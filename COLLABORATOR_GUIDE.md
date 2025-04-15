@@ -84,7 +84,6 @@ The Website also uses several other Open Source libraries (not limited to) liste
 - [`next-intl`][] is the i18n Library adopted within the Website
   - It provides an excellent integration with Next.js, But it also supports standalone support for i18n if it eventually migrates from Next.js to something else.
   - Supports React Server Components and Next.js Middlewares
-- [`next-sitemap`](https://www.npmjs.com/package/next-sitemap) is used for Sitemap and `robots.txt` Generation
 - We use [Rehype](https://github.com/rehypejs/rehype) and [Remark](https://github.com/remarkjs/remark) to extend MDX functionality
 - We use [Storybook](https://storybook.js.org/) for Manual Testing and Visual Regression Tests of our React Components
   - Storybook also provides a sandboxed environment, which is very useful whilst for crafting React Components
@@ -188,14 +187,14 @@ Finally, if you're unfamiliar with how to use Tailwind or how to use Tailwind wi
 #### Guidelines when writing CSS
 
 - We use camelCase for defining CSS classes
-- We use Tailwind's `@apply` selector to apply Tailwind Tokens
+- We use Tailwind's `@apply` selector to apply Tailwind utility classes
   - We discourage the usage of any plain CSS styles and tokens, when in doubt ask for help
-  - We require that you define one Tailwind Token per line, just as shown on the example above, since this improves readability
+  - We require that you define one Tailwind utility class per line, just as shown on the example above, since this improves readability
 - Only write CSS within CSS Modules, avoid writing CSS within JavaScript files
 
 > \[!NOTE]\
 > Tailwind is already configured for this repository. You don't need to import any Tailwind module within your CSS module.\
-> You can apply Tailwind Tokens with Tailwind's `@apply` CSS rule. [Read more about applying Tailwind classes with `@apply`](https://tailwindcss.com/docs/functions-and-directives#apply).
+> You can apply Tailwind utility classes with Tailwind's `@apply` CSS rule. [Read more about applying Tailwind utility classes with `@apply`](https://tailwindcss.com/docs/functions-and-directives#apply).
 
 > \[!IMPORTANT]\
 > When using IDEs such as Visual Studio Code, we recommend installing the official [Stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint)
