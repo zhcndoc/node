@@ -1,5 +1,5 @@
 {
   "app_dir": "/",
-  "build_command": "npm ci && npm run build",
-  "start_command": "PORT=8080 npm run start"
+  "build_command": "pnpm run build",
+  "start_command": "pnpm run start"
 }
