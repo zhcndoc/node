@@ -1,18 +1,21 @@
 {
   "name": "@node-core/rehype-shiki",
   "type": "module",
-  "main": "./src/index.mjs",
-  "module": "./src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs",
+    "./*": "./src/*.mjs"
+  },
   "scripts": {
     "lint:js": "eslint \"**/*.mjs\"",
-    "test": "node --test"
+    "test": "turbo test:unit",
+    "test:unit": "node --experimental-test-coverage --experimental-test-module-mocks --test \"**/*.test.mjs\""
   },
   "dependencies": {
-    "@shikijs/core": "^3.3.0",
-    "@shikijs/engine-javascript": "^3.3.0",
+    "@shikijs/core": "^3.4.2",
+    "@shikijs/engine-javascript": "^3.4.2",
     "classnames": "~2.5.1",
     "hast-util-to-string": "^3.0.1",
-    "shiki": "~3.3.0",
+    "shiki": "~3.4.2",
     "unist-util-visit": "^5.0.0"
   }
 }
