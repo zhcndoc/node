@@ -54,7 +54,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
+        uses: step-security/harden-runner@6c439dc8bdf85cadbbce9ed30d1c7b959517bc49 # v2.12.2
         with:
           egress-policy: audit
 
@@ -85,7 +85,7 @@ jobs:
         # This action must be manually updated to the latest commit from
         # https://github.com/chromaui/action
         id: chromatic-deploy
-        uses: chromaui/action@d7afd50124cf4f337bcd943e7f45cfa85a5e4476 # v12.0.0
+        uses: chromaui/action@b5848056bb67ce5f1cccca8e62a37cbd9dd42871 # v13.0.1
         with:
           workingDir: packages/ui-components
           buildScriptName: storybook:build
