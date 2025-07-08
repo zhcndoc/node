@@ -118,11 +118,17 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          # Install deps
+          pnpm install --frozen-lockfile
           # Create a unique version using the commit SHA as a prerelease identifier
-          # This ensures we can publish multiple times from the same codebase with unique versions
           npm version --no-git-tag-version 1.0.1-$COMMIT_SHA
-          # Publish the package to the npm registry with public access flag
-          pnpm publish --access public --no-git-checks
+
+          # Check if a custom publish script exists in package.json
+          if jq -e '.scripts.publish' package.json > /dev/null; then
+            pnpm run publish
+          else
+            pnpm publish --access public --no-git-checks
+          fi
 
       - name: Notify on Manual Release
         if: ${{ github.event_name == 'workflow_dispatch' }}
