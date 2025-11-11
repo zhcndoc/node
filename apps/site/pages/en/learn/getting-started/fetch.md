@@ -104,6 +104,8 @@ async function streamOllamaCompletion(prompt) {
   // You can read about HTTP status codes here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
   // 200 means the request was successful.
   if (statusCode !== 200) {
+    // consuming the response body is mandatory: https://undici.nodejs.org/#/?id=garbage-collection
+    await body.dump();
     throw new Error(`Ollama request failed with status ${statusCode}`);
   }
 
@@ -133,14 +135,14 @@ try {
 [Streams](https://nodejs.org/docs/v22.14.0/api/stream.html#stream) is a feature in Node.js that allows you to read and write chunks of data.
 
 ```js
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 
 import { stream } from 'undici';
 
 async function fetchGitHubRepos() {
   const url = 'https://api.github.com/users/nodejs/repos';
 
-  const { statusCode } = await stream(
+  await stream(
     url,
     {
       method: 'GET',
@@ -149,35 +151,31 @@ async function fetchGitHubRepos() {
         Accept: 'application/json',
       },
     },
-    () => {
+    res => {
       let buffer = '';
 
       return new Writable({
         write(chunk, encoding, callback) {
           buffer += chunk.toString();
-
+          callback();
+        },
+        final(callback) {
           try {
             const json = JSON.parse(buffer);
             console.log(
               'Repository Names:',
               json.map(repo => repo.name)
             );
-            buffer = '';
           } catch (error) {
             console.error('Error parsing JSON:', error);
           }
-
-          callback();
-        },
-        final(callback) {
           console.log('Stream processing completed.');
+          console.log(`Response status: ${res.statusCode}`);
           callback();
         },
       });
     }
   );
-
-  console.log(`Response status: ${statusCode}`);
 }
 
 fetchGitHubRepos().catch(console.error);
