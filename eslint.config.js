@@ -1,7 +1,7 @@
 import js from '@eslint/js';
 import * as importX from 'eslint-plugin-import-x';
-import tseslint from 'typescript-eslint';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   js.configs.recommended,
@@ -50,10 +50,29 @@ export default tseslint.config(
             'builtin',
             'external',
             'internal',
+            'object',
+            'type',
             ['sibling', 'parent'],
             'index',
-            'unknown',
           ],
+          pathGroups: [
+            {
+              pattern: '{.,..}/**/*.css',
+              group: 'sibling',
+              position: 'after',
+            },
+            {
+              pattern: './**/*.css',
+              group: 'sibling',
+              position: 'after',
+            },
+            {
+              pattern: '../**/*.css',
+              group: 'sibling',
+              position: 'after',
+            },
+          ],
+          pathGroupsExcludedImportTypes: ['type'],
           'newlines-between': 'always',
           alphabetize: {
             order: 'asc',

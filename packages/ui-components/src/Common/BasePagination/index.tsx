@@ -1,9 +1,10 @@
 import { ArrowRightIcon, ArrowLeftIcon } from '@heroicons/react/20/solid';
-import type { FC } from 'react';
 
 import Button from '#ui/Common/BaseButton';
 import { useGetPageElements } from '#ui/Common/BasePagination/useGetPageElements';
+
 import type { LinkLike } from '#ui/types';
+import type { FC } from 'react';
 
 import styles from './index.module.css';
 
@@ -20,9 +21,9 @@ export type PaginationProps = {
   getPageLabel: (pageNumber: number) => string;
   labels: {
     aria: string;
-    prevAria: string;
-    prev: string;
-    nextAria: string;
+    previousAriaLabel: string;
+    previous: string;
+    nextAriaLabel: string;
     next: string;
   };
 };
@@ -47,21 +48,21 @@ const BasePagination: FC<PaginationProps> = ({
     <nav aria-label={labels.aria} className={styles.pagination}>
       <Button
         as={as}
-        aria-label={labels.prevAria}
+        aria-label={labels.previousAriaLabel}
         disabled={currentPage === 1}
         kind="secondary"
         className={styles.previousButton}
         href={pages[currentPage - 2]?.url}
       >
         <ArrowLeftIcon className={styles.arrowIcon} />
-        <span>{labels.prev}</span>
+        <span>{labels.previous}</span>
       </Button>
 
       <ol className={styles.list}>{parsedPages}</ol>
 
       <Button
         as={as}
-        aria-label={labels.nextAria}
+        aria-label={labels.nextAriaLabel}
         disabled={currentPage === pages.length}
         kind="secondary"
         className={styles.nextButton}

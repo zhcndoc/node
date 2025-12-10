@@ -1,31 +1,34 @@
 'use strict';
 import createNextIntlPlugin from 'next-intl/plugin';
 
+import { OPEN_NEXT_CLOUDFLARE } from './next.constants.cloudflare.mjs';
 import { BASE_PATH, ENABLE_STATIC_EXPORT } from './next.constants.mjs';
+import { getImagesConfig } from './next.image.config.mjs';
 import { redirects, rewrites } from './next.rewrites.mjs';
+
+const getDeploymentId = async () => {
+  if (OPEN_NEXT_CLOUDFLARE) {
+    // If we're building for the Cloudflare deployment we want to set
+    // an appropriate deploymentId (needed for skew protection)
+    const openNextAdapter = await import('@opennextjs/cloudflare');
+
+    return openNextAdapter.getDeploymentId();
+  }
+
+  return undefined;
+};
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  allowedDevOrigins: ['10.1.1.232'],
+  // Full Support of React 18 SSR and Streaming
+  reactCompiler: true,
   // We don't want to redirect with trailing slashes
   skipTrailingSlashRedirect: true,
   // We allow the BASE_PATH to be overridden in case that the Website
   // is being built on a subdirectory (e.g. /nodejs-website)
   basePath: BASE_PATH,
   // Vercel/Next.js Image Optimization Settings
-  images: {
-    // We disable image optimisation during static export builds
-    unoptimized: ENABLE_STATIC_EXPORT,
-    // We add it to the remote pattern for the static images we use from multiple sources
-    // to be marked as safe sources (these come from Markdown files)
-    remotePatterns: [
-      new URL('https://avatars.githubusercontent.com/**'),
-      new URL('https://bestpractices.coreinfrastructure.org/**'),
-      new URL('https://raw.githubusercontent.com/nodejs/**'),
-      new URL('https://user-images.githubusercontent.com/**'),
-      new URL('https://website-assets.oramasearch.com/**'),
-    ],
-  },
+  images: getImagesConfig(),
   serverExternalPackages: ['twoslash'],
   outputFileTracingIncludes: {
     // Twoslash needs TypeScript declarations to function, and, by default, Next.js
@@ -50,10 +53,7 @@ const nextConfig = {
   // Enable statically typed links
   // @see https://nextjs.org/docs/app/api-reference/config/typescript#statically-typed-links
   typedRoutes: true,
-  // We don't want to run ESLint Checking on Production Builds
-  // as we already check it on the CI within each Pull Request
-  // we also configure ESLint to run its lint checking on all files
-  eslint: { ignoreDuringBuilds: true },
+  // Experimental Flags
   experimental: {
     useCache: true,
     // Ensure that server-side code is also minified
@@ -80,17 +80,10 @@ const nextConfig = {
       'tailwindcss',
       'shiki',
     ],
+    // Faster Development Servers with Turbopack
+    turbopackFileSystemCacheForDev: true,
   },
-  // If we're building for the Cloudflare deployment we want to set
-  // an appropriate deploymentId (needed for skew protection)
-  // TODO: The `OPEN_NEXT_CLOUDFLARE` environment variable is being
-  //       defined in the worker building script, ideally the open-next
-  //       adapter should set it itself when it invokes the Next.js build
-  //       process, onces it does that remove the manual `OPEN_NEXT_CLOUDFLARE`
-  //       definition in the package.json script.
-  deploymentId: process.env.OPEN_NEXT_CLOUDFLARE
-    ? (await import('@opennextjs/cloudflare')).getDeploymentId()
-    : undefined,
+  deploymentId: await getDeploymentId(),
 };
 
 const withNextIntl = createNextIntlPlugin('./i18n.tsx');

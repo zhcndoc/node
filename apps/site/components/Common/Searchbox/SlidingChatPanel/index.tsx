@@ -4,10 +4,12 @@ import { XMarkIcon } from '@heroicons/react/24/solid';
 import ChatInput from '@node-core/ui-components/Common/Search/Chat/Input';
 import { SlidingPanel } from '@orama/ui/components';
 import { useTranslations } from 'next-intl';
+
 import type { FC, PropsWithChildren } from 'react';
 
-import styles from './index.module.css';
 import { ChatInteractionsContainer } from '../ChatInteractions';
+
+import styles from './index.module.css';
 
 type SlidingChatPanelProps = PropsWithChildren<{
   open: boolean;

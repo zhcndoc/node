@@ -1,6 +1,6 @@
-import type { Meta as MetaObj, StoryObj } from '@storybook/react-webpack5';
-
 import Sidebar from '#ui/Containers/Sidebar';
+
+import type { Meta as MetaObj, StoryObj } from '@storybook/react-webpack5';
 
 type Story = StoryObj<typeof Sidebar>;
 type Meta = MetaObj<typeof Sidebar>;
@@ -81,8 +81,5 @@ const args = {
 };
 
 export const Default: Story = { args };
-export const Progression: Story = {
-  args: { ...args, showProgressionIcons: true },
-};
 
 export default { component: Sidebar } as Meta;

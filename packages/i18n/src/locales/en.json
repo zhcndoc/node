@@ -25,7 +25,7 @@
           "guides": "Guides",
           "learn": "Learn",
           "security": "Security",
-          "certification": "Certification",
+          "certification": "Courses",
           "blog": "Blog",
           "contribute": "Contribute"
         }
@@ -65,7 +65,8 @@
         "http": {
           "links": {
             "http": "HTTP",
-            "anatomyOfAnHttpTransaction": "Anatomy of an HTTP Transaction"
+            "anatomyOfAnHttpTransaction": "Anatomy of an HTTP Transaction",
+            "enterpriseNetworkConfiguration": "Enterprise Network Configuration"
           }
         },
         "manipulatingFiles": {
@@ -214,7 +215,8 @@
       "releaseDate": "Released at",
       "lastUpdated": "Last updated",
       "vulnerabilities": "Vulnerabilities",
-      "details": "Details"
+      "details": "Details",
+      "hideNonLts": "Hide non-LTS versions"
     },
     "minorReleasesTable": {
       "version": "Version",
@@ -236,10 +238,6 @@
       "npmVersion": "npm version",
       "v8Version": "V8 version"
     },
-    "pagination": {
-      "next": "Next",
-      "previous": "Previous"
-    },
     "common": {
       "alertBox": {
         "info": "Info",
@@ -249,17 +247,13 @@
       "breadcrumbs": {
         "navigateToHome": "Navigate to Home"
       },
-      "crossLink": {
-        "previous": "Prev",
-        "next": "Next"
-      },
       "codebox": {
         "copy": "Copy to clipboard",
         "copied": "Copied to clipboard!"
       },
       "pagination": {
-        "prev": "Previous",
-        "prevAriaLabel": "Previous page",
+        "previous": "Previous",
+        "previousAriaLabel": "Previous page",
         "next": "Next",
         "nextAriaLabel": "Next page",
         "defaultLabel": "Pagination",

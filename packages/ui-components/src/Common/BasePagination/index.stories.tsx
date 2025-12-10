@@ -1,6 +1,6 @@
-import type { Meta as MetaObj, StoryObj } from '@storybook/react-webpack5';
-
 import BasePagination from '#ui/Common/BasePagination';
+
+import type { Meta as MetaObj, StoryObj } from '@storybook/react-webpack5';
 
 type Story = StoryObj<typeof BasePagination>;
 type Meta = MetaObj<typeof BasePagination>;
@@ -13,9 +13,9 @@ export const Default: Story = {
     getPageLabel: value => `Page: ${value}`,
     labels: {
       aria: 'Aria',
-      prevAria: 'Previous Aria',
-      prev: 'Previous',
-      nextAria: 'Next Aria',
+      previousAriaLabel: 'Previous Aria',
+      previous: 'Previous',
+      nextAriaLabel: 'Next Aria',
       next: 'Next',
     },
   },

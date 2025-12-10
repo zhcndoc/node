@@ -1,9 +1,9 @@
+import type { LinkLike } from '#ui/types';
 import type { FC, PropsWithChildren } from 'react';
 
-import type { LinkLike } from '#ui/types';
+import StatelessSelect from '../Select/StatelessSelect';
 
 import styles from './index.module.css';
-import StatelessSelect from '../Select/StatelessSelect';
 
 type LinkTab = { key: string; label: string; link: string };
 

@@ -1,12 +1,12 @@
 'use server';
 
-import { ArrowRightIcon } from '@heroicons/react/24/solid';
 import { getTranslations } from 'next-intl/server';
-import type { FC } from 'react';
 
 import Button from '#site/components/Common/Button';
 import Turtle from '#site/components/Common/Turtle';
 import GlowingBackdropLayout from '#site/layouts/GlowingBackdrop';
+
+import type { FC } from 'react';
 
 const NotFoundPage: FC = async () => {
   const t = await getTranslations();
@@ -27,10 +27,7 @@ const NotFoundPage: FC = async () => {
         {t('layouts.error.notFound.description')}
       </p>
 
-      <Button href="/">
-        {t('layouts.error.backToHome')}
-        <ArrowRightIcon />
-      </Button>
+      <Button href="/">{t('layouts.error.backToHome')}</Button>
     </GlowingBackdropLayout>
   );
 };
