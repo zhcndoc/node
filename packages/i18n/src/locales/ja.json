@@ -268,7 +268,8 @@
       "themeToggle": {
         "light": "ライトモードに切り替える",
         "dark": "ダークモードに切り替える"
-      }
+      },
+      "skipToContent": "コンテンツにスキップ"
     },
     "metabar": {
       "lastUpdated": "最終更新日",
@@ -385,7 +386,6 @@
           "fnm": "\"fnm\"はクロスプラットフォームに対応したNode.jsのバージョンマネージャーです。",
           "brew": "HomebrewはmacOS用およびLinux用のパッケージマネージャーです。",
           "choco": "ChocolateyはWIndows用のパッケージマネージャーです。",
-          "devbox": "Devboxは隔離された再現可能な開発環境を構築します。",
           "docker": "Dockerはコンテナー化に関するプラットフォームです。",
           "n": "\"n\"はクロスプラットフォームに対応したNode.jsのバージョンマネージャーです。",
           "volta": "\"Volta\"はクロスプラットフォームに対応したNode.jsのバージョンマネージャーです。"
