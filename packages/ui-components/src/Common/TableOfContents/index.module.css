@@ -1,0 +1,59 @@
+@reference "../../styles/index.css";
+
+.details {
+  @apply my-2
+    block
+    rounded-md
+    bg-neutral-200
+    lg:hidden
+    dark:bg-neutral-900;
+
+  &[open] {
+    .icon {
+      @apply rotate-90;
+    }
+  }
+
+  .summary {
+    @apply flex
+      list-none
+      items-center
+      gap-1
+      px-3.5
+      py-2.5;
+
+    &::-webkit-details-marker {
+      @apply hidden;
+    }
+
+    .icon {
+      @apply size-5;
+    }
+  }
+
+  .list {
+    @apply space-y-1
+      px-4
+      pb-2
+      wrap-anywhere;
+  }
+
+  .link {
+    @apply inline-block
+      text-sm
+      font-semibold
+      text-neutral-900
+      underline
+      hover:text-neutral-700
+      dark:text-white
+      dark:hover:text-neutral-500;
+  }
+
+  .depthThree {
+    @apply pl-2;
+  }
+
+  .depthFour {
+    @apply pl-4;
+  }
+}
