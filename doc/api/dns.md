@@ -131,11 +131,10 @@ changes:
       - v16.7.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/39610
-    description: The `options` object now accepts a `tries` option.
+    description: "The `options` object now accepts a `tries` option."
   - version: v12.18.3
     pr-url: https://github.com/nodejs/node/pull/33472
-    description: The constructor now accepts an `options` object.
-                 The single supported option is `timeout`.
+    description: "The constructor now accepts an `options` object.The single supported option is `timeout`."
 -->
 
 创建一个新的解析器。
@@ -200,26 +199,22 @@ changes:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52492
-    description: The `verbatim` option is now deprecated in favor of the new `order` option.
+    description: "The `verbatim` option is now deprecated in favor of the new `order` option."
   - version: v18.4.0
     pr-url: https://github.com/nodejs/node/pull/43054
-    description: For compatibility with `node:net`, when passing an option
-                 object the `family` option can be the string `'IPv4'` or the
-                 string `'IPv6'`.
+    description: "For compatibility with `node:net`, when passing an option object the `family` option can be the string `'IPv4'` or the string `'IPv6'`."
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: Passing an invalid callback to the `callback` argument
-                 now throws `ERR_INVALID_ARG_TYPE` instead of
-                 `ERR_INVALID_CALLBACK`.
+    description: "Passing an invalid callback to the `callback` argument now throws `ERR_INVALID_ARG_TYPE` instead of `ERR_INVALID_CALLBACK`."
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/39987
-    description: The `verbatim` options defaults to `true` now.
+    description: "The `verbatim` options defaults to `true` now."
   - version: v8.5.0
     pr-url: https://github.com/nodejs/node/pull/14731
-    description: The `verbatim` option is supported now.
+    description: "The `verbatim` option is supported now."
   - version: v1.2.0
     pr-url: https://github.com/nodejs/node/pull/744
-    description: The `all` option is supported now.
+    description: "The `all` option is supported now."
 -->
 
 * `hostname` {string}
@@ -288,7 +283,7 @@ changes:
      - v13.13.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/32183
-    description: Added support for the `dns.ALL` flag.
+    description: "Added support for the `dns.ALL` flag."
 -->
 
 以下标志可以作为提示传递给 [`dns.lookup()`][]。
@@ -304,8 +299,7 @@ added: v0.11.14
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `address` {string}
@@ -347,8 +341,7 @@ added: v0.1.27
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string} 要解析的主机名。
@@ -384,12 +377,10 @@ added: v0.1.16
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v7.2.0
     pr-url: https://github.com/nodejs/node/pull/9296
-    description: 此方法现在支持传递 `options`，
-                 特别是 `options.ttl`。
+    description: "此方法现在支持传递 `options`，特别是 `options.ttl`。"
 -->
 
 * `hostname` {string} 要解析的主机名。
@@ -411,12 +402,10 @@ added: v0.1.16
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v7.2.0
     pr-url: https://github.com/nodejs/node/pull/9296
-    description: 此方法现在支持传递 `options`，
-                 特别是 `options.ttl`。
+    description: "此方法现在支持传递 `options`，特别是 `options.ttl`。"
 -->
 
 * `hostname` {string} 要解析的主机名。
@@ -437,8 +426,7 @@ changes:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -492,8 +480,7 @@ added: v0.3.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -512,8 +499,7 @@ added:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -533,8 +519,7 @@ added: v0.1.27
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -553,8 +538,7 @@ added: v0.9.12
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -593,8 +577,7 @@ added: v0.1.90
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -613,8 +596,7 @@ added: v6.0.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -632,8 +614,7 @@ added: v0.11.10
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -673,8 +654,7 @@ added: v0.1.27
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -744,8 +724,7 @@ added: v0.1.27
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -786,10 +765,10 @@ changes:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52492
-    description: 现在支持 `ipv6first` 值。
+    description: "现在支持 `ipv6first` 值。"
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/39987
-    description: 默认值已更改为 `verbatim`。
+    description: "默认值已更改为 `verbatim`。"
 -->
 
 * `order` {string} 必须是 `'ipv4first'`、`'ipv6first'` 或 `'verbatim'`。
@@ -816,7 +795,7 @@ changes:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52492
-    description: 现在支持 `ipv6first` 值。
+    description: "现在支持 `ipv6first` 值。"
 -->
 
 获取 [`dns.lookup()`][] 和
@@ -867,7 +846,7 @@ added: v10.6.0
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/32953
-    description: 作为 `require('dns/promises')` 暴露。
+    description: "作为 `require('dns/promises')` 暴露。"
   - version:
     - v11.14.0
     - v10.17.0
@@ -979,7 +958,7 @@ changes:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52492
-    description: 现在已弃用 `verbatim` 选项，推荐使用新的 `order` 选项。
+    description: "现在已弃用 `verbatim` 选项，推荐使用新的 `order` 选项。"
 -->
 
 * `hostname` {string}
@@ -1440,10 +1419,10 @@ changes:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52492
-    description: 现在支持 `ipv6first` 值。
+    description: "现在支持 `ipv6first` 值。"
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/39987
-    description: 默认值已更改为 `verbatim`。
+    description: "默认值已更改为 `verbatim`。"
 -->
 
 * `order` {string} 必须是 `'ipv4first'`、`'ipv6first'` 或 `'verbatim'`。

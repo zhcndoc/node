@@ -63,7 +63,7 @@ added: v0.1.25
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5348
-    description: Passing a non-string as the `path` argument will throw now.
+    description: "Passing a non-string as the `path` argument will throw now."
 -->
 
 * `path` {string}
@@ -132,7 +132,7 @@ added: v0.1.16
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5348
-    description: Passing a non-string as the `path` argument will throw now.
+    description: "Passing a non-string as the `path` argument will throw now."
 -->
 
 * `path` {string}
@@ -154,7 +154,7 @@ added: v0.1.25
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5348
-    description: Passing a non-string as the `path` argument will throw now.
+    description: "Passing a non-string as the `path` argument will throw now."
 -->
 
 * `path` {string}
@@ -191,7 +191,7 @@ added: v0.11.15
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44349
-    description: The dot will be added if it is not specified in `ext`.
+    description: "The dot will be added if it is not specified in `ext`."
 -->
 
 * `pathObject` {Object} 任何具有以下属性的 JavaScript 对象：
@@ -460,7 +460,7 @@ added: v0.11.15
 changes:
   - version: v15.3.0
     pr-url: https://github.com/nodejs/node/pull/34962
-    description: 作为 `require('path/posix')` 暴露。
+    description: "作为 `require('path/posix')` 暴露。"
 -->
 
 * 类型：{Object}
@@ -588,7 +588,7 @@ added: v0.11.15
 changes:
   - version: v15.3.0
     pr-url: https://github.com/nodejs/node/pull/34962
-    description: 作为 `require('path/win32')` 暴露。
+    description: "作为 `require('path/win32')` 暴露。"
 -->
 
 * 类型：{Object}

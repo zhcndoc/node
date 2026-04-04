@@ -327,7 +327,7 @@ changes:
    - v24.7.0
    - v22.20.0
    pr-url: https://github.com/nodejs/node/pull/59464
-   description: format 现在接受 `brotli` 值。
+   description: "format 现在接受 `brotli` 值。"
  - version:
     - v23.11.0
     - v22.15.0
@@ -373,7 +373,7 @@ changes:
     description: 不再处于实验阶段。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42083
-    description: 不再受 `--experimental-global-webcrypto` CLI 标志限制。
+    description: "不再受 `--experimental-global-webcrypto` CLI 标志限制。"
 -->
 
 {Crypto} 的与浏览器兼容的实现。仅当编译 Node.js 二进制文件时包含对 `node:crypto` 模块的支持，此全局对象才可用。
@@ -390,7 +390,7 @@ changes:
     description: 不再处于实验阶段。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42083
-    description: 不再受 `--experimental-global-webcrypto` CLI 标志限制。
+    description: "不再受 `--experimental-global-webcrypto` CLI 标志限制。"
 -->
 
 [Web Crypto API][] 的与浏览器兼容的实现。
@@ -407,7 +407,7 @@ changes:
     description: 不再处于实验阶段。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42083
-    description: 不再受 `--experimental-global-webcrypto` CLI 标志限制。
+    description: "不再受 `--experimental-global-webcrypto` CLI 标志限制。"
 -->
 
 {CryptoKey} 的与浏览器兼容的实现。仅当编译 Node.js 二进制文件时包含对 `node:crypto` 模块的支持，此全局对象才可用。
@@ -429,7 +429,7 @@ changes:
     description: CustomEvent 现在已稳定。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44860
-    description: 不再受 `--experimental-global-customevent` CLI 标志限制。
+    description: "不再受 `--experimental-global-customevent` CLI 标志限制。"
 -->
 
 {CustomEvent} 的与浏览器兼容的实现。
@@ -443,7 +443,7 @@ changes:
     - v24.7.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59464
-    description: format 现在接受 `brotli` 值。
+    description: "format 现在接受 `brotli` 值。"
   - version:
     - v23.11.0
     - v22.15.0
@@ -525,7 +525,7 @@ changes:
     description: 不再是实验性的。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41811
-    description: 不再位于 `--experimental-fetch` CLI 标志之后。
+    description: "不再位于 `--experimental-fetch` CLI 标志之后。"
 -->
 
 与浏览器兼容的 [`fetch()`][] 函数实现。
@@ -589,7 +589,7 @@ changes:
     description: 不再是实验性的。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41811
-    description: 不再位于 `--experimental-fetch` CLI 标志之后。
+    description: "不再位于 `--experimental-fetch` CLI 标志之后。"
 -->
 
 与浏览器兼容的 {FormData} 实现。
@@ -624,7 +624,7 @@ changes:
     description: 不再是实验性的。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41811
-    description: 不再位于 `--experimental-fetch` CLI 标志之后。
+    description: "不再位于 `--experimental-fetch` CLI 标志之后。"
 -->
 
 与浏览器兼容的 {Headers} 实现。
@@ -636,17 +636,13 @@ added: v22.4.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/60351
-    description: 在不提供
-                 `--localstorage-file` 的情况下访问 `localStorage` 全局现在会抛出 `DOMException`，以
-                 符合 Web Storage 规范。
+    description: "在不提供`--localstorage-file` 的情况下访问 `localStorage` 全局现在会抛出 `DOMException`，以符合 Web Storage 规范。"
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/57666
-    description: 当启用 webstorage 且未提供
-                 `--localstorage-file` 时，访问 `localStorage` 全局现在返回一个
-                 空对象。
+    description: "当启用 webstorage 且未提供`--localstorage-file` 时，访问 `localStorage` 全局现在返回一个空对象。"
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/57666
-    description: 此 API 不再位于 `--experimental-webstorage` 运行时标志之后。
+    description: "此 API 不再位于 `--experimental-webstorage` 运行时标志之后。"
 -->
 
 > 稳定性：1.2 - 发布候选。使用 [`--no-experimental-webstorage`][] 禁用此 API。
@@ -1046,7 +1042,7 @@ changes:
     description: 不再是实验性的。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41811
-    description: 不再位于 `--experimental-fetch` CLI 标志之后。
+    description: "不再位于 `--experimental-fetch` CLI 标志之后。"
 -->
 
 与浏览器兼容的 {Request} 实现。
@@ -1068,7 +1064,7 @@ changes:
     description: 不再是实验性的。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41811
-    description: 不再位于 `--experimental-fetch` CLI 标志之后。
+    description: "不再位于 `--experimental-fetch` CLI 标志之后。"
 -->
 
 与浏览器兼容的 {Response} 实现。
@@ -1080,7 +1076,7 @@ added: v22.4.0
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/57666
-    description: 此 API 不再位于 `--experimental-webstorage` 运行时标志之后。
+    description: "此 API 不再位于 `--experimental-webstorage` 运行时标志之后。"
 -->
 
 > 稳定性：1.2 - 发布候选。使用 [`--no-experimental-webstorage`][] 禁用此 API。
@@ -1138,7 +1134,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42083
-    description: 不再位于 `--experimental-global-webcrypto` CLI 标志之后。
+    description: "不再位于 `--experimental-global-webcrypto` CLI 标志之后。"
 -->
 
 与浏览器兼容的 {SubtleCrypto} 实现。仅当 Node.js 二进制文件编译时包含对 `node:crypto` 模块的支持时，此全局变量才可用。
@@ -1263,7 +1259,7 @@ changes:
     description: 不再是实验性的。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/51594
-    description: 不再位于 `--experimental-websocket` CLI 标志之后。
+    description: "不再位于 `--experimental-websocket` CLI 标志之后。"
 -->
 
 与浏览器兼容的 {WebSocket} 实现。使用 [`--no-experimental-websocket`][] CLI 标志禁用此 API。

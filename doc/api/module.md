@@ -169,7 +169,7 @@ changes:
     - v22.13.1
     - v20.18.2
     pr-url: https://github.com/nodejs-private/node-private/pull/629
-    description: 在启用权限模型的情况下使用此功能需要传递 `--allow-worker`。
+    description: "在启用权限模型的情况下使用此功能需要传递 `--allow-worker`。"
   - version:
     - v20.8.0
     - v18.19.0
@@ -223,7 +223,7 @@ added:
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/61803
-    description: 移除了 `transform` 和 `sourceMap` 选项。
+    description: "移除了 `transform` 和 `sourceMap` 选项。"
 -->
 
 > 稳定性：1.2 - 发布候选
@@ -411,12 +411,12 @@ changes:
       - v25.0.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/58797
-    description: 添加 `portable` 选项以启用便携编译缓存。
+    description: "添加 `portable` 选项以启用便携编译缓存。"
   - version:
       - v25.0.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/59931
-    description: 将未发布的 `path` 选项重命名为 `directory` 以保持一致性。
+    description: "将未发布的 `path` 选项重命名为 `directory` 以保持一致性。"
 -->
 
 * `options` {string|Object} 可选。如果传递字符串，则被视为 `options.directory`。
@@ -482,7 +482,7 @@ changes:
     - v20.6.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/48842
-    description: 添加 `initialize` 钩子以替换 `globalPreload`。
+    description: "添加 `initialize` 钩子以替换 `globalPreload`。"
   - version:
     - v18.6.0
     - v16.17.0
@@ -490,7 +490,7 @@ changes:
     description: 添加对链式加载器的支持。
   - version: v16.12.0
     pr-url: https://github.com/nodejs/node/pull/37468
-    description: 移除 `getFormat`、`getSource`、`transformSource` 和 `globalPreload`；添加 `load` 钩子和 `getGlobalPreload` 钩子。
+    description: "移除 `getFormat`、`getSource`、`transformSource` 和 `globalPreload`；添加 `load` 钩子和 `getGlobalPreload` 钩子。"
 -->
 
 <!-- type=misc -->
@@ -1027,7 +1027,7 @@ changes:
     - v20.6.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/48842
-    description: 添加 `initialize` 钩子以替换 `globalPreload`。
+    description: "添加 `initialize` 钩子以替换 `globalPreload`。"
   - version:
     - v18.6.0
     - v16.17.0
@@ -1035,7 +1035,7 @@ changes:
     description: 添加对链式加载器的支持。
   - version: v16.12.0
     pr-url: https://github.com/nodejs/node/pull/37468
-    description: 移除 `getFormat`、`getSource`、`transformSource` 和 `globalPreload`；添加 `load` 钩子和 `getGlobalPreload` 钩子。
+    description: "移除 `getFormat`、`getSource`、`transformSource` 和 `globalPreload`；添加 `load` 钩子和 `getGlobalPreload` 钩子。"
 -->
 
 [`register`][] 方法可用于注册导出的一组钩子的模块。钩子是 Node.js 调用的函数，用于自定义模块解析和加载过程。导出的函数必须具有特定的名称和签名，并且必须作为命名导出导出。
@@ -1134,12 +1134,12 @@ changes:
     - v20.10.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/50140
-    description: 属性 `context.importAssertions` 被替换为 `context.importAttributes`。使用旧名称仍然受支持，但会发出实验性警告。
+    description: "属性 `context.importAssertions` 被替换为 `context.importAttributes`。使用旧名称仍然受支持，但会发出实验性警告。"
   - version:
     - v18.6.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42623
-    description: 添加对链式 resolve 钩子的支持。每个钩子必须 either 调用 `nextResolve()` 或在其返回中包含设置为 `true` 的 `shortCircuit` 属性。
+    description: "添加对链式 resolve 钩子的支持。每个钩子必须 either 调用 `nextResolve()` 或在其返回中包含设置为 `true` 的 `shortCircuit` 属性。"
   - version:
     - v17.1.0
     - v16.14.0
@@ -1202,15 +1202,15 @@ export async function resolve(specifier, context, nextResolve) {
 changes:
   - version: v22.6.0
     pr-url: https://github.com/nodejs/node/pull/56350
-    description: 添加对格式 `commonjs-typescript` 和 `module-typescript` 的 `source` 支持。
+    description: "添加对格式 `commonjs-typescript` 和 `module-typescript` 的 `source` 支持。"
   - version: v20.6.0
     pr-url: https://github.com/nodejs/node/pull/47999
-    description: 添加对格式 `commonjs` 的 `source` 支持。
+    description: "添加对格式 `commonjs` 的 `source` 支持。"
   - version:
     - v18.6.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42623
-    description: 添加对链式 load 钩子的支持。每个钩子必须 either 调用 `nextLoad()` 或在其返回中包含设置为 `true` 的 `shortCircuit` 属性。
+    description: "添加对链式 load 钩子的支持。每个钩子必须 either 调用 `nextLoad()` 或在其返回中包含设置为 `true` 的 `shortCircuit` 属性。"
 -->
 
 * `url` {string} `resolve` 链返回的 URL
@@ -1595,7 +1595,7 @@ added:
 changes:
   - version: v20.5.0
     pr-url: https://github.com/nodejs/node/pull/48461
-    description: 添加对 `lineLengths` 的支持。
+    description: "添加对 `lineLengths` 的支持。"
 -->
 
 * `payload` {Object}

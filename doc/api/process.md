@@ -218,7 +218,7 @@ changes:
      - v12.0.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/26599
-    description: 添加了 `origin` 参数。
+    description: "添加了 `origin` 参数。"
 -->
 
 * `err` {Error} 未捕获的异常。
@@ -328,10 +328,10 @@ added: v1.4.1
 changes:
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/8217
-    description: 不处理 `Promise` 拒绝已弃用。
+    description: "不处理 `Promise` 拒绝已弃用。"
   - version: v6.6.0
     pr-url: https://github.com/nodejs/node/pull/8223
-    description: 未处理的 `Promise` 拒绝现在将发出进程警告。
+    description: "未处理的 `Promise` 拒绝现在将发出进程警告。"
 -->
 
 * `reason` {Error|any} 拒绝 promise 的对象（通常是 [`Error`][] 对象）。
@@ -832,7 +832,7 @@ added: v0.7.7
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/43627
-    description: `process.config` 对象现在已冻结。
+    description: "`process.config` 对象现在已冻结。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36902
     description: 修改 process.config 已被弃用。
@@ -900,7 +900,7 @@ changes:
     - v22.0.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52039
-    description: 与 `uv_get_constrained_memory` 对齐返回值。
+    description: "与 `uv_get_constrained_memory` 对齐返回值。"
 -->
 
 * 返回：{number}
@@ -1015,7 +1015,7 @@ added: v0.1.16
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/12794
-    description: 增加了对 `flags` 参数的支持。
+    description: "增加了对 `flags` 参数的支持。"
 -->
 
 * `module` {Object}
@@ -1282,7 +1282,7 @@ added: v0.1.27
 changes:
   - version: v11.14.0
     pr-url: https://github.com/nodejs/node/pull/26544
-    description: 工作线程现在将默认使用父线程的 `process.env` 副本，可通过 `Worker` 构造函数的 `env` 选项进行配置。
+    description: "工作线程现在将默认使用父线程的 `process.env` 副本，可通过 `Worker` 构造函数的 `env` 选项进行配置。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18990
     description: 变量值到字符串的隐式转换已弃用。
@@ -1721,7 +1721,7 @@ added:
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/61803
-    description: 移除了 `transform` 值。
+    description: "移除了 `transform` 值。"
   - version:
       - v25.2.0
       - v24.12.0
@@ -2397,10 +2397,10 @@ changes:
      - v13.9.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/31550
-    description: 向返回的对象添加了 `arrayBuffers`。
+    description: "向返回的对象添加了 `arrayBuffers`。"
   - version: v7.2.0
     pr-url: https://github.com/nodejs/node/pull/9587
-    description: 向返回的对象添加了 `external`。
+    description: "向返回的对象添加了 `external`。"
 -->
 
 * 返回：{Object}
@@ -2496,10 +2496,10 @@ changes:
     description: 将稳定性更改为遗留。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v1.8.1
     pr-url: https://github.com/nodejs/node/pull/1077
-    description: 现在支持 `callback` 之后的额外参数。
+    description: "现在支持 `callback` 之后的额外参数。"
 -->
 
 > 稳定性：3 - 遗留：请改用 [`queueMicrotask()`][]。
@@ -2848,7 +2848,7 @@ added: v3.0.0
 changes:
   - version: v4.2.0
     pr-url: https://github.com/nodejs/node/pull/3212
-    description: 现在支持 `lts` 属性。
+    description: "现在支持 `lts` 属性。"
 -->
 
 * 类型：{Object}
@@ -3511,8 +3511,7 @@ added: v9.3.0
 changes:
   - version: v25.9.0
     pr-url: https://github.com/nodejs/node/pull/61227
-    description: Use `process.addUncaughtExceptionCaptureCallback()` to
-      register multiple callbacks.
+    description: "Use `process.addUncaughtExceptionCaptureCallback()` toregister multiple callbacks."
 -->
 
 * `fn` {Function|null}
@@ -3729,7 +3728,7 @@ changes:
     - v14.0.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/32499
-    description: Calling `process.umask()` with no arguments is deprecated.
+    description: "Calling `process.umask()` with no arguments is deprecated."
 -->
 
 > 稳定性：0 - 已废弃。不带参数调用 `process.umask()` 会导致进程范围的 umask 被写入两次。这在线程之间引入了竞态条件，并且是一个潜在的安全漏洞。没有安全、跨平台的替代 API。
@@ -3837,10 +3836,10 @@ added: v0.2.0
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15785
-    description: The `v8` property now includes a Node.js specific suffix.
+    description: "The `v8` property now includes a Node.js specific suffix."
   - version: v4.2.0
     pr-url: https://github.com/nodejs/node/pull/3102
-    description: The `icu` property is now supported.
+    description: "The `icu` property is now supported."
 -->
 
 * 类型：{Object}

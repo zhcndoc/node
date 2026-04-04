@@ -339,7 +339,7 @@ added: v0.7.7
 changes:
   - version: v7.3.0
     pr-url: https://github.com/nodejs/node/pull/10019
-    description: This method now returns a reference to `worker`.
+    description: "This method now returns a reference to `worker`."
 -->
 
 * 返回：{cluster.Worker} 对 `worker` 的引用。
@@ -543,7 +543,7 @@ added: v0.7.0
 changes:
   - version: v4.0.0
     pr-url: https://github.com/nodejs/node/pull/2620
-    description: The `callback` parameter is supported now.
+    description: "The `callback` parameter is supported now."
 -->
 
 * `message` {Object}
@@ -678,7 +678,7 @@ added: v2.5.0
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5361
-    description: 现在传递 `worker` 参数；详见下文。
+    description: "现在传递 `worker` 参数；详见下文。"
 -->
 
 * `worker` {cluster.Worker}
@@ -803,19 +803,19 @@ changes:
      - v13.2.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30162
-    description: 现在支持 `serialization` 选项。
+    description: "现在支持 `serialization` 选项。"
   - version: v9.5.0
     pr-url: https://github.com/nodejs/node/pull/18399
-    description: 现在支持 `cwd` 选项。
+    description: "现在支持 `cwd` 选项。"
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/17412
-    description: 现在支持 `windowsHide` 选项。
+    description: "现在支持 `windowsHide` 选项。"
   - version: v8.2.0
     pr-url: https://github.com/nodejs/node/pull/14140
-    description: 现在支持 `inspectPort` 选项。
+    description: "现在支持 `inspectPort` 选项。"
   - version: v6.4.0
     pr-url: https://github.com/nodejs/node/pull/7838
-    description: 现在支持 `stdio` 选项。
+    description: "现在支持 `stdio` 选项。"
 -->
 
 * 类型：{Object}
@@ -844,7 +844,7 @@ deprecated: v16.0.0
 changes:
   - version: v6.4.0
     pr-url: https://github.com/nodejs/node/pull/7838
-    description: 现在支持 `stdio` 选项。
+    description: "现在支持 `stdio` 选项。"
 -->
 
 > 稳定性：0 - 已弃用

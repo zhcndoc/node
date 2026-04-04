@@ -236,8 +236,7 @@ changes:
       - v25.2.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/59982
-    description: Add options object with modifyPrototype to conditionally
-                 modify the prototype of the deprecated object.
+    description: "Add options object with modifyPrototype to conditionallymodify the prototype of the deprecated object."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/16393
     description: Deprecation warnings are only emitted once for each code.
@@ -391,29 +390,28 @@ added: v0.5.3
 changes:
   - version: v12.11.0
     pr-url: https://github.com/nodejs/node/pull/29606
-    description: 现在 `%c` 说明符被忽略。
+    description: "现在 `%c` 说明符被忽略。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/23162
-    description: 现在仅当 `format` 参数实际包含格式说明符时才将其视为格式字符串。
+    description: "现在仅当 `format` 参数实际包含格式说明符时才将其视为格式字符串。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/23162
-    description: 如果 `format` 参数不是格式字符串，则输出字符串的格式不再依赖于第一个参数的类型。
-                 此更改移除了以前当第一个参数不是字符串时输出字符串中存在的引号。
+    description: "如果 `format` 参数不是格式字符串，则输出字符串的格式不再依赖于第一个参数的类型。此更改移除了以前当第一个参数不是字符串时输出字符串中存在的引号。"
   - version: v11.4.0
     pr-url: https://github.com/nodejs/node/pull/23708
-    description: `%d`、`%f` 和 `%i` 说明符现在正确支持 Symbol。
+    description: "`%d`、`%f` 和 `%i` 说明符现在正确支持 Symbol。"
   - version: v11.4.0
     pr-url: https://github.com/nodejs/node/pull/24806
-    description: `%o` 说明符的 `depth` 再次默认深度为 4。
+    description: "`%o` 说明符的 `depth` 再次默认深度为 4。"
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/17907
-    description: `%o` 说明符的 `depth` 选项现在将回退到默认深度。
+    description: "`%o` 说明符的 `depth` 选项现在将回退到默认深度。"
   - version: v10.12.0
     pr-url: https://github.com/nodejs/node/pull/22097
-    description: `%d` 和 `%i` 说明符现在支持 BigInt。
+    description: "`%d` 和 `%i` 说明符现在支持 BigInt。"
   - version: v8.4.0
     pr-url: https://github.com/nodejs/node/pull/14558
-    description: 现在支持 `%o` 和 `%O` 说明符。
+    description: "现在支持 `%o` 和 `%O` 说明符。"
 -->
 
 * `format` {string} 一个 `printf` 风格的格式字符串。
@@ -494,17 +492,17 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56584
-    description: 属性 `column` 已弃用，推荐使用 `columnNumber`。
+    description: "属性 `column` 已弃用，推荐使用 `columnNumber`。"
   - version:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56551
-    description: 暴露了属性 `CallSite.scriptId`。
+    description: "暴露了属性 `CallSite.scriptId`。"
   - version:
     - v23.3.0
     - v22.12.0
     pr-url: https://github.com/nodejs/node/pull/55626
-    description: API 已从 `util.getCallSite` 重命名为 `util.getCallSites()`。
+    description: "API 已从 `util.getCallSite` 重命名为 `util.getCallSites()`。"
 -->
 
 > 稳定性：1.1 - 积极开发中
@@ -725,7 +723,7 @@ added: v0.3.0
 changes:
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/3455
-    description: `constructor` 参数现在可以引用 ES6 类。
+    description: "`constructor` 参数现在可以引用 ES6 类。"
 -->
 
 > 稳定性：3 - 遗留：请改用 ES2015 类语法和 `extends` 关键字。
@@ -810,81 +808,81 @@ changes:
   - version:
     - v25.0.0
     pr-url: https://github.com/nodejs/node/pull/59710
-    description: `util.inspect.styles.regexp` 样式现在是一个方法，用于为字符串化的正则表达式着色。
+    description: "`util.inspect.styles.regexp` 样式现在是一个方法，用于为字符串化的正则表达式着色。"
   - version:
     - v17.3.0
     - v16.14.0
     pr-url: https://github.com/nodejs/node/pull/41003
-    description: 现在支持 `numericSeparator` 选项。
+    description: "现在支持 `numericSeparator` 选项。"
   - version: v16.18.0
     pr-url: https://github.com/nodejs/node/pull/43576
-    description: 检查 `Set` 和 `Map` 时添加了对 `maxArrayLength` 的支持。
+    description: "检查 `Set` 和 `Map` 时添加了对 `maxArrayLength` 的支持。"
   - version:
     - v14.6.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33690
-    description: 如果 `object` 来自不同的 `vm.Context`，其上的自定义检查函数将不再接收特定于上下文的参数。
+    description: "如果 `object` 来自不同的 `vm.Context`，其上的自定义检查函数将不再接收特定于上下文的参数。"
   - version:
      - v13.13.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/32392
-    description: 现在支持 `maxStringLength` 选项。
+    description: "现在支持 `maxStringLength` 选项。"
   - version:
      - v13.5.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30768
-    description: 如果 `showHidden` 为 `true`，则会检查用户定义的原型属性。
+    description: "如果 `showHidden` 为 `true`，则会检查用户定义的原型属性。"
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27685
     description: 循环引用现在包含对引用的标记。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/27109
-    description: `compact` 选项的默认值更改为 `3`，`breakLength` 选项的默认值更改为 `80`。
+    description: "`compact` 选项的默认值更改为 `3`，`breakLength` 选项的默认值更改为 `80`。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/24971
     description: 内部属性不再出现在自定义检查函数的上下文参数中。
   - version: v11.11.0
     pr-url: https://github.com/nodejs/node/pull/26269
-    description: `compact` 选项接受数字以用于新的输出模式。
+    description: "`compact` 选项接受数字以用于新的输出模式。"
   - version: v11.7.0
     pr-url: https://github.com/nodejs/node/pull/25006
     description: ArrayBuffers 现在也显示它们的二进制内容。
   - version: v11.5.0
     pr-url: https://github.com/nodejs/node/pull/24852
-    description: 现在支持 `getters` 选项。
+    description: "现在支持 `getters` 选项。"
   - version: v11.4.0
     pr-url: https://github.com/nodejs/node/pull/24326
-    description: `depth` 默认值改回 `2`。
+    description: "`depth` 默认值改回 `2`。"
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22846
-    description: `depth` 默认值更改为 `20`。
+    description: "`depth` 默认值更改为 `20`。"
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22756
     description: 检查输出现在限制为约 128 MiB。超过该大小的数据将不会被完全检查。
   - version: v10.12.0
     pr-url: https://github.com/nodejs/node/pull/22788
-    description: 现在支持 `sorted` 选项。
+    description: "现在支持 `sorted` 选项。"
   - version: v10.6.0
     pr-url: https://github.com/nodejs/node/pull/20725
     description: 现在可以检查链表和类似对象，直到最大调用堆栈大小。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19259
-    description: `WeakMap` 和 `WeakSet` 条目现在也可以被检查。
+    description: "`WeakMap` 和 `WeakSet` 条目现在也可以被检查。"
   - version: v9.9.0
     pr-url: https://github.com/nodejs/node/pull/17576
-    description: 现在支持 `compact` 选项。
+    description: "现在支持 `compact` 选项。"
   - version: v6.6.0
     pr-url: https://github.com/nodejs/node/pull/8174
-    description: 自定义检查函数现在可以返回 `this`。
+    description: "自定义检查函数现在可以返回 `this`。"
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/7499
-    description: 现在支持 `breakLength` 选项。
+    description: "现在支持 `breakLength` 选项。"
   - version: v6.1.0
     pr-url: https://github.com/nodejs/node/pull/6334
-    description: 现在支持 `maxArrayLength` 选项；特别是，长数组默认会被截断。
+    description: "现在支持 `maxArrayLength` 选项；特别是，长数组默认会被截断。"
   - version: v6.1.0
     pr-url: https://github.com/nodejs/node/pull/6465
-    description: 现在支持 `showProxy` 选项。
+    description: "现在支持 `showProxy` 选项。"
 -->
 
 * `object` {any} 任何 JavaScript 原始值或 `Object`。
@@ -1454,7 +1452,7 @@ added: v9.0.0
 changes:
   - version: v24.9.0
     pr-url: https://github.com/nodejs/node/pull/59762
-    description: 添加了 `options` 参数以允许跳过原型比较。
+    description: "添加了 `options` 参数以允许跳过原型比较。"
 -->
 
 * `val1` {any}
@@ -1846,7 +1844,7 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53107
-    description: 添加支持以在输入 `config` 中允许负选项。
+    description: "添加支持以在输入 `config` 中允许负选项。"
   - version:
     - v20.0.0
     pr-url: https://github.com/nodejs/node/pull/46718
@@ -1855,12 +1853,12 @@ changes:
     - v18.11.0
     - v16.19.0
     pr-url: https://github.com/nodejs/node/pull/44631
-    description: 添加支持以在输入 `config` 中使用默认值。
+    description: "添加支持以在输入 `config` 中使用默认值。"
   - version:
     - v18.7.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43459
-    description: 添加支持以使用输入 `config` 中的 `tokens` 和返回的属性返回详细的解析信息。
+    description: "添加支持以使用输入 `config` 中的 `tokens` 和返回的属性返回详细的解析信息。"
 -->
 
 * `config` {Object} 用于提供解析参数和配置解析器。`config` 支持以下属性：
@@ -2067,7 +2065,7 @@ added: v8.0.0
 changes:
   - version: v20.8.0
     pr-url: https://github.com/nodejs/node/pull/49647
-    description: 在返回 `Promise` 的函数上调用 `promisify` 已被弃用。
+    description: "在返回 `Promise` 的函数上调用 `promisify` 已被弃用。"
 -->
 
 * `original` {函数}
@@ -2290,7 +2288,7 @@ changes:
       - v24.2.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/58437
-    description: 添加了 `'none'` 格式作为无操作格式。
+    description: "添加了 `'none'` 格式作为无操作格式。"
   - version:
     - v23.5.0
     - v22.13.0
@@ -2658,7 +2656,7 @@ added: v10.0.0
 changes:
   - version: v15.3.0
     pr-url: https://github.com/nodejs/node/pull/34055
-    description: 作为 `require('util/types')` 暴露。
+    description: "作为 `require('util/types')` 暴露。"
 -->
 
 `util.types` 提供针对不同种类内置对象的类型检查。

@@ -481,27 +481,27 @@ added: v0.1.99
 changes:
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/39190
-    description: address 参数现在只接受 `string`、`null` 或 `undefined`。
+    description: "address 参数现在只接受 `string`、`null` 或 `undefined`。"
   - version:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/22413
-    description: msg 参数现在可以是任何 `TypedArray` 或 `DataView`。
+    description: "msg 参数现在可以是任何 `TypedArray` 或 `DataView`。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26871
     description: 增加了在已连接套接字上发送数据的支持。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11985
-    description: msg 参数现在可以是 `Uint8Array`。
+    description: "msg 参数现在可以是 `Uint8Array`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10473
     description: address 参数现在始终是可选的。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5929
-    description: 成功时，`callback` 现在将使用 `null` 而不是 `0` 的 `error` 参数调用。
+    description: "成功时，`callback` 现在将使用 `null` 而不是 `0` 的 `error` 参数调用。"
   - version: v5.7.0
     pr-url: https://github.com/nodejs/node/pull/4374
-    description: msg 参数现在可以是数组。此外，`offset` 和 `length` 参数现在是可选的。
+    description: "msg 参数现在可以是数组。此外，`offset` 和 `length` 参数现在是可选的。"
 -->
 
 * `msg` {Buffer|TypedArray|DataView|string|Array} 要发送的消息。
@@ -820,19 +820,19 @@ changes:
     - v23.1.0
     - v22.12.0
     pr-url: https://github.com/nodejs/node/pull/55403
-    description: 支持 `reusePort` 选项。
+    description: "支持 `reusePort` 选项。"
   - version: v15.8.0
     pr-url: https://github.com/nodejs/node/pull/37026
     description: 添加了 AbortSignal 支持。
   - version: v11.4.0
     pr-url: https://github.com/nodejs/node/pull/23798
-    description: 支持 `ipv6Only` 选项。
+    description: "支持 `ipv6Only` 选项。"
   - version: v8.7.0
     pr-url: https://github.com/nodejs/node/pull/13623
-    description: 现在支持 `recvBufferSize` 和 `sendBufferSize` 选项。
+    description: "现在支持 `recvBufferSize` 和 `sendBufferSize` 选项。"
   - version: v8.6.0
     pr-url: https://github.com/nodejs/node/pull/14560
-    description: 支持 `lookup` 选项。
+    description: "支持 `lookup` 选项。"
 -->
 
 * `options` {Object} 可用选项包括：

@@ -96,8 +96,7 @@ added: v0.1.99
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/9618
-    description: Each invalid character is now replaced by a single replacement
-                 character instead of one for each individual byte.
+    description: "Each invalid character is now replaced by a single replacementcharacter instead of one for each individual byte."
 -->
 
 * `buffer` {string|Buffer|TypedArray|DataView} 要解码的字节。

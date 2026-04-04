@@ -84,13 +84,13 @@ changes:
       - v15.7.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/36952
-    description: Introduced `base64url` encoding.
+    description: "Introduced `base64url` encoding."
   - version: v6.4.0
     pr-url: https://github.com/nodejs/node/pull/7111
-    description: Introduced `latin1` as an alias for `binary`.
+    description: "Introduced `latin1` as an alias for `binary`."
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2859
-    description: Removed the deprecated `raw` and `raws` encodings.
+    description: "Removed the deprecated `raw` and `raws` encodings."
 -->
 
 在 `Buffer` 和字符串之间转换时，可以指定字符编码。如果未指定字符编码，将使用 UTF-8 作为默认值。
@@ -189,7 +189,7 @@ Buffer.from('1634', 'hex');
 changes:
   - version: v3.0.0
     pr-url: https://github.com/nodejs/node/pull/2002
-    description: The `Buffer` class now inherits from `Uint8Array`.
+    description: "The `Buffer` class now inherits from `Uint8Array`."
 -->
 
 `Buffer` 实例也是 JavaScript {Uint8Array} 和 {TypedArray} 实例。所有 {TypedArray} 方法和属性在 `Buffer` 上都可用。但是，`Buffer` API 和 {TypedArray} API 之间存在细微的不兼容性。
@@ -420,8 +420,7 @@ added:
 changes:
   - version: v16.7.0
     pr-url: https://github.com/nodejs/node/pull/39708
-    description: 添加了标准的 `endings` 选项以替换行尾，
-                 并移除了非标准的 `encoding` 选项。
+    description: "添加了标准的 `endings` 选项以替换行尾，并移除了非标准的 `encoding` 选项。"
 -->
 
 * `sources` {string\[]|ArrayBuffer\[]|TypedArray\[]|DataView\[]|Blob\[]} 一个
@@ -604,8 +603,7 @@ added: v5.10.0
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/45796
-    description: 对于无效的输入参数，抛出 ERR_INVALID_ARG_TYPE 或 ERR_OUT_OF_RANGE 而不是
-                 ERR_INVALID_ARG_VALUE。
+    description: "对于无效的输入参数，抛出 ERR_INVALID_ARG_TYPE 或 ERR_OUT_OF_RANGE 而不是ERR_INVALID_ARG_VALUE。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/34682
     description: 对于无效的输入参数，抛出 ERR_INVALID_ARG_VALUE 而不是 ERR_INVALID_OPT_VALUE。
@@ -614,11 +612,10 @@ changes:
     description: 尝试用零长度 buffer 填充非零长度 buffer 会触发抛出的异常。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17427
-    description: 为 `fill` 指定无效的字符串会触发抛出的异常。
+    description: "为 `fill` 指定无效的字符串会触发抛出的异常。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/17428
-    description: 为 `fill` 指定无效的字符串现在会导致
-                 零填充的 buffer。
+    description: "为 `fill` 指定无效的字符串现在会导致零填充的 buffer。"
 -->
 
 * `size` {integer} 新 `Buffer` 所需的长度。
@@ -708,14 +705,13 @@ added: v5.10.0
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/45796
-    description: 对于无效的输入参数，抛出 ERR_INVALID_ARG_TYPE 或 ERR_OUT_OF_RANGE 而不是
-                 ERR_INVALID_ARG_VALUE。
+    description: "对于无效的输入参数，抛出 ERR_INVALID_ARG_TYPE 或 ERR_OUT_OF_RANGE 而不是ERR_INVALID_ARG_VALUE。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/34682
     description: 对于无效的输入参数，抛出 ERR_INVALID_ARG_VALUE 而不是 ERR_INVALID_OPT_VALUE。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7079
-    description: 传递负数 `size` 现在将抛出错误。
+    description: "传递负数 `size` 现在将抛出错误。"
 -->
 
 * `size` {integer} 新 `Buffer` 所需的长度。
@@ -781,8 +777,7 @@ added: v5.12.0
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/45796
-    description: 对于无效的输入参数，抛出 ERR_INVALID_ARG_TYPE 或 ERR_OUT_OF_RANGE 而不是
-                 ERR_INVALID_ARG_VALUE。
+    description: "对于无效的输入参数，抛出 ERR_INVALID_ARG_TYPE 或 ERR_OUT_OF_RANGE 而不是ERR_INVALID_ARG_VALUE。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/34682
     description: 对于无效的输入参数，抛出 ERR_INVALID_ARG_VALUE 而不是 ERR_INVALID_OPT_VALUE。
@@ -863,8 +858,7 @@ changes:
     description: 传递无效的输入现在将抛出错误。
   - version: v5.10.0
     pr-url: https://github.com/nodejs/node/pull/5255
-    description: `string` 参数现在可以是任何 `TypedArray`、`DataView`
-                 或 `ArrayBuffer`。
+    description: "`string` 参数现在可以是任何 `TypedArray`、`DataView`或 `ArrayBuffer`。"
 -->
 
 * `string` {string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer} 一个
@@ -911,7 +905,7 @@ added: v0.11.13
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10236
-    description: 参数现在可以是 `Uint8Array`。
+    description: "参数现在可以是 `Uint8Array`。"
 -->
 
 * `buf1` {Buffer|Uint8Array}
@@ -952,7 +946,7 @@ added: v0.7.11
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10236
-    description: `list` 的元素现在可以是 `Uint8Array`。
+    description: "`list` 的元素现在可以是 `Uint8Array`。"
 -->
 
 * `list` {Buffer\[] | Uint8Array\[]} 要连接的 `Buffer` 或 {Uint8Array}
@@ -1553,7 +1547,7 @@ added: v0.11.13
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10236
-    description: `target` 参数现在可以是 `Uint8Array`。
+    description: "`target` 参数现在可以是 `Uint8Array`。"
   - version: v5.11.0
     pr-url: https://github.com/nodejs/node/pull/5880
     description: 现在支持用于指定偏移量的附加参数。
@@ -1814,7 +1808,7 @@ added: v0.11.13
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10236
-    description: 参数现在可以是 `Uint8Array`。
+    description: "参数现在可以是 `Uint8Array`。"
 -->
 
 * `otherBuffer` {Buffer|Uint8Array} 一个 `Buffer` 或 {Uint8Array}，用于与
@@ -1858,19 +1852,19 @@ added: v0.5.0
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22969
-    description: 抛出 `ERR_OUT_OF_RANGE` 而不是 `ERR_INDEX_OUT_OF_RANGE`。
+    description: "抛出 `ERR_OUT_OF_RANGE` 而不是 `ERR_INDEX_OUT_OF_RANGE`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18790
-    description: 负数 `end` 值抛出 `ERR_INDEX_OUT_OF_RANGE` 错误。
+    description: "负数 `end` 值抛出 `ERR_INDEX_OUT_OF_RANGE` 错误。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18129
     description: 尝试用零长度 buffer 填充非零长度 buffer 会触发抛出的异常。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17427
-    description: 为 `value` 指定无效的字符串会触发抛出的异常。
+    description: "为 `value` 指定无效的字符串会触发抛出的异常。"
   - version: v5.7.0
     pr-url: https://github.com/nodejs/node/pull/4935
-    description: 现在支持 `encoding` 参数。
+    description: "现在支持 `encoding` 参数。"
 -->
 
 * `value` {string|Buffer|Uint8Array|integer} 用于填充 `buf` 的值。
@@ -1983,7 +1977,7 @@ changes:
      - v25.5.0
      - v24.13.1
     pr-url: https://github.com/nodejs/node/pull/56578
-    description: 支持 Uint8Array 作为 `this` 值。
+    description: "支持 Uint8Array 作为 `this` 值。"
 -->
 
 * `value` {string|Buffer|Uint8Array|integer} 要搜索的内容。
@@ -2044,13 +2038,12 @@ added: v1.5.0
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10236
-    description: `value` 现在可以是 `Uint8Array`。
+    description: "`value` 现在可以是 `Uint8Array`。"
   - version:
     - v5.7.0
     - v4.4.0
     pr-url: https://github.com/nodejs/node/pull/4803
-    description: 当传递 `encoding` 时，`byteOffset` 参数
-                 不再必需。
+    description: "当传递 `encoding` 时，`byteOffset` 参数不再必需。"
 -->
 
 * `value` {string|Buffer|Uint8Array|integer} 要搜索的内容。
@@ -4098,8 +4091,7 @@ added: v0.11.15
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
 -->
 
 * `value` {number} 要写入 `buf` 的数字。
@@ -4139,8 +4131,7 @@ added: v0.5.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4184,8 +4175,7 @@ added: v0.5.5
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4228,8 +4218,7 @@ added: v0.5.5
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4272,8 +4261,7 @@ added: v0.5.5
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4316,8 +4304,7 @@ added: v0.5.5
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4360,8 +4347,7 @@ added: v0.11.15
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 and `byteLength` to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetand `byteLength` to `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4404,8 +4390,7 @@ added: v0.11.15
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 and `byteLength` to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetand `byteLength` to `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4450,11 +4435,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: This function is also available as `buf.writeUint8()`.
+    description: "This function is also available as `buf.writeUint8()`."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4505,11 +4489,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: This function is also available as `buf.writeUint16BE()`.
+    description: "This function is also available as `buf.writeUint16BE()`."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4556,11 +4539,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: This function is also available as `buf.writeUint16LE()`.
+    description: "This function is also available as `buf.writeUint16LE()`."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4607,11 +4589,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: This function is also available as `buf.writeUint32BE()`.
+    description: "This function is also available as `buf.writeUint32BE()`."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4656,11 +4637,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: This function is also available as `buf.writeUint32LE()`.
+    description: "This function is also available as `buf.writeUint32LE()`."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4705,11 +4685,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: This function is also available as `buf.writeUintBE()`.
+    description: "This function is also available as `buf.writeUintBE()`."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 and `byteLength` to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetand `byteLength` to `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4756,11 +4735,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: This function is also available as `buf.writeUintLE()`.
+    description: "This function is also available as `buf.writeUintLE()`."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: Removed `noAssert` and no implicit coercion of the offset
-                 and `byteLength` to `uint32` anymore.
+    description: "Removed `noAssert` and no implicit coercion of the offsetand `byteLength` to `uint32` anymore."
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4805,8 +4783,7 @@ deprecated: v6.0.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19524
-    description: Calling this constructor emits a deprecation warning when
-                 run from code outside the `node_modules` directory.
+    description: "Calling this constructor emits a deprecation warning whenrun from code outside the `node_modules` directory."
   - version: v7.2.1
     pr-url: https://github.com/nodejs/node/pull/9529
     description: Calling this constructor no longer emits a deprecation warning.
@@ -4829,8 +4806,7 @@ deprecated: v6.0.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19524
-    description: Calling this constructor emits a deprecation warning when
-                 run from code outside the `node_modules` directory.
+    description: "Calling this constructor emits a deprecation warning whenrun from code outside the `node_modules` directory."
   - version: v7.2.1
     pr-url: https://github.com/nodejs/node/pull/9529
     description: Calling this constructor no longer emits a deprecation warning.
@@ -4839,7 +4815,7 @@ changes:
     description: Calling this constructor emits a deprecation warning now.
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4682
-    description: The `byteOffset` and `length` parameters are supported now.
+    description: "The `byteOffset` and `length` parameters are supported now."
 -->
 
 > 稳定性：0 - 已弃用：请使用
@@ -4862,8 +4838,7 @@ deprecated: v6.0.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19524
-    description: Calling this constructor emits a deprecation warning when
-                 run from code outside the `node_modules` directory.
+    description: "Calling this constructor emits a deprecation warning whenrun from code outside the `node_modules` directory."
   - version: v7.2.1
     pr-url: https://github.com/nodejs/node/pull/9529
     description: Calling this constructor no longer emits a deprecation warning.
@@ -4886,12 +4861,10 @@ deprecated: v6.0.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19524
-    description: Calling this constructor emits a deprecation warning when
-                 run from code outside the `node_modules` directory.
+    description: "Calling this constructor emits a deprecation warning whenrun from code outside the `node_modules` directory."
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12141
-    description: The `new Buffer(size)` will return zero-filled memory by
-                 default.
+    description: "The `new Buffer(size)` will return zero-filled memory bydefault."
   - version: v7.2.1
     pr-url: https://github.com/nodejs/node/pull/9529
     description: Calling this constructor no longer emits a deprecation warning.
@@ -4915,8 +4888,7 @@ deprecated: v6.0.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19524
-    description: Calling this constructor emits a deprecation warning when
-                 run from code outside the `node_modules` directory.
+    description: "Calling this constructor emits a deprecation warning whenrun from code outside the `node_modules` directory."
   - version: v7.2.1
     pr-url: https://github.com/nodejs/node/pull/9529
     description: Calling this constructor no longer emits a deprecation warning.
@@ -5131,7 +5103,7 @@ added: v7.1.0
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10236
-    description: `source` 参数现在可以是 `Uint8Array`。
+    description: "`source` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `source` {Buffer|Uint8Array} 一个 `Buffer` 或 `Uint8Array` 实例。

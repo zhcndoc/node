@@ -433,7 +433,7 @@ added: v0.9.2
 changes:
   - version: v0.11.12
     pr-url: https://github.com/nodejs/node-v0.x-archive/pull/7118
-    description: The `callback` argument is now supported.
+    description: "The `callback` argument is now supported."
 -->
 
 创建新的 TLS 会话时发出 `'newSession'` 事件。这可用于将会话存储在外部存储中。数据应提供给 [`'resumeSession'`][] 回调。
@@ -633,7 +633,7 @@ added: v0.11.4
 changes:
   - version: v12.2.0
     pr-url: https://github.com/nodejs/node/pull/27497
-    description: 现在支持 `enableTrace` 选项。
+    description: "现在支持 `enableTrace` 选项。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2564
     description: 现在支持 ALPN 选项。
@@ -742,10 +742,10 @@ added: v0.11.4
 changes:
   - version: v18.4.0
     pr-url: https://github.com/nodejs/node/pull/43054
-    description: `family` 属性现在返回字符串而不是数字。
+    description: "`family` 属性现在返回字符串而不是数字。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41431
-    description: `family` 属性现在返回数字而不是字符串。
+    description: "`family` 属性现在返回数字而不是字符串。"
 -->
 
 * 返回：{Object}
@@ -854,7 +854,7 @@ changes:
      - v13.4.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30637
-    description: 将 IETF 加密套件名称作为 `standardName` 返回。
+    description: "将 IETF 加密套件名称作为 `standardName` 返回。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26625
     description: 返回最低加密套件版本，而不是固定字符串
@@ -1162,8 +1162,7 @@ added: v0.11.8
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `options` {Object}
@@ -1218,7 +1217,7 @@ changes:
       - v14.18.3
       - v12.22.9
     pr-url: https://github.com/nodejs-private/node-private/pull/300
-    description: 作为对 CVE-2021-44531 的响应，已禁用对 `uniformResourceIdentifier` 主体备用名称的支持。
+    description: "作为对 CVE-2021-44531 的响应，已禁用对 `uniformResourceIdentifier` 主体备用名称的支持。"
 -->
 
 * `hostname` {string} 用于验证证书的主机名或 IP 地址。
@@ -1246,42 +1245,42 @@ changes:
       - v15.1.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/35753
-    description: 添加了 `onread` 选项。
+    description: "添加了 `onread` 选项。"
   - version:
       - v14.1.0
       - v13.14.0
     pr-url: https://github.com/nodejs/node/pull/32786
-    description: 现在接受 `highWaterMark` 选项。
+    description: "现在接受 `highWaterMark` 选项。"
   - version:
       - v13.6.0
       - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/23188
-    description: 现在支持 `pskCallback` 选项。
+    description: "现在支持 `pskCallback` 选项。"
   - version: v12.9.0
     pr-url: https://github.com/nodejs/node/pull/27836
-    description: 支持 `allowHalfOpen` 选项。
+    description: "支持 `allowHalfOpen` 选项。"
   - version: v12.4.0
     pr-url: https://github.com/nodejs/node/pull/27816
-    description: 现在支持 `hints` 选项。
+    description: "现在支持 `hints` 选项。"
   - version: v12.2.0
     pr-url: https://github.com/nodejs/node/pull/27497
-    description: 现在支持 `enableTrace` 选项。
+    description: "现在支持 `enableTrace` 选项。"
   - version:
       - v11.8.0
       - v10.16.0
     pr-url: https://github.com/nodejs/node/pull/25517
-    description: 现在支持 `timeout` 选项。
+    description: "现在支持 `timeout` 选项。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12839
-    description: 现在支持 `lookup` 选项。
+    description: "现在支持 `lookup` 选项。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11984
-    description: `ALPNProtocols` 选项现在可以是 `TypedArray` 或 `DataView`。
+    description: "`ALPNProtocols` 选项现在可以是 `TypedArray` 或 `DataView`。"
   - version:
       - v5.3.0
       - v4.7.0
     pr-url: https://github.com/nodejs/node/pull/4246
-    description: 现在支持 `secureContext` 选项。
+    description: "现在支持 `secureContext` 选项。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2564
     description: 现在支持 ALPN 选项。
@@ -1440,50 +1439,49 @@ changes:
     - v22.9.0
     - v20.18.0
     pr-url: https://github.com/nodejs/node/pull/54790
-    description: 添加了 `allowPartialTrustChain` 选项。
+    description: "添加了 `allowPartialTrustChain` 选项。"
   - version:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53329
-    description: `clientCertEngine`、`privateKeyEngine` 和
-                 `privateKeyIdentifier` 选项依赖于 OpenSSL 中的自定义引擎支持，该支持在 OpenSSL 3 中已废弃。
+    description: "`clientCertEngine`、`privateKeyEngine` 和`privateKeyIdentifier` 选项依赖于 OpenSSL 中的自定义引擎支持，该支持在 OpenSSL 3 中已废弃。"
   - version:
     - v19.8.0
     - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46978
-    description: `dhparam` 选项现在可以设置为 `'auto'` 以启用具有适当知名参数的 DHE。
+    description: "`dhparam` 选项现在可以设置为 `'auto'` 以启用具有适当知名参数的 DHE。"
   - version: v12.12.0
     pr-url: https://github.com/nodejs/node/pull/28973
-    description: 添加了 `privateKeyIdentifier` 和 `privateKeyEngine` 选项以从 OpenSSL 引擎获取私钥。
+    description: "添加了 `privateKeyIdentifier` 和 `privateKeyEngine` 选项以从 OpenSSL 引擎获取私钥。"
   - version: v12.11.0
     pr-url: https://github.com/nodejs/node/pull/29598
-    description: 添加了 `sigalgs` 选项以覆盖支持的签名算法。
+    description: "添加了 `sigalgs` 选项以覆盖支持的签名算法。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26209
     description: 添加了 TLSv1.3 支持。
   - version: v11.5.0
     pr-url: https://github.com/nodejs/node/pull/24733
-    description: `ca:` 选项现在支持 `BEGIN TRUSTED CERTIFICATE`。
+    description: "`ca:` 选项现在支持 `BEGIN TRUSTED CERTIFICATE`。"
   - version:
      - v11.4.0
      - v10.16.0
     pr-url: https://github.com/nodejs/node/pull/24405
-    description: `minVersion` 和 `maxVersion` 可用于限制允许的 TLS 协议版本。
+    description: "`minVersion` 和 `maxVersion` 可用于限制允许的 TLS 协议版本。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19794
-    description: 由于 OpenSSL 的变更，`ecdhCurve` 不再能设置为 `false`。
+    description: "由于 OpenSSL 的变更，`ecdhCurve` 不再能设置为 `false`。"
   - version: v9.3.0
     pr-url: https://github.com/nodejs/node/pull/14903
-    description: `options` 参数现在可以包含 `clientCertEngine`。
+    description: "`options` 参数现在可以包含 `clientCertEngine`。"
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15206
-    description: `ecdhCurve` 选项现在可以是多个由 `':'` 分隔的曲线名称或 `'auto'`。
+    description: "`ecdhCurve` 选项现在可以是多个由 `':'` 分隔的曲线名称或 `'auto'`。"
   - version: v7.3.0
     pr-url: https://github.com/nodejs/node/pull/10294
-    description: 如果 `key` 选项是一个数组，单个条目不再需要 `passphrase` 属性。`Array` 条目现在也可以只是 `string` 或 `Buffer`。
+    description: "如果 `key` 选项是一个数组，单个条目不再需要 `passphrase` 属性。`Array` 条目现在也可以只是 `string` 或 `Buffer`。"
   - version: v5.2.0
     pr-url: https://github.com/nodejs/node/pull/4099
-    description: `ca` 选项现在可以是包含多个 CA 证书的单个字符串。
+    description: "`ca` 选项现在可以是包含多个 CA 证书的单个字符串。"
 -->
 
 * `options` {Object}
@@ -1540,29 +1538,24 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53329
-    description: `clientCertEngine` 选项依赖于 OpenSSL 中的自定义引擎支持，
-                 该支持在 OpenSSL 3 中已弃用。
+    description: "`clientCertEngine` 选项依赖于 OpenSSL 中的自定义引擎支持，该支持在 OpenSSL 3 中已弃用。"
   - version:
     - v20.4.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/45190
-    description: `options` 参数现在可以包含 `ALPNCallback`。
+    description: "`options` 参数现在可以包含 `ALPNCallback`。"
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44031
-    description: 如果设置了 `ALPNProtocols`，发送不含支持协议的
-                 ALPN 扩展的传入连接将被终止，并返回
-                 致命的 `no_application_protocol` 警报。
+    description: "如果设置了 `ALPNProtocols`，发送不含支持协议的ALPN 扩展的传入连接将被终止，并返回致命的 `no_application_protocol` 警报。"
   - version: v12.3.0
     pr-url: https://github.com/nodejs/node/pull/27665
-    description: `options` 参数现在支持 `net.createServer()`
-                 选项。
+    description: "`options` 参数现在支持 `net.createServer()`选项。"
   - version: v9.3.0
     pr-url: https://github.com/nodejs/node/pull/14903
-    description: `options` 参数现在可以包含 `clientCertEngine`。
+    description: "`options` 参数现在可以包含 `clientCertEngine`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11984
-    description: `ALPNProtocols` 选项现在可以是 `TypedArray` 或
-     `DataView`。
+    description: "`ALPNProtocols` 选项现在可以是 `TypedArray` 或`DataView`。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2564
     description: 现在支持 ALPN 选项。
@@ -1816,7 +1809,7 @@ added: v0.11.13
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/16853
-    description: Default value changed to `'auto'`.
+    description: "Default value changed to `'auto'`."
 -->
 
 TLS 服务器中用于 ECDH 密钥协商的默认曲线名称。默认值为 `'auto'`。有关更多信息，请参阅 [`tls.createSecureContext()`][]。

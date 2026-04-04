@@ -248,10 +248,10 @@ added: v0.6.0
 changes:
   - version: v18.4.0
     pr-url: https://github.com/nodejs/node/pull/43054
-    description: The `family` property now returns a string instead of a number.
+    description: "The `family` property now returns a string instead of a number."
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41431
-    description: The `family` property now returns a number instead of a string.
+    description: "The `family` property now returns a number instead of a string."
 -->
 
 * 返回值：{Object}
@@ -363,8 +363,7 @@ added: v0.9.9
 changes:
   - version: v2.0.0
     pr-url: https://github.com/nodejs/node/pull/747
-    description: This function is now cross-platform consistent and no longer
-                 returns a path with a trailing slash on any platform.
+    description: "This function is now cross-platform consistent and no longerreturns a path with a trailing slash on any platform."
 -->
 
 * 返回值：{string}
@@ -455,7 +454,7 @@ added:
 changes:
   - version: v5.11.0
     pr-url: https://github.com/nodejs/node/pull/6093
-    description: 添加了对 `SIGINFO` 的支持。
+    description: "添加了对 `SIGINFO` 的支持。"
 -->
 
 以下信号常量由 `os.constants.signals` 导出。

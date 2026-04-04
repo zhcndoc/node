@@ -210,19 +210,19 @@ changes:
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31166
-    description: End-of-Life (for `digest === null`).
+    description: "End-of-Life (for `digest === null`)."
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22861
-    description: Runtime deprecation (for `digest === null`).
+    description: "Runtime deprecation (for `digest === null`)."
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11305
-    description: End-of-Life (for `digest === undefined`).
+    description: "End-of-Life (for `digest === undefined`)."
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
     description: A deprecation code has been assigned.
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4047
-    description: Runtime deprecation (for `digest === undefined`).
+    description: "Runtime deprecation (for `digest === undefined`)."
 -->
 
 类型：生命周期结束
@@ -871,7 +871,7 @@ changes:
     description: Runtime deprecation.
   - version: v16.6.0
     pr-url: https://github.com/nodejs/node/pull/38444
-    description: Added support for `--pending-deprecation`.
+    description: "Added support for `--pending-deprecation`."
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7941
     description: Documentation-only deprecation.
@@ -1646,7 +1646,7 @@ changes:
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33648
-    description: The legacy `node debug` command was removed.
+    description: "The legacy `node debug` command was removed."
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11441
     description: Runtime deprecation.
@@ -2288,8 +2288,7 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18990
-    description: Documentation-only deprecation
-                 with `--pending-deprecation` support.
+    description: "Documentation-only deprecationwith `--pending-deprecation` support."
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -2423,7 +2422,7 @@ changes:
 changes:
   - version: v11.12.0
     pr-url: https://github.com/nodejs/node/pull/26500
-    description: Added support for `--pending-deprecation`.
+    description: "Added support for `--pending-deprecation`."
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/22004
     description: Documentation-only deprecation.
@@ -2499,8 +2498,7 @@ changes:
     pr-url:
       - https://github.com/nodejs/node/pull/22519
       - https://github.com/nodejs/node/pull/23017
-    description: Documentation-only deprecation
-                 with `--pending-deprecation` support.
+    description: "Documentation-only deprecationwith `--pending-deprecation` support."
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -2518,12 +2516,12 @@ changes:
   - version:
       - v24.0.0
     pr-url: https://github.com/nodejs/node/pull/55017
-    description: DEP0169 covers also `url.format()` and `url.resolve()`.
+    description: "DEP0169 covers also `url.format()` and `url.resolve()`."
   - version:
       - v19.0.0
       - v18.13.0
     pr-url: https://github.com/nodejs/node/pull/44919
-    description: DEP0169 deprecates `url.parse()` again.
+    description: "DEP0169 deprecates `url.parse()` again."
   - version:
       - v15.13.0
       - v14.17.0
@@ -2586,8 +2584,7 @@ changes:
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/23597
-    description: Documentation-only deprecation
-                 with `--pending-deprecation` support.
+    description: "Documentation-only deprecationwith `--pending-deprecation` support."
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -2855,8 +2852,7 @@ changes:
 changes:
   - version: v12.12.0
     pr-url: https://github.com/nodejs/node/pull/29781
-    description: Documentation-only deprecation
-                 with `--pending-deprecation` support.
+    description: "Documentation-only deprecationwith `--pending-deprecation` support."
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -3001,8 +2997,7 @@ changes:
 changes:
   - version: v14.3.0
     pr-url: https://github.com/nodejs/node/pull/33294
-    description: Documentation-only deprecation
-                 with `--pending-deprecation` support.
+    description: "Documentation-only deprecationwith `--pending-deprecation` support."
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -3016,8 +3011,7 @@ changes:
 changes:
   - version: v14.3.0
     pr-url: https://github.com/nodejs/node/pull/33294
-    description: Documentation-only deprecation
-                 with `--pending-deprecation` support.
+    description: "Documentation-only deprecationwith `--pending-deprecation` support."
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -3204,8 +3198,7 @@ changes:
       - v15.8.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/36918
-    description: Documentation-only deprecation
-                 with `--pending-deprecation` support.
+    description: "Documentation-only deprecationwith `--pending-deprecation` support."
 -->
 
 类型：运行时
@@ -3289,8 +3282,7 @@ changes:
     description: Runtime deprecation.
   - version: v16.10.0
     pr-url: https://github.com/nodejs/node/pull/40039
-    description: Documentation-only deprecation
-                 with `--pending-deprecation` support.
+    description: "Documentation-only deprecationwith `--pending-deprecation` support."
 -->
 
 类型：运行时
@@ -3476,12 +3468,12 @@ changes:
     - v18.10.0
     - v16.18.0
     pr-url: https://github.com/nodejs/node/pull/44714
-    description: `process.exitCode` 整数强制转换的仅文档弃用。
+    description: "`process.exitCode` 整数强制转换的仅文档弃用。"
   - version:
     - v18.7.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43738
-    description: `process.exit(code)` 整数强制转换的仅文档弃用。
+    description: "`process.exit(code)` 整数强制转换的仅文档弃用。"
 -->
 
 类型：生命周期结束
@@ -3518,7 +3510,7 @@ changes:
     description: 运行时弃用。
   - version: v18.10.0
     pr-url: https://github.com/nodejs/node/pull/44477
-    description: 仅文档弃用，支持 `--pending-deprecation`。
+    description: "仅文档弃用，支持 `--pending-deprecation`。"
 -->
 
 类型：运行时
@@ -3571,7 +3563,7 @@ changes:
       - v19.9.0
       - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47203
-    description: 添加了对 `--pending-deprecation` 的支持。
+    description: "添加了对 `--pending-deprecation` 的支持。"
   - version:
       - v19.0.0
       - v18.13.0
@@ -3965,7 +3957,7 @@ changes:
      - v24.0.0
      - v22.16.0
     pr-url: https://github.com/nodejs/node/pull/57508
-    description: 仅文档弃用，支持 `--pending-deprecation`。
+    description: "仅文档弃用，支持 `--pending-deprecation`。"
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -4104,7 +4096,7 @@ changes:
       - v22.18.0
       - v20.19.5
     pr-url: https://github.com/nodejs/node/pull/58942
-    description: 仅文档弃用，支持 `--pending-deprecation`。
+    description: "仅文档弃用，支持 `--pending-deprecation`。"
 -->
 
 类型：运行时

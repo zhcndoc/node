@@ -10,8 +10,7 @@ changes:
     description: 可以使用 AbortSignal 中止请求。
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/34664
-    description: 现在可以发送/接收带有 host 头（带或不带
-                 :authority）的请求。
+    description: "现在可以发送/接收带有 host 头（带或不带:authority）的请求。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22466
     description: HTTP/2 现在是稳定的。此前，它是实验性的。
@@ -513,8 +512,7 @@ added: v8.9.3
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是
-                 ERR_INVALID_CALLBACK。
+    description: "向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
 -->
 
 * `payload` {Buffer|TypedArray|DataView} 可选的 ping 负载。
@@ -604,8 +602,7 @@ added: v8.4.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是
-                 ERR_INVALID_CALLBACK。
+    description: "向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
 -->
 
 * `msecs` {number}
@@ -657,8 +654,7 @@ added: v8.4.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是
-                 ERR_INVALID_CALLBACK。
+    description: "向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
 -->
 
 * `settings` {HTTP/2 设置对象}
@@ -1145,8 +1141,7 @@ added: v8.4.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是
-                 ERR_INVALID_CALLBACK。
+    description: "向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
 -->
 
 * `code` {number} 标识错误代码的无符号 32 位整数。**默认：** `http2.constants.NGHTTP2_NO_ERROR` (`0x00`)。
@@ -1279,8 +1274,7 @@ added: v8.4.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是
-                 ERR_INVALID_CALLBACK。
+    description: "向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
 -->
 
 * `msecs` {number}
@@ -1505,8 +1499,7 @@ added: v8.4.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 callback 参数传递无效的回调现在会抛出 ERR_INVALID_ARG_TYPE 而不是
-                 ERR_INVALID_CALLBACK。
+    description: "向 callback 参数传递无效的回调现在会抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
 -->
 
 * `headers` {HTTP/2 头对象}
@@ -1649,8 +1642,7 @@ changes:
     description: 现在支持任何可读的文件描述符，不一定是常规文件。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18936
-    description: 现在支持任何可读的文件描述符，不一定是
-                 常规文件。
+    description: "现在支持任何可读的文件描述符，不一定是常规文件。"
 -->
 
 * `fd` {number|FileHandle} 一个可读的文件描述符。
@@ -1787,8 +1779,7 @@ changes:
     description: 允许显式设置日期头。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18936
-    description: 现在支持任何可读的文件，不一定是
-                 常规文件。
+    description: "现在支持任何可读的文件，不一定是常规文件。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -2146,8 +2137,7 @@ added: v8.4.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 callback 参数传递无效的回调现在会抛出 ERR_INVALID_ARG_TYPE 而不是
-                 ERR_INVALID_CALLBACK。
+    description: "向 callback 参数传递无效的回调现在会抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27558
     description: 默认超时从 120 秒更改为 0（无超时）。
@@ -2411,8 +2401,7 @@ added: v8.4.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 callback 参数传递无效的回调现在会抛出 ERR_INVALID_ARG_TYPE 而不是
-                 ERR_INVALID_CALLBACK。
+    description: "向 callback 参数传递无效的回调现在会抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
 -->
 
 * `msecs` {number} **默认值：** `120000`（2 分钟）
@@ -2473,8 +2462,7 @@ changes:
     description: 添加了 strictSingleValueFields 选项。
   - version: v25.7.0
     pr-url: https://github.com/nodejs/node/pull/61713
-    description: 添加了 http1Options 选项。Http1IncomingMessage
-                 和 Http1ServerResponse 选项现已弃用。
+    description: "添加了 http1Options 选项。Http1IncomingMessage和 Http1ServerResponse 选项现已弃用。"
   - version:
       - v23.0.0
       - v22.10.0
@@ -2506,25 +2494,19 @@ changes:
     description: 添加了 maxSessionInvalidFrames 选项，默认值为 1000。
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/29144
-    description: PADDING_STRATEGY_CALLBACK 已等同于提供
-                 PADDING_STRATEGY_ALIGNED，并且 selectPadding
-                 已被移除。
+    description: "PADDING_STRATEGY_CALLBACK 已等同于提供PADDING_STRATEGY_ALIGNED，并且 selectPadding已被移除。"
   - version: v12.4.0
     pr-url: https://github.com/nodejs/node/pull/27782
-    description: options 参数现在支持 net.createServer()
-                 选项。
+    description: "options 参数现在支持 net.createServer()选项。"
   - version: v9.6.0
     pr-url: https://github.com/nodejs/node/pull/15752
-    description: 添加了 Http1IncomingMessage 和 Http1ServerResponse
-                 选项。
+    description: "添加了 Http1IncomingMessage 和 Http1ServerResponse选项。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/17105
-    description: 添加了 maxOutstandingPings 选项，默认限制为
-                 10。
+    description: "添加了 maxOutstandingPings 选项，默认限制为10。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/16676
-    description: 添加了 maxHeaderListPairs 选项，默认限制为
-                 128 个头对。
+    description: "添加了 maxHeaderListPairs 选项，默认限制为128 个头对。"
 -->
 
 * `options` {Object}
@@ -2703,21 +2685,16 @@ changes:
     description: 添加了 maxSessionInvalidFrames 选项，默认值为 1000。
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/29144
-    description: PADDING_STRATEGY_CALLBACK 已等同于提供
-                 PADDING_STRATEGY_ALIGNED，并且 selectPadding
-                 已被移除。
+    description: "PADDING_STRATEGY_CALLBACK 已等同于提供PADDING_STRATEGY_ALIGNED，并且 selectPadding已被移除。"
   - version: v10.12.0
     pr-url: https://github.com/nodejs/node/pull/22956
-    description: 添加了 origins 选项，以便在 Http2Session 启动时自动发送 ORIGIN
-                 帧。
+    description: "添加了 origins 选项，以便在 Http2Session 启动时自动发送 ORIGIN帧。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/17105
-    description: 添加了 maxOutstandingPings 选项，默认限制为
-                 10。
+    description: "添加了 maxOutstandingPings 选项，默认限制为10。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/16676
-    description: 添加了 maxHeaderListPairs 选项，默认限制为
-                 128 个头对。
+    description: "添加了 maxHeaderListPairs 选项，默认限制为128 个头对。"
 -->
 
 * `options` {Object}
@@ -2862,27 +2839,23 @@ changes:
       - v12.21.0
       - v10.24.0
     pr-url: https://github.com/nodejs-private/node-private/pull/246
-    description: 添加了 `unknownProtocolTimeout` 选项，默认值为 10000。
+    description: "添加了 `unknownProtocolTimeout` 选项，默认值为 10000。"
   - version:
      - v14.4.0
      - v12.18.0
      - v10.21.0
     commit: 3948830ce6408be620b09a70bf66158623022af0
     pr-url: https://github.com/nodejs-private/node-private/pull/204
-    description: 添加了 `maxSettings` 选项，默认值为 32。
+    description: "添加了 `maxSettings` 选项，默认值为 32。"
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/29144
-    description: `PADDING_STRATEGY_CALLBACK` 已等同于提供
-                 `PADDING_STRATEGY_ALIGNED`，并且 `selectPadding`
-                 已被移除。
+    description: "`PADDING_STRATEGY_CALLBACK` 已等同于提供`PADDING_STRATEGY_ALIGNED`，并且 `selectPadding`已被移除。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/17105
-    description: 添加了 `maxOutstandingPings` 选项，默认限制为
-                 10。
+    description: "添加了 `maxOutstandingPings` 选项，默认限制为10。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/16676
-    description: 添加了 `maxHeaderListPairs` 选项，默认限制为
-                 128 个头部对。
+    description: "添加了 `maxHeaderListPairs` 选项，默认限制为128 个头部对。"
 -->
 
 * `authority` {string|URL} 要连接到的远程 HTTP/2 服务器。这必须
@@ -3178,10 +3151,10 @@ added: v8.4.0
 changes:
   - version: v12.12.0
     pr-url: https://github.com/nodejs/node/pull/29833
-    description: `maxConcurrentStreams` 设置更加严格。
+    description: "`maxConcurrentStreams` 设置更加严格。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/16676
-    description: `maxHeaderListSize` 设置现在被严格执行。
+    description: "`maxHeaderListSize` 设置现在被严格执行。"
 -->
 
 `http2.getDefaultSettings()`、`http2.getPackedSettings()`、
@@ -3912,9 +3885,7 @@ added: v8.4.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: Passing an invalid callback to the `callback` argument
-                 now throws `ERR_INVALID_ARG_TYPE` instead of
-                 `ERR_INVALID_CALLBACK`.
+    description: "Passing an invalid callback to the `callback` argumentnow throws `ERR_INVALID_ARG_TYPE` instead of`ERR_INVALID_CALLBACK`."
 -->
 
 * `headers` {HTTP/2 头对象} 描述头的对象
@@ -3931,7 +3902,7 @@ added: v8.4.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18780
-    description: This method now returns a reference to `ServerResponse`.
+    description: "This method now returns a reference to `ServerResponse`."
 -->
 
 * `data` {string|Buffer|Uint8Array}
@@ -4277,8 +4248,7 @@ changes:
      - v11.10.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/25974
-    description: Return `this` from `writeHead()` to allow chaining with
-                 `end()`.
+    description: "Return `this` from `writeHead()` to allow chaining with`end()`."
 -->
 
 * `statusCode` {number}

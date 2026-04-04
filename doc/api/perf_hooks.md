@@ -68,8 +68,7 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `performance` 对象作为
-                 接收者调用。
+    description: "此方法必须以 `performance` 对象作为接收者调用。"
 -->
 
 * `name` {string}
@@ -83,8 +82,7 @@ added: v16.7.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `performance` 对象作为
-                 接收者调用。
+    description: "此方法必须以 `performance` 对象作为接收者调用。"
 -->
 
 * `name` {string}
@@ -100,8 +98,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `performance` 对象作为
-                 接收者调用。
+    description: "此方法必须以 `performance` 对象作为接收者调用。"
 -->
 
 * `name` {string}
@@ -119,7 +116,7 @@ changes:
       - v25.2.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/60370
-    description: 添加了 `perf_hooks.eventLoopUtilization` 别名。
+    description: "添加了 `perf_hooks.eventLoopUtilization` 别名。"
 -->
 
 * `utilization1` {Object} 之前调用 `eventLoopUtilization()` 的结果。
@@ -140,8 +137,7 @@ added: v16.7.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `performance` 对象作为
-                 接收者调用。
+    description: "此方法必须以 `performance` 对象作为接收者调用。"
 -->
 
 * 返回：{PerformanceEntry\[]}
@@ -155,8 +151,7 @@ added: v16.7.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `performance` 对象作为
-                 接收者调用。
+    description: "此方法必须以 `performance` 对象作为接收者调用。"
 -->
 
 * `name` {string}
@@ -172,8 +167,7 @@ added: v16.7.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `performance` 对象作为
-                 接收者调用。
+    description: "此方法必须以 `performance` 对象作为接收者调用。"
 -->
 
 * `type` {string}
@@ -188,8 +182,7 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `performance` 对象作为
-                 接收者调用。name 参数不再可选。
+    description: "此方法必须以 `performance` 对象作为接收者调用。name 参数不再可选。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37136
     description: 更新以符合 User Timing Level 3 规范。
@@ -239,8 +232,7 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `performance` 对象作为
-                 接收者调用。
+    description: "此方法必须以 `performance` 对象作为接收者调用。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37136
     description: 更新以符合 User Timing Level 3 规范。
@@ -248,7 +240,7 @@ changes:
       - v13.13.0
       - v12.16.3
     pr-url: https://github.com/nodejs/node/pull/32651
-    description: 使 `startMark` 和 `endMark` 参数可选。
+    description: "使 `startMark` 和 `endMark` 参数可选。"
 -->
 
 * `name` {string}
@@ -286,8 +278,7 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `performance` 对象作为
-                 接收者调用。
+    description: "此方法必须以 `performance` 对象作为接收者调用。"
 -->
 
 * 返回：{number}
@@ -301,8 +292,7 @@ added: v18.8.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `performance` 对象作为
-                 接收者调用。
+    description: "此方法必须以 `performance` 对象作为接收者调用。"
 -->
 
 将全局性能资源时间线缓冲区大小设置为指定数量的 "resource" 类型性能条目对象。
@@ -328,14 +318,13 @@ changes:
       - v25.2.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/60370
-    description: 添加了 `perf_hooks.timerify` 别名。
+    description: "添加了 `perf_hooks.timerify` 别名。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37475
     description: 添加了 histogram 选项。
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37136
-    description: 重新实现以使用纯 JavaScript 以及计时
-                 异步函数的能力。
+    description: "重新实现以使用纯 JavaScript 以及计时异步函数的能力。"
 -->
 
 * `fn` {Function}
@@ -353,8 +342,7 @@ added: v16.1.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `performance` 对象作为
-                 接收者调用。
+    description: "此方法必须以 `performance` 对象作为接收者调用。"
 -->
 
 一个对象，是 `performance` 对象的 JSON 表示。它类似于浏览器中的 [`window.performance.toJSON`][]。
@@ -382,8 +370,7 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性 getter 必须使用
-                 `PerformanceEntry` 对象作为接收者来调用。
+    description: "此属性 getter 必须使用`PerformanceEntry` 对象作为接收者来调用。"
 -->
 
 * 类型：{number}
@@ -397,8 +384,7 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性 getter 必须使用
-                 `PerformanceEntry` 对象作为接收者来调用。
+    description: "此属性 getter 必须使用`PerformanceEntry` 对象作为接收者来调用。"
 -->
 
 * 类型：{string}
@@ -423,8 +409,7 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性 getter 必须使用
-                 `PerformanceEntry` 对象作为接收者来调用。
+    description: "此属性 getter 必须使用`PerformanceEntry` 对象作为接收者来调用。"
 -->
 
 * 类型：{string}
@@ -438,8 +423,7 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性 getter 必须使用
-                 `PerformanceEntry` 对象作为接收者来调用。
+    description: "此属性 getter 必须使用`PerformanceEntry` 对象作为接收者来调用。"
 -->
 
 * 类型：{number}
@@ -465,8 +449,7 @@ added: v16.0.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性 getter 必须使用
-                 `PerformanceMark` 对象作为接收者来调用。
+    description: "此属性 getter 必须使用`PerformanceMark` 对象作为接收者来调用。"
 -->
 
 * 类型：{any}
@@ -494,8 +477,7 @@ added: v16.0.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性 getter 必须使用
-                 `PerformanceMeasure` 对象作为接收者来调用。
+    description: "此属性 getter 必须使用`PerformanceMeasure` 对象作为接收者来调用。"
 -->
 
 * 类型：{any}
@@ -523,8 +505,7 @@ added: v16.0.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性 getter 必须使用
-                 `PerformanceNodeEntry` 对象作为接收者来调用。
+    description: "此属性 getter 必须使用`PerformanceNodeEntry` 对象作为接收者来调用。"
 -->
 
 * 类型：{any}
@@ -792,7 +773,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -808,7 +789,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -824,7 +805,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -840,7 +821,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -856,7 +837,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -872,7 +853,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -888,7 +869,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -904,7 +885,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -920,7 +901,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -936,7 +917,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -952,7 +933,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -968,7 +949,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -984,7 +965,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -1000,7 +981,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -1016,7 +997,7 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: 此方法必须以 `PerformanceResourceTiming` 对象作为接收者调用。
+    description: "此方法必须以 `PerformanceResourceTiming` 对象作为接收者调用。"
 -->
 
 返回一个 `object`，它是 `PerformanceResourceTiming` 对象的 JSON 表示。
@@ -1044,8 +1025,7 @@ added: v8.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调函数现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调函数现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `callback` {Function}
@@ -1106,12 +1086,10 @@ added: v8.5.0
 changes:
   - version: v16.7.0
     pr-url: https://github.com/nodejs/node/pull/39297
-    description: 更新以符合 Performance Timeline Level 2。`buffered`
-                 选项已被加回。
+    description: "更新以符合 Performance Timeline Level 2。`buffered`选项已被加回。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37136
-    description: 更新以符合 User Timing Level 3。`buffered`
-                 选项已被移除。
+    description: "更新以符合 User Timing Level 3。`buffered`选项已被移除。"
 -->
 
 * `options` {Object}

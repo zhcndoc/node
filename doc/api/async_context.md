@@ -625,12 +625,12 @@ added:
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/46432
-    description: 添加到绑定函数的 `asyncResource` 属性已弃用，并将在未来版本中移除。
+    description: "添加到绑定函数的 `asyncResource` 属性已弃用，并将在未来版本中移除。"
   - version:
     - v17.8.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/42177
-    description: 更改了当 `thisArg` 为 undefined 时的默认值，以使用调用者的 `this`。
+    description: "更改了当 `thisArg` 为 undefined 时的默认值，以使用调用者的 `this`。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36782
     description: 添加了可选的 thisArg。
@@ -651,12 +651,12 @@ added:
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/46432
-    description: 添加到绑定函数的 `asyncResource` 属性已弃用，并将在未来版本中移除。
+    description: "添加到绑定函数的 `asyncResource` 属性已弃用，并将在未来版本中移除。"
   - version:
     - v17.8.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/42177
-    description: 更改了当 `thisArg` 为 undefined 时的默认值，以使用调用者的 `this`。
+    description: "更改了当 `thisArg` 为 undefined 时的默认值，以使用调用者的 `this`。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36782
     description: 添加了可选的 thisArg。

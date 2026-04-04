@@ -90,21 +90,21 @@ const { Console } = console;
 changes:
   - version: v24.10.0
     pr-url: https://github.com/nodejs/node/pull/60082
-    description: `inspectOptions` 选项可以是从流到选项的 `Map`。
+    description: "`inspectOptions` 选项可以是从流到选项的 `Map`。"
   - version:
      - v14.2.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/32964
-    description: 引入了 `groupIndentation` 选项。
+    description: "引入了 `groupIndentation` 选项。"
   - version: v11.7.0
     pr-url: https://github.com/nodejs/node/pull/24978
-    description: 引入了 `inspectOptions` 选项。
+    description: "引入了 `inspectOptions` 选项。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19372
-    description: `Console` 构造函数现在支持 `options` 参数，并引入了 `colorMode` 选项。
+    description: "`Console` 构造函数现在支持 `options` 参数，并引入了 `colorMode` 选项。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/9744
-    description: 引入了 `ignoreErrors` 选项。
+    description: "引入了 `ignoreErrors` 选项。"
 -->
 
 * `options` {Object}
@@ -430,7 +430,7 @@ changes:
     description: 经过的时间以合适的时间单位显示。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5901
-    description: 此方法不再支持不映射到单个 `console.time()` 调用的多次调用；详见下文。
+    description: "此方法不再支持不映射到单个 `console.time()` 调用的多次调用；详见下文。"
 -->
 
 * `label` {string} **默认值：** `'default'`

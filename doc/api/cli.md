@@ -38,8 +38,7 @@ Node.js 附带各种命令行选项。这些选项提供了内置的调试功能
 changes:
   - version: v10.12.0
     pr-url: https://github.com/nodejs/node/pull/23020
-    description: 现在允许使用下划线代替连字符，
-                 除了 V8 选项外，也适用于 Node.js 选项。
+    description: "现在允许使用下划线代替连字符，除了 V8 选项外，也适用于 Node.js 选项。"
 -->
 
 > 稳定性：2 - 稳定
@@ -124,8 +123,7 @@ changes:
       - v24.4.0
       - v22.18.0
     pr-url: https://github.com/nodejs/node/pull/58853
-    description: 当在启用权限模型的情况下生成进程时。
-                 标志通过 NODE_OPTIONS 环境变量继承到子 Node.js 进程。
+    description: "当在启用权限模型的情况下生成进程时。标志通过 NODE_OPTIONS 环境变量继承到子 Node.js 进程。"
 -->
 
 > 稳定性：1.1 - 积极开发中
@@ -175,7 +173,7 @@ changes:
     description: 权限模型和 --allow-fs 标志已稳定。
   - version: v20.7.0
     pr-url: https://github.com/nodejs/node/pull/49047
-    description: 不再允许使用逗号 (`,`) 分隔的路径。
+    description: "不再允许使用逗号 (`,`) 分隔的路径。"
 -->
 
 此标志使用 [Permission Model][] 配置文件系统读取权限。
@@ -214,7 +212,7 @@ changes:
     description: 权限模型和 --allow-fs 标志已稳定。
   - version: v20.7.0
     pr-url: https://github.com/nodejs/node/pull/49047
-    description: 不再允许使用逗号 (`,`) 分隔的路径。
+    description: "不再允许使用逗号 (`,`) 分隔的路径。"
 -->
 
 此标志使用 [Permission Model][] 配置文件系统写入权限。
@@ -448,7 +446,7 @@ added:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19600
-    description: 检查文件时现在支持 `--require` 选项。
+    description: "检查文件时现在支持 `--require` 选项。"
 -->
 
 语法检查脚本而不执行。
@@ -501,7 +499,7 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53343
-    description: `--cpu-prof` 标志现已稳定。
+    description: "`--cpu-prof` 标志现已稳定。"
 -->
 
 在启动时启动 V8 CPU 性能分析器，并在退出前将 CPU 配置文件写入磁盘。
@@ -535,7 +533,7 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53343
-    description: `--cpu-prof` 标志现已稳定。
+    description: "`--cpu-prof` 标志现已稳定。"
 -->
 
 指定放置由 `--cpu-prof` 生成的 CPU 配置文件的目录。
@@ -551,7 +549,7 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53343
-    description: `--cpu-prof` 标志现已稳定。
+    description: "`--cpu-prof` 标志现已稳定。"
 -->
 
 指定由 `--cpu-prof` 生成的 CPU 配置文件的采样间隔（微秒）。默认值为 1000 微秒。
@@ -565,7 +563,7 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53343
-    description: `--cpu-prof` 标志现已稳定。
+    description: "`--cpu-prof` 标志现已稳定。"
 -->
 
 指定由 `--cpu-prof` 生成的 CPU 配置文件的文件名。
@@ -688,10 +686,10 @@ changes:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52492
-    description: 现在支持 `ipv6first`。
+    description: "现在支持 `ipv6first`。"
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/39987
-    description: 默认值更改为 `verbatim`。
+    description: "默认值更改为 `verbatim`。"
 -->
 
 设置 [`dns.lookup()`][] 和 [`dnsPromises.lookup()`][] 中 `order` 的默认值。值可以是：
@@ -769,7 +767,7 @@ changes:
      - v24.10.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59925
-    description: `--env-file-if-exists` 标志不再是实验性的。
+    description: "`--env-file-if-exists` 标志不再是实验性的。"
 -->
 
 行为与 [`--env-file`][] 相同，但如果文件不存在则不抛出错误。
@@ -783,7 +781,7 @@ changes:
      - v24.10.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59925
-    description: `--env-file` 标志不再是实验性的。
+    description: "`--env-file` 标志不再是实验性的。"
   - version:
     - v21.7.0
     - v20.12.0
@@ -994,8 +992,7 @@ changes:
     - v20.6.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/49028
-    description: 同步 import.meta.resolve 默认可用，同时
-                 保留该标志以启用之前支持的实验性第二个参数。
+    description: "同步 import.meta.resolve 默认可用，同时保留该标志以启用之前支持的实验性第二个参数。"
 -->
 
 启用实验性 `import.meta.resolve()` 父 URL 支持，这允许传递第二个 `parentURL` 参数进行上下文解析。
@@ -1024,12 +1021,10 @@ changes:
     - v22.13.1
     - v20.18.2
     pr-url: https://github.com/nodejs-private/node-private/pull/629
-    description: 在启用权限模型的情况下使用此功能需要
-                 传递 `--allow-worker`。
+    description: "在启用权限模型的情况下使用此功能需要传递 `--allow-worker`。"
   - version: v12.11.1
     pr-url: https://github.com/nodejs/node/pull/29752
-    description: 此标志已从 `--loader` 重命名为
-                 `--experimental-loader`。
+    description: "此标志已从 `--loader` 重命名为`--experimental-loader`。"
 -->
 
 > 不鼓励使用此标志，它可能会在未来的 Node.js 版本中被移除。
@@ -1123,7 +1118,7 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47686
-    description: 此选项可与 `--test` 一起使用。
+    description: "此选项可与 `--test` 一起使用。"
 -->
 
 与 `node:test` 模块结合使用时，代码覆盖率报告将作为测试运行器输出的一部分生成。如果没有运行测试，则不会生成覆盖率报告。有关更多详细信息，请参阅 [collecting code coverage from tests][] 文档。
@@ -1140,8 +1135,7 @@ changes:
     - v22.13.1
     - v20.18.2
     pr-url: https://github.com/nodejs-private/node-private/pull/629
-    description: 在启用权限模型的情况下使用此功能需要
-                 传递 `--allow-worker`。
+    description: "在启用权限模型的情况下使用此功能需要传递 `--allow-worker`。"
 -->
 
 > 稳定性：1.0 - 早期开发
@@ -1169,12 +1163,10 @@ changes:
     - v20.0.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47286
-    description: 不再需要此选项，因为 WASI 已
-                 默认启用，但仍可以传递。
+    description: "不再需要此选项，因为 WASI 已默认启用，但仍可以传递。"
   - version: v13.6.0
     pr-url: https://github.com/nodejs/node/pull/30980
-    description: 从 `--experimental-wasi-unstable-preview0` 更改为
-                 `--experimental-wasi-unstable-preview1`。
+    description: "从 `--experimental-wasi-unstable-preview0` 更改为`--experimental-wasi-unstable-preview1`。"
 -->
 
 启用实验性 WebAssembly 系统接口 (WASI) 支持。
@@ -1260,7 +1252,7 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53343
-    description: `--heap-prof` 标志现已稳定。
+    description: "`--heap-prof` 标志现已稳定。"
 -->
 
 在启动时启动 V8 堆性能分析器，并在退出前将堆配置文件写入磁盘。
@@ -1284,7 +1276,7 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53343
-    description: `--heap-prof` 标志现已稳定。
+    description: "`--heap-prof` 标志现已稳定。"
 -->
 
 指定放置由 `--heap-prof` 生成的堆配置文件的目录。
@@ -1300,7 +1292,7 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53343
-    description: `--heap-prof` 标志现已稳定。
+    description: "`--heap-prof` 标志现已稳定。"
 -->
 
 指定由 `--heap-prof` 生成的堆配置文件的平均采样间隔（字节）。默认值为 512 \* 1024 字节。
@@ -1314,7 +1306,7 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53343
-    description: `--heap-prof` 标志现已稳定。
+    description: "`--heap-prof` 标志现已稳定。"
 -->
 
 指定由 `--heap-prof` 生成的堆配置文件的文件名。
@@ -1420,7 +1412,7 @@ changes:
       - v23.6.0
       - v22.18.0
     pr-url: https://github.com/nodejs/node/pull/56350
-    description: 添加对 `-typescript` 值的支持。
+    description: "添加对 `-typescript` 值的支持。"
   - version:
     - v22.7.0
     - v20.19.0
@@ -1688,8 +1680,7 @@ changes:
   - version:
     - v25.4.0
     pr-url: https://github.com/nodejs/node/pull/60959
-    description: 该标志已从 `--no-experimental-require-module` 重命名为
-                 `--no-require-module`，前者标记为遗留。
+    description: "该标志已从 `--no-experimental-require-module` 重命名为`--no-require-module`，前者标记为遗留。"
   - version:
     - v23.0.0
     - v22.12.0
@@ -1769,9 +1760,7 @@ added: v19.4.0
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/46790
-    description: 该标志已从 `--no-enable-network-family-autoselection`
-                 重命名为 `--no-network-family-autoselection`。旧名称仍可作为
-                 别名工作。
+    description: "该标志已从 `--no-enable-network-family-autoselection`重命名为 `--no-network-family-autoselection`。旧名称仍可作为别名工作。"
 -->
 
 除非连接选项显式启用，否则禁用族自动选择算法。
@@ -1792,8 +1781,7 @@ changes:
   - version:
     - v25.4.0
     pr-url: https://github.com/nodejs/node/pull/60959
-    description: 此标志已从 `--no-experimental-require-module`
-                 重命名为 `--no-require-module`。
+    description: "此标志已从 `--no-experimental-require-module`重命名为 `--no-require-module`。"
   - version:
     - v23.0.0
     - v22.12.0
@@ -1815,8 +1803,7 @@ changes:
       - v25.2.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/60600
-    description: 类型剥离现已稳定，该标志已从
-                 `--no-experimental-strip-types` 重命名为 `--no-strip-types`。
+    description: "类型剥离现已稳定，该标志已从`--no-experimental-strip-types` 重命名为 `--no-strip-types`。"
   - version:
       - v23.6.0
       - v22.18.0
@@ -2053,8 +2040,7 @@ changes:
     description: 此选项不再是实验性的。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/27312
-    description: 从 `--diagnostic-report-directory` 更改为
-                 `--report-directory`。
+    description: "从 `--diagnostic-report-directory` 更改为`--report-directory`。"
 -->
 
 生成报告的位置。
@@ -2093,8 +2079,7 @@ changes:
     description: 此选项不再是实验性的。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/27312
-    description: 从 `--diagnostic-report-filename` 更改为
-                 `--report-filename`。
+    description: "从 `--diagnostic-report-filename` 更改为`--report-filename`。"
 -->
 
 写入报告的文件名。
@@ -2115,8 +2100,7 @@ changes:
     description: 此选项不再是实验性的。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/27312
-    description: 从 `--diagnostic-report-on-fatalerror` 更改为
-                 `--report-on-fatalerror`。
+    description: "从 `--diagnostic-report-on-fatalerror` 更改为`--report-on-fatalerror`。"
 -->
 
 启用在导致应用程序终止的致命错误（Node.js 运行时内的内部错误，如内存不足）上触发报告。有助于检查各种诊断数据元素，如堆、堆栈、事件循环状态、资源消耗等，以推理致命错误。
@@ -2133,8 +2117,7 @@ changes:
     description: 此选项不再是实验性的。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/27312
-    description: 从 `--diagnostic-report-on-signal` 更改为
-                 `--report-on-signal`。
+    description: "从 `--diagnostic-report-on-signal` 更改为`--report-on-signal`。"
 -->
 
 启用在接收到发送给运行中的 Node.js 进程的指定（或预定义）信号时生成报告。触发报告的信号通过 `--report-signal` 指定。
@@ -2151,8 +2134,7 @@ changes:
     description: 此选项不再是实验性的。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/27312
-    description: 从 `--diagnostic-report-signal` 更改为
-                 `--report-signal`。
+    description: "从 `--diagnostic-report-signal` 更改为`--report-signal`。"
 -->
 
 设置或重置用于生成报告的信号（不支持 Windows）。
@@ -2175,8 +2157,7 @@ changes:
     description: 此选项不再是实验性的。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/27312
-    description: 从 `--diagnostic-report-uncaught-exception` 更改为
-                 `--report-uncaught-exception`。
+    description: "从 `--diagnostic-report-uncaught-exception` 更改为`--report-uncaught-exception`。"
 -->
 
 启用在进程因未捕获异常退出时生成报告。当结合原生堆栈和其他运行时环境数据检查 JavaScript 堆栈时很有用。
@@ -2217,9 +2198,7 @@ changes:
     description: 添加了 NODE_RUN_PACKAGE_JSON_PATH 环境变量。
   - version: v22.3.0
     pr-url: https://github.com/nodejs/node/pull/53154
-    description: 向上遍历到根目录并找到
-                 一个 `package.json` 文件以从中运行命令，并相应地更新
-                 `PATH` 环境变量。
+    description: "向上遍历到根目录并找到一个 `package.json` 文件以从中运行命令，并相应地更新`PATH` 环境变量。"
 -->
 
 这从 package.json 的 `"scripts"` 对象运行指定命令。
@@ -2459,8 +2438,7 @@ added: v22.8.0
 changes:
   - version: v23.6.0
     pr-url: https://github.com/nodejs/node/pull/56298
-    description: 该标志已从 `--experimental-test-isolation` 重命名为
-                 `--test-isolation`。
+    description: "该标志已从 `--experimental-test-isolation` 重命名为`--test-isolation`。"
 -->
 
 配置测试运行器中使用的测试隔离类型。当 `mode` 为
@@ -2904,8 +2882,7 @@ added:
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33021
-    description: 默认模式更改为 `throw`。以前，发出
-                 警告。
+    description: "默认模式更改为 `throw`。以前，发出警告。"
 -->
 
 使用此标志允许更改发生未处理拒绝时应发生的情况。可以选择以下模式之一：

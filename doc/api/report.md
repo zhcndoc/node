@@ -12,12 +12,12 @@ changes:
     - v23.3.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/55697
-    description: Added `--report-exclude-env` option for excluding environment variables from report generation.
+    description: "Added `--report-exclude-env` option for excluding environment variables from report generation."
   - version:
     - v22.0.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/51645
-    description: Added `--report-exclude-network` option for excluding networking operations that can slow down report generation in some cases.
+    description: "Added `--report-exclude-network` option for excluding networking operations that can slow down report generation in some cases."
 -->
 
 > 稳定性：2 - 稳定
@@ -621,7 +621,7 @@ changes:
     - v23.3.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/55697
-    description: Added `--report-exclude-env` option for excluding environment variables from report generation.
+    description: "Added `--report-exclude-env` option for excluding environment variables from report generation."
 -->
 
 新字段 `ipv4` 和 `ipv6` 添加到 `tcp` 和 `udp` libuv 句柄端点。示例：

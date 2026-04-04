@@ -51,15 +51,15 @@ added: v0.1.25
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10967
-    description: 现在可以正确解析多个空条目（例如 `&=&=`）。
+    description: "现在可以正确解析多个空条目（例如 `&=&=`）。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/6055
-    description: 返回的对象不再继承自 `Object.prototype`。
+    description: "返回的对象不再继承自 `Object.prototype`。"
   - version:
     - v6.0.0
     - v4.2.4
     pr-url: https://github.com/nodejs/node/pull/3807
-    description: `eq` 参数现在的长度可以超过 `1`。
+    description: "`eq` 参数现在的长度可以超过 `1`。"
 -->
 
 * `str` {string} 要解析的 URL 查询字符串

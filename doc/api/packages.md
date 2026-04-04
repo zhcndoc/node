@@ -25,7 +25,7 @@ changes:
     - v13.7.0
     - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/31001
-    description: 移除 `--experimental-conditional-exports` 选项。在 12.16.0 中，条件导出仍然位于 `--experimental-modules` 之后。
+    description: "移除 `--experimental-conditional-exports` 选项。在 12.16.0 中，条件导出仍然位于 `--experimental-modules` 之后。"
   - version:
     - v13.6.0
     - v12.16.0
@@ -401,7 +401,7 @@ changes:
      - v25.4.0
      - v24.14.0
     pr-url: https://github.com/nodejs/node/pull/60864
-    description: Allow subpath imports that start with `#/`.
+    description: "Allow subpath imports that start with `#/`."
 -->
 
 除了 [`"exports"`][] 字段外，还有一个包 `"imports"` 字段，用于创建仅适用于包内部导入说明符的私有映射。

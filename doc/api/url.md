@@ -292,8 +292,7 @@ console.log(myURL.href);
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33325
-    description: The scheme "gopher" is no longer special and `url.origin` now
-                 returns `'null'` for it.
+    description: "The scheme gopher is no longer special and `url.origin` nowreturns `'null'` for it."
 -->
 
 * 类型：{string}
@@ -1003,7 +1002,7 @@ changes:
       - v20.2.0
       - v18.18.0
     pr-url: https://github.com/nodejs/node/pull/47885
-    description: Add support for optional `value` argument.
+    description: "Add support for optional `value` argument."
 -->
 
 * `name` {string}
@@ -1028,9 +1027,7 @@ changes:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: Passing an invalid callback to the `fn` argument
-                 now throws `ERR_INVALID_ARG_TYPE` instead of
-                 `ERR_INVALID_CALLBACK`.
+    description: "Passing an invalid callback to the `fn` argumentnow throws `ERR_INVALID_ARG_TYPE` instead of`ERR_INVALID_CALLBACK`."
 -->
 
 * `fn` {Function} 为查询中的每个名称 - 值对调用
@@ -1072,7 +1069,7 @@ changes:
       - v20.2.0
       - v18.18.0
     pr-url: https://github.com/nodejs/node/pull/47885
-    description: Add support for optional `value` argument.
+    description: "Add support for optional `value` argument."
 -->
 
 * `name` {string}
@@ -1288,8 +1285,7 @@ changes:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52509
-    description: The `options` argument can now be used to
-                 determine how to parse the `path` argument.
+    description: "The `options` argument can now be used todetermine how to parse the `path` argument."
 -->
 
 * `url` {URL | string} 要转换为路径的文件 URL 字符串或 URL 对象。
@@ -1442,8 +1438,7 @@ changes:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52509
-    description: The `options` argument can now be used to
-                 determine how to return the `path` value.
+    description: "The `options` argument can now be used todetermine how to return the `path` value."
 -->
 
 * `path` {string} 要转换为文件 URL 的路径。
@@ -1492,8 +1487,7 @@ changes:
     - v19.9.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/46989
-    description: The returned object will also contain all the own enumerable
-                 properties of the `url` argument.
+    description: "The returned object will also contain all the own enumerableproperties of the `url` argument."
 -->
 
 * `url` {URL} 要转换为选项对象的 [WHATWG URL][] 对象。
@@ -1669,7 +1663,7 @@ added: v0.1.25
 changes:
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/38631
-    description: 现在当主机名的 Punycode 转换引入可能导致 URL 被不同地重新解析的更改时，会抛出 `ERR_INVALID_URL` 异常。
+    description: "现在当主机名的 Punycode 转换引入可能导致 URL 被不同地重新解析的更改时，会抛出 `ERR_INVALID_URL` 异常。"
   - version:
       - v15.13.0
       - v14.17.0
@@ -1680,7 +1674,7 @@ changes:
     description: 旧版 URL API 已弃用。请改用 WHATWG URL API。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7234
-    description: 带有 `file:` 方案的 URL 现在将始终使用正确数量的斜杠，无论 `slashes` 选项如何。不带协议且 `slashes` 选项为假值的情况现在也始终受到尊重。
+    description: "带有 `file:` 方案的 URL 现在将始终使用正确数量的斜杠，无论 `slashes` 选项如何。不带协议且 `slashes` 选项为假值的情况现在也始终受到尊重。"
 -->
 
 * `urlObject` {Object} 一个 URL 对象（由 `url.parse()` 返回或以其他方式构造）。
@@ -1794,7 +1788,7 @@ changes:
       - v19.9.0
       - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47203
-    description: 添加了对 `--pending-deprecation` 的支持。
+    description: "添加了对 `--pending-deprecation` 的支持。"
   - version:
       - v19.0.0
       - v18.13.0
@@ -1807,13 +1801,13 @@ changes:
     description: 弃用已撤销。状态更改为“旧版”。
   - version: v11.14.0
     pr-url: https://github.com/nodejs/node/pull/26941
-    description: 当没有路径且协议方案为 `ws:` 或 `wss:` 时，返回的 URL 对象上的 `pathname` 属性现在为 `/`。
+    description: "当没有路径且协议方案为 `ws:` 或 `wss:` 时，返回的 URL 对象上的 `pathname` 属性现在为 `/`。"
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22715
     description: 旧版 URL API 已弃用。请改用 WHATWG URL API。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/13606
-    description: 当不存在查询字符串时，返回的 URL 对象上的 `search` 属性现在为 `null`。
+    description: "当不存在查询字符串时，返回的 URL 对象上的 `search` 属性现在为 `null`。"
 -->
 
 > 稳定性：0 - 已弃用：请改用 WHATWG URL API。
@@ -1871,15 +1865,15 @@ changes:
     description: 旧版 URL API 已弃用。请改用 WHATWG URL API。
   - version: v6.6.0
     pr-url: https://github.com/nodejs/node/pull/8215
-    description: 当 `from` 和 `to` 引用同一主机时，`auth` 字段现在保持完整。
+    description: "当 `from` 和 `to` 引用同一主机时，`auth` 字段现在保持完整。"
   - version:
     - v6.5.0
     - v4.6.2
     pr-url: https://github.com/nodejs/node/pull/8214
-    description: `port` 字段现在已正确复制。
+    description: "`port` 字段现在已正确复制。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/1480
-    description: 当 `to` 参数包含主机名时，`auth` 字段现在被清除。
+    description: "当 `to` 参数包含主机名时，`auth` 字段现在被清除。"
 -->
 
 > 稳定性：0 - 已弃用：请改用 WHATWG URL API。

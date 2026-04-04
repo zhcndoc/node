@@ -238,7 +238,7 @@ changes:
       - v16.0.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37246
-    description: 为 `require(...)` 添加 `node:` 导入支持。
+    description: "为 `require(...)` 添加 `node:` 导入支持。"
 -->
 
 支持 `node:` URL 作为加载 Node.js 内置
@@ -435,14 +435,12 @@ changes:
     - v20.6.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/49028
-    description: 不再位于 `--experimental-import-meta-resolve` CLI 标志之后，
-                 非标准 `parentURL` 参数除外。
+    description: "不再位于 `--experimental-import-meta-resolve` CLI 标志之后，非标准 `parentURL` 参数除外。"
   - version:
     - v20.6.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/49038
-    description: 当针对不映射到本地文件系统上现有文件的 `file:` URL 时，
-                 此 API 不再抛出异常。
+    description: "当针对不映射到本地文件系统上现有文件的 `file:` URL 时，此 API 不再抛出异常。"
   - version:
     - v20.0.0
     - v18.19.0
@@ -452,7 +450,7 @@ changes:
       - v16.2.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38587
-    description: 为 `parentURL` 参数添加对 WHATWG `URL` 对象的支持。
+    description: "为 `parentURL` 参数添加对 WHATWG `URL` 对象的支持。"
 -->
 
 > 稳定性：1.2 - 发布候选
@@ -514,7 +512,7 @@ added: v14.13.0
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/53848
-    description: 为 CJS 命名空间添加了 `'module.exports'` 导出标记。
+    description: "为 CJS 命名空间添加了 `'module.exports'` 导出标记。"
 -->
 
 CommonJS 模块由一个 `module.exports` 对象组成，它可以是任何类型。
@@ -696,7 +694,7 @@ changes:
      - v24.5.0
      - v22.19.0
     pr-url: https://github.com/nodejs/node/pull/57038
-    description: Wasm 模块不再需要 `--experimental-wasm-modules` 标志。
+    description: "Wasm 模块不再需要 `--experimental-wasm-modules` 标志。"
 -->
 
 支持导入 WebAssembly 模块实例和 WebAssembly 源阶段导入。

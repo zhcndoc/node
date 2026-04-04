@@ -56,17 +56,17 @@ changes:
     - v24.7.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59315
-    description: Add support for `agentKeepAliveTimeoutBuffer`.
+    description: "Add support for `agentKeepAliveTimeoutBuffer`."
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: Add support for `proxyEnv`.
+    description: "Add support for `proxyEnv`."
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: Add support for `defaultPort` and `protocol`.
+    description: "Add support for `defaultPort` and `protocol`."
   - version:
       - v15.6.0
       - v14.17.0
@@ -76,13 +76,12 @@ changes:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33617
-    description: Add `maxTotalSockets` option to agent constructor.
+    description: "Add `maxTotalSockets` option to agent constructor."
   - version:
       - v14.5.0
       - v12.20.0
     pr-url: https://github.com/nodejs/node/pull/33278
-    description: Add `scheduling` option to specify the free socket
-                 scheduling strategy.
+    description: "Add `scheduling` option to specify the free socketscheduling strategy."
 -->
 
 * `options` {Object} 要在 agent 上设置的可配置选项集。
@@ -172,17 +171,17 @@ changes:
     - v24.7.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59315
-    description: Add support for `agentKeepAliveTimeoutBuffer`.
+    description: "Add support for `agentKeepAliveTimeoutBuffer`."
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: Add support for `proxyEnv`.
+    description: "Add support for `proxyEnv`."
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: Add support for `defaultPort` and `protocol`.
+    description: "Add support for `defaultPort` and `protocol`."
   - version:
       - v15.6.0
       - v14.17.0
@@ -192,13 +191,12 @@ changes:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33617
-    description: Add `maxTotalSockets` option to agent constructor.
+    description: "Add `maxTotalSockets` option to agent constructor."
   - version:
       - v14.5.0
       - v12.20.0
     pr-url: https://github.com/nodejs/node/pull/33278
-    description: Add `scheduling` option to specify the free socket
-                 scheduling strategy.
+    description: "Add `scheduling` option to specify the free socketscheduling strategy."
 -->
 
 * `options` {Object} 要在 agent 上设置的可配置选项集。
@@ -381,7 +379,7 @@ added: v0.11.4
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: The property now has a `null` prototype.
+    description: "The property now has a `null` prototype."
 -->
 
 * 类型：{Object}
@@ -401,7 +399,7 @@ changes:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41906
-    description: The `options` parameter is now optional.
+    description: "The `options` parameter is now optional."
 -->
 
 * `options` {Object} 提供名称生成信息的一组选项
@@ -459,7 +457,7 @@ added: v0.5.9
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: The property now has a `null` prototype.
+    description: "The property now has a `null` prototype."
 -->
 
 * 类型：{Object}
@@ -474,7 +472,7 @@ added: v0.3.6
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: The property now has a `null` prototype.
+    description: "The property now has a `null` prototype."
 -->
 
 * 类型：{Object}
@@ -874,7 +872,7 @@ deprecated:
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/20230
-    description: `aborted` 属性不再是一个时间戳数字。
+    description: "`aborted` 属性不再是一个时间戳数字。"
 -->
 
 > 稳定性：0 - 已废弃。请改用检查 [`request.destroyed`][]。
@@ -913,10 +911,10 @@ added: v0.1.90
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: `data` 参数现在可以是 `Uint8Array`。
+    description: "`data` 参数现在可以是 `Uint8Array`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18780
-    description: 此方法现在返回对 `ClientRequest` 的引用。
+    description: "此方法现在返回对 `ClientRequest` 的引用。"
 -->
 
 * `data` {string|Buffer|Uint8Array}
@@ -937,7 +935,7 @@ added: v0.3.0
 changes:
   - version: v14.5.0
     pr-url: https://github.com/nodejs/node/pull/32789
-    description: 为了与其他 Readable 流保持一致，该函数返回 `this`。
+    description: "为了与其他 Readable 流保持一致，该函数返回 `this`。"
 -->
 
 * `error` {Error} 可选，一个随 `'error'` 事件触发的错误。
@@ -1384,7 +1382,7 @@ added: v0.1.29
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: `chunk` 参数现在可以是 `Uint8Array`。
+    description: "`chunk` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `chunk` {string|Buffer|Uint8Array}
@@ -1452,17 +1450,13 @@ added: v0.1.94
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25605
-    description: 如果发生 HPE_HEADER_OVERFLOW 错误，默认行为将返回 431 Request Header
-                 Fields Too Large。
+    description: "如果发生 HPE_HEADER_OVERFLOW 错误，默认行为将返回 431 Request HeaderFields Too Large。"
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/17672
-    description: `rawPacket` 是刚刚解析的当前缓冲区。将此
-                 缓冲区添加到 `'clientError'` 事件的错误对象中是为了
-                 使开发人员能够记录损坏的数据包。
+    description: "`rawPacket` 是刚刚解析的当前缓冲区。将此缓冲区添加到 `'clientError'` 事件的错误对象中是为了使开发人员能够记录损坏的数据包。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4557
-    description: 如果附加了 `'clientError'` 的监听器，调用 `socket`
-                 上 `.destroy()` 的默认操作将不再发生。
+    description: "如果附加了 `'clientError'` 的监听器，调用 `socket`上 `.destroy()` 的默认操作将不再发生。"
 -->
 
 * `exception` {Error}
@@ -1621,22 +1615,15 @@ added: v0.1.94
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/60016
-    description: 请求主体不再以原始（未解析）形式暴露在
-                 socket 参数上。相反，如果收到主体，流
-                 参数将是一个双工流，仅在请求主体之后发出 socket 内容，
-                 而解析后的请求主体数据将从请求中发出，就像在普通服务器
-                 `'request'` 事件中一样。
+    description: "请求主体不再以原始（未解析）形式暴露在socket 参数上。相反，如果收到主体，流参数将是一个双工流，仅在请求主体之后发出 socket 内容，而解析后的请求主体数据将从请求中发出，就像在普通服务器`'request'` 事件中一样。"
   - version:
      - v24.9.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59824
-    description: 是否触发此事件现在可以通过
-                 `shouldUpgradeCallback` 控制，如果没有事件处理程序监听，
-                 socket 将在升级时被销毁。
+    description: "是否触发此事件现在可以通过`shouldUpgradeCallback` 控制，如果没有事件处理程序监听，socket 将在升级时被销毁。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19981
-    description: 不再监听此事件不再导致 socket
-                 在客户端发送 Upgrade 头部时被销毁。
+    description: "不再监听此事件不再导致 socket在客户端发送 Upgrade 头部时被销毁。"
 -->
 
 * `request` {http.IncomingMessage} HTTP 请求的参数，与
@@ -1788,7 +1775,7 @@ changes:
     - v19.4.0
     - v18.14.0
     pr-url: https://github.com/nodejs/node/pull/45778
-    description: 默认值现在设置为 [`server.requestTimeout`][] 或 `60000` 之间的最小值。
+    description: "默认值现在设置为 [`server.requestTimeout`][] 或 `60000` 之间的最小值。"
 -->
 
 * 类型：{number} **默认值：** [`server.requestTimeout`][] 或 `60000` 之间的最小值。
@@ -2042,10 +2029,10 @@ added: v0.1.90
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: `data` 参数现在可以是 `Uint8Array`。
+    description: "`data` 参数现在可以是 `Uint8Array`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18780
-    description: 此方法现在返回对 `ServerResponse` 的引用。
+    description: "此方法现在返回对 `ServerResponse` 的引用。"
 -->
 
 * `data` {string|Buffer|Uint8Array}
@@ -2369,7 +2356,7 @@ added: v0.1.29
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: `chunk` 参数现在可以是 `Uint8Array`。
+    description: "`chunk` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `chunk` {string|Buffer|Uint8Array}
@@ -2449,12 +2436,12 @@ changes:
      - v11.10.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/25974
-    description: 从 `writeHead()` 返回 `this` 以允许与 `end()` 链式调用。
+    description: "从 `writeHead()` 返回 `this` 以允许与 `end()` 链式调用。"
   - version:
     - v5.11.0
     - v4.4.5
     pr-url: https://github.com/nodejs/node/pull/6291
-    description: 如果 `statusCode` 不是 `[100, 999]` 范围内的数字，则抛出 `RangeError`。
+    description: "如果 `statusCode` 不是 `[100, 999]` 范围内的数字，则抛出 `RangeError`。"
 -->
 
 * `statusCode` {number}
@@ -2515,12 +2502,12 @@ added: v0.1.17
 changes:
   - version: v15.5.0
     pr-url: https://github.com/nodejs/node/pull/33035
-    description: 传入数据被消费后，`destroyed` 值返回 `true`。
+    description: "传入数据被消费后，`destroyed` 值返回 `true`。"
   - version:
      - v13.1.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30135
-    description: `readableHighWaterMark` 值与 socket 的值镜像一致。
+    description: "`readableHighWaterMark` 值与 socket 的值镜像一致。"
 -->
 
 * 继承自：{stream.Readable}
@@ -2549,7 +2536,7 @@ added: v0.4.2
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/33035
-    description: `close` 事件现在在请求完成时发出，而不是在底层 socket 关闭时。
+    description: "`close` 事件现在在请求完成时发出，而不是在底层 socket 关闭时。"
 -->
 
 当请求完成时发出。
@@ -2616,7 +2603,7 @@ changes:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/32789
-    description: 该函数返回 `this` 以与其他 Readable 流保持一致。
+    description: "该函数返回 `this` 以与其他 Readable 流保持一致。"
 -->
 
 * `error` {Error}
@@ -2987,9 +2974,9 @@ added: v0.1.90
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: `chunk` 参数现在可以是 `Uint8Array`。
+    description: "`chunk` 参数现在可以是 `Uint8Array`。"
   - version: v0.11.6
-    description: 添加 `callback` 参数。
+    description: "添加 `callback` 参数。"
 -->
 
 * `chunk` {string|Buffer|Uint8Array}
@@ -3263,9 +3250,9 @@ added: v0.1.29
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: `chunk` 参数现在可以是 `Uint8Array`。
+    description: "`chunk` 参数现在可以是 `Uint8Array`。"
   - version: v0.11.6
-    description: 添加了 `callback` 参数。
+    description: "添加了 `callback` 参数。"
 -->
 
 * `chunk` {string|Buffer|Uint8Array}
@@ -3315,39 +3302,37 @@ changes:
      - v24.9.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59824
-    description: 现在支持 `shouldUpgradeCallback` 选项。
+    description: "现在支持 `shouldUpgradeCallback` 选项。"
   - version:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47405
-    description: 现在支持 `highWaterMark` 选项。
+    description: "现在支持 `highWaterMark` 选项。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41263
-    description: 现在支持 `requestTimeout`、`headersTimeout`、`keepAliveTimeout` 和
-                 `connectionsCheckingInterval` 选项。
+    description: "现在支持 `requestTimeout`、`headersTimeout`、`keepAliveTimeout` 和`connectionsCheckingInterval` 选项。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42163
-    description: `noDelay` 选项现在默认为 `true`。
+    description: "`noDelay` 选项现在默认为 `true`。"
   - version:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41310
-    description: 现在支持 `noDelay`、`keepAlive` 和 `keepAliveInitialDelay`
-                 选项。
+    description: "现在支持 `noDelay`、`keepAlive` 和 `keepAliveInitialDelay`选项。"
   - version:
      - v13.8.0
      - v12.15.0
      - v10.19.0
     pr-url: https://github.com/nodejs/node/pull/31448
-    description: 现在支持 `insecureHTTPParser` 选项。
+    description: "现在支持 `insecureHTTPParser` 选项。"
   - version: v13.3.0
     pr-url: https://github.com/nodejs/node/pull/30570
-    description: 现在支持 `maxHeaderSize` 选项。
+    description: "现在支持 `maxHeaderSize` 选项。"
   - version:
     - v9.6.0
     - v8.12.0
     pr-url: https://github.com/nodejs/node/pull/15752
-    description: 现在支持 `options` 参数。
+    description: "现在支持 `options` 参数。"
 -->
 
 * `options` {Object}
@@ -3484,11 +3469,10 @@ added: v0.3.6
 changes:
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21616
-    description: `url` 参数现在可以与单独的
-                 `options` 对象一起传递。
+    description: "`url` 参数现在可以与单独的`options` 对象一起传递。"
   - version: v7.5.0
     pr-url: https://github.com/nodejs/node/pull/10638
-    description: `options` 参数可以是 WHATWG `URL` 对象。
+    description: "`options` 参数可以是 WHATWG `URL` 对象。"
 -->
 
 * `url` {string | URL}
@@ -3593,7 +3577,7 @@ changes:
       - v16.7.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/39310
-    description: 当使用 `URL` 对象时，解析后的用户名和密码现在将进行正确的 URI 解码。
+    description: "当使用 `URL` 对象时，解析后的用户名和密码现在将进行正确的 URI 解码。"
   - version:
       - v15.3.0
       - v14.17.0
@@ -3604,16 +3588,16 @@ changes:
      - v12.15.0
      - v10.19.0
     pr-url: https://github.com/nodejs/node/pull/31448
-    description: 现在支持 `insecureHTTPParser` 选项。
+    description: "现在支持 `insecureHTTPParser` 选项。"
   - version: v13.3.0
     pr-url: https://github.com/nodejs/node/pull/30570
-    description: 现在支持 `maxHeaderSize` 选项。
+    description: "现在支持 `maxHeaderSize` 选项。"
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21616
-    description: 现在可以连同单独的 `options` 对象一起传递 `url` 参数。
+    description: "现在可以连同单独的 `options` 对象一起传递 `url` 参数。"
   - version: v7.5.0
     pr-url: https://github.com/nodejs/node/pull/10638
-    description: `options` 参数可以是 WHATWG `URL` 对象。
+    description: "`options` 参数可以是 WHATWG `URL` 对象。"
 -->
 
 * `url` {string | URL}
@@ -3858,7 +3842,7 @@ changes:
     - v19.5.0
     - v18.14.0
     pr-url: https://github.com/nodejs/node/pull/46143
-    description: 添加了 `label` 参数。
+    description: "添加了 `label` 参数。"
 -->
 
 * `name` {string}

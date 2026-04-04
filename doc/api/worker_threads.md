@@ -559,7 +559,7 @@ added: v12.3.0
 changes:
   - version: v15.12.0
     pr-url: https://github.com/nodejs/node/pull/37535
-    description: port 参数现在也可以引用 `BroadcastChannel`。
+    description: "port 参数现在也可以引用 `BroadcastChannel`。"
 -->
 
 * `port` {MessagePort|BroadcastChannel}
@@ -1018,7 +1018,7 @@ changes:
   - version:
     - v14.7.0
     pr-url: https://github.com/nodejs/node/pull/34057
-    description: 此类现在继承自 `EventTarget` 而不是 `EventEmitter`。
+    description: "此类现在继承自 `EventTarget` 而不是 `EventEmitter`。"
 -->
 
 * 继承自：{EventTarget}
@@ -1122,20 +1122,20 @@ changes:
     description: 将 'Histogram' 类型添加到可克隆类型列表中。
   - version: v15.6.0
     pr-url: https://github.com/nodejs/node/pull/36804
-    description: 将 `X509Certificate` 添加到可克隆类型列表中。
+    description: "将 `X509Certificate` 添加到可克隆类型列表中。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
-    description: 将 `CryptoKey` 添加到可克隆类型列表中。
+    description: "将 `CryptoKey` 添加到可克隆类型列表中。"
   - version:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33360
-    description: 将 `KeyObject` 添加到可克隆类型列表中。
+    description: "将 `KeyObject` 添加到可克隆类型列表中。"
   - version:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33772
-    description: 将 `FileHandle` 添加到可传输类型列表中。
+    description: "将 `FileHandle` 添加到可传输类型列表中。"
 -->
 
 * `value` {any}
@@ -1465,38 +1465,38 @@ changes:
     - v19.8.0
     - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46832
-    description: 添加了对 `name` 选项的支持，允许为工作线程标题添加名称以便调试。
+    description: "添加了对 `name` 选项的支持，允许为工作线程标题添加名称以便调试。"
   - version: v14.9.0
     pr-url: https://github.com/nodejs/node/pull/34584
-    description: `filename` 参数可以是使用 `data:` 协议的 WHATWG `URL` 对象。
+    description: "`filename` 参数可以是使用 `data:` 协议的 WHATWG `URL` 对象。"
   - version: v14.9.0
     pr-url: https://github.com/nodejs/node/pull/34394
-    description: `trackUnmanagedFds` 选项默认设置为 `true`。
+    description: "`trackUnmanagedFds` 选项默认设置为 `true`。"
   - version:
     - v14.6.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34303
-    description: 引入了 `trackUnmanagedFds` 选项。
+    description: "引入了 `trackUnmanagedFds` 选项。"
   - version:
      - v13.13.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/32278
-    description: 引入了 `transferList` 选项。
+    description: "引入了 `transferList` 选项。"
   - version:
      - v13.12.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/31664
-    description: `filename` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`filename` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version:
      - v13.4.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30559
-    description: 引入了 `argv` 选项。
+    description: "引入了 `argv` 选项。"
   - version:
      - v13.2.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/26628
-    description: 引入了 `resourceLimits` 选项。
+    description: "引入了 `resourceLimits` 选项。"
 -->
 
 * `filename` {string|URL} Worker 主脚本或模块的路径。必须是

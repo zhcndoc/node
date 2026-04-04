@@ -111,7 +111,7 @@ changes:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。
+    description: "cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。"
   - version: v15.4.0
     pr-url: https://github.com/nodejs/node/pull/36308
     description: 添加了 AbortSignal 支持。
@@ -258,7 +258,7 @@ changes:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。
+    description: "cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。"
   - version:
       - v15.4.0
       - v14.17.0
@@ -372,12 +372,12 @@ changes:
       - v17.4.0
       - v16.14.0
     pr-url: https://github.com/nodejs/node/pull/41225
-    description: modulePath 参数可以是一个使用 file: 协议的 WHATWG URL 对象。
+    description: "modulePath 参数可以是一个使用 file: 协议的 WHATWG URL 对象。"
   - version:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。
+    description: "cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。"
   - version:
       - v15.13.0
       - v14.18.0
@@ -491,7 +491,7 @@ changes:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。
+    description: "cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。"
   - version:
       - v15.13.0
       - v14.18.0
@@ -876,23 +876,21 @@ changes:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: `cwd` 选项可以是一个使用
-                 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`cwd` 选项可以是一个使用`file:` 协议的 WHATWG `URL` 对象。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22409
-    description: `input` 选项现在可以是任何 `TypedArray` 或
-                 `DataView`。
+    description: "`input` 选项现在可以是任何 `TypedArray` 或`DataView`。"
   - version: v8.8.0
     pr-url: https://github.com/nodejs/node/pull/15380
-    description: 现在支持 `windowsHide` 选项。
+    description: "现在支持 `windowsHide` 选项。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10653
-    description: `input` 选项现在可以是 `Uint8Array`。
+    description: "`input` 选项现在可以是 `Uint8Array`。"
   - version:
     - v6.2.1
     - v4.5.0
     pr-url: https://github.com/nodejs/node/pull/6939
-    description: `encoding` 选项现在可以显式设置为 `buffer`。
+    description: "`encoding` 选项现在可以显式设置为 `buffer`。"
 -->
 
 * `file` {string} 要运行的可执行文件的名称或路径。
@@ -1000,18 +998,16 @@ changes:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: `cwd` 选项可以是一个使用
-                 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`cwd` 选项可以是一个使用`file:` 协议的 WHATWG `URL` 对象。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22409
-    description: `input` 选项现在可以是任何 `TypedArray` 或
-                 `DataView`。
+    description: "`input` 选项现在可以是任何 `TypedArray` 或`DataView`。"
   - version: v8.8.0
     pr-url: https://github.com/nodejs/node/pull/15380
-    description: 现在支持 `windowsHide` 选项。
+    description: "现在支持 `windowsHide` 选项。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10653
-    description: `input` 选项现在可以是 `Uint8Array`。
+    description: "`input` 选项现在可以是 `Uint8Array`。"
 -->
 
 * `command` {string} 要运行的命令。
@@ -1061,26 +1057,24 @@ changes:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: `cwd` 选项可以是一个使用
-                 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`cwd` 选项可以是一个使用`file:` 协议的 WHATWG `URL` 对象。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22409
-    description: `input` 选项现在可以是任何 `TypedArray` 或
-                 `DataView`。
+    description: "`input` 选项现在可以是任何 `TypedArray` 或`DataView`。"
   - version: v8.8.0
     pr-url: https://github.com/nodejs/node/pull/15380
-    description: 现在支持 `windowsHide` 选项。
+    description: "现在支持 `windowsHide` 选项。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10653
-    description: `input` 选项现在可以是 `Uint8Array`。
+    description: "`input` 选项现在可以是 `Uint8Array`。"
   - version:
     - v6.2.1
     - v4.5.0
     pr-url: https://github.com/nodejs/node/pull/6939
-    description: `encoding` 选项现在可以显式设置为 `buffer`。
+    description: "`encoding` 选项现在可以显式设置为 `buffer`。"
   - version: v5.7.0
     pr-url: https://github.com/nodejs/node/pull/4598
-    description: 现在支持 `shell` 选项。
+    description: "现在支持 `shell` 选项。"
 -->
 
 * `command` {string} 要运行的命令。
@@ -1501,13 +1495,13 @@ added: v0.5.9
 changes:
   - version: v5.8.0
     pr-url: https://github.com/nodejs/node/pull/5283
-    description: 现在支持 `options` 参数，特别是 `keepOpen` 选项。
+    description: "现在支持 `options` 参数，特别是 `keepOpen` 选项。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/3516
     description: 此方法现在返回一个用于流控制的布尔值。
   - version: v4.0.0
     pr-url: https://github.com/nodejs/node/pull/2620
-    description: 现在支持 `callback` 参数。
+    description: "现在支持 `callback` 参数。"
 -->
 
 * `message` {Object}

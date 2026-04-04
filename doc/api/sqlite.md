@@ -12,7 +12,7 @@ changes:
     - v23.4.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/55890
-    description: SQLite 不再位于 `--experimental-sqlite` 之后，但仍为实验性。
+    description: "SQLite 不再位于 `--experimental-sqlite` 之后，但仍为实验性。"
 -->
 
 > 稳定性：1.2 - 发布候选版本。
@@ -112,12 +112,12 @@ changes:
     - v24.0.0
     - v22.16.0
     pr-url: https://github.com/nodejs/node/pull/57752
-    description: 添加 `timeout` 选项。
+    description: "添加 `timeout` 选项。"
   - version:
     - v23.10.0
     - v22.15.0
     pr-url: https://github.com/nodejs/node/pull/56991
-    description: `path` 参数现在支持 Buffer 和 URL 对象。
+    description: "`path` 参数现在支持 Buffer 和 URL 对象。"
 -->
 
 此类表示到 SQLite 数据库的单个 [连接][]。此类暴露的所有 API
@@ -132,12 +132,12 @@ changes:
      - v25.5.0
      - v24.14.0
     pr-url: https://github.com/nodejs/node/pull/61266
-    description: 默认启用 `defensive`。
+    description: "默认启用 `defensive`。"
   - version:
       - v25.1.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/60217
-    description: 添加 `defensive` 选项。
+    description: "添加 `defensive` 选项。"
   - version:
       - v24.4.0
       - v22.18.0
@@ -836,7 +836,7 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56385
-    description: 为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。
+    description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
 * `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
@@ -900,7 +900,7 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56385
-    description: 为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。
+    description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
 * `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
@@ -926,7 +926,7 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56385
-    description: 为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。
+    description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
 * `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
@@ -949,7 +949,7 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56385
-    description: 为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。
+    description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
 * `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
@@ -1165,7 +1165,7 @@ added:
 changes:
   - version: v23.10.0
     pr-url: https://github.com/nodejs/node/pull/56991
-    description: `path` 参数现在支持 Buffer 和 URL 对象。
+    description: "`path` 参数现在支持 Buffer 和 URL 对象。"
 -->
 
 * `sourceDb` {DatabaseSync} 要备份的数据库。源数据库必须处于打开状态。

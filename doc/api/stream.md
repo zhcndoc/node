@@ -56,9 +56,7 @@ changes:
       - v17.2.0
       - v16.14.0
     pr-url: https://github.com/nodejs/node/pull/40886
-    description: Add the `end` option, which can be set to `false` to prevent
-                 automatically closing the destination stream when the source
-                 ends.
+    description: "Add the `end` option, which can be set to `false` to preventautomatically closing the destination stream when the sourceends."
 -->
 
 * `streams` {Stream\[]|Iterable\[]|AsyncIterable\[]|Function\[]}
@@ -236,12 +234,12 @@ changes:
     - v19.5.0
     - v18.14.0
     pr-url: https://github.com/nodejs/node/pull/46205
-    description: Added support for `ReadableStream` and `WritableStream`.
+    description: "Added support for `ReadableStream` and `WritableStream`."
   - version:
     - v19.1.0
     - v18.13.0
     pr-url: https://github.com/nodejs/node/pull/44862
-    description: The `cleanup` option was added.
+    description: "The `cleanup` option was added."
 -->
 
 * `stream` {Stream|ReadableStream|WritableStream} 可读和/或可写流/webstream。
@@ -430,7 +428,7 @@ added: v0.9.4
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18438
-    description: 添加 `emitClose` 选项以指定在销毁时是否发出 `'close'` 事件。
+    description: "添加 `emitClose` 选项以指定在销毁时是否发出 `'close'` 事件。"
 -->
 
 当流及其任何底层资源（例如文件描述符）已关闭时，会发出 `'close'` 事件。该事件表示将不再发出更多事件，也不会发生进一步的计算。
@@ -649,7 +647,7 @@ changes:
     - v22.0.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/51866
-    description: `chunk` 参数现在可以是 `TypedArray` 或 `DataView` 实例。
+    description: "`chunk` 参数现在可以是 `TypedArray` 或 `DataView` 实例。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/34101
     description: 回调在 'finish' 之前或出错时调用。
@@ -658,10 +656,10 @@ changes:
     description: 如果发出 'finish' 或 'error'，则调用回调。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18780
-    description: 此方法现在返回对 `writable` 的引用。
+    description: "此方法现在返回对 `writable` 的引用。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11608
-    description: `chunk` 参数现在可以是 `Uint8Array` 实例。
+    description: "`chunk` 参数现在可以是 `Uint8Array` 实例。"
 -->
 
 * `chunk` {string|Buffer|TypedArray|DataView|any} 可选的要写入的数据。对于不在对象模式下运行的流，`chunk` 必须是 {string}、{Buffer}、{TypedArray} 或 {DataView}。对于对象模式流，`chunk` 可以是除 `null` 之外的任何 JavaScript 值。
@@ -689,7 +687,7 @@ added: v0.11.15
 changes:
   - version: v6.1.0
     pr-url: https://github.com/nodejs/node/pull/5040
-    description: 此方法现在返回对 `writable` 的引用。
+    description: "此方法现在返回对 `writable` 的引用。"
 -->
 
 * `encoding` {string} 新的默认编码
@@ -866,13 +864,13 @@ changes:
     - v22.0.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/51866
-    description: `chunk` 参数现在可以是 `TypedArray` 或 `DataView` 实例。
+    description: "`chunk` 参数现在可以是 `TypedArray` 或 `DataView` 实例。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11608
-    description: `chunk` 参数现在可以是 `Uint8Array` 实例。
+    description: "`chunk` 参数现在可以是 `Uint8Array` 实例。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/6170
-    description: 将 `null` 作为 `chunk` 参数传递现在始终被视为无效，即使在对象模式下。
+    description: "将 `null` 作为 `chunk` 参数传递现在始终被视为无效，即使在对象模式下。"
 -->
 
 * `chunk` {string|Buffer|TypedArray|DataView|any} 可选的要写入的数据。对于不在对象模式下运行的流，`chunk` 必须是 {string}、{Buffer}、{TypedArray} 或 {DataView}。对于对象模式流，`chunk` 可以是除 `null` 之外的任何 JavaScript 值。
@@ -1004,7 +1002,7 @@ added: v0.9.4
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18438
-    description: 添加 `emitClose` 选项以指定在销毁时是否发出 `'close'` 事件。
+    description: "添加 `emitClose` 选项以指定在销毁时是否发出 `'close'` 事件。"
 -->
 
 当流及其任何底层资源（例如文件描述符）已关闭时，会发出 `'close'` 事件。该事件表示将不再发出更多事件，也不会发生进一步的计算。
@@ -1079,10 +1077,10 @@ added: v0.9.4
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17979
-    description: `'readable'` 总是在调用 `.push()` 后的下一个 tick 中发出。
+    description: "`'readable'` 总是在调用 `.push()` 后的下一个 tick 中发出。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18994
-    description: 使用 `'readable'` 需要调用 `.read()`。
+    description: "使用 `'readable'` 需要调用 `.read()`。"
 -->
 
 当有数据可供从流中读取时，会发出 `'readable'` 事件，直到配置的高水位标记（`state.highWaterMark`）。实际上，它表示流在缓冲区中有新信息。如果此缓冲区内有可用数据，可以调用 [`stream.read()`][stream-read] 来检索该数据。此外，当到达流末尾时，也可能发出 `'readable'` 事件。
@@ -1454,7 +1452,7 @@ added: v0.9.4
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18994
-    description: 如果有 `'readable'` 事件监听，`resume()` 无效。
+    description: "如果有 `'readable'` 事件监听，`resume()` 无效。"
 -->
 
 * 返回：{this}
@@ -1536,10 +1534,10 @@ changes:
     - v22.0.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/51866
-    description: `chunk` 参数现在可以是 `TypedArray` 或 `DataView` 实例。
+    description: "`chunk` 参数现在可以是 `TypedArray` 或 `DataView` 实例。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11608
-    description: `chunk` 参数现在可以是 `Uint8Array` 实例。
+    description: "`chunk` 参数现在可以是 `Uint8Array` 实例。"
 -->
 
 * `chunk` {Buffer|TypedArray|DataView|string|null|any} 要 unshift 到读取队列的数据块。对于不在对象模式下运行的流，`chunk` 必须是 {string}、{Buffer}、{TypedArray}、{DataView} 或 `null`。
@@ -1770,7 +1768,7 @@ changes:
     - v20.7.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/49249
-    description: added `highWaterMark` in options.
+    description: "added `highWaterMark` in options."
 -->
 
 > 稳定性：1 - 实验性
@@ -1818,7 +1816,7 @@ changes:
     - v20.7.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/49249
-    description: added `highWaterMark` in options.
+    description: "added `highWaterMark` in options."
 -->
 
 > 稳定性：1 - 实验性
@@ -2232,8 +2230,7 @@ added: v0.9.4
 changes:
   - version: v6.8.0
     pr-url: https://github.com/nodejs/node/pull/8834
-    description: Instances of `Duplex` now return `true` when
-                 checking `instanceof stream.Writable`.
+    description: "Instances of `Duplex` now return `true` whenchecking `instanceof stream.Writable`."
 -->
 
 <!--type=class-->
@@ -2320,24 +2317,19 @@ added: v10.0.0
 changes:
   - version: v19.5.0
     pr-url: https://github.com/nodejs/node/pull/46205
-    description: Added support for `ReadableStream` and `WritableStream`.
+    description: "Added support for `ReadableStream` and `WritableStream`."
   - version: v15.11.0
     pr-url: https://github.com/nodejs/node/pull/37354
-    description: The `signal` option was added.
+    description: "The `signal` option was added."
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/32158
-    description: The `finished(stream, cb)` will wait for the `'close'` event
-                 before invoking the callback. The implementation tries to
-                 detect legacy streams and only apply this behavior to streams
-                 which are expected to emit `'close'`.
+    description: "The `finished(stream, cb)` will wait for the `'close'` eventbefore invoking the callback. The implementation tries todetect legacy streams and only apply this behavior to streamswhich are expected to emit `'close'`."
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31545
-    description: Emitting `'close'` before `'end'` on a `Readable` stream
-                 will cause an `ERR_STREAM_PREMATURE_CLOSE` error.
+    description: "Emitting `'close'` before `'end'` on a `Readable` streamwill cause an `ERR_STREAM_PREMATURE_CLOSE` error."
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31509
-    description: Callback will be invoked on streams which have already
-                 finished before the call to `finished(stream, cb)`.
+    description: "Callback will be invoked on streams which have alreadyfinished before the call to `finished(stream, cb)`."
 -->
 
 * `stream` {Stream|ReadableStream|WritableStream} 一个 readable 和/或 writable 流/webstream。
@@ -2396,15 +2388,10 @@ changes:
     description: Added support for webstreams.
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: Passing an invalid callback to the `callback` argument
-                 now throws `ERR_INVALID_ARG_TYPE` instead of
-                 `ERR_INVALID_CALLBACK`.
+    description: "Passing an invalid callback to the `callback` argumentnow throws `ERR_INVALID_ARG_TYPE` instead of`ERR_INVALID_CALLBACK`."
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/32158
-    description: The `pipeline(..., cb)` will wait for the `'close'` event
-                 before invoking the callback. The implementation tries to
-                 detect legacy streams and only apply this behavior to streams
-                 which are expected to emit `'close'`.
+    description: "The `pipeline(..., cb)` will wait for the `'close'` eventbefore invoking the callback. The implementation tries todetect legacy streams and only apply this behavior to streamswhich are expected to emit `'close'`."
   - version: v13.10.0
     pr-url: https://github.com/nodejs/node/pull/31223
     description: Add support for async generators.
@@ -2773,8 +2760,7 @@ changes:
     - v19.5.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/46190
-    description: The `src` argument can now be a `ReadableStream` or
-                 `WritableStream`.
+    description: "The `src` argument can now be a `ReadableStream` or`WritableStream`."
 -->
 
 * `src` {Stream|Blob|ArrayBuffer|string|Iterable|AsyncIterable|
@@ -2899,8 +2885,7 @@ added: v17.0.0
 changes:
   - version: v25.7.0
     pr-url: https://github.com/nodejs/node/pull/61632
-    description: Added the 'readableType' option to specify the ReadableStream
-                 type. The 'type' option is deprecated.
+    description: "Added the 'readableType' option to specify the ReadableStreamtype. The 'type' option is deprecated."
   - version:
      - v25.4.0
      - v24.14.0
@@ -2975,8 +2960,7 @@ changes:
     - v19.7.0
     - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46273
-    description: Added support for `ReadableStream` and
-                 `WritableStream`.
+    description: "Added support for `ReadableStream` and`WritableStream`."
 -->
 
 * `signal` {AbortSignal} 一个表示可能取消的信号
@@ -3158,15 +3142,15 @@ changes:
     description: 支持传入 AbortSignal。
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/30623
-    description: 将 `autoDestroy` 选项默认值改为 `true`。
+    description: "将 `autoDestroy` 选项默认值改为 `true`。"
   - version:
      - v11.2.0
      - v10.16.0
     pr-url: https://github.com/nodejs/node/pull/22795
-    description: 添加 `autoDestroy` 选项以便在发出 `'finish'` 或错误时自动 `destroy()` 流。
+    description: "添加 `autoDestroy` 选项以便在发出 `'finish'` 或错误时自动 `destroy()` 流。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18438
-    description: 添加 `emitClose` 选项以指定是否在销毁时发出 `'close'`。
+    description: "添加 `emitClose` 选项以指定是否在销毁时发出 `'close'`。"
 -->
 
 * `options` {Object}
@@ -3446,12 +3430,12 @@ changes:
     description: 支持传入 AbortSignal。
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/30623
-    description: 将 `autoDestroy` 选项默认值改为 `true`。
+    description: "将 `autoDestroy` 选项默认值改为 `true`。"
   - version:
      - v11.2.0
      - v10.16.0
     pr-url: https://github.com/nodejs/node/pull/22795
-    description: 添加 `autoDestroy` 选项以便在发出 `'end'` 或错误时自动 `destroy()` 流。
+    description: "添加 `autoDestroy` 选项以便在发出 `'end'` 或错误时自动 `destroy()` 流。"
 -->
 
 * `options` {Object}
@@ -3611,10 +3595,10 @@ changes:
     - v22.0.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/51866
-    description: `chunk` 参数现在可以是 `TypedArray` 或 `DataView` 实例。
+    description: "`chunk` 参数现在可以是 `TypedArray` 或 `DataView` 实例。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11608
-    description: `chunk` 参数现在可以是 `Uint8Array` 实例。
+    description: "`chunk` 参数现在可以是 `Uint8Array` 实例。"
 -->
 
 * `chunk` {Buffer|TypedArray|DataView|string|null|any} 要推入读取队列的数据块。对于不在对象模式下运行的流，`chunk` 必须是 {string}、{Buffer}、{TypedArray} 或 {DataView}。对于对象模式流，`chunk` 可以是任何 JavaScript 值。
@@ -3728,7 +3712,7 @@ class Counter extends Readable {
 changes:
   - version: v8.4.0
     pr-url: https://github.com/nodejs/node/pull/14636
-    description: 现在支持 `readableHighWaterMark` 和 `writableHighWaterMark` 选项。
+    description: "现在支持 `readableHighWaterMark` 和 `writableHighWaterMark` 选项。"
 -->
 
 * `options` {Object} 传递给 `Writable` 和 `Readable` 构造函数。还有以下字段：

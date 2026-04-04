@@ -4,7 +4,7 @@
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/61803
-    description: 移除了 `--experimental-transform-types` 标志。
+    description: "移除了 `--experimental-transform-types` 标志。"
   - version:
       - v25.2.0
       - v24.12.0
@@ -22,7 +22,7 @@ changes:
     description: 默认启用类型剥离。
   - version: v22.7.0
     pr-url: https://github.com/nodejs/node/pull/54283
-    description: 添加了 `--experimental-transform-types` 标志。
+    description: "添加了 `--experimental-transform-types` 标志。"
 -->
 
 <!--introduced_in=v22.6.0-->

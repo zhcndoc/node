@@ -685,7 +685,7 @@ added: v0.1.104
 changes:
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/37947
-    description: 类 `readline.Interface` 现在继承自 `Interface`。
+    description: "类 `readline.Interface` 现在继承自 `Interface`。"
 -->
 
 * 继承：{readline.InterfaceConstructor}
@@ -746,7 +746,7 @@ added: v0.7.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v12.7.0
     pr-url: https://github.com/nodejs/node/pull/28674
     description: 流的 write() 回调和返回值被暴露。
@@ -769,7 +769,7 @@ added: v0.7.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v12.7.0
     pr-url: https://github.com/nodejs/node/pull/28641
     description: 流的 write() 回调和返回值被暴露。
@@ -790,29 +790,29 @@ changes:
       - v15.14.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37932
-    description: 现在支持 `signal` 选项。
+    description: "现在支持 `signal` 选项。"
   - version:
       - v15.8.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/33662
-    description: 现在支持 `history` 选项。
+    description: "现在支持 `history` 选项。"
   - version: v13.9.0
     pr-url: https://github.com/nodejs/node/pull/31318
-    description: 现在支持 `tabSize` 选项。
+    description: "现在支持 `tabSize` 选项。"
   - version:
     - v8.3.0
     - v6.11.4
     pr-url: https://github.com/nodejs/node/pull/13497
-    description: 移除 `crlfDelay` 选项的最大限制。
+    description: "移除 `crlfDelay` 选项的最大限制。"
   - version: v6.6.0
     pr-url: https://github.com/nodejs/node/pull/8109
-    description: 现在支持 `crlfDelay` 选项。
+    description: "现在支持 `crlfDelay` 选项。"
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/7125
-    description: 现在支持 `prompt` 选项。
+    description: "现在支持 `prompt` 选项。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/6352
-    description: `historySize` 现在可以为 `0`。
+    description: "`historySize` 现在可以为 `0`。"
 -->
 
 * `options` {Object}
@@ -900,7 +900,7 @@ added: v0.7.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v12.7.0
     pr-url: https://github.com/nodejs/node/pull/28674
     description: 流的 write() 回调和返回值被暴露。
@@ -921,7 +921,7 @@ added: v0.7.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v12.7.0
     pr-url: https://github.com/nodejs/node/pull/28674
     description: 流的 write() 回调和返回值被暴露。

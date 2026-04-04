@@ -15,7 +15,7 @@ added: v9.9.0
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/34001
-    description: 作为 `require('node:assert/strict')` 暴露。
+    description: "作为 `require('node:assert/strict')` 暴露。"
   - version:
       - v13.9.0
       - v12.16.2
@@ -228,7 +228,7 @@ added:
 changes:
   - version: v24.9.0
     pr-url: https://github.com/nodejs/node/pull/59762
-    description: 添加了 `skipPrototype` 选项。
+    description: "添加了 `skipPrototype` 选项。"
 -->
 
 * `options` {Object}
@@ -295,7 +295,7 @@ added: v0.5.9
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: 消息现在可以是 `printf` 风格的格式字符串或函数。
+    description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
 -->
 
 * `value` {any} 检查是否为真值的输入。
@@ -310,7 +310,7 @@ added: v0.1.21
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: 消息现在可以是 `printf` 风格的格式字符串或函数。
+    description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/59448
     description: 如果 Promise 不是同一实例，则不再视为相等。
@@ -341,10 +341,10 @@ changes:
     description: 现在正确比较类型标签，并进行了一些次要的比较调整以使检查不那么令人惊讶。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15001
-    description: 现在正确比较 `Error` 名称和消息。
+    description: "现在正确比较 `Error` 名称和消息。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12142
-    description: 现在也比较 `Set` 和 `Map` 内容。
+    description: "现在也比较 `Set` 和 `Map` 内容。"
   - version:
       - v6.4.0
       - v4.7.1
@@ -359,7 +359,7 @@ changes:
       - v5.10.1
       - v4.4.3
     pr-url: https://github.com/nodejs/node/pull/5910
-    description: 正确处理非 `Uint8Array` 类型化数组。
+    description: "正确处理非 `Uint8Array` 类型化数组。"
 -->
 
 * `actual` {any}
@@ -491,7 +491,7 @@ added: v1.2.0
 changes:
   - version: v25.1.0
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: message 现在可以是 `printf` 风格的格式字符串或函数。
+    description: "message 现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/59448
     description: 如果 Promise 不是同一个实例，则不再视为相等。
@@ -514,15 +514,13 @@ changes:
     description: 可枚举的 symbol 属性现在也会被比较。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15036
-    description: `NaN` 现在使用
-              [SameValueZero](https://tc39.github.io/ecma262/#sec-samevaluezero)
-              进行比较。
+    description: "`NaN` 现在使用[SameValueZero](https://tc39.github.io/ecma262/#sec-samevaluezero)进行比较。"
   - version: v8.5.0
     pr-url: https://github.com/nodejs/node/pull/15001
-    description: `Error` 的名称和消息现在会被正确比较。
+    description: "`Error` 的名称和消息现在会被正确比较。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12142
-    description: `Set` 和 `Map` 的内容也会被比较。
+    description: "`Set` 和 `Map` 的内容也会被比较。"
   - version:
     - v6.4.0
     - v4.7.1
@@ -535,7 +533,7 @@ changes:
     - v5.10.1
     - v4.4.3
     pr-url: https://github.com/nodejs/node/pull/5910
-    description: 正确处理非 `Uint8Array` 类型化数组。
+    description: "正确处理非 `Uint8Array` 类型化数组。"
 -->
 
 * `actual` {任何}
@@ -792,7 +790,7 @@ added:
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: message 现在可以是 `printf` 风格的格式字符串或函数。
+    description: "message 现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/38111
     description: 此 API 不再是实验性的。
@@ -904,10 +902,10 @@ changes:
     - v5.11.0
     - v4.4.5
     pr-url: https://github.com/nodejs/node/pull/2407
-    description: 现在支持 `message` 参数。
+    description: "现在支持 `message` 参数。"
   - version: v4.2.0
     pr-url: https://github.com/nodejs/node/pull/3276
-    description: `error` 参数现在可以是箭头函数。
+    description: "`error` 参数现在可以是箭头函数。"
 -->
 
 * `fn` {Function}
@@ -1007,7 +1005,7 @@ added: v0.1.21
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: 消息现在可以是 `printf` 风格的格式字符串或函数。
+    description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
   - version:
       - v16.0.0
       - v14.18.0
@@ -1109,10 +1107,10 @@ added: v0.1.97
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18247
-    description: 现在不是抛出原始错误，而是将其包装到包含完整堆栈跟踪的 [`AssertionError`][] 中。
+    description: "现在不是抛出原始错误，而是将其包装到包含完整堆栈跟踪的 [`AssertionError`][] 中。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18247
-    description: 值现在只能是 `undefined` 或 `null`。之前所有假值都与 `null` 一样处理且不会抛出。
+    description: "值现在只能是 `undefined` 或 `null`。之前所有假值都与 `null` 一样处理且不会抛出。"
 -->
 
 * `value` {any}
@@ -1180,7 +1178,7 @@ added:
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: 消息现在可以是 `printf` 风格的格式字符串或函数。
+    description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/38111
     description: 此 API 不再是实验性的。
@@ -1227,7 +1225,7 @@ added: v0.1.21
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: Message 现在可以是 `printf` 风格的格式字符串或函数。
+    description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
   - version:
       - v16.0.0
       - v14.18.0
@@ -1238,10 +1236,10 @@ changes:
     description: 如果两边都是 NaN，现在将 NaN 视为相同。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15001
-    description: 现在可以正确比较 `Error` 名称和消息。
+    description: "现在可以正确比较 `Error` 名称和消息。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12142
-    description: 现在也会比较 `Set` 和 `Map` 内容。
+    description: "现在也会比较 `Set` 和 `Map` 内容。"
   - version:
       - v6.4.0
       - v4.7.1
@@ -1256,7 +1254,7 @@ changes:
       - v5.10.1
       - v4.4.3
     pr-url: https://github.com/nodejs/node/pull/5910
-    description: 正确处理非 `Uint8Array` 类型化数组。
+    description: "正确处理非 `Uint8Array` 类型化数组。"
 -->
 
 * `actual` {any}
@@ -1348,19 +1346,19 @@ added: v1.2.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: Message 现在可以是 `printf` 风格的格式字符串或函数。
+    description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15398
-    description: `-0` 和 `+0` 不再被视为相等。
+    description: "`-0` 和 `+0` 不再被视为相等。"
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15036
-    description: 现在使用 [SameValueZero](https://tc39.github.io/ecma262/#sec-samevaluezero) 比较 `NaN`。
+    description: "现在使用 [SameValueZero](https://tc39.github.io/ecma262/#sec-samevaluezero) 比较 `NaN`。"
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15001
-    description: 现在可以正确比较 `Error` 名称和消息。
+    description: "现在可以正确比较 `Error` 名称和消息。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12142
-    description: 现在也会比较 `Set` 和 `Map` 内容。
+    description: "现在也会比较 `Set` 和 `Map` 内容。"
   - version:
     - v6.4.0
     - v4.7.1
@@ -1373,7 +1371,7 @@ changes:
     - v5.10.1
     - v4.4.3
     pr-url: https://github.com/nodejs/node/pull/5910
-    description: 正确处理非 `Uint8Array` 类型化数组。
+    description: "正确处理非 `Uint8Array` 类型化数组。"
 -->
 
 * `actual` {any}
@@ -1405,7 +1403,7 @@ added: v0.1.21
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: Message 现在可以是 `printf` 风格的格式字符串或函数。
+    description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
   - version:
       - v16.0.0
       - v14.18.0
@@ -1465,10 +1463,10 @@ added: v0.1.21
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: Message 现在可以是 `printf` 风格的格式字符串或函数。
+    description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17003
-    description: 使用的比较已从严格相等改为 `Object.is()`。
+    description: "使用的比较已从严格相等改为 `Object.is()`。"
 -->
 
 * `actual` {any}
@@ -1516,10 +1514,10 @@ added: v0.1.21
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: Message 现在可以是 `printf` 风格的格式字符串或函数。
+    description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18319
-    description: `assert.ok()`（无参数）现在将使用预定义的错误消息。
+    description: "`assert.ok()`（无参数）现在将使用预定义的错误消息。"
 -->
 
 * `value` {any}
@@ -1741,10 +1739,10 @@ added: v0.1.21
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: 消息现在可以是 `printf` 风格的格式字符串或函数。
+    description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17003
-    description: 使用的比较方式从严格相等改为 `Object.is()`。
+    description: "使用的比较方式从严格相等改为 `Object.is()`。"
 -->
 
 * `actual` {任意}
@@ -1838,13 +1836,13 @@ added: v0.1.21
 changes:
   - version: v10.2.0
     pr-url: https://github.com/nodejs/node/pull/20485
-    description: `error` 参数现在可以是包含正则表达式的对象。
+    description: "`error` 参数现在可以是包含正则表达式的对象。"
   - version: v9.9.0
     pr-url: https://github.com/nodejs/node/pull/17584
-    description: `error` 参数现在也可以是对象。
+    description: "`error` 参数现在也可以是对象。"
   - version: v4.2.0
     pr-url: https://github.com/nodejs/node/pull/3276
-    description: `error` 参数现在可以是箭头函数。
+    description: "`error` 参数现在可以是箭头函数。"
 -->
 
 * `fn` {函数}

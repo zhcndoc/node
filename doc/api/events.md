@@ -450,8 +450,7 @@ changes:
     - v6.1.0
     - v4.7.0
     pr-url: https://github.com/nodejs/node/pull/6394
-    description: For listeners attached using `.once()`, the `listener` argument
-                 now yields the original listener function.
+    description: "For listeners attached using `.once()`, the `listener` argumentnow yields the original listener function."
 -->
 
 * `eventName` {string|symbol} 事件名称
@@ -607,7 +606,7 @@ changes:
     - v19.8.0
     - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46523
-    description: Added the `listener` argument.
+    description: "Added the `listener` argument."
 -->
 
 * `eventName` {string|symbol} 被监听的事件名称
@@ -624,8 +623,7 @@ added: v0.1.26
 changes:
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/6881
-    description: For listeners attached using `.once()` this returns the
-                 original listeners instead of wrapper functions now.
+    description: "For listeners attached using `.once()` this returns theoriginal listeners instead of wrapper functions now."
 -->
 
 * `eventName` {string|symbol}
@@ -1218,7 +1216,7 @@ added:
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/34912
-    description: The `signal` option is supported now.
+    description: "The `signal` option is supported now."
 -->
 
 * `emitter` {EventEmitter}
@@ -1575,13 +1573,11 @@ changes:
     - v22.0.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52080
-    description: 支持 `highWaterMark` 和 `lowWaterMark` 选项，
-                 为了保持一致性。旧选项仍然受支持。
+    description: "支持 `highWaterMark` 和 `lowWaterMark` 选项，为了保持一致性。旧选项仍然受支持。"
   - version:
     - v20.0.0
     pr-url: https://github.com/nodejs/node/pull/41276
-    description: 现在支持 `close`、`highWatermark` 和 `lowWatermark`
-                 选项。
+    description: "现在支持 `close`、`highWatermark` 和 `lowWatermark`选项。"
 -->
 
 * `emitter` {EventEmitter}
@@ -1896,8 +1892,7 @@ changes:
     description: 不再是实验性的。
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35496
-    description:
-      `EventTarget` 和 `Event` 类现在可作为全局对象使用。
+    description: "`EventTarget` 和 `Event` 类现在可作为全局对象使用。"
 -->
 
 `EventTarget` 和 `Event` 对象是 [`EventTarget` Web API][] 的 Node.js 特定实现，由某些 Node.js 核心 API 暴露。
@@ -1990,7 +1985,7 @@ added: v14.5.0
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35496
-    description: `Event` 类现在可通过全局对象使用。
+    description: "`Event` 类现在可通过全局对象使用。"
 -->
 
 `Event` 对象是 [`Event` Web API][] 的适配版本。实例由 Node.js 内部创建。
@@ -2180,8 +2175,7 @@ added: v14.5.0
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35496
-    description:
-      `EventTarget` 类现在可通过全局对象使用。
+    description: "`EventTarget` 类现在可通过全局对象使用。"
 -->
 
 #### `eventTarget.addEventListener(type, listener[, options])`
@@ -2191,7 +2185,7 @@ added: v14.5.0
 changes:
   - version: v15.4.0
     pr-url: https://github.com/nodejs/node/pull/36258
-    description: 添加对 `signal` 选项的支持。
+    description: "添加对 `signal` 选项的支持。"
 -->
 
 * `type` {string}
@@ -2265,7 +2259,7 @@ changes:
     description: CustomEvent 现在是稳定的。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44860
-    description: 不再位于 `--experimental-global-customevent` CLI 标志之后。
+    description: "不再位于 `--experimental-global-customevent` CLI 标志之后。"
 -->
 
 * 继承：{Event}

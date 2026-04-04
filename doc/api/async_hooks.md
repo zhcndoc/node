@@ -665,7 +665,7 @@ added: v8.1.0
 changes:
   - version: v8.2.0
     pr-url: https://github.com/nodejs/node/pull/13490
-    description: Renamed from `currentId`.
+    description: "Renamed from `currentId`."
 -->
 
 * 返回：{number} 当前执行上下文的 `asyncId`。可用于

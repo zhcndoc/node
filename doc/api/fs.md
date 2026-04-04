@@ -117,7 +117,7 @@ added: v10.0.0
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31553
-    description: 暴露为 `require('fs/promises')`。
+    description: "暴露为 `require('fs/promises')`。"
   - version:
     - v11.14.0
     - v10.17.0
@@ -125,7 +125,7 @@ changes:
     description: 此 API 不再是实验性的。
   - version: v10.1.0
     pr-url: https://github.com/nodejs/node/pull/20504
-    description: 该 API 仅可通过 `require('fs').promises` 访问。
+    description: "该 API 仅可通过 `require('fs').promises` 访问。"
 -->
 
 `fs/promises` API 提供返回 promises 的异步文件系统方法。
@@ -163,15 +163,15 @@ changes:
     - v21.1.0
     - v20.10.0
     pr-url: https://github.com/nodejs/node/pull/50095
-    description: 现在支持 `flush` 选项。
+    description: "现在支持 `flush` 选项。"
   - version:
       - v15.14.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37490
-    description: `data` 参数支持 `AsyncIterable`、`Iterable` 和 `Stream`。
+    description: "`data` 参数支持 `AsyncIterable`、`Iterable` 和 `Stream`。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `data` 参数不再将不支持的输入强制转换为字符串。
+    description: "`data` 参数不再将不支持的输入强制转换为字符串。"
 -->
 
 * `data` {string|Buffer|TypedArray|DataView|AsyncIterable|Iterable|Stream}
@@ -288,7 +288,7 @@ changes:
     - v21.0.0
     - v20.10.0
     pr-url: https://github.com/nodejs/node/pull/50093
-    description: 现在支持 `flush` 选项。
+    description: "现在支持 `flush` 选项。"
 -->
 
 * `options` {Object}
@@ -459,7 +459,7 @@ added: v10.0.0
 changes:
   - version: v21.0.0
     pr-url: https://github.com/nodejs/node/pull/42835
-    description: 接受 bigint 值作为 `position`。
+    description: "接受 bigint 值作为 `position`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView} 将填充读取的文件数据的缓冲区。
@@ -483,7 +483,7 @@ added:
 changes:
   - version: v21.0.0
     pr-url: https://github.com/nodejs/node/pull/42835
-    description: 接受 bigint 值作为 `position`。
+    description: "接受 bigint 值作为 `position`。"
 -->
 
 * `options` {Object}
@@ -508,7 +508,7 @@ added:
 changes:
   - version: v21.0.0
     pr-url: https://github.com/nodejs/node/pull/42835
-    description: 接受 bigint 值作为 `position`。
+    description: "接受 bigint 值作为 `position`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView} 将填充读取的文件数据的缓冲区。
@@ -666,7 +666,7 @@ added: v10.0.0
 changes:
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: 接受一个额外的 `options` 对象来指定返回的数值是否应为 bigint。
+    description: "接受一个额外的 `options` 对象来指定返回的数值是否应为 bigint。"
 -->
 
 * `options` {Object}
@@ -733,7 +733,7 @@ added: v10.0.0
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `buffer` 参数不再将不支持的输入强制转换为 buffers。
+    description: "`buffer` 参数不再将不支持的输入强制转换为 buffers。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView}
@@ -779,7 +779,7 @@ added: v10.0.0
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `string` 参数不再将不支持的输入强制转换为字符串。
+    description: "`string` 参数不再将不支持的输入强制转换为字符串。"
 -->
 
 * `string` {string}
@@ -807,10 +807,10 @@ changes:
       - v15.14.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37490
-    description: `data` 参数支持 `AsyncIterable`、`Iterable` 和 `Stream`。
+    description: "`data` 参数支持 `AsyncIterable`、`Iterable` 和 `Stream`。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `data` 参数不再将不支持的输入强制转换为字符串。
+    description: "`data` 参数不再将不支持的输入强制转换为字符串。"
 -->
 
 * `data` {string|Buffer|TypedArray|DataView|AsyncIterable|Iterable|Stream}
@@ -983,7 +983,7 @@ changes:
     - v21.1.0
     - v20.10.0
     pr-url: https://github.com/nodejs/node/pull/50095
-    description: 现在支持 `flush` 选项。
+    description: "现在支持 `flush` 选项。"
 -->
 
 * `path` {string|Buffer|URL|FileHandle} 文件名或 {FileHandle}
@@ -1035,7 +1035,7 @@ added: v10.0.0
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/27044
-    description: 将 `flags` 参数更改为 `mode` 并实施了更严格的类型验证。
+    description: "将 `flags` 参数更改为 `mode` 并实施了更严格的类型验证。"
 -->
 
 * `src` {string|Buffer|URL} 要复制的源文件名
@@ -1081,12 +1081,12 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47084
-    description: 接受一个额外的 `mode` 选项来指定复制行为，作为 `fs.copyFile()` 的 `mode` 参数。
+    description: "接受一个额外的 `mode` 选项来指定复制行为，作为 `fs.copyFile()` 的 `mode` 参数。"
   - version:
     - v17.6.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41819
-    description: 接受一个额外的 `verbatimSymlinks` 选项来指定是否对符号链接执行路径解析。
+    description: "接受一个额外的 `verbatimSymlinks` 选项来指定是否对符号链接执行路径解析。"
 -->
 
 * `src` {string|URL} 要复制的源路径。
@@ -1118,7 +1118,7 @@ changes:
       - v24.1.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/58182
-    description: 为 `cwd` 选项添加对 `URL` 实例的支持。
+    description: "为 `cwd` 选项添加对 `URL` 实例的支持。"
   - version:
       - v24.0.0
       - v22.17.0
@@ -1128,10 +1128,10 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56489
-    description: 添加对 `exclude` 选项的支持以接受 glob 模式。
+    description: "添加对 `exclude` 选项的支持以接受 glob 模式。"
   - version: v22.2.0
     pr-url: https://github.com/nodejs/node/pull/52837
-    description: 添加对 `withFileTypes` 作为选项的支持。
+    description: "添加对 `withFileTypes` 作为选项的支持。"
 -->
 
 * `pattern` {string|string\[]}
@@ -1224,7 +1224,7 @@ added: v10.0.0
 changes:
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: 接受一个额外的 `options` 对象来指定返回的数值是否应为 bigint。
+    description: "接受一个额外的 `options` 对象来指定返回的数值是否应为 bigint。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -1287,12 +1287,12 @@ changes:
     - v20.6.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/48828
-    description: `prefix` 参数现在接受 buffers 和 URL。
+    description: "`prefix` 参数现在接受 buffers 和 URL。"
   - version:
       - v16.5.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/39028
-    description: `prefix` 参数现在接受空字符串。
+    description: "`prefix` 参数现在接受空字符串。"
 -->
 
 * `prefix` {string|Buffer|URL}
@@ -1349,7 +1349,7 @@ added: v10.0.0
 changes:
   - version: v11.1.0
     pr-url: https://github.com/nodejs/node/pull/23767
-    description: `flags` 参数现在是可选的，默认值为 `'r'`。
+    description: "`flags` 参数现在是可选的，默认值为 `'r'`。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -1376,12 +1376,12 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/41439
-    description: 添加了 `recursive` 选项。
+    description: "添加了 `recursive` 选项。"
   - version:
      - v13.1.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30114
-    description: 引入了 `bufferSize` 选项。
+    description: "引入了 `bufferSize` 选项。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -1425,10 +1425,10 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/41439
-    description: 添加了 `recursive` 选项。
+    description: "添加了 `recursive` 选项。"
   - version: v10.11.0
     pr-url: https://github.com/nodejs/node/pull/22020
-    description: 添加了新选项 `withFileTypes`。
+    description: "添加了新选项 `withFileTypes`。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -1591,31 +1591,27 @@ added: v10.0.0
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58616
-    description: 移除了 `recursive` 选项。
+    description: "移除了 `recursive` 选项。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37216
-    description: "不再允许在为文件的 `path` 上使用 `fsPromises.rmdir(path, { recursive: true })`，
-                 在 Windows 上会导致 `ENOENT` 错误，在 POSIX 上会导致 `ENOTDIR` 错误。"
+    description: "不再允许在为文件的 `path` 上使用 `fsPromises.rmdir(path, { recursive: true })`，在 Windows 上会导致 `ENOENT` 错误，在 POSIX 上会导致 `ENOTDIR` 错误。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37216
-    description: "不再允许在不存在的 `path` 上使用 `fsPromises.rmdir(path, { recursive: true })`，
-                 会导致 `ENOENT` 错误。"
+    description: "不再允许在不存在的 `path` 上使用 `fsPromises.rmdir(path, { recursive: true })`，会导致 `ENOENT` 错误。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37302
-    description: `recursive` 选项已弃用，使用它会触发弃用警告。
+    description: "`recursive` 选项已弃用，使用它会触发弃用警告。"
   - version: v14.14.0
     pr-url: https://github.com/nodejs/node/pull/35579
-    description: `recursive` 选项已弃用，请改用 `fsPromises.rm`。
+    description: "`recursive` 选项已弃用，请改用 `fsPromises.rm`。"
   - version:
      - v13.3.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30644
-    description: `maxBusyTries` 选项重命名为 `maxRetries`，其
-                 默认值为 0。`emfileWait` 选项已被移除，
-                 `EMFILE` 错误使用与其他错误相同的重试逻辑。现在支持 `retryDelay` 选项。`ENFILE` 错误现在会重试。
+    description: "`maxBusyTries` 选项重命名为 `maxRetries`，其默认值为 0。`emfileWait` 选项已被移除，`EMFILE` 错误使用与其他错误相同的重试逻辑。现在支持 `retryDelay` 选项。`ENFILE` 错误现在会重试。"
   - version: v12.10.0
     pr-url: https://github.com/nodejs/node/pull/29168
-    description: 现在支持 `recursive`、`maxBusyTries` 和 `emfileWait` 选项。
+    description: "现在支持 `recursive`、`maxBusyTries` 和 `emfileWait` 选项。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -1663,10 +1659,10 @@ added: v10.0.0
 changes:
   - version: v25.7.0
     pr-url: https://github.com/nodejs/node/pull/61178
-    description: 接受 `throwIfNoEntry` 选项以指定如果条目不存在是否应抛出异常。
+    description: "接受 `throwIfNoEntry` 选项以指定如果条目不存在是否应抛出异常。"
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: 接受一个额外的 `options` 对象以指定返回的数值是否应为 bigint。
+    description: "接受一个额外的 `options` 对象以指定返回的数值是否应为 bigint。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -1699,9 +1695,7 @@ added: v10.0.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42894
-    description: 如果 `type` 参数为 `null` 或被省略，Node.js 将
-                 自动检测 `target` 类型并自动
-                 选择 `dir` 或 `file`。
+    description: "如果 `type` 参数为 `null` 或被省略，Node.js 将自动检测 `target` 类型并自动选择 `dir` 或 `file`。"
 
 -->
 
@@ -1834,12 +1828,12 @@ changes:
     - v21.0.0
     - v20.10.0
     pr-url: https://github.com/nodejs/node/pull/50009
-    description: 现在支持 `flush` 选项。
+    description: "现在支持 `flush` 选项。"
   - version:
       - v15.14.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37490
-    description: `data` 参数支持 `AsyncIterable`、`Iterable` 和 `Stream`。
+    description: "`data` 参数支持 `AsyncIterable`、`Iterable` 和 `Stream`。"
   - version:
       - v15.2.0
       - v14.17.0
@@ -1847,7 +1841,7 @@ changes:
     description: options 参数可以包含一个 AbortSignal 以中止正在进行的 writeFile 请求。
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `data` 参数不再将不支持的输入强制转换为字符串。
+    description: "`data` 参数不再将不支持的输入强制转换为字符串。"
 -->
 
 * `file` {string|Buffer|URL|FileHandle} 文件名或 `FileHandle`
@@ -1933,19 +1927,19 @@ added: v0.11.15
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/55862
-    description: 直接存在于 `fs` 上的常量 `fs.F_OK`、`fs.R_OK`、`fs.W_OK` 和 `fs.X_OK` 已被移除。
+    description: "直接存在于 `fs` 上的常量 `fs.F_OK`、`fs.R_OK`、`fs.W_OK` 和 `fs.X_OK` 已被移除。"
   - version: v20.8.0
     pr-url: https://github.com/nodejs/node/pull/49683
-    description: 直接存在于 `fs` 上的常量 `fs.F_OK`、`fs.R_OK`、`fs.W_OK` 和 `fs.X_OK` 已弃用。
+    description: "直接存在于 `fs` 上的常量 `fs.F_OK`、`fs.R_OK`、`fs.W_OK` 和 `fs.X_OK` 已弃用。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6534
-    description: 像 `fs.R_OK` 等直接存在于 `fs` 上的常量已作为软弃用移入 `fs.constants`。因此对于 Node.js `< v6.3.0` 使用 `fs` 访问这些常量，或者使用类似 `(fs.constants || fs).R_OK` 的方式以兼容所有版本。
+    description: "像 `fs.R_OK` 等直接存在于 `fs` 上的常量已作为软弃用移入 `fs.constants`。因此对于 Node.js `< v6.3.0` 使用 `fs` 访问这些常量，或者使用类似 `(fs.constants || fs).R_OK` 的方式以兼容所有版本。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -2103,22 +2097,22 @@ changes:
     - v21.1.0
     - v20.10.0
     pr-url: https://github.com/nodejs/node/pull/50095
-    description: 现在支持 `flush` 选项。
+    description: "现在支持 `flush` 选项。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7831
-    description: 传入的 `options` 对象将永远不会被修改。
+    description: "传入的 `options` 对象将永远不会被修改。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/3163
-    description: `file` 参数现在可以是文件描述符。
+    description: "`file` 参数现在可以是文件描述符。"
 -->
 
 * `path` {string|Buffer|URL|number} 文件名或文件描述符
@@ -2185,16 +2179,16 @@ added: v0.1.30
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -2261,16 +2255,16 @@ added: v0.1.97
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -2290,7 +2284,7 @@ added: v0.0.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version:
       - v15.9.0
       - v14.17.0
@@ -2298,10 +2292,10 @@ changes:
     description: 如果未提供回调，现在使用默认回调。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 * `fd` {integer}
@@ -2321,10 +2315,10 @@ added: v8.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/27044
-    description: 将 `flags` 参数更改为 `mode` 并实施更严格的类型验证。
+    description: "将 `flags` 参数更改为 `mode` 并实施更严格的类型验证。"
 -->
 
 * `src` {string|Buffer|URL} 要复制的源文件名
@@ -2368,15 +2362,15 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47084
-    description: 接受额外的 `mode` 选项以指定复制行为，作为 `fs.copyFile()` 的 `mode` 参数。
+    description: "接受额外的 `mode` 选项以指定复制行为，作为 `fs.copyFile()` 的 `mode` 参数。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version:
     - v17.6.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41819
-    description: 接受额外的 `verbatimSymlinks` 选项以指定是否对符号链接执行路径解析。
+    description: "接受额外的 `verbatimSymlinks` 选项以指定是否对符号链接执行路径解析。"
 -->
 
 * `src` {string|URL} 要复制的源路径。
@@ -2407,40 +2401,40 @@ added: v0.1.31
 changes:
   - version: v16.10.0
     pr-url: https://github.com/nodejs/node/pull/40013
-    description: 如果提供了 `fd`，`fs` 选项不需要 `open` 方法。
+    description: "如果提供了 `fd`，`fs` 选项不需要 `open` 方法。"
   - version: v16.10.0
     pr-url: https://github.com/nodejs/node/pull/40013
-    description: 如果 `autoClose` 为 `false`，`fs` 选项不需要 `close` 方法。
+    description: "如果 `autoClose` 为 `false`，`fs` 选项不需要 `close` 方法。"
   - version: v15.5.0
     pr-url: https://github.com/nodejs/node/pull/36431
-    description: 添加对 `AbortSignal` 的支持。
+    description: "添加对 `AbortSignal` 的支持。"
   - version:
      - v15.4.0
     pr-url: https://github.com/nodejs/node/pull/35922
-    description: `fd` 选项接受 FileHandle 参数。
+    description: "`fd` 选项接受 FileHandle 参数。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31408
-    description: 将 `emitClose` 默认值更改为 `true`。
+    description: "将 `emitClose` 默认值更改为 `true`。"
   - version:
      - v13.6.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/29083
-    description: `fs` 选项允许覆盖使用的 `fs` 实现。
+    description: "`fs` 选项允许覆盖使用的 `fs` 实现。"
   - version: v12.10.0
     pr-url: https://github.com/nodejs/node/pull/29212
-    description: 启用 `emitClose` 选项。
+    description: "启用 `emitClose` 选项。"
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/19898
-    description: 对 `start` 和 `end` 施加新的限制，在无法合理处理输入值的情况下抛出更合适的错误。
+    description: "对 `start` 和 `end` 施加新的限制，在无法合理处理输入值的情况下抛出更合适的错误。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7831
-    description: 传入的 `options` 对象将永远不会被修改。
+    description: "传入的 `options` 对象将永远不会被修改。"
   - version: v2.3.0
     pr-url: https://github.com/nodejs/node/pull/1845
-    description: 传入的 `options` 对象现在可以是字符串。
+    description: "传入的 `options` 对象现在可以是字符串。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -2506,43 +2500,43 @@ changes:
     - v21.0.0
     - v20.10.0
     pr-url: https://github.com/nodejs/node/pull/50093
-    description: 现在支持 `flush` 选项。
+    description: "现在支持 `flush` 选项。"
   - version: v16.10.0
     pr-url: https://github.com/nodejs/node/pull/40013
-    description: 如果提供了 `fd`，`fs` 选项不需要 `open` 方法。
+    description: "如果提供了 `fd`，`fs` 选项不需要 `open` 方法。"
   - version: v16.10.0
     pr-url: https://github.com/nodejs/node/pull/40013
-    description: 如果 `autoClose` 为 `false`，`fs` 选项不需要 `close` 方法。
+    description: "如果 `autoClose` 为 `false`，`fs` 选项不需要 `close` 方法。"
   - version: v15.5.0
     pr-url: https://github.com/nodejs/node/pull/36431
-    description: 添加对 `AbortSignal` 的支持。
+    description: "添加对 `AbortSignal` 的支持。"
   - version:
      - v15.4.0
     pr-url: https://github.com/nodejs/node/pull/35922
-    description: `fd` 选项接受 FileHandle 参数。
+    description: "`fd` 选项接受 FileHandle 参数。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31408
-    description: 将 `emitClose` 默认值更改为 `true`。
+    description: "将 `emitClose` 默认值更改为 `true`。"
   - version:
      - v13.6.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/29083
-    description: `fs` 选项允许覆盖使用的 `fs` 实现。
+    description: "`fs` 选项允许覆盖使用的 `fs` 实现。"
   - version: v12.10.0
     pr-url: https://github.com/nodejs/node/pull/29212
-    description: 启用 `emitClose` 选项。
+    description: "启用 `emitClose` 选项。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7831
-    description: 传入的 `options` 对象将永远不会被修改。
+    description: "传入的 `options` 对象将永远不会被修改。"
   - version: v5.5.0
     pr-url: https://github.com/nodejs/node/pull/3679
-    description: 现在支持 `autoClose` 选项。
+    description: "现在支持 `autoClose` 选项。"
   - version: v2.3.0
     pr-url: https://github.com/nodejs/node/pull/1845
-    description: 传入的 `options` 对象现在可以是字符串。
+    description: "传入的 `options` 对象现在可以是字符串。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -2580,10 +2574,10 @@ deprecated: v1.0.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 > 稳定性：0 - 已弃用：改用 [`fs.stat()`][] 或 [`fs.access()`][]。
@@ -2716,13 +2710,13 @@ added: v0.4.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 * `fd` {integer}
@@ -2741,13 +2735,13 @@ added: v0.4.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 * `fd` {integer}
@@ -2767,13 +2761,13 @@ added: v0.1.96
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 * `fd` {integer}
@@ -2789,16 +2783,16 @@ added: v0.1.95
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: 接受额外的 `options` 对象以指定返回的数值是否应为 bigint。
+    description: "接受额外的 `options` 对象以指定返回的数值是否应为 bigint。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 * `fd` {integer}
@@ -2819,13 +2813,13 @@ added: v0.1.96
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 * `fd` {integer}
@@ -2841,13 +2835,13 @@ added: v0.8.6
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 * `fd` {integer}
@@ -2898,16 +2892,16 @@ added: v0.4.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
   - version: v4.1.0
     pr-url: https://github.com/nodejs/node/pull/2387
-    description: 现在允许数字字符串、`NaN` 和 `Infinity` 作为时间说明符。
+    description: "现在允许数字字符串、`NaN` 和 `Infinity` 作为时间说明符。"
 -->
 
 * `fd` {integer}
@@ -2927,7 +2921,7 @@ changes:
       - v24.1.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/58182
-    description: 为 `cwd` 选项添加对 `URL` 实例的支持。
+    description: "为 `cwd` 选项添加对 `URL` 实例的支持。"
   - version:
       - v24.0.0
       - v22.17.0
@@ -2937,10 +2931,10 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56489
-    description: 添加对 `exclude` 选项的支持以接受 glob 模式。
+    description: "添加对 `exclude` 选项的支持以接受 glob 模式。"
   - version: v22.2.0
     pr-url: https://github.com/nodejs/node/pull/52837
-    description: 添加对 `withFileTypes` 作为选项的支持。
+    description: "添加对 `withFileTypes` 作为选项的支持。"
 -->
 
 * `pattern` {string|string\[]}
@@ -2980,16 +2974,16 @@ deprecated: v0.4.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37460
-    description: 如果返回多个错误，返回的错误可能是 `AggregateError`。
+    description: "如果返回多个错误，返回的错误可能是 `AggregateError`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 > 稳定性：0 - 已弃用
@@ -3011,16 +3005,16 @@ changes:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.6.0
     pr-url: https://github.com/nodejs/node/pull/21498
     description: 此 API 不再弃用。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
   - version: v0.4.7
     description: 仅文档弃用。
 -->
@@ -3044,7 +3038,7 @@ added:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -3064,16 +3058,16 @@ added: v0.1.31
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `existingPath` 和 `newPath` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。支持目前仍是 *实验性的*。
+    description: "`existingPath` 和 `newPath` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。支持目前仍是 *实验性的*。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 * `existingPath` {string|Buffer|URL}
@@ -3090,19 +3084,19 @@ added: v0.1.30
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: 接受额外的 `options` 对象以指定返回的数值是否应为 bigint。
+    description: "接受额外的 `options` 对象以指定返回的数值是否应为 bigint。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出 id 为 DEP0013 的弃用警告。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -3123,31 +3117,24 @@ added: v0.1.8
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version:
      - v13.11.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/31530
-    description: 在 `recursive` 模式下，回调现在接收第一个
-                 创建的路径作为参数。
+    description: "在 `recursive` 模式下，回调现在接收第一个创建的路径作为参数。"
   - version: v10.12.0
     pr-url: https://github.com/nodejs/node/pull/21875
-    description: 第二个参数现在可以是一个带有
-                 `recursive` 和 `mode` 属性的 `options` 对象。
+    description: "第二个参数现在可以是一个带有`recursive` 和 `mode` 属性的 `options` 对象。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:`
-                 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:`协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -3204,28 +3191,24 @@ changes:
     - v20.6.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/48828
-    description: `prefix` 参数现在接受 buffers 和 URL。
+    description: "`prefix` 参数现在接受 buffers 和 URL。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version:
       - v16.5.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/39028
-    description: `prefix` 参数现在接受空字符串。
+    description: "`prefix` 参数现在接受空字符串。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
   - version: v6.2.1
     pr-url: https://github.com/nodejs/node/pull/6828
-    description: `callback` 参数现在是可选的。
+    description: "`callback` 参数现在是可选的。"
 -->
 
 * `prefix` {string|Buffer|URL}
@@ -3301,19 +3284,16 @@ added: v0.0.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v11.1.0
     pr-url: https://github.com/nodejs/node/pull/23767
-    description: `flags` 参数现在是可选的，默认值为 `'r'`。
+    description: "`flags` 参数现在是可选的，默认值为 `'r'`。"
   - version: v9.9.0
     pr-url: https://github.com/nodejs/node/pull/18801
-    description: 现在支持 `as` 和 `as+` 标志。
+    description: "现在支持 `as` 和 `as+` 标志。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:`
-                 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:`协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -3391,17 +3371,15 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/41439
-    description: 添加了 `recursive` 选项。
+    description: "添加了 `recursive` 选项。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version:
      - v13.1.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30114
-    description: 引入了 `bufferSize` 选项。
+    description: "引入了 `bufferSize` 选项。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -3429,19 +3407,16 @@ added: v0.0.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22150
-    description: `buffer` 参数现在可以是任何 `TypedArray` 或
-                 `DataView`。
+    description: "`buffer` 参数现在可以是任何 `TypedArray` 或`DataView`。"
   - version: v7.4.0
     pr-url: https://github.com/nodejs/node/pull/10382
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4518
-    description: `length` 参数现在可以是 `0`。
+    description: "`length` 参数现在可以是 `0`。"
 -->
 
 * `fd` {integer}
@@ -3508,8 +3483,7 @@ changes:
      - v13.11.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/31402
-    description: 可以传入 Options 对象
-                 以使 buffer、offset、length 和 position 可选。
+    description: "可以传入 Options 对象以使 buffer、offset、length 和 position 可选。"
 -->
 
 * `fd` {integer}
@@ -3560,30 +3534,25 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/41439
-    description: 添加了 `recursive` 选项。
+    description: "添加了 `recursive` 选项。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22020
-    description: 添加了新选项 `withFileTypes`。
+    description: "添加了新选项 `withFileTypes`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:`
-                 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:`协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5616
-    description: 添加了 `options` 参数。
+    description: "添加了 `options` 参数。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -3618,37 +3587,30 @@ added: v0.1.29
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37460
-    description: 如果返回多个错误，返回的错误可能是 `AggregateError`。
+    description: "如果返回多个错误，返回的错误可能是 `AggregateError`。"
   - version:
       - v15.2.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/35911
-    description: options 参数可以包括一个 AbortSignal 以中止
-                 正在进行的 readFile 请求。
+    description: "options 参数可以包括一个 AbortSignal 以中止正在进行的 readFile 请求。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:`
-                 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:`协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
   - version: v5.1.0
     pr-url: https://github.com/nodejs/node/pull/3740
-    description: 成功时 `callback` 将始终使用 `null` 作为 `error`
-                 参数调用。
+    description: "成功时 `callback` 将始终使用 `null` 作为 `error`参数调用。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/3163
-    description: `path` 参数现在可以是文件描述符。
+    description: "`path` 参数现在可以是文件描述符。"
 -->
 
 * `path` {string|Buffer|URL|integer} 文件名或文件描述符
@@ -3761,21 +3723,16 @@ added: v0.1.31
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:`
-                 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:`协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -3804,9 +3761,7 @@ added:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `fd` {integer}
@@ -3837,30 +3792,25 @@ added: v0.1.31
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/13028
     description: 添加了 Pipe/Socket 解析支持。
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用
-                 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用`file:` 协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
   - version: v6.4.0
     pr-url: https://github.com/nodejs/node/pull/7899
-    description: 调用 `realpath` 现在再次适用于 Windows 上的各种边缘情况。
+    description: "调用 `realpath` 现在再次适用于 Windows 上的各种边缘情况。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/3594
-    description: 移除了 `cache` 参数。
+    description: "移除了 `cache` 参数。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -3906,9 +3856,7 @@ added: v9.2.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -3940,22 +3888,16 @@ added: v0.0.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `oldPath` 和 `newPath` 参数可以是使用 `file:` 协议的
-                 WHATWG `URL` 对象。支持目前仍然是
-                 *实验性的*。
+    description: "`oldPath` 和 `newPath` 参数可以是使用 `file:` 协议的WHATWG `URL` 对象。支持目前仍然是*实验性的*。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
 -->
 
 * `oldPath` {string|Buffer|URL}
@@ -3987,53 +3929,39 @@ added: v0.0.2
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58616
-    description: 移除 `recursive` 选项。
+    description: "移除 `recursive` 选项。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37216
-    description: "在是文件的 `path` 上使用 `fs.rmdir(path, { recursive: true })`
-                 不再被允许，并在 Windows 上导致 `ENOENT` 错误
-                 在 POSIX 上导致 `ENOTDIR` 错误。"
+    description: "在是文件的 `path` 上使用 `fs.rmdir(path, { recursive: true })`不再被允许，并在 Windows 上导致 `ENOENT` 错误在 POSIX 上导致 `ENOTDIR` 错误。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37216
-    description: "在不存在的 `path` 上使用 `fs.rmdir(path, { recursive: true })`
-                 不再被允许，并导致 `ENOENT`
-                 错误。"
+    description: "在不存在的 `path` 上使用 `fs.rmdir(path, { recursive: true })`不再被允许，并导致 `ENOENT`错误。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37302
-    description: `recursive` 选项已弃用，使用它会触发
-                 弃用警告。
+    description: "`recursive` 选项已弃用，使用它会触发弃用警告。"
   - version: v14.14.0
     pr-url: https://github.com/nodejs/node/pull/35579
-    description: `recursive` 选项已弃用，改用 `fs.rm`。
+    description: "`recursive` 选项已弃用，改用 `fs.rm`。"
   - version:
      - v13.3.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30644
-    description: `maxBusyTries` 选项重命名为 `maxRetries`，其
-                 默认值为 0。`emfileWait` 选项已被移除，并且
-                 `EMFILE` 错误使用与其他错误相同的重试逻辑。
-                 `retryDelay` 选项现在受支持。`ENFILE` 错误现在
-                 被重试。
+    description: "`maxBusyTries` 选项重命名为 `maxRetries`，其默认值为 0。`emfileWait` 选项已被移除，并且`EMFILE` 错误使用与其他错误相同的重试逻辑。`retryDelay` 选项现在受支持。`ENFILE` 错误现在被重试。"
   - version: v12.10.0
     pr-url: https://github.com/nodejs/node/pull/29168
-    description: 现在支持 `recursive`、`maxBusyTries` 和 `emfileWait` 选项。
+    description: "现在支持 `recursive`、`maxBusyTries` 和 `emfileWait` 选项。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用
-                 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用`file:` 协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -4062,8 +3990,7 @@ changes:
       - v17.3.0
       - v16.14.0
     pr-url: https://github.com/nodejs/node/pull/41132
-    description: `path` 参数可以是使用 `file:`
-                 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:`协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -4093,29 +4020,22 @@ added: v0.0.2
 changes:
   - version: v25.7.0
     pr-url: https://github.com/nodejs/node/pull/61178
-    description: 接受 `throwIfNoEntry` 选项以指定是否
-                 如果条目不存在应抛出异常。
+    description: "接受 `throwIfNoEntry` 选项以指定是否如果条目不存在应抛出异常。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: 接受额外的 `options` 对象以指定
-                 返回的数值是否应为 bigint。
+    description: "接受额外的 `options` 对象以指定返回的数值是否应为 bigint。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:`
-                 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:`协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -4245,18 +4165,13 @@ added: v0.1.31
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/23724
-    description: 如果 `type` 参数未定义，Node 将自动检测
-                 `target` 类型并自动选择 `dir` 或 `file`。
+    description: "如果 `type` 参数未定义，Node 将自动检测`target` 类型并自动选择 `dir` 或 `file`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `target` 和 `path` 参数可以是使用 `file:` 协议的
-                 WHATWG `URL` 对象。支持目前仍然是
-                 *实验性的*。
+    description: "`target` 和 `path` 参数可以是使用 `file:` 协议的WHATWG `URL` 对象。支持目前仍然是*实验性的*。"
 -->
 
 * `target` {string|Buffer|URL}
@@ -4303,20 +4218,16 @@ added: v0.8.6
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37460
-    description: 如果返回多个错误，返回的错误可能是 `AggregateError`。
+    description: "如果返回多个错误，返回的错误可能是 `AggregateError`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -4358,21 +4269,16 @@ added: v0.0.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:`
-                 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:`协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -4424,29 +4330,22 @@ added: v0.4.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再是可选的。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11919
-    description: "`NaN`、`Infinity` 和 `-Infinity` 不再是有效的时间
-                 说明符。"
+    description: "`NaN`、`Infinity` 和 `-Infinity` 不再是有效的时间说明符。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是使用 `file:`
-                 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是使用 `file:`协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再是可选的。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
   - version: v4.1.0
     pr-url: https://github.com/nodejs/node/pull/2387
-    description: 数字字符串、`NaN` 和 `Infinity` 现在允许
-                 作为时间说明符。
+    description: "数字字符串、`NaN` 和 `Infinity` 现在允许作为时间说明符。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -4479,11 +4378,10 @@ changes:
     description: 添加了使用 AbortSignal 关闭 watcher 的支持。
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `filename` 参数可以是使用
-                 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`filename` 参数可以是使用`file:` 协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7831
-    description: 传递的 `options` 对象将永远不会被修改。
+    description: "传递的 `options` 对象将永远不会被修改。"
 -->
 
 * `filename` {string|Buffer|URL}
@@ -4606,11 +4504,10 @@ added: v0.1.31
 changes:
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: 现在支持 `bigint` 选项。
+    description: "现在支持 `bigint` 选项。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `filename` 参数可以是一个使用
-                 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`filename` 参数可以是一个使用`file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `filename` {string|Buffer|URL}
@@ -4674,31 +4571,25 @@ added: v0.0.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `buffer` 参数不再将不支持的输入强制转换为
-                 字符串。
+    description: "`buffer` 参数不再将不支持的输入强制转换为字符串。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22150
-    description: `buffer` 参数现在可以是任何 `TypedArray` 或
-                 `DataView`。
+    description: "`buffer` 参数现在可以是任何 `TypedArray` 或`DataView`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再可选。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再可选。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.4.0
     pr-url: https://github.com/nodejs/node/pull/10382
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
   - version: v7.2.0
     pr-url: https://github.com/nodejs/node/pull/7856
-    description: `offset` 和 `length` 参数现在是可选的。
+    description: "`offset` 和 `length` 参数现在是可选的。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再可选。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再可选。不传递它将发出带有 id DEP0013 的弃用警告。"
 -->
 
 * `fd` {integer}
@@ -4763,31 +4654,25 @@ added: v0.11.5
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42796
-    description: 不再支持向 `string` 参数传递具有自有
-                 `toString` 函数的对象。
+    description: "不再支持向 `string` 参数传递具有自有`toString` 函数的对象。"
   - version: v17.8.0
     pr-url: https://github.com/nodejs/node/pull/42149
-    description: 向 `string` 参数传递具有自有
-                 `toString` 函数的对象已弃用。
+    description: "向 `string` 参数传递具有自有`toString` 函数的对象已弃用。"
   - version: v14.12.0
     pr-url: https://github.com/nodejs/node/pull/34993
-    description: `string` 参数将字符串化具有显式
-                 `toString` 函数的对象。
+    description: "`string` 参数将字符串化具有显式`toString` 函数的对象。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `string` 参数不再将不支持的输入强制转换为
-                 字符串。
+    description: "`string` 参数不再将不支持的输入强制转换为字符串。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再可选。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再可选。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.2.0
     pr-url: https://github.com/nodejs/node/pull/7856
-    description: `position` 参数现在是可选的。
+    description: "`position` 参数现在是可选的。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再可选。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再可选。不传递它将发出带有 id DEP0013 的弃用警告。"
 -->
 
 * `fd` {integer}
@@ -4832,56 +4717,45 @@ changes:
     - v21.0.0
     - v20.10.0
     pr-url: https://github.com/nodejs/node/pull/50009
-    description: 现在支持 `flush` 选项。
+    description: "现在支持 `flush` 选项。"
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42796
-    description: 不再支持向 `string` 参数传递具有自有
-                 `toString` 函数的对象。
+    description: "不再支持向 `string` 参数传递具有自有`toString` 函数的对象。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v17.8.0
     pr-url: https://github.com/nodejs/node/pull/42149
-    description: 向 `string` 参数传递具有自有
-                 `toString` 函数的对象已弃用。
+    description: "向 `string` 参数传递具有自有`toString` 函数的对象已弃用。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37460
-    description: 如果返回多个错误，返回的错误可能是
-                 `AggregateError`。
+    description: "如果返回多个错误，返回的错误可能是`AggregateError`。"
   - version:
       - v15.2.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/35993
-    description: options 参数可以包括一个 AbortSignal 以中止
-                 正在进行的 writeFile 请求。
+    description: "options 参数可以包括一个 AbortSignal 以中止正在进行的 writeFile 请求。"
   - version: v14.12.0
     pr-url: https://github.com/nodejs/node/pull/34993
-    description: `data` 参数将字符串化具有显式
-                 `toString` 函数的对象。
+    description: "`data` 参数将字符串化具有显式`toString` 函数的对象。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `data` 参数不再将不支持的输入强制转换为
-                 字符串。
+    description: "`data` 参数不再将不支持的输入强制转换为字符串。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22150
-    description: `data` 参数现在可以是任何 `TypedArray` 或
-                 `DataView`。
+    description: "`data` 参数现在可以是任何 `TypedArray` 或`DataView`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
-    description: `callback` 参数不再可选。不传递
-                 它将在运行时抛出 `TypeError`。
+    description: "`callback` 参数不再可选。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.4.0
     pr-url: https://github.com/nodejs/node/pull/10382
-    description: `data` 参数现在可以是 `Uint8Array`。
+    description: "`data` 参数现在可以是 `Uint8Array`。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: `callback` 参数不再可选。不传递
-                 它将发出带有 id DEP0013 的弃用警告。
+    description: "`callback` 参数不再可选。不传递它将发出带有 id DEP0013 的弃用警告。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/3163
-    description: `file` 参数现在可以是文件描述符。
+    description: "`file` 参数现在可以是文件描述符。"
 -->
 
 * `file` {string|Buffer|URL|integer} 文件名或文件描述符
@@ -4990,9 +4864,7 @@ added: v12.9.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调
-                 现在抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `fd` {integer}
@@ -5032,7 +4904,7 @@ added: v0.11.15
 changes:
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5062,13 +4934,13 @@ changes:
     - v21.1.0
     - v20.10.0
     pr-url: https://github.com/nodejs/node/pull/50095
-    description: 现在支持 `flush` 选项。
+    description: "现在支持 `flush` 选项。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7831
-    description: 传入的 `options` 对象将永远不会被修改。
+    description: "传入的 `options` 对象将永远不会被修改。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/3163
-    description: `file` 参数现在可以是文件描述符。
+    description: "`file` 参数现在可以是文件描述符。"
 -->
 
 * `path` {string|Buffer|URL|number} 文件名或文件描述符
@@ -5127,7 +4999,7 @@ added: v0.6.7
 changes:
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5144,7 +5016,7 @@ added: v0.1.97
 changes:
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5177,7 +5049,7 @@ added: v8.5.0
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/27044
-    description: 将 `flags` 参数更改为 `mode` 并实施更严格的类型验证。
+    description: "将 `flags` 参数更改为 `mode` 并实施更严格的类型验证。"
 -->
 
 * `src` {string|Buffer|URL} 要复制的源文件名
@@ -5215,12 +5087,12 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47084
-    description: 接受额外的 `mode` 选项以指定复制行为，作为 `fs.copyFile()` 的 `mode` 参数。
+    description: "接受额外的 `mode` 选项以指定复制行为，作为 `fs.copyFile()` 的 `mode` 参数。"
   - version:
     - v17.6.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41819
-    description: 接受额外的 `verbatimSymlinks` 选项以指定是否对符号链接执行路径解析。
+    description: "接受额外的 `verbatimSymlinks` 选项以指定是否对符号链接执行路径解析。"
 -->
 
 * `src` {string|URL} 要复制的源路径。
@@ -5249,7 +5121,7 @@ added: v0.1.21
 changes:
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5312,7 +5184,7 @@ added: v0.1.95
 changes:
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: 接受额外的 `options` 对象以指定返回的数值是否应为 bigint。
+    description: "接受额外的 `options` 对象以指定返回的数值是否应为 bigint。"
 -->
 
 * `fd` {integer}
@@ -5354,7 +5226,7 @@ added: v0.4.2
 changes:
   - version: v4.1.0
     pr-url: https://github.com/nodejs/node/pull/2387
-    description: 数字字符串、`NaN` 和 `Infinity` 现在允许作为时间说明符。
+    description: "数字字符串、`NaN` 和 `Infinity` 现在允许作为时间说明符。"
 -->
 
 * `fd` {integer}
@@ -5372,7 +5244,7 @@ changes:
       - v24.1.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/58182
-    description: 为 `cwd` 选项添加对 `URL` 实例的支持。
+    description: "为 `cwd` 选项添加对 `URL` 实例的支持。"
   - version:
       - v24.0.0
       - v22.17.0
@@ -5382,10 +5254,10 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56489
-    description: 添加对 `exclude` 选项的支持以接受 glob 模式。
+    description: "添加对 `exclude` 选项的支持以接受 glob 模式。"
   - version: v22.2.0
     pr-url: https://github.com/nodejs/node/pull/52837
-    description: 添加对 `withFileTypes` 作为选项的支持。
+    description: "添加对 `withFileTypes` 作为选项的支持。"
 -->
 
 * `pattern` {string|string\[]}
@@ -5464,7 +5336,7 @@ added: v0.1.31
 changes:
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `existingPath` 和 `newPath` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。支持目前仍然是 *实验性的*。
+    description: "`existingPath` 和 `newPath` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。支持目前仍然是 *实验性的*。"
 -->
 
 * `existingPath` {string|Buffer|URL}
@@ -5481,13 +5353,13 @@ changes:
     - v15.3.0
     - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/33716
-    description: 接受 `throwIfNoEntry` 选项以指定如果条目不存在是否应抛出异常。
+    description: "接受 `throwIfNoEntry` 选项以指定如果条目不存在是否应抛出异常。"
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: 接受额外的 `options` 对象以指定返回的数值是否应为 bigint。
+    description: "接受额外的 `options` 对象以指定返回的数值是否应为 bigint。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5509,13 +5381,13 @@ changes:
      - v13.11.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/31530
-    description: 在 `recursive` 模式下，现在返回第一个创建的路径。
+    description: "在 `recursive` 模式下，现在返回第一个创建的路径。"
   - version: v10.12.0
     pr-url: https://github.com/nodejs/node/pull/21875
-    description: 第二个参数现在可以是具有 `recursive` 和 `mode` 属性的 `options` 对象。
+    description: "第二个参数现在可以是具有 `recursive` 和 `mode` 属性的 `options` 对象。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5538,12 +5410,12 @@ changes:
     - v20.6.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/48828
-    description: `prefix` 参数现在接受 buffers 和 URL。
+    description: "`prefix` 参数现在接受 buffers 和 URL。"
   - version:
       - v16.5.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/39028
-    description: `prefix` 参数现在接受空字符串。
+    description: "`prefix` 参数现在接受空字符串。"
 -->
 
 * `prefix` {string|Buffer|URL}
@@ -5590,12 +5462,12 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/41439
-    description: 添加 `recursive` 选项。
+    description: "添加 `recursive` 选项。"
   - version:
      - v13.1.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30114
-    description: 引入 `bufferSize` 选项。
+    description: "引入 `bufferSize` 选项。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5618,13 +5490,13 @@ added: v0.1.21
 changes:
   - version: v11.1.0
     pr-url: https://github.com/nodejs/node/pull/23767
-    description: `flags` 参数现在是可选的，默认为 `'r'`。
+    description: "`flags` 参数现在是可选的，默认为 `'r'`。"
   - version: v9.9.0
     pr-url: https://github.com/nodejs/node/pull/18801
-    description: 现在支持 `as` 和 `as+` 标志。
+    description: "现在支持 `as` 和 `as+` 标志。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5645,13 +5517,13 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/41439
-    description: 添加 `recursive` 选项。
+    description: "添加 `recursive` 选项。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22020
-    description: 添加新选项 `withFileTypes`。
+    description: "添加新选项 `withFileTypes`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5676,10 +5548,10 @@ added: v0.1.8
 changes:
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/3163
-    description: `path` 参数现在可以是文件描述符。
+    description: "`path` 参数现在可以是文件描述符。"
 -->
 
 * `path` {string|Buffer|URL|integer} 文件名或文件描述符
@@ -5714,7 +5586,7 @@ added: v0.1.31
 changes:
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5735,10 +5607,10 @@ added: v0.1.21
 changes:
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22150
-    description: `buffer` 参数现在可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数现在可以是任何 `TypedArray` 或 `DataView`。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4518
-    description: `length` 参数现在可以是 `0`。
+    description: "`length` 参数现在可以是 `0`。"
 -->
 
 * `fd` {integer}
@@ -5806,13 +5678,13 @@ changes:
     description: 添加 Pipe/Socket 解析支持。
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version: v6.4.0
     pr-url: https://github.com/nodejs/node/pull/7899
-    description: 现在再次适用于 Windows 上的各种边缘情况调用 `realpathSync`。
+    description: "现在再次适用于 Windows 上的各种边缘情况调用 `realpathSync`。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/3594
-    description: 移除 `cache` 参数。
+    description: "移除 `cache` 参数。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5850,7 +5722,7 @@ added: v0.1.21
 changes:
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `oldPath` 和 `newPath` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。支持目前仍然是 *实验性的*。
+    description: "`oldPath` 和 `newPath` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。支持目前仍然是 *实验性的*。"
 -->
 
 * `oldPath` {string|Buffer|URL}
@@ -5867,7 +5739,7 @@ added: v0.1.21
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58616
-    description: 移除 `recursive` 选项。
+    description: "移除 `recursive` 选项。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37216
     description: "不再允许在是文件的 `path` 上使用 `fs.rmdirSync(path, { recursive: true })`，在 Windows 上导致 `ENOENT` 错误，在 POSIX 上导致 `ENOTDIR` 错误。"
@@ -5876,21 +5748,21 @@ changes:
     description: "不再允许在不存在的 `path` 上使用 `fs.rmdirSync(path, { recursive: true })`，导致 `ENOENT` 错误。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37302
-    description: `recursive` 选项已弃用，使用它会触发弃用警告。
+    description: "`recursive` 选项已弃用，使用它会触发弃用警告。"
   - version: v14.14.0
     pr-url: https://github.com/nodejs/node/pull/35579
-    description: `recursive` 选项已弃用，改用 `fs.rmSync`。
+    description: "`recursive` 选项已弃用，改用 `fs.rmSync`。"
   - version:
      - v13.3.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30644
-    description: `maxBusyTries` 选项重命名为 `maxRetries`，其默认值为 0。`emfileWait` 选项已移除，`EMFILE` 错误使用与其他错误相同的重试逻辑。现在支持 `retryDelay` 选项。`ENFILE` 错误现在会重试。
+    description: "`maxBusyTries` 选项重命名为 `maxRetries`，其默认值为 0。`emfileWait` 选项已移除，`EMFILE` 错误使用与其他错误相同的重试逻辑。现在支持 `retryDelay` 选项。`ENFILE` 错误现在会重试。"
   - version: v12.10.0
     pr-url: https://github.com/nodejs/node/pull/29168
-    description: 现在支持 `recursive`、`maxBusyTries` 和 `emfileWait` 选项。
+    description: "现在支持 `recursive`、`maxBusyTries` 和 `emfileWait` 选项。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5911,7 +5783,7 @@ changes:
       - v17.3.0
       - v16.14.0
     pr-url: https://github.com/nodejs/node/pull/41132
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5932,13 +5804,13 @@ changes:
     - v15.3.0
     - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/33716
-    description: 接受 `throwIfNoEntry` 选项以指定如果条目不存在是否应抛出异常。
+    description: "接受 `throwIfNoEntry` 选项以指定如果条目不存在是否应抛出异常。"
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: 接受额外的 `options` 对象以指定返回的数值是否应为 bigint。
+    description: "接受额外的 `options` 对象以指定返回的数值是否应为 bigint。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -5973,10 +5845,10 @@ added: v0.1.31
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/23724
-    description: 如果 `type` 参数未定义，Node 将自动检测 `target` 类型并自动选择 `dir` 或 `file`。
+    description: "如果 `type` 参数未定义，Node 将自动检测 `target` 类型并自动选择 `dir` 或 `file`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `target` 和 `path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。支持目前仍然是 *实验性的*。
+    description: "`target` 和 `path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。支持目前仍然是 *实验性的*。"
 -->
 
 * `target` {string|Buffer|URL}
@@ -6006,7 +5878,7 @@ added: v0.1.21
 changes:
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -6023,10 +5895,10 @@ changes:
     description: "`NaN`、`Infinity` 和 `-Infinity` 不再是有效的时间说明符。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: `path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。
+    description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version: v4.1.0
     pr-url: https://github.com/nodejs/node/pull/2387
-    description: 数字字符串、`NaN` 和 `Infinity` 现在允许作为时间说明符。
+    description: "数字字符串、`NaN` 和 `Infinity` 现在允许作为时间说明符。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -6045,28 +5917,28 @@ changes:
     - v21.0.0
     - v20.10.0
     pr-url: https://github.com/nodejs/node/pull/50009
-    description: 现在支持 `flush` 选项。
+    description: "现在支持 `flush` 选项。"
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42796
-    description: 不再支持向 `data` 参数传递具有自有 `toString` 函数的对象。
+    description: "不再支持向 `data` 参数传递具有自有 `toString` 函数的对象。"
   - version: v17.8.0
     pr-url: https://github.com/nodejs/node/pull/42149
-    description: 向 `data` 参数传递具有自有 `toString` 函数的对象已弃用。
+    description: "向 `data` 参数传递具有自有 `toString` 函数的对象已弃用。"
   - version: v14.12.0
     pr-url: https://github.com/nodejs/node/pull/34993
-    description: `data` 参数将字符串化具有显式 `toString` 函数的对象。
+    description: "`data` 参数将字符串化具有显式 `toString` 函数的对象。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `data` 参数不再将不支持的输入强制转换为字符串。
+    description: "`data` 参数不再将不支持的输入强制转换为字符串。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22150
-    description: `data` 参数现在可以是任何 `TypedArray` 或 `DataView`。
+    description: "`data` 参数现在可以是任何 `TypedArray` 或 `DataView`。"
   - version: v7.4.0
     pr-url: https://github.com/nodejs/node/pull/10382
-    description: `data` 参数现在可以是 `Uint8Array`。
+    description: "`data` 参数现在可以是 `Uint8Array`。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/3163
-    description: `file` 参数现在可以是文件描述符。
+    description: "`file` 参数现在可以是文件描述符。"
 -->
 
 * `file` {string|Buffer|URL|integer} 文件名或文件描述符
@@ -6089,16 +5961,16 @@ added: v0.1.21
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `buffer` 参数不再将不支持的输入强制转换为字符串。
+    description: "`buffer` 参数不再将不支持的输入强制转换为字符串。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22150
-    description: `buffer` 参数现在可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数现在可以是任何 `TypedArray` 或 `DataView`。"
   - version: v7.4.0
     pr-url: https://github.com/nodejs/node/pull/10382
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
   - version: v7.2.0
     pr-url: https://github.com/nodejs/node/pull/7856
-    description: `offset` 和 `length` 参数现在是可选的。
+    description: "`offset` 和 `length` 参数现在是可选的。"
 -->
 
 * `fd` {integer}
@@ -6135,10 +6007,10 @@ added: v0.11.5
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `string` 参数不再将不支持的输入强制转换为字符串。
+    description: "`string` 参数不再将不支持的输入强制转换为字符串。"
   - version: v7.2.0
     pr-url: https://github.com/nodejs/node/pull/7856
-    description: `position` 参数现在是可选的。
+    description: "`position` 参数现在是可选的。"
 -->
 
 * `fd` {integer}
@@ -6211,8 +6083,7 @@ added: v12.12.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 callback 参数传递无效的回调现在会抛出 ERR_INVALID_ARG_TYPE 而不是
-                 ERR_INVALID_CALLBACK。
+    description: "向 callback 参数传递无效的回调现在会抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
 -->
 
 * `callback` {Function}

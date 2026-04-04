@@ -782,16 +782,16 @@ changes:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33516
-    description: 现在支持 `maxOutputLength` 选项。
+    description: "现在支持 `maxOutputLength` 选项。"
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `dictionary` 选项可以是 `ArrayBuffer`。
+    description: "`dictionary` 选项可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `dictionary` 选项现在可以是 `Uint8Array`。
+    description: "`dictionary` 选项现在可以是 `Uint8Array`。"
   - version: v5.11.0
     pr-url: https://github.com/nodejs/node/pull/6069
-    description: 现在支持 `finishFlush` 选项。
+    description: "现在支持 `finishFlush` 选项。"
 -->
 
 <!--type=misc-->
@@ -824,7 +824,7 @@ changes:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33516
-    description: 现在支持 `maxOutputLength` 选项。
+    description: "现在支持 `maxOutputLength` 选项。"
 -->
 
 <!--type=misc-->
@@ -903,13 +903,13 @@ added: v0.5.8
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5883
-    description: 输入流末尾的尾部垃圾数据现在将导致 `'error'` 事件。
+    description: "输入流末尾的尾部垃圾数据现在将导致 `'error'` 事件。"
   - version: v5.9.0
     pr-url: https://github.com/nodejs/node/pull/5120
     description: 现在支持多个连接的 gzip 文件成员。
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2595
-    description: 截断的输入流现在将导致 `'error'` 事件。
+    description: "截断的输入流现在将导致 `'error'` 事件。"
 -->
 
 * 继承自：[`ZlibBase`][]
@@ -933,7 +933,7 @@ added: v0.5.8
 changes:
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2595
-    description: 截断的输入流现在将导致 `'error'` 事件。
+    description: "截断的输入流现在将导致 `'error'` 事件。"
 -->
 
 * 继承自：[`ZlibBase`][]
@@ -947,10 +947,10 @@ added: v0.5.8
 changes:
   - version: v6.8.0
     pr-url: https://github.com/nodejs/node/pull/8512
-    description: `InflateRaw` 现在支持自定义字典。
+    description: "`InflateRaw` 现在支持自定义字典。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2595
-    description: 截断的输入流现在将导致 `'error'` 事件。
+    description: "截断的输入流现在将导致 `'error'` 事件。"
 -->
 
 * 继承自：[`ZlibBase`][]
@@ -976,7 +976,7 @@ changes:
      - v11.7.0
      - v10.16.0
     pr-url: https://github.com/nodejs/node/pull/24939
-    description: 此类已从 `Zlib` 重命名为 `ZlibBase`。
+    description: "此类已从 `Zlib` 重命名为 `ZlibBase`。"
 -->
 
 * 继承自：[`stream.Transform`][]
@@ -1342,13 +1342,13 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1362,13 +1362,13 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1383,10 +1383,10 @@ added: v0.6.0
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1400,13 +1400,13 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1421,13 +1421,13 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1441,13 +1441,13 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1462,13 +1462,13 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1482,13 +1482,13 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1503,13 +1503,13 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1523,13 +1523,13 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1544,13 +1544,13 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1564,13 +1564,13 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1585,13 +1585,13 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
@@ -1605,13 +1605,13 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: `buffer` 参数可以是 `ArrayBuffer`。
+    description: "`buffer` 参数可以是 `ArrayBuffer`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: `buffer` 参数现在可以是 `Uint8Array`。
+    description: "`buffer` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}

@@ -80,7 +80,7 @@ added: v0.5.8
 added: v0.5.8
 changes:
   - version: v0.9.4
-    description: 支持 `options` 参数。
+    description: "支持 `options` 参数。"
 -->
 
 * `fd` {number} 与 TTY 关联的文件描述符。

@@ -1512,7 +1512,7 @@ changes:
     - v14.10.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34819
-    description: Changed signature of the `hook` callback.
+    description: "Changed signature of the `hook` callback."
 -->
 
 ```c
@@ -1547,7 +1547,7 @@ changes:
     - v14.10.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34819
-    description: Removed `env` parameter.
+    description: "Removed `env` parameter."
 -->
 
 ```c
@@ -1801,7 +1801,7 @@ changes:
      - v25.5.0
      - v24.13.1
     pr-url: https://github.com/nodejs/node/pull/58879
-    description: Added `napi_float16_array` for Float16Array support.
+    description: "Added `napi_float16_array` for Float16Array support."
 -->
 
 ```c
@@ -2318,7 +2318,7 @@ changes:
      - v25.5.0
      - v24.13.1
     pr-url: https://github.com/nodejs/node/pull/60473
-    description: Added support for `SharedArrayBuffer`.
+    description: "Added support for `SharedArrayBuffer`."
 -->
 
 ```c
@@ -2838,7 +2838,7 @@ changes:
      - v24.9.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59071
-    description: Added support for `SharedArrayBuffer`.
+    description: "Added support for `SharedArrayBuffer`."
 -->
 
 ```c
@@ -3954,7 +3954,7 @@ if (status != napi_ok) return status;
 changes:
  - version: v14.12.0
    pr-url: https://github.com/nodejs/node/pull/35214
-   description: 添加了 `napi_default_method` 和 `napi_default_property`。
+   description: "添加了 `napi_default_method` 和 `napi_default_property`。"
 -->
 
 ```c
@@ -5113,7 +5113,7 @@ napiVersion: 1
 changes:
   - version: v8.6.0
     pr-url: https://github.com/nodejs/node/pull/14697
-    description: 添加了 `async_resource` 和 `async_resource_name` 参数。
+    description: "添加了 `async_resource` 和 `async_resource_name` 参数。"
 -->
 
 ```c
@@ -5263,7 +5263,7 @@ napiVersion: 1
 changes:
   - version: v8.6.0
     pr-url: https://github.com/nodejs/node/pull/15189
-    description: 添加了 `async_context` 参数。
+    description: "添加了 `async_context` 参数。"
 -->
 
 ```c
@@ -5637,7 +5637,7 @@ changes:
      - v12.6.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/27791
-    description: 使用自定义 `call_js_cb` 时，`func` 参数变为可选。
+    description: "使用自定义 `call_js_cb` 时，`func` 参数变为可选。"
 -->
 
 ```c
@@ -5699,10 +5699,10 @@ napiVersion: 4
 changes:
   - version: v14.5.0
     pr-url: https://github.com/nodejs/node/pull/33453
-    description: 对 `napi_would_deadlock` 的支持已被回退。
+    description: "对 `napi_would_deadlock` 的支持已被回退。"
   - version: v14.1.0
     pr-url: https://github.com/nodejs/node/pull/32689
-    description: 当从主线程或工作线程使用 `napi_tsfn_blocking` 调用且队列已满时，返回 `napi_would_deadlock`。
+    description: "当从主线程或工作线程使用 `napi_tsfn_blocking` 调用且队列已满时，返回 `napi_would_deadlock`。"
 -->
 
 ```c

@@ -34,7 +34,7 @@ changes:
     - v22.13.0
     - v20.19.3
     pr-url: https://github.com/nodejs/node/pull/56142
-    description: 算法 `Ed25519` 和 `X25519` 现已稳定。
+    description: "算法 `Ed25519` 和 `X25519` 现已稳定。"
   - version:
     - v20.0.0
     - v18.17.0
@@ -43,37 +43,32 @@ changes:
       与其他 Web Crypto API 实现一样。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44897
-    description: 不再处于实验阶段，但 `Ed25519`、`Ed448`、
-      `X25519` 和 `X448` 算法除外。
+    description: "不再处于实验阶段，但 `Ed25519`、`Ed448`、`X25519` 和 `X448` 算法除外。"
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43310
-    description: 移除了专有的 `'node.keyObject'` 导入/导出格式。
+    description: "移除了专有的 `'node.keyObject'` 导入/导出格式。"
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43310
-    description: 移除了专有的 `'NODE-DSA'`、`'NODE-DH'`、
-      和 `'NODE-SCRYPT'` 算法。
+    description: "移除了专有的 `'NODE-DSA'`、`'NODE-DH'`、和 `'NODE-SCRYPT'` 算法。"
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: 添加了 `'Ed25519'`、`'Ed448'`、`'X25519'` 和 `'X448'`
-      算法。
+    description: "添加了 `'Ed25519'`、`'Ed448'`、`'X25519'` 和 `'X448'`算法。"
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: 移除了专有的 `'NODE-ED25519'` 和 `'NODE-ED448'`
-      算法。
+    description: "移除了专有的 `'NODE-ED25519'` 和 `'NODE-ED448'`算法。"
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: 从 `'ECDH'` 算法中移除了专有的 `'NODE-X25519'` 和 `'NODE-X448'` 命名
-      曲线。
+    description: "从 `'ECDH'` 算法中移除了专有的 `'NODE-X25519'` 和 `'NODE-X448'` 命名曲线。"
 -->
 
 <!-- introduced_in=v15.0.0 -->
@@ -899,13 +894,12 @@ changes:
     - v20.17.0
     - v18.20.5
     pr-url: https://github.com/nodejs/node/pull/53601
-    description: The length parameter is now optional for `'ECDH'`, `'X25519'`,
-                 and `'X448'`.
+    description: "The length parameter is now optional for `'ECDH'`, `'X25519'`,and `'X448'`."
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'X25519'`, and `'X448'` algorithms.
+    description: "Added `'X25519'`, and `'X448'` algorithms."
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -946,7 +940,7 @@ changes:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'X25519'`, and `'X448'` algorithms.
+    description: "Added `'X25519'`, and `'X448'` algorithms."
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -1109,11 +1103,10 @@ changes:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'Ed25519'`, `'Ed448'`, `'X25519'`, and `'X448'`
-      algorithms.
+    description: "Added `'Ed25519'`, `'Ed448'`, `'X25519'`, and `'X448'`algorithms."
   - version: v15.9.0
     pr-url: https://github.com/nodejs/node/pull/37203
-    description: Removed `'NODE-DSA'` JWK export.
+    description: "Removed `'NODE-DSA'` JWK export."
 -->
 
 * `format` {string} 必须是 `'raw'`、`'pkcs8'`、`'spki'`、`'jwk'`、`'raw-secret'`[^modern-algos]、`'raw-public'`[^modern-algos] 或 `'raw-seed'`[^modern-algos] 之一。
@@ -1253,11 +1246,10 @@ changes:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'Ed25519'`, `'Ed448'`, `'X25519'`, and `'X448'`
-      algorithms.
+    description: "Added `'Ed25519'`, `'Ed448'`, `'X25519'`, and `'X448'`algorithms."
   - version: v15.9.0
     pr-url: https://github.com/nodejs/node/pull/37203
-    description: Removed `'NODE-DSA'` JWK import.
+    description: "Removed `'NODE-DSA'` JWK import."
 -->
 
 * `format` {string} 必须是 `'raw'`、`'pkcs8'`、`'spki'`、`'jwk'`、`'raw-secret'`[^modern-algos]、`'raw-public'`[^modern-algos] 或 `'raw-seed'`[^modern-algos] 之一。
@@ -1326,7 +1318,7 @@ changes:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'Ed25519'`, and `'Ed448'` algorithms.
+    description: "Added `'Ed25519'`, and `'Ed448'` algorithms."
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -1436,7 +1428,7 @@ changes:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'Ed25519'`, and `'Ed448'` algorithms.
+    description: "Added `'Ed25519'`, and `'Ed448'` algorithms."
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -1809,7 +1801,7 @@ added: v24.7.0
 changes:
   - version: v25.9.0
     pr-url: https://github.com/nodejs/node/pull/61875
-    description: Renamed `cShakeParams.length` to `cShakeParams.outputLength`.
+    description: "Renamed `cShakeParams.length` to `cShakeParams.outputLength`."
 -->
 
 #### `cShakeParams.name`
@@ -2342,7 +2334,7 @@ added: v24.8.0
 changes:
   - version: v25.9.0
     pr-url: https://github.com/nodejs/node/pull/61875
-    description: Renamed `kmacParams.length` to `kmacParams.outputLength`.
+    description: "Renamed `kmacParams.length` to `kmacParams.outputLength`."
 -->
 
 #### `kmacParams.algorithm`

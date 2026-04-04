@@ -284,7 +284,7 @@ added: v8.0.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `method` {string}
@@ -388,7 +388,7 @@ require('node:inspector').console.log('a message');
 changes:
   - version: v20.6.0
     pr-url: https://github.com/nodejs/node/pull/48765
-    description: inspector.open() 现在返回一个 `Disposable` 对象。
+    description: "inspector.open() 现在返回一个 `Disposable` 对象。"
 -->
 
 * `port` {number} 用于监听检查器连接的端口。可选。

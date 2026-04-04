@@ -73,22 +73,18 @@ changes:
     - v21.7.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/51244
-    description: Added support for
-                `vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`.
+    description: "Added support for`vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`."
   - version:
     - v17.0.0
     - v16.12.0
     pr-url: https://github.com/nodejs/node/pull/40249
-    description: Added support for import attributes to the
-                 `importModuleDynamically` parameter.
+    description: "Added support for import attributes to the`importModuleDynamically` parameter."
   - version: v10.6.0
     pr-url: https://github.com/nodejs/node/pull/20300
-    description: The `produceCachedData` is deprecated in favour of
-                 `script.createCachedData()`.
+    description: "The `produceCachedData` is deprecated in favour of`script.createCachedData()`."
   - version: v5.7.0
     pr-url: https://github.com/nodejs/node/pull/4777
-    description: The `cachedData` and `produceCachedData` options are
-                 supported now.
+    description: "The `cachedData` and `produceCachedData` options aresupported now."
 -->
 
 * `code` {string} 要编译的 JavaScript 代码。
@@ -153,7 +149,7 @@ added: v0.3.1
 changes:
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6635
-    description: The `breakOnSigint` option is supported now.
+    description: "The `breakOnSigint` option is supported now."
 -->
 
 * `contextifiedObject` {Object} 由 `vm.createContext()` 方法返回的 [上下文化的][] 对象。
@@ -216,16 +212,16 @@ changes:
     - v22.8.0
     - v20.18.0
     pr-url: https://github.com/nodejs/node/pull/54394
-    description: The `contextObject` argument now accepts `vm.constants.DONT_CONTEXTIFY`.
+    description: "The `contextObject` argument now accepts `vm.constants.DONT_CONTEXTIFY`."
   - version: v14.6.0
     pr-url: https://github.com/nodejs/node/pull/34023
-    description: The `microtaskMode` option is supported now.
+    description: "The `microtaskMode` option is supported now."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19016
-    description: The `contextCodeGeneration` option is supported now.
+    description: "The `contextCodeGeneration` option is supported now."
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6635
-    description: The `breakOnSigint` option is supported now.
+    description: "The `breakOnSigint` option is supported now."
 -->
 
 * `contextObject` {Object|vm.constants.DONT\_CONTEXTIFY|undefined} [`vm.constants.DONT_CONTEXTIFY`][] 或将被 [上下文化的][] 对象。如果为 `undefined`，将为向后兼容性创建一个空的上下文化对象。
@@ -297,7 +293,7 @@ added: v0.3.1
 changes:
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6635
-    description: The `breakOnSigint` option is supported now.
+    description: "The `breakOnSigint` option is supported now."
 -->
 
 * `options` {Object}
@@ -633,8 +629,7 @@ changes:
     - v20.10.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/50141
-    description: The option `extra.assert` is renamed to `extra.attributes`. The
-                 former name is still provided for backward compatibility.
+    description: "The option `extra.assert` is renamed to `extra.attributes`. Theformer name is still provided for backward compatibility."
 -->
 
 * `linker` {Function}
@@ -857,7 +852,7 @@ changes:
     - v24.4.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/20300
-    description: 已弃用，推荐使用 `sourceTextModule.moduleRequests`。
+    description: "已弃用，推荐使用 `sourceTextModule.moduleRequests`。"
 -->
 
 > 稳定性：0 - 已弃用：请改用 [`sourceTextModule.moduleRequests`][]。
@@ -1085,7 +1080,7 @@ changes:
      - v24.8.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59000
-    description: 调用此方法前不再需要调用 `syntheticModule.link()`。
+    description: "调用此方法前不再需要调用 `syntheticModule.link()`。"
 -->
 
 * `name` {string} 要设置的导出名称。
@@ -1141,33 +1136,28 @@ changes:
     - v21.7.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/51244
-    description: Added support for
-                `vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`.
+    description: "Added support for`vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`."
   - version:
     - v19.6.0
     - v18.15.0
     pr-url: https://github.com/nodejs/node/pull/46320
-    description: The return value now includes `cachedDataRejected`
-                 with the same semantics as the `vm.Script` version
-                 if the `cachedData` option was passed.
+    description: "The return value now includes `cachedDataRejected` with the same semantics as the `vm.Script` version if the `cachedData` option was passed."
   - version:
     - v17.0.0
     - v16.12.0
     pr-url: https://github.com/nodejs/node/pull/40249
-    description: Added support for import attributes to the
-                 `importModuleDynamically` parameter.
+    description: "Added support for import attributes to the`importModuleDynamically` parameter."
   - version: v15.9.0
     pr-url: https://github.com/nodejs/node/pull/35431
-    description: Added `importModuleDynamically` option again.
+    description: "Added `importModuleDynamically` option again."
   - version: v14.3.0
     pr-url: https://github.com/nodejs/node/pull/33364
-    description: Removal of `importModuleDynamically` due to compatibility
-                 issues.
+    description: "Removal of `importModuleDynamically` due to compatibilityissues."
   - version:
     - v14.1.0
     - v13.14.0
     pr-url: https://github.com/nodejs/node/pull/32985
-    description: The `importModuleDynamically` option is now supported.
+    description: "The `importModuleDynamically` option is now supported."
 -->
 
 * `code` {string} 要编译的函数体。
@@ -1229,27 +1219,26 @@ changes:
     - v22.8.0
     - v20.18.0
     pr-url: https://github.com/nodejs/node/pull/54394
-    description: The `contextObject` argument now accepts `vm.constants.DONT_CONTEXTIFY`.
+    description: "The `contextObject` argument now accepts `vm.constants.DONT_CONTEXTIFY`."
   - version:
     - v21.7.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/51244
-    description: Added support for
-                 `vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`.
+    description: "Added support for`vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`."
   - version:
     - v21.2.0
     - v20.11.0
     pr-url: https://github.com/nodejs/node/pull/50360
-    description: The `importModuleDynamically` option is supported now.
+    description: "The `importModuleDynamically` option is supported now."
   - version: v14.6.0
     pr-url: https://github.com/nodejs/node/pull/34023
-    description: The `microtaskMode` option is supported now.
+    description: "The `microtaskMode` option is supported now."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19398
     description: The first argument can no longer be a function.
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19016
-    description: The `codeGeneration` option is supported now.
+    description: "The `codeGeneration` option is supported now."
 -->
 
 * `contextObject` {Object|vm.constants.DONT\_CONTEXTIFY|undefined}
@@ -1438,17 +1427,15 @@ changes:
     - v21.7.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/51244
-    description: 添加了对
-                `vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER` 的支持。
+    description: "添加了对`vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER` 的支持。"
   - version:
     - v17.0.0
     - v16.12.0
     pr-url: https://github.com/nodejs/node/pull/40249
-    description: 添加了对导入属性到
-                 `importModuleDynamically` 参数的支持。
+    description: "添加了对导入属性到`importModuleDynamically` 参数的支持。"
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6635
-    description: 现在支持 `breakOnSigint` 选项。
+    description: "现在支持 `breakOnSigint` 选项。"
 -->
 
 * `code` {string} 要编译和运行的 JavaScript 代码。
@@ -1510,28 +1497,26 @@ changes:
     - v22.8.0
     - v20.18.0
     pr-url: https://github.com/nodejs/node/pull/54394
-    description: `contextObject` 参数现在接受 `vm.constants.DONT_CONTEXTIFY`。
+    description: "`contextObject` 参数现在接受 `vm.constants.DONT_CONTEXTIFY`。"
   - version:
     - v21.7.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/51244
-    description: 添加了对
-                `vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER` 的支持。
+    description: "添加了对`vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER` 的支持。"
   - version:
     - v17.0.0
     - v16.12.0
     pr-url: https://github.com/nodejs/node/pull/40249
-    description: 添加了对导入属性到
-                 `importModuleDynamically` 参数的支持。
+    description: "添加了对导入属性到`importModuleDynamically` 参数的支持。"
   - version: v14.6.0
     pr-url: https://github.com/nodejs/node/pull/34023
-    description: 现在支持 `microtaskMode` 选项。
+    description: "现在支持 `microtaskMode` 选项。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19016
-    description: 现在支持 `contextCodeGeneration` 选项。
+    description: "现在支持 `contextCodeGeneration` 选项。"
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6635
-    description: 现在支持 `breakOnSigint` 选项。
+    description: "现在支持 `breakOnSigint` 选项。"
 -->
 
 * `code` {string} 要编译和运行的 JavaScript 代码。
@@ -1636,16 +1621,15 @@ changes:
     - v21.7.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/51244
-    description: 添加了对
-                `vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER` 的支持。
+    description: "添加了对`vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER` 的支持。"
   - version:
     - v17.0.0
     - v16.12.0
     pr-url: https://github.com/nodejs/node/pull/40249
-    description: 为 `importModuleDynamically` 参数添加了对 import 属性的支持。
+    description: "为 `importModuleDynamically` 参数添加了对 import 属性的支持。"
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6635
-    description: 现在支持 `breakOnSigint` 选项。
+    description: "现在支持 `breakOnSigint` 选项。"
 -->
 
 * `code` {string} 要编译和运行的 JavaScript 代码。

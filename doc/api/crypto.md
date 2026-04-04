@@ -810,7 +810,7 @@ added: v0.1.94
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: 默认 `inputEncoding` 从 `binary` 改为 `utf8`。
+    description: "默认 `inputEncoding` 从 `binary` 改为 `utf8`。"
 -->
 
 * `data` {string|Buffer|TypedArray|DataView}
@@ -1047,7 +1047,7 @@ changes:
     description: buffer 参数可以是字符串或 ArrayBuffer，并且限制为不超过 2 ** 31 - 1 字节。
   - version: v7.2.0
     pr-url: https://github.com/nodejs/node/pull/9398
-    description: 此方法现在返回对 `decipher` 的引用。
+    description: "此方法现在返回对 `decipher` 的引用。"
 -->
 
 * `buffer` {string|ArrayBuffer|Buffer|TypedArray|DataView}
@@ -1071,12 +1071,12 @@ added: v1.0.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/61084
-    description: 创建 `decipher` 时未指定 `authTagLength` 选项而使用 128 位以外的 GCM 标签长度不再被允许。
+    description: "创建 `decipher` 时未指定 `authTagLength` 选项而使用 128 位以外的 GCM 标签长度不再被允许。"
   - version:
     - v22.0.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52345
-    description: 创建 `decipher` 时未指定 `authTagLength` 选项而使用 128 位以外的 GCM 标签长度已弃用。
+    description: "创建 `decipher` 时未指定 `authTagLength` 选项而使用 128 位以外的 GCM 标签长度已弃用。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: buffer 参数可以是字符串或 ArrayBuffer，并且限制为不超过 2 ** 31 - 1 字节。
@@ -1085,7 +1085,7 @@ changes:
     description: 如果 GCM 标签长度无效，此方法现在将抛出错误。
   - version: v7.2.0
     pr-url: https://github.com/nodejs/node/pull/9398
-    description: 此方法现在返回对 `decipher` 的引用。
+    description: "此方法现在返回对 `decipher` 的引用。"
 -->
 
 * `buffer` {string|Buffer|ArrayBuffer|TypedArray|DataView}
@@ -1121,7 +1121,7 @@ added: v0.1.94
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: 默认 `inputEncoding` 从 `binary` 更改为 `utf8`。
+    description: "默认 `inputEncoding` 从 `binary` 更改为 `utf8`。"
 -->
 
 * `data` {string|Buffer|TypedArray|DataView}
@@ -1477,7 +1477,7 @@ changes:
     description: 更改错误格式以更好地支持无效公钥错误。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: 默认 `inputEncoding` 从 `binary` 更改为 `utf8`。
+    description: "默认 `inputEncoding` 从 `binary` 更改为 `utf8`。"
 -->
 
 * `otherPublicKey` {string|ArrayBuffer|Buffer|TypedArray|DataView}
@@ -1805,7 +1805,7 @@ added: v0.1.92
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: 默认 `inputEncoding` 从 `binary` 改为 `utf8`。
+    description: "默认 `inputEncoding` 从 `binary` 改为 `utf8`。"
 -->
 
 * `data` {string|Buffer|TypedArray|DataView}
@@ -1954,7 +1954,7 @@ added: v0.1.94
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: 默认 `inputEncoding` 从 `binary` 改为 `utf8`。
+    description: "默认 `inputEncoding` 从 `binary` 改为 `utf8`。"
 -->
 
 * `data` {string|Buffer|TypedArray|DataView}
@@ -1977,7 +1977,7 @@ changes:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33360
-    description: 此类的实例现在可以使用 `postMessage` 传递给 worker 线程。
+    description: "此类的实例现在可以使用 `postMessage` 传递给 worker 线程。"
   - version: v11.13.0
     pr-url: https://github.com/nodejs/node/pull/26438
     description: 此类现在已导出。
@@ -1997,7 +1997,7 @@ added: v15.0.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: 将不可提取的 CryptoKey 作为 `key` 传递已弃用。
+    description: "将不可提取的 CryptoKey 作为 `key` 传递已弃用。"
 -->
 
 * `key` {CryptoKey}
@@ -2044,7 +2044,7 @@ added: v15.7.0
 changes:
   - version: v16.9.0
     pr-url: https://github.com/nodejs/node/pull/39851
-    description: 公开 RSA-PSS 密钥的 `RSASSA-PSS-params` 序列参数。
+    description: "公开 RSA-PSS 密钥的 `RSASSA-PSS-params` 序列参数。"
 -->
 
 * 类型：{Object}
@@ -2080,19 +2080,19 @@ changes:
      - v13.9.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/31178
-    description: 添加了对 `'dh'` 的支持。
+    description: "添加了对 `'dh'` 的支持。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26960
-    description: 添加了对 `'rsa-pss'` 的支持。
+    description: "添加了对 `'rsa-pss'` 的支持。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26786
-    description: 此属性现在对于无法识别类型的 KeyObject 实例返回 `undefined`，而不是中止。
+    description: "此属性现在对于无法识别类型的 KeyObject 实例返回 `undefined`，而不是中止。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26774
-    description: 添加了对 `'x25519'` 和 `'x448'` 的支持。
+    description: "添加了对 `'x25519'` 和 `'x448'` 的支持。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26319
-    description: 添加了对 `'ed25519'` 和 `'ed448'` 的支持。
+    description: "添加了对 `'ed25519'` 和 `'ed448'` 的支持。"
 -->
 
 * 类型：{string}
@@ -2121,13 +2121,13 @@ added: v11.6.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62240
-    description: 添加了对 `'raw-public'`、`'raw-private'` 和 `'raw-seed'` 格式的支持。
+    description: "添加了对 `'raw-public'`、`'raw-private'` 和 `'raw-seed'` 格式的支持。"
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62178
-    description: ML-KEM 和 ML-DSA 私钥 `'pkcs8'` 导出现在在可用种子时默认仅使用种子格式。
+    description: "ML-KEM 和 ML-DSA 私钥 `'pkcs8'` 导出现在在可用种子时默认仅使用种子格式。"
   - version: v15.9.0
     pr-url: https://github.com/nodejs/node/pull/37081
-    description: 添加了对 `'jwk'` 格式的支持。
+    description: "添加了对 `'jwk'` 格式的支持。"
 -->
 
 * `options` {Object}
@@ -2370,7 +2370,7 @@ added: v0.1.92
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: 默认 `inputEncoding` 从 `binary` 更改为 `utf8`。
+    description: "默认 `inputEncoding` 从 `binary` 更改为 `utf8`。"
 -->
 
 * `data` {string|Buffer|TypedArray|DataView}
@@ -2405,7 +2405,7 @@ added: v0.1.92
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: 默认 `inputEncoding` 从 `binary` 更改为 `utf8`。
+    description: "默认 `inputEncoding` 从 `binary` 更改为 `utf8`。"
 -->
 
 * `data` {string|Buffer|TypedArray|DataView}
@@ -2522,19 +2522,17 @@ added: v15.6.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41600
-    description: The subject option now defaults to `'default'`.
+    description: "The subject option now defaults to `'default'`."
   - version:
       - v17.5.0
       - v16.14.1
     pr-url: https://github.com/nodejs/node/pull/41599
-    description: The `wildcards`, `partialWildcards`, `multiLabelWildcards`, and
-                 `singleLabelSubdomains` options have been removed since they
-                 had no effect.
+    description: "The `wildcards`, `partialWildcards`, `multiLabelWildcards`, and`singleLabelSubdomains` options have been removed since theyhad no effect."
   - version:
     - v17.5.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41569
-    description: The subject option can now be set to `'default'`.
+    description: "The subject option can now be set to `'default'`."
 -->
 
 * `email` {string}
@@ -2558,12 +2556,12 @@ added: v15.6.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41600
-    description: The subject option now defaults to `'default'`.
+    description: "The subject option now defaults to `'default'`."
   - version:
     - v17.5.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41569
-    description: The subject option can now be set to `'default'`.
+    description: "The subject option can now be set to `'default'`."
 -->
 
 * `name` {string}
@@ -2595,7 +2593,7 @@ changes:
       - v17.5.0
       - v16.14.1
     pr-url: https://github.com/nodejs/node/pull/41571
-    description: The `options` argument has been removed since it had no effect.
+    description: "The `options` argument has been removed since it had no effect."
 -->
 
 * `ip` {string}
@@ -2682,8 +2680,7 @@ changes:
       - v17.3.1
       - v16.13.2
     pr-url: https://github.com/nodejs-private/node-private/pull/300
-    description: Parts of this string may be encoded as JSON string literals
-                 in response to CVE-2021-44532.
+    description: "Parts of this string may be encoded as JSON string literalsin response to CVE-2021-44532."
 -->
 
 * 类型：{string}
@@ -2775,8 +2772,7 @@ changes:
       - v17.3.1
       - v16.13.2
     pr-url: https://github.com/nodejs-private/node-private/pull/300
-    description: Parts of this string may be encoded as JSON string literals
-                 in response to CVE-2021-44532.
+    description: "Parts of this string may be encoded as JSON string literalsin response to CVE-2021-44532."
 -->
 
 * 类型：{string}
@@ -3033,7 +3029,7 @@ added: v15.8.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `candidate` {ArrayBuffer|SharedArrayBuffer|TypedArray|Buffer|DataView|bigint}
@@ -3077,32 +3073,32 @@ added: v0.1.94
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: 传递 CryptoKey 作为 `key` 已弃用。
+    description: "传递 CryptoKey 作为 `key` 已弃用。"
   - version:
     - v17.9.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42427
-    description: 使用 `chacha20-poly1305` 密码时，`authTagLength` 选项现在是可选的，默认为 16 字节。
+    description: "使用 `chacha20-poly1305` 密码时，`authTagLength` 选项现在是可选的，默认为 16 字节。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: password 和 iv 参数可以是 ArrayBuffer，并且每个都限制为最大 2 ** 31 - 1 字节。
   - version: v11.6.0
     pr-url: https://github.com/nodejs/node/pull/24234
-    description: `key` 参数现在可以是 `KeyObject`。
+    description: "`key` 参数现在可以是 `KeyObject`。"
   - version:
      - v11.2.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/24081
-    description: 现在支持密码 `chacha20-poly1305`（ChaCha20-Poly1305 的 IETF 变体）。
+    description: "现在支持密码 `chacha20-poly1305`（ChaCha20-Poly1305 的 IETF 变体）。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/21447
     description: 现在支持 OCB 模式下的密码。
   - version: v10.2.0
     pr-url: https://github.com/nodejs/node/pull/20235
-    description: `authTagLength` 选项现在可用于在 GCM 模式下生成更短的认证标签，默认为 16 字节。
+    description: "`authTagLength` 选项现在可用于在 GCM 模式下生成更短的认证标签，默认为 16 字节。"
   - version: v9.9.0
     pr-url: https://github.com/nodejs/node/pull/18644
-    description: 对于不需要初始化向量的密码，`iv` 参数现在可以是 `null`。
+    description: "对于不需要初始化向量的密码，`iv` 参数现在可以是 `null`。"
 -->
 
 * `algorithm` {string}
@@ -3130,29 +3126,29 @@ added: v0.1.94
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: 传递 CryptoKey 作为 `key` 已弃用。
+    description: "传递 CryptoKey 作为 `key` 已弃用。"
   - version:
     - v17.9.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42427
-    description: 使用 `chacha20-poly1305` 密码时，`authTagLength` 选项现在是可选的，默认为 16 字节。
+    description: "使用 `chacha20-poly1305` 密码时，`authTagLength` 选项现在是可选的，默认为 16 字节。"
   - version: v11.6.0
     pr-url: https://github.com/nodejs/node/pull/24234
-    description: `key` 参数现在可以是 `KeyObject`。
+    description: "`key` 参数现在可以是 `KeyObject`。"
   - version:
      - v11.2.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/24081
-    description: 现在支持密码 `chacha20-poly1305`（ChaCha20-Poly1305 的 IETF 变体）。
+    description: "现在支持密码 `chacha20-poly1305`（ChaCha20-Poly1305 的 IETF 变体）。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/21447
     description: 现在支持 OCB 模式下的密码。
   - version: v10.2.0
     pr-url: https://github.com/nodejs/node/pull/20039
-    description: `authTagLength` 选项现在可用于限制接受的 GCM 认证标签长度。
+    description: "`authTagLength` 选项现在可用于限制接受的 GCM 认证标签长度。"
   - version: v9.9.0
     pr-url: https://github.com/nodejs/node/pull/18644
-    description: 对于不需要初始化向量的密码，`iv` 参数现在可以是 `null`。
+    description: "对于不需要初始化向量的密码，`iv` 参数现在可以是 `null`。"
 -->
 
 * `algorithm` {string}
@@ -3180,13 +3176,13 @@ added: v0.11.12
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: `prime` 参数现在可以是任何 `TypedArray` 或 `DataView`。
+    description: "`prime` 参数现在可以是任何 `TypedArray` 或 `DataView`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11983
-    description: `prime` 参数现在可以是 `Uint8Array`。
+    description: "`prime` 参数现在可以是 `Uint8Array`。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: 编码参数的默认值从 `binary` 改为 `utf8`。
+    description: "编码参数的默认值从 `binary` 改为 `utf8`。"
 -->
 
 * `prime` {string|ArrayBuffer|Buffer|TypedArray|DataView}
@@ -3245,7 +3241,7 @@ added: v0.1.92
 changes:
   - version: v12.8.0
     pr-url: https://github.com/nodejs/node/pull/28805
-    description: 为 XOF 哈希函数添加了 `outputLength` 选项。
+    description: "为 XOF 哈希函数添加了 `outputLength` 选项。"
 -->
 
 * `algorithm` {string}
@@ -3315,13 +3311,13 @@ added: v0.1.94
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: 传递 CryptoKey 作为 `key` 已弃用。
+    description: "传递 CryptoKey 作为 `key` 已弃用。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: key 也可以是 ArrayBuffer 或 CryptoKey。添加了 encoding 选项。key 不能包含超过 2 ** 32 - 1 字节。
   - version: v11.6.0
     pr-url: https://github.com/nodejs/node/pull/24234
-    description: `key` 参数现在可以是 `KeyObject`。
+    description: "`key` 参数现在可以是 `KeyObject`。"
 -->
 
 * `algorithm` {string}
@@ -3395,10 +3391,10 @@ added: v11.6.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: 传递 CryptoKey 作为 `key` 已弃用。
+    description: "传递 CryptoKey 作为 `key` 已弃用。"
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62240
-    description: 添加了对 `'raw-private'` 和 `'raw-seed'` 格式的支持。
+    description: "添加了对 `'raw-private'` 和 `'raw-seed'` 格式的支持。"
   - version: v24.6.0
     pr-url: https://github.com/nodejs/node/pull/59259
     description: 添加对 ML-DSA 密钥的支持。
@@ -3436,10 +3432,10 @@ added: v11.6.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: 传递 CryptoKey 作为 `key` 已弃用。
+    description: "传递 CryptoKey 作为 `key` 已弃用。"
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62240
-    description: 添加了对 `'raw-public'` 格式的支持。
+    description: "添加了对 `'raw-public'` 格式的支持。"
   - version: v24.6.0
     pr-url: https://github.com/nodejs/node/pull/59259
     description: 添加对 ML-DSA 密钥的支持。
@@ -3451,10 +3447,10 @@ changes:
     description: key 也可以是 ArrayBuffer。添加了 encoding 选项。key 不能包含超过 2 ** 32 - 1 字节。
   - version: v11.13.0
     pr-url: https://github.com/nodejs/node/pull/26278
-    description: `key` 参数现在可以是类型为 `private` 的 `KeyObject`。
+    description: "`key` 参数现在可以是类型为 `private` 的 `KeyObject`。"
   - version: v11.7.0
     pr-url: https://github.com/nodejs/node/pull/25217
-    description: `key` 参数现在可以是私钥。
+    description: "`key` 参数现在可以是私钥。"
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -3639,7 +3635,7 @@ added: v15.0.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `type` {string} 生成的密钥的预期用途。当前接受的值为 `'hmac'` 和 `'aes'`。
@@ -3693,10 +3689,10 @@ changes:
     description: 添加对 ML-DSA 密钥对的支持。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v16.10.0
     pr-url: https://github.com/nodejs/node/pull/39927
-    description: 添加为 RSA-PSS 密钥对定义 `RSASSA-PSS-params` 序列参数的能力。
+    description: "添加为 RSA-PSS 密钥对定义 `RSASSA-PSS-params` 序列参数的能力。"
   - version:
      - v13.9.0
      - v12.17.0
@@ -3713,7 +3709,7 @@ changes:
     description: 添加生成 Ed25519 和 Ed448 密钥对的能力。
   - version: v11.6.0
     pr-url: https://github.com/nodejs/node/pull/24234
-    description: 如果未指定编码，`generateKeyPair` 和 `generateKeyPairSync` 函数现在生成密钥对象。
+    description: "如果未指定编码，`generateKeyPair` 和 `generateKeyPairSync` 函数现在生成密钥对象。"
 -->
 
 * `type` {string} 要生成的非对称密钥类型。参见支持的 [非对称密钥类型][]。
@@ -3807,7 +3803,7 @@ changes:
     description: 添加对 ML-DSA 密钥对的支持。
   - version: v16.10.0
     pr-url: https://github.com/nodejs/node/pull/39927
-    description: 添加为 RSA-PSS 密钥对定义 `RSASSA-PSS-params` 序列参数的能力。
+    description: "添加为 RSA-PSS 密钥对定义 `RSASSA-PSS-params` 序列参数的能力。"
   - version:
      - v13.9.0
      - v12.17.0
@@ -3824,7 +3820,7 @@ changes:
     description: 添加生成 Ed25519 和 Ed448 密钥对的能力。
   - version: v11.6.0
     pr-url: https://github.com/nodejs/node/pull/24234
-    description: 如果未指定编码，`generateKeyPair` 和 `generateKeyPairSync` 函数现在生成密钥对象。
+    description: "如果未指定编码，`generateKeyPair` 和 `generateKeyPairSync` 函数现在生成密钥对象。"
 -->
 
 * `type` {string} 要生成的非对称密钥类型。参见支持的 [非对称密钥类型][]。
@@ -3943,7 +3939,7 @@ added: v15.8.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `size` {number} 要生成的素数的大小（位）。
@@ -4181,7 +4177,7 @@ changes:
     description: 此 API 不再处于实验阶段。
   - version: v24.4.0
     pr-url: https://github.com/nodejs/node/pull/58121
-    description: 为 XOF 哈希函数添加了 `outputLength` 选项。
+    description: "为 XOF 哈希函数添加了 `outputLength` 选项。"
 -->
 
 * `algorithm` {string|undefined}
@@ -4243,7 +4239,7 @@ changes:
     description: 输入密钥材料现在可以是零长度。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `digest` {string} 要使用的摘要算法。
@@ -4335,22 +4331,22 @@ added: v0.5.5
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: password 和 salt 参数也可以是 ArrayBuffer 实例。
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/30578
-    description: `iterations` 参数现在限制为正值。早期版本将其他值视为一。
+    description: "`iterations` 参数现在限制为正值。早期版本将其他值视为一。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11305
-    description: `digest` 参数现在总是必需的。
+    description: "`digest` 参数现在总是必需的。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4047
-    description: 调用此函数而不传递 `digest` 参数现已弃用，并将发出警告。
+    description: "调用此函数而不传递 `digest` 参数现已弃用，并将发出警告。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: 如果 `password` 是字符串，其默认编码已从 `binary` 更改为 `utf8`。
+    description: "如果 `password` 是字符串，其默认编码已从 `binary` 更改为 `utf8`。"
 -->
 
 * `password` {string|ArrayBuffer|Buffer|TypedArray|DataView}
@@ -4405,13 +4401,13 @@ added: v0.9.3
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/30578
-    description: `iterations` 参数现在限制为正值。早期版本将其他值视为一。
+    description: "`iterations` 参数现在限制为正值。早期版本将其他值视为一。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4047
-    description: 调用此函数而不传递 `digest` 参数现已弃用，并将发出警告。
+    description: "调用此函数而不传递 `digest` 参数现已弃用，并将发出警告。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: 如果 `password` 是字符串，其默认编码已从 `binary` 更改为 `utf8`。
+    description: "如果 `password` 是字符串，其默认编码已从 `binary` 更改为 `utf8`。"
 -->
 
 * `password` {string|Buffer|TypedArray|DataView}
@@ -4461,16 +4457,16 @@ changes:
       - v20.11.1
       - v18.19.1
     pr-url: https://github.com/nodejs-private/node-private/pull/515
-    description: 除非 OpenSSL 构建支持隐式拒绝，否则 `RSA_PKCS1_PADDING` 填充已被禁用。
+    description: "除非 OpenSSL 构建支持隐式拒绝，否则 `RSA_PKCS1_PADDING` 填充已被禁用。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: 添加了 string、ArrayBuffer 和 CryptoKey 作为允许的密钥类型。oaepLabel 可以是 ArrayBuffer。buffer 可以是 string 或 ArrayBuffer。所有接受 buffer 的类型限制为最大 2 ** 31 - 1 字节。
   - version: v12.11.0
     pr-url: https://github.com/nodejs/node/pull/29489
-    description: 添加了 `oaepLabel` 选项。
+    description: "添加了 `oaepLabel` 选项。"
   - version: v12.9.0
     pr-url: https://github.com/nodejs/node/pull/28335
-    description: 添加了 `oaepHash` 选项。
+    description: "添加了 `oaepHash` 选项。"
   - version: v11.6.0
     pr-url: https://github.com/nodejs/node/pull/24234
     description: 此函数现在支持密钥对象。
@@ -4562,10 +4558,10 @@ changes:
     description: 添加了 string、ArrayBuffer 和 CryptoKey 作为允许的密钥类型。oaepLabel 和 passphrase 可以是 ArrayBuffer。buffer 可以是 string 或 ArrayBuffer。所有接受 buffer 的类型限制为最大 2 ** 31 - 1 字节。
   - version: v12.11.0
     pr-url: https://github.com/nodejs/node/pull/29489
-    description: 添加了 `oaepLabel` 选项。
+    description: "添加了 `oaepLabel` 选项。"
   - version: v12.9.0
     pr-url: https://github.com/nodejs/node/pull/28335
-    description: 添加了 `oaepHash` 选项。
+    description: "添加了 `oaepHash` 选项。"
   - version: v11.6.0
     pr-url: https://github.com/nodejs/node/pull/24234
     description: 此函数现在支持密钥对象。
@@ -4598,10 +4594,10 @@ added: v0.5.8
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/16454
-    description: 将 `null` 作为 `callback` 参数传递现在会抛出 `ERR_INVALID_CALLBACK`。
+    description: "将 `null` 作为 `callback` 参数传递现在会抛出 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `size` {number} 要生成的字节数。`size` 不得大于 `2**31 - 1`。
@@ -4677,10 +4673,10 @@ added:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15231
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
 -->
 
 * `buffer` {ArrayBuffer|Buffer|TypedArray|DataView} 必须提供。提供的 `buffer` 的大小不得大于 `2**31 - 1`。
@@ -4803,7 +4799,7 @@ added:
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15231
-    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
+    description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
 -->
 
 * `buffer` {ArrayBuffer|Buffer|TypedArray|DataView} 必须提供。提供的 `buffer` 的大小不得大于 `2**31 - 1`。
@@ -4886,7 +4882,7 @@ added:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `min` {integer} 随机范围的开始（包含）。**默认：** `0`。
@@ -4984,7 +4980,7 @@ added: v10.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: password 和 salt 参数也可以是 ArrayBuffer 实例。
@@ -4992,10 +4988,10 @@ changes:
      - v12.8.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/28799
-    description: `maxmem` 值现在可以是任何安全整数。
+    description: "`maxmem` 值现在可以是任何安全整数。"
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21525
-    description: 添加了 `cost`、`blockSize` 和 `parallelization` 选项名称。
+    description: "添加了 `cost`、`blockSize` 和 `parallelization` 选项名称。"
 -->
 
 * `password` {string|ArrayBuffer|Buffer|TypedArray|DataView}
@@ -5066,10 +5062,10 @@ changes:
      - v12.8.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/28799
-    description: `maxmem` 值现在可以是任何安全整数。
+    description: "`maxmem` 值现在可以是任何安全整数。"
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21525
-    description: 添加了 `cost`、`blockSize` 和 `parallelization` 选项名称。
+    description: "添加了 `cost`、`blockSize` 和 `parallelization` 选项名称。"
 -->
 
 * `password` {string|Buffer|TypedArray|DataView}
@@ -5195,7 +5191,7 @@ changes:
     description: 添加对 ML-DSA 签名的支持。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v15.12.0
     pr-url: https://github.com/nodejs/node/pull/37500
     description: 添加了可选的 callback 参数。
@@ -5306,8 +5302,7 @@ changes:
     description: 添加对 ML-DSA 签名验证的支持。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v15.12.0
     pr-url: https://github.com/nodejs/node/pull/37500
     description: 添加了可选的 callback 参数。

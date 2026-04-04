@@ -43,10 +43,10 @@ added: v0.4.5
 changes:
   - version: v5.3.0
     pr-url: https://github.com/nodejs/node/pull/4252
-    description: 支持 `0` `maxCachedSessions` 以禁用 TLS 會話緩存。
+    description: "支持 `0` `maxCachedSessions` 以禁用 TLS 會話緩存。"
   - version: v2.5.0
     pr-url: https://github.com/nodejs/node/pull/2228
-    description: 參數 `maxCachedSessions` 添加到 `options` 用於 TLS 會話復用。
+    description: "參數 `maxCachedSessions` 添加到 `options` 用於 TLS 會話復用。"
 -->
 
 一個用於 HTTPS 的 [`Agent`][] 對象，類似於 [`http.Agent`][]。詳見 [`https.request()`][] 獲取更多信息。
@@ -63,12 +63,12 @@ changes:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: 添加對 `proxyEnv` 的支持。
+    description: "添加對 `proxyEnv` 的支持。"
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: 添加對 `defaultPort` 和 `protocol` 的支持。
+    description: "添加對 `defaultPort` 和 `protocol` 的支持。"
   - version: v12.5.0
     pr-url: https://github.com/nodejs/node/pull/28209
     description: 如果目標主機是使用 IP 地址指定的，則不自動設置 servername。
@@ -323,10 +323,10 @@ added: v0.3.6
 changes:
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21616
-    description: `url` 參數現在可以與單獨的 `options` 對象一起傳遞。
+    description: "`url` 參數現在可以與單獨的 `options` 對象一起傳遞。"
   - version: v7.5.0
     pr-url: https://github.com/nodejs/node/pull/10638
-    description: `options` 參數可以是 WHATWG `URL` 對象。
+    description: "`options` 參數可以是 WHATWG `URL` 對象。"
 -->
 
 * `url` {string | URL}
@@ -395,26 +395,26 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53329
-    description: `clientCertEngine` 选项依赖于 OpenSSL 中的自定义引擎支持，该支持在 OpenSSL 3 中已弃用。
+    description: "`clientCertEngine` 选项依赖于 OpenSSL 中的自定义引擎支持，该支持在 OpenSSL 3 中已弃用。"
   - version:
       - v16.7.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/39310
-    description: 当使用 `URL` 对象时，解析后的用户名和密码现在将进行正确的 URI 解码。
+    description: "当使用 `URL` 对象时，解析后的用户名和密码现在将进行正确的 URI 解码。"
   - version:
       - v14.1.0
       - v13.14.0
     pr-url: https://github.com/nodejs/node/pull/32786
-    description: 现在接受 `highWaterMark` 选项。
+    description: "现在接受 `highWaterMark` 选项。"
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21616
-    description: 现在可以连同单独的 `options` 对象一起传递 `url` 参数。
+    description: "现在可以连同单独的 `options` 对象一起传递 `url` 参数。"
   - version: v9.3.0
     pr-url: https://github.com/nodejs/node/pull/14903
-    description: `options` 参数现在可以包含 `clientCertEngine`。
+    description: "`options` 参数现在可以包含 `clientCertEngine`。"
   - version: v7.5.0
     pr-url: https://github.com/nodejs/node/pull/10638
-    description: `options` 参数可以是 WHATWG `URL` 对象。
+    description: "`options` 参数可以是 WHATWG `URL` 对象。"
 -->
 
 * `url` {string | URL}

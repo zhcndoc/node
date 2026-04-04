@@ -603,7 +603,7 @@ changes:
     - v21.7.0
     - v20.17.0
     pr-url: https://github.com/nodejs/node/pull/50888
-    description: 添加了 `min` 选项。
+    description: "添加了 `min` 选项。"
 -->
 
 * `view` {Buffer|TypedArray|DataView}
@@ -1345,12 +1345,12 @@ changes:
     - v24.7.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59464
-    description: format 现在接受 `brotli` 值。
+    description: "format 现在接受 `brotli` 值。"
   - version:
     - v21.2.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/50097
-    description: format 现在接受 `deflate-raw` 值。
+    description: "format 现在接受 `deflate-raw` 值。"
 -->
 
 * `format` {string} `'deflate'`、`'deflate-raw'`、`'gzip'` 或 `'brotli'` 之一。
@@ -1390,12 +1390,12 @@ changes:
     - v24.7.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59464
-    description: format 现在接受 `brotli` 值。
+    description: "format 现在接受 `brotli` 值。"
   - version:
     - v21.2.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/50097
-    description: format 现在接受 `deflate-raw` 值。
+    description: "format 现在接受 `deflate-raw` 值。"
 -->
 
 * `format` {string} `'deflate'`、`'deflate-raw'`、`'gzip'` 或 `'brotli'` 之一。

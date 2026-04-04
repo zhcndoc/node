@@ -134,19 +134,18 @@ changes:
     - v22.13.0
     - v20.19.0
     pr-url: https://github.com/nodejs/node/pull/56194
-    description: 此功能默认不再发出实验性警告，
-                 尽管仍可以通过 --trace-require-module 发出警告。
+    description: "此功能默认不再发出实验性警告，尽管仍可以通过 --trace-require-module 发出警告。"
   - version:
     - v23.0.0
     - v22.12.0
     - v20.19.0
     pr-url: https://github.com/nodejs/node/pull/55085
-    description: 此功能不再隐藏在 `--experimental-require-module` CLI 标志后面。
+    description: "此功能不再隐藏在 `--experimental-require-module` CLI 标志后面。"
   - version:
     - v23.0.0
     - v22.12.0
     pr-url: https://github.com/nodejs/node/pull/54563
-    description: 在 `require(esm)` 中支持 `'module.exports'` 互操作导出。
+    description: "在 `require(esm)` 中支持 `'module.exports'` 互操作导出。"
 -->
 
 `.mjs` 扩展名保留给 [ECMAScript 模块][]。
@@ -411,7 +410,7 @@ changes:
       - v16.0.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37246
-    description: Added `node:` import support to `require(...)`.
+    description: "Added `node:` import support to `require(...)`."
 -->
 
 Node.js 有几个编译到二进制文件中的模块。这些模块在本文档的其他部分有更详细的描述。
@@ -790,7 +789,7 @@ added: v0.3.0
 changes:
   - version: v8.9.0
     pr-url: https://github.com/nodejs/node/pull/16397
-    description: The `paths` option is now supported.
+    description: "The `paths` option is now supported."
 -->
 
 * `request` {string} 要解析的模块路径。

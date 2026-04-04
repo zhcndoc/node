@@ -3250,7 +3250,7 @@ changes:
      - v10.15.0
     commit: 186035243fad247e3955f
     pr-url: https://github.com/nodejs-private/node-private/pull/143
-    description: `http_parser` 中的最大头大小设置为 8 KiB。
+    description: "`http_parser` 中的最大头大小设置为 8 KiB。"
 -->
 
 接收到的 HTTP 头数据过多。为了防止恶意或配置错误的客户端，如果接收到超过 `maxHeaderSize` 的 HTTP 头数据，则 HTTP 解析将中止，不会创建请求或响应对象，并将发出带有此代码的 `Error`。
@@ -3273,7 +3273,7 @@ changes:
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25690
-    description: 添加了 `requireStack` 属性。
+    description: "添加了 `requireStack` 属性。"
 -->
 
 CommonJS 模块加载器在尝试 [`require()`][] 操作或加载程序入口点时无法解析模块文件。
@@ -3492,7 +3492,7 @@ removed: v21.0.0
 changes:
   - version: v21.0.0
     pr-url: https://github.com/nodejs/node/pull/47839
-    description: 改为抛出 `DOMException`。
+    description: "改为抛出 `DOMException`。"
 -->
 
 无效的传输对象被传递给 `postMessage()`。
@@ -3597,7 +3597,7 @@ removed: v21.0.0
 changes:
   - version: v21.0.0
     pr-url: https://github.com/nodejs/node/pull/47839
-    description: 改为抛出 `DOMException`。
+    description: "改为抛出 `DOMException`。"
 -->
 
 需要显式列在 `transferList` 参数中的对象存在于传递给 [`postMessage()`][] 调用的对象中，但未在该调用的 `transferList` 中提供。通常，这是一个 `MessagePort`。
@@ -3693,9 +3693,7 @@ removed: v10.12.0
 changes:
   - version: v10.12.0
     pr-url: https://github.com/nodejs/node/pull/23053
-    description: `process.stderr.end()` 现在不再抛出错误，而是
-                 只关闭流一侧而不关闭底层资源，
-                 使得此错误已过时。
+    description: "`process.stderr.end()` 现在不再抛出错误，而是只关闭流一侧而不关闭底层资源，使得此错误已过时。"
 -->
 
 尝试关闭 `process.stderr` 流。按照设计，Node.js 不允许用户代码关闭 `stdout` 或 `stderr` 流。
@@ -3709,9 +3707,7 @@ removed: v10.12.0
 changes:
   - version: v10.12.0
     pr-url: https://github.com/nodejs/node/pull/23053
-    description: `process.stderr.end()` 现在不再抛出错误，而是
-                 只关闭流一侧而不关闭底层资源，
-                 使得此错误已过时。
+    description: "`process.stderr.end()` 现在不再抛出错误，而是只关闭流一侧而不关闭底层资源，使得此错误已过时。"
 -->
 
 尝试关闭 `process.stdout` 流。按照设计，Node.js 不允许用户代码关闭 `stdout` 或 `stderr` 流。

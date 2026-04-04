@@ -1157,12 +1157,12 @@ added:
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/54548
-    description: 非 TTY 标准输出上的默认报告器已从 `tap` 更改为 `spec`，与 TTY 标准输出保持一致。
+    description: "非 TTY 标准输出上的默认报告器已从 `tap` 更改为 `spec`，与 TTY 标准输出保持一致。"
   - version:
     - v19.9.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47238
-    description: 报告器现在暴露在 `node:test/reporters` 上。
+    description: "报告器现在暴露在 `node:test/reporters` 上。"
 -->
 
 `node:test` 模块支持传递 [`--test-reporter`][] 标志，以便测试运行器使用特定的报告器。
@@ -1420,13 +1420,13 @@ changes:
      - v25.6.0
      - v24.14.0
     pr-url: https://github.com/nodejs/node/pull/61367
-    description: 添加 `env` 选项。
+    description: "添加 `env` 选项。"
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59443
     description: 添加了 rerunFailuresFilePath 选项。
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/54705
-    description: 添加了 `cwd` 选项。
+    description: "添加了 `cwd` 选项。"
   - version:
     - v23.0.0
     - v22.10.0
@@ -1434,15 +1434,15 @@ changes:
     description: 添加了覆盖率选项。
   - version: v22.8.0
     pr-url: https://github.com/nodejs/node/pull/53927
-    description: 添加了 `isolation` 选项。
+    description: "添加了 `isolation` 选项。"
   - version: v22.6.0
     pr-url: https://github.com/nodejs/node/pull/53866
-    description: 添加了 `globPatterns` 选项。
+    description: "添加了 `globPatterns` 选项。"
   - version:
     - v22.0.0
     - v20.14.0
     pr-url: https://github.com/nodejs/node/pull/52038
-    description: 添加了 `forceExit` 选项。
+    description: "添加了 `forceExit` 选项。"
   - version:
     - v20.1.0
     - v18.17.0
@@ -1631,17 +1631,17 @@ changes:
     - v20.2.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47909
-    description: 添加了 `skip`、`todo` 和 `only` 简写。
+    description: "添加了 `skip`、`todo` 和 `only` 简写。"
   - version:
     - v18.8.0
     - v16.18.0
     pr-url: https://github.com/nodejs/node/pull/43554
-    description: 添加 `signal` 选项。
+    description: "添加 `signal` 选项。"
   - version:
     - v18.7.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43505
-    description: 添加 `timeout` 选项。
+    description: "添加 `timeout` 选项。"
 -->
 
 * `name` {string} 测试的名称，在报告测试结果时显示。**默认：** `fn` 的 `name` 属性，如果 `fn` 没有名称则为 `'<anonymous>'`。
@@ -1753,7 +1753,7 @@ changes:
     - v19.8.0
     - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46889
-    description: 调用 `it()` 现在等同于调用 `test()`。
+    description: "调用 `it()` 现在等同于调用 `test()`。"
 -->
 
 [`test()`][] 的别名。
@@ -2493,8 +2493,7 @@ changes:
     - v21.2.0
     - v20.11.0
     pr-url: https://github.com/nodejs/node/pull/48638
-    description: 更新参数为选项对象，包含可用 API
-                 和默认初始纪元。
+    description: "更新参数为选项对象，包含可用 API和默认初始纪元。"
 -->
 
 为指定的计时器启用计时器模拟。
@@ -3057,7 +3056,7 @@ changes:
     - v19.9.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47094
-    description: 当测试为套件时，为 test:pass 和 test:fail 事件添加了类型。
+    description: "当测试为套件时，为 test:pass 和 test:fail 事件添加了类型。"
 -->
 
 * 继承自 {Readable}
@@ -3349,7 +3348,7 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47586
-    description: The `before` function was added to TestContext.
+    description: "The `before` function was added to TestContext."
 -->
 
 `TestContext` 的实例会传递给每个测试函数，以便与测试运行器交互。但是，`TestContext` 构造函数并未作为 API 的一部分暴露。
@@ -3634,7 +3633,7 @@ changes:
     - v23.9.0
     - v22.15.0
     pr-url: https://github.com/nodejs/node/pull/56765
-    description: Add the `options` parameter.
+    description: "Add the `options` parameter."
   - version:
     - v23.4.0
     - v22.13.0
@@ -3791,12 +3790,12 @@ changes:
     - v18.8.0
     - v16.18.0
     pr-url: https://github.com/nodejs/node/pull/43554
-    description: Add a `signal` option.
+    description: "Add a `signal` option."
   - version:
     - v18.7.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43505
-    description: Add a `timeout` option.
+    description: "Add a `timeout` option."
 -->
 
 * `name` {string} 子测试的名称，在报告测试结果时显示。**默认值：** `fn` 的 `name` 属性，如果 `fn` 没有名称，则为 `'<anonymous>'`。

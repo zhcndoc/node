@@ -9,7 +9,7 @@ added:
 changes:
   - version: v25.5.0
     pr-url: https://github.com/nodejs/node/pull/61167
-    description: 通过 CLI 标志 `--build-sea` 添加了内置的单可执行应用程序生成功能。
+    description: "通过 CLI 标志 `--build-sea` 添加了内置的单可执行应用程序生成功能。"
   - version: v20.6.0
     pr-url: https://github.com/nodejs/node/pull/46824
     description: 添加了对 "useSnapshot" 的支持。

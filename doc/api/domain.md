@@ -5,10 +5,10 @@ deprecated: v1.4.2
 changes:
   - version: v8.8.0
     pr-url: https://github.com/nodejs/node/pull/15695
-    description: 在 VM 上下文中创建的任何 `Promise` 不再拥有 `.domain` 属性。然而，它们的处理程序仍然在正确的域中执行，并且在主上下文中创建的 `Promise` 仍然拥有 `.domain` 属性。
+    description: "在 VM 上下文中创建的任何 `Promise` 不再拥有 `.domain` 属性。然而，它们的处理程序仍然在正确的域中执行，并且在主上下文中创建的 `Promise` 仍然拥有 `.domain` 属性。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12489
-    description: `Promise` 的处理程序现在在链中第一个 promise 被创建时的域中调用。
+    description: "`Promise` 的处理程序现在在链中第一个 promise 被创建时的域中调用。"
 -->
 
 <!--introduced_in=v0.10.0-->

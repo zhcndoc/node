@@ -28,8 +28,7 @@ const net = require('node:net');
 changes:
   - version: v20.8.0
     pr-url: https://github.com/nodejs/node/pull/49667
-    description: 支持绑定到抽象 Unix 域套接字路径，如 `\0abstract`。
-                 对于 Node.js `< v20.4.0`，我们可以绑定 '\0'。
+    description: "支持绑定到抽象 Unix 域套接字路径，如 `\0abstract`。对于 Node.js `< v20.4.0`，我们可以绑定 '\0'。"
 -->
 
 `node:net` 模块在 Windows 上支持使用命名管道进行 IPC，在其他
@@ -376,10 +375,10 @@ added: v0.1.90
 changes:
   - version: v18.4.0
     pr-url: https://github.com/nodejs/node/pull/43054
-    description: `family` 属性现在返回字符串而不是数字。
+    description: "`family` 属性现在返回字符串而不是数字。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41431
-    description: `family` 属性现在返回数字而不是字符串。
+    description: "`family` 属性现在返回数字而不是字符串。"
 -->
 
 * 返回：{Object|string|null}
@@ -524,13 +523,13 @@ changes:
     - v23.1.0
     - v22.12.0
     pr-url: https://github.com/nodejs/node/pull/55408
-    description: 支持 `reusePort` 选项。
+    description: "支持 `reusePort` 选项。"
   - version: v15.6.0
     pr-url: https://github.com/nodejs/node/pull/36623
     description: 添加了 AbortSignal 支持。
   - version: v11.4.0
     pr-url: https://github.com/nodejs/node/pull/23798
-    description: 支持 `ipv6Only` 选项。
+    description: "支持 `ipv6Only` 选项。"
 -->
 
 * `options` {Object} 必需。支持以下属性：
@@ -655,8 +654,7 @@ added: v0.2.0
 changes:
   - version: v21.0.0
     pr-url: https://github.com/nodejs/node/pull/48276
-    description: 将 `maxConnections` 设置为 `0` 会丢弃所有传入
-                 连接。此前，它被解释为 `Infinity`。
+    description: "将 `maxConnections` 设置为 `0` 会丢弃所有传入连接。此前，它被解释为 `Infinity`。"
 -->
 
 * 类型：{integer}
@@ -727,13 +725,13 @@ added: v0.3.4
 changes:
   - version: v25.6.0
     pr-url: https://github.com/nodejs/node/pull/61503
-    description: 添加了 `typeOfService` 选项。
+    description: "添加了 `typeOfService` 选项。"
   - version: v15.14.0
     pr-url: https://github.com/nodejs/node/pull/37735
     description: 添加了 AbortSignal 支持。
   - version: v12.10.0
     pr-url: https://github.com/nodejs/node/pull/25436
-    description: 添加了 `onread` 选项。
+    description: "添加了 `onread` 选项。"
 -->
 
 * `options` {Object} 可用选项包括：
@@ -872,7 +870,7 @@ added: v0.11.3
 changes:
   - version: v5.10.0
     pr-url: https://github.com/nodejs/node/pull/5598
-    description: 现在支持 `host` 参数。
+    description: "现在支持 `host` 参数。"
 -->
 
 在解析主机名之后但在连接之前发出。
@@ -910,10 +908,10 @@ added: v0.1.90
 changes:
   - version: v18.4.0
     pr-url: https://github.com/nodejs/node/pull/43054
-    description: `family` 属性现在返回字符串而不是数字。
+    description: "`family` 属性现在返回字符串而不是数字。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41431
-    description: `family` 属性现在返回数字而不是字符串。
+    description: "`family` 属性现在返回数字而不是字符串。"
 -->
 
 * 返回：{Object}
@@ -1000,33 +998,26 @@ changes:
       - v20.0.0
       - v18.18.0
     pr-url: https://github.com/nodejs/node/pull/46790
-    description: autoSelectFamily 选项的默认值现在为 true。
-                 `--enable-network-family-autoselection` CLI 标志已重命名为
-                 `--network-family-autoselection`。旧名称现在是
-                 别名，但不推荐使用。
+    description: "autoSelectFamily 选项的默认值现在为 true。`--enable-network-family-autoselection` CLI 标志已重命名为`--network-family-autoselection`。旧名称现在是别名，但不推荐使用。"
   - version: v19.4.0
     pr-url: https://github.com/nodejs/node/pull/45777
-    description: autoSelectFamily 选项的默认值可以在运行时使用 `setDefaultAutoSelectFamily` 更改
-                 或通过命令行选项 `--enable-network-family-autoselection` 更改。
+    description: "autoSelectFamily 选项的默认值可以在运行时使用 `setDefaultAutoSelectFamily` 更改或通过命令行选项 `--enable-network-family-autoselection` 更改。"
   - version:
       - v19.3.0
       - v18.13.0
     pr-url: https://github.com/nodejs/node/pull/44731
-    description: 添加了 `autoSelectFamily` 选项。
+    description: "添加了 `autoSelectFamily` 选项。"
   - version:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41310
-    description: 现在支持 `noDelay`、`keepAlive` 和 `keepAliveInitialDelay`
-                 选项。
+    description: "现在支持 `noDelay`、`keepAlive` 和 `keepAliveInitialDelay`选项。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/6021
-    description: 现在所有情况下 `hints` 选项的默认值均为 `0`。
-                 以前，在没有 `family` 选项的情况下，它默认
-                 为 `dns.ADDRCONFIG | dns.V4MAPPED`。
+    description: "现在所有情况下 `hints` 选项的默认值均为 `0`。以前，在没有 `family` 选项的情况下，它默认为 `dns.ADDRCONFIG | dns.V4MAPPED`。"
   - version: v5.11.0
     pr-url: https://github.com/nodejs/node/pull/6000
-    description: 现在支持 `hints` 选项。
+    description: "现在支持 `hints` 选项。"
 -->
 
 * `options` {Object}
@@ -1275,7 +1266,7 @@ changes:
     - v13.12.0
     - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/32204
-    description: 添加了 `TCP_KEEPCNT` 和 `TCP_KEEPINTVL` Socket 选项的新默认值。
+    description: "添加了 `TCP_KEEPCNT` 和 `TCP_KEEPINTVL` Socket 选项的新默认值。"
 -->
 
 * `enable` {boolean} **默认值：** `false`
@@ -1317,8 +1308,7 @@ added: v0.1.90
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: 现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是
-                 `ERR_INVALID_CALLBACK`。
+    description: "现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `timeout` {number}
@@ -1649,13 +1639,12 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47405
-    description: The `highWaterMark` option is supported now.
+    description: "The `highWaterMark` option is supported now."
   - version:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41310
-    description: The `noDelay`, `keepAlive`, and `keepAliveInitialDelay`
-                 options are supported now.
+    description: "The `noDelay`, `keepAlive`, and `keepAliveInitialDelay`options are supported now."
 -->
 
 * `options` {Object}
