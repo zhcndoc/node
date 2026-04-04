@@ -1,21 +1,19 @@
-# Performance measurement APIs
+# 性能测量 API
 
 <!--introduced_in=v8.5.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/perf_hooks.js -->
 
-This module provides an implementation of a subset of the W3C
-[Web Performance APIs][] as well as additional APIs for
-Node.js-specific performance measurements.
+此模块提供了 W3C [Web Performance APIs][] 子集的实现，以及用于 Node.js 特定性能测量的其他 API。
 
-Node.js supports the following [Web Performance APIs][]:
+Node.js 支持以下 [Web Performance APIs][]：
 
-* [High Resolution Time][]
-* [Performance Timeline][]
-* [User Timing][]
-* [Resource Timing][]
+* [高精度时间][]
+* [性能时间线][]
+* [用户计时][]
+* [资源计时][]
 
 ```mjs
 import { performance, PerformanceObserver } from 'node:perf_hooks';
@@ -61,8 +59,7 @@ performance.mark('A');
 added: v8.5.0
 -->
 
-An object that can be used to collect performance metrics from the current
-Node.js instance. It is similar to [`window.performance`][] in browsers.
+一个可用于从当前 Node.js 实例收集性能指标的对象。它类似于浏览器中的 [`window.performance`][]。
 
 ### `performance.clearMarks([name])`
 
@@ -71,14 +68,13 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the `performance` object as
-                 the receiver.
+    description: 此方法必须以 `performance` 对象作为
+                 接收者调用。
 -->
 
 * `name` {string}
 
-If `name` is not provided, removes all `PerformanceMark` objects from the
-Performance Timeline. If `name` is provided, removes only the named mark.
+如果未提供 `name`，则从性能时间线中移除所有 `PerformanceMark` 对象。如果提供了 `name`，则仅移除命名的标记。
 
 ### `performance.clearMeasures([name])`
 
@@ -87,14 +83,13 @@ added: v16.7.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the `performance` object as
-                 the receiver.
+    description: 此方法必须以 `performance` 对象作为
+                 接收者调用。
 -->
 
 * `name` {string}
 
-If `name` is not provided, removes all `PerformanceMeasure` objects from the
-Performance Timeline. If `name` is provided, removes only the named measure.
+如果未提供 `name`，则从性能时间线中移除所有 `PerformanceMeasure` 对象。如果提供了 `name`，则仅移除命名的测量。
 
 ### `performance.clearResourceTimings([name])`
 
@@ -105,14 +100,13 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the `performance` object as
-                 the receiver.
+    description: 此方法必须以 `performance` 对象作为
+                 接收者调用。
 -->
 
 * `name` {string}
 
-If `name` is not provided, removes all `PerformanceResourceTiming` objects from
-the Resource Timeline. If `name` is provided, removes only the named resource.
+如果未提供 `name`，则从资源时间线中移除所有 `PerformanceResourceTiming` 对象。如果提供了 `name`，则仅移除命名的资源。
 
 ### `performance.eventLoopUtilization([utilization1[, utilization2]])`
 
@@ -125,21 +119,19 @@ changes:
       - v25.2.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/60370
-    description: Added `perf_hooks.eventLoopUtilization` alias.
+    description: 添加了 `perf_hooks.eventLoopUtilization` 别名。
 -->
 
-* `utilization1` {Object} The result of a previous call to
-  `eventLoopUtilization()`.
-* `utilization2` {Object} The result of a previous call to
-  `eventLoopUtilization()` prior to `utilization1`.
-* Returns: {Object}
+* `utilization1` {Object} 之前调用 `eventLoopUtilization()` 的结果。
+* `utilization2` {Object} 在 `utilization1` 之前调用 `eventLoopUtilization()` 的结果。
+* 返回：{Object}
   * `idle` {number}
   * `active` {number}
   * `utilization` {number}
 
-This is an alias of [`perf_hooks.eventLoopUtilization()`][].
+这是 [`perf_hooks.eventLoopUtilization()`][] 的别名。
 
-_This property is an extension by Node.js. It is not available in Web browsers._
+_此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
 
 ### `performance.getEntries()`
 
@@ -148,16 +140,13 @@ added: v16.7.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the `performance` object as
-                 the receiver.
+    description: 此方法必须以 `performance` 对象作为
+                 接收者调用。
 -->
 
-* Returns: {PerformanceEntry\[]}
+* 返回：{PerformanceEntry\[]}
 
-Returns a list of `PerformanceEntry` objects in chronological order with
-respect to `performanceEntry.startTime`. If you are only interested in
-performance entries of certain types or that have certain names, see
-`performance.getEntriesByType()` and `performance.getEntriesByName()`.
+返回按 `performanceEntry.startTime`  chronological order 排列的 `PerformanceEntry` 对象列表。如果你只关心特定类型或具有特定名称的性能条目，请参阅 `performance.getEntriesByType()` 和 `performance.getEntriesByName()`。
 
 ### `performance.getEntriesByName(name[, type])`
 
@@ -166,18 +155,15 @@ added: v16.7.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the `performance` object as
-                 the receiver.
+    description: 此方法必须以 `performance` 对象作为
+                 接收者调用。
 -->
 
 * `name` {string}
 * `type` {string}
-* Returns: {PerformanceEntry\[]}
+* 返回：{PerformanceEntry\[]}
 
-Returns a list of `PerformanceEntry` objects in chronological order
-with respect to `performanceEntry.startTime` whose `performanceEntry.name` is
-equal to `name`, and optionally, whose `performanceEntry.entryType` is equal to
-`type`.
+返回按 `performanceEntry.startTime`  chronological order 排列的 `PerformanceEntry` 对象列表，其 `performanceEntry.name` 等于 `name`，并且可选地，其 `performanceEntry.entryType` 等于 `type`。
 
 ### `performance.getEntriesByType(type)`
 
@@ -186,16 +172,14 @@ added: v16.7.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the `performance` object as
-                 the receiver.
+    description: 此方法必须以 `performance` 对象作为
+                 接收者调用。
 -->
 
 * `type` {string}
-* Returns: {PerformanceEntry\[]}
+* 返回：{PerformanceEntry\[]}
 
-Returns a list of `PerformanceEntry` objects in chronological order
-with respect to `performanceEntry.startTime` whose `performanceEntry.entryType`
-is equal to `type`.
+返回按 `performanceEntry.startTime`  chronological order 排列的 `PerformanceEntry` 对象列表，其 `performanceEntry.entryType` 等于 `type`。
 
 ### `performance.mark(name[, options])`
 
@@ -204,30 +188,22 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the `performance` object as
-                 the receiver. The name argument is no longer optional.
+    description: 此方法必须以 `performance` 对象作为
+                 接收者调用。name 参数不再可选。
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37136
-    description: Updated to conform to the User Timing Level 3 specification.
+    description: 更新以符合 User Timing Level 3 规范。
 -->
 
 * `name` {string}
 * `options` {Object}
-  * `detail` {any} Additional optional detail to include with the mark.
-  * `startTime` {number} An optional timestamp to be used as the mark time.
-    **Default**: `performance.now()`.
+  * `detail` {any} 包含在标记中的附加可选详情。
+  * `startTime` {number} 用作标记时间的可选时间戳。
+    **默认值**：`performance.now()`。
 
-Creates a new `PerformanceMark` entry in the Performance Timeline. A
-`PerformanceMark` is a subclass of `PerformanceEntry` whose
-`performanceEntry.entryType` is always `'mark'`, and whose
-`performanceEntry.duration` is always `0`. Performance marks are used
-to mark specific significant moments in the Performance Timeline.
+在性能时间线中创建一个新的 `PerformanceMark` 条目。`PerformanceMark` 是 `PerformanceEntry` 的子类，其 `performanceEntry.entryType` 始终为 `'mark'`，且 `performanceEntry.duration` 始终为 `0`。性能标记用于标记性能时间线中的特定重要时刻。
 
-The created `PerformanceMark` entry is put in the global Performance Timeline
-and can be queried with `performance.getEntries`,
-`performance.getEntriesByName`, and `performance.getEntriesByType`. When the
-observation is performed, the entries should be cleared from the global
-Performance Timeline manually with `performance.clearMarks`.
+创建的 `PerformanceMark` 条目被放入全局性能时间线中，可以通过 `performance.getEntries`、`performance.getEntriesByName` 和 `performance.getEntriesByType` 查询。当执行观察时，应使用 `performance.clearMarks` 手动从全局性能时间线中清除条目。
 
 ### `performance.markResourceTiming(timingInfo, requestedUrl, initiatorType, global, cacheMode, bodyInfo, responseStatus[, deliveryType])`
 
@@ -238,30 +214,23 @@ added:
 changes:
   - version: v22.2.0
     pr-url: https://github.com/nodejs/node/pull/51589
-    description: Added bodyInfo, responseStatus, and deliveryType arguments.
+    description: 添加了 bodyInfo、responseStatus 和 deliveryType 参数。
 -->
 
 * `timingInfo` {Object} [Fetch Timing Info][]
-* `requestedUrl` {string} The resource url
-* `initiatorType` {string} The initiator name, e.g: 'fetch'
+* `requestedUrl` {string} 资源 url
+* `initiatorType` {string} 发起者名称，例如：'fetch'
 * `global` {Object}
-* `cacheMode` {string} The cache mode must be an empty string ('') or 'local'
+* `cacheMode` {string} 缓存模式必须是空字符串 ('') 或 'local'
 * `bodyInfo` {Object} [Fetch Response Body Info][]
-* `responseStatus` {number} The response's status code
-* `deliveryType` {string} The delivery type.  **Default:** `''`.
+* `responseStatus` {number} 响应的状态码
+* `deliveryType` {string} 交付类型。**默认值：** `''`。
 
-_This property is an extension by Node.js. It is not available in Web browsers._
+_此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
 
-Creates a new `PerformanceResourceTiming` entry in the Resource Timeline. A
-`PerformanceResourceTiming` is a subclass of `PerformanceEntry` whose
-`performanceEntry.entryType` is always `'resource'`. Performance resources
-are used to mark moments in the Resource Timeline.
+在资源时间线中创建一个新的 `PerformanceResourceTiming` 条目。`PerformanceResourceTiming` 是 `PerformanceEntry` 的子类，其 `performanceEntry.entryType` 始终为 `'resource'`。性能资源用于标记资源时间线中的时刻。
 
-The created `PerformanceMark` entry is put in the global Resource Timeline
-and can be queried with `performance.getEntries`,
-`performance.getEntriesByName`, and `performance.getEntriesByType`. When the
-observation is performed, the entries should be cleared from the global
-Performance Timeline manually with `performance.clearResourceTimings`.
+创建的 `PerformanceMark` 条目被放入全局资源时间线中，可以通过 `performance.getEntries`、`performance.getEntriesByName` 和 `performance.getEntriesByType` 查询。当执行观察时，应使用 `performance.clearResourceTimings` 手动从全局性能时间线中清除条目。
 
 ### `performance.measure(name[, startMarkOrOptions[, endMark]])`
 
@@ -270,51 +239,33 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the `performance` object as
-                 the receiver.
+    description: 此方法必须以 `performance` 对象作为
+                 接收者调用。
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37136
-    description: Updated to conform to the User Timing Level 3 specification.
+    description: 更新以符合 User Timing Level 3 规范。
   - version:
       - v13.13.0
       - v12.16.3
     pr-url: https://github.com/nodejs/node/pull/32651
-    description: Make `startMark` and `endMark` parameters optional.
+    description: 使 `startMark` 和 `endMark` 参数可选。
 -->
 
 * `name` {string}
-* `startMarkOrOptions` {string|Object} Optional.
-  * `detail` {any} Additional optional detail to include with the measure.
-  * `duration` {number} Duration between start and end times.
-  * `end` {number|string} Timestamp to be used as the end time, or a string
-    identifying a previously recorded mark.
-  * `start` {number|string} Timestamp to be used as the start time, or a string
-    identifying a previously recorded mark.
-* `endMark` {string} Optional. Must be omitted if `startMarkOrOptions` is an
-  {Object}.
+* `startMarkOrOptions` {string|Object} 可选。
+  * `detail` {any} 包含在测量中的附加可选详情。
+  * `duration` {number} 开始和结束时间之间的持续时间。
+  * `end` {number|string} 用作结束时间的时间戳，或标识先前记录的标记的字符串。
+  * `start` {number|string} 用作开始时间的时间戳，或标识先前记录的标记的字符串。
+* `endMark` {string} 可选。如果 `startMarkOrOptions` 是 {Object}，则必须省略。
 
-Creates a new `PerformanceMeasure` entry in the Performance Timeline. A
-`PerformanceMeasure` is a subclass of `PerformanceEntry` whose
-`performanceEntry.entryType` is always `'measure'`, and whose
-`performanceEntry.duration` measures the number of milliseconds elapsed since
-`startMark` and `endMark`.
+在性能时间线中创建一个新的 `PerformanceMeasure` 条目。`PerformanceMeasure` 是 `PerformanceEntry` 的子类，其 `performanceEntry.entryType` 始终为 `'measure'`，且 `performanceEntry.duration` 测量自 `startMark` 和 `endMark` 以来经过的毫秒数。
 
-The `startMark` argument may identify any _existing_ `PerformanceMark` in the
-Performance Timeline, or _may_ identify any of the timestamp properties
-provided by the `PerformanceNodeTiming` class. If the named `startMark` does
-not exist, an error is thrown.
+`startMark` 参数可以标识性能时间线中的任何 _现有_ `PerformanceMark`，或者 _可以_ 标识 `PerformanceNodeTiming` 类提供的任何时间戳属性。如果命名的 `startMark` 不存在，则会抛出错误。
 
-The optional `endMark` argument must identify any _existing_ `PerformanceMark`
-in the Performance Timeline or any of the timestamp properties provided by the
-`PerformanceNodeTiming` class. `endMark` will be `performance.now()`
-if no parameter is passed, otherwise if the named `endMark` does not exist, an
-error will be thrown.
+可选的 `endMark` 参数必须标识性能时间线中的任何 _现有_ `PerformanceMark` 或 `PerformanceNodeTiming` 类提供的任何时间戳属性。如果没有传递参数，`endMark` 将为 `performance.now()`，否则如果命名的 `endMark` 不存在，将抛出错误。
 
-The created `PerformanceMeasure` entry is put in the global Performance Timeline
-and can be queried with `performance.getEntries`,
-`performance.getEntriesByName`, and `performance.getEntriesByType`. When the
-observation is performed, the entries should be cleared from the global
-Performance Timeline manually with `performance.clearMeasures`.
+创建的 `PerformanceMeasure` 条目被放入全局性能时间线中，可以通过 `performance.getEntries`、`performance.getEntriesByName` 和 `performance.getEntriesByType` 查询。当执行观察时，应使用 `performance.clearMeasures` 手动从全局性能时间线中清除条目。
 
 ### `performance.nodeTiming`
 
@@ -322,12 +273,11 @@ Performance Timeline manually with `performance.clearMeasures`.
 added: v8.5.0
 -->
 
-* Type: {PerformanceNodeTiming}
+* 类型：{PerformanceNodeTiming}
 
-_This property is an extension by Node.js. It is not available in Web browsers._
+_此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
 
-An instance of the `PerformanceNodeTiming` class that provides performance
-metrics for specific Node.js operational milestones.
+`PerformanceNodeTiming` 类的一个实例，为特定的 Node.js 操作里程碑提供性能指标。
 
 ### `performance.now()`
 
@@ -336,14 +286,13 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the `performance` object as
-                 the receiver.
+    description: 此方法必须以 `performance` 对象作为
+                 接收者调用。
 -->
 
-* Returns: {number}
+* 返回：{number}
 
-Returns the current high resolution millisecond timestamp, where 0 represents
-the start of the current `node` process.
+返回当前高分辨率毫秒时间戳，其中 0 代表当前 `node` 进程的开始。
 
 ### `performance.setResourceTimingBufferSize(maxSize)`
 
@@ -352,14 +301,13 @@ added: v18.8.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the `performance` object as
-                 the receiver.
+    description: 此方法必须以 `performance` 对象作为
+                 接收者调用。
 -->
 
-Sets the global performance resource timing buffer size to the specified number
-of "resource" type performance entry objects.
+将全局性能资源时间线缓冲区大小设置为指定数量的 "resource" 类型性能条目对象。
 
-By default the max buffer size is set to 250.
+默认情况下，最大缓冲区大小设置为 250。
 
 ### `performance.timeOrigin`
 
@@ -367,10 +315,9 @@ By default the max buffer size is set to 250.
 added: v8.5.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The [`timeOrigin`][] specifies the high resolution millisecond timestamp at
-which the current `node` process began, measured in Unix time.
+[`timeOrigin`][] 指定当前 `node` 进程开始的高分辨率毫秒时间戳，以 Unix 时间测量。
 
 ### `performance.timerify(fn[, options])`
 
@@ -381,25 +328,23 @@ changes:
       - v25.2.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/60370
-    description: Added `perf_hooks.timerify` alias.
+    description: 添加了 `perf_hooks.timerify` 别名。
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37475
-    description: Added the histogram option.
+    description: 添加了 histogram 选项。
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37136
-    description: Re-implemented to use pure-JavaScript and the ability
-                 to time async functions.
+    description: 重新实现以使用纯 JavaScript 以及计时
+                 异步函数的能力。
 -->
 
 * `fn` {Function}
 * `options` {Object}
-  * `histogram` {RecordableHistogram} A histogram object created using
-    `perf_hooks.createHistogram()` that will record runtime durations in
-    nanoseconds.
+  * `histogram` {RecordableHistogram} 使用 `perf_hooks.createHistogram()` 创建的直方图对象，将记录纳秒级的运行时持续时间。
 
-This is an alias of [`perf_hooks.timerify()`][].
+这是 [`perf_hooks.timerify()`][] 的别名。
 
-_This property is an extension by Node.js. It is not available in Web browsers._
+_此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
 
 ### `performance.toJSON()`
 
@@ -408,32 +353,27 @@ added: v16.1.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the `performance` object as
-                 the receiver.
+    description: 此方法必须以 `performance` 对象作为
+                 接收者调用。
 -->
 
-An object which is JSON representation of the `performance` object. It
-is similar to [`window.performance.toJSON`][] in browsers.
+一个对象，是 `performance` 对象的 JSON 表示。它类似于浏览器中的 [`window.performance.toJSON`][]。
 
-#### Event: `'resourcetimingbufferfull'`
+#### 事件：`'resourcetimingbufferfull'`
 
 <!-- YAML
 added: v18.8.0
 -->
 
-The `'resourcetimingbufferfull'` event is fired when the global performance
-resource timing buffer is full. Adjust resource timing buffer size with
-`performance.setResourceTimingBufferSize()` or clear the buffer with
-`performance.clearResourceTimings()` in the event listener to allow
-more entries to be added to the performance timeline buffer.
+当全局性能资源时间线缓冲区已满时，会触发 `'resourcetimingbufferfull'` 事件。在事件监听器中使用 `performance.setResourceTimingBufferSize()` 调整资源时间线缓冲区大小，或使用 `performance.clearResourceTimings()` 清除缓冲区，以允许更多条目添加到性能时间线缓冲区中。
 
-## Class: `PerformanceEntry`
+## 类：`PerformanceEntry`
 
 <!-- YAML
 added: v8.5.0
 -->
 
-The constructor of this class is not exposed to users directly.
+此类的构造函数不直接暴露给用户。
 
 ### `performanceEntry.duration`
 
@@ -442,14 +382,13 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceEntry` object as the receiver.
+    description: 此属性 getter 必须使用
+                 `PerformanceEntry` 对象作为接收者来调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The total number of milliseconds elapsed for this entry. This value will not
-be meaningful for all Performance Entry types.
+此条目经过的总毫秒数。此值对于所有性能条目类型并不都有意义。
 
 ### `performanceEntry.entryType`
 
@@ -458,24 +397,24 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceEntry` object as the receiver.
+    description: 此属性 getter 必须使用
+                 `PerformanceEntry` 对象作为接收者来调用。
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The type of the performance entry. It may be one of:
+性能条目的类型。它可能是以下之一：
 
-* `'dns'` (Node.js only)
-* `'function'` (Node.js only)
-* `'gc'` (Node.js only)
-* `'http2'` (Node.js only)
-* `'http'` (Node.js only)
-* `'mark'` (available on the Web)
-* `'measure'` (available on the Web)
-* `'net'` (Node.js only)
-* `'node'` (Node.js only)
-* `'resource'` (available on the Web)
+* `'dns'`（仅 Node.js）
+* `'function'`（仅 Node.js）
+* `'gc'`（仅 Node.js）
+* `'http2'`（仅 Node.js）
+* `'http'`（仅 Node.js）
+* `'mark'`（Web 上可用）
+* `'measure'`（Web 上可用）
+* `'net'`（仅 Node.js）
+* `'node'`（仅 Node.js）
+* `'resource'`（Web 上可用）
 
 ### `performanceEntry.name`
 
@@ -484,13 +423,13 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceEntry` object as the receiver.
+    description: 此属性 getter 必须使用
+                 `PerformanceEntry` 对象作为接收者来调用。
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The name of the performance entry.
+性能条目的名称。
 
 ### `performanceEntry.startTime`
 
@@ -499,16 +438,15 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceEntry` object as the receiver.
+    description: 此属性 getter 必须使用
+                 `PerformanceEntry` 对象作为接收者来调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp marking the starting time of the
-Performance Entry.
+标记性能条目开始时间的高分辨率毫秒时间戳。
 
-## Class: `PerformanceMark`
+## 类：`PerformanceMark`
 
 <!-- YAML
 added:
@@ -516,9 +454,9 @@ added:
   - v16.17.0
 -->
 
-* Extends: {PerformanceEntry}
+* 继承：{PerformanceEntry}
 
-Exposes marks created via the `Performance.mark()` method.
+暴露通过 `Performance.mark()` 方法创建的标记。
 
 ### `performanceMark.detail`
 
@@ -527,15 +465,15 @@ added: v16.0.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceMark` object as the receiver.
+    description: 此属性 getter 必须使用
+                 `PerformanceMark` 对象作为接收者来调用。
 -->
 
-* Type: {any}
+* 类型：{any}
 
-Additional detail specified when creating with `Performance.mark()` method.
+使用 `Performance.mark()` 方法创建时指定的附加详情。
 
-## Class: `PerformanceMeasure`
+## 类：`PerformanceMeasure`
 
 <!-- YAML
 added:
@@ -543,11 +481,11 @@ added:
   - v16.17.0
 -->
 
-* Extends: {PerformanceEntry}
+* 继承：{PerformanceEntry}
 
-Exposes measures created via the `Performance.measure()` method.
+暴露通过 `Performance.measure()` 方法创建的测量。
 
-The constructor of this class is not exposed to users directly.
+此类的构造函数不直接暴露给用户。
 
 ### `performanceMeasure.detail`
 
@@ -556,27 +494,27 @@ added: v16.0.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceMeasure` object as the receiver.
+    description: 此属性 getter 必须使用
+                 `PerformanceMeasure` 对象作为接收者来调用。
 -->
 
-* Type: {any}
+* 类型：{any}
 
-Additional detail specified when creating with `Performance.measure()` method.
+使用 `Performance.measure()` 方法创建时指定的附加详情。
 
-## Class: `PerformanceNodeEntry`
+## 类：`PerformanceNodeEntry`
 
 <!-- YAML
 added: v19.0.0
 -->
 
-* Extends: {PerformanceEntry}
+* 继承：{PerformanceEntry}
 
-_This class is an extension by Node.js. It is not available in Web browsers._
+_此类是 Node.js 的扩展。它在 Web 浏览器中不可用。_
 
-Provides detailed Node.js timing data.
+提供详细的 Node.js 计时数据。
 
-The constructor of this class is not exposed to users directly.
+此类的构造函数不直接暴露给用户。
 
 ### `performanceNodeEntry.detail`
 
@@ -585,13 +523,13 @@ added: v16.0.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceNodeEntry` object as the receiver.
+    description: 此属性 getter 必须使用
+                 `PerformanceNodeEntry` 对象作为接收者来调用。
 -->
 
-* Type: {any}
+* 类型：{any}
 
-Additional detail specific to the `entryType`.
+特定于 `entryType` 的附加详情。
 
 ### `performanceNodeEntry.flags`
 
@@ -602,17 +540,14 @@ added:
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37136
-    description: Runtime deprecated. Now moved to the detail property
-                 when entryType is 'gc'.
+    description: 运行时已弃用。现在当 entryType 为 'gc' 时已移至 detail 属性。
 -->
 
-> Stability: 0 - Deprecated: Use `performanceNodeEntry.detail` instead.
+> 稳定性：0 - 已弃用：请改用 `performanceNodeEntry.detail`。
 
-* Type: {number}
+* 类型：{number}
 
-When `performanceEntry.entryType` is equal to `'gc'`, the `performance.flags`
-property contains additional information about garbage collection operation.
-The value may be one of:
+当 `performanceEntry.entryType` 等于 `'gc'` 时，`performance.flags` 属性包含有关垃圾回收操作的附加信息。该值可能是以下之一：
 
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_FLAGS_NO`
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_FLAGS_CONSTRUCT_RETAINED`
@@ -629,34 +564,30 @@ added: v8.5.0
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37136
-    description: Runtime deprecated. Now moved to the detail property
-                 when entryType is 'gc'.
+    description: 运行时已弃用。现在当 entryType 为 'gc' 时已移至 detail 属性。
 -->
 
-> Stability: 0 - Deprecated: Use `performanceNodeEntry.detail` instead.
+> 稳定性：0 - 已弃用：请改用 `performanceNodeEntry.detail`。
 
-* Type: {number}
+* 类型：{number}
 
-When `performanceEntry.entryType` is equal to `'gc'`, the `performance.kind`
-property identifies the type of garbage collection operation that occurred.
-The value may be one of:
+当 `performanceEntry.entryType` 等于 `'gc'` 时，`performance.kind` 属性标识发生的垃圾回收操作类型。该值可能是以下之一：
 
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_MAJOR`
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_MINOR`
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_INCREMENTAL`
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_WEAKCB`
 
-### Garbage Collection ('gc') Details
+### 垃圾回收 ('gc') 详情
 
-When `performanceEntry.type` is equal to `'gc'`, the
-`performanceNodeEntry.detail` property will be an {Object} with two properties:
+当 `performanceEntry.type` 等于 `'gc'` 时，`performanceNodeEntry.detail` 属性将是一个包含两个属性的 {Object}：
 
-* `kind` {number} One of:
+* `kind` {number} 以下之一：
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_MAJOR`
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_MINOR`
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_INCREMENTAL`
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_WEAKCB`
-* `flags` {number} One of:
+* `flags` {number} 以下之一：
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_FLAGS_NO`
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_FLAGS_CONSTRUCT_RETAINED`
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_FLAGS_FORCED`
@@ -665,110 +596,72 @@ When `performanceEntry.type` is equal to `'gc'`, the
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_FLAGS_ALL_EXTERNAL_MEMORY`
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_FLAGS_SCHEDULE_IDLE`
 
-### HTTP ('http') Details
+### HTTP ('http') 详情
 
-When `performanceEntry.type` is equal to `'http'`, the
-`performanceNodeEntry.detail` property will be an {Object} containing
-additional information.
+当 `performanceEntry.type` 等于 `'http'` 时，`performanceNodeEntry.detail` 属性将是一个包含附加信息的 {Object}。
 
-If `performanceEntry.name` is equal to `HttpClient`, the `detail`
-will contain the following properties: `req`, `res`. And the `req` property
-will be an {Object} containing `method`, `url`, `headers`, the `res` property
-will be an {Object} containing `statusCode`, `statusMessage`, `headers`.
+如果 `performanceEntry.name` 等于 `HttpClient`，`detail` 将包含以下属性：`req`, `res`。`req` 属性将是一个包含 `method`, `url`, `headers` 的 {Object}，`res` 属性将是一个包含 `statusCode`, `statusMessage`, `headers` 的 {Object}。
 
-If `performanceEntry.name` is equal to `HttpRequest`, the `detail`
-will contain the following properties: `req`, `res`. And the `req` property
-will be an {Object} containing `method`, `url`, `headers`, the `res` property
-will be an {Object} containing `statusCode`, `statusMessage`, `headers`.
+如果 `performanceEntry.name` 等于 `HttpRequest`，`detail` 将包含以下属性：`req`, `res`。`req` 属性将是一个包含 `method`, `url`, `headers` 的 {Object}，`res` 属性将是一个包含 `statusCode`, `statusMessage`, `headers` 的 {Object}。
 
-This could add additional memory overhead and should only be used for
-diagnostic purposes, not left turned on in production by default.
+这可能会增加额外的内存开销，应仅用于诊断目的，默认情况下不应在生产环境中保持开启。
 
-### HTTP/2 ('http2') Details
+### HTTP/2 ('http2') 详情
 
-When `performanceEntry.type` is equal to `'http2'`, the
-`performanceNodeEntry.detail` property will be an {Object} containing
-additional performance information.
+当 `performanceEntry.type` 等于 `'http2'` 时，`performanceNodeEntry.detail` 属性将是一个包含附加性能信息的 {Object}。
 
-If `performanceEntry.name` is equal to `Http2Stream`, the `detail`
-will contain the following properties:
+如果 `performanceEntry.name` 等于 `Http2Stream`，`detail` 将包含以下属性：
 
-* `bytesRead` {number} The number of `DATA` frame bytes received for this
-  `Http2Stream`.
-* `bytesWritten` {number} The number of `DATA` frame bytes sent for this
-  `Http2Stream`.
-* `id` {number} The identifier of the associated `Http2Stream`
-* `timeToFirstByte` {number} The number of milliseconds elapsed between the
-  `PerformanceEntry` `startTime` and the reception of the first `DATA` frame.
-* `timeToFirstByteSent` {number} The number of milliseconds elapsed between
-  the `PerformanceEntry` `startTime` and sending of the first `DATA` frame.
-* `timeToFirstHeader` {number} The number of milliseconds elapsed between the
-  `PerformanceEntry` `startTime` and the reception of the first header.
+* `bytesRead` {number} 为此 `Http2Stream` 接收的 `DATA` 帧字节数。
+* `bytesWritten` {number} 为此 `Http2Stream` 发送的 `DATA` 帧字节数。
+* `id` {number} 关联 `Http2Stream` 的标识符。
+* `timeToFirstByte` {number} `PerformanceEntry` `startTime` 与接收第一个 `DATA` 帧之间经过的毫秒数。
+* `timeToFirstByteSent` {number} `PerformanceEntry` `startTime` 与发送第一个 `DATA` 帧之间经过的毫秒数。
+* `timeToFirstHeader` {number} `PerformanceEntry` `startTime` 与接收第一个头之间经过的毫秒数。
 
-If `performanceEntry.name` is equal to `Http2Session`, the `detail` will
-contain the following properties:
+如果 `performanceEntry.name` 等于 `Http2Session`，`detail` 将包含以下属性：
 
-* `bytesRead` {number} The number of bytes received for this `Http2Session`.
-* `bytesWritten` {number} The number of bytes sent for this `Http2Session`.
-* `framesReceived` {number} The number of HTTP/2 frames received by the
-  `Http2Session`.
-* `framesSent` {number} The number of HTTP/2 frames sent by the `Http2Session`.
-* `maxConcurrentStreams` {number} The maximum number of streams concurrently
-  open during the lifetime of the `Http2Session`.
-* `pingRTT` {number} The number of milliseconds elapsed since the transmission
-  of a `PING` frame and the reception of its acknowledgment. Only present if
-  a `PING` frame has been sent on the `Http2Session`.
-* `streamAverageDuration` {number} The average duration (in milliseconds) for
-  all `Http2Stream` instances.
-* `streamCount` {number} The number of `Http2Stream` instances processed by
-  the `Http2Session`.
-* `type` {string} Either `'server'` or `'client'` to identify the type of
-  `Http2Session`.
+* `bytesRead` {number} 为此 `Http2Session` 接收的字节数。
+* `bytesWritten` {number} 为此 `Http2Session` 发送的字节数。
+* `framesReceived` {number} `Http2Session` 接收的 HTTP/2 帧数。
+* `framesSent` {number} `Http2Session` 发送的 HTTP/2 帧数。
+* `maxConcurrentStreams` {number} `Http2Session` 生命周期内同时打开的最大流数。
+* `pingRTT` {number} 自发送 `PING` 帧到接收其确认之间经过的毫秒数。仅在 `Http2Session` 上发送了 `PING` 帧时存在。
+* `streamAverageDuration` {number} 所有 `Http2Stream` 实例的平均持续时间（毫秒）。
+* `streamCount` {number} `Http2Session` 处理的 `Http2Stream` 实例数。
+* `type` {string} `'server'` 或 `'client'`，用于标识 `Http2Session` 的类型。
 
-### Timerify ('function') Details
+### Timerify ('function') 详情
 
-When `performanceEntry.type` is equal to `'function'`, the
-`performanceNodeEntry.detail` property will be an {Array} listing
-the input arguments to the timed function.
+当 `performanceEntry.type` 等于 `'function'` 时，`performanceNodeEntry.detail` 属性将是一个 {Array}，列出计时函数的输入参数。
 
-### Net ('net') Details
+### Net ('net') 详情
 
-When `performanceEntry.type` is equal to `'net'`, the
-`performanceNodeEntry.detail` property will be an {Object} containing
-additional information.
+当 `performanceEntry.type` 等于 `'net'` 时，`performanceNodeEntry.detail` 属性将是一个包含附加信息的 {Object}。
 
-If `performanceEntry.name` is equal to `connect`, the `detail`
-will contain the following properties: `host`, `port`.
+如果 `performanceEntry.name` 等于 `connect`，`detail` 将包含以下属性：`host`, `port`。
 
-### DNS ('dns') Details
+### DNS ('dns') 详情
 
-When `performanceEntry.type` is equal to `'dns'`, the
-`performanceNodeEntry.detail` property will be an {Object} containing
-additional information.
+当 `performanceEntry.type` 等于 `'dns'` 时，`performanceNodeEntry.detail` 属性将是一个包含附加信息的 {Object}。
 
-If `performanceEntry.name` is equal to `lookup`, the `detail`
-will contain the following properties: `hostname`, `family`, `hints`, `verbatim`,
-`addresses`.
+如果 `performanceEntry.name` 等于 `lookup`，`detail` 将包含以下属性：`hostname`, `family`, `hints`, `verbatim`, `addresses`。
 
-If `performanceEntry.name` is equal to `lookupService`, the `detail` will
-contain the following properties: `host`, `port`, `hostname`, `service`.
+如果 `performanceEntry.name` 等于 `lookupService`，`detail` 将包含以下属性：`host`, `port`, `hostname`, `service`。
 
-If `performanceEntry.name` is equal to `queryxxx` or `getHostByAddr`, the `detail` will
-contain the following properties: `host`, `ttl`, `result`. The value of `result` is
-same as the result of `queryxxx` or `getHostByAddr`.
+如果 `performanceEntry.name` 等于 `queryxxx` 或 `getHostByAddr`，`detail` 将包含以下属性：`host`, `ttl`, `result`。`result` 的值与 `queryxxx` 或 `getHostByAddr` 的结果相同。
 
-## Class: `PerformanceNodeTiming`
+## 类：`PerformanceNodeTiming`
 
 <!-- YAML
 added: v8.5.0
 -->
 
-* Extends: {PerformanceEntry}
+* 继承：{PerformanceEntry}
 
-_This property is an extension by Node.js. It is not available in Web browsers._
+_此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
 
-Provides timing details for Node.js itself. The constructor of this class
-is not exposed to users.
+提供 Node.js 本身的计时详情。此类的构造函数不对用户暴露。
 
 ### `performanceNodeTiming.bootstrapComplete`
 
@@ -776,11 +669,9 @@ is not exposed to users.
 added: v8.5.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp at which the Node.js process
-completed bootstrapping. If bootstrapping has not yet finished, the property
-has the value of -1.
+Node.js 进程完成引导的高分辨率毫秒时间戳。如果引导尚未完成，则该属性的值为 -1。
 
 ### `performanceNodeTiming.environment`
 
@@ -788,10 +679,9 @@ has the value of -1.
 added: v8.5.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp at which the Node.js environment was
-initialized.
+Node.js 环境初始化的分辨率毫秒时间戳。
 
 ### `performanceNodeTiming.idleTime`
 
@@ -801,13 +691,9 @@ added:
   - v12.19.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp of the amount of time the event loop
-has been idle within the event loop's event provider (e.g. `epoll_wait`). This
-does not take CPU usage into consideration. If the event loop has not yet
-started (e.g., in the first tick of the main script), the property has the
-value of 0.
+事件循环在其事件提供者（例如 `epoll_wait`）内处于空闲状态的时间量的高分辨率毫秒时间戳。这不考虑 CPU 使用情况。如果事件循环尚未启动（例如，在主脚本的第一个刻度中），则该属性的值为 0。
 
 ### `performanceNodeTiming.loopExit`
 
@@ -815,11 +701,9 @@ value of 0.
 added: v8.5.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp at which the Node.js event loop
-exited. If the event loop has not yet exited, the property has the value of -1.
-It can only have a value of not -1 in a handler of the [`'exit'`][] event.
+Node.js 事件循环退出时的高分辨率毫秒时间戳。如果事件循环尚未退出，则该属性的值为 -1。它只能在 [`'exit'`][] 事件的处理程序中具有非 -1 的值。
 
 ### `performanceNodeTiming.loopStart`
 
@@ -827,11 +711,9 @@ It can only have a value of not -1 in a handler of the [`'exit'`][] event.
 added: v8.5.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp at which the Node.js event loop
-started. If the event loop has not yet started (e.g., in the first tick of the
-main script), the property has the value of -1.
+Node.js 事件循环启动时的高分辨率毫秒时间戳。如果事件循环尚未启动（例如，在主脚本的第一个刻度中），则该属性的值为 -1。
 
 ### `performanceNodeTiming.nodeStart`
 
@@ -839,10 +721,9 @@ main script), the property has the value of -1.
 added: v8.5.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp at which the Node.js process was
-initialized.
+Node.js 进程初始化时的高分辨率毫秒时间戳。
 
 ### `performanceNodeTiming.uvMetricsInfo`
 
@@ -852,17 +733,15 @@ added:
   - v20.18.0
 -->
 
-* Returns: {Object}
-  * `loopCount` {number} Number of event loop iterations.
-  * `events` {number} Number of events that have been processed by the event handler.
-  * `eventsWaiting` {number} Number of events that were waiting to be processed when the event provider was called.
+* 返回：{Object}
+  * `loopCount` {number} 事件循环迭代次数。
+  * `events` {number} 事件处理程序已处理的事件数。
+  * `eventsWaiting` {number} 调用事件提供者时等待处理的事件数。
 
-This is a wrapper to the `uv_metrics_info` function.
-It returns the current set of event loop metrics.
+这是 `uv_metrics_info` 函数的包装器。
+它返回当前的一组事件循环指标。
 
-It is recommended to use this property inside a function whose execution was
-scheduled using `setImmediate` to avoid collecting metrics before finishing all
-operations scheduled during the current loop iteration.
+建议在通过 `setImmediate` 调度执行的函数内部使用此属性，以避免在当前循环迭代期间计划的所有操作完成之前收集指标。
 
 ```cjs
 const { performance } = require('node:perf_hooks');
@@ -886,12 +765,11 @@ setImmediate(() => {
 added: v8.5.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp at which the V8 platform was
-initialized.
+V8 平台初始化时的高分辨率毫秒时间戳。
 
-## Class: `PerformanceResourceTiming`
+## 类：`PerformanceResourceTiming`
 
 <!-- YAML
 added:
@@ -899,12 +777,11 @@ added:
   - v16.17.0
 -->
 
-* Extends: {PerformanceEntry}
+* 继承：{PerformanceEntry}
 
-Provides detailed network timing data regarding the loading of an application's
-resources.
+提供有关应用程序资源加载的详细网络计时数据。
 
-The constructor of this class is not exposed to users directly.
+此类的构造函数不直接暴露给用户。
 
 ### `performanceResourceTiming.workerStart`
 
@@ -915,15 +792,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp at immediately before dispatching
-the `fetch` request. If the resource is not intercepted by a worker the property
-will always return 0.
+调度 `fetch` 请求之前立即的高分辨率毫秒时间戳。如果资源未被工作器拦截，则该属性将始终返回 0。
 
 ### `performanceResourceTiming.redirectStart`
 
@@ -934,14 +808,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp that represents the start time
-of the fetch which initiates the redirect.
+表示发起重定向的 fetch 开始时间的高分辨率毫秒时间戳。
 
 ### `performanceResourceTiming.redirectEnd`
 
@@ -952,14 +824,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp that will be created immediately after
-receiving the last byte of the response of the last redirect.
+接收到最后一个重定向响应的最后一个字节后立即创建的高分辨率毫秒时间戳。
 
 ### `performanceResourceTiming.fetchStart`
 
@@ -970,14 +840,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp immediately before the Node.js starts
-to fetch the resource.
+Node.js 开始获取资源之前立即的高分辨率毫秒时间戳。
 
 ### `performanceResourceTiming.domainLookupStart`
 
@@ -988,14 +856,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp immediately before the Node.js starts
-the domain name lookup for the resource.
+Node.js 开始资源的域名查找之前立即的高分辨率毫秒时间戳。
 
 ### `performanceResourceTiming.domainLookupEnd`
 
@@ -1006,14 +872,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp representing the time immediately
-after the Node.js finished the domain name lookup for the resource.
+表示 Node.js 完成资源的域名查找之后立即的时间的高分辨率毫秒时间戳。
 
 ### `performanceResourceTiming.connectStart`
 
@@ -1024,15 +888,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp representing the time immediately
-before Node.js starts to establish the connection to the server to retrieve
-the resource.
+表示 Node.js 开始建立与服务器的连接以检索资源之前立即的时间的高分辨率毫秒时间戳。
 
 ### `performanceResourceTiming.connectEnd`
 
@@ -1043,15 +904,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp representing the time immediately
-after Node.js finishes establishing the connection to the server to retrieve
-the resource.
+表示 Node.js 完成建立与服务器的连接以检索资源之后立即的时间的高分辨率毫秒时间戳。
 
 ### `performanceResourceTiming.secureConnectionStart`
 
@@ -1062,14 +920,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp representing the time immediately
-before Node.js starts the handshake process to secure the current connection.
+表示 Node.js 开始握手过程以保护当前连接之前立即的时间的高分辨率毫秒时间戳。
 
 ### `performanceResourceTiming.requestStart`
 
@@ -1080,14 +936,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp representing the time immediately
-before Node.js receives the first byte of the response from the server.
+表示 Node.js 接收到来自服务器的响应的第一个字节之前立即的时间的高分辨率毫秒时间戳。
 
 ### `performanceResourceTiming.responseEnd`
 
@@ -1098,15 +952,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The high resolution millisecond timestamp representing the time immediately
-after Node.js receives the last byte of the resource or immediately before
-the transport connection is closed, whichever comes first.
+表示 Node.js 接收到资源的最后一个字节之后立即或传输连接关闭之前立即的时间的高分辨率毫秒时间戳，以先发生者为准。
 
 ### `performanceResourceTiming.transferSize`
 
@@ -1117,14 +968,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-A number representing the size (in octets) of the fetched resource. The size
-includes the response header fields plus the response payload body.
+一个数字，表示获取的资源的大小（以八位字节为单位）。大小包括响应头字段加上响应负载主体。
 
 ### `performanceResourceTiming.encodedBodySize`
 
@@ -1135,15 +984,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-A number representing the size (in octets) received from the fetch
-(HTTP or cache), of the payload body, before removing any applied
-content-codings.
+一个数字，表示从 fetch（HTTP 或缓存）接收的负载主体的大小（以八位字节为单位），在移除任何应用的内容编码之前。
 
 ### `performanceResourceTiming.decodedBodySize`
 
@@ -1154,15 +1000,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This property getter must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此属性获取器必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-* Type: {number}
+* 类型：{number}
 
-A number representing the size (in octets) received from the fetch
-(HTTP or cache), of the message body, after removing any applied
-content-codings.
+一个数字，表示从 fetch（HTTP 或缓存）接收的消息主体的大小（以八位字节为单位），在移除任何应用的内容编码之后。
 
 ### `performanceResourceTiming.toJSON()`
 
@@ -1173,14 +1016,12 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: This method must be called with the
-                 `PerformanceResourceTiming` object as the receiver.
+    description: 此方法必须以 `PerformanceResourceTiming` 对象作为接收者调用。
 -->
 
-Returns a `object` that is the JSON representation of the
-`PerformanceResourceTiming` object
+返回一个 `object`，它是 `PerformanceResourceTiming` 对象的 JSON 表示。
 
-## Class: `PerformanceObserver`
+## 类：`PerformanceObserver`
 
 <!-- YAML
 added: v8.5.0
@@ -1192,9 +1033,9 @@ added: v8.5.0
 added: v16.0.0
 -->
 
-* Type: {string\[]}
+* 类型：{string\[]}
 
-Get supported types.
+获取支持的类型。
 
 ### `new PerformanceObserver(callback)`
 
@@ -1203,17 +1044,15 @@ added: v8.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: Passing an invalid callback to the `callback` argument
-                 now throws `ERR_INVALID_ARG_TYPE` instead of
-                 `ERR_INVALID_CALLBACK`.
+    description: 向 `callback` 参数传递无效的回调函数现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是
+                 `ERR_INVALID_CALLBACK`。
 -->
 
 * `callback` {Function}
   * `list` {PerformanceObserverEntryList}
   * `observer` {PerformanceObserver}
 
-`PerformanceObserver` objects provide notifications when new
-`PerformanceEntry` instances have been added to the Performance Timeline.
+`PerformanceObserver` 对象在新的 `PerformanceEntry` 实例被添加到性能时间轴时提供通知。
 
 ```mjs
 import { performance, PerformanceObserver } from 'node:perf_hooks';
@@ -1248,15 +1087,9 @@ obs.observe({ entryTypes: ['mark'], buffered: true });
 performance.mark('test');
 ```
 
-Because `PerformanceObserver` instances introduce their own additional
-performance overhead, instances should not be left subscribed to notifications
-indefinitely. Users should disconnect observers as soon as they are no
-longer needed.
+因为 `PerformanceObserver` 实例引入了它们自己额外的性能开销，实例不应无限期地订阅通知。用户应在不再需要观察者时尽快断开连接。
 
-The `callback` is invoked when a `PerformanceObserver` is
-notified about new `PerformanceEntry` instances. The callback receives a
-`PerformanceObserverEntryList` instance and a reference to the
-`PerformanceObserver`.
+当 `PerformanceObserver` 收到新的 `PerformanceEntry` 实例通知时，会调用 `callback`。回调接收一个 `PerformanceObserverEntryList` 实例和对 `PerformanceObserver` 的引用。
 
 ### `performanceObserver.disconnect()`
 
@@ -1264,7 +1097,7 @@ notified about new `PerformanceEntry` instances. The callback receives a
 added: v8.5.0
 -->
 
-Disconnects the `PerformanceObserver` instance from all notifications.
+断开 `PerformanceObserver` 实例与所有通知的连接。
 
 ### `performanceObserver.observe(options)`
 
@@ -1273,34 +1106,26 @@ added: v8.5.0
 changes:
   - version: v16.7.0
     pr-url: https://github.com/nodejs/node/pull/39297
-    description: Updated to conform to Performance Timeline Level 2. The
-                 buffered option has been added back.
+    description: 更新以符合 Performance Timeline Level 2。`buffered`
+                 选项已被加回。
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37136
-    description: Updated to conform to User Timing Level 3. The
-                 buffered option has been removed.
+    description: 更新以符合 User Timing Level 3。`buffered`
+                 选项已被移除。
 -->
 
 * `options` {Object}
-  * `type` {string} A single {PerformanceEntry} type. Must not be given
-    if `entryTypes` is already specified.
-  * `entryTypes` {string\[]} An array of strings identifying the types of
-    {PerformanceEntry} instances the observer is interested in. If not
-    provided an error will be thrown.
-  * `buffered` {boolean} If true, the observer callback is called with a
-    list global `PerformanceEntry` buffered entries. If false, only
-    `PerformanceEntry`s created after the time point are sent to the
-    observer callback. **Default:** `false`.
+  * `type` {string} 单个 {PerformanceEntry} 类型。如果已指定 `entryTypes`，则不得给定。
+  * `entryTypes` {string\[]} 一个字符串数组，标识观察者感兴趣的 {PerformanceEntry} 实例的类型。如果未提供，将抛出错误。
+  * `buffered` {boolean} 如果为 true，观察者回调将被调用并传入全局 `PerformanceEntry` 缓冲条目列表。如果为 false，只有时间点之后创建的 `PerformanceEntry` 才会发送给观察者回调。**默认值：** `false`。
 
-Subscribes the {PerformanceObserver} instance to notifications of new
-{PerformanceEntry} instances identified either by `options.entryTypes`
-or `options.type`:
+订阅 {PerformanceObserver} 实例以接收新的 {PerformanceEntry} 实例的通知，这些实例由 `options.entryTypes` 或 `options.type` 标识：
 
 ```mjs
 import { performance, PerformanceObserver } from 'node:perf_hooks';
 
 const obs = new PerformanceObserver((list, observer) => {
-  // Called once asynchronously. `list` contains three items.
+  // 异步调用一次。`list` 包含三个项。
 });
 obs.observe({ type: 'mark' });
 
@@ -1315,7 +1140,7 @@ const {
 } = require('node:perf_hooks');
 
 const obs = new PerformanceObserver((list, observer) => {
-  // Called once asynchronously. `list` contains three items.
+  // 异步调用一次。`list` 包含三个项。
 });
 obs.observe({ type: 'mark' });
 
@@ -1329,17 +1154,16 @@ for (let n = 0; n < 3; n++)
 added: v16.0.0
 -->
 
-* Returns: {PerformanceEntry\[]} Current list of entries stored in the performance observer, emptying it out.
+* 返回：{PerformanceEntry\[]} 当前存储在性能观察者中的条目列表，并将其清空。
 
-## Class: `PerformanceObserverEntryList`
+## 类：`PerformanceObserverEntryList`
 
 <!-- YAML
 added: v8.5.0
 -->
 
-The `PerformanceObserverEntryList` class is used to provide access to the
-`PerformanceEntry` instances passed to a `PerformanceObserver`.
-The constructor of this class is not exposed to users.
+`PerformanceObserverEntryList` 类用于提供对传递给 `PerformanceObserver` 的 `PerformanceEntry` 实例的访问。
+此类的构造函数不对用户暴露。
 
 ### `performanceObserverEntryList.getEntries()`
 
@@ -1347,10 +1171,9 @@ The constructor of this class is not exposed to users.
 added: v8.5.0
 -->
 
-* Returns: {PerformanceEntry\[]}
+* 返回：{PerformanceEntry\[]}
 
-Returns a list of `PerformanceEntry` objects in chronological order
-with respect to `performanceEntry.startTime`.
+返回一个 `PerformanceEntry` 对象列表，按照 `performanceEntry.startTime` 的时间顺序排列。
 
 ```mjs
 import { performance, PerformanceObserver } from 'node:perf_hooks';
@@ -1431,12 +1254,9 @@ added: v8.5.0
 
 * `name` {string}
 * `type` {string}
-* Returns: {PerformanceEntry\[]}
+* 返回：{PerformanceEntry\[]}
 
-Returns a list of `PerformanceEntry` objects in chronological order
-with respect to `performanceEntry.startTime` whose `performanceEntry.name` is
-equal to `name`, and optionally, whose `performanceEntry.entryType` is equal to
-`type`.
+返回一个 `PerformanceEntry` 对象列表，按照 `performanceEntry.startTime` 的时间顺序排列，其 `performanceEntry.name` 等于 `name`，并且可选地，其 `performanceEntry.entryType` 等于 `type`。
 
 ```mjs
 import { performance, PerformanceObserver } from 'node:perf_hooks';
@@ -1532,11 +1352,9 @@ added: v8.5.0
 -->
 
 * `type` {string}
-* Returns: {PerformanceEntry\[]}
+* 返回：{PerformanceEntry\[]}
 
-Returns a list of `PerformanceEntry` objects in chronological order
-with respect to `performanceEntry.startTime` whose `performanceEntry.entryType`
-is equal to `type`.
+返回一个 `PerformanceEntry` 对象列表，按照 `performanceEntry.startTime` 的时间顺序排列，其 `performanceEntry.entryType` 等于 `type`。
 
 ```mjs
 import { performance, PerformanceObserver } from 'node:perf_hooks';
@@ -1616,16 +1434,13 @@ added:
 -->
 
 * `options` {Object}
-  * `lowest` {number|bigint} The lowest discernible value. Must be an integer
-    value greater than 0. **Default:** `1`.
-  * `highest` {number|bigint} The highest recordable value. Must be an integer
-    value that is equal to or greater than two times `lowest`.
-    **Default:** `Number.MAX_SAFE_INTEGER`.
-  * `figures` {number} The number of accuracy digits. Must be a number between
-    `1` and `5`. **Default:** `3`.
-* Returns: {RecordableHistogram}
+  * `lowest` {number|bigint} 最低可分辨值。必须是大于 0 的整数值。**默认值：** `1`。
+  * `highest` {number|bigint} 最高可记录值。必须是等于或大于 `lowest` 两倍的整数值。
+    **默认值：** `Number.MAX_SAFE_INTEGER`。
+  * `figures` {number} 精度位数。必须是 `1` 到 `5` 之间的数字。**默认值：** `3`。
+* 返回：{RecordableHistogram}
 
-Returns a {RecordableHistogram}.
+返回一个 {RecordableHistogram}。
 
 ## `perf_hooks.eventLoopUtilization([utilization1[, utilization2]])`
 
@@ -1635,40 +1450,24 @@ added:
   - v24.12.0
 -->
 
-* `utilization1` {Object} The result of a previous call to
-  `eventLoopUtilization()`.
-* `utilization2` {Object} The result of a previous call to
-  `eventLoopUtilization()` prior to `utilization1`.
-* Returns: {Object}
+* `utilization1` {Object} 之前调用 `eventLoopUtilization()` 的结果。
+* `utilization2` {Object} 在 `utilization1` 之前调用 `eventLoopUtilization()` 的结果。
+* 返回：{Object}
   * `idle` {number}
   * `active` {number}
   * `utilization` {number}
 
-The `eventLoopUtilization()` function returns an object that contains the
-cumulative duration of time the event loop has been both idle and active as a
-high resolution milliseconds timer. The `utilization` value is the calculated
-Event Loop Utilization (ELU).
+`eventLoopUtilization()` 函数返回一个对象，该对象包含事件循环处于空闲和活动状态的累计持续时间，作为高分辨率毫秒计时器。`utilization` 值是计算出的事件循环利用率 (ELU)。
 
-If bootstrapping has not yet finished on the main thread the properties have
-the value of `0`. The ELU is immediately available on [Worker threads][] since
-bootstrap happens within the event loop.
+如果主线程上的引导尚未完成，则属性的值为 `0`。由于引导发生在事件循环内，因此 ELU 在 [工作线程][] 上立即可用。
 
-Both `utilization1` and `utilization2` are optional parameters.
+`utilization1` 和 `utilization2` 都是可选参数。
 
-If `utilization1` is passed, then the delta between the current call's `active`
-and `idle` times, as well as the corresponding `utilization` value are
-calculated and returned (similar to [`process.hrtime()`][]).
+如果传入了 `utilization1`，则会计算并返回当前调用的 `active` 和 `idle` 时间之间的差值，以及相应的 `utilization` 值（类似于 [`process.hrtime()`][]）。
 
-If `utilization1` and `utilization2` are both passed, then the delta is
-calculated between the two arguments. This is a convenience option because,
-unlike [`process.hrtime()`][], calculating the ELU is more complex than a
-single subtraction.
+如果同时传入了 `utilization1` 和 `utilization2`，则会计算这两个参数之间的差值。这是一个便利选项，因为与 [`process.hrtime()`][] 不同，计算 ELU 比单次减法更复杂。
 
-ELU is similar to CPU utilization, except that it only measures event loop
-statistics and not CPU usage. It represents the percentage of time the event
-loop has spent outside the event loop's event provider (e.g. `epoll_wait`).
-No other CPU idle time is taken into consideration. The following is an example
-of how a mostly idle process will have a high ELU.
+ELU 类似于 CPU 利用率，但它仅测量事件循环统计信息，而不是 CPU 使用情况。它表示事件循环花在事件循环的事件提供者（例如 `epoll_wait`）之外的时间百分比。不考虑其他 CPU 空闲时间。以下是一个大部分空闲的进程如何具有高 ELU 的示例。
 
 ```mjs
 import { eventLoopUtilization } from 'node:perf_hooks';
@@ -1693,13 +1492,9 @@ setImmediate(() => {
 });
 ```
 
-Although the CPU is mostly idle while running this script, the value of
-`utilization` is `1`. This is because the call to
-[`child_process.spawnSync()`][] blocks the event loop from proceeding.
+虽然运行此脚本时 CPU 大部分处于空闲状态，但 `utilization` 的值为 `1`。这是因为对 [`child_process.spawnSync()`][] 的调用阻止了事件循环继续执行。
 
-Passing in a user-defined object instead of the result of a previous call to
-`eventLoopUtilization()` will lead to undefined behavior. The return values
-are not guaranteed to reflect any correct state of the event loop.
+传入用户定义的对象而不是之前调用 `eventLoopUtilization()` 的结果会导致未定义的行为。返回值不保证反映事件循环的任何正确状态。
 
 ## `perf_hooks.monitorEventLoopDelay([options])`
 
@@ -1708,27 +1503,21 @@ added: v11.10.0
 -->
 
 * `options` {Object}
-  * `resolution` {number} The sampling rate in milliseconds. Must be greater
-    than zero. **Default:** `10`.
-* Returns: {IntervalHistogram}
+  * `resolution` {number} 采样率（毫秒）。必须大于零。**默认值：** `10`。
+* 返回：{IntervalHistogram}
 
-_This property is an extension by Node.js. It is not available in Web browsers._
+_此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
 
-Creates an `IntervalHistogram` object that samples and reports the event loop
-delay over time. The delays will be reported in nanoseconds.
+创建一个 `IntervalHistogram` 对象，该对象随时间采样并报告事件循环延迟。延迟将以纳秒为单位报告。
 
-Using a timer to detect approximate event loop delay works because the
-execution of timers is tied specifically to the lifecycle of the libuv
-event loop. That is, a delay in the loop will cause a delay in the execution
-of the timer, and those delays are specifically what this API is intended to
-detect.
+使用计时器检测近似事件循环延迟之所以有效，是因为计时器的执行与 libuv 事件循环的生命周期具体绑定。也就是说，循环中的延迟会导致计时器执行的延迟，而这些延迟正是此 API 旨在检测的。
 
 ```mjs
 import { monitorEventLoopDelay } from 'node:perf_hooks';
 
 const h = monitorEventLoopDelay({ resolution: 20 });
 h.enable();
-// Do something.
+// 做一些事情。
 h.disable();
 console.log(h.min);
 console.log(h.max);
@@ -1743,7 +1532,7 @@ console.log(h.percentile(99));
 const { monitorEventLoopDelay } = require('node:perf_hooks');
 const h = monitorEventLoopDelay({ resolution: 20 });
 h.enable();
-// Do something.
+// 做一些事情。
 h.disable();
 console.log(h.min);
 console.log(h.max);
@@ -1764,15 +1553,11 @@ added:
 
 * `fn` {Function}
 * `options` {Object}
-  * `histogram` {RecordableHistogram} A histogram object created using
-    `perf_hooks.createHistogram()` that will record runtime durations in
-    nanoseconds.
+  * `histogram` {RecordableHistogram} 使用 `perf_hooks.createHistogram()` 创建的直方图对象，用于记录纳秒级的运行时持续时间。
 
-_This property is an extension by Node.js. It is not available in Web browsers._
+_此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
 
-Wraps a function within a new function that measures the running time of the
-wrapped function. A `PerformanceObserver` must be subscribed to the `'function'`
-event type in order for the timing details to be accessed.
+将函数包装在一个新函数中，该函数测量被包装函数的运行时间。必须将 `PerformanceObserver` 订阅到 `'function'` 事件类型才能访问计时详细信息。
 
 ```mjs
 import { timerify, performance, PerformanceObserver } from 'node:perf_hooks';
@@ -1792,7 +1577,7 @@ const obs = new PerformanceObserver((list) => {
 });
 obs.observe({ entryTypes: ['function'] });
 
-// A performance timeline entry will be created
+// 将创建一个性能时间线条目
 wrapped();
 ```
 
@@ -1818,13 +1603,11 @@ const obs = new PerformanceObserver((list) => {
 });
 obs.observe({ entryTypes: ['function'] });
 
-// A performance timeline entry will be created
+// 将创建一个性能时间线条目
 wrapped();
 ```
 
-If the wrapped function returns a promise, a finally handler will be attached
-to the promise and the duration will be reported once the finally handler is
-invoked.
+如果被包装的函数返回一个 promise，则将附加一个 finally 处理程序到该 promise，并且一旦调用 finally 处理程序就会报告持续时间。
 
 ## Class: `Histogram`
 
@@ -1840,9 +1623,9 @@ added:
   - v16.14.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The number of samples recorded by the histogram.
+直方图记录的样本数。
 
 ### `histogram.countBigInt`
 
@@ -1852,9 +1635,9 @@ added:
   - v16.14.0
 -->
 
-* Type: {bigint}
+* 类型：{bigint}
 
-The number of samples recorded by the histogram.
+直方图记录的样本数。
 
 ### `histogram.exceeds`
 
@@ -1862,10 +1645,9 @@ The number of samples recorded by the histogram.
 added: v11.10.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The number of times the event loop delay exceeded the maximum 1 hour event
-loop delay threshold.
+事件循环延迟超过最大 1 小时事件循环延迟阈值的次数。
 
 ### `histogram.exceedsBigInt`
 
@@ -1875,10 +1657,9 @@ added:
   - v16.14.0
 -->
 
-* Type: {bigint}
+* 类型：{bigint}
 
-The number of times the event loop delay exceeded the maximum 1 hour event
-loop delay threshold.
+事件循环延迟超过最大 1 小时事件循环延迟阈值的次数。
 
 ### `histogram.max`
 
@@ -1886,9 +1667,9 @@ loop delay threshold.
 added: v11.10.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The maximum recorded event loop delay.
+记录的最大事件循环延迟。
 
 ### `histogram.maxBigInt`
 
@@ -1898,9 +1679,9 @@ added:
   - v16.14.0
 -->
 
-* Type: {bigint}
+* 类型：{bigint}
 
-The maximum recorded event loop delay.
+记录的最大事件循环延迟。
 
 ### `histogram.mean`
 
@@ -1908,9 +1689,9 @@ The maximum recorded event loop delay.
 added: v11.10.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The mean of the recorded event loop delays.
+记录的事件循环延迟的平均值。
 
 ### `histogram.min`
 
@@ -1918,9 +1699,9 @@ The mean of the recorded event loop delays.
 added: v11.10.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The minimum recorded event loop delay.
+记录的最小事件循环延迟。
 
 ### `histogram.minBigInt`
 
@@ -1930,9 +1711,9 @@ added:
   - v16.14.0
 -->
 
-* Type: {bigint}
+* 类型：{bigint}
 
-The minimum recorded event loop delay.
+记录的最小事件循环延迟。
 
 ### `histogram.percentile(percentile)`
 
@@ -1940,10 +1721,10 @@ The minimum recorded event loop delay.
 added: v11.10.0
 -->
 
-* `percentile` {number} A percentile value in the range (0, 100].
-* Returns: {number}
+* `percentile` {number} 范围在 (0, 100] 内的百分位值。
+* 返回：{number}
 
-Returns the value at the given percentile.
+返回给定百分位处的值。
 
 ### `histogram.percentileBigInt(percentile)`
 
@@ -1953,10 +1734,10 @@ added:
   - v16.14.0
 -->
 
-* `percentile` {number} A percentile value in the range (0, 100].
-* Returns: {bigint}
+* `percentile` {number} 范围在 (0, 100] 内的百分位值。
+* 返回：{bigint}
 
-Returns the value at the given percentile.
+返回给定百分位处的值。
 
 ### `histogram.percentiles`
 
@@ -1964,9 +1745,9 @@ Returns the value at the given percentile.
 added: v11.10.0
 -->
 
-* Type: {Map}
+* 类型：{Map}
 
-Returns a `Map` object detailing the accumulated percentile distribution.
+返回一个 `Map` 对象，详细说明累积的百分位分布。
 
 ### `histogram.percentilesBigInt`
 
@@ -1976,9 +1757,9 @@ added:
   - v16.14.0
 -->
 
-* Type: {Map}
+* 类型：{Map}
 
-Returns a `Map` object detailing the accumulated percentile distribution.
+返回一个 `Map` 对象，详细说明累积的百分位分布。
 
 ### `histogram.reset()`
 
@@ -1986,7 +1767,7 @@ Returns a `Map` object detailing the accumulated percentile distribution.
 added: v11.10.0
 -->
 
-Resets the collected histogram data.
+重置收集的直方图数据。
 
 ### `histogram.stddev`
 
@@ -1994,13 +1775,13 @@ Resets the collected histogram data.
 added: v11.10.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The standard deviation of the recorded event loop delays.
+记录的事件循环延迟的标准差。
 
 ## Class: `IntervalHistogram extends Histogram`
 
-A `Histogram` that is periodically updated on a given interval.
+一个在给定间隔上定期更新的 `Histogram`。
 
 ### `histogram.disable()`
 
@@ -2008,10 +1789,9 @@ A `Histogram` that is periodically updated on a given interval.
 added: v11.10.0
 -->
 
-* Returns: {boolean}
+* 返回：{boolean}
 
-Disables the update interval timer. Returns `true` if the timer was
-stopped, `false` if it was already stopped.
+禁用更新间隔计时器。如果计时器被停止则返回 `true`，如果它已经停止则返回 `false`。
 
 ### `histogram.enable()`
 
@@ -2019,10 +1799,9 @@ stopped, `false` if it was already stopped.
 added: v11.10.0
 -->
 
-* Returns: {boolean}
+* 返回：{boolean}
 
-Enables the update interval timer. Returns `true` if the timer was
-started, `false` if it was already started.
+启用更新间隔计时器。如果计时器已启动则返回 `true`，如果它已经启动则返回 `false`。
 
 ### `histogram[Symbol.dispose]()`
 
@@ -2030,22 +1809,20 @@ started, `false` if it was already started.
 added: v24.2.0
 -->
 
-Disables the update interval timer when the histogram is disposed.
+当直方图被处置时禁用更新间隔计时器。
 
 ```js
 const { monitorEventLoopDelay } = require('node:perf_hooks');
 {
   using hist = monitorEventLoopDelay({ resolution: 20 });
   hist.enable();
-  // The histogram will be disabled when the block is exited.
+  // 当退出块时，直方图将被禁用。
 }
 ```
 
-### Cloning an `IntervalHistogram`
+### 克隆 `IntervalHistogram`
 
-{IntervalHistogram} instances can be cloned via {MessagePort}. On the receiving
-end, the histogram is cloned as a plain {Histogram} object that does not
-implement the `enable()` and `disable()` methods.
+{IntervalHistogram} 实例可以通过 {MessagePort} 克隆。在接收端，直方图被克隆为一个普通的 {Histogram} 对象，该对象不实现 `enable()` 和 `disable()` 方法。
 
 ## Class: `RecordableHistogram extends Histogram`
 
@@ -2065,7 +1842,7 @@ added:
 
 * `other` {RecordableHistogram}
 
-Adds the values from `other` to this histogram.
+将 `other` 中的值添加到此直方图。
 
 ### `histogram.record(val)`
 
@@ -2075,7 +1852,7 @@ added:
   - v14.18.0
 -->
 
-* `val` {number|bigint} The amount to record in the histogram.
+* `val` {number|bigint} 要记录到直方图中的量。
 
 ### `histogram.recordDelta()`
 
@@ -2085,16 +1862,13 @@ added:
   - v14.18.0
 -->
 
-Calculates the amount of time (in nanoseconds) that has passed since the
-previous call to `recordDelta()` and records that amount in the histogram.
+计算自上次调用 `recordDelta()` 以来经过的时间量（纳秒），并将该量记录在直方图中。
 
-## Examples
+## 示例
 
-### Measuring the duration of async operations
+### 测量异步操作的持续时间
 
-The following example uses the [Async Hooks][] and Performance APIs to measure
-the actual duration of a Timeout operation (including the amount of time it took
-to execute the callback).
+以下示例使用 [Async Hooks][] 和 Performance API 来测量 Timeout 操作的实际持续时间（包括执行回调所花费的时间）。
 
 ```mjs
 import { createHook } from 'node:async_hooks';
@@ -2170,17 +1944,16 @@ obs.observe({ entryTypes: ['measure'] });
 setTimeout(() => {}, 1000);
 ```
 
-### Measuring how long it takes to load dependencies
+### 测量加载依赖项所需的时间
 
-The following example measures the duration of `require()` operations to load
-dependencies:
+以下示例测量加载依赖项的 `require()` 操作的持续时间：
 
 <!-- eslint-disable no-global-assign -->
 
 ```mjs
 import { performance, PerformanceObserver } from 'node:perf_hooks';
 
-// Activate the observer
+// 激活观察器
 const obs = new PerformanceObserver((list) => {
   const entries = list.getEntries();
   entries.forEach((entry) => {
@@ -2209,12 +1982,12 @@ const {
 } = require('node:perf_hooks');
 const mod = require('node:module');
 
-// Monkey patch the require function
+// 猴子补丁 require 函数
 mod.Module.prototype.require =
   performance.timerify(mod.Module.prototype.require);
 require = performance.timerify(require);
 
-// Activate the observer
+// 激活观察器
 const obs = new PerformanceObserver((list) => {
   const entries = list.getEntries();
   entries.forEach((entry) => {
@@ -2229,13 +2002,9 @@ obs.observe({ entryTypes: ['function'] });
 require('some-module');
 ```
 
-### Measuring how long one HTTP round-trip takes
+### 测量一次 HTTP 往返所需的时间
 
-The following example is used to trace the time spent by HTTP client
-(`OutgoingMessage`) and HTTP request (`IncomingMessage`). For HTTP client,
-it means the time interval between starting the request and receiving the
-response, and for HTTP request, it means the time interval between receiving
-the request and sending the response:
+以下示例用于追踪 HTTP 客户端（`OutgoingMessage`）和 HTTP 请求（`IncomingMessage`）所花费的时间。对于 HTTP 客户端，它指的是从开始请求到接收响应之间的时间间隔；对于 HTTP 请求，它指的是从接收请求到发送响应之间的时间间隔：
 
 ```mjs
 import { PerformanceObserver } from 'node:perf_hooks';
@@ -2280,7 +2049,7 @@ http.createServer((req, res) => {
 });
 ```
 
-### Measuring how long the `net.connect` (only for TCP) takes when the connection is successful
+### 测量连接成功时 `net.connect`（仅适用于 TCP）所需的时间
 
 ```mjs
 import { PerformanceObserver } from 'node:perf_hooks';
@@ -2318,7 +2087,7 @@ net.createServer((socket) => {
 });
 ```
 
-### Measuring how long the DNS takes when the request is successful
+### 测量请求成功时 DNS 所需的时间
 
 ```mjs
 import { PerformanceObserver } from 'node:perf_hooks';

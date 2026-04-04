@@ -1,99 +1,96 @@
-# About this documentation
+# 关于本文档
 
 <!--introduced_in=v0.10.0-->
 
 <!-- type=misc -->
 
-Welcome to the official API reference documentation for Node.js!
+欢迎来到 Node.js 官方 API 参考文档！
 
-Node.js is a JavaScript runtime built on the [V8 JavaScript engine][].
+Node.js 是一个基于 [V8 JavaScript 引擎][] 构建的 JavaScript 运行时。
 
-## Contributing
+## 贡献
 
-Report errors in this documentation in [the issue tracker][]. See
-[the contributing guide][] for directions on how to submit pull requests.
+在 [问题追踪器][] 中报告本文档的错误。参见
+[贡献指南][] 了解如何提交 pull request 的说明。
 
-## Stability index
+## 稳定性指数
 
 <!--type=misc-->
 
-Throughout the documentation are indications of a section's stability. Some APIs
-are so proven and so relied upon that they are unlikely to ever change at all.
-Others are brand new and experimental, or known to be hazardous.
+整个文档中都标明了各个部分的稳定性。某些 API
+经过充分验证且被广泛依赖，以至于它们完全不可能发生变化。
+另一些则是全新的、实验性的，或已知存在风险的。
 
-The stability indexes are as follows:
+稳定性指数如下：
 
-> Stability: 0 - Deprecated. The feature may emit warnings. Backward
-> compatibility is not guaranteed.
-
-<!-- separator -->
-
-> Stability: 1 - Experimental. The feature is not subject to
-> [semantic versioning][] rules. Non-backward compatible changes or removal may
-> occur in any future release. Use of the feature is not recommended in
-> production environments.
->
-> Experimental features are subdivided into stages:
->
-> * 1.0 - Early development. Experimental features at this stage are unfinished
->   and subject to substantial change.
-> * 1.1 - Active development. Experimental features at this stage are nearing
->   minimum viability.
-> * 1.2 - Release candidate. Experimental features at this stage are hopefully
->   ready to become stable. No further breaking changes are anticipated but may
->   still occur in response to user feedback or the features' underlying
->   specification development. We encourage user testing and feedback so that
->   we can know that this feature is ready to be marked as stable.
->
-> Experimental features leave the experimental status typically either by
-> graduating to stable, or are removed without a deprecation cycle.
+> 稳定性：0 - 已弃用。该功能可能会发出警告。不保证向后
+> 兼容性。
 
 <!-- separator -->
 
-> Stability: 2 - Stable. Compatibility with the npm ecosystem is a high
-> priority.
+> 稳定性：1 - 实验性。该功能不受
+> [语义化版本][] 规则约束。任何未来版本中都可能发生不向后兼容的更改或移除。
+> 不建议在生产环境中使用该功能。
+>
+> 实验性功能细分为以下几个阶段：
+>
+> * 1.0 - 早期开发。此阶段的实验性功能尚未完成
+>   且可能会发生重大变化。
+> * 1.1 - 积极开发。此阶段的实验性功能接近
+>   最低可行性。
+> * 1.2 - 发布候选。此阶段的实验性功能有望
+>   准备好变为稳定版。预计不会再有破坏性更改，但仍可能
+>   因用户反馈或功能底层规范的发展而发生。我们鼓励用户测试和反馈，以便
+>   我们知道该功能已准备好标记为稳定版。
+>
+> 实验性功能通常通过
+> 晋升为稳定版，或未经弃用周期直接被移除来脱离实验状态。
 
 <!-- separator -->
 
-> Stability: 3 - Legacy. Although this feature is unlikely to be removed and is
-> still covered by semantic versioning guarantees, it is no longer actively
-> maintained, and other alternatives are available.
+> 稳定性：2 - 稳定。与 npm 生态系统的兼容性是高度
+> 优先事项。
 
-Features are marked as legacy rather than being deprecated if their use does no
-harm, and they are widely relied upon within the npm ecosystem. Bugs found in
-legacy features are unlikely to be fixed.
+<!-- separator -->
 
-Use caution when making use of Experimental features, particularly when
-authoring libraries. Users may not be aware that experimental features are being
-used. Bugs or behavior changes may surprise users when Experimental API
-modifications occur. To avoid surprises, use of an Experimental feature may need
-a command-line flag. Experimental features may also emit a [warning][].
+> 稳定性：3 - 遗留。虽然该功能不太可能被移除且仍
+> 受语义化版本保证覆盖，但不再积极
+> 维护，且有其他替代方案可用。
 
-## Stability overview
+如果功能的使用无害，且在 npm 生态系统中被广泛依赖，则标记为遗留而非弃用。
+在遗留功能中发现的 Bug 不太可能被修复。
+
+使用实验性功能时要小心，特别是在
+编写库时。用户可能不知道正在使用实验性功能。
+当实验性 API 发生修改时，Bug 或行为变化可能会让用户感到意外。
+为避免意外，使用实验性功能可能需要
+命令行标志。实验性功能也可能会发出 [警告][]。
+
+## 稳定性概述
 
 <!-- STABILITY_OVERVIEW_SLOT_BEGIN -->
 
 <!-- STABILITY_OVERVIEW_SLOT_END -->
 
-## JSON output
+## JSON 输出
 
 <!-- YAML
 added: v0.6.12
 -->
 
-Every `.html` document has a corresponding `.json` document. This is for IDEs
-and other utilities that consume the documentation.
+每个 `.html` 文档都有一个对应的 `.json` 文档。这是供 IDE
+及其他使用文档的工具使用的。
 
-## System calls and man pages
+## 系统调用和 man 页面
 
-Node.js functions which wrap a system call will document that. The docs link
-to the corresponding man pages which describe how the system call works.
+封装系统调用的 Node.js 函数会对此进行文档说明。文档链接
+到相应的 man 页面，描述系统调用的工作原理。
 
-Most Unix system calls have Windows analogues. Still, behavior differences may
-be unavoidable.
+大多数 Unix 系统调用都有 Windows 对应物。尽管如此，行为差异可能
+不可避免。
 
-[V8 JavaScript engine]: https://v8.dev/
-[semantic versioning]: https://semver.org/
-[the contributing guide]: https://github.com/nodejs/node/blob/HEAD/CONTRIBUTING.md
-[the issue tracker]: https://github.com/nodejs/node/issues/new
-[warning]: process.md#event-warning
+[V8 JavaScript 引擎]: https://v8.dev/
+[语义化版本]: https://semver.org/
+[贡献指南]: https://github.com/nodejs/node/blob/HEAD/CONTRIBUTING.md
+[问题追踪器]: https://github.com/nodejs/node/issues/new
+[警告]: process.md#event-warning

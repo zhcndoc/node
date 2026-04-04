@@ -1,13 +1,12 @@
-# Worker threads
+# 工作线程
 
 <!--introduced_in=v10.5.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/worker_threads.js -->
 
-The `node:worker_threads` module enables the use of threads that execute
-JavaScript in parallel. To access it:
+`node:worker_threads` 模块允许使用并行执行 JavaScript 的线程。要访问它：
 
 ```mjs
 import worker_threads from 'node:worker_threads';
@@ -19,13 +18,9 @@ import worker_threads from 'node:worker_threads';
 const worker_threads = require('node:worker_threads');
 ```
 
-Workers (threads) are useful for performing CPU-intensive JavaScript operations.
-They do not help much with I/O-intensive work. The Node.js built-in
-asynchronous I/O operations are more efficient than Workers can be.
+工作器（线程）适用于执行 CPU 密集型的 JavaScript 操作。它们对 I/O 密集型工作帮助不大。Node.js 内置的异步 I/O 操作比工作器更高效。
 
-Unlike `child_process` or `cluster`, `worker_threads` can share memory. They do
-so by transferring `ArrayBuffer` instances or sharing `SharedArrayBuffer`
-instances.
+与 `child_process` 或 `cluster` 不同，`worker_threads` 可以共享内存。它们通过传输 `ArrayBuffer` 实例或共享 `SharedArrayBuffer` 实例来实现这一点。
 
 ```mjs
 import {
@@ -87,19 +82,11 @@ if (isMainThread) {
 }
 ```
 
-The above example spawns a Worker thread for each `parseJSAsync()` call. In
-practice, use a pool of Workers for these kinds of tasks. Otherwise, the
-overhead of creating Workers would likely exceed their benefit.
+上述示例为每个 `parseJSAsync()` 调用生成一个 Worker 线程。实际上，对于此类任务应使用 Worker 池。否则，创建 Worker 的开销可能会超过其收益。
 
-When implementing a worker pool, use the [`AsyncResource`][] API to inform
-diagnostic tools (e.g. to provide asynchronous stack traces) about the
-correlation between tasks and their outcomes. See
-["Using `AsyncResource` for a `Worker` thread pool"][async-resource-worker-pool]
-in the `async_hooks` documentation for an example implementation.
+实现 Worker 池时，使用 [`AsyncResource`][] API 通知诊断工具（例如提供异步堆栈跟踪）关于任务与其结果之间的关联。有关示例实现，请参阅 `async_hooks` 文档中的 ["使用 `AsyncResource` 用于 `Worker` 线程池"][async-resource-worker-pool]。
 
-Worker threads inherit non-process-specific options by default. Refer to
-[`Worker constructor options`][] to know how to customize worker thread options,
-specifically `argv` and `execArgv` options.
+Worker 线程默认继承非进程特定的选项。参阅 [`Worker 构造函数选项`][] 了解如何自定义工作线程选项，特别是 `argv` 和 `execArgv` 选项。
 
 ## `worker_threads.getEnvironmentData(key)`
 
@@ -115,14 +102,10 @@ changes:
     description: No longer experimental.
 -->
 
-* `key` {any} Any arbitrary, cloneable JavaScript value that can be used as a
-  {Map} key.
-* Returns: {any}
+* `key` {any} 任何任意的、可克隆的 JavaScript 值，可用作 {Map} 键。
+* 返回：{any}
 
-Within a worker thread, `worker.getEnvironmentData()` returns a clone
-of data passed to the spawning thread's `worker.setEnvironmentData()`.
-Every new `Worker` receives its own copy of the environment data
-automatically.
+在工作线程内，`worker.getEnvironmentData()` 返回传递给生成线程的 `worker.setEnvironmentData()` 的数据克隆。每个新 `Worker` 都会自动接收环境数据的自己的副本。
 
 ```mjs
 import {
@@ -136,7 +119,7 @@ if (isMainThread) {
   setEnvironmentData('Hello', 'World!');
   const worker = new Worker(new URL(import.meta.url));
 } else {
-  console.log(getEnvironmentData('Hello'));  // Prints 'World!'.
+  console.log(getEnvironmentData('Hello'));  // 打印 'World!'.
 }
 ```
 
@@ -154,7 +137,7 @@ if (isMainThread) {
   setEnvironmentData('Hello', 'World!');
   const worker = new Worker(__filename);
 } else {
-  console.log(getEnvironmentData('Hello'));  // Prints 'World!'.
+  console.log(getEnvironmentData('Hello'));  // 打印 'World!'.
 }
 ```
 
@@ -166,9 +149,9 @@ added:
   - v22.14.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Is `true` if this code is running inside of an internal [`Worker`][] thread (e.g the loader thread).
+如果此代码在内部 [`Worker`][] 线程（例如加载器线程）内运行，则为 `true`。
 
 ```bash
 node --experimental-loader ./loader.js main.js
@@ -208,19 +191,19 @@ console.log(isInternalThread);  // false
 added: v10.5.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Is `true` if this code is not running inside of a [`Worker`][] thread.
+如果此代码不在 [`Worker`][] 线程内运行，则为 `true`。
 
 ```mjs
 import { Worker, isMainThread } from 'node:worker_threads';
 
 if (isMainThread) {
-  // This re-loads the current file inside a Worker instance.
+  // 这会在 Worker 实例中重新加载当前文件。
   new Worker(new URL(import.meta.url));
 } else {
   console.log('Inside Worker!');
-  console.log(isMainThread);  // Prints 'false'.
+  console.log(isMainThread);  // 打印 'false'.
 }
 ```
 
@@ -230,11 +213,11 @@ if (isMainThread) {
 const { Worker, isMainThread } = require('node:worker_threads');
 
 if (isMainThread) {
-  // This re-loads the current file inside a Worker instance.
+  // 这会在 Worker 实例中重新加载当前文件。
   new Worker(__filename);
 } else {
   console.log('Inside Worker!');
-  console.log(isMainThread);  // Prints 'false'.
+  console.log(isMainThread);  // 打印 'false'.
 }
 ```
 
@@ -246,20 +229,13 @@ added:
   - v12.19.0
 -->
 
-* `object` {any} Any arbitrary JavaScript value.
+* `object` {any} 任何任意的 JavaScript 值。
 
-Mark an object as not transferable. If `object` occurs in the transfer list of
-a [`port.postMessage()`][] call, an error is thrown. This is a no-op if
-`object` is a primitive value.
+将对象标记为不可传输。如果 `object` 出现在 [`port.postMessage()`][] 调用的传输列表中，则会抛出错误。如果 `object` 是原始值，则此操作无效。
 
-In particular, this makes sense for objects that can be cloned, rather than
-transferred, and which are used by other objects on the sending side.
-For example, Node.js marks the `ArrayBuffer`s it uses for its
-[`Buffer` pool][`Buffer.allocUnsafe()`] with this.
-`ArrayBuffer.prototype.transfer()` is disallowed on such array buffer
-instances.
+特别是，这对于可以被克隆而不是传输，并且被发送方其他对象使用的对象是有意义的。例如，Node.js 用它来标记用于 [`Buffer` 池][`Buffer.allocUnsafe()`] 的 `ArrayBuffer`。在此类数组缓冲区实例上禁止使用 `ArrayBuffer.prototype.transfer()`。
 
-This operation cannot be undone.
+此操作无法撤销。
 
 ```mjs
 import { MessageChannel, markAsUntransferable } from 'node:worker_threads';
@@ -272,17 +248,17 @@ markAsUntransferable(pooledBuffer);
 
 const { port1 } = new MessageChannel();
 try {
-  // This will throw an error, because pooledBuffer is not transferable.
+  // 这将抛出一个错误，因为 pooledBuffer 不可传输。
   port1.postMessage(typedArray1, [ typedArray1.buffer ]);
 } catch (error) {
   // error.name === 'DataCloneError'
 }
 
-// The following line prints the contents of typedArray1 -- it still owns
-// its memory and has not been transferred. Without
-// `markAsUntransferable()`, this would print an empty Uint8Array and the
-// postMessage call would have succeeded.
-// typedArray2 is intact as well.
+// 以下行打印 typedArray1 的内容 -- 它仍然拥有
+// 其内存且未被传输。如果没有
+// `markAsUntransferable()`，这将打印一个空的 Uint8Array 并且
+// postMessage 调用会成功。
+// typedArray2 也完好无损。
 console.log(typedArray1);
 console.log(typedArray2);
 ```
@@ -300,22 +276,22 @@ markAsUntransferable(pooledBuffer);
 
 const { port1 } = new MessageChannel();
 try {
-  // This will throw an error, because pooledBuffer is not transferable.
+  // 这将抛出一个错误，因为 pooledBuffer 不可传输。
   port1.postMessage(typedArray1, [ typedArray1.buffer ]);
 } catch (error) {
   // error.name === 'DataCloneError'
 }
 
-// The following line prints the contents of typedArray1 -- it still owns
-// its memory and has not been transferred. Without
-// `markAsUntransferable()`, this would print an empty Uint8Array and the
-// postMessage call would have succeeded.
-// typedArray2 is intact as well.
+// 以下行打印 typedArray1 的内容 -- 它仍然拥有
+// 其内存且未被传输。如果没有
+// `markAsUntransferable()`，这将打印一个空的 Uint8Array 并且
+// postMessage 调用会成功。
+// typedArray2 也完好无损。
 console.log(typedArray1);
 console.log(typedArray2);
 ```
 
-There is no equivalent to this API in browsers.
+浏览器中没有与此 API 等效的功能。
 
 ## `worker_threads.isMarkedAsUntransferable(object)`
 
@@ -323,11 +299,10 @@ There is no equivalent to this API in browsers.
 added: v21.0.0
 -->
 
-* `object` {any} Any JavaScript value.
-* Returns: {boolean}
+* `object` {any} 任何 JavaScript 值。
+* 返回：{boolean}
 
-Check if an object is marked as not transferable with
-[`markAsUntransferable()`][].
+检查对象是否被 [`markAsUntransferable()`][] 标记为不可传输。
 
 ```mjs
 import { markAsUntransferable, isMarkedAsUntransferable } from 'node:worker_threads';
@@ -335,7 +310,7 @@ import { markAsUntransferable, isMarkedAsUntransferable } from 'node:worker_thre
 const pooledBuffer = new ArrayBuffer(8);
 markAsUntransferable(pooledBuffer);
 
-isMarkedAsUntransferable(pooledBuffer);  // Returns true.
+isMarkedAsUntransferable(pooledBuffer);  // 返回 true。
 ```
 
 ```cjs
@@ -346,10 +321,10 @@ const { markAsUntransferable, isMarkedAsUntransferable } = require('node:worker_
 const pooledBuffer = new ArrayBuffer(8);
 markAsUntransferable(pooledBuffer);
 
-isMarkedAsUntransferable(pooledBuffer);  // Returns true.
+isMarkedAsUntransferable(pooledBuffer);  // 返回 true。
 ```
 
-There is no equivalent to this API in browsers.
+浏览器中没有与此 API 等效的功能。
 
 ## `worker_threads.markAsUncloneable(object)`
 
@@ -359,15 +334,13 @@ added:
  - v22.10.0
 -->
 
-* `object` {any} Any arbitrary JavaScript value.
+* `object` {any} 任何任意的 JavaScript 值。
 
-Mark an object as not cloneable. If `object` is used as [`message`](#event-message) in
-a [`port.postMessage()`][] call, an error is thrown. This is a no-op if `object` is a
-primitive value.
+将对象标记为不可克隆。如果 `object` 在 [`port.postMessage()`][] 调用中用作 [`message`](#event-message)，则会抛出错误。如果 `object` 是原始值，则此操作无效。
 
-This has no effect on `ArrayBuffer`, or any `Buffer` like objects.
+这对 `ArrayBuffer` 或任何 `Buffer` 类对象没有影响。
 
-This operation cannot be undone.
+此操作无法撤销。
 
 ```mjs
 import { markAsUncloneable } from 'node:worker_threads';
@@ -376,7 +349,7 @@ const anyObject = { foo: 'bar' };
 markAsUncloneable(anyObject);
 const { port1 } = new MessageChannel();
 try {
-  // This will throw an error, because anyObject is not cloneable.
+  // 这将抛出一个错误，因为 anyObject 不可克隆。
   port1.postMessage(anyObject);
 } catch (error) {
   // error.name === 'DataCloneError'
@@ -392,14 +365,14 @@ const anyObject = { foo: 'bar' };
 markAsUncloneable(anyObject);
 const { port1 } = new MessageChannel();
 try {
-  // This will throw an error, because anyObject is not cloneable.
+  // 这将抛出一个错误，因为 anyObject 不可克隆。
   port1.postMessage(anyObject);
 } catch (error) {
   // error.name === 'DataCloneError'
 }
 ```
 
-There is no equivalent to this API in browsers.
+浏览器中没有与此 API 等效的功能。
 
 ## `worker_threads.moveMessagePortToContext(port, contextifiedSandbox)`
 
@@ -407,25 +380,17 @@ There is no equivalent to this API in browsers.
 added: v11.13.0
 -->
 
-* `port` {MessagePort} The message port to transfer.
+* `port` {MessagePort} 要传输的消息端口。
 
-* `contextifiedSandbox` {Object} A [contextified][] object as returned by the
-  `vm.createContext()` method.
+* `contextifiedSandbox` {Object} 一个 [contextified][] 对象，由 `vm.createContext()` 方法返回。
 
-* Returns: {MessagePort}
+* 返回：{MessagePort}
 
-Transfer a `MessagePort` to a different [`vm`][] Context. The original `port`
-object is rendered unusable, and the returned `MessagePort` instance
-takes its place.
+将 `MessagePort` 传输到不同的 [`vm`][] 上下文。原始 `port` 对象变为不可用，返回的 `MessagePort` 实例取代其位置。
 
-The returned `MessagePort` is an object in the target context and
-inherits from its global `Object` class. Objects passed to the
-[`port.onmessage()`][] listener are also created in the target context
-and inherit from its global `Object` class.
+返回的 `MessagePort` 是目标上下文中的对象，并继承自其全局 `Object` 类。传递给 [`port.onmessage()`][] 监听器的对象也在目标上下文中创建，并继承自其全局 `Object` 类。
 
-However, the created `MessagePort` no longer inherits from
-{EventTarget}, and only [`port.onmessage()`][] can be used to receive
-events using it.
+但是，创建的 `MessagePort` 不再继承自 {EventTarget}，只能使用 [`port.onmessage()`][] 来接收事件。
 
 ## `worker_threads.parentPort`
 
@@ -433,14 +398,12 @@ events using it.
 added: v10.5.0
 -->
 
-* Type: {null|MessagePort}
+* 类型：{null|MessagePort}
 
-If this thread is a [`Worker`][], this is a [`MessagePort`][]
-allowing communication with the parent thread. Messages sent using
-`parentPort.postMessage()` are available in the parent thread
-using `worker.on('message')`, and messages sent from the parent thread
-using `worker.postMessage()` are available in this thread using
-`parentPort.on('message')`.
+如果此线程是一个 [`Worker`][]，则这是一个 [`MessagePort`][]，
+允许与主线程通信。使用 `parentPort.postMessage()` 发送的消息在主线程中
+通过 `worker.on('message')` 可用，而使用 `worker.postMessage()` 从主线程
+发送的消息在此线程中通过 `parentPort.on('message')` 可用。
 
 ```mjs
 import { Worker, isMainThread, parentPort } from 'node:worker_threads';
@@ -448,11 +411,11 @@ import { Worker, isMainThread, parentPort } from 'node:worker_threads';
 if (isMainThread) {
   const worker = new Worker(new URL(import.meta.url));
   worker.once('message', (message) => {
-    console.log(message);  // Prints 'Hello, world!'.
+    console.log(message);  // 打印 'Hello, world!'。
   });
   worker.postMessage('Hello, world!');
 } else {
-  // When a message from the parent thread is received, send it back:
+  // 当收到来自主线程的消息时，将其发回：
   parentPort.once('message', (message) => {
     parentPort.postMessage(message);
   });
@@ -467,11 +430,11 @@ const { Worker, isMainThread, parentPort } = require('node:worker_threads');
 if (isMainThread) {
   const worker = new Worker(__filename);
   worker.once('message', (message) => {
-    console.log(message);  // Prints 'Hello, world!'.
+    console.log(message);  // 打印 'Hello, world!'。
   });
   worker.postMessage('Hello, world!');
 } else {
-  // When a message from the parent thread is received, send it back:
+  // 当收到来自主线程的消息时，将其发回：
   parentPort.once('message', (message) => {
     parentPort.postMessage(message);
   });
@@ -486,35 +449,34 @@ added:
 - v20.19.0
 -->
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
-* `threadId` {number} The target thread ID. If the thread ID is invalid, a
-  [`ERR_WORKER_MESSAGING_FAILED`][] error will be thrown. If the target thread ID is the current thread ID,
-  a [`ERR_WORKER_MESSAGING_SAME_THREAD`][] error will be thrown.
-* `value` {any} The value to send.
-* `transferList` {Object\[]} If one or more `MessagePort`-like objects are passed in `value`,
-  a `transferList` is required for those items or [`ERR_MISSING_MESSAGE_PORT_IN_TRANSFER_LIST`][] is thrown.
-  See [`port.postMessage()`][] for more information.
-* `timeout` {number} Time to wait for the message to be delivered in milliseconds.
-  By default it's `undefined`, which means wait forever. If the operation times out,
-  a [`ERR_WORKER_MESSAGING_TIMEOUT`][] error is thrown.
-* Returns: {Promise} A promise which is fulfilled if the message was successfully processed by destination thread.
+* `threadId` {number} 目标线程 ID。如果线程 ID 无效，将抛出
+  [`ERR_WORKER_MESSAGING_FAILED`][] 错误。如果目标线程 ID 是当前线程 ID，
+  将抛出 [`ERR_WORKER_MESSAGING_SAME_THREAD`][] 错误。
+* `value` {any} 要发送的值。
+* `transferList` {Object\[]} 如果 `value` 中传递了一个或多个 `MessagePort` 类似对象，
+  则这些项需要 `transferList`，否则将抛出 [`ERR_MISSING_MESSAGE_PORT_IN_TRANSFER_LIST`][]。
+  参见 [`port.postMessage()`][] 获取更多信息。
+* `timeout` {number} 等待消息传递的时间（毫秒）。
+  默认为 `undefined`，表示永远等待。如果操作超时，
+  将抛出 [`ERR_WORKER_MESSAGING_TIMEOUT`][] 错误。
+* 返回：{Promise} 如果消息被目标线程成功处理，则履行的 promise。
 
-Sends a value to another worker, identified by its thread ID.
+向另一个 worker 发送一个值，由其线程 ID 标识。
 
-If the target thread has no listener for the `workerMessage` event, then the operation will throw
-a [`ERR_WORKER_MESSAGING_FAILED`][] error.
+如果目标线程没有 `workerMessage` 事件的监听器，则操作将抛出
+[`ERR_WORKER_MESSAGING_FAILED`][] 错误。
 
-If the target thread threw an error while processing the `workerMessage` event, then the operation will throw
-a [`ERR_WORKER_MESSAGING_ERRORED`][] error.
+如果目标线程在处理 `workerMessage` 事件时抛出错误，则操作将抛出
+[`ERR_WORKER_MESSAGING_ERRORED`][] 错误。
 
-This method should be used when the target thread is not the direct
-parent or child of the current thread.
-If the two threads are parent-children, use the [`require('node:worker_threads').parentPort.postMessage()`][]
-and the [`worker.postMessage()`][] to let the threads communicate.
+当目标线程不是当前线程的直接父线程或子线程时，应使用此方法。
+如果两个线程是父子关系，请使用 [`require('node:worker_threads').parentPort.postMessage()`][]
+和 [`worker.postMessage()`][] 让线程通信。
 
-The example below shows the use of of `postMessageToThread`: it creates 10 nested threads,
-the last one will try to communicate with the main thread.
+下面的示例展示了 `postMessageToThread` 的使用：它创建了 10 个嵌套线程，
+最后一个将尝试与主线程通信。
 
 ```mjs
 import process from 'node:process';
@@ -597,17 +559,16 @@ added: v12.3.0
 changes:
   - version: v15.12.0
     pr-url: https://github.com/nodejs/node/pull/37535
-    description: The port argument can also refer to a `BroadcastChannel` now.
+    description: port 参数现在也可以引用 `BroadcastChannel`。
 -->
 
 * `port` {MessagePort|BroadcastChannel}
 
-* Returns: {Object|undefined}
+* 返回：{Object|undefined}
 
-Receive a single message from a given `MessagePort`. If no message is available,
-`undefined` is returned, otherwise an object with a single `message` property
-that contains the message payload, corresponding to the oldest message in the
-`MessagePort`'s queue.
+从给定的 `MessagePort` 接收单条消息。如果没有可用消息，
+则返回 `undefined`，否则返回一个包含单个 `message` 属性的对象，
+该属性包含消息负载，对应于 `MessagePort` 队列中最旧的消息。
 
 ```mjs
 import { MessageChannel, receiveMessageOnPort } from 'node:worker_threads';
@@ -615,9 +576,9 @@ const { port1, port2 } = new MessageChannel();
 port1.postMessage({ hello: 'world' });
 
 console.log(receiveMessageOnPort(port2));
-// Prints: { message: { hello: 'world' } }
+// 打印：{ message: { hello: 'world' } }
 console.log(receiveMessageOnPort(port2));
-// Prints: undefined
+// 打印：undefined
 ```
 
 ```cjs
@@ -628,13 +589,13 @@ const { port1, port2 } = new MessageChannel();
 port1.postMessage({ hello: 'world' });
 
 console.log(receiveMessageOnPort(port2));
-// Prints: { message: { hello: 'world' } }
+// 打印：{ message: { hello: 'world' } }
 console.log(receiveMessageOnPort(port2));
-// Prints: undefined
+// 打印：undefined
 ```
 
-When this function is used, no `'message'` event is emitted and the
-`onmessage` listener is not invoked.
+使用此函数时，不会发出 `'message'` 事件，也不会调用
+`onmessage` 监听器。
 
 ## `worker_threads.resourceLimits`
 
@@ -644,17 +605,17 @@ added:
  - v12.16.0
 -->
 
-* Type: {Object}
+* 类型：{Object}
   * `maxYoungGenerationSizeMb` {number}
   * `maxOldGenerationSizeMb` {number}
   * `codeRangeSizeMb` {number}
   * `stackSizeMb` {number}
 
-Provides the set of JS engine resource constraints inside this Worker thread.
-If the `resourceLimits` option was passed to the [`Worker`][] constructor,
-this matches its values.
+提供此 Worker 线程内 JS 引擎资源约束的集合。
+如果将 `resourceLimits` 选项传递给 [`Worker`][] 构造函数，
+则与此值匹配。
 
-If this is used in the main thread, its value is an empty object.
+如果在主线程中使用此选项，其值为一个空对象。
 
 ## `worker_threads.SHARE_ENV`
 
@@ -662,18 +623,17 @@ If this is used in the main thread, its value is an empty object.
 added: v11.14.0
 -->
 
-* Type: {symbol}
+* 类型：{symbol}
 
-A special value that can be passed as the `env` option of the [`Worker`][]
-constructor, to indicate that the current thread and the Worker thread should
-share read and write access to the same set of environment variables.
+一个特殊值，可作为 [`Worker`][] 构造函数的 `env` 选项传递，
+以指示当前线程和 Worker 线程应共享对同一组环境变量的读写访问权限。
 
 ```mjs
 import process from 'node:process';
 import { Worker, SHARE_ENV } from 'node:worker_threads';
 new Worker('process.env.SET_IN_WORKER = "foo"', { eval: true, env: SHARE_ENV })
   .once('exit', () => {
-    console.log(process.env.SET_IN_WORKER);  // Prints 'foo'.
+    console.log(process.env.SET_IN_WORKER);  // 打印 'foo'。
   });
 ```
 
@@ -683,7 +643,7 @@ new Worker('process.env.SET_IN_WORKER = "foo"', { eval: true, env: SHARE_ENV })
 const { Worker, SHARE_ENV } = require('node:worker_threads');
 new Worker('process.env.SET_IN_WORKER = "foo"', { eval: true, env: SHARE_ENV })
   .once('exit', () => {
-    console.log(process.env.SET_IN_WORKER);  // Prints 'foo'.
+    console.log(process.env.SET_IN_WORKER);  // 打印 'foo'。
   });
 ```
 
@@ -698,18 +658,15 @@ changes:
     - v17.5.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41272
-    description: No longer experimental.
+    description: 不再是实验性的。
 -->
 
-* `key` {any} Any arbitrary, cloneable JavaScript value that can be used as a
-  {Map} key.
-* `value` {any} Any arbitrary, cloneable JavaScript value that will be cloned
-  and passed automatically to all new `Worker` instances. If `value` is passed
-  as `undefined`, any previously set value for the `key` will be deleted.
+* `key` {any} 任何可用作 {Map} 键的任意可克隆 JavaScript 值。
+* `value` {any} 任何将被克隆并自动传递给所有新 `Worker` 实例的任意可克隆 JavaScript 值。如果 `value` 传递
+  为 `undefined`，则之前为 `key` 设置的任何值将被删除。
 
-The `worker.setEnvironmentData()` API sets the content of
-`worker.getEnvironmentData()` in the current thread and all new `Worker`
-instances spawned from the current context.
+`worker.setEnvironmentData()` API 设置当前线程和从当前上下文
+生成的所有新 `Worker` 实例中 `worker.getEnvironmentData()` 的内容。
 
 ## `worker_threads.threadId`
 
@@ -717,11 +674,11 @@ instances spawned from the current context.
 added: v10.5.0
 -->
 
-* Type: {integer}
+* 类型：{integer}
 
-An integer identifier for the current thread. On the corresponding worker object
-(if there is any), it is available as [`worker.threadId`][].
-This value is unique for each [`Worker`][] instance inside a single process.
+当前线程的整数标识符。在相应的 worker 对象上
+（如果有的话），它可作为 [`worker.threadId`][] 使用。
+此值在单个进程内的每个 [`Worker`][] 实例中都是唯一的。
 
 ## `worker_threads.threadName`
 
@@ -733,8 +690,8 @@ added:
 
 * {string|null}
 
-A string identifier for the current thread or null if the thread is not running.
-On the corresponding worker object (if there is any), it is available as [`worker.threadName`][].
+当前线程的字符串标识符，如果线程未运行则为 null。
+在相应的 worker 对象上（如果有的话），它可作为 [`worker.threadName`][] 使用。
 
 ## `worker_threads.workerData`
 
@@ -742,11 +699,10 @@ On the corresponding worker object (if there is any), it is available as [`worke
 added: v10.5.0
 -->
 
-An arbitrary JavaScript value that contains a clone of the data passed
-to this thread's `Worker` constructor.
+任意 JavaScript 值，包含传递给此线程的 `Worker` 构造函数的数据的克隆。
 
-The data is cloned as if using [`postMessage()`][`port.postMessage()`],
-according to the [HTML structured clone algorithm][].
+数据的克隆方式如同使用 [`postMessage()`][`port.postMessage()`]，
+根据 [HTML 结构化克隆算法][]。
 
 ```mjs
 import { Worker, isMainThread, workerData } from 'node:worker_threads';
@@ -754,7 +710,7 @@ import { Worker, isMainThread, workerData } from 'node:worker_threads';
 if (isMainThread) {
   const worker = new Worker(new URL(import.meta.url), { workerData: 'Hello, world!' });
 } else {
-  console.log(workerData);  // Prints 'Hello, world!'.
+  console.log(workerData);  // 打印 'Hello, world!'。
 }
 ```
 
@@ -766,7 +722,7 @@ const { Worker, isMainThread, workerData } = require('node:worker_threads');
 if (isMainThread) {
   const worker = new Worker(__filename, { workerData: 'Hello, world!' });
 } else {
-  console.log(workerData);  // Prints 'Hello, world!'.
+  console.log(workerData);  // 打印 'Hello, world!'。
 }
 ```
 
@@ -776,23 +732,20 @@ if (isMainThread) {
 added: v24.5.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 * {LockManager}
 
-An instance of a [`LockManager`][LockManager] that can be used to coordinate
-access to resources that may be shared across multiple threads within the same
-process. The API mirrors the semantics of the
-[browser `LockManager`][]
+一个 [`LockManager`][LockManager] 实例，可用于协调访问同一进程内多个线程之间可能共享的资源。该 API 镜像了
+[浏览器 `LockManager`][] 的语义。
 
-### Class: `Lock`
+### 类：`Lock`
 
 <!-- YAML
 added: v24.5.0
 -->
 
-The `Lock` interface provides information about a lock that has been granted via
-[`locks.request()`][locks.request()]
+`Lock` 接口提供有关通过 [`locks.request()`][locks.request()] 授予的锁的信息。
 
 #### `lock.name`
 
@@ -802,7 +755,7 @@ added: v24.5.0
 
 * {string}
 
-The name of the lock.
+锁的名称。
 
 #### `lock.mode`
 
@@ -812,16 +765,15 @@ added: v24.5.0
 
 * {string}
 
-The mode of the lock. Either `shared` or `exclusive`.
+锁的模式。`shared` 或 `exclusive`。
 
-### Class: `LockManager`
+### 类：`LockManager`
 
 <!-- YAML
 added: v24.5.0
 -->
 
-The `LockManager` interface provides methods for requesting and introspecting
-locks. To obtain a `LockManager` instance use
+`LockManager` 接口提供请求和内省锁的方法。要获取 `LockManager` 实例，请使用
 
 ```mjs
 import { locks } from 'node:worker_threads';
@@ -833,7 +785,7 @@ import { locks } from 'node:worker_threads';
 const { locks } = require('node:worker_threads');
 ```
 
-This implementation matches the [browser `LockManager`][] API.
+此实现与 [浏览器 `LockManager`][] API 匹配。
 
 #### `locks.request(name[, options], callback)`
 
@@ -843,28 +795,25 @@ added: v24.5.0
 
 * `name` {string}
 * `options` {Object}
-  * `mode` {string} Either `'exclusive'` or `'shared'`. **Default:** `'exclusive'`.
-  * `ifAvailable` {boolean} If `true`, the request will only be granted if the
-    lock is not already held. If it cannot be granted, `callback` will be
-    invoked with `null` instead of a `Lock` instance. **Default:** `false`.
-  * `steal` {boolean} If `true`, any existing locks with the same name are
-    released and the request is granted immediately, pre-empting any queued
-    requests. **Default:** `false`.
-  * `signal` {AbortSignal} that can be used to abort a
-    pending (but not yet granted) lock request.
-* `callback` {Function} Invoked once the lock is granted (or immediately with
-  `null` if `ifAvailable` is `true` and the lock is unavailable). The lock is
-  released automatically when the function returns, or—if the function returns
-  a promise—when that promise settles.
-* Returns: {Promise} Resolves once the lock has been released.
+  * `mode` {string} `'exclusive'` 或 `'shared'`。**默认值：** `'exclusive'`。
+  * `ifAvailable` {boolean} 如果为 `true`，则仅当锁未被持有时才授予请求。如果无法授予，`callback` 将
+    使用 `null` 调用，而不是 `Lock` 实例。**默认值：** `false`。
+  * `steal` {boolean} 如果为 `true`，则释放任何具有相同名称的现有锁，并立即授予请求，抢占任何排队的
+    请求。**默认值：** `false`。
+  * `signal` {AbortSignal} 可用于中止
+    待处理（但尚未授予）锁请求的信号。
+* `callback` {Function} 一旦锁被授予则调用（如果 `ifAvailable` 为 `true` 且锁不可用，则立即使用
+  `null` 调用）。当函数返回时，锁会自动释放，或者——如果函数返回
+  一个 promise——当该 promise 解决时。
+* 返回：{Promise} 一旦锁被释放则解决。
 
 ```mjs
 import { locks } from 'node:worker_threads';
 
 await locks.request('my_resource', async (lock) => {
-  // The lock has been acquired.
+  // 锁已获取。
 });
-// The lock has been released here.
+// 锁在此处已释放。
 ```
 
 ```cjs
@@ -873,9 +822,9 @@ await locks.request('my_resource', async (lock) => {
 const { locks } = require('node:worker_threads');
 
 locks.request('my_resource', async (lock) => {
-  // The lock has been acquired.
+  // 锁已获取。
 }).then(() => {
-  // The lock has been released here.
+  // 锁在此处已释放。
 });
 ```
 
@@ -885,10 +834,9 @@ locks.request('my_resource', async (lock) => {
 added: v24.5.0
 -->
 
-* Returns: {Promise}
+* 返回：{Promise}
 
-Resolves with a `LockManagerSnapshot` describing the currently held and pending
-locks for the current process.
+解决为一个 `LockManagerSnapshot`，描述当前进程当前持有和待处理的锁。
 
 ```mjs
 import { locks } from 'node:worker_threads';
@@ -917,18 +865,17 @@ locks.query().then((snapshot) => {
 });
 ```
 
-## Class: `BroadcastChannel extends EventTarget`
+## 类：`BroadcastChannel extends EventTarget`
 
 <!-- YAML
 added: v15.4.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41271
-    description: No longer experimental.
+    description: 不再是实验性功能。
 -->
 
-Instances of `BroadcastChannel` allow asynchronous one-to-many communication
-with all other `BroadcastChannel` instances bound to the same channel name.
+`BroadcastChannel` 的实例允许与所有绑定到相同通道名称的其他 `BroadcastChannel` 实例进行异步一对多通信。
 
 ```mjs
 import {
@@ -984,8 +931,7 @@ if (isMainThread) {
 added: v15.4.0
 -->
 
-* `name` {any} The name of the channel to connect to. Any JavaScript value
-  that can be converted to a string using `` `${name}` `` is permitted.
+* `name` {any} 要连接的通道名称。允许使用任何可以使用 `` `${name}` `` 转换为字符串的 JavaScript 值。
 
 ### `broadcastChannel.close()`
 
@@ -993,7 +939,7 @@ added: v15.4.0
 added: v15.4.0
 -->
 
-Closes the `BroadcastChannel` connection.
+关闭 `BroadcastChannel` 连接。
 
 ### `broadcastChannel.onmessage`
 
@@ -1001,8 +947,7 @@ Closes the `BroadcastChannel` connection.
 added: v15.4.0
 -->
 
-* Type: {Function} Invoked with a single `MessageEvent` argument
-  when a message is received.
+* 类型：{Function} 当收到消息时，使用单个 `MessageEvent` 参数调用。
 
 ### `broadcastChannel.onmessageerror`
 
@@ -1010,8 +955,7 @@ added: v15.4.0
 added: v15.4.0
 -->
 
-* Type: {Function} Invoked with a received message cannot be
-  deserialized.
+* 类型：{Function} 当收到的消息无法被反序列化时调用。
 
 ### `broadcastChannel.postMessage(message)`
 
@@ -1019,7 +963,7 @@ added: v15.4.0
 added: v15.4.0
 -->
 
-* `message` {any} Any cloneable JavaScript value.
+* `message` {any} 任何可克隆的 JavaScript 值。
 
 ### `broadcastChannel.ref()`
 
@@ -1027,10 +971,7 @@ added: v15.4.0
 added: v15.4.0
 -->
 
-Opposite of `unref()`. Calling `ref()` on a previously `unref()`ed
-BroadcastChannel does _not_ let the program exit if it's the only active handle
-left (the default behavior). If the port is `ref()`ed, calling `ref()` again
-has no effect.
+`unref()` 的反义词。对之前 `unref()` 过的 BroadcastChannel 调用 `ref()` 并不会让程序退出，如果它是唯一留下的活动句柄（默认行为）。如果端口已被 `ref()`，再次调用 `ref()` 无效。
 
 ### `broadcastChannel.unref()`
 
@@ -1038,21 +979,16 @@ has no effect.
 added: v15.4.0
 -->
 
-Calling `unref()` on a BroadcastChannel allows the thread to exit if this
-is the only active handle in the event system. If the BroadcastChannel is
-already `unref()`ed calling `unref()` again has no effect.
+在 BroadcastChannel 上调用 `unref()` 允许线程退出，如果这是事件系统中唯一活动的句柄。如果 BroadcastChannel 已经 `unref()`，再次调用 `unref()` 无效。
 
-## Class: `MessageChannel`
+## 类：`MessageChannel`
 
 <!-- YAML
 added: v10.5.0
 -->
 
-Instances of the `worker.MessageChannel` class represent an asynchronous,
-two-way communications channel.
-The `MessageChannel` has no methods of its own. `new MessageChannel()`
-yields an object with `port1` and `port2` properties, which refer to linked
-[`MessagePort`][] instances.
+`worker.MessageChannel` 类的实例表示一个异步的双向通信通道。
+`MessageChannel` 没有自己的方法。`new MessageChannel()` 生成一个带有 `port1` 和 `port2` 属性的对象，这些属性引用链接的 [`MessagePort`][] 实例。
 
 ```mjs
 import { MessageChannel } from 'node:worker_threads';
@@ -1060,7 +996,7 @@ import { MessageChannel } from 'node:worker_threads';
 const { port1, port2 } = new MessageChannel();
 port1.on('message', (message) => console.log('received', message));
 port2.postMessage({ foo: 'bar' });
-// Prints: received { foo: 'bar' } from the `port1.on('message')` listener
+// 打印：received { foo: 'bar' } 来自 `port1.on('message')` 监听器
 ```
 
 ```cjs
@@ -1071,10 +1007,10 @@ const { MessageChannel } = require('node:worker_threads');
 const { port1, port2 } = new MessageChannel();
 port1.on('message', (message) => console.log('received', message));
 port2.postMessage({ foo: 'bar' });
-// Prints: received { foo: 'bar' } from the `port1.on('message')` listener
+// 打印：received { foo: 'bar' } 来自 `port1.on('message')` 监听器
 ```
 
-## Class: `MessagePort`
+## 类：`MessagePort`
 
 <!-- YAML
 added: v10.5.0
@@ -1082,33 +1018,28 @@ changes:
   - version:
     - v14.7.0
     pr-url: https://github.com/nodejs/node/pull/34057
-    description: This class now inherits from `EventTarget` rather than
-                 from `EventEmitter`.
+    description: 此类现在继承自 `EventTarget` 而不是 `EventEmitter`。
 -->
 
-* Extends: {EventTarget}
+* 继承自：{EventTarget}
 
-Instances of the `worker.MessagePort` class represent one end of an
-asynchronous, two-way communications channel. It can be used to transfer
-structured data, memory regions and other `MessagePort`s between different
-[`Worker`][]s.
+`worker.MessagePort` 类的实例表示异步双向通信通道的一端。它可用于在不同的 [`Worker`][] 之间传输结构化数据、内存区域和其他 `MessagePort`。
 
-This implementation matches [browser `MessagePort`][]s.
+此实现与 [浏览器 `MessagePort`][] 匹配。
 
-### Event: `'close'`
+### 事件：`'close'`
 
 <!-- YAML
 added: v10.5.0
 -->
 
-The `'close'` event is emitted once either side of the channel has been
-disconnected.
+当通道的任意一侧断开连接时，会发出 `'close'` 事件。
 
 ```mjs
 import { MessageChannel } from 'node:worker_threads';
 const { port1, port2 } = new MessageChannel();
 
-// Prints:
+// 打印：
 //   foobar
 //   closed!
 port2.on('message', (message) => console.log(message));
@@ -1124,7 +1055,7 @@ port1.close();
 const { MessageChannel } = require('node:worker_threads');
 const { port1, port2 } = new MessageChannel();
 
-// Prints:
+// 打印：
 //   foobar
 //   closed!
 port2.on('message', (message) => console.log(message));
@@ -1134,21 +1065,19 @@ port1.postMessage('foobar');
 port1.close();
 ```
 
-### Event: `'message'`
+### 事件：`'message'`
 
 <!-- YAML
 added: v10.5.0
 -->
 
-* `value` {any} The transmitted value
+* `value` {any} 传输的值
 
-The `'message'` event is emitted for any incoming message, containing the cloned
-input of [`port.postMessage()`][].
+对于任何传入的消息，都会发出 `'message'` 事件，包含 [`port.postMessage()`][] 的克隆输入。
 
-Listeners on this event receive a clone of the `value` parameter as passed
-to `postMessage()` and no further arguments.
+此事件的监听器接收传递给 `postMessage()` 的 `value` 参数的克隆，没有进一步的参数。
 
-### Event: `'messageerror'`
+### 事件：`'messageerror'`
 
 <!-- YAML
 added:
@@ -1156,15 +1085,11 @@ added:
   - v12.19.0
 -->
 
-* `error` {Error} An Error object
+* `error` {Error} 一个 Error 对象
 
-The `'messageerror'` event is emitted when deserializing a message failed.
+当反序列化消息失败时，会发出 `'messageerror'` 事件。
 
-Currently, this event is emitted when there is an error occurring while
-instantiating the posted JS object on the receiving end. Such situations
-are rare, but can happen, for instance, when certain Node.js API objects
-are received in a `vm.Context` (where Node.js APIs are currently
-unavailable).
+目前，当在接收端实例化发布的 JS 对象发生错误时，会发出此事件。这种情况很少见，但可能会发生，例如，当在 `vm.Context` 中接收到某些 Node.js API 对象时（目前在该上下文中 Node.js API 不可用）。
 
 ### `port.close()`
 
@@ -1172,12 +1097,10 @@ unavailable).
 added: v10.5.0
 -->
 
-Disables further sending of messages on either side of the connection.
-This method can be called when no further communication will happen over this
-`MessagePort`.
+禁用连接任一侧的进一步消息发送。
+当不再通过此 `MessagePort` 进行通信时，可以调用此方法。
 
-The [`'close'` event][] is emitted on both `MessagePort` instances that
-are part of the channel.
+[`'close'` 事件][] 会在属于该通道的两个 `MessagePort` 实例上发出。
 
 ### `port.postMessage(value[, transferList])`
 
@@ -1186,60 +1109,56 @@ added: v10.5.0
 changes:
   - version: v21.0.0
     pr-url: https://github.com/nodejs/node/pull/47604
-    description: An error is thrown when an untransferable object is in the
-                 transfer list.
+    description: 当传输列表中存在不可传输的对象时会抛出错误。
   - version:
       - v15.14.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37917
-    description: Add 'BlockList' to the list of cloneable types.
+    description: 将 'BlockList' 添加到可克隆类型列表中。
   - version:
       - v15.9.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37155
-    description: Add 'Histogram' types to the list of cloneable types.
+    description: 将 'Histogram' 类型添加到可克隆类型列表中。
   - version: v15.6.0
     pr-url: https://github.com/nodejs/node/pull/36804
-    description: Added `X509Certificate` to the list of cloneable types.
+    description: 将 `X509Certificate` 添加到可克隆类型列表中。
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
-    description: Added `CryptoKey` to the list of cloneable types.
+    description: 将 `CryptoKey` 添加到可克隆类型列表中。
   - version:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33360
-    description: Added `KeyObject` to the list of cloneable types.
+    description: 将 `KeyObject` 添加到可克隆类型列表中。
   - version:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33772
-    description: Added `FileHandle` to the list of transferable types.
+    description: 将 `FileHandle` 添加到可传输类型列表中。
 -->
 
 * `value` {any}
 * `transferList` {Object\[]}
 
-Sends a JavaScript value to the receiving side of this channel.
-`value` is transferred in a way which is compatible with
-the [HTML structured clone algorithm][].
+将 JavaScript 值发送到此通道的接收端。
+`value` 以与 [HTML 结构化克隆算法][] 兼容的方式进行传输。
 
-In particular, the significant differences to `JSON` are:
+特别是，与 `JSON` 的显著区别是：
 
-* `value` may contain circular references.
-* `value` may contain instances of builtin JS types such as `RegExp`s,
-  `BigInt`s, `Map`s, `Set`s, etc.
-* `value` may contain typed arrays, both using `ArrayBuffer`s
-  and `SharedArrayBuffer`s.
-* `value` may contain [`WebAssembly.Module`][] instances.
-* `value` may not contain native (C++-backed) objects other than:
-  * {CryptoKey}s,
-  * {FileHandle}s,
-  * {Histogram}s,
-  * {KeyObject}s,
-  * {MessagePort}s,
-  * {net.BlockList}s,
-  * {net.SocketAddress}es,
-  * {X509Certificate}s.
+* `value` 可能包含循环引用。
+* `value` 可能包含内置 JS 类型的实例，例如 `RegExp`、`BigInt`、`Map`、`Set` 等。
+* `value` 可能包含类型化数组，使用 `ArrayBuffer` 和 `SharedArrayBuffer`。
+* `value` 可能包含 [`WebAssembly.Module`][] 实例。
+* `value` 可能不包含原生（C++ 支持）对象，除了：
+  * {CryptoKey}，
+  * {FileHandle}，
+  * {Histogram}，
+  * {KeyObject}，
+  * {MessagePort}，
+  * {net.BlockList}，
+  * {net.SocketAddress}，
+  * {X509Certificate}。
 
 ```mjs
 import { MessageChannel } from 'node:worker_threads';
@@ -1249,7 +1168,7 @@ port1.on('message', (message) => console.log(message));
 
 const circularData = {};
 circularData.foo = circularData;
-// Prints: { foo: [Circular] }
+// 打印：{ foo: [Circular] }
 port2.postMessage(circularData);
 ```
 
@@ -1263,22 +1182,16 @@ port1.on('message', (message) => console.log(message));
 
 const circularData = {};
 circularData.foo = circularData;
-// Prints: { foo: [Circular] }
+// 打印：{ foo: [Circular] }
 port2.postMessage(circularData);
 ```
 
-`transferList` may be a list of {ArrayBuffer}, [`MessagePort`][], and
-[`FileHandle`][] objects.
-After transferring, they are not usable on the sending side of the channel
-anymore (even if they are not contained in `value`). Unlike with
-[child processes][], transferring handles such as network sockets is currently
-not supported.
+`transferList` 可以是 {ArrayBuffer}、[`MessagePort`][] 和 [`FileHandle`][] 对象的列表。
+传输后，它们在通道的发送端不再可用（即使它们不包含在 `value` 中）。与 [子进程][] 不同，目前不支持传输网络套接字等句柄。
 
-If `value` contains {SharedArrayBuffer} instances, those are accessible
-from either thread. They cannot be listed in `transferList`.
+如果 `value` 包含 {SharedArrayBuffer} 实例，则它们可从任一线程访问。它们不能列在 `transferList` 中。
 
-`value` may still contain `ArrayBuffer` instances that are not in
-`transferList`; in that case, the underlying memory is copied rather than moved.
+`value` 可能仍然包含不在 `transferList` 中的 `ArrayBuffer` 实例；在这种情况下，底层内存会被复制而不是移动。
 
 ```mjs
 import { MessageChannel } from 'node:worker_threads';
@@ -1287,19 +1200,17 @@ const { port1, port2 } = new MessageChannel();
 port1.on('message', (message) => console.log(message));
 
 const uint8Array = new Uint8Array([ 1, 2, 3, 4 ]);
-// This posts a copy of `uint8Array`:
+// 这会发布 `uint8Array` 的副本：
 port2.postMessage(uint8Array);
-// This does not copy data, but renders `uint8Array` unusable:
+// 这不会复制数据，但会使 `uint8Array` 不可用：
 port2.postMessage(uint8Array, [ uint8Array.buffer ]);
 
-// The memory for the `sharedUint8Array` is accessible from both the
-// original and the copy received by `.on('message')`:
+// `sharedUint8Array` 的内存可从原始副本和 `.on('message')` 接收的副本中访问：
 const sharedUint8Array = new Uint8Array(new SharedArrayBuffer(4));
 port2.postMessage(sharedUint8Array);
 
-// This transfers a freshly created message port to the receiver.
-// This can be used, for example, to create communication channels between
-// multiple `Worker` threads that are children of the same parent thread.
+// 这将新创建的消息端口传输给接收者。
+// 例如，这可用于在作为同一父线程子线程的多个 `Worker` 线程之间创建通信通道。
 const otherChannel = new MessageChannel();
 port2.postMessage({ port: otherChannel.port1 }, [ otherChannel.port1 ]);
 ```
@@ -1313,39 +1224,28 @@ const { port1, port2 } = new MessageChannel();
 port1.on('message', (message) => console.log(message));
 
 const uint8Array = new Uint8Array([ 1, 2, 3, 4 ]);
-// This posts a copy of `uint8Array`:
+// 这会发布 `uint8Array` 的副本：
 port2.postMessage(uint8Array);
-// This does not copy data, but renders `uint8Array` unusable:
+// 这不会复制数据，但会使 `uint8Array` 不可用：
 port2.postMessage(uint8Array, [ uint8Array.buffer ]);
 
-// The memory for the `sharedUint8Array` is accessible from both the
-// original and the copy received by `.on('message')`:
+// `sharedUint8Array` 的内存可从原始副本和 `.on('message')` 接收的副本中访问：
 const sharedUint8Array = new Uint8Array(new SharedArrayBuffer(4));
 port2.postMessage(sharedUint8Array);
 
-// This transfers a freshly created message port to the receiver.
-// This can be used, for example, to create communication channels between
-// multiple `Worker` threads that are children of the same parent thread.
+// 这将新创建的消息端口传输给接收者。
+// 例如，这可用于在作为同一父线程子线程的多个 `Worker` 线程之间创建通信通道。
 const otherChannel = new MessageChannel();
 port2.postMessage({ port: otherChannel.port1 }, [ otherChannel.port1 ]);
 ```
 
-The message object is cloned immediately, and can be modified after
-posting without having side effects.
+消息对象会立即被克隆，并且可以在发布后修改而不会产生副作用。
 
-For more information on the serialization and deserialization mechanisms
-behind this API, see the [serialization API of the `node:v8` module][v8.serdes].
+有关此 API 背后的序列化和反序列化机制的更多信息，请参阅 [`node:v8` 模块的序列化 API][v8.serdes]。
 
-#### Considerations when transferring TypedArrays and Buffers
+#### 传输 TypedArrays 和 Buffers 时的注意事项
 
-All {TypedArray|Buffer} instances are views over an underlying
-{ArrayBuffer}. That is, it is the `ArrayBuffer` that actually stores
-the raw data while the `TypedArray` and `Buffer` objects provide a
-way of viewing and manipulating the data. It is possible and common
-for multiple views to be created over the same `ArrayBuffer` instance.
-Great care must be taken when using a transfer list to transfer an
-`ArrayBuffer` as doing so causes all `TypedArray` and `Buffer`
-instances that share that same `ArrayBuffer` to become unusable.
+所有 {TypedArray|Buffer} 实例都是底层 {ArrayBuffer} 的视图。也就是说，实际上是 `ArrayBuffer` 存储原始数据，而 `TypedArray` 和 `Buffer` 对象提供了一种查看和操作数据的方式。为同一个 `ArrayBuffer` 实例创建多个视图是可能且常见的。在使用传输列表传输 `ArrayBuffer` 时必须非常小心，因为这样做会导致共享该 `ArrayBuffer` 的所有 `TypedArray` 和 `Buffer` 实例变得不可用。
 
 ```js
 const ab = new ArrayBuffer(10);
@@ -1353,44 +1253,26 @@ const ab = new ArrayBuffer(10);
 const u1 = new Uint8Array(ab);
 const u2 = new Uint16Array(ab);
 
-console.log(u2.length);  // prints 5
+console.log(u2.length);  // 打印 5
 
 port.postMessage(u1, [u1.buffer]);
 
-console.log(u2.length);  // prints 0
+console.log(u2.length);  // 打印 0
 ```
 
-For `Buffer` instances, specifically, whether the underlying
-`ArrayBuffer` can be transferred or cloned depends entirely on how
-instances were created, which often cannot be reliably determined.
+具体对于 `Buffer` 实例，底层的 `ArrayBuffer` 是可以传输还是克隆完全取决于实例是如何创建的，这通常无法可靠地确定。
 
-An `ArrayBuffer` can be marked with [`markAsUntransferable()`][] to indicate
-that it should always be cloned and never transferred.
+可以使用 [`markAsUntransferable()`][] 标记 `ArrayBuffer`，以指示它应该始终被克隆而从不被传输。
 
-Depending on how a `Buffer` instance was created, it may or may
-not own its underlying `ArrayBuffer`. An `ArrayBuffer` must not
-be transferred unless it is known that the `Buffer` instance
-owns it. In particular, for `Buffer`s created from the internal
-`Buffer` pool (using, for instance `Buffer.from()` or `Buffer.allocUnsafe()`),
-transferring them is not possible and they are always cloned,
-which sends a copy of the entire `Buffer` pool.
-This behavior may come with unintended higher memory
-usage and possible security concerns.
+根据 `Buffer` 实例的创建方式，它可能拥有也可能不拥有其底层的 `ArrayBuffer`。除非已知 `Buffer` 实例拥有 `ArrayBuffer`，否则不得传输 `ArrayBuffer`。特别是，对于从内部 `Buffer` 池创建的 `Buffer`（例如使用 `Buffer.from()` 或 `Buffer.allocUnsafe()`），无法传输它们，它们总是被克隆，这会发送整个 `Buffer` 池的副本。这种行为可能会带来意外的高内存使用和可能的安全隐患。
 
-See [`Buffer.allocUnsafe()`][] for more details on `Buffer` pooling.
+有关 `Buffer` 池化的更多详细信息，请参阅 [`Buffer.allocUnsafe()`][]。
 
-The `ArrayBuffer`s for `Buffer` instances created using
-`Buffer.alloc()` or `Buffer.allocUnsafeSlow()` can always be
-transferred but doing so renders all other existing views of
-those `ArrayBuffer`s unusable.
+使用 `Buffer.alloc()` 或 `Buffer.allocUnsafeSlow()` 创建的 `Buffer` 实例的 `ArrayBuffer` 始终可以传输，但这样做会使这些 `ArrayBuffer` 的所有其他现有视图不可用。
 
-#### Considerations when cloning objects with prototypes, classes, and accessors
+#### 克隆带有原型、类和访问器的对象时的注意事项
 
-Because object cloning uses the [HTML structured clone algorithm][],
-non-enumerable properties, property accessors, and object prototypes are
-not preserved. In particular, {Buffer} objects will be read as
-plain {Uint8Array}s on the receiving side, and instances of JavaScript
-classes will be cloned as plain JavaScript objects.
+因为对象克隆使用 [HTML 结构化克隆算法][]，所以不可枚举的属性、属性访问器和对象原型不会被保留。特别是，{Buffer} 对象在接收端将被读取为普通的 {Uint8Array}，JavaScript 类的实例将被克隆为普通的 JavaScript 对象。
 
 <!-- eslint-disable no-unused-private-class-members -->
 
@@ -1413,11 +1295,10 @@ port1.onmessage = ({ data }) => console.log(data);
 
 port2.postMessage(new Foo());
 
-// Prints: { c: 3 }
+// 打印：{ c: 3 }
 ```
 
-This limitation extends to many built-in objects, such as the global `URL`
-object:
+此限制扩展到许多内置对象，例如全局 `URL` 对象：
 
 ```js
 const { port1, port2 } = new MessageChannel();
@@ -1426,7 +1307,7 @@ port1.onmessage = ({ data }) => console.log(data);
 
 port2.postMessage(new URL('https://example.org'));
 
-// Prints: { }
+// 打印：{ }
 ```
 
 ### `port.hasRef()`
@@ -1440,12 +1321,12 @@ changes:
     - v24.0.0
     - v22.17.0
    pr-url: https://github.com/nodejs/node/pull/57513
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-* Returns: {boolean}
+* 返回：{boolean}
 
-If true, the `MessagePort` object will keep the Node.js event loop active.
+如果为 true，`MessagePort` 对象将保持 Node.js 事件循环活动。
 
 ### `port.ref()`
 
@@ -1453,13 +1334,9 @@ If true, the `MessagePort` object will keep the Node.js event loop active.
 added: v10.5.0
 -->
 
-Opposite of `unref()`. Calling `ref()` on a previously `unref()`ed port does
-_not_ let the program exit if it's the only active handle left (the default
-behavior). If the port is `ref()`ed, calling `ref()` again has no effect.
+`unref()` 的反义词。对之前 `unref()` 过的端口调用 `ref()` 并不会让程序退出，如果它是唯一留下的活动句柄（默认行为）。如果端口已被 `ref()`，再次调用 `ref()` 无效。
 
-If listeners are attached or removed using `.on('message')`, the port
-is `ref()`ed and `unref()`ed automatically depending on whether
-listeners for the event exist.
+如果使用 `.on('message')` 附加或移除监听器，端口会根据是否存在事件监听器自动 `ref()` 和 `unref()`。
 
 ### `port.start()`
 
@@ -1467,15 +1344,9 @@ listeners for the event exist.
 added: v10.5.0
 -->
 
-Starts receiving messages on this `MessagePort`. When using this port
-as an event emitter, this is called automatically once `'message'`
-listeners are attached.
+开始在此 `MessagePort` 上接收消息。当将此端口用作事件发射器时，一旦附加了 `'message'` 监听器，就会自动调用此方法。
 
-This method exists for parity with the Web `MessagePort` API. In Node.js,
-it is only useful for ignoring messages when no event listener is present.
-Node.js also diverges in its handling of `.onmessage`. Setting it
-automatically calls `.start()`, but unsetting it lets messages queue up
-until a new handler is set or the port is discarded.
+此方法存在是为了与 Web `MessagePort` API 保持一致。在 Node.js 中，它仅用于在没有事件监听器时忽略消息。Node.js 在处理 `.onmessage` 方面也有所不同。设置它会自动调用 `.start()`，但取消设置它会让消息排队，直到设置新的处理程序或端口被丢弃。
 
 ### `port.unref()`
 
@@ -1483,69 +1354,63 @@ until a new handler is set or the port is discarded.
 added: v10.5.0
 -->
 
-Calling `unref()` on a port allows the thread to exit if this is the only
-active handle in the event system. If the port is already `unref()`ed calling
-`unref()` again has no effect.
+在端口上调用 `unref()` 允许线程退出，如果这是事件系统中唯一的活动句柄。如果端口已经 `unref()`，再次调用 `unref()` 无效。
 
-If listeners are attached or removed using `.on('message')`, the port is
-`ref()`ed and `unref()`ed automatically depending on whether
-listeners for the event exist.
+如果使用 `.on('message')` 附加或移除监听器，端口会根据是否存在事件监听器自动 `ref()` 和 `unref()`。
 
-## Class: `Worker`
+## 类：`Worker`
 
 <!-- YAML
 added: v10.5.0
 -->
 
-* Extends: {EventEmitter}
+* 继承：{EventEmitter}
 
-The `Worker` class represents an independent JavaScript execution thread.
-Most Node.js APIs are available inside of it.
+`Worker` 类代表一个独立的 JavaScript 执行线程。
+大多数 Node.js API 在其中可用。
 
-Notable differences inside a Worker environment are:
+Worker 环境内的显著差异包括：
 
-* The [`process.stdin`][], [`process.stdout`][], and [`process.stderr`][]
-  streams may be redirected by the parent thread.
-* The [`require('node:worker_threads').isMainThread`][] property is set to `false`.
-* The [`require('node:worker_threads').parentPort`][] message port is available.
-* [`process.exit()`][] does not stop the whole program, just the single thread,
-  and [`process.abort()`][] is not available.
-* [`process.chdir()`][] and `process` methods that set group or user ids
-  are not available.
-* [`process.env`][] is a copy of the parent thread's environment variables,
-  unless otherwise specified. Changes to one copy are not visible in other
-  threads, and are not visible to native add-ons (unless
-  [`worker.SHARE_ENV`][] is passed as the `env` option to the
-  [`Worker`][] constructor). On Windows, unlike the main thread, a copy of the
-  environment variables operates in a case-sensitive manner.
-* [`process.title`][] cannot be modified.
-* Signals are not delivered through [`process.on('...')`][Signals events].
-* Execution may stop at any point as a result of [`worker.terminate()`][]
-  being invoked.
-* IPC channels from parent processes are not accessible.
-* The [`trace_events`][] module is not supported.
-* Native add-ons can only be loaded from multiple threads if they fulfill
-  [certain conditions][Addons worker support].
+* [`process.stdin`][]、[`process.stdout`][] 和 [`process.stderr`][]
+  流可能会被父线程重定向。
+* [`require('node:worker_threads').isMainThread`][] 属性设置为 `false`。
+* [`require('node:worker_threads').parentPort`][] 消息端口可用。
+* [`process.exit()`][] 不会停止整个程序，只会停止单个线程，
+  且 [`process.abort()`][] 不可用。
+* [`process.chdir()`][] 和设置组或用户 ID 的 `process` 方法
+  不可用。
+* [`process.env`][] 是父线程环境变量的副本，
+  除非另有指定。对一个副本的更改在其他
+  线程中不可见，并且对原生插件不可见（除非
+  将 [`worker.SHARE_ENV`][] 作为 `env` 选项传递给
+  [`Worker`][] 构造函数）。在 Windows 上，与主线程不同，
+  环境变量的副本以区分大小写的方式运行。
+* [`process.title`][] 不能被修改。
+* 信号不会通过 [`process.on('...')`][Signals events] 交付。
+* 由于调用了 [`worker.terminate()`][]，执行可能在任何点停止。
+* 来自父进程的 IPC 通道不可访问。
+* [`trace_events`][] 模块不受支持。
+* 原生插件只有在满足
+  [某些条件][Addons worker support] 的情况下才能从多个线程加载。
 
-Creating `Worker` instances inside of other `Worker`s is possible.
+可以在其他 `Worker` 内部创建 `Worker` 实例。
 
-Like [Web Workers][] and the [`node:cluster` module][], two-way communication
-can be achieved through inter-thread message passing. Internally, a `Worker` has
-a built-in pair of [`MessagePort`][]s that are already associated with each
-other when the `Worker` is created. While the `MessagePort` object on the parent
-side is not directly exposed, its functionalities are exposed through
-[`worker.postMessage()`][] and the [`worker.on('message')`][] event
-on the `Worker` object for the parent thread.
+像 [Web Workers][] 和 [`node:cluster` 模块][] 一样，双向通信
+可以通过线程间消息传递实现。在内部，`Worker` 拥有一对内置的 [`MessagePort`][]，
+它们在 `Worker` 创建时已经相互关联。虽然父端
+的 `MessagePort` 对象没有直接暴露，但其功能通过
+父线程 `Worker` 对象上的 [`worker.postMessage()`][] 和 [`worker.on('message')`][] 事件
+暴露。
 
-To create custom messaging channels (which is encouraged over using the default
-global channel because it facilitates separation of concerns), users can create
-a `MessageChannel` object on either thread and pass one of the
-`MessagePort`s on that `MessageChannel` to the other thread through a
-pre-existing channel, such as the global one.
+要创建自定义消息通道（鼓励使用自定义通道而不是默认
+全局通道，因为它有助于关注点分离），用户可以在任一线程上创建
+一个 `MessageChannel` 对象，并通过
+预先存在的通道（例如全局通道）将该 `MessageChannel` 上的
+其中一个 `MessagePort` 传递给另一个线程。
 
-See [`port.postMessage()`][] for more information on how messages are passed,
-and what kind of JavaScript values can be successfully transported through
-the thread barrier.
+参见 [`port.postMessage()`][] 以获取有关消息如何传递的更多信息，
+以及哪些类型的 JavaScript 值可以成功通过
+线程屏障传输。
 
 ```mjs
 import assert from 'node:assert';
@@ -1600,120 +1465,115 @@ changes:
     - v19.8.0
     - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46832
-    description: Added support for a `name` option, which allows
-                 adding a name to worker title for debugging.
+    description: 添加了对 `name` 选项的支持，允许为工作线程标题添加名称以便调试。
   - version: v14.9.0
     pr-url: https://github.com/nodejs/node/pull/34584
-    description: The `filename` parameter can be a WHATWG `URL` object using
-                 `data:` protocol.
+    description: `filename` 参数可以是使用 `data:` 协议的 WHATWG `URL` 对象。
   - version: v14.9.0
     pr-url: https://github.com/nodejs/node/pull/34394
-    description: The `trackUnmanagedFds` option was set to `true` by default.
+    description: `trackUnmanagedFds` 选项默认设置为 `true`。
   - version:
     - v14.6.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34303
-    description: The `trackUnmanagedFds` option was introduced.
+    description: 引入了 `trackUnmanagedFds` 选项。
   - version:
      - v13.13.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/32278
-    description: The `transferList` option was introduced.
+    description: 引入了 `transferList` 选项。
   - version:
      - v13.12.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/31664
-    description: The `filename` parameter can be a WHATWG `URL` object using
-                 `file:` protocol.
+    description: `filename` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。
   - version:
      - v13.4.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30559
-    description: The `argv` option was introduced.
+    description: 引入了 `argv` 选项。
   - version:
      - v13.2.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/26628
-    description: The `resourceLimits` option was introduced.
+    description: 引入了 `resourceLimits` 选项。
 -->
 
-* `filename` {string|URL} The path to the Worker's main script or module. Must
-  be either an absolute path or a relative path (i.e. relative to the
-  current working directory) starting with `./` or `../`, or a WHATWG `URL`
-  object using `file:` or `data:` protocol.
-  When using a [`data:` URL][], the data is interpreted based on MIME type using
-  the [ECMAScript module loader][].
-  If `options.eval` is `true`, this is a string containing JavaScript code
-  rather than a path.
+* `filename` {string|URL} Worker 主脚本或模块的路径。必须是
+  绝对路径或相对路径（即相对于当前
+  工作目录），以 `./` 或 `../` 开头，或者是使用
+  `file:` 或 `data:` 协议的 WHATWG `URL`
+  对象。
+  当使用 [`data:` URL][] 时，数据根据 MIME 类型使用
+  [ECMAScript 模块加载器][] 进行解释。
+  如果 `options.eval` 为 `true`，则这是一个包含 JavaScript 代码
+  的字符串，而不是路径。
 * `options` {Object}
-  * `argv` {any\[]} List of arguments which would be stringified and appended to
-    `process.argv` in the worker. This is mostly similar to the `workerData`
-    but the values are available on the global `process.argv` as if they
-    were passed as CLI options to the script.
-  * `env` {Object} If set, specifies the initial value of `process.env` inside
-    the Worker thread. As a special value, [`worker.SHARE_ENV`][] may be used
-    to specify that the parent thread and the child thread should share their
-    environment variables; in that case, changes to one thread's `process.env`
-    object affect the other thread as well. **Default:** `process.env`.
-  * `eval` {boolean} If `true` and the first argument is a `string`, interpret
-    the first argument to the constructor as a script that is executed once the
-    worker is online.
-  * `execArgv` {string\[]} List of node CLI options passed to the worker.
-    V8 options (such as `--max-old-space-size`) and options that affect the
-    process (such as `--title`) are not supported. If set, this is provided
-    as [`process.execArgv`][] inside the worker. By default, options are
-    inherited from the parent thread.
-  * `stdin` {boolean} If this is set to `true`, then `worker.stdin`
-    provides a writable stream whose contents appear as `process.stdin`
-    inside the Worker. By default, no data is provided.
-  * `stdout` {boolean} If this is set to `true`, then `worker.stdout` is
-    not automatically piped through to `process.stdout` in the parent.
-  * `stderr` {boolean} If this is set to `true`, then `worker.stderr` is
-    not automatically piped through to `process.stderr` in the parent.
-  * `workerData` {any} Any JavaScript value that is cloned and made
-    available as [`require('node:worker_threads').workerData`][]. The cloning
-    occurs as described in the [HTML structured clone algorithm][], and an error
-    is thrown if the object cannot be cloned (e.g. because it contains
-    `function`s).
-  * `trackUnmanagedFds` {boolean} If this is set to `true`, then the Worker
-    tracks raw file descriptors managed through [`fs.open()`][] and
-    [`fs.close()`][], and closes them when the Worker exits, similar to other
-    resources like network sockets or file descriptors managed through
-    the [`FileHandle`][] API. This option is automatically inherited by all
-    nested `Worker`s. **Default:** `true`.
-  * `transferList` {Object\[]} If one or more `MessagePort`-like objects
-    are passed in `workerData`, a `transferList` is required for those
-    items or [`ERR_MISSING_MESSAGE_PORT_IN_TRANSFER_LIST`][] is thrown.
-    See [`port.postMessage()`][] for more information.
-  * `resourceLimits` {Object} An optional set of resource limits for the new JS
-    engine instance. Reaching these limits leads to termination of the `Worker`
-    instance. These limits only affect the JS engine, and no external data,
-    including no `ArrayBuffer`s. Even if these limits are set, the process may
-    still abort if it encounters a global out-of-memory situation.
-    * `maxOldGenerationSizeMb` {number} The maximum size of the main heap in
-      MB. If the command-line argument [`--max-old-space-size`][] is set, it
-      overrides this setting.
-    * `maxYoungGenerationSizeMb` {number} The maximum size of a heap space for
-      recently created objects. If the command-line argument
-      [`--max-semi-space-size`][] is set, it overrides this setting.
-    * `codeRangeSizeMb` {number} The size of a pre-allocated memory range
-      used for generated code.
-    * `stackSizeMb` {number} The default maximum stack size for the thread.
-      Small values may lead to unusable Worker instances. **Default:** `4`.
-  * `name` {string} An optional `name` to be replaced in the thread name
-    and to the worker title for debugging/identification purposes,
-    making the final title as `[worker ${id}] ${name}`.
-    This parameter has a maximum allowed size, depending on the operating
-    system. If the provided name exceeds the limit, it will be truncated
-    * Maximum sizes:
-      * Windows: 32,767 characters
-      * macOS: 64 characters
-      * Linux: 16 characters
-      * NetBSD: limited to `PTHREAD_MAX_NAMELEN_NP`
-      * FreeBSD and OpenBSD: limited to `MAXCOMLEN`
-        **Default:** `'WorkerThread'`.
+  * `argv` {any\[]} 将被字符串化并追加到
+    worker 中的 `process.argv` 的参数列表。这与 `workerData`
+    非常相似，但这些值在全局 `process.argv` 上可用，就像它们
+    作为 CLI 选项传递给脚本一样。
+  * `env` {Object} 如果设置，指定 Worker 线程内部
+    `process.env` 的初始值。作为一个特殊值，[`worker.SHARE_ENV`][] 可用于
+    指定父线程和子线程应共享它们的
+    环境变量；在这种情况下，对一个线程的 `process.env`
+    对象的更改也会影响另一个线程。**默认：** `process.env`。
+  * `eval` {boolean} 如果为 `true` 且第一个参数是 `string`，则将
+    构造函数的第一个参数解释为一旦
+    worker 上线就执行的脚本。
+  * `execArgv` {string\[]} 传递给 worker 的 node CLI 选项列表。
+    V8 选项（如 `--max-old-space-size`）和影响
+    进程的选项（如 `--title`）不受支持。如果设置，这将作为
+    worker 内部的 [`process.execArgv`][] 提供。默认情况下，选项
+    从父线程继承。
+  * `stdin` {boolean} 如果设置为 `true`，则 `worker.stdin`
+    提供一个可写流，其内容在 Worker 内部显示为 `process.stdin`
+    。默认情况下，不提供数据。
+  * `stdout` {boolean} 如果设置为 `true`，则 `worker.stdout`
+    不会自动管道传输到父级的 `process.stdout`。
+  * `stderr` {boolean} 如果设置为 `true`，则 `worker.stderr`
+    不会自动管道传输到父级的 `process.stderr`。
+  * `workerData` {any} 任何被克隆并作为
+    [`require('node:worker_threads').workerData`][] 可用的 JavaScript 值。克隆
+    如 [HTML 结构化克隆算法][] 中所述，如果对象无法被克隆（例如因为它包含
+    `function`），则会抛出错误。
+  * `trackUnmanagedFds` {boolean} 如果设置为 `true`，则 Worker
+    跟踪通过 [`fs.open()`][] 和
+    [`fs.close()`][] 管理的原始文件描述符，并在 Worker 退出时关闭它们，类似于通过
+    [`FileHandle`][] API 管理的网络套接字或文件描述符等其他
+    资源。此选项会自动被所有
+    嵌套 `Worker` 继承。**默认：** `true`。
+  * `transferList` {Object\[]} 如果一个或多个 `MessagePort` 类对象
+    在 `workerData` 中传递，则这些
+    项需要 `transferList`，否则将抛出 [`ERR_MISSING_MESSAGE_PORT_IN_TRANSFER_LIST`][]。
+    参见 [`port.postMessage()`][] 以获取更多信息。
+  * `resourceLimits` {Object} 新 JS
+    引擎实例的一组可选资源限制。达到这些限制会导致 `Worker`
+    实例终止。这些限制仅影响 JS 引擎，不影响外部数据，
+    包括 `ArrayBuffer`。即使设置了这些限制，如果进程遇到全局内存不足情况，
+    仍可能中止。
+    * `maxOldGenerationSizeMb` {number} 主堆的最大大小，单位为
+      MB。如果设置了命令行参数 [`--max-old-space-size`][]，它将
+      覆盖此设置。
+    * `maxYoungGenerationSizeMb` {number} 最近创建的对象的堆空间的最大大小。如果设置了命令行参数
+      [`--max-semi-space-size`][]，它将覆盖此设置。
+    * `codeRangeSizeMb` {number} 用于生成代码的预分配内存范围的大小。
+    * `stackSizeMb` {number} 线程的默认最大栈大小。
+      小值可能导致 Worker 实例不可用。**默认：** `4`。
+  * `name` {string} 一个可选的 `name`，用于替换线程名称
+    和工作线程标题，以便调试/识别，
+    使最终标题为 `[worker ${id}] ${name}`。
+    此参数有一个最大允许大小，取决于操作
+    系统。如果提供的名称超过限制，它将被截断。
+    * 最大大小：
+      * Windows: 32,767 个字符
+      * macOS: 64 个字符
+      * Linux: 16 个字符
+      * NetBSD: 限制为 `PTHREAD_MAX_NAMELEN_NP`
+      * FreeBSD 和 OpenBSD: 限制为 `MAXCOMLEN`
+        **默认：** `'WorkerThread'`。
 
-### Event: `'error'`
+### 事件：`'error'`
 
 <!-- YAML
 added: v10.5.0
@@ -1721,10 +1581,9 @@ added: v10.5.0
 
 * `err` {any}
 
-The `'error'` event is emitted if the worker thread throws an uncaught
-exception. In that case, the worker is terminated.
+如果工作线程抛出未捕获的异常，则会发出 `'error'` 事件。在这种情况下，worker 将被终止。
 
-### Event: `'exit'`
+### 事件：`'exit'`
 
 <!-- YAML
 added: v10.5.0
@@ -1732,29 +1591,29 @@ added: v10.5.0
 
 * `exitCode` {integer}
 
-The `'exit'` event is emitted once the worker has stopped. If the worker
-exited by calling [`process.exit()`][], the `exitCode` parameter is the
-passed exit code. If the worker was terminated, the `exitCode` parameter is
-`1`.
+一旦 worker 停止，就会发出 `'exit'` 事件。如果 worker
+通过调用 [`process.exit()`][] 退出，`exitCode` 参数是
+传递的退出代码。如果 worker 被终止，`exitCode` 参数是
+`1`。
 
-This is the final event emitted by any `Worker` instance.
+这是任何 `Worker` 实例发出的最后一个事件。
 
-### Event: `'message'`
+### 事件：`'message'`
 
 <!-- YAML
 added: v10.5.0
 -->
 
-* `value` {any} The transmitted value
+* `value` {any} 传输的值
 
-The `'message'` event is emitted when the worker thread has invoked
-[`require('node:worker_threads').parentPort.postMessage()`][].
-See the [`port.on('message')`][] event for more details.
+当工作线程调用了
+[`require('node:worker_threads').parentPort.postMessage()`][] 时，会发出 `'message'` 事件。
+参见 [`port.on('message')`][] 事件以获取更多详情。
 
-All messages sent from the worker thread are emitted before the
-[`'exit'` event][] is emitted on the `Worker` object.
+所有从工作线程发送的消息都在
+`Worker` 对象上发出 [`'exit'` 事件][] 之前发出。
 
-### Event: `'messageerror'`
+### 事件：`'messageerror'`
 
 <!-- YAML
 added:
@@ -1762,18 +1621,18 @@ added:
   - v12.19.0
 -->
 
-* `error` {Error} An Error object
+* `error` {Error} 一个 Error 对象
 
-The `'messageerror'` event is emitted when deserializing a message failed.
+当反序列化消息失败时，会发出 `'messageerror'` 事件。
 
-### Event: `'online'`
+### 事件：`'online'`
 
 <!-- YAML
 added: v10.5.0
 -->
 
-The `'online'` event is emitted when the worker thread has started executing
-JavaScript code.
+当工作线程开始执行
+JavaScript 代码时，会发出 `'online'` 事件。
 
 ### `worker.cpuUsage([prev])`
 
@@ -1783,11 +1642,11 @@ added:
  - v22.19.0
 -->
 
-* Returns: {Promise}
+* 返回：{Promise}
 
-This method returns a `Promise` that will resolve to an object identical to [`process.threadCpuUsage()`][],
-or reject with an [`ERR_WORKER_NOT_RUNNING`][] error if the worker is no longer running.
-This methods allows the statistics to be observed from outside the actual thread.
+此方法返回一个 `Promise`，该 Promise 将解析为与 [`process.threadCpuUsage()`][] 相同的对象，
+如果 worker 不再运行，则拒绝并抛出 [`ERR_WORKER_NOT_RUNNING`][] 错误。
+此方法允许从实际线程外部观察统计信息。
 
 ### `worker.getHeapSnapshot([options])`
 
@@ -1798,23 +1657,23 @@ added:
 changes:
   - version: v19.1.0
     pr-url: https://github.com/nodejs/node/pull/44989
-    description: Support options to configure the heap snapshot.
+    description: 支持配置堆快照的选项。
 -->
 
 * `options` {Object}
-  * `exposeInternals` {boolean} If true, expose internals in the heap snapshot.
-    **Default:** `false`.
-  * `exposeNumericValues` {boolean} If true, expose numeric values in
-    artificial fields. **Default:** `false`.
-* Returns: {Promise} A promise for a Readable Stream containing
-  a V8 heap snapshot
+  * `exposeInternals` {boolean} 如果为 true，则在堆快照中暴露内部信息。
+    **默认：** `false`。
+  * `exposeNumericValues` {boolean} 如果为 true，则在
+    人工字段中暴露数值。**默认：** `false`。
+* 返回：{Promise} 一个包含
+  V8 堆快照的可读流的 Promise
 
-Returns a readable stream for a V8 snapshot of the current state of the Worker.
-See [`v8.getHeapSnapshot()`][] for more details.
+返回一个可读流，用于获取 Worker 当前状态的 V8 快照。
+参见 [`v8.getHeapSnapshot()`][] 以获取更多详情。
 
-If the Worker thread is no longer running, which may occur before the
-[`'exit'` event][] is emitted, the returned `Promise` is rejected
-immediately with an [`ERR_WORKER_NOT_RUNNING`][] error.
+如果 Worker 线程不再运行（这可能发生在
+[`'exit'` 事件][] 发出之前），返回的 `Promise` 将立即
+被 [`ERR_WORKER_NOT_RUNNING`][] 错误拒绝。
 
 ### `worker.getHeapStatistics()`
 
@@ -1824,11 +1683,11 @@ added:
 - v22.16.0
 -->
 
-* Returns: {Promise}
+* 返回：{Promise}
 
-This method returns a `Promise` that will resolve to an object identical to [`v8.getHeapStatistics()`][],
-or reject with an [`ERR_WORKER_NOT_RUNNING`][] error if the worker is no longer running.
-This methods allows the statistics to be observed from outside the actual thread.
+此方法返回一个 `Promise`，该 Promise 将解析为与 [`v8.getHeapStatistics()`][] 相同的对象，
+如果 worker 不再运行，则拒绝并抛出 [`ERR_WORKER_NOT_RUNNING`][] 错误。
+此方法允许从实际线程外部观察统计信息。
 
 ### `worker.performance`
 
@@ -1839,8 +1698,8 @@ added:
   - v12.22.0
 -->
 
-An object that can be used to query performance information from a worker
-instance.
+一个可用于查询 worker
+实例性能信息的对象。
 
 #### `performance.eventLoopUtilization([utilization1[, utilization2]])`
 
@@ -1851,26 +1710,25 @@ added:
   - v12.22.0
 -->
 
-* `utilization1` {Object} The result of a previous call to
-  `eventLoopUtilization()`.
-* `utilization2` {Object} The result of a previous call to
-  `eventLoopUtilization()` prior to `utilization1`.
-* Returns: {Object}
+* `utilization1` {Object} 之前调用
+  `eventLoopUtilization()` 的结果。
+* `utilization2` {Object} 在 `utilization1` 之前调用
+  `eventLoopUtilization()` 的结果。
+* 返回：{Object}
   * `idle` {number}
   * `active` {number}
   * `utilization` {number}
 
-The same call as [`perf_hooks` `eventLoopUtilization()`][], except the values
-of the worker instance are returned.
+与 [`perf_hooks` `eventLoopUtilization()`][] 相同的调用，但返回的是
+worker 实例的值。
 
-One difference is that, unlike the main thread, bootstrapping within a worker
-is done within the event loop. So the event loop utilization is
-immediately available once the worker's script begins execution.
+一个区别是，与主线程不同，worker 内的引导是在
+事件循环内完成的。因此，一旦 worker 的脚本开始执行，
+事件循环利用率立即可用。
 
-An `idle` time that does not increase does not indicate that the worker is
-stuck in bootstrap. The following examples shows how the worker's entire
-lifetime never accumulates any `idle` time, but is still be able to process
-messages.
+`idle` 时间不增加并不表示 worker 卡在引导过程中。以下示例显示 worker 的整个
+生命周期从未积累任何 `idle` 时间，但仍能够处理
+消息。
 
 ```mjs
 import { Worker, isMainThread, parentPort } from 'node:worker_threads';
@@ -1914,9 +1772,9 @@ if (isMainThread) {
 }
 ```
 
-The event loop utilization of a worker is available only after the [`'online'`
-event][] emitted, and if called before this, or after the [`'exit'`
-event][], then all properties have the value of `0`.
+Worker 的事件循环利用率仅在发出 [`'online'`
+事件][] 后可用，如果在此之前调用，或在 [`'exit'`
+事件][] 之后调用，则所有属性的值为 `0`。
 
 ### `worker.postMessage(value[, transferList])`
 
@@ -1927,9 +1785,9 @@ added: v10.5.0
 * `value` {any}
 * `transferList` {Object\[]}
 
-Send a message to the worker that is received via
-[`require('node:worker_threads').parentPort.on('message')`][].
-See [`port.postMessage()`][] for more details.
+发送消息给 worker，该消息通过
+[`require('node:worker_threads').parentPort.on('message')`][] 接收。
+参见 [`port.postMessage()`][] 以获取更多详情。
 
 ### `worker.ref()`
 
@@ -1937,10 +1795,10 @@ See [`port.postMessage()`][] for more details.
 added: v10.5.0
 -->
 
-Opposite of `unref()`, calling `ref()` on a previously `unref()`ed worker does
-_not_ let the program exit if it's the only active handle left (the default
-behavior). If the worker is `ref()`ed, calling `ref()` again has
-no effect.
+`unref()` 的反操作，对之前 `unref()` 过的 worker 调用 `ref()`
+_不会_ 让程序退出，如果它是唯一活动的句柄（默认
+行为）。如果 worker 是 `ref()` 过的，再次调用 `ref()`
+没有效果。
 
 ### `worker.resourceLimits`
 
@@ -1950,17 +1808,17 @@ added:
  - v12.16.0
 -->
 
-* Type: {Object}
+* 类型：{Object}
   * `maxYoungGenerationSizeMb` {number}
   * `maxOldGenerationSizeMb` {number}
   * `codeRangeSizeMb` {number}
   * `stackSizeMb` {number}
 
-Provides the set of JS engine resource constraints for this Worker thread.
-If the `resourceLimits` option was passed to the [`Worker`][] constructor,
-this matches its values.
+提供此 Worker 线程的 JS 引擎资源约束集。
+如果将 `resourceLimits` 选项传递给了 [`Worker`][] 构造函数，
+则与此值匹配。
 
-If the worker has stopped, the return value is an empty object.
+如果 worker 已停止，返回值为一个空对象。
 
 ### `worker.startCpuProfile()`
 
@@ -1968,10 +1826,10 @@ If the worker has stopped, the return value is an empty object.
 added: v24.8.0
 -->
 
-* Returns: {Promise}
+* 返回：{Promise}
 
-Starting a CPU profile then return a Promise that fulfills with an error
-or an `CPUProfileHandle` object. This API supports `await using` syntax.
+启动 CPU 性能分析，然后返回一个 Promise，该 Promise 兑现为一个错误
+或一个 `CPUProfileHandle` 对象。此 API 支持 `await using` 语法。
 
 ```cjs
 const { Worker } = require('node:worker_threads');
@@ -1989,7 +1847,7 @@ worker.on('online', async () => {
 });
 ```
 
-`await using` example.
+`await using` 示例。
 
 ```cjs
 const { Worker } = require('node:worker_threads');
@@ -2000,7 +1858,7 @@ const w = new Worker(`
   `, { eval: true });
 
 w.on('online', async () => {
-  // Stop profile automatically when return and profile will be discarded
+  // 返回时自动停止性能分析，且性能分析将被丢弃
   await using handle = await w.startCpuProfile();
 });
 ```
@@ -2013,10 +1871,10 @@ added:
   - v22.20.0
 -->
 
-* Returns: {Promise}
+* 返回：{Promise}
 
-Starting a Heap profile then return a Promise that fulfills with an error
-or an `HeapProfileHandle` object. This API supports `await using` syntax.
+启动堆性能分析，然后返回一个 Promise，该 Promise 兑现为一个错误
+或一个 `HeapProfileHandle` 对象。此 API 支持 `await using` 语法。
 
 ```cjs
 const { Worker } = require('node:worker_threads');
@@ -2034,7 +1892,7 @@ worker.on('online', async () => {
 });
 ```
 
-`await using` example.
+`await using` 示例。
 
 ```cjs
 const { Worker } = require('node:worker_threads');
@@ -2045,7 +1903,7 @@ const w = new Worker(`
   `, { eval: true });
 
 w.on('online', async () => {
-  // Stop profile automatically when return and profile will be discarded
+  // 返回时自动停止性能分析，且性能分析将被丢弃
   await using handle = await w.startHeapProfile();
 });
 ```
@@ -2056,12 +1914,12 @@ w.on('online', async () => {
 added: v10.5.0
 -->
 
-* Type: {stream.Readable}
+* 类型：{stream.Readable}
 
-This is a readable stream which contains data written to [`process.stderr`][]
-inside the worker thread. If `stderr: true` was not passed to the
-[`Worker`][] constructor, then data is piped to the parent thread's
-[`process.stderr`][] stream.
+这是一个可读流，包含在 worker 线程内写入 [`process.stderr`][]
+的数据。如果未将 `stderr: true` 传递给
+[`Worker`][] 构造函数，则数据会管道传输到父线程的
+[`process.stderr`][] 流。
 
 ### `worker.stdin`
 
@@ -2069,11 +1927,11 @@ inside the worker thread. If `stderr: true` was not passed to the
 added: v10.5.0
 -->
 
-* Type: {null|stream.Writable}
+* 类型：{null|stream.Writable}
 
-If `stdin: true` was passed to the [`Worker`][] constructor, this is a
-writable stream. The data written to this stream will be made available in
-the worker thread as [`process.stdin`][].
+如果将 `stdin: true` 传递给了 [`Worker`][] 构造函数，这是一个
+可写流。写入此流的数据将在
+worker 线程中作为 [`process.stdin`][] 可用。
 
 ### `worker.stdout`
 
@@ -2081,12 +1939,12 @@ the worker thread as [`process.stdin`][].
 added: v10.5.0
 -->
 
-* Type: {stream.Readable}
+* 类型：{stream.Readable}
 
-This is a readable stream which contains data written to [`process.stdout`][]
-inside the worker thread. If `stdout: true` was not passed to the
-[`Worker`][] constructor, then data is piped to the parent thread's
-[`process.stdout`][] stream.
+这是一个可读流，包含在 worker 线程内写入 [`process.stdout`][]
+的数据。如果未将 `stdout: true` 传递给
+[`Worker`][] 构造函数，则数据会管道传输到父线程的
+[`process.stdout`][] 流。
 
 ### `worker.terminate()`
 
@@ -2095,17 +1953,14 @@ added: v10.5.0
 changes:
   - version: v12.5.0
     pr-url: https://github.com/nodejs/node/pull/28021
-    description: This function now returns a Promise.
-                 Passing a callback is deprecated, and was useless up to this
-                 version, as the Worker was actually terminated synchronously.
-                 Terminating is now a fully asynchronous operation.
+    description: 此函数现在返回一个 Promise。传递回调函数已废弃，且在此版本之前无用，因为 Worker 实际上是同步终止的。终止现在是一个完全异步的操作。
 -->
 
-* Returns: {Promise}
+* 返回：{Promise}
 
-Stop all JavaScript execution in the worker thread as soon as possible.
-Returns a Promise for the exit code that is fulfilled when the
-[`'exit'` event][] is emitted.
+尽快停止 worker 线程中的所有 JavaScript 执行。
+返回一个 Promise，用于获取退出代码，当
+[`'exit'` 事件][] 发出时兑现。
 
 ### `worker.threadId`
 
@@ -2113,11 +1968,11 @@ Returns a Promise for the exit code that is fulfilled when the
 added: v10.5.0
 -->
 
-* Type: {integer}
+* 类型：{integer}
 
-An integer identifier for the referenced thread. Inside the worker thread,
-it is available as [`require('node:worker_threads').threadId`][].
-This value is unique for each `Worker` instance inside a single process.
+引用线程的整数标识符。在 worker 线程内部，
+它作为 [`require('node:worker_threads').threadId`][] 可用。
+此值在单个进程内的每个 `Worker` 实例中是唯一的。
 
 ### `worker.threadName`
 
@@ -2129,8 +1984,8 @@ added:
 
 * {string|null}
 
-A string identifier for the referenced thread or null if the thread is not running.
-Inside the worker thread, it is available as [`require('node:worker_threads').threadName`][].
+引用线程的字符串标识符，如果线程未运行则为 null。
+在 worker 线程内部，它作为 [`require('node:worker_threads').threadName`][] 可用。
 
 ### `worker.unref()`
 
@@ -2138,9 +1993,9 @@ Inside the worker thread, it is available as [`require('node:worker_threads').th
 added: v10.5.0
 -->
 
-Calling `unref()` on a worker allows the thread to exit if this is the only
-active handle in the event system. If the worker is already `unref()`ed calling
-`unref()` again has no effect.
+对 worker 调用 `unref()` 允许线程退出，如果这是事件系统中唯一
+活动的句柄。如果 worker 已经 `unref()` 过，再次调用
+`unref()` 没有效果。
 
 ### `worker[Symbol.asyncDispose]()`
 
@@ -2150,23 +2005,20 @@ added:
  - v22.18.0
 -->
 
-Calls [`worker.terminate()`][] when the dispose scope is exited.
+当处置作用域退出时调用 [`worker.terminate()`][]。
 
 ```js
 async function example() {
   await using worker = new Worker('for (;;) {}', { eval: true });
-  // Worker is automatically terminate when the scope is exited.
+  // 当作用域退出时，Worker 会自动终止。
 }
 ```
 
-## Notes
+## 注意事项
 
-### Synchronous blocking of stdio
+### stdio 的同步阻塞
 
-`Worker`s utilize message passing via {MessagePort} to implement interactions
-with `stdio`. This means that `stdio` output originating from a `Worker` can
-get blocked by synchronous code on the receiving end that is blocking the
-Node.js event loop.
+`Worker` 通过 {MessagePort} 利用消息传递来实现与 `stdio` 的交互。这意味着源自 `Worker` 的 `stdio` 输出可能会被接收端阻塞 Node.js 事件循环的同步代码所阻塞。
 
 ```mjs
 import {
@@ -2177,10 +2029,10 @@ import {
 if (isMainThread) {
   new Worker(new URL(import.meta.url));
   for (let n = 0; n < 1e10; n++) {
-    // Looping to simulate work.
+    // 循环以模拟工作。
   }
 } else {
-  // This output will be blocked by the for loop in the main thread.
+  // 此输出将被主线程中的 for 循环阻塞。
   console.log('foo');
 }
 ```
@@ -2196,32 +2048,27 @@ const {
 if (isMainThread) {
   new Worker(__filename);
   for (let n = 0; n < 1e10; n++) {
-    // Looping to simulate work.
+    // 循环以模拟工作。
   }
 } else {
-  // This output will be blocked by the for loop in the main thread.
+  // 此输出将被主线程中的 for 循环阻塞。
   console.log('foo');
 }
 ```
 
-### Launching worker threads from preload scripts
+### 从预加载脚本启动工作线程
 
-Take care when launching worker threads from preload scripts (scripts loaded
-and run using the `-r` command line flag). Unless the `execArgv` option is
-explicitly set, new Worker threads automatically inherit the command line flags
-from the running process and will preload the same preload scripts as the main
-thread. If the preload script unconditionally launches a worker thread, every
-thread spawned will spawn another until the application crashes.
+从预加载脚本（使用 `-r` 命令行标志加载和运行的脚本）启动工作线程时要小心。除非显式设置了 `execArgv` 选项，否则新的 Worker 线程会自动继承正在运行的进程的命令行标志，并将预加载与主线程相同的预加载脚本。如果预加载脚本无条件地启动工作线程，则每个生成的线程都会再生成另一个线程，直到应用程序崩溃。
 
-[Addons worker support]: addons.md#worker-support
-[ECMAScript module loader]: esm.md#data-imports
-[HTML structured clone algorithm]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+[插件工作线程支持]: addons.md#worker-support
+[ECMAScript 模块加载器]: esm.md#data-imports
+[HTML 结构化克隆算法]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
 [LockManager]: #class-lockmanager
-[Signals events]: process.md#signal-events
+[信号事件]: process.md#signal-events
 [Web Workers]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API
-[`'close'` event]: #event-close
-[`'exit'` event]: #event-exit
-[`'online'` event]: #event-online
+[`'close'` 事件]: #event-close
+[`'exit'` 事件]: #event-exit
+[`'online'` 事件]: #event-online
 [`--max-old-space-size`]: cli.md#--max-old-space-sizesize-in-mib
 [`--max-semi-space-size`]: cli.md#--max-semi-space-sizesize-in-mib
 [`AsyncResource`]: async_hooks.md#class-asyncresource
@@ -2235,13 +2082,13 @@ thread spawned will spawn another until the application crashes.
 [`FileHandle`]: fs.md#class-filehandle
 [`MessagePort`]: #class-messageport
 [`WebAssembly.Module`]: https://developer.mozilla.org/en-US/docs/WebAssembly/Reference/JavaScript_interface/Module
-[`Worker constructor options`]: #new-workerfilename-options
+[`Worker 构造函数选项`]: #new-workerfilename-options
 [`Worker`]: #class-worker
 [`data:` URL]: https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data
 [`fs.close()`]: fs.md#fsclosefd-callback
 [`fs.open()`]: fs.md#fsopenpath-flags-mode-callback
 [`markAsUntransferable()`]: #worker_threadsmarkasuntransferableobject
-[`node:cluster` module]: cluster.md
+[`node:cluster` 模块]: cluster.md
 [`perf_hooks` `eventLoopUtilization()`]: perf_hooks.md#perf_hookseventlooputilizationutilization1-utilization2
 [`port.on('message')`]: #event-message
 [`port.onmessage()`]: https://developer.mozilla.org/en-US/docs/Web/API/MessagePort/message_event
@@ -2274,9 +2121,9 @@ thread spawned will spawn another until the application crashes.
 [`worker.threadId`]: #workerthreadid
 [`worker.threadName`]: #workerthreadname
 [async-resource-worker-pool]: async_context.md#using-asyncresource-for-a-worker-thread-pool
-[browser `LockManager`]: https://developer.mozilla.org/en-US/docs/Web/API/LockManager
-[browser `MessagePort`]: https://developer.mozilla.org/en-US/docs/Web/API/MessagePort
-[child processes]: child_process.md
-[contextified]: vm.md#what-does-it-mean-to-contextify-an-object
+[浏览器 `LockManager`]: https://developer.mozilla.org/en-US/docs/Web/API/LockManager
+[浏览器 `MessagePort`]: https://developer.mozilla.org/en-US/docs/Web/API/MessagePort
+[子进程]: child_process.md
+[上下文化]: vm.md#what-does-it-mean-to-contextify-an-object
 [locks.request()]: #locksrequestname-options-callback
 [v8.serdes]: v8.md#serialization-api

@@ -1,53 +1,35 @@
-# Deprecated APIs
+# 已弃用的 API
 
 <!--introduced_in=v7.7.0-->
 
 <!-- type=misc -->
 
-Node.js APIs might be deprecated for any of the following reasons:
+Node.js API 可能因以下任何原因被弃用：
 
-* Use of the API is unsafe.
-* An improved alternative API is available.
-* Breaking changes to the API are expected in a future major release.
+* 使用该 API 不安全。
+* 有改进的替代 API 可用。
+* 预计在未来的主要版本中会对 API 进行破坏性更改。
 
-Node.js uses four kinds of deprecations:
+Node.js 使用四种弃用方式：
 
-* Documentation-only
-* Application (non-`node_modules` code only)
-* Runtime (all code)
-* End-of-Life
+* 仅文档
+* 应用程序（仅限非 `node_modules` 代码）
+* 运行时（所有代码）
+* 生命周期结束
 
-A Documentation-only deprecation is one that is expressed only within the
-Node.js API docs. These generate no side-effects while running Node.js.
-Some Documentation-only deprecations trigger a runtime warning when launched
-with [`--pending-deprecation`][] flag (or its alternative,
-`NODE_PENDING_DEPRECATION=1` environment variable), similarly to Runtime
-deprecations below. Documentation-only deprecations that support that flag
-are explicitly labeled as such in the
-[list of Deprecated APIs](#list-of-deprecated-apis).
+仅文档弃用是指仅在 Node.js API 文档中表达的弃用。这些在运行 Node.js 时不会产生副作用。某些仅文档弃用在启动时带有 [`--pending-deprecation`][] 标志（或其替代方案，`NODE_PENDING_DEPRECATION=1` 环境变量）会触发运行时警告，类似于下面的运行时弃用。支持该标志的仅文档弃用在 [已弃用 API 列表](#list-of-deprecated-apis) 中会明确标注。
 
-An Application deprecation for only non-`node_modules` code will, by default,
-generate a process warning that will be printed to `stderr` the first time
-the deprecated API is used in code that's not loaded from `node_modules`.
-When the [`--throw-deprecation`][] command-line flag is used, a Runtime
-deprecation will cause an error to be thrown. When
-[`--pending-deprecation`][] is used, warnings will also be emitted for
-code loaded from `node_modules`.
+默认情况下，仅针对非 `node_modules` 代码的应用程序弃用会在首次于非 `node_modules` 加载的代码中使用弃用 API 时生成一个进程警告并打印到 `stderr`。当使用 [`--throw-deprecation`][] 命令行标志时，运行时弃用将导致抛出错误。当使用 [`--pending-deprecation`][] 时，警告也会为从 `node_modules` 加载的代码发出。
 
-A runtime deprecation for all code is similar to the runtime deprecation
-for non-`node_modules` code, except that it also emits a warning for
-code loaded from `node_modules`.
+所有代码的运行时弃用类似于非 `node_modules` 代码的运行时弃用，不同之处在于它也会为从 `node_modules` 加载的代码发出警告。
 
-An End-of-Life deprecation is used when functionality is or will soon be removed
-from Node.js.
+当功能正在或即将从 Node.js 中移除时，会使用生命周期结束弃用。
 
-## Revoking deprecations
+## 撤销弃用
 
-Occasionally, the deprecation of an API might be reversed. In such situations,
-this document will be updated with information relevant to the decision.
-However, the deprecation identifier will not be modified.
+偶尔，API 的弃用可能会被撤销。在这种情况下，本文档将更新与决策相关的信息。但是，弃用标识符不会被修改。
 
-## List of deprecated APIs
+## 已弃用 API 列表
 
 ### DEP0001: `http.OutgoingMessage.prototype.flush`
 
@@ -66,10 +48,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`OutgoingMessage.prototype.flush()` has been removed. Use
-`OutgoingMessage.prototype.flushHeaders()` instead.
+`OutgoingMessage.prototype.flush()` 已被移除。请改用 `OutgoingMessage.prototype.flushHeaders()`。
 
 ### DEP0002: `require('_linklist')`
 
@@ -86,9 +67,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `_linklist` module is deprecated. Please use a userland alternative.
+`_linklist` 模块已弃用。请使用用户空间的替代方案。
 
 ### DEP0003: `_writableState.buffer`
 
@@ -107,10 +88,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `_writableState.buffer` has been removed. Use `_writableState.getBuffer()`
-instead.
+`_writableState.buffer` 已被移除。请改用 `_writableState.getBuffer()`。
 
 ### DEP0004: `CryptoStream.prototype.readyState`
 
@@ -129,11 +109,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `CryptoStream.prototype.readyState` property was removed.
+`CryptoStream.prototype.readyState` 属性已被移除。
 
-### DEP0005: `Buffer()` constructor
+### DEP0005: `Buffer()` 构造函数
 
 <!-- YAML
 changes:
@@ -148,31 +128,21 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Application (non-`node_modules` code only)
+类型：应用程序（仅限非 `node_modules` 代码）
 
-The `Buffer()` function and `new Buffer()` constructor are deprecated due to
-API usability issues that can lead to accidental security issues.
+`Buffer()` 函数和 `new Buffer()` 构造函数因 API 可用性问题可能导致意外的安全问题而被弃用。
 
-As an alternative, use one of the following methods of constructing `Buffer`
-objects:
+作为替代，请使用以下构造 `Buffer` 对象的方法之一：
 
-* [`Buffer.alloc(size[, fill[, encoding]])`][alloc]: Create a `Buffer` with
-  _initialized_ memory.
-* [`Buffer.allocUnsafe(size)`][alloc_unsafe_size]: Create a `Buffer` with
-  _uninitialized_ memory.
-* [`Buffer.allocUnsafeSlow(size)`][]: Create a `Buffer` with _uninitialized_
-  memory.
-* [`Buffer.from(array)`][]: Create a `Buffer` with a copy of `array`
-* [`Buffer.from(arrayBuffer[, byteOffset[, length]])`][from_arraybuffer] -
-  Create a `Buffer` that wraps the given `arrayBuffer`.
-* [`Buffer.from(buffer)`][]: Create a `Buffer` that copies `buffer`.
-* [`Buffer.from(string[, encoding])`][from_string_encoding]: Create a `Buffer`
-  that copies `string`.
+* [`Buffer.alloc(size[, fill[, encoding]])`][alloc]：创建具有_已初始化_内存的 `Buffer`。
+* [`Buffer.allocUnsafe(size)`][alloc_unsafe_size]：创建具有_未初始化_内存的 `Buffer`。
+* [`Buffer.allocUnsafeSlow(size)`][]：创建具有_未初始化_内存的 `Buffer`。
+* [`Buffer.from(array)`][]：创建具有 `array` 副本的 `Buffer`
+* [`Buffer.from(arrayBuffer[, byteOffset[, length]])`][from_arraybuffer] - 创建包装给定 `arrayBuffer` 的 `Buffer`。
+* [`Buffer.from(buffer)`][]：创建复制 `buffer` 的 `Buffer`。
+* [`Buffer.from(string[, encoding])`][from_string_encoding]：创建复制 `string` 的 `Buffer`。
 
-Without `--pending-deprecation`, runtime warnings occur only for code not in
-`node_modules`. This means there will not be deprecation warnings for
-`Buffer()` usage in dependencies. With `--pending-deprecation`, a runtime
-warning results no matter where the `Buffer()` usage occurs.
+如果没有 `--pending-deprecation`，运行时警告仅发生在不在 `node_modules` 中的代码。这意味着依赖项中的 `Buffer()` 用法不会有弃用警告。使用 `--pending-deprecation` 时，无论 `Buffer()` 用法出现在何处，都会产生运行时警告。
 
 ### DEP0006: `child_process` `options.customFds`
 
@@ -192,13 +162,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Within the [`child_process`][] module's `spawn()`, `fork()`, and `exec()`
-methods, the `options.customFds` option is deprecated. The `options.stdio`
-option should be used instead.
+在 [`child_process`][] 模块的 `spawn()`、`fork()` 和 `exec()` 方法中，`options.customFds` 选项已弃用。应改用 `options.stdio` 选项。
 
-### DEP0007: Replace `cluster` `worker.suicide` with `worker.exitedAfterDisconnect`
+### DEP0007: 将 `cluster` `worker.suicide` 替换为 `worker.exitedAfterDisconnect`
 
 <!-- YAML
 changes:
@@ -216,14 +184,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-In an earlier version of the Node.js `cluster`, a boolean property with the name
-`suicide` was added to the `Worker` object. The intent of this property was to
-provide an indication of how and why the `Worker` instance exited. In Node.js
-6.0.0, the old property was deprecated and replaced with a new
-[`worker.exitedAfterDisconnect`][] property. The old property name did not
-precisely describe the actual semantics and was unnecessarily emotion-laden.
+在早期版本的 Node.js `cluster` 中，一个名为 `suicide` 的布尔属性被添加到 `Worker` 对象。该属性的目的是指示 `Worker` 实例如何以及为何退出。在 Node.js 6.0.0 中，旧属性被弃用并替换为新的 [`worker.exitedAfterDisconnect`][] 属性。旧属性名称并未精确描述实际语义，且带有不必要的情感色彩。
 
 ### DEP0008: `require('node:constants')`
 
@@ -237,14 +200,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The `node:constants` module is deprecated. When requiring access to constants
-relevant to specific Node.js builtin modules, developers should instead refer
-to the `constants` property exposed by the relevant module. For instance,
-`require('node:fs').constants` and `require('node:os').constants`.
+`node:constants` 模块已弃用。当需要访问与特定 Node.js 内置模块相关的常量时，开发者应参考相关模块暴露的 `constants` 属性。例如，`require('node:fs').constants` 和 `require('node:os').constants`。
 
-### DEP0009: `crypto.pbkdf2` without digest
+### DEP0009: 不带 digest 的 `crypto.pbkdf2`
 
 <!-- YAML
 changes:
@@ -265,19 +225,13 @@ changes:
     description: Runtime deprecation (for `digest === undefined`).
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Use of the [`crypto.pbkdf2()`][] API without specifying a digest was deprecated
-in Node.js 6.0 because the method defaulted to using the non-recommended
-`'SHA1'` digest. Previously, a deprecation warning was printed. Starting in
-Node.js 8.0.0, calling `crypto.pbkdf2()` or `crypto.pbkdf2Sync()` with
-`digest` set to `undefined` will throw a `TypeError`.
+在 Node.js 6.0 中，未指定 digest 使用 [`crypto.pbkdf2()`][] API 已被弃用，因为该方法默认使用不推荐的 `'SHA1'` digest。此前，会打印弃用警告。从 Node.js 8.0.0 开始，使用 `digest` 设置为 `undefined` 调用 `crypto.pbkdf2()` 或 `crypto.pbkdf2Sync()` 将抛出 `TypeError`。
 
-Beginning in Node.js 11.0.0, calling these functions with `digest` set to
-`null` would print a deprecation warning to align with the behavior when `digest`
-is `undefined`.
+从 Node.js 11.0.0 开始，使用 `digest` 设置为 `null` 调用这些函数将打印弃用警告，以与 `digest` 为 `undefined` 时的行为保持一致。
 
-Now, however, passing either `undefined` or `null` will throw a `TypeError`.
+但现在，传递 `undefined` 或 `null` 都将抛出 `TypeError`。
 
 ### DEP0010: `crypto.createCredentials`
 
@@ -296,10 +250,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `crypto.createCredentials()` API was removed. Please use
-[`tls.createSecureContext()`][] instead.
+`crypto.createCredentials()` API 已被移除。请改用 [`tls.createSecureContext()`][]。
 
 ### DEP0011: `crypto.Credentials`
 
@@ -318,10 +271,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `crypto.Credentials` class was removed. Please use [`tls.SecureContext`][]
-instead.
+`crypto.Credentials` 类已被移除。请改用 [`tls.SecureContext`][]。
 
 ### DEP0012: `Domain.dispose`
 
@@ -340,12 +292,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`Domain.dispose()` has been removed. Recover from failed I/O actions
-explicitly via error event handlers set on the domain instead.
+`Domain.dispose()` 已被移除。请改为通过设置在域上的错误事件处理程序显式地从失败的 I/O 操作恢复。
 
-### DEP0013: `fs` asynchronous function without callback
+### DEP0013: 不带回调的 `fs` 异步函数
 
 <!-- YAML
 changes:
@@ -357,37 +308,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Calling an asynchronous function without a callback throws a `TypeError`
-in Node.js 10.0.0 onwards. See <https://github.com/nodejs/node/pull/12562>.
+从 Node.js 10.0.0 开始，调用不带回调的异步函数会抛出 `TypeError`。参见 <https://github.com/nodejs/node/pull/12562>。
 
-### DEP0014: `fs.read` legacy String interface
-
-<!-- YAML
-changes:
-  - version: v8.0.0
-    pr-url: https://github.com/nodejs/node/pull/9683
-    description: End-of-Life.
-  - version:
-    - v6.12.0
-    - v4.8.6
-    pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
-  - version: v6.0.0
-    pr-url: https://github.com/nodejs/node/pull/4525
-    description: Runtime deprecation.
-  - version: v0.1.96
-    commit: c93e0aaf062081db3ec40ac45b3e2c979d5759d6
-    description: Documentation-only deprecation.
--->
-
-Type: End-of-Life
-
-The [`fs.read()`][] legacy `String` interface is deprecated. Use the `Buffer`
-API as mentioned in the documentation instead.
-
-### DEP0015: `fs.readSync` legacy String interface
+### DEP0014: `fs.read` 遗留 String 接口
 
 <!-- YAML
 changes:
@@ -407,10 +332,33 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The [`fs.readSync()`][] legacy `String` interface is deprecated. Use the
-`Buffer` API as mentioned in the documentation instead.
+[`fs.read()`][] 遗留 `String` 接口已弃用。请改用文档中提到的 `Buffer` API。
+
+### DEP0015: `fs.readSync` 遗留 String 接口
+
+<!-- YAML
+changes:
+  - version: v8.0.0
+    pr-url: https://github.com/nodejs/node/pull/9683
+    description: End-of-Life.
+  - version:
+    - v6.12.0
+    - v4.8.6
+    pr-url: https://github.com/nodejs/node/pull/10116
+    description: A deprecation code has been assigned.
+  - version: v6.0.0
+    pr-url: https://github.com/nodejs/node/pull/4525
+    description: Runtime deprecation.
+  - version: v0.1.96
+    commit: c93e0aaf062081db3ec40ac45b3e2c979d5759d6
+    description: Documentation-only deprecation.
+-->
+
+类型：生命周期结束
+
+[`fs.readSync()`][] 遗留 `String` 接口已弃用。请改用文档中提到的 `Buffer` API。
 
 ### DEP0016: `GLOBAL`/`root`
 
@@ -427,10 +375,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `GLOBAL` and `root` aliases for the `global` property were deprecated
-in Node.js 6.0.0 and have since been removed.
+`global` 属性的 `GLOBAL` 和 `root` 别名在 Node.js 6.0.0 中被弃用，此后已被移除。
 
 ### DEP0017: `Intl.v8BreakIterator`
 
@@ -444,12 +391,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`Intl.v8BreakIterator` was a non-standard extension and has been removed.
-See [`Intl.Segmenter`](https://github.com/tc39/proposal-intl-segmenter).
+`Intl.v8BreakIterator` 是一个非标准扩展，已被移除。参见 [`Intl.Segmenter`](https://github.com/tc39/proposal-intl-segmenter)。
 
-### DEP0018: Unhandled promise rejections
+### DEP0018: 未处理的 Promise 拒绝
 
 <!-- YAML
 changes:
@@ -461,14 +407,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Unhandled promise rejections are deprecated. By default, promise rejections
-that are not handled terminate the Node.js process with a non-zero exit
-code. To change the way Node.js treats unhandled rejections, use the
-[`--unhandled-rejections`][] command-line option.
+未处理的 Promise 拒绝已弃用。默认情况下，未处理的 Promise 拒绝会以非零退出码终止 Node.js 进程。要更改 Node.js 处理未处理拒绝的方式，请使用 [`--unhandled-rejections`][] 命令行选项。
 
-### DEP0019: `require('.')` resolved outside directory
+### DEP0019: `require('.')` 解析到目录外部
 
 <!-- YAML
 changes:
@@ -485,10 +428,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-In certain cases, `require('.')` could resolve outside the package directory.
-This behavior has been removed.
+在某些情况下，`require('.')` 可能解析到包目录外部。此行为已被移除。
 
 ### DEP0020: `Server.connections`
 
@@ -507,10 +449,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `Server.connections` property was deprecated in Node.js 0.9.7 and has
-been removed. Please use the [`Server.getConnections()`][] method instead.
+`Server.connections` 属性在 Node.js 0.9.7 中被弃用，此后已被移除。请改用 [`Server.getConnections()`][] 方法。
 
 ### DEP0021: `Server.listenFD`
 
@@ -529,10 +470,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `Server.listenFD()` method was deprecated and removed. Please use
-[`Server.listen({fd: <number>})`][] instead.
+`Server.listenFD()` 方法已弃用并被移除。请改用 [`Server.listen({fd: <number>})`][]。
 
 ### DEP0022: `os.tmpDir()`
 
@@ -546,12 +486,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `os.tmpDir()` API was deprecated in Node.js 7.0.0 and has since been
-removed. Please use [`os.tmpdir()`][] instead.
+`os.tmpDir()` API 在 Node.js 7.0.0 中被弃用，此后已被移除。请改用 [`os.tmpdir()`][]。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/tmpdir-to-tmpdir)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/tmpdir-to-tmpdir)）：
 
 ```bash
 npx codemod@latest @nodejs/tmpDir-to-tmpdir
@@ -574,10 +513,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `os.getNetworkInterfaces()` method is deprecated. Please use the
-[`os.networkInterfaces()`][] method instead.
+`os.getNetworkInterfaces()` 方法已弃用。请改用 [`os.networkInterfaces()`][] 方法。
 
 ### DEP0024: `REPLServer.prototype.convertToContext()`
 
@@ -591,9 +529,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `REPLServer.prototype.convertToContext()` API has been removed.
+`REPLServer.prototype.convertToContext()` API 已被移除。
 
 ### DEP0025: `require('node:sys')`
 
@@ -609,9 +547,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: Runtime
+类型：运行时
 
-The `node:sys` module is deprecated. Please use the [`util`][] module instead.
+`node:sys` 模块已弃用。请改用 [`util`][] 模块。
 
 ### DEP0026: `util.print()`
 
@@ -630,11 +568,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`util.print()` has been removed. Please use [`console.log()`][] instead.
+`util.print()` 已被移除。请改用 [`console.log()`][]。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-print-to-console-log)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-print-to-console-log)）：
 
 ```bash
 npx codemod@latest @nodejs/util-print-to-console-log
@@ -657,11 +595,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`util.puts()` has been removed. Please use [`console.log()`][] instead.
+`util.puts()` 已被移除。请改用 [`console.log()`][]。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-print-to-console-log)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-print-to-console-log)）：
 
 ```bash
 npx codemod@latest @nodejs/util-print-to-console-log
@@ -684,11 +622,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`util.debug()` has been removed. Please use [`console.error()`][] instead.
+`util.debug()` 已被移除。请改用 [`console.error()`][]。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-print-to-console-log)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-print-to-console-log)）：
 
 ```bash
 npx codemod@latest @nodejs/util-print-to-console-log
@@ -711,11 +649,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`util.error()` has been removed. Please use [`console.error()`][] instead.
+`util.error()` 已被移除。请改用 [`console.error()`][]。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-print-to-console-log)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-print-to-console-log)）：
 
 ```bash
 npx codemod@latest @nodejs/util-print-to-console-log
@@ -739,12 +677,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `SlowBuffer` class has been removed. Please use
-[`Buffer.allocUnsafeSlow(size)`][] instead.
+`SlowBuffer` 类已被移除。请改用 [`Buffer.allocUnsafeSlow(size)`][]。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/slow-buffer-to-buffer-alloc-unsafe-slow)).
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/slow-buffer-to-buffer-alloc-unsafe-slow)）。
 
 ```bash
 npx codemod@latest @nodejs/slow-buffer-to-buffer-alloc-unsafe-slow
@@ -765,12 +702,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Runtime
+类型：运行时
 
-The [`ecdh.setPublicKey()`][] method is now deprecated as its inclusion in
-the API is not useful.
+[`ecdh.setPublicKey()`][] 方法现已弃用，因为其在 API 中的包含并无用处。
 
-### DEP0032: `node:domain` module
+### DEP0032: `node:domain` 模块
 
 <!-- YAML
 changes:
@@ -784,9 +720,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The [`domain`][] module is deprecated and should not be used.
+[`domain`][] 模块已弃用，不应使用。
 
 ### DEP0033: `EventEmitter.listenerCount()`
 
@@ -807,12 +743,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Revoked
+类型：已撤销
 
-The [`events.listenerCount(emitter, eventName)`][] API was deprecated, as it
-provided identical fuctionality to [`emitter.listenerCount(eventName)`][]. The
-deprecation was revoked because this function has been repurposed to also
-accept {EventTarget} arguments.
+[`events.listenerCount(emitter, eventName)`][] API 曾被弃用，因为它提供了与 [`emitter.listenerCount(eventName)`][] 相同的功能。弃用被撤销，因为此函数已被重新用于也接受 {EventTarget} 参数。
 
 ### DEP0034: `fs.exists(path, callback)`
 
@@ -828,10 +761,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The [`fs.exists(path, callback)`][] API is deprecated. Please use
-[`fs.stat()`][] or [`fs.access()`][] instead.
+[`fs.exists(path, callback)`][] API 已弃用。请改用 [`fs.stat()`][] 或 [`fs.access()`][]。
 
 ### DEP0035: `fs.lchmod(path, mode, callback)`
 
@@ -846,9 +778,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The [`fs.lchmod(path, mode, callback)`][] API is deprecated.
+[`fs.lchmod(path, mode, callback)`][] API 已弃用。
 
 ### DEP0036: `fs.lchmodSync(path, mode)`
 
@@ -863,9 +795,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The [`fs.lchmodSync(path, mode)`][] API is deprecated.
+[`fs.lchmodSync(path, mode)`][] API 已弃用。
 
 ### DEP0037: `fs.lchown(path, uid, gid, callback)`
 
@@ -883,11 +815,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Deprecation revoked
+类型：弃用已撤销
 
-The [`fs.lchown(path, uid, gid, callback)`][] API was deprecated. The
-deprecation was revoked because the requisite supporting APIs were added in
-libuv.
+[`fs.lchown(path, uid, gid, callback)`][] API 曾被弃用。弃用被撤销，因为必要的支持 API 已添加到 libuv 中。
 
 ### DEP0038: `fs.lchownSync(path, uid, gid)`
 
@@ -905,10 +835,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Deprecation revoked
+类型：弃用已撤销
 
-The [`fs.lchownSync(path, uid, gid)`][] API was deprecated. The deprecation was
-revoked because the requisite supporting APIs were added in libuv.
+[`fs.lchownSync(path, uid, gid)`][] API 曾被弃用。弃用被撤销，因为必要的支持 API 已添加到 libuv 中。
 
 ### DEP0039: `require.extensions`
 
@@ -924,11 +853,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The [`require.extensions`][] property is deprecated.
+[`require.extensions`][] 属性已弃用。
 
-### DEP0040: `node:punycode` module
+### DEP0040: `node:punycode` 模块
 
 <!-- YAML
 changes:
@@ -948,12 +877,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Application (non-`node_modules` code only)
+类型：应用程序（仅限非 `node_modules` 代码）
 
-The [`punycode`][] module is deprecated. Please use a userland alternative
-instead.
+[`punycode`][] 模块已弃用。请改用用户空间的替代方案。
 
-### DEP0041: `NODE_REPL_HISTORY_FILE` environment variable
+### DEP0041: `NODE_REPL_HISTORY_FILE` 环境变量
 
 <!-- YAML
 changes:
@@ -970,10 +898,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `NODE_REPL_HISTORY_FILE` environment variable was removed. Please use
-`NODE_REPL_HISTORY` instead.
+`NODE_REPL_HISTORY_FILE` 环境变量已被移除。请改用 `NODE_REPL_HISTORY`。
 
 ### DEP0042: `tls.CryptoStream`
 
@@ -992,10 +919,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `tls.CryptoStream` class was removed. Please use
-[`tls.TLSSocket`][] instead.
+`tls.CryptoStream` 类已被移除。请改用 [`tls.TLSSocket`][]。
 
 ### DEP0043: `tls.SecurePair`
 
@@ -1023,10 +949,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `tls.SecurePair` class is deprecated. Please use
-[`tls.TLSSocket`][] instead.
+`tls.SecurePair` 类已弃用。请改用 [`tls.TLSSocket`][]。
 
 ### DEP0044: `util.isArray()`
 
@@ -1047,12 +972,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Runtime
+类型：运行时
 
-The [`util.isArray()`][] API is deprecated. Please use `Array.isArray()`
-instead.
+[`util.isArray()`][] API 已弃用。请改用 `Array.isArray()`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1080,12 +1004,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isBoolean()` API has been removed. Please use
-`typeof arg === 'boolean'` instead.
+`util.isBoolean()` API 已被移除。请改用 `typeof arg === 'boolean'`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1113,12 +1036,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isBuffer()` API has been removed. Please use
-[`Buffer.isBuffer()`][] instead.
+`util.isBuffer()` API 已被移除。请改用 [`Buffer.isBuffer()`][]。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1146,16 +1068,15 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isDate()` API has been removed. Please use
-`arg instanceof Date` instead.
+`util.isDate()` API 已被移除。请改用 `arg instanceof Date`。
 
-Also for stronger approaches, consider using:
-`Date.prototype.toString.call(arg) === '[object Date]' && !isNaN(arg)`.
-This can also be used in a `try/catch` block to handle invalid date objects.
+对于更强的方法，考虑使用：
+`Date.prototype.toString.call(arg) === '[object Date]' && !isNaN(arg)`。
+这也可用于 `try/catch` 块中以处理无效的日期对象。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1183,11 +1104,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isError()` API has been removed. Please use `Error.isError(arg)`.
+`util.isError()` API 已被移除。请改用 `Error.isError(arg)`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1215,12 +1136,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isFunction()` API has been removed. Please use
-`typeof arg === 'function'` instead.
+`util.isFunction()` API 已被移除。请改用 `typeof arg === 'function'`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1248,12 +1168,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isNull()` API has been removed. Please use
-`arg === null` instead.
+`util.isNull()` API 已被移除。请改用 `arg === null`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1281,12 +1200,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isNullOrUndefined()` API has been removed. Please use
-`arg === null || arg === undefined` instead.
+`util.isNullOrUndefined()` API 已被移除。请改用 `arg === null || arg === undefined`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1314,12 +1232,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isNumber()` API has been removed. Please use
-`typeof arg === 'number'` instead.
+`util.isNumber()` API 已被移除。请改用 `typeof arg === 'number'`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1347,12 +1264,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isObject()` API has been removed. Please use
-`arg && typeof arg === 'object'` instead.
+`util.isObject()` API 已被移除。请改用 `arg && typeof arg === 'object'`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1380,11 +1296,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isPrimitive()` API has been removed. Please use `Object(arg) !== arg` instead.
+`util.isPrimitive()` API 已被移除。请改用 `Object(arg) !== arg`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1412,12 +1328,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isRegExp()` API has been removed. Please use
-`arg instanceof RegExp` instead.
+`util.isRegExp()` API 已被移除。请改用 `arg instanceof RegExp`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1445,12 +1360,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isString()` API has been removed. Please use
-`typeof arg === 'string'` instead.
+`util.isString()` API 已被移除。请改用 `typeof arg === 'string'`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1478,12 +1392,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isSymbol()` API has been removed. Please use
-`typeof arg === 'symbol'` instead.
+`util.isSymbol()` API 已被移除。请改用 `typeof arg === 'symbol'`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1511,12 +1424,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.isUndefined()` API has been removed. Please use
-`arg === undefined` instead.
+`util.isUndefined()` API 已被移除。请改用 `arg === undefined`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
@@ -1540,21 +1452,17 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.log()` API has been removed because it's an unmaintained
-legacy API that was exposed to user land by accident. Instead,
-consider the following alternatives based on your specific needs:
+`util.log()` API 已被移除，因为它是一个意外暴露给用户空间的未维护的遗留 API。相反，根据您的具体需求考虑以下替代方案：
 
-* **Third-Party Logging Libraries**
+* **第三方日志库**
 
-* **Use `console.log(new Date().toLocaleString(), message)`**
+* **使用 `console.log(new Date().toLocaleString(), message)`**
 
-By adopting one of these alternatives, you can transition away from `util.log()`
-and choose a logging strategy that aligns with the specific
-requirements and complexity of your application.
+通过采用这些替代方案之一，您可以过渡远离 `util.log()` 并选择符合您应用程序特定要求和复杂性的日志策略。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-log-to-console-log)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-log-to-console-log)）：
 
 ```bash
 npx codemod@latest @nodejs/util-log-to-console-log
@@ -1575,13 +1483,12 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Runtime
+类型：运行时
 
-The [`util._extend()`][] API is deprecated because it's an unmaintained
-legacy API that was exposed to user land by accident.
-Please use `target = Object.assign(target, source)` instead.
+[`util._extend()`][] API 已弃用，因为它是一个意外暴露给用户空间的未维护的遗留 API。
+请改用 `target = Object.assign(target, source)`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-extend-to-object-assign)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-extend-to-object-assign)）：
 
 ```bash
 npx codemod@latest @nodejs/util-extend-to-object-assign
@@ -1602,11 +1509,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `fs.SyncWriteStream` class was never intended to be a publicly accessible
-API and has been removed. No alternative API is available. Please use a userland
-alternative.
+`fs.SyncWriteStream` 类从未打算成为 publicly accessible API，已被移除。没有可用的替代 API。请使用用户空间的替代方案。
 
 ### DEP0062: `node --debug`
 
@@ -1620,11 +1525,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`--debug` activates the legacy V8 debugger interface, which was removed as
-of V8 5.8. It is replaced by Inspector which is activated with `--inspect`
-instead.
+`--debug` 激活遗留的 V8 调试器接口，该接口自 V8 5.8 起已被移除。它已被 Inspector 取代，后者改用 `--inspect` 激活。
 
 ### DEP0063: `ServerResponse.prototype.writeHeader()`
 
@@ -1641,13 +1544,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `node:http` module `ServerResponse.prototype.writeHeader()` API is
-deprecated. Please use `ServerResponse.prototype.writeHead()` instead.
+`node:http` 模块 `ServerResponse.prototype.writeHeader()` API 已弃用。请改用 `ServerResponse.prototype.writeHead()`。
 
-The `ServerResponse.prototype.writeHeader()` method was never documented as an
-officially supported API.
+`ServerResponse.prototype.writeHeader()` 方法从未被记录为官方支持的 API。
 
 ### DEP0064: `tls.createSecurePair()`
 
@@ -1675,12 +1576,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `tls.createSecurePair()` API was deprecated in documentation in Node.js
-0.11.3. Users should use `tls.Socket` instead.
+`tls.createSecurePair()` API 在 Node.js 0.11.3 的文档中被弃用。用户应改用 `tls.Socket`。
 
-### DEP0065: `repl.REPL_MODE_MAGIC` and `NODE_REPL_MODE=magic`
+### DEP0065: `repl.REPL_MODE_MAGIC` 和 `NODE_REPL_MODE=magic`
 
 <!-- YAML
 changes:
@@ -1692,16 +1592,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `node:repl` module's `REPL_MODE_MAGIC` constant, used for `replMode` option,
-has been removed. Its behavior has been functionally identical to that of
-`REPL_MODE_SLOPPY` since Node.js 6.0.0, when V8 5.0 was imported. Please use
-`REPL_MODE_SLOPPY` instead.
+`node:repl` 模块的 `REPL_MODE_MAGIC` 常量（用于 `replMode` 选项）已被移除。自 Node.js 6.0.0 导入 V8 5.0 以来，其行为在功能上与 `REPL_MODE_SLOPPY` 相同。请改用 `REPL_MODE_SLOPPY`。
 
-The `NODE_REPL_MODE` environment variable is used to set the underlying
-`replMode` of an interactive `node` session. Its value, `magic`, is also
-removed. Please use `sloppy` instead.
+`NODE_REPL_MODE` 环境变量用于设置交互式 `node` 会话的底层 `replMode`。其值 `magic` 也被移除。请改用 `sloppy`。
 
 ### DEP0066: `OutgoingMessage.prototype._headers, OutgoingMessage.prototype._headerNames`
 
@@ -1718,23 +1613,13 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `node:http` module `OutgoingMessage.prototype._headers` and
-`OutgoingMessage.prototype._headerNames` properties are deprecated. Use one of
-the public methods (e.g. `OutgoingMessage.prototype.getHeader()`,
-`OutgoingMessage.prototype.getHeaders()`,
-`OutgoingMessage.prototype.getHeaderNames()`,
-`OutgoingMessage.prototype.getRawHeaderNames()`,
-`OutgoingMessage.prototype.hasHeader()`,
-`OutgoingMessage.prototype.removeHeader()`,
-`OutgoingMessage.prototype.setHeader()`) for working with outgoing headers.
+`node:http` 模块 `OutgoingMessage.prototype._headers` 和 `OutgoingMessage.prototype._headerNames` 属性已弃用。使用公共方法之一（例如 `OutgoingMessage.prototype.getHeader()`、`OutgoingMessage.prototype.getHeaders()`、`OutgoingMessage.prototype.getHeaderNames()`、`OutgoingMessage.prototype.getRawHeaderNames()`、`OutgoingMessage.prototype.hasHeader()`、`OutgoingMessage.prototype.removeHeader()`、`OutgoingMessage.prototype.setHeader()`）来处理传出 header。
 
-The `OutgoingMessage.prototype._headers` and
-`OutgoingMessage.prototype._headerNames` properties were never documented as
-officially supported properties.
+`OutgoingMessage.prototype._headers` 和 `OutgoingMessage.prototype._headerNames` 属性从未被记录为官方支持的属性。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/http-outgoingmessage-headers)):
+自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/http-outgoingmessage-headers)）：
 
 ```bash
 npx codemod@latest @nodejs/http-outgoingmessage-headers
@@ -1749,13 +1634,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The `node:http` module `OutgoingMessage.prototype._renderHeaders()` API is
-deprecated.
+`node:http` 模块 `OutgoingMessage.prototype._renderHeaders()` API 已弃用。
 
-The `OutgoingMessage.prototype._renderHeaders` property was never documented as
-an officially supported API.
+`OutgoingMessage.prototype._renderHeaders` 属性从未被记录为官方支持的 API。
 
 ### DEP0068: `node debug`
 
@@ -1769,10 +1652,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`node debug` corresponds to the legacy CLI debugger which has been replaced with
-a V8-inspector based CLI debugger available through `node inspect`.
+`node debug` 对应于传统的 CLI 调试器，它已被基于 V8-inspector 的 CLI 调试器取代，后者可通过 `node inspect` 使用。
 
 ### DEP0069: `vm.runInDebugContext(string)`
 
@@ -1789,11 +1671,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-DebugContext has been removed in V8 and is not available in Node.js 10+.
+DebugContext 已在 V8 中被移除，在 Node.js 10+ 中不可用。
 
-DebugContext was an experimental API.
+DebugContext 曾是一个实验性 API。
 
 ### DEP0070: `async_hooks.currentId()`
 
@@ -1807,12 +1689,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`async_hooks.currentId()` was renamed to `async_hooks.executionAsyncId()` for
-clarity.
+`async_hooks.currentId()` 已重命名为 `async_hooks.executionAsyncId()` 以提高清晰度。
 
-This change was made while `async_hooks` was an experimental API.
+此更改是在 `async_hooks` 作为实验性 API 时进行的。
 
 ### DEP0071: `async_hooks.triggerId()`
 
@@ -1826,12 +1707,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`async_hooks.triggerId()` was renamed to `async_hooks.triggerAsyncId()` for
-clarity.
+`async_hooks.triggerId()` 已重命名为 `async_hooks.triggerAsyncId()` 以提高清晰度。
 
-This change was made while `async_hooks` was an experimental API.
+此更改是在 `async_hooks` 作为实验性 API 时进行的。
 
 ### DEP0072: `async_hooks.AsyncResource.triggerId()`
 
@@ -1845,14 +1725,14 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`async_hooks.AsyncResource.triggerId()` was renamed to
-`async_hooks.AsyncResource.triggerAsyncId()` for clarity.
+`async_hooks.AsyncResource.triggerId()` 已重命名为
+`async_hooks.AsyncResource.triggerAsyncId()` 以提高清晰度。
 
-This change was made while `async_hooks` was an experimental API.
+此更改是在 `async_hooks` 作为实验性 API 时进行的。
 
-### DEP0073: Several internal properties of `net.Server`
+### DEP0073: `net.Server` 的几个内部属性
 
 <!-- YAML
 changes:
@@ -1864,13 +1744,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Accessing several internal, undocumented properties of `net.Server` instances
-with inappropriate names is deprecated.
+访问 `net.Server` 实例的几个具有不适当名称的内部、未文档化属性已弃用。
 
-As the original API was undocumented and not generally useful for non-internal
-code, no replacement API is provided.
+由于原始 API 未文档化且通常对非内部代码无用，因此不提供替代 API。
 
 ### DEP0074: `REPLServer.bufferedCommand`
 
@@ -1884,10 +1762,10 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `REPLServer.bufferedCommand` property was deprecated in favor of
-[`REPLServer.clearBufferedCommand()`][].
+`REPLServer.bufferedCommand` 属性已弃用，推荐使用
+[`REPLServer.clearBufferedCommand()`][]。
 
 ### DEP0075: `REPLServer.parseREPLKeyword()`
 
@@ -1901,9 +1779,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`REPLServer.parseREPLKeyword()` was removed from userland visibility.
+`REPLServer.parseREPLKeyword()` 已从用户空间可见性中移除。
 
 ### DEP0076: `tls.parseCertString()`
 
@@ -1920,15 +1798,13 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`tls.parseCertString()` was a trivial parsing helper that was made public by
-mistake. While it was supposed to parse certificate subject and issuer strings,
-it never handled multi-value Relative Distinguished Names correctly.
+`tls.parseCertString()` 是一个简单的解析辅助函数，被错误地公开了。虽然它应该解析证书主题和颁发者字符串，
+但它从未正确处理多值相对区分名称（Relative Distinguished Names）。
 
-Earlier versions of this document suggested using `querystring.parse()` as an
-alternative to `tls.parseCertString()`. However, `querystring.parse()` also does
-not handle all certificate subjects correctly and should not be used.
+本文档的早期版本建议使用 `querystring.parse()` 作为 `tls.parseCertString()` 的替代方案。然而，`querystring.parse()` 也
+不能正确处理所有证书主题，不应使用。
 
 ### DEP0077: `Module._debug()`
 
@@ -1942,12 +1818,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`Module._debug()` has been removed.
+`Module._debug()` 已被移除。
 
-The `Module._debug()` function was never documented as an officially
-supported API.
+`Module._debug()` 函数从未被文档化为官方支持的 API。
 
 ### DEP0078: `REPLServer.turnOffEditorMode()`
 
@@ -1961,11 +1836,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`REPLServer.turnOffEditorMode()` was removed from userland visibility.
+`REPLServer.turnOffEditorMode()` 已从用户空间可见性中移除。
 
-### DEP0079: Custom inspection function on objects via `.inspect()`
+### DEP0079: 通过 `.inspect()` 在对象上使用自定义检查函数
 
 <!-- YAML
 changes:
@@ -1980,12 +1855,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Using a property named `inspect` on an object to specify a custom inspection
-function for [`util.inspect()`][] is deprecated. Use [`util.inspect.custom`][]
-instead. For backward compatibility with Node.js prior to version 6.4.0, both
-can be specified.
+在对象上使用名为 `inspect` 的属性来为 [`util.inspect()`][] 指定自定义检查函数已弃用。请改用 [`util.inspect.custom`][]。为了与 6.4.0 版本之前的 Node.js 保持向后兼容，两者都可以指定。
 
 ### DEP0080: `path._makeLong()`
 
@@ -1996,13 +1868,13 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The internal `path._makeLong()` was not intended for public use. However,
-userland modules have found it useful. The internal API is deprecated
-and replaced with an identical, public `path.toNamespacedPath()` method.
+内部 `path._makeLong()` 并非 intended 供公开使用。然而，
+用户空间模块发现它很有用。内部 API 已弃用
+并替换为相同的公共 `path.toNamespacedPath()` 方法。
 
-### DEP0081: `fs.truncate()` using a file descriptor
+### DEP0081: `fs.truncate()` 使用文件描述符
 
 <!-- YAML
 changes:
@@ -2014,13 +1886,13 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`fs.truncate()` `fs.truncateSync()` usage with a file descriptor is
-deprecated. Please use `fs.ftruncate()` or `fs.ftruncateSync()` to work with
-file descriptors.
+`fs.truncate()` `fs.truncateSync()` 与文件描述符一起使用已
+弃用。请使用 `fs.ftruncate()` 或 `fs.ftruncateSync()` 来处理
+文件描述符。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/fs-truncate-fd-deprecation)):
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/fs-truncate-fd-deprecation)）：
 
 ```bash
 npx codemod@latest @nodejs/fs-truncate-fd-deprecation
@@ -2038,12 +1910,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`REPLServer.prototype.memory()` is only necessary for the internal mechanics of
-the `REPLServer` itself. Do not use this function.
+`REPLServer.prototype.memory()` 仅对 `REPLServer` 本身的内部机制是必要的。不要使用此函数。
 
-### DEP0083: Disabling ECDH by setting `ecdhCurve` to `false`
+### DEP0083: 通过将 `ecdhCurve` 设置为 `false` 禁用 ECDH
 
 <!-- YAML
 changes:
@@ -2055,14 +1926,13 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `ecdhCurve` option to `tls.createSecureContext()` and `tls.TLSSocket` could
-be set to `false` to disable ECDH entirely on the server only. This mode was
-deprecated in preparation for migrating to OpenSSL 1.1.0 and consistency with
-the client and is now unsupported. Use the `ciphers` parameter instead.
+`tls.createSecureContext()` 和 `tls.TLSSocket` 的 `ecdhCurve` 选项可以
+设置为 `false` 以仅在服务器上完全禁用 ECDH。此模式已
+弃用，以准备迁移到 OpenSSL 1.1.0 并与客户端保持一致，现在不再支持。请改用 `ciphers` 参数。
 
-### DEP0084: requiring bundled internal dependencies
+### DEP0084: 要求绑定的内部依赖项
 
 <!-- YAML
 changes:
@@ -2074,11 +1944,10 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Since Node.js versions 4.4.0 and 5.2.0, several modules only intended for
-internal usage were mistakenly exposed to user code through `require()`. These
-modules were:
+自 Node.js 版本 4.4.0 和 5.2.0 以来，几个仅用于
+内部使用的模块被错误地通过 `require()` 暴露给用户代码。这些模块是：
 
 * `v8/tools/codemap`
 * `v8/tools/consarray`
@@ -2090,19 +1959,15 @@ modules were:
 * `v8/tools/splaytree`
 * `v8/tools/tickprocessor-driver`
 * `v8/tools/tickprocessor`
-* `node-inspect/lib/_inspect` (from 7.6.0)
-* `node-inspect/lib/internal/inspect_client` (from 7.6.0)
-* `node-inspect/lib/internal/inspect_repl` (from 7.6.0)
+* `node-inspect/lib/_inspect` (从 7.6.0 开始)
+* `node-inspect/lib/internal/inspect_client` (从 7.6.0 开始)
+* `node-inspect/lib/internal/inspect_repl` (从 7.6.0 开始)
 
-The `v8/*` modules do not have any exports, and if not imported in a specific
-order would in fact throw errors. As such there are virtually no legitimate use
-cases for importing them through `require()`.
+`v8/*` 模块没有任何导出，如果不按特定顺序导入，实际上会抛出错误。因此，通过 `require()` 导入它们几乎没有合法的用例。
 
-On the other hand, `node-inspect` can be installed locally through a package
-manager, as it is published on the npm registry under the same name. No source
-code modification is necessary if that is done.
+另一方面，`node-inspect` 可以通过包管理器在本地安装，因为它以相同的名称发布在 npm 注册表上。如果这样做，则无需修改源代码。
 
-### DEP0085: AsyncHooks sensitive API
+### DEP0085: AsyncHooks 敏感 API
 
 <!-- YAML
 changes:
@@ -2116,13 +1981,13 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The AsyncHooks sensitive API was never documented and had various minor issues.
-Use the `AsyncResource` API instead. See
-<https://github.com/nodejs/node/issues/15572>.
+AsyncHooks 敏感 API 从未被文档化，并且存在各种小问题。
+请改用 `AsyncResource` API。参见
+<https://github.com/nodejs/node/issues/15572>。
 
-### DEP0086: Remove `runInAsyncIdScope`
+### DEP0086: 移除 `runInAsyncIdScope`
 
 <!-- YAML
 changes:
@@ -2136,10 +2001,10 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`runInAsyncIdScope` doesn't emit the `'before'` or `'after'` event and can thus
-cause a lot of issues. See <https://github.com/nodejs/node/issues/14328>.
+`runInAsyncIdScope` 不发出 `'before'` 或 `'after'` 事件，因此可能导致
+很多问题。参见 <https://github.com/nodejs/node/issues/14328>。
 
 <!-- md-lint skip-deprecation DEP0087 -->
 
@@ -2159,14 +2024,13 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Deprecation revoked
+类型：弃用撤销
 
-Importing assert directly was not recommended as the exposed functions use
-loose equality checks. The deprecation was revoked because use of the
-`node:assert` module is not discouraged, and the deprecation caused developer
-confusion.
+直接导入 assert 不被推荐，因为暴露的函数使用
+松散相等性检查。弃用被撤销，因为使用
+`node:assert` 模块并不受劝阻，且弃用引起了开发者的困惑。
 
-### DEP0090: Invalid GCM authentication tag lengths
+### DEP0090: 无效的 GCM 身份验证标签长度
 
 <!-- YAML
 changes:
@@ -2178,13 +2042,12 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Node.js used to support all GCM authentication tag lengths which are accepted by
-OpenSSL when calling [`decipher.setAuthTag()`][]. Beginning with Node.js
-v11.0.0, only authentication tag lengths of 128, 120, 112, 104, 96, 64, and 32
-bits are allowed. Authentication tags of other lengths are invalid per
-[NIST SP 800-38D][].
+Node.js 曾经支持调用 [`decipher.setAuthTag()`][] 时 OpenSSL 接受的所有 GCM 身份验证标签长度。从 Node.js
+v11.0.0 开始，只允许 128、120、112、104、96、64 和 32
+位的身份验证标签长度。其他长度的身份验证标签根据
+[NIST SP 800-38D][] 是无效的。
 
 ### DEP0091: `crypto.DEFAULT_ENCODING`
 
@@ -2198,12 +2061,12 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `crypto.DEFAULT_ENCODING` property only existed for compatibility with
-Node.js releases prior to versions 0.9.3 and has been removed.
+`crypto.DEFAULT_ENCODING` 属性仅为了与
+0.9.3 版本之前的 Node.js 发布版本兼容而存在，现已移除。
 
-### DEP0092: Top-level `this` bound to `module.exports`
+### DEP0092: 顶层 `this` 绑定到 `module.exports`
 
 <!-- YAML
 changes:
@@ -2212,13 +2075,13 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-Assigning properties to the top-level `this` as an alternative
-to `module.exports` is deprecated. Developers should use `exports`
-or `module.exports` instead.
+将属性分配给顶层 `this` 作为
+`module.exports` 的替代方案已弃用。开发者应改用 `exports`
+或 `module.exports`。
 
-### DEP0093: `crypto.fips` is deprecated and replaced
+### DEP0093: `crypto.fips` 已弃用并被替换
 
 <!-- YAML
 changes:
@@ -2230,18 +2093,18 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Runtime
+类型：运行时
 
-The [`crypto.fips`][] property is deprecated. Please use `crypto.setFips()`
-and `crypto.getFips()` instead.
+[`crypto.fips`][] 属性已弃用。请改用 `crypto.setFips()`
+和 `crypto.getFips()`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/crypto-fips-to-getFips)).
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/crypto-fips-to-getFips)）。
 
 ```bash
 npx codemod@latest @nodejs/crypto-fips-to-getFips
 ```
 
-### DEP0094: Using `assert.fail()` with more than one argument
+### DEP0094: 使用多个参数调用 `assert.fail()`
 
 <!-- YAML
 changes:
@@ -2253,11 +2116,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Using `assert.fail()` with more than one argument is deprecated. Use
-`assert.fail()` with only one argument or use a different `node:assert` module
-method.
+使用多个参数调用 `assert.fail()` 已弃用。请仅使用
+一个参数调用 `assert.fail()` 或使用不同的 `node:assert` 模块
+方法。
 
 ### DEP0095: `timers.enroll()`
 
@@ -2271,10 +2134,10 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`timers.enroll()` has been removed. Please use the publicly documented
-[`setTimeout()`][] or [`setInterval()`][] instead.
+`timers.enroll()` 已被移除。请改用公开文档化的
+[`setTimeout()`][] 或 [`setInterval()`][]。
 
 ### DEP0096: `timers.unenroll()`
 
@@ -2288,12 +2151,12 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`timers.unenroll()` has been removed. Please use the publicly documented
-[`clearTimeout()`][] or [`clearInterval()`][] instead.
+`timers.unenroll()` 已被移除。请改用公开文档化的
+[`clearTimeout()`][] 或 [`clearInterval()`][]。
 
-### DEP0097: `MakeCallback` with `domain` property
+### DEP0097: 带有 `domain` 属性的 `MakeCallback`
 
 <!-- YAML
 changes:
@@ -2302,13 +2165,13 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: Runtime
+类型：运行时
 
-Users of `MakeCallback` that add the `domain` property to carry context,
-should start using the `async_context` variant of `MakeCallback` or
-`CallbackScope`, or the high-level `AsyncResource` class.
+添加 `domain` 属性以携带上下文的 `MakeCallback` 用户，
+应开始使用 `MakeCallback` 的 `async_context` 变体或
+`CallbackScope`，或高级 `AsyncResource` 类。
 
-### DEP0098: AsyncHooks embedder `AsyncResource.emitBefore` and `AsyncResource.emitAfter` APIs
+### DEP0098: AsyncHooks 嵌入器 `AsyncResource.emitBefore` 和 `AsyncResource.emitAfter` API
 
 <!-- YAML
 changes:
@@ -2323,17 +2186,17 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The embedded API provided by AsyncHooks exposes `.emitBefore()` and
-`.emitAfter()` methods which are very easy to use incorrectly which can lead
-to unrecoverable errors.
+AsyncHooks 提供的嵌入 API 暴露了 `.emitBefore()` 和
+`.emitAfter()` 方法，这些方法非常容易被错误使用，从而导致
+不可恢复的错误。
 
-Use [`asyncResource.runInAsyncScope()`][] API instead which provides a much
-safer, and more convenient, alternative. See
-<https://github.com/nodejs/node/pull/18513>.
+请改用 [`asyncResource.runInAsyncScope()`][] API，它提供了更安全、
+更方便的替代方案。参见
+<https://github.com/nodejs/node/pull/18513>。
 
-### DEP0099: Async context-unaware `node::MakeCallback` C++ APIs
+### DEP0099:  unaware 异步上下文的 `node::MakeCallback` C++ API
 
 <!-- YAML
 changes:
@@ -2342,11 +2205,10 @@ changes:
     description: Compile-time deprecation.
 -->
 
-Type: Compile-time
+类型：编译时
 
-Certain versions of `node::MakeCallback` APIs available to native addons are
-deprecated. Please use the versions of the API that accept an `async_context`
-parameter.
+某些版本的 `node::MakeCallback` API（可供原生插件使用）已
+弃用。请使用接受 `async_context` 参数的 API 版本。
 
 ### DEP0100: `process.assert()`
 
@@ -2362,13 +2224,13 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`process.assert()` is deprecated. Please use the [`assert`][] module instead.
+`process.assert()` 已弃用。请改用 [`assert`][] 模块。
 
-This was never a documented feature.
+这从未是一个文档化的功能。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/process-assert-to-node-assert)).
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/process-assert-to-node-assert)）。
 
 ```bash
 npx codemod@latest @nodejs/process-assert-to-node-assert
@@ -2383,11 +2245,11 @@ changes:
     description: End-of-Life.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `--with-lttng` compile-time option has been removed.
+`--with-lttng` 编译时选项已被移除。
 
-### DEP0102: Using `noAssert` in `Buffer#(read|write)` operations
+### DEP0102: 在 `Buffer#(read|write)` 操作中使用 `noAssert`
 
 <!-- YAML
 changes:
@@ -2396,13 +2258,12 @@ changes:
     description: End-of-Life.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Using the `noAssert` argument has no functionality anymore. All input is
-verified regardless of the value of `noAssert`. Skipping the verification
-could lead to hard-to-find errors and crashes.
+使用 `noAssert` 参数不再有任何功能。无论 `noAssert` 的值如何，所有输入都会
+被验证。跳过验证可能导致难以发现的错误和崩溃。
 
-### DEP0103: `process.binding('util').is[...]` typechecks
+### DEP0103: `process.binding('util').is[...]` 类型检查
 
 <!-- YAML
 changes:
@@ -2414,15 +2275,14 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
-Using `process.binding()` in general should be avoided. The type checking
-methods in particular can be replaced by using [`util.types`][].
+通常应避免使用 `process.binding()`。特别是类型检查
+方法可以通过使用 [`util.types`][] 来替换。
 
-This deprecation has been superseded by the deprecation of the
-`process.binding()` API ([DEP0111](#DEP0111)).
+此弃用已被 `process.binding()` API 的弃用所取代 ([DEP0111](#DEP0111))。
 
-### DEP0104: `process.env` string coercion
+### DEP0104: `process.env` 字符串强制转换
 
 <!-- YAML
 changes:
@@ -2432,13 +2292,11 @@ changes:
                  with `--pending-deprecation` support.
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
-When assigning a non-string property to [`process.env`][], the assigned value is
-implicitly converted to a string. This behavior is deprecated if the assigned
-value is not a string, boolean, or number. In the future, such assignment might
-result in a thrown error. Please convert the property to a string before
-assigning it to `process.env`.
+当将非字符串属性分配给 [`process.env`][] 时，分配的值会
+隐式转换为字符串。如果分配的值不是字符串、布尔值或数字，则此行为已弃用。将来，此类分配可能会
+导致抛出错误。请在将其分配给 `process.env` 之前将属性转换为字符串。
 
 ### DEP0105: `decipher.finaltol`
 
@@ -2452,13 +2310,13 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`decipher.finaltol()` has never been documented and was an alias for
-[`decipher.final()`][]. This API has been removed, and it is recommended to use
-[`decipher.final()`][] instead.
+`decipher.finaltol()` 从未被文档化，它是
+[`decipher.final()`][] 的别名。此 API 已被移除，建议使用
+[`decipher.final()`][] 代替。
 
-### DEP0106: `crypto.createCipher` and `crypto.createDecipher`
+### DEP0106: `crypto.createCipher` 和 `crypto.createDecipher`
 
 <!-- YAML
 changes:
@@ -2473,15 +2331,14 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`crypto.createCipher()` and `crypto.createDecipher()` have been removed
-as they use a weak key derivation function (MD5 with no salt) and static
-initialization vectors.
-It is recommended to derive a key using
-[`crypto.pbkdf2()`][] or [`crypto.scrypt()`][] with random salts and to use
-[`crypto.createCipheriv()`][] and [`crypto.createDecipheriv()`][] to obtain the
-[`Cipheriv`][] and [`Decipheriv`][] objects respectively.
+`crypto.createCipher()` 和 `crypto.createDecipher()` 已被移除，
+因为它们使用弱密钥派生函数（无盐的 MD5）和静态
+初始化向量。
+建议使用 [`crypto.pbkdf2()`][] 或 [`crypto.scrypt()`][] 与随机盐派生密钥，并使用
+[`crypto.createCipheriv()`][] 和 [`crypto.createDecipheriv()`][] 分别获取
+[`Cipheriv`][] 和 [`Decipheriv`][] 对象。
 
 ### DEP0107: `tls.convertNPNProtocols()`
 
@@ -2495,10 +2352,10 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-This was an undocumented helper function not intended for use outside Node.js
-core and obsoleted by the removal of NPN (Next Protocol Negotiation) support.
+这是一个未文档化的辅助函数，不 intended 供 Node.js
+核心之外使用，并且随着 NPN（Next Protocol Negotiation）支持的移除而过时。
 
 ### DEP0108: `zlib.bytesRead`
 
@@ -2515,20 +2372,19 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Deprecated alias for [`zlib.bytesWritten`][]. This original name was chosen
-because it also made sense to interpret the value as the number of bytes
-read by the engine, but is inconsistent with other streams in Node.js that
-expose values under these names.
+[`zlib.bytesWritten`][] 的已弃用别名。选择这个原始名称是因为
+将其值解释为引擎读取的字节数也有意义，但与 Node.js 中
+在这些名称下暴露值的其他流不一致。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/zlib-bytesread-to-byteswritten)):
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/zlib-bytesread-to-byteswritten)）：
 
 ```bash
 npx codemod@latest @nodejs/zlib-bytesread-to-byteswritten
 ```
 
-### DEP0109: `http`, `https`, and `tls` support for invalid URLs
+### DEP0109: `http`、`https` 和 `tls` 对无效 URL 的支持
 
 <!-- YAML
 changes:
@@ -2540,16 +2396,14 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Some previously supported (but strictly invalid) URLs were accepted through the
-[`http.request()`][], [`http.get()`][], [`https.request()`][],
-[`https.get()`][], and [`tls.checkServerIdentity()`][] APIs because those were
-accepted by the legacy `url.parse()` API. The mentioned APIs now use the WHATWG
-URL parser that requires strictly valid URLs. Passing an invalid URL is
-deprecated and support will be removed in the future.
+一些以前支持（但严格无效）的 URL 被 [`http.request()`][]、[`http.get()`][]、[`https.request()`][]、
+[`https.get()`][] 和 [`tls.checkServerIdentity()`][] API 接受，因为这些 URL 被传统的 `url.parse()` API 接受。提到的 API 现在使用 WHATWG
+URL 解析器，该解析器需要严格有效的 URL。传递无效 URL 已
+弃用，支持将在未来移除。
 
-### DEP0110: `vm.Script` cached data
+### DEP0110: `vm.Script` 缓存数据
 
 <!-- YAML
 changes:
@@ -2558,10 +2412,10 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The `produceCachedData` option is deprecated. Use
-[`script.createCachedData()`][] instead.
+`produceCachedData` 选项已弃用。请改用
+[`script.createCachedData()`][]。
 
 ### DEP0111: `process.binding()`
 
@@ -2575,14 +2429,13 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
-`process.binding()` is for use by Node.js internal code only.
+`process.binding()` 仅供 Node.js 内部代码使用。
 
-While `process.binding()` has not reached End-of-Life status in general, it is
-unavailable when the [permission model][] is enabled.
+虽然 `process.binding()` 通常尚未达到生命周期结束状态，但在启用 [权限模型][] 时不可用。
 
-### DEP0112: `dgram` private APIs
+### DEP0112: `dgram` 私有 API
 
 <!-- YAML
 changes:
@@ -2594,16 +2447,16 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `node:dgram` module previously contained several APIs that were never meant
-to accessed outside of Node.js core: `Socket.prototype._handle`,
-`Socket.prototype._receiving`, `Socket.prototype._bindState`,
-`Socket.prototype._queue`, `Socket.prototype._reuseAddr`,
-`Socket.prototype._healthCheck()`, `Socket.prototype._stopReceiving()`, and
-`dgram._createSocketHandle()`. These have been removed.
+`node:dgram` 模块以前包含几个从未 meant
+在 Node.js 核心之外访问的 API：`Socket.prototype._handle`、
+`Socket.prototype._receiving`、`Socket.prototype._bindState`、
+`Socket.prototype._queue`、`Socket.prototype._reuseAddr`、
+`Socket.prototype._healthCheck()`、`Socket.prototype._stopReceiving()` 和
+`dgram._createSocketHandle()`。这些已被移除。
 
-### DEP0113: `Cipher.setAuthTag()`, `Decipher.getAuthTag()`
+### DEP0113: `Cipher.setAuthTag()`、`Decipher.getAuthTag()`
 
 <!-- YAML
 changes:
@@ -2615,10 +2468,10 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`Cipher.setAuthTag()` and `Decipher.getAuthTag()` are no longer available. They
-were never documented and would throw when called.
+`Cipher.setAuthTag()` 和 `Decipher.getAuthTag()` 不再可用。它们
+从未被文档化，并且在调用时会抛出错误。
 
 ### DEP0114: `crypto._toBuf()`
 
@@ -2632,14 +2485,13 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `crypto._toBuf()` function was not designed to be used by modules outside
-of Node.js core and was removed.
+`crypto._toBuf()` 函数并非 designed 供 Node.js 核心之外的模块使用，已被移除。
 
 <!--lint disable nodejs-yaml-comments -->
 
-### DEP0115: `crypto.prng()`, `crypto.pseudoRandomBytes()`, `crypto.rng()`
+### DEP0115: `crypto.prng()`、`crypto.pseudoRandomBytes()`、`crypto.rng()`
 
 <!-- YAML
 changes:
@@ -2651,17 +2503,15 @@ changes:
                  with `--pending-deprecation` support.
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
 <!--lint enable nodejs-yaml-comments -->
 
-In recent versions of Node.js, there is no difference between
-[`crypto.randomBytes()`][] and `crypto.pseudoRandomBytes()`. The latter is
-deprecated along with the undocumented aliases `crypto.prng()` and
-`crypto.rng()` in favor of [`crypto.randomBytes()`][] and might be removed in a
-future release.
+在最近版本的 Node.js 中，[`crypto.randomBytes()`][] 和 `crypto.pseudoRandomBytes()` 之间没有区别。后者已
+弃用，连同未文档化的别名 `crypto.prng()` 和
+`crypto.rng()` 一起，推荐使用 [`crypto.randomBytes()`][]，并可能在未来的版本中移除。
 
-### DEP0116: Legacy URL API
+### DEP0116: 传统 URL API
 
 <!-- YAML
 changes:
@@ -2684,19 +2534,18 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Deprecation revoked
+类型：弃用撤销
 
-The [legacy URL API][] is deprecated. This includes [`url.format()`][],
-[`url.parse()`][], [`url.resolve()`][], and the [legacy `urlObject`][]. Please
-use the [WHATWG URL API][] instead.
+[传统 URL API][] 已弃用。这包括 [`url.format()`][]、
+[`url.parse()`][]、[`url.resolve()`][] 和 [传统 `urlObject`][]。请改用 [WHATWG URL API][]。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/node-url-to-whatwg-url)).
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/node-url-to-whatwg-url)）。
 
 ```bash
 npx codemod@latest @nodejs/node-url-to-whatwg-url
 ```
 
-### DEP0117: Native crypto handles
+### DEP0117: 原生 crypto 句柄
 
 <!-- YAML
 changes:
@@ -2708,15 +2557,14 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Previous versions of Node.js exposed handles to internal native objects through
-the `_handle` property of the `Cipher`, `Decipher`, `DiffieHellman`,
-`DiffieHellmanGroup`, `ECDH`, `Hash`, `Hmac`, `Sign`, and `Verify` classes.
-The `_handle` property has been removed because improper use of the native
-object can lead to crashing the application.
+早期版本的 Node.js 通过 `Cipher`、`Decipher`、`DiffieHellman`、
+`DiffieHellmanGroup`、`ECDH`、`Hash`、`Hmac`、`Sign` 和 `Verify` 类的 `_handle` 属性暴露了内部原生对象的句柄。
+`_handle` 属性已被移除，因为不当使用原生
+对象可能导致应用程序崩溃。
 
-### DEP0118: `dns.lookup()` support for a falsy host name
+### DEP0118: `dns.lookup()` 对假值主机名的支持
 
 <!-- YAML
 changes:
@@ -2728,12 +2576,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Previous versions of Node.js supported `dns.lookup()` with a falsy host name
-like `dns.lookup(false)` due to backward compatibility. This has been removed.
+早期版本的 Node.js 支持使用假值主机名（如 `dns.lookup(false)`）调用 `dns.lookup()`，这是出于向后兼容性考虑。此支持已被移除。
 
-### DEP0119: `process.binding('uv').errname()` private API
+### DEP0119: `process.binding('uv').errname()` 私有 API
 
 <!-- YAML
 changes:
@@ -2743,12 +2590,12 @@ changes:
                  with `--pending-deprecation` support.
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
-`process.binding('uv').errname()` is deprecated. Please use
-[`util.getSystemErrorName()`][] instead.
+`process.binding('uv').errname()` 已弃用。请改用
+[`util.getSystemErrorName()`][]。
 
-### DEP0120: Windows Performance Counter support
+### DEP0120: Windows 性能计数器支持
 
 <!-- YAML
 changes:
@@ -2760,13 +2607,13 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Windows Performance Counter support has been removed from Node.js. The
-undocumented `COUNTER_NET_SERVER_CONNECTION()`,
-`COUNTER_NET_SERVER_CONNECTION_CLOSE()`, `COUNTER_HTTP_SERVER_REQUEST()`,
-`COUNTER_HTTP_SERVER_RESPONSE()`, `COUNTER_HTTP_CLIENT_REQUEST()`, and
-`COUNTER_HTTP_CLIENT_RESPONSE()` functions have been deprecated.
+Windows 性能计数器支持已从 Node.js 中移除。
+未文档化的 `COUNTER_NET_SERVER_CONNECTION()`、
+`COUNTER_NET_SERVER_CONNECTION_CLOSE()`、`COUNTER_HTTP_SERVER_REQUEST()`、
+`COUNTER_HTTP_SERVER_RESPONSE()`、`COUNTER_HTTP_CLIENT_REQUEST()` 和
+`COUNTER_HTTP_CLIENT_RESPONSE()` 函数已弃用。
 
 ### DEP0121: `net._setSimultaneousAccepts()`
 
@@ -2780,12 +2627,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The undocumented `net._setSimultaneousAccepts()` function was originally
-intended for debugging and performance tuning when using the
-`node:child_process` and `node:cluster` modules on Windows. The function is not
-generally useful and is being removed. See discussion here:
+未文档化的 `net._setSimultaneousAccepts()` 函数最初
+intended 用于在 Windows 上使用 `node:child_process` 和 `node:cluster` 模块时进行调试和性能调优。该函数通常
+无用，正在被移除。参见此处的讨论：
 <https://github.com/nodejs/node/issues/18391>
 
 ### DEP0122: `tls` `Server.prototype.setOptions()`
@@ -2800,11 +2646,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Please use `Server.prototype.setSecureContext()` instead.
+请改用 `Server.prototype.setSecureContext()`。
 
-### DEP0123: setting the TLS ServerName to an IP address
+### DEP0123: 将 TLS ServerName 设置为 IP 地址
 
 <!-- YAML
 changes:
@@ -2816,12 +2662,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Setting the TLS ServerName to an IP address is not permitted by
-[RFC 6066][].
+[RFC 6066][] 不允许将 TLS ServerName 设置为 IP 地址。
 
-### DEP0124: using `REPLServer.rli`
+### DEP0124: 使用 `REPLServer.rli`
 
 <!-- YAML
 changes:
@@ -2833,9 +2678,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-This property is a reference to the instance itself.
+此属性是对实例本身的引用。
 
 ### DEP0125: `require('node:_stream_wrap')`
 
@@ -2849,9 +2694,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `node:_stream_wrap` module is deprecated.
+`node:_stream_wrap` 模块已弃用。
 
 ### DEP0126: `timers.active()`
 
@@ -2865,12 +2710,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The previously undocumented `timers.active()` has been removed.
-Please use the publicly documented [`timeout.refresh()`][] instead.
-If re-referencing the timeout is necessary, [`timeout.ref()`][] can be used
-with no performance impact since Node.js 10.
+以前未文档化的 `timers.active()` 已被移除。
+请改用公开文档化的 [`timeout.refresh()`][]。
+如果需要重新引用超时，[`timeout.ref()`][] 可以自 Node.js 10 以来使用，且无性能影响。
 
 ### DEP0127: `timers._unrefActive()`
 
@@ -2884,14 +2728,13 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The previously undocumented and "private" `timers._unrefActive()` has been removed.
-Please use the publicly documented [`timeout.refresh()`][] instead.
-If unreferencing the timeout is necessary, [`timeout.unref()`][] can be used
-with no performance impact since Node.js 10.
+以前未文档化且“私有”的 `timers._unrefActive()` 已被移除。
+请改用公开文档化的 [`timeout.refresh()`][]。
+如果需要取消引用超时，[`timeout.unref()`][] 可以自 Node.js 10 以来使用，且无性能影响。
 
-### DEP0128: modules with an invalid `main` entry and an `index.js` file
+### DEP0128: 具有无效 `main` 入口和 `index.js` 文件的模块
 
 <!-- YAML
 changes:
@@ -2903,12 +2746,12 @@ changes:
     description: Documentation-only.
 -->
 
-Type: Runtime
+类型：运行时
 
-Modules that have an invalid `main` entry (e.g., `./does-not-exist.js`) and
-also have an `index.js` file in the top level directory will resolve the
-`index.js` file. That is deprecated and is going to throw an error in future
-Node.js versions.
+具有无效 `main` 入口（例如 `./does-not-exist.js`）且
+在顶层目录中也有 `index.js` 文件的模块将解析
+`index.js` 文件。这已弃用，并将在未来的
+Node.js 版本中抛出错误。
 
 ### DEP0129: `ChildProcess._channel`
 
@@ -2925,11 +2768,9 @@ changes:
     description: Documentation-only.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `_channel` property of child process objects returned by `spawn()` and
-similar functions is not intended for public use. Use `ChildProcess.channel`
-instead.
+`spawn()` 和类似函数返回的子进程对象的 `_channel` 属性不 intended 供公开使用。请改用 `ChildProcess.channel`。
 
 ### DEP0130: `Module.createRequireFromPath()`
 
@@ -2946,17 +2787,17 @@ changes:
     description: Documentation-only.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Use [`module.createRequire()`][] instead.
+请改用 [`module.createRequire()`][]。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/create-require-from-path)):
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/create-require-from-path)）：
 
 ```bash
 npx codemod@latest @nodejs/create-require-from-path
 ```
 
-### DEP0131: Legacy HTTP parser
+### DEP0131: 传统 HTTP 解析器
 
 <!-- YAML
 changes:
@@ -2971,14 +2812,13 @@ changes:
     description: Documentation-only.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The legacy HTTP parser, used by default in versions of Node.js prior to 12.0.0,
-is deprecated and has been removed in v13.0.0. Prior to v13.0.0, the
-`--http-parser=legacy` command-line flag could be used to revert to using the
-legacy parser.
+传统 HTTP 解析器在 12.0.0 版本之前的 Node.js 版本中默认使用，
+已弃用并在 v13.0.0 中移除。在 v13.0.0 之前，
+可以使用 `--http-parser=legacy` 命令行标志恢复使用传统解析器。
 
-### DEP0132: `worker.terminate()` with callback
+### DEP0132: 带回调的 `worker.terminate()`
 
 <!-- YAML
 changes:
@@ -2990,10 +2830,10 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Passing a callback to [`worker.terminate()`][] is deprecated. Use the returned
-`Promise` instead, or a listener to the worker's `'exit'` event.
+传递回调给 [`worker.terminate()`][] 已弃用。请改用返回的
+`Promise`，或监听 worker 的 `'exit'` 事件。
 
 ### DEP0133: `http` `connection`
 
@@ -3004,10 +2844,10 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-Prefer [`response.socket`][] over [`response.connection`][] and
-[`request.socket`][] over [`request.connection`][].
+首选 [`response.socket`][] 而不是 [`response.connection`][]，
+首选 [`request.socket`][] 而不是 [`request.connection`][]。
 
 ### DEP0134: `process._tickCallback`
 
@@ -3019,12 +2859,12 @@ changes:
                  with `--pending-deprecation` support.
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
-The `process._tickCallback` property was never documented as
-an officially supported API.
+`process._tickCallback` 属性从未被文档化为
+官方支持的 API。
 
-### DEP0135: `WriteStream.open()` and `ReadStream.open()` are internal
+### DEP0135: `WriteStream.open()` 和 `ReadStream.open()` 是内部的
 
 <!-- YAML
 changes:
@@ -3036,12 +2876,11 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-[`WriteStream.open()`][] and [`ReadStream.open()`][] are undocumented internal
-APIs that do not make sense to use in userland. File streams should always be
-opened through their corresponding factory methods [`fs.createWriteStream()`][]
-and [`fs.createReadStream()`][]) or by passing a file descriptor in options.
+[`WriteStream.open()`][] 和 [`ReadStream.open()`][] 是未文档化的内部
+API，在用户空间中使用没有意义。文件流应始终通过其相应的工厂方法 [`fs.createWriteStream()`][]
+和 [`fs.createReadStream()`][] 打开，或在选项中传递文件描述符。
 
 ### DEP0136: `http` `finished`
 
@@ -3054,19 +2893,19 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-[`response.finished`][] indicates whether [`response.end()`][] has been
-called, not whether `'finish'` has been emitted and the underlying data
-is flushed.
+[`response.finished`][] 指示是否已调用 [`response.end()`][]，
+而不是是否已发出 `'finish'` 且底层数据
+已刷新。
 
-Use [`response.writableFinished`][] or [`response.writableEnded`][]
-accordingly instead to avoid the ambiguity.
+请相应地改用 [`response.writableFinished`][] 或 [`response.writableEnded`][]
+以避免歧义。
 
-To maintain existing behavior `response.finished` should be replaced with
-`response.writableEnded`.
+为了保持现有行为，`response.finished` 应替换为
+`response.writableEnded`。
 
-### DEP0137: Closing fs.FileHandle on garbage collection
+### DEP0137: 垃圾回收时关闭 fs.FileHandle
 
 <!-- YAML
 changes:
@@ -3078,13 +2917,13 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Allowing a [`fs.FileHandle`][] object to be closed on garbage collection used
-to be allowed, but now throws an error.
+允许 [`fs.FileHandle`][] 对象在垃圾回收时关闭曾经是
+允许的，但现在会抛出错误。
 
-Please ensure that all `fs.FileHandle` objects are explicitly closed using
-`FileHandle.prototype.close()` when the `fs.FileHandle` is no longer needed:
+请确保所有 `fs.FileHandle` 对象在不再需要时使用
+`FileHandle.prototype.close()` 显式关闭：
 
 ```js
 const fsPromises = require('node:fs').promises;
@@ -3108,22 +2947,22 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-[`process.mainModule`][] is a CommonJS-only feature while `process` global
-object is shared with non-CommonJS environment. Its use within ECMAScript
-modules is unsupported.
+[`process.mainModule`][] 是仅 CommonJS 的功能，而 `process` 全局
+对象与非 CommonJS 环境共享。它在 ECMAScript
+模块中的使用不受支持。
 
-It is deprecated in favor of [`require.main`][], because it serves the same
-purpose and is only available on CommonJS environment.
+它已弃用，推荐使用 [`require.main`][]，因为它服务于相同的
+目的，且仅在 CommonJS 环境中可用。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/process-main-module)):
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/process-main-module)）：
 
 ```bash
 npx codemod@latest @nodejs/process-main-module
 ```
 
-### DEP0139: `process.umask()` with no arguments
+### DEP0139: 无参数的 `process.umask()`
 
 <!-- YAML
 changes:
@@ -3134,14 +2973,14 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-Calling `process.umask()` with no argument causes the process-wide umask to be
-written twice. This introduces a race condition between threads, and is a
-potential security vulnerability. There is no safe, cross-platform alternative
-API.
+调用无参数的 `process.umask()` 会导致进程范围的 umask 被
+写入两次。这在线程之间引入了竞态条件，并且是一个
+潜在的安全漏洞。没有安全、跨平台的替代
+API。
 
-### DEP0140: Use `request.destroy()` instead of `request.abort()`
+### DEP0140: 使用 `request.destroy()` 而不是 `request.abort()`
 
 <!-- YAML
 changes:
@@ -3152,11 +2991,11 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-Use [`request.destroy()`][] instead of [`request.abort()`][].
+请改用 [`request.destroy()`][] 而不是 [`request.abort()`][]。
 
-### DEP0141: `repl.inputStream` and `repl.outputStream`
+### DEP0141: `repl.inputStream` 和 `repl.outputStream`
 
 <!-- YAML
 changes:
@@ -3166,10 +3005,10 @@ changes:
                  with `--pending-deprecation` support.
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
-The `node:repl` module exported the input and output stream twice. Use `.input`
-instead of `.inputStream` and `.output` instead of `.outputStream`.
+`node:repl` 模块导出了输入和输出流两次。请改用 `.input`
+而不是 `.inputStream`，改用 `.output` 而不是 `.outputStream`。
 
 ### DEP0142: `repl._builtinLibs`
 
@@ -3181,13 +3020,12 @@ changes:
                  with `--pending-deprecation` support.
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
-The `node:repl` module exports a `_builtinLibs` property that contains an array
-of built-in modules. It was incomplete so far and instead it's better to rely
-upon `require('node:module').builtinModules`.
+`node:repl` 模块导出了一个包含内置模块数组的 `_builtinLibs` 属性。它目前不完整，最好依赖
+`require('node:module').builtinModules`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-builtin-modules)):
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-builtin-modules)）：
 
 ```bash
 npx codemod@latest @nodejs/repl-builtin-modules
@@ -3205,10 +3043,9 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`Transform._transformState` will be removed in future versions where it is
-no longer required due to simplification of the implementation.
+`Transform._transformState` 将在未来版本中移除，届时由于实现的简化，它将不再需要。
 
 ### DEP0144: `module.parent`
 
@@ -3221,24 +3058,21 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
-A CommonJS module can access the first module that required it using
-`module.parent`. This feature is deprecated because it does not work
-consistently in the presence of ECMAScript modules and because it gives an
-inaccurate representation of the CommonJS module graph.
+CommonJS 模块可以使用 `module.parent` 访问第一个 require 它的模块。此功能已弃用，因为它在存在 ECMAScript 模块的情况下不能一致地工作，并且因为它给出了 CommonJS 模块图的不准确表示。
 
-Some modules use it to check if they are the entry point of the current process.
-Instead, it is recommended to compare `require.main` and `module`:
+一些模块使用它来检查它们是否是当前进程的入口点。
+相反，建议比较 `require.main` 和 `module`：
 
 ```js
 if (require.main === module) {
-  // Code section that will run only if current file is the entry point.
+  // 仅当当前文件是入口点时才会运行的代码部分。
 }
 ```
 
-When looking for the CommonJS modules that have required the current one,
-`require.cache` and `module.children` can be used:
+当查找 require 当前模块的 CommonJS 模块时，
+可以使用 `require.cache` 和 `module.children`：
 
 ```js
 const moduleParents = Object.values(require.cache)
@@ -3254,9 +3088,9 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-[`socket.bufferSize`][] is just an alias for [`writable.writableLength`][].
+[`socket.bufferSize`][] 只是 [`writable.writableLength`][] 的别名。
 
 ### DEP0146: `new crypto.Certificate()`
 
@@ -3267,10 +3101,10 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The [`crypto.Certificate()` constructor][] is deprecated. Use
-[static methods of `crypto.Certificate()`][] instead.
+[`crypto.Certificate()` 构造函数][] 已弃用。请改用
+[`crypto.Certificate()` 的静态方法][]。
 
 ### DEP0147: `fs.rmdir(path, { recursive: true })`
 
@@ -3290,22 +3124,22 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `fs.rmdir`, `fs.rmdirSync`, and `fs.promises.rmdir` methods used
-to support a `recursive` option. That option has been removed.
+`fs.rmdir`、`fs.rmdirSync` 和 `fs.promises.rmdir` 方法曾经
+支持 `recursive` 选项。该选项已被移除。
 
-Use `fs.rm(path, { recursive: true, force: true })`,
-`fs.rmSync(path, { recursive: true, force: true })` or
-`fs.promises.rm(path, { recursive: true, force: true })` instead.
+请改用 `fs.rm(path, { recursive: true, force: true })`、
+`fs.rmSync(path, { recursive: true, force: true })` 或
+`fs.promises.rm(path, { recursive: true, force: true })`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/rmdir)):
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/rmdir)）：
 
 ```bash
 npx codemod@latest @nodejs/rmdir
 ```
 
-### DEP0148: Folder mappings in `"exports"` (trailing `"/"`)
+### DEP0148: `"exports"` 中的文件夹映射（尾部 `"/"`）
 
 <!-- YAML
 changes:
@@ -3323,11 +3157,10 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Using a trailing `"/"` to define subpath folder mappings in the
-[subpath exports][] or [subpath imports][] fields is no longer supported.
-Use [subpath patterns][] instead.
+不再支持在 [子路径导出][] 或 [子路径导入][] 字段中使用尾部 `"/"` 来定义子路径文件夹映射。
+请改用 [子路径模式][]。
 
 ### DEP0149: `http.IncomingMessage#connection`
 
@@ -3338,11 +3171,11 @@ changes:
     description: Documentation-only deprecation.
  -->
 
-Type: Documentation-only
+类型：仅文档
 
-Prefer [`message.socket`][] over [`message.connection`][].
+首选 [`message.socket`][] 而不是 [`message.connection`][]。
 
-### DEP0150: Changing the value of `process.config`
+### DEP0150: 更改 `process.config` 的值
 
 <!-- YAML
 changes:
@@ -3354,13 +3187,13 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `process.config` property provides access to Node.js compile-time settings.
-However, the property is mutable and therefore subject to tampering. The ability
-to change the value will be removed in a future version of Node.js.
+`process.config` 属性提供对 Node.js 编译时设置的访问。
+然而，该属性是可变的，因此易受篡改。更改值的能力
+将在未来的 Node.js 版本中移除。
 
-### DEP0151: Main index lookup and extension searching
+### DEP0151: 主索引查找和扩展名搜索
 
 <!-- YAML
 changes:
@@ -3375,15 +3208,15 @@ changes:
                  with `--pending-deprecation` support.
 -->
 
-Type: Runtime
+类型：运行时
 
-Previously, `index.js` and extension searching lookups would apply to
-`import 'pkg'` main entry point resolution, even when resolving ES modules.
+以前，`index.js` 和扩展名搜索查找会应用于
+`import 'pkg'` 主入口点解析，即使在解析 ES 模块时也是如此。
 
-With this deprecation, all ES module main entry point resolutions require
-an explicit [`"exports"` or `"main"` entry][] with the exact file extension.
+通过此弃用，所有 ES 模块主入口点解析都需要
+一个带有确切文件扩展名的显式 [`"exports"` 或 `"main"` 入口][]。
 
-### DEP0152: Extension PerformanceEntry properties
+### DEP0152: 扩展 PerformanceEntry 属性
 
 <!-- YAML
 changes:
@@ -3395,15 +3228,14 @@ changes:
     description: Runtime deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `'gc'`, `'http2'`, and `'http'` {PerformanceEntry} object types used to have
-additional properties assigned to them that provide additional information.
-These properties are now available within the standard `detail` property
-of the `PerformanceEntry` object. The deprecated accessors have been
-removed.
+`'gc'`、`'http2'` 和 `'http'` {PerformanceEntry} 对象类型曾经有
+分配给它们的额外属性，提供额外信息。
+这些属性现在可在 `PerformanceEntry` 对象的标准 `detail` 属性内使用。已弃用的访问器已被
+移除。
 
-### DEP0153: `dns.lookup` and `dnsPromises.lookup` options type coercion
+### DEP0153: `dns.lookup` 和 `dnsPromises.lookup` 选项类型强制转换
 
 <!-- YAML
 changes:
@@ -3418,15 +3250,12 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Using a non-nullish non-integer value for `family` option, a non-nullish
-non-number value for `hints` option, a non-nullish non-boolean value for `all`
-option, or a non-nullish non-boolean value for `verbatim` option in
-[`dns.lookup()`][] and [`dnsPromises.lookup()`][] throws an
-`ERR_INVALID_ARG_TYPE` error.
+在 [`dns.lookup()`][] 和 [`dnsPromises.lookup()`][] 中对 `family` 选项使用非空值非整数值，对 `hints` 选项使用非空值非数字值，对 `all` 选项使用非空值非布尔值，或对 `verbatim` 选项使用非空值非布尔值，将抛出
+`ERR_INVALID_ARG_TYPE` 错误。
 
-### DEP0154: RSA-PSS generate key pair options
+### DEP0154: RSA-PSS 生成密钥对选项
 
 <!-- YAML
 changes:
@@ -3441,17 +3270,17 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Use  `'hashAlgorithm'` instead of `'hash'`, and `'mgf1HashAlgorithm'` instead of `'mgf1Hash'`.
+请使用 `'hashAlgorithm'` 而不是 `'hash'`，使用 `'mgf1HashAlgorithm'` 而不是 `'mgf1Hash'`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/crypto-rsa-pss-update)):
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/crypto-rsa-pss-update)）：
 
 ```bash
 npx codemod@latest @nodejs/crypto-rsa-pss-update
 ```
 
-### DEP0155: Trailing slashes in pattern specifier resolutions
+### DEP0155: 模式标识符解析中的尾部斜杠
 
 <!-- YAML
 changes:
@@ -3464,12 +3293,11 @@ changes:
                  with `--pending-deprecation` support.
 -->
 
-Type: Runtime
+类型：运行时
 
-The remapping of specifiers ending in `"/"` like `import 'pkg/x/'` is deprecated
-for package `"exports"` and `"imports"` pattern resolutions.
+对于包 `"exports"` 和 `"imports"` 模式解析，以 `"/"` 结尾的标识符（如 `import 'pkg/x/'`）的重映射已弃用。
 
-### DEP0156: `.aborted` property and `'abort'`, `'aborted'` event in `http`
+### DEP0156: `http` 中的 `.aborted` 属性和 `'abort'`、`'aborted'` 事件
 
 <!-- YAML
 changes:
@@ -3480,21 +3308,21 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-Move to {Stream} API instead, as the [`http.ClientRequest`][],
-[`http.ServerResponse`][], and [`http.IncomingMessage`][] are all stream-based.
-Check `stream.destroyed` instead of the `.aborted` property, and listen for
-`'close'` instead of `'abort'`, `'aborted'` event.
+请改用 {Stream} API，因为 [`http.ClientRequest`][]、
+[`http.ServerResponse`][] 和 [`http.IncomingMessage`][] 都是基于流的。
+检查 `stream.destroyed` 而不是 `.aborted` 属性，并监听
+`'close'` 而不是 `'abort'`、`'aborted'` 事件。
 
-The `.aborted` property and `'abort'` event are only useful for detecting
-`.abort()` calls. For closing a request early, use the Stream
-`.destroy([error])` then check the `.destroyed` property and `'close'` event
-should have the same effect. The receiving end should also check the
-[`readable.readableEnded`][] value on [`http.IncomingMessage`][] to get whether
-it was an aborted or graceful destroy.
+`.aborted` 属性和 `'abort'` 事件仅对检测
+`.abort()` 调用有用。对于提前关闭请求，使用 Stream
+`.destroy([error])`，然后检查 `.destroyed` 属性和 `'close'` 事件
+应具有相同的效果。接收端还应检查
+[`http.IncomingMessage`][] 上的 [`readable.readableEnded`][] 值，以获取它是
+被中止还是优雅销毁。
 
-### DEP0157: Thenable support in streams
+### DEP0157: 流中的 Thenable 支持
 
 <!-- YAML
 changes:
@@ -3508,15 +3336,13 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-An undocumented feature of Node.js streams was to support thenables in
-implementation methods. This is now deprecated, use callbacks instead and avoid
-use of async function for streams implementation methods.
+Node.js 流的一个未文档化功能是在
+实现方法中支持 thenables。这现已弃用，请改用回调，并避免
+在流实现方法中使用异步函数。
 
-This feature caused users to encounter unexpected problems where the user
-implements the function in callback style but uses e.g. an async method which
-would cause an error since mixing promise and callback semantics is not valid.
+此功能导致用户遇到意外问题，即用户使用回调风格实现函数，但使用了例如异步方法，这将导致错误，因为混合 Promise 和回调语义是无效的。
 
 ```js
 const w = new Writable({
@@ -3535,15 +3361,14 @@ changes:
     - v17.5.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41596
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-This method was deprecated because it is not compatible with
-`Uint8Array.prototype.slice()`, which is a superclass of `Buffer`.
+此方法已被弃用，因为它与 `Uint8Array.prototype.slice()` 不兼容，而后者是 `Buffer` 的超类。
 
-Use [`buffer.subarray`][] which does the same thing instead.
+请改用 [`buffer.subarray`][]，它执行相同的操作。
 
 ### DEP0159: `ERR_INVALID_CALLBACK`
 
@@ -3551,13 +3376,12 @@ Use [`buffer.subarray`][] which does the same thing instead.
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: End-of-Life.
+    description: 生命周期结束。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-This error code was removed due to adding more confusion to
-the errors used for value type validation.
+此错误代码已被移除，因为它给用于值类型验证的错误增加了更多的混淆。
 
 ### DEP0160: `process.on('multipleResolves', handler)`
 
@@ -3565,23 +3389,22 @@ the errors used for value type validation.
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58707
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41896
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v17.6.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41872
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-This event was deprecated and removed because it did not work with V8 promise
-combinators which diminished its usefulness.
+此事件已被弃用并移除，因为它不适用于 V8 Promise 组合器，从而降低了其有用性。
 
-### DEP0161: `process._getActiveRequests()` and `process._getActiveHandles()`
+### DEP0161: `process._getActiveRequests()` 和 `process._getActiveHandles()`
 
 <!-- YAML
 changes:
@@ -3589,41 +3412,35 @@ changes:
     - v17.6.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41587
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The `process._getActiveHandles()` and `process._getActiveRequests()`
-functions are not intended for public use and can be removed in future
-releases.
+`process._getActiveHandles()` 和 `process._getActiveRequests()` 函数并非 intended 供公开使用，并可能在未来的版本中被移除。
 
-Use [`process.getActiveResourcesInfo()`][] to get a list of types of active
-resources and not the actual references.
+请使用 [`process.getActiveResourcesInfo()`][] 来获取活动资源类型的列表，而不是实际的引用。
 
-### DEP0162: `fs.write()`, `fs.writeFileSync()` coercion to string
+### DEP0162: `fs.write()`、`fs.writeFileSync()` 强制转换为字符串
 
 <!-- YAML
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42796
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42607
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v17.8.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/42149
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Implicit coercion of objects with own `toString` property, passed as second
-parameter in [`fs.write()`][], [`fs.writeFile()`][], [`fs.appendFile()`][],
-[`fs.writeFileSync()`][], and [`fs.appendFileSync()`][] is deprecated.
-Convert them to primitive strings.
+在 [`fs.write()`][]、[`fs.writeFile()`][]、[`fs.appendFile()`][]、[`fs.writeFileSync()`][] 和 [`fs.appendFileSync()`][] 中作为第二个参数传递的具有自有 `toString` 属性的对象的隐式强制转换已被弃用。请将它们转换为原始字符串。
 
 ### DEP0163: `channel.subscribe(onMessage)`, `channel.unsubscribe(onMessage)`
 
@@ -3633,50 +3450,43 @@ changes:
     - v24.8.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59758
-    description: Deprecation revoked.
+    description: 弃用已撤销。
   - version:
     - v18.7.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42714
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Deprecation revoked
+类型：弃用已撤销
 
-These methods were deprecated because their use could leave the channel object
-vulnerable to being garbage-collected if not strongly referenced by the user.
-The deprecation was revoked because channel objects are now resistant to
-garbage collection when the channel has active subscribers.
+这些方法已被弃用，因为如果用户没有强引用它们，它们的使用可能会使 channel 对象容易被垃圾回收。弃用已被撤销，因为当 channel 有活动订阅者时，channel 对象现在可以抵抗垃圾回收。
 
-### DEP0164: `process.exit(code)`, `process.exitCode` coercion to integer
+### DEP0164: `process.exit(code)`, `process.exitCode` 强制转换为整数
 
 <!-- YAML
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/43716
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44711
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v18.10.0
     - v16.18.0
     pr-url: https://github.com/nodejs/node/pull/44714
-    description: Documentation-only deprecation of `process.exitCode` integer
-                 coercion.
+    description: `process.exitCode` 整数强制转换的仅文档弃用。
   - version:
     - v18.7.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43738
-    description: Documentation-only deprecation of `process.exit(code)` integer
-                 coercion.
+    description: `process.exit(code)` 整数强制转换的仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Values other than `undefined`, `null`, integer numbers, and integer strings
-(e.g., `'1'`) are deprecated as value for the `code` parameter in
-[`process.exit()`][] and as value to assign to [`process.exitCode`][].
+除了 `undefined`、`null`、整数和整数字符串（例如 `'1'`）之外的值，作为 [`process.exit()`][] 中 `code` 参数的值以及分配给 [`process.exitCode`][] 的值已被弃用。
 
 ### DEP0165: `--trace-atomics-wait`
 
@@ -3684,44 +3494,38 @@ Values other than `undefined`, `null`, integer numbers, and integer strings
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52747
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/51179
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v18.8.0
     - v16.18.0
     pr-url: https://github.com/nodejs/node/pull/44093
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `--trace-atomics-wait` flag has been removed because
-it uses the V8 hook `SetAtomicsWaitCallback`,
-that will be removed in a future V8 release.
+`--trace-atomics-wait` 标志已被移除，因为它使用了 V8 钩子 `SetAtomicsWaitCallback`，该钩子将在未来的 V8 版本中被移除。
 
-### DEP0166: Double slashes in imports and exports targets
+### DEP0166: 导入和导出目标中的双斜杠
 
 <!-- YAML
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44495
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v18.10.0
     pr-url: https://github.com/nodejs/node/pull/44477
-    description: Documentation-only deprecation
-                 with `--pending-deprecation` support.
+    description: 仅文档弃用，支持 `--pending-deprecation`。
 -->
 
-Type: Runtime
+类型：运行时
 
-Package imports and exports targets mapping into paths including a double slash
-(of _"/"_ or _"\\"_) are deprecated and will fail with a resolution validation
-error in a future release. This same deprecation also applies to pattern matches
-starting or ending in a slash.
+包导入和导出目标映射到包含双斜杠（`"/"` 或 `"\\"`）的路径已被弃用，并将在未来的版本中因解析验证错误而失败。此弃用同样适用于以斜杠开头或结尾的模式匹配。
 
-### DEP0167: Weak `DiffieHellmanGroup` instances (`modp1`, `modp2`, `modp5`)
+### DEP0167: 弱 `DiffieHellmanGroup` 实例（`modp1`, `modp2`, `modp5`）
 
 <!-- YAML
 changes:
@@ -3729,19 +3533,16 @@ changes:
     - v18.10.0
     - v16.18.0
     pr-url: https://github.com/nodejs/node/pull/44588
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The well-known MODP groups `modp1`, `modp2`, and `modp5` are deprecated because
-they are not secure against practical attacks. See [RFC 8247 Section 2.4][] for
-details.
+众所周知的 MODP 组 `modp1`、`modp2` 和 `modp5` 已被弃用，因为它们无法抵御实际攻击。详见 [RFC 8247 第 2.4 节][]。
 
-These groups might be removed in future versions of Node.js. Applications that
-rely on these groups should evaluate using stronger MODP groups instead.
+这些组可能会在未来的 Node.js 版本中被移除。依赖这些组的应用程序应评估使用更强的 MODP 组。
 
-### DEP0168: Unhandled exception in Node-API callbacks
+### DEP0168: Node-API 回调中未处理的异常
 
 <!-- YAML
 changes:
@@ -3749,72 +3550,64 @@ changes:
     - v18.3.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/36510
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-The implicit suppression of uncaught exceptions in Node-API callbacks is now
-deprecated.
+Node-API 回调中未捕获异常的隐式抑制现已弃用。
 
-Set the flag [`--force-node-api-uncaught-exceptions-policy`][] to force Node.js
-to emit an [`'uncaughtException'`][] event if the exception is not handled in
-Node-API callbacks.
+设置标志 [`--force-node-api-uncaught-exceptions-policy`][] 以强制 Node.js 在 Node-API 回调中未处理异常时发出 [`'uncaughtException'`][] 事件。
 
-### DEP0169: Insecure url.parse()
+### DEP0169: 不安全的 url.parse()
 
 <!-- YAML
 changes:
   - version:
       - v24.0.0
     pr-url: https://github.com/nodejs/node/pull/55017
-    description: Application deprecation.
+    description: 应用弃用。
   - version:
       - v19.9.0
       - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47203
-    description: Added support for `--pending-deprecation`.
+    description: 添加了对 `--pending-deprecation` 的支持。
   - version:
       - v19.0.0
       - v18.13.0
     pr-url: https://github.com/nodejs/node/pull/44919
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Application (non-`node_modules` code only)
+类型：应用（仅限非 `node_modules` 代码）
 
-[`url.parse()`][] behavior is not standardized and prone to errors that
-have security implications. Use the [WHATWG URL API][] instead. CVEs are not
-issued for `url.parse()` vulnerabilities.
+[`url.parse()`][] 行为未标准化且容易出错，具有安全隐患。请改用 [WHATWG URL API][]。不会为 `url.parse()` 漏洞发布 CVE。
 
-Calling [`url.format(urlString)`][] or [`url.resolve()`][] invokes `url.parse()`
-internally, and is therefore also covered by this deprecation.
+调用 [`url.format(urlString)`][] 或 [`url.resolve()`][] 会在内部调用 `url.parse()`，因此也受此弃用的约束。
 
-### DEP0170: Invalid port when using `url.parse()`
+### DEP0170: 使用 `url.parse()` 时端口无效
 
 <!-- YAML
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58617
-    description: End-of-Life.
+    description: 生命周期结束。
   - version:
     - v20.0.0
     pr-url: https://github.com/nodejs/node/pull/45526
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
       - v19.2.0
       - v18.13.0
     pr-url: https://github.com/nodejs/node/pull/45576
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-[`url.parse()`][] used to accept URLs with ports that are not numbers. This
-behavior might result in host name spoofing with unexpected input. These URLs
-will throw an error (which the [WHATWG URL API][] also does).
+[`url.parse()`][] 过去接受端口不是数字的 URL。此行为可能导致主机名欺骗和意外输入。这些 URL 将抛出错误（[WHATWG URL API][] 也会这样做）。
 
-### DEP0171: Setters for `http.IncomingMessage` headers and trailers
+### DEP0171: `http.IncomingMessage` 标头和尾部的设置器
 
 <!-- YAML
 changes:
@@ -3822,64 +3615,60 @@ changes:
       - v19.3.0
       - v18.13.0
     pr-url: https://github.com/nodejs/node/pull/45697
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-In a future version of Node.js, [`message.headers`][],
-[`message.headersDistinct`][], [`message.trailers`][], and
-[`message.trailersDistinct`][] will be read-only.
+在未来的 Node.js 版本中，[`message.headers`][]、[`message.headersDistinct`][]、[`message.trailers`][] 和 [`message.trailersDistinct`][] 将是只读的。
 
-### DEP0172: The `asyncResource` property of `AsyncResource` bound functions
+### DEP0172: `AsyncResource` 绑定函数的 `asyncResource` 属性
 
 <!-- YAML
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58618
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/46432
-    description: Runtime-deprecation.
+    description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Older versions of Node.js would add the `asyncResource` when a function is
-bound to an `AsyncResource`. It no longer does.
+旧版本的 Node.js 会在函数绑定到 `AsyncResource` 时添加 `asyncResource`。现在不再这样做。
 
-### DEP0173: the `assert.CallTracker` class
+### DEP0173: `assert.CallTracker` 类
 
 <!-- YAML
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/00000
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v20.1.0
     pr-url: https://github.com/nodejs/node/pull/47740
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `assert.CallTracker` API has been removed.
+`assert.CallTracker` API 已被移除。
 
-### DEP0174: calling `promisify` on a function that returns a `Promise`
+### DEP0174: 对返回 `Promise` 的函数调用 `promisify`
 
 <!-- YAML
 changes:
   - version: v21.0.0
     pr-url: https://github.com/nodejs/node/pull/49609
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v20.8.0
     pr-url: https://github.com/nodejs/node/pull/49647
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-Calling [`util.promisify`][] on a function that returns a `Promise` will ignore
-the result of said promise, which can lead to unhandled promise rejections.
+对返回 `Promise` 的函数调用 [`util.promisify`][] 将忽略该 Promise 的结果，这可能导致未处理的 Promise 拒绝。
 
 ### DEP0175: `util.toUSVString`
 
@@ -3887,13 +3676,12 @@ the result of said promise, which can lead to unhandled promise rejections.
 changes:
   - version: v20.8.0
     pr-url: https://github.com/nodejs/node/pull/49725
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The [`util.toUSVString()`][] API is deprecated. Please use
-[`String.prototype.toWellFormed`][] instead.
+[`util.toUSVString()`][] API 已弃用。请改用 [`String.prototype.toWellFormed`][]。
 
 ### DEP0176: `fs.F_OK`, `fs.R_OK`, `fs.W_OK`, `fs.X_OK`
 
@@ -3901,21 +3689,20 @@ The [`util.toUSVString()`][] API is deprecated. Please use
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/55862
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/49686
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v20.8.0
     pr-url: https://github.com/nodejs/node/pull/49683
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`F_OK`, `R_OK`, `W_OK` and `X_OK` getters exposed directly on `node:fs` were
-removed. Get them from `fs.constants` or `fs.promises.constants` instead.
+直接暴露在 `node:fs` 上的 `F_OK`、`R_OK`、`W_OK` 和 `X_OK` 获取器已被移除。请改为从 `fs.constants` 或 `fs.promises.constants` 获取它们。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/fs-access-mode-constants)):
+提供自动迁移工具 ([源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/fs-access-mode-constants))：
 
 ```bash
 npx codemod@latest @nodejs/fs-access-mode-constants
@@ -3929,21 +3716,20 @@ changes:
     - v21.7.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/51442
-    description: End-of-Life.
+    description: 生命周期结束。
   - version:
     - v21.3.0
     - v20.11.0
     pr-url: https://github.com/nodejs/node/pull/50486
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/32116
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `util.types.isWebAssemblyCompiledModule` API has been removed.
-Please use `value instanceof WebAssembly.Module` instead.
+`util.types.isWebAssemblyCompiledModule` API 已被移除。请改用 `value instanceof WebAssembly.Module`。
 
 ### DEP0178: `dirent.path`
 
@@ -3951,110 +3737,98 @@ Please use `value instanceof WebAssembly.Module` instead.
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/55548
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/51050
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v21.5.0
     - v20.12.0
     - v18.20.0
     pr-url: https://github.com/nodejs/node/pull/51020
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `dirent.path` property has been removed due to its lack of consistency across
-release lines. Please use [`dirent.parentPath`][] instead.
+`dirent.path` 属性已被移除，因为其在发布版本之间缺乏一致性。请改用 [`dirent.parentPath`][]。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/dirent-path-to-parent-path)):
+提供自动迁移工具 ([源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/dirent-path-to-parent-path))：
 
 ```bash
 npx codemod@latest @nodejs/dirent-path-to-parent-path
 ```
 
-### DEP0179: `Hash` constructor
+### DEP0179: `Hash` 构造函数
 
 <!-- YAML
 changes:
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/51880
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v21.5.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/51077
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-Calling `Hash` class directly with `Hash()` or `new Hash()` is
-deprecated due to being internals, not intended for public use.
-Please use the [`crypto.createHash()`][] method to create Hash instances.
+直接使用 `Hash()` 或 `new Hash()` 调用 `Hash` 类已被弃用，因为它是内部实现，不 intended 供公开使用。请使用 [`crypto.createHash()`][] 方法来创建 Hash 实例。
 
-### DEP0180: `fs.Stats` constructor
+### DEP0180: `fs.Stats` 构造函数
 
 <!-- YAML
 changes:
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/52067
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v20.13.0
     pr-url: https://github.com/nodejs/node/pull/51879
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-Calling `fs.Stats` class directly with `Stats()` or `new Stats()` is
-deprecated due to being internals, not intended for public use.
+直接使用 `Stats()` 或 `new Stats()` 调用 `fs.Stats` 类已被弃用，因为它是内部实现，不 intended 供公开使用。
 
-### DEP0181: `Hmac` constructor
+### DEP0181: `Hmac` 构造函数
 
 <!-- YAML
 changes:
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/52071
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v20.13.0
     pr-url: https://github.com/nodejs/node/pull/51881
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-Calling `Hmac` class directly with `Hmac()` or `new Hmac()` is
-deprecated due to being internals, not intended for public use.
-Please use the [`crypto.createHmac()`][] method to create Hmac instances.
+直接使用 `Hmac()` 或 `new Hmac()` 调用 `Hmac` 类已被弃用，因为它是内部实现，不 intended 供公开使用。请使用 [`crypto.createHmac()`][] 方法来创建 Hmac 实例。
 
-### DEP0182: Short GCM authentication tags without explicit `authTagLength`
+### DEP0182: 没有显式 `authTagLength` 的短 GCM 认证标签
 
 <!-- YAML
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/61084
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52552
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52345
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-For ciphers in GCM mode, the [`decipher.setAuthTag()`][] function used to accept
-authentication tags of any valid length (see also [DEP0090](#DEP0090)). This
-exception has been removed to better align with recommendations per
-[NIST SP 800-38D][], and applications that intend to use authentication tags
-that are shorter than the default authentication tag length (i.e., shorter than
-16 bytes for AES-GCM) must explicitly set the `authTagLength` option of the
-[`crypto.createDecipheriv()`][] function to the appropriate length.
+对于 GCM 模式的密码，[`decipher.setAuthTag()`][] 函数过去接受任何有效长度的认证标签（另见 [DEP0090](#DEP0090)）。此例外已被移除，以便更好地符合 [NIST SP 800-38D][] 的建议，打算使用短于默认认证标签长度（即短于 AES-GCM 的 16 字节）的认证标签的应用程序必须显式地将 [`crypto.createDecipheriv()`][] 函数的 `authTagLength` 选项设置为适当的长度。
 
-### DEP0183: OpenSSL engine-based APIs
+### DEP0183: 基于 OpenSSL 引擎的 API
 
 <!-- YAML
 changes:
@@ -4062,61 +3836,53 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53329
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-OpenSSL 3 has deprecated support for custom engines with a recommendation to
-switch to its new provider model. The `clientCertEngine` option for
-`https.request()`, [`tls.createSecureContext()`][], and [`tls.createServer()`][];
-the `privateKeyEngine` and `privateKeyIdentifier` for [`tls.createSecureContext()`][];
-and [`crypto.setEngine()`][] all depend on this functionality from OpenSSL.
+OpenSSL 3 已弃用对自定义引擎的支持，并建议切换到其新的提供者模型。`https.request()`、[`tls.createSecureContext()`][] 和 [`tls.createServer()`][] 的 `clientCertEngine` 选项；[`tls.createSecureContext()`][] 的 `privateKeyEngine` 和 `privateKeyIdentifier`；以及 [`crypto.setEngine()`][] 都依赖于 OpenSSL 的此功能。
 
-### DEP0184: Instantiating `node:zlib` classes without `new`
+### DEP0184: 实例化 `node:zlib` 类时不使用 `new`
 
 <!-- YAML
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/55718
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v22.9.0
     - v20.18.0
     pr-url: https://github.com/nodejs/node/pull/54708
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-Instantiating classes without the `new` qualifier exported by the `node:zlib` module is deprecated.
-It is recommended to use the `new` qualifier instead. This applies to all Zlib classes, such as `Deflate`,
-`DeflateRaw`, `Gunzip`, `Inflate`, `InflateRaw`, `Unzip`, and `Zlib`.
+实例化 `node:zlib` 模块导出的类时不使用 `new` 限定符已被弃用。建议改用 `new` 限定符。这适用于所有 Zlib 类，例如 `Deflate`、`DeflateRaw`、`Gunzip`、`Inflate`、`InflateRaw`、`Unzip` 和 `Zlib`。
 
-### DEP0185: Instantiating `node:repl` classes without `new`
+### DEP0185: 实例化 `node:repl` 类时不使用 `new`
 
 <!-- YAML
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/59495
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/54869
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v22.9.0
     - v20.18.0
     pr-url: https://github.com/nodejs/node/pull/54842
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-Instantiating classes without the `new` qualifier exported by the `node:repl` module is deprecated.
-The `new` qualifier must be used instead. This applies to all REPL classes, including
-`REPLServer` and `Recoverable`.
+实例化 `node:repl` 模块导出的类时不使用 `new` 限定符已被弃用。必须改用 `new` 限定符。这适用于所有 REPL 类，包括 `REPLServer` 和 `Recoverable`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-classes-with-new)):
+提供自动迁移工具 ([源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-classes-with-new))：
 
 ```bash
 npx codemod@latest @nodejs/repl-classes-with-new
@@ -4124,27 +3890,26 @@ npx codemod@latest @nodejs/repl-classes-with-new
 
 <!-- md-lint skip-deprecation DEP0186 -->
 
-### DEP0187: Passing invalid argument types to `fs.existsSync`
+### DEP0187: 传递无效参数类型给 `fs.existsSync`
 
 <!-- YAML
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/55753
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v23.4.0
     - v22.13.0
     - v20.19.3
     pr-url: https://github.com/nodejs/node/pull/55892
-    description: Documentation-only.
+    description: 仅文档。
 -->
 
-Type: Runtime
+类型：运行时
 
-Passing non-supported argument types is deprecated and, instead of returning `false`,
-will throw an error in a future version.
+传递不支持的参数类型已被弃用，并且在未来的版本中将抛出错误，而不是返回 `false`。
 
-### DEP0188: `process.features.ipv6` and `process.features.uv`
+### DEP0188: `process.features.ipv6` 和 `process.features.uv`
 
 <!-- YAML
 changes:
@@ -4152,12 +3917,12 @@ changes:
     - v23.4.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/55545
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-These properties are unconditionally `true`. Any checks based on these properties are redundant.
+这些属性无条件为 `true`。基于这些属性的任何检查都是多余的。
 
 ### DEP0189: `process.features.tls_*`
 
@@ -4167,33 +3932,30 @@ changes:
     - v23.4.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/55545
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-`process.features.tls_alpn`, `process.features.tls_ocsp`, and `process.features.tls_sni` are
-deprecated, as their values are guaranteed to be identical to that of `process.features.tls`.
+`process.features.tls_alpn`、`process.features.tls_ocsp` 和 `process.features.tls_sni` 已弃用，因为它们的值保证与 `process.features.tls` 的值相同。
 
-### DEP0190: Passing `args` to `node:child_process` `execFile`/`spawn` with `shell` option
+### DEP0190: 传递 `args` 给 `node:child_process` `execFile`/`spawn` 并使用 `shell` 选项
 
 <!-- YAML
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/57199
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v23.11.0
     - v22.15.0
     pr-url: https://github.com/nodejs/node/pull/57389
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-When an `args` array is passed to [`child_process.execFile`][] or [`child_process.spawn`][] with the option
-`{ shell: true }` or `{ shell: '/path/to/shell' }`, the values are not escaped, only space-separated,
-which can lead to shell injection.
+当将 `args` 数组传递给 [`child_process.execFile`][] 或 [`child_process.spawn`][] 并带有选项 `{ shell: true }` 或 `{ shell: '/path/to/shell' }` 时，值不会被转义，仅以空格分隔，这可能导致 Shell 注入。
 
 ### DEP0191: `repl.builtinModules`
 
@@ -4203,24 +3965,20 @@ changes:
      - v24.0.0
      - v22.16.0
     pr-url: https://github.com/nodejs/node/pull/57508
-    description: Documentation-only deprecation
-                 with `--pending-deprecation` support.
+    description: 仅文档弃用，支持 `--pending-deprecation`。
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
-The `node:repl` module exports a `builtinModules` property that contains an array
-of built-in modules. This was incomplete and matched the already deprecated
-`repl._builtinLibs` ([DEP0142][]) instead it's better to rely
-upon `require('node:module').builtinModules`.
+`node:repl` 模块导出一个 `builtinModules` 属性，其中包含内置模块数组。这是不完整的，并且匹配已弃用的 `repl._builtinLibs` ([DEP0142][])，最好依赖 `require('node:module').builtinModules`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-builtin-modules)):
+提供自动迁移工具 ([源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-builtin-modules))：
 
 ```bash
 npx codemod@latest @nodejs/repl-builtin-modules
 ```
 
-### DEP0192: `require('node:_tls_common')` and `require('node:_tls_wrap')`
+### DEP0192: `require('node:_tls_common')` 和 `require('node:_tls_wrap')`
 
 <!-- YAML
 changes:
@@ -4229,13 +3987,12 @@ changes:
       - v22.17.0
       - v20.19.6
     pr-url: https://github.com/nodejs/node/pull/57643
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-The `node:_tls_common` and `node:_tls_wrap` modules are deprecated as they should be considered
-an internal nodejs implementation rather than a public facing API, use `node:tls` instead.
+`node:_tls_common` 和 `node:_tls_wrap` 模块已弃用，因为它们应被视为内部 nodejs 实现而不是公开 API，请改用 `node:tls`。
 
 ### DEP0193: `require('node:_stream_*')`
 
@@ -4243,41 +4000,39 @@ an internal nodejs implementation rather than a public facing API, use `node:tls
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/60657
-    description: End-of-Life.
+    description: 生命周期结束。
   - version:
       - v24.2.0
       - v22.17.0
       - v20.19.6
     pr-url: https://github.com/nodejs/node/pull/58337
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The `node:_stream_duplex`, `node:_stream_passthrough`, `node:_stream_readable`, `node:_stream_transform`,
-`node:_stream_wrap` and `node:_stream_writable` modules are deprecated as they should be considered
-an internal nodejs implementation rather than a public facing API, use `node:stream` instead.
+`node:_stream_duplex`、`node:_stream_passthrough`、`node:_stream_readable`、`node:_stream_transform`、`node:_stream_wrap` 和 `node:_stream_writable` 模块已弃用，因为它们应被视为内部 nodejs 实现而不是公开 API，请改用 `node:stream`。
 
-### DEP0194: HTTP/2 priority signaling
+### DEP0194: HTTP/2 优先级信令
 
 <!-- YAML
 changes:
   - version: v24.2.0
     pr-url: https://github.com/nodejs/node/pull/58293
-    description: End-of-Life.
+    description: 生命周期结束。
   - version:
       - v24.2.0
       - v22.17.0
       - v20.19.6
     pr-url: https://github.com/nodejs/node/pull/58313
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-The support for priority signaling has been removed following its deprecation in the [RFC 9113][].
+对在 [RFC 9113][] 中弃用的优先级信令的支持已被移除。
 
-### DEP0195: Instantiating `node:http` classes without `new`
+### DEP0195: 实例化 `node:http` 类时不使用 `new`
 
 <!-- YAML
 changes:
@@ -4285,22 +4040,20 @@ changes:
       - v24.2.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/58518
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-Instantiating classes without the `new` qualifier exported by the `node:http` module is deprecated.
-It is recommended to use the `new` qualifier instead. This applies to all http classes, such as
-`OutgoingMessage`, `IncomingMessage`, `ServerResponse` and `ClientRequest`.
+实例化 `node:http` 模块导出的类时不使用 `new` 限定符已被弃用。建议改用 `new` 限定符。这适用于所有 http 类，例如 `OutgoingMessage`、`IncomingMessage`、`ServerResponse` 和 `ClientRequest`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/http-classes-with-new)):
+提供自动迁移工具 ([源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/http-classes-with-new))：
 
 ```bash
 npx codemod@latest @nodejs/http-classes-with-new
 ```
 
-### DEP0196: Calling `node:child_process` functions with `options.shell` as an empty string
+### DEP0196: 调用 `node:child_process` 函数时 `options.shell` 为空字符串
 
 <!-- YAML
 changes:
@@ -4308,22 +4061,16 @@ changes:
       - v24.2.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/58564
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-Calling the process-spawning functions with `{ shell: '' }` is almost certainly
-unintentional, and can cause aberrant behavior.
+使用 `{ shell: '' }` 调用进程生成函数几乎肯定是有意的，并且可能导致异常行为。
 
-To make [`child_process.execFile`][] or [`child_process.spawn`][] invoke the
-default shell, use `{ shell: true }`. If the intention is not to invoke a shell
-(default behavior), either omit the `shell` option, or set it to `false` or a
-nullish value.
+要使 [`child_process.execFile`][] 或 [`child_process.spawn`][] 调用默认 shell，请使用 `{ shell: true }`。如果意图是不调用 shell（默认行为），要么省略 `shell` 选项，要么将其设置为 `false` 或 nullish 值。
 
-To make [`child_process.exec`][] invoke the default shell, either omit the
-`shell` option, or set it to a nullish value. If the intention is not to invoke
-a shell, use [`child_process.execFile`][] instead.
+要使 [`child_process.exec`][] 调用默认 shell，要么省略 `shell` 选项，要么将其设置为 nullish 值。如果意图是不调用 shell，请改用 [`child_process.execFile`][]。
 
 ### DEP0197: `util.types.isNativeError()`
 
@@ -4332,37 +4079,37 @@ changes:
   - version:
     - v24.2.0
     pr-url: https://github.com/nodejs/node/pull/58262
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The [`util.types.isNativeError`][] API is deprecated. Please use [`Error.isError`][] instead.
+[`util.types.isNativeError`][] API 已弃用。请改用 [`Error.isError`][]。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/types-is-native-error)):
+提供自动迁移工具 ([源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/types-is-native-error))：
 
 ```bash
 npx codemod@latest @nodejs/types-is-native-error
 ```
 
-### DEP0198: Creating SHAKE-128 and SHAKE-256 digests without an explicit `options.outputLength`
+### DEP0198: 创建 SHAKE-128 和 SHAKE-256 摘要时没有显式 `options.outputLength`
 
 <!-- YAML
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/59008
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
       - v24.4.0
       - v22.18.0
       - v20.19.5
     pr-url: https://github.com/nodejs/node/pull/58942
-    description: Documentation-only deprecation with support for `--pending-deprecation`.
+    description: 仅文档弃用，支持 `--pending-deprecation`。
 -->
 
-Type: Runtime
+类型：运行时
 
-Creating SHAKE-128 and SHAKE-256 digests without an explicit `options.outputLength` is deprecated.
+创建 SHAKE-128 和 SHAKE-256 摘要时没有显式 `options.outputLength` 已被弃用。
 
 ### DEP0199: `require('node:_http_*')`
 
@@ -4372,49 +4119,44 @@ changes:
      - v24.6.0
      - v22.19.0
     pr-url: https://github.com/nodejs/node/pull/59293
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The `node:_http_agent`, `node:_http_client`, `node:_http_common`, `node:_http_incoming`,
-`node:_http_outgoing` and `node:_http_server` modules are deprecated as they should be considered
-an internal nodejs implementation rather than a public facing API, use `node:http` instead.
+`node:_http_agent`、`node:_http_client`、`node:_http_common`、`node:_http_incoming`、`node:_http_outgoing` 和 `node:_http_server` 模块已弃用，因为它们应被视为内部 nodejs 实现而不是公开 API，请改用 `node:http`。
 
-### DEP0200: Closing fs.Dir on garbage collection
+### DEP0200: 垃圾回收时关闭 fs.Dir
 
 <!-- YAML
 changes:
   - version: v24.9.0
     pr-url: https://github.com/nodejs/node/pull/59839
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-Allowing a [`fs.Dir`][] object to be closed on garbage collection is
-deprecated. In the future, doing so might result in a thrown error that will
-terminate the process.
+允许 [`fs.Dir`][] 对象在垃圾回收时关闭已被弃用。在未来，这样做可能会导致抛出错误并终止进程。
 
-Please ensure that all `fs.Dir` objects are explicitly closed using
-`Dir.prototype.close()` or `using` keyword:
+请确保所有 `fs.Dir` 对象都使用 `Dir.prototype.close()` 或 `using` 关键字显式关闭：
 
 ```mjs
 import { opendir } from 'node:fs/promises';
 
 {
   await using dir = await opendir('/async/disposable/directory');
-} // Closed by dir[Symbol.asyncDispose]()
+} // 由 dir[Symbol.asyncDispose]() 关闭
 
 {
   using dir = await opendir('/sync/disposable/directory');
-} // Closed by dir[Symbol.dispose]()
+} // 由 dir[Symbol.dispose]() 关闭
 
 {
   const dir = await opendir('/unconditionally/iterated/directory');
   for await (const entry of dir) {
-    // process an entry
-  } // Closed by iterator
+    // 处理条目
+  } // 由迭代器关闭
 }
 
 {
@@ -4427,42 +4169,37 @@ import { opendir } from 'node:fs/promises';
 }
 ```
 
-### DEP0201: Passing `options.type` to `Duplex.toWeb()`
+### DEP0201: 传递 `options.type` 给 `Duplex.toWeb()`
 
 <!-- YAML
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62173
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v25.7.0
     pr-url: https://github.com/nodejs/node/pull/61632
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-Passing the `type` option to [`Duplex.toWeb()`][] is deprecated. To specify the
-type of the readable half of the constructed readable-writable pair, use the
-`readableType` option instead.
+传递 `type` 选项给 [`Duplex.toWeb()`][] 已被弃用。要指定构造的可读 - 可写对的可读部分的类型，请改用 `readableType` 选项。
 
-### DEP0202: `Http1IncomingMessage` and `Http1ServerResponse` options of HTTP/2 servers
+### DEP0202: HTTP/2 服务器的 `Http1IncomingMessage` 和 `Http1ServerResponse` 选项
 
 <!-- YAML
 changes:
   - version: v25.7.0
     pr-url: https://github.com/nodejs/node/pull/61713
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-The `Http1IncomingMessage` and `Http1ServerResponse` options of
-[`http2.createServer()`][] and [`http2.createSecureServer()`][] are
-deprecated. Use `http1Options.IncomingMessage` and
-`http1Options.ServerResponse` instead.
+[`http2.createServer()`][] 和 [`http2.createSecureServer()`][] 的 `Http1IncomingMessage` 和 `Http1ServerResponse` 选项已弃用。请改用 `http1Options.IncomingMessage` 和 `http1Options.ServerResponse`。
 
 ```cjs
-// Deprecated
+// 已弃用
 const server = http2.createSecureServer({
   allowHTTP1: true,
   Http1IncomingMessage: MyIncomingMessage,
@@ -4471,7 +4208,7 @@ const server = http2.createSecureServer({
 ```
 
 ```cjs
-// Use this instead
+// 请改用此项
 const server = http2.createSecureServer({
   allowHTTP1: true,
   http1Options: {
@@ -4481,47 +4218,37 @@ const server = http2.createSecureServer({
 });
 ```
 
-### DEP0203: Passing `CryptoKey` to `node:crypto` APIs
+### DEP0203: 传递 `CryptoKey` 给 `node:crypto` API
 
 <!-- YAML
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62321
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-Passing a [`CryptoKey`][] to `node:crypto` functions is deprecated and
-will throw an error in a future version. This includes
-[`crypto.createPublicKey()`][], [`crypto.createPrivateKey()`][],
-[`crypto.sign()`][], [`crypto.verify()`][],
-[`crypto.publicEncrypt()`][], [`crypto.publicDecrypt()`][],
-[`crypto.privateEncrypt()`][], [`crypto.privateDecrypt()`][],
-[`Sign.prototype.sign()`][], [`Verify.prototype.verify()`][],
-[`crypto.createHmac()`][], [`crypto.createCipheriv()`][],
-[`crypto.createDecipheriv()`][], [`crypto.encapsulate()`][], and
-[`crypto.decapsulate()`][].
+传递 [`CryptoKey`][] 给 `node:crypto` 函数已被弃用，并将在未来的版本中抛出错误。这包括 [`crypto.createPublicKey()`][]、[`crypto.createPrivateKey()`][]、[`crypto.sign()`][]、[`crypto.verify()`][]、[`crypto.publicEncrypt()`][]、[`crypto.publicDecrypt()`][]、[`crypto.privateEncrypt()`][]、[`crypto.privateDecrypt()`][]、[`Sign.prototype.sign()`][]、[`Verify.prototype.verify()`][]、[`crypto.createHmac()`][]、[`crypto.createCipheriv()`][]、[`crypto.createDecipheriv()`][]、[`crypto.encapsulate()`][] 和 [`crypto.decapsulate()`][]。
 
-### DEP0204: `KeyObject.from()` with non-extractable `CryptoKey`
+### DEP0204: `KeyObject.from()` 与不可提取的 `CryptoKey`
 
 <!-- YAML
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62321
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-Passing a non-extractable [`CryptoKey`][] to [`KeyObject.from()`][] is
-deprecated and will throw an error in a future version.
+传递不可提取的 [`CryptoKey`][] 给 [`KeyObject.from()`][] 已被弃用，并将在未来的版本中抛出错误。
 
 ### DEP0205: `module.register()`
 
@@ -4529,32 +4256,26 @@ deprecated and will throw an error in a future version.
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62401
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62395
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-[`module.register()`][] is deprecated. Use [`module.registerHooks()`][]
-instead.
+[`module.register()`][] 已弃用。请改用 [`module.registerHooks()`][]。
 
-The `module.register()` API provides off-thread async hooks for customizing ES modules;
-the `module.registerHooks()` API provides similar hooks that are synchronous, in-thread, and
-work for all types of modules.
-Supporting async hooks has proven to be complex, involving worker threads orchestration, and there are issues
-that have proven unresolveable. See [caveats of asynchronous customization hooks][]. Please migrate to
-`module.registerHooks()` as soon as possible as `module.register()` will be
-removed in a future version of Node.js.
+`module.register()` API 提供离线异步钩子用于自定义 ES 模块；`module.registerHooks()` API 提供类似的同步、线程内钩子，并适用于所有类型的模块。
+支持异步钩子已被证明是复杂的，涉及 worker 线程协调，并且存在无法解决的问题。详见 [异步自定义钩子的注意事项][]。请尽快迁移到 `module.registerHooks()`，因为 `module.register()` 将在未来的 Node.js 版本中被移除。
 
 [DEP0142]: #dep0142-repl_builtinlibs
 [NIST SP 800-38D]: https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf
 [RFC 6066]: https://tools.ietf.org/html/rfc6066#section-3
-[RFC 8247 Section 2.4]: https://www.rfc-editor.org/rfc/rfc8247#section-2.4
+[RFC 8247 第 2.4 节]: https://www.rfc-editor.org/rfc/rfc8247#section-2.4
 [RFC 9113]: https://datatracker.ietf.org/doc/html/rfc9113#section-5.3.1
 [WHATWG URL API]: url.md#the-whatwg-url-api
-[`"exports"` or `"main"` entry]: packages.md#main-entry-point-export
+[`"exports"` 或 `"main"` 入口]: packages.md#main-entry-point-export
 [`'uncaughtException'`]: process.md#event-uncaughtexception
 [`--force-node-api-uncaught-exceptions-policy`]: cli.md#--force-node-api-uncaught-exceptions-policy
 [`--pending-deprecation`]: cli.md#--pending-deprecation
@@ -4589,7 +4310,7 @@ removed in a future version of Node.js.
 [`clearTimeout()`]: timers.md#cleartimeouttimeout
 [`console.error()`]: console.md#consoleerrordata-args
 [`console.log()`]: console.md#consolelogdata-args
-[`crypto.Certificate()` constructor]: crypto.md#legacy-api
+[`crypto.Certificate()` 构造函数]: crypto.md#legacy-api
 [`crypto.createCipheriv()`]: crypto.md#cryptocreatecipherivalgorithm-key-iv-options
 [`crypto.createDecipheriv()`]: crypto.md#cryptocreatedecipherivalgorithm-key-iv-options
 [`crypto.createHash()`]: crypto.md#cryptocreatehashalgorithm-options
@@ -4707,13 +4428,13 @@ removed in a future version of Node.js.
 [`zlib.bytesWritten`]: zlib.md#zlibbyteswritten
 [alloc]: buffer.md#static-method-bufferallocsize-fill-encoding
 [alloc_unsafe_size]: buffer.md#static-method-bufferallocunsafesize
-[caveats of asynchronous customization hooks]: module.md#caveats-of-asynchronous-customization-hooks
+[异步自定义钩子的注意事项]: module.md#caveats-of-asynchronous-customization-hooks
 [from_arraybuffer]: buffer.md#static-method-bufferfromarraybuffer-byteoffset-length
 [from_string_encoding]: buffer.md#static-method-bufferfromstring-encoding
 [legacy URL API]: url.md#legacy-url-api
 [legacy `urlObject`]: url.md#legacy-urlobject
 [permission model]: permissions.md#permission-model
-[static methods of `crypto.Certificate()`]: crypto.md#class-certificate
+[`crypto.Certificate()` 的静态方法]: crypto.md#class-certificate
 [subpath exports]: packages.md#subpath-exports
 [subpath imports]: packages.md#subpath-imports
 [subpath patterns]: packages.md#subpath-patterns

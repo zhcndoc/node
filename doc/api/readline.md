@@ -2,14 +2,13 @@
 
 <!--introduced_in=v0.10.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/readline.js -->
 
-The `node:readline` module provides an interface for reading data from a
-[Readable][] stream (such as [`process.stdin`][]) one line at a time.
+`node:readline` 模块提供一个接口，用于一次一行地从 [Readable][] 流（例如 [`process.stdin`][]）读取数据。
 
-To use the promise-based APIs:
+要使用基于 Promise 的 API：
 
 ```mjs
 import * as readline from 'node:readline/promises';
@@ -19,7 +18,7 @@ import * as readline from 'node:readline/promises';
 const readline = require('node:readline/promises');
 ```
 
-To use the callback and sync APIs:
+要使用回调和同步 API：
 
 ```mjs
 import * as readline from 'node:readline';
@@ -29,8 +28,7 @@ import * as readline from 'node:readline';
 const readline = require('node:readline');
 ```
 
-The following simple example illustrates the basic use of the `node:readline`
-module.
+以下简单示例说明了 `node:readline` 模块的基本用法。
 
 ```mjs
 import * as readline from 'node:readline/promises';
@@ -52,82 +50,66 @@ const { stdin: input, stdout: output } = require('node:process');
 const rl = readline.createInterface({ input, output });
 
 rl.question('What do you think of Node.js? ', (answer) => {
-  // TODO: Log the answer in a database
+  // TODO: 将答案记录到数据库中
   console.log(`Thank you for your valuable feedback: ${answer}`);
 
   rl.close();
 });
 ```
 
-Once this code is invoked, the Node.js application will not terminate until the
-`readline.Interface` is closed because the interface waits for data to be
-received on the `input` stream.
+一旦调用此代码，Node.js 应用程序将不会终止，直到 `readline.Interface` 关闭，因为该接口等待在 `input` 流上接收数据。
 
 <a id='readline_class_interface'></a>
 
-## Class: `InterfaceConstructor`
+## 类：`InterfaceConstructor`
 
 <!-- YAML
 added: v0.1.104
 -->
 
-* Extends: {EventEmitter}
+* 继承：{EventEmitter}
 
-Instances of the `InterfaceConstructor` class are constructed using the
-`readlinePromises.createInterface()` or `readline.createInterface()` method.
-Every instance is associated with a single `input` [Readable][] stream and a
-single `output` [Writable][] stream.
-The `output` stream is used to print prompts for user input that arrives on,
-and is read from, the `input` stream.
+`InterfaceConstructor` 类的实例是使用 `readlinePromises.createInterface()` 或 `readline.createInterface()` 方法构造的。每个实例都与单个 `input` [Readable][] 流和单个 `output` [Writable][] 流关联。
+`output` 流用于打印提示符，以便用户在 `input` 流上提供输入并从中读取。
 
-### Event: `'close'`
+### 事件：`'close'`
 
 <!-- YAML
 added: v0.1.98
 -->
 
-The `'close'` event is emitted when one of the following occur:
+当发生以下情况之一时，会发出 `'close'` 事件：
 
-* The `rl.close()` method is called and the `InterfaceConstructor` instance has
-  relinquished control over the `input` and `output` streams;
-* The `input` stream receives its `'end'` event;
-* The `input` stream receives <kbd>Ctrl</kbd>+<kbd>D</kbd> to signal
-  end-of-transmission (EOT);
-* The `input` stream receives <kbd>Ctrl</kbd>+<kbd>C</kbd> to signal `SIGINT`
-  and there is no `'SIGINT'` event listener registered on the
-  `InterfaceConstructor` instance.
+* 调用了 `rl.close()` 方法，并且 `InterfaceConstructor` 实例已放弃对 `input` 和 `output` 流的控制；
+* `input` 流接收到其 `'end'` 事件；
+* `input` 流接收到 <kbd>Ctrl</kbd>+<kbd>D</kbd> 以信号传输结束 (EOT)；
+* `input` 流接收到 <kbd>Ctrl</kbd>+<kbd>C</kbd> 以信号 `SIGINT`，并且在 `InterfaceConstructor` 实例上没有注册 `'SIGINT'` 事件监听器。
 
-The listener function is called without passing any arguments.
+监听器函数被调用时不传递任何参数。
 
-The `InterfaceConstructor` instance is finished once the `'close'` event is
-emitted.
+一旦发出 `'close'` 事件，`InterfaceConstructor` 实例即完成。
 
-### Event: `'error'`
+### 事件：`'error'`
 
 <!-- YAML
 added: v16.0.0
 -->
 
-The `'error'` event is emitted when an error occurs on the `input` stream
-associated with the `node:readline` `Interface`.
+当与 `node:readline` `Interface` 关联的 `input` 流发生错误时，会发出 `'error'` 事件。
 
-The listener function is called with an `Error` object passed as the single argument.
+监听器函数被调用时，会传入一个 `Error` 对象作为单个参数。
 
-### Event: `'line'`
+### 事件：`'line'`
 
 <!-- YAML
 added: v0.1.98
 -->
 
-The `'line'` event is emitted whenever the `input` stream receives an
-end-of-line input (`\n`, `\r`, or `\r\n`). This usually occurs when the user
-presses <kbd>Enter</kbd> or <kbd>Return</kbd>.
+每当 `input` 流接收到行尾输入（`\n`、`\r` 或 `\r\n`）时，就会发出 `'line'` 事件。这通常发生在用户按下 <kbd>Enter</kbd> 或 <kbd>Return</kbd> 时。
 
-The `'line'` event is also emitted if new data has been read from a stream and
-that stream ends without a final end-of-line marker.
+如果已从流中读取新数据且该流结束时没有最终的行尾标记，也会发出 `'line'` 事件。
 
-The listener function is called with a string containing the single line of
-received input.
+监听器函数被调用时，会传入一个包含单行接收输入的字符串。
 
 ```js
 rl.on('line', (input) => {
@@ -135,7 +117,7 @@ rl.on('line', (input) => {
 });
 ```
 
-### Event: `'history'`
+### 事件：`'history'`
 
 <!-- YAML
 added:
@@ -143,16 +125,11 @@ added:
   - v14.18.0
 -->
 
-The `'history'` event is emitted whenever the history array has changed.
+每当历史数组发生变化时，就会发出 `'history'` 事件。
 
-The listener function is called with an array containing the history array.
-It will reflect all changes, added lines and removed lines due to
-`historySize` and `removeHistoryDuplicates`.
+监听器函数被调用时，会传入一个包含历史数组的数组。它将反映所有更改，包括因 `historySize` 和 `removeHistoryDuplicates` 而添加和删除的行。
 
-The primary purpose is to allow a listener to persist the history.
-It is also possible for the listener to change the history object. This
-could be useful to prevent certain lines to be added to the history, like
-a password.
+主要目的是允许监听器持久化历史。监听器也可以更改历史对象。这对于防止某些行（如密码）被添加到历史中可能很有用。
 
 ```js
 rl.on('history', (history) => {
@@ -160,19 +137,18 @@ rl.on('history', (history) => {
 });
 ```
 
-### Event: `'pause'`
+### 事件：`'pause'`
 
 <!-- YAML
 added: v0.7.5
 -->
 
-The `'pause'` event is emitted when one of the following occur:
+当发生以下情况之一时，会发出 `'pause'` 事件：
 
-* The `input` stream is paused.
-* The `input` stream is not paused and receives the `'SIGCONT'` event. (See
-  events [`'SIGTSTP'`][] and [`'SIGCONT'`][].)
+* `input` 流被暂停。
+* `input` 流未暂停并接收到 `'SIGCONT'` 事件。（参见事件 [`'SIGTSTP'`][] 和 [`'SIGCONT'`][]。）
 
-The listener function is called without passing any arguments.
+监听器函数被调用时不传递任何参数。
 
 ```js
 rl.on('pause', () => {
@@ -180,15 +156,15 @@ rl.on('pause', () => {
 });
 ```
 
-### Event: `'resume'`
+### 事件：`'resume'`
 
 <!-- YAML
 added: v0.7.5
 -->
 
-The `'resume'` event is emitted whenever the `input` stream is resumed.
+每当 `input` 流恢复时，就会发出 `'resume'` 事件。
 
-The listener function is called without passing any arguments.
+监听器函数被调用时不传递任何参数。
 
 ```js
 rl.on('resume', () => {
@@ -196,42 +172,36 @@ rl.on('resume', () => {
 });
 ```
 
-### Event: `'SIGCONT'`
+### 事件：`'SIGCONT'`
 
 <!-- YAML
 added: v0.7.5
 -->
 
-The `'SIGCONT'` event is emitted when a Node.js process previously moved into
-the background using <kbd>Ctrl</kbd>+<kbd>Z</kbd> (i.e. `SIGTSTP`) is then
-brought back to the foreground using fg(1p).
+当之前使用 <kbd>Ctrl</kbd>+<kbd>Z</kbd>（即 `SIGTSTP`）移至后台的 Node.js 进程使用 fg(1p) 带回前台时，会发出 `'SIGCONT'` 事件。
 
-If the `input` stream was paused _before_ the `SIGTSTP` request, this event will
-not be emitted.
+如果在 `SIGTSTP` 请求 _之前_ `input` 流已暂停，则不会发出此事件。
 
-The listener function is invoked without passing any arguments.
+监听器函数被调用时不传递任何参数。
 
 ```js
 rl.on('SIGCONT', () => {
-  // `prompt` will automatically resume the stream
+  // `prompt` 将自动恢复流
   rl.prompt();
 });
 ```
 
-The `'SIGCONT'` event is _not_ supported on Windows.
+Windows 上 _不_ 支持 `'SIGCONT'` 事件。
 
-### Event: `'SIGINT'`
+### 事件：`'SIGINT'`
 
 <!-- YAML
 added: v0.3.0
 -->
 
-The `'SIGINT'` event is emitted whenever the `input` stream receives
-a <kbd>Ctrl+C</kbd> input, known typically as `SIGINT`. If there are no
-`'SIGINT'` event listeners registered when the `input` stream receives a
-`SIGINT`, the `'pause'` event will be emitted.
+每当 `input` 流接收到 <kbd>Ctrl+C</kbd> 输入（通常称为 `SIGINT`）时，就会发出 `'SIGINT'` 事件。如果当 `input` 流接收到 `SIGINT` 时没有注册 `'SIGINT'` 事件监听器，则会发出 `'pause'` 事件。
 
-The listener function is invoked without passing any arguments.
+监听器函数被调用时不传递任何参数。
 
 ```js
 rl.on('SIGINT', () => {
@@ -241,34 +211,29 @@ rl.on('SIGINT', () => {
 });
 ```
 
-### Event: `'SIGTSTP'`
+### 事件：`'SIGTSTP'`
 
 <!-- YAML
 added: v0.7.5
 -->
 
-The `'SIGTSTP'` event is emitted when the `input` stream receives
-a <kbd>Ctrl</kbd>+<kbd>Z</kbd> input, typically known as `SIGTSTP`. If there are
-no `'SIGTSTP'` event listeners registered when the `input` stream receives a
-`SIGTSTP`, the Node.js process will be sent to the background.
+当 `input` 流接收到 <kbd>Ctrl</kbd>+<kbd>Z</kbd> 输入（通常称为 `SIGTSTP`）时，会发出 `'SIGTSTP'` 事件。如果当 `input` 流接收到 `SIGTSTP` 时没有注册 `'SIGTSTP'` 事件监听器，Node.js 进程将被发送到后台。
 
-When the program is resumed using fg(1p), the `'pause'` and `'SIGCONT'` events
-will be emitted. These can be used to resume the `input` stream.
+当使用 fg(1p) 恢复程序时，将发出 `'pause'` 和 `'SIGCONT'` 事件。这些可用于恢复 `input` 流。
 
-The `'pause'` and `'SIGCONT'` events will not be emitted if the `input` was
-paused before the process was sent to the background.
+如果在进程发送到后台之前 `input` 已暂停，则不会发出 `'pause'` 和 `'SIGCONT'` 事件。
 
-The listener function is invoked without passing any arguments.
+监听器函数被调用时不传递任何参数。
 
 ```js
 rl.on('SIGTSTP', () => {
-  // This will override SIGTSTP and prevent the program from going to the
-  // background.
+  // 这将覆盖 SIGTSTP 并防止程序进入
+  // 后台。
   console.log('Caught SIGTSTP.');
 });
 ```
 
-The `'SIGTSTP'` event is _not_ supported on Windows.
+Windows 上 _不_ 支持 `'SIGTSTP'` 事件。
 
 ### `rl.close()`
 
@@ -276,12 +241,9 @@ The `'SIGTSTP'` event is _not_ supported on Windows.
 added: v0.1.98
 -->
 
-The `rl.close()` method closes the `InterfaceConstructor` instance and
-relinquishes control over the `input` and `output` streams. When called,
-the `'close'` event will be emitted.
+`rl.close()` 方法关闭 `InterfaceConstructor` 实例并放弃对 `input` 和 `output` 流的控制。调用时，将发出 `'close'` 事件。
 
-Calling `rl.close()` does not immediately stop other events (including `'line'`)
-from being emitted by the `InterfaceConstructor` instance.
+调用 `rl.close()` 不会立即停止 `InterfaceConstructor` 实例发出其他事件（包括 `'line'`）。
 
 ### `rl[Symbol.dispose]()`
 
@@ -291,7 +253,7 @@ added:
   - v22.15.0
 -->
 
-Alias for `rl.close()`.
+`rl.close()` 的别名。
 
 ### `rl.pause()`
 
@@ -299,11 +261,9 @@ Alias for `rl.close()`.
 added: v0.3.4
 -->
 
-The `rl.pause()` method pauses the `input` stream, allowing it to be resumed
-later if necessary.
+`rl.pause()` 方法暂停 `input` 流，允许必要时稍后恢复。
 
-Calling `rl.pause()` does not immediately pause other events (including
-`'line'`) from being emitted by the `InterfaceConstructor` instance.
+调用 `rl.pause()` 不会立即暂停 `InterfaceConstructor` 实例发出其他事件（包括 `'line'`）。
 
 ### `rl.prompt([preserveCursor])`
 
@@ -311,18 +271,13 @@ Calling `rl.pause()` does not immediately pause other events (including
 added: v0.1.98
 -->
 
-* `preserveCursor` {boolean} If `true`, prevents the cursor placement from
-  being reset to `0`.
+* `preserveCursor` {boolean} 如果为 `true`，防止光标位置重置为 `0`。
 
-The `rl.prompt()` method writes the `InterfaceConstructor` instances configured
-`prompt` to a new line in `output` in order to provide a user with a new
-location at which to provide input.
+`rl.prompt()` 方法将 `InterfaceConstructor` 实例配置的 `prompt` 写入 `output` 中的新行，以便为用户提供提供输入的新位置。
 
-When called, `rl.prompt()` will resume the `input` stream if it has been
-paused.
+调用时，如果 `input` 流已暂停，`rl.prompt()` 将恢复它。
 
-If the `InterfaceConstructor` was created with `output` set to `null` or
-`undefined` the prompt is not written.
+如果创建 `InterfaceConstructor` 时将 `output` 设置为 `null` 或 `undefined`，则不会写入提示符。
 
 ### `rl.resume()`
 
@@ -330,7 +285,7 @@ If the `InterfaceConstructor` was created with `output` set to `null` or
 added: v0.3.4
 -->
 
-The `rl.resume()` method resumes the `input` stream if it has been paused.
+如果 `input` 流已暂停，`rl.resume()` 方法将恢复它。
 
 ### `rl.setPrompt(prompt)`
 
@@ -340,8 +295,7 @@ added: v0.1.98
 
 * `prompt` {string}
 
-The `rl.setPrompt()` method sets the prompt that will be written to `output`
-whenever `rl.prompt()` is called.
+`rl.setPrompt()` 方法设置每当调用 `rl.prompt()` 时将写入 `output` 的提示符。
 
 ### `rl.getPrompt()`
 
@@ -351,9 +305,9 @@ added:
   - v14.17.0
 -->
 
-* Returns: {string} the current prompt string
+* 返回：{string} 当前提示符字符串
 
-The `rl.getPrompt()` method returns the current prompt used by `rl.prompt()`.
+`rl.getPrompt()` 方法返回 `rl.prompt()` 使用的当前提示符。
 
 ### `rl.write(data[, key])`
 
@@ -363,32 +317,26 @@ added: v0.1.98
 
 * `data` {string}
 * `key` {Object}
-  * `ctrl` {boolean} `true` to indicate the <kbd>Ctrl</kbd> key.
-  * `meta` {boolean} `true` to indicate the <kbd>Meta</kbd> key.
-  * `shift` {boolean} `true` to indicate the <kbd>Shift</kbd> key.
-  * `name` {string} The name of the a key.
+  * `ctrl` {boolean} `true` 表示 <kbd>Ctrl</kbd> 键。
+  * `meta` {boolean} `true` 表示 <kbd>Meta</kbd> 键。
+  * `shift` {boolean} `true` 表示 <kbd>Shift</kbd> 键。
+  * `name` {string} 键的名称。
 
-The `rl.write()` method will write either `data` or a key sequence identified
-by `key` to the `output`. The `key` argument is supported only if `output` is
-a [TTY][] text terminal. See [TTY keybindings][] for a list of key
-combinations.
+`rl.write()` 方法会将 `data` 或由 `key` 标识的键序列写入 `output`。仅当 `output` 是 [TTY][] 文本终端时，才支持 `key` 参数。有关键组合列表，请参阅 [TTY 键绑定][]。
 
-If `key` is specified, `data` is ignored.
+如果指定了 `key`，则忽略 `data`。
 
-When called, `rl.write()` will resume the `input` stream if it has been
-paused.
+调用时，如果 `input` 流已暂停，`rl.write()` 将恢复它。
 
-If the `InterfaceConstructor` was created with `output` set to `null` or
-`undefined` the `data` and `key` are not written.
+如果创建 `InterfaceConstructor` 时将 `output` 设置为 `null` 或 `undefined`，则不会写入 `data` 和 `key`。
 
 ```js
 rl.write('Delete this!');
-// Simulate Ctrl+U to delete the line written previously
+// 模拟 Ctrl+U 删除之前写入的行
 rl.write(null, { ctrl: true, name: 'u' });
 ```
 
-The `rl.write()` method will write the data to the `readline` `Interface`'s
-`input` _as if it were provided by the user_.
+`rl.write()` 方法会将数据写入 `readline` `Interface` 的 `input`，_就像是由用户提供的一样_。
 
 ### `rl[Symbol.asyncIterator]()`
 
@@ -401,23 +349,18 @@ changes:
      - v11.14.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/26989
-    description: Symbol.asyncIterator support is no longer experimental.
+    description: Symbol.asyncIterator 支持不再是实验性的。
 -->
 
-* Returns: {AsyncIterator}
+* 返回：{AsyncIterator}
 
-Create an `AsyncIterator` object that iterates through each line in the input
-stream as a string. This method allows asynchronous iteration of
-`InterfaceConstructor` objects through `for await...of` loops.
+创建一个 `AsyncIterator` 对象，该对象将输入流中的每一行作为字符串进行迭代。此方法允许通过 `for await...of` 循环异步迭代 `InterfaceConstructor` 对象。
 
-Errors in the input stream are not forwarded.
+输入流中的错误不会转发。
 
-If the loop is terminated with `break`, `throw`, or `return`,
-[`rl.close()`][] will be called. In other words, iterating over a
-`InterfaceConstructor` will always consume the input stream fully.
+如果循环使用 `break`、`throw` 或 `return` 终止，将调用 [`rl.close()`][]。换句话说，迭代 `InterfaceConstructor` 将始终完全消耗输入流。
 
-Performance is not on par with the traditional `'line'` event API. Use `'line'`
-instead for performance-sensitive applications.
+性能不如传统的 `'line'` 事件 API。对于性能敏感的应用程序，请改用 `'line'`。
 
 ```js
 async function processLineByLine() {
@@ -426,15 +369,13 @@ async function processLineByLine() {
   });
 
   for await (const line of rl) {
-    // Each line in the readline input will be successively available here as
-    // `line`.
+    // readline 输入中的每一行将在此处依次作为
+    // `line` 可用。
   }
 }
 ```
 
-`readline.createInterface()` will start to consume the input stream once
-invoked. Having asynchronous operations between interface creation and
-asynchronous iteration may result in missed lines.
+`readline.createInterface()` 一旦调用就会开始消耗输入流。在接口创建和异步迭代之间进行异步操作可能会导致遗漏行。
 
 ### `rl.line`
 
@@ -445,24 +386,20 @@ changes:
       - v15.8.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/33676
-    description: Value will always be a string, never undefined.
+    description: 值将始终为字符串，永不为 undefined。
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The current input data being processed by node.
+当前正在由 node 处理的输入数据。
 
-This can be used when collecting input from a TTY stream to retrieve the
-current value that has been processed thus far, prior to the `line` event
-being emitted. Once the `line` event has been emitted, this property will
-be an empty string.
+当从 TTY 流收集输入时，这可用于检索在发出 `line` 事件之前迄今为止已处理的当前值。一旦发出 `line` 事件，此属性将为空字符串。
 
-Be aware that modifying the value during the instance runtime may have
-unintended consequences if `rl.cursor` is not also controlled.
+请注意，如果在实例运行时修改值且未同时控制 `rl.cursor`，可能会产生意外后果。
 
-**If not using a TTY stream for input, use the [`'line'`][] event.**
+**如果不使用 TTY 流作为输入，请使用 [`'line'`][] 事件。**
 
-One possible use case would be as follows:
+一个可能的用例如下：
 
 ```js
 const values = ['lorem ipsum', 'dolor sit amet'];
@@ -484,14 +421,11 @@ process.stdin.on('keypress', (c, k) => {
 added: v0.1.98
 -->
 
-* Type: {number|undefined}
+* 类型：{number|undefined}
 
-The cursor position relative to `rl.line`.
+相对于 `rl.line` 的光标位置。
 
-This will track where the current cursor lands in the input string, when
-reading input from a TTY stream. The position of cursor determines the
-portion of the input string that will be modified as input is processed,
-as well as the column where the terminal caret will be rendered.
+当从 TTY 流读取输入时，这将跟踪当前光标落在输入字符串中的位置。光标的位置决定了在处理输入时将修改的输入字符串部分，以及将呈现终端插入符号的列。
 
 ### `rl.getCursorPos()`
 
@@ -501,13 +435,11 @@ added:
  - v12.16.0
 -->
 
-* Returns: {Object}
-  * `rows` {number} the row of the prompt the cursor currently lands on
-  * `cols` {number} the screen column the cursor currently lands on
+* 返回：{Object}
+  * `rows` {number} 光标当前所在的提示符行
+  * `cols` {number} 光标当前所在的屏幕列
 
-Returns the real position of the cursor in relation to the input
-prompt + string. Long input (wrapping) strings, as well as multiple
-line prompts are included in the calculations.
+返回相对于输入提示符 + 字符串的光标实际位置。长输入（换行）字符串以及多行提示符都包含在计算中。
 
 ## Promises API
 
@@ -518,22 +450,18 @@ changes:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: Marking the API stable.
+    description: 标记该 API 为稳定版。
 -->
 
-### Class: `readlinePromises.Interface`
+### 类：`readlinePromises.Interface`
 
 <!-- YAML
 added: v17.0.0
 -->
 
-* Extends: {readline.InterfaceConstructor}
+* 继承：{readline.InterfaceConstructor}
 
-Instances of the `readlinePromises.Interface` class are constructed using the
-`readlinePromises.createInterface()` method. Every instance is associated with a
-single `input` [Readable][] stream and a single `output` [Writable][] stream.
-The `output` stream is used to print prompts for user input that arrives on,
-and is read from, the `input` stream.
+`readlinePromises.Interface` 类的实例是使用 `readlinePromises.createInterface()` 方法构造的。每个实例都与单个 `input` [Readable][] 流和单个 `output` [Writable][] 流相关联。`output` 流用于打印提示符，以获取在 `input` 流上到达并从中读取的用户输入。
 
 #### `rl.question(query[, options])`
 
@@ -541,34 +469,27 @@ and is read from, the `input` stream.
 added: v17.0.0
 -->
 
-* `query` {string} A statement or query to write to `output`, prepended to the
-  prompt.
+* `query` {string} 要写入 `output` 的语句或查询， prepend 到提示符之前。
 * `options` {Object}
-  * `signal` {AbortSignal} Optionally allows the `question()` to be canceled
-    using an `AbortSignal`.
-* Returns: {Promise} A promise that is fulfilled with the user's
-  input in response to the `query`.
+  * `signal` {AbortSignal} 可选地允许使用 `AbortSignal` 取消 `question()`。
+* 返回：{Promise} 一个 Promise，在用户响应 `query` 的输入后 fulfilled。
 
-The `rl.question()` method displays the `query` by writing it to the `output`,
-waits for user input to be provided on `input`, then invokes the `callback`
-function passing the provided input as the first argument.
+`rl.question()` 方法通过将 `query` 写入 `output` 来显示它，等待在 `input` 上提供用户输入，然后调用 `callback` 函数并将提供的输入作为第一个参数传递。
 
-When called, `rl.question()` will resume the `input` stream if it has been
-paused.
+调用时，如果 `input` 流已暂停，`rl.question()` 将恢复它。
 
-If the `readlinePromises.Interface` was created with `output` set to `null` or
-`undefined` the `query` is not written.
+如果 `readlinePromises.Interface` 创建时 `output` 设为 `null` 或 `undefined`，则不会写入 `query`。
 
-If the question is called after `rl.close()`, it returns a rejected promise.
+如果在 `rl.close()` 之后调用 question，它将返回一个被拒绝的 promise。
 
-Example usage:
+使用示例：
 
 ```mjs
 const answer = await rl.question('What is your favorite food? ');
 console.log(`Oh, so your favorite food is ${answer}`);
 ```
 
-Using an `AbortSignal` to cancel a question.
+使用 `AbortSignal` 取消问题。
 
 ```mjs
 const signal = AbortSignal.timeout(10_000);
@@ -581,7 +502,7 @@ const answer = await rl.question('What is your favorite food? ', { signal });
 console.log(`Oh, so your favorite food is ${answer}`);
 ```
 
-### Class: `readlinePromises.Readline`
+### 类：`readlinePromises.Readline`
 
 <!-- YAML
 added: v17.0.0
@@ -593,9 +514,9 @@ added: v17.0.0
 added: v17.0.0
 -->
 
-* `stream` {stream.Writable} A [TTY][] stream.
+* `stream` {stream.Writable} 一个 [TTY][] 流。
 * `options` {Object}
-  * `autoCommit` {boolean} If `true`, no need to call `rl.commit()`.
+  * `autoCommit` {boolean} 如果为 `true`，则无需调用 `rl.commit()`。
 
 #### `rl.clearLine(dir)`
 
@@ -604,16 +525,13 @@ added: v17.0.0
 -->
 
 * `dir` {integer}
-  * `-1`: to the left from cursor
-  * `1`: to the right from cursor
-  * `0`: the entire line
-* Returns: this
+  * `-1`：光标左侧
+  * `1`：光标右侧
+  * `0`：整行
+* 返回：this
 
-The `rl.clearLine()` method adds to the internal list of pending action an
-action that clears current line of the associated `stream` in a specified
-direction identified by `dir`.
-Call `rl.commit()` to see the effect of this method, unless `autoCommit: true`
-was passed to the constructor.
+`rl.clearLine()` 方法将清除关联 `stream` 当前行的操作添加到内部待处理操作列表中，清除方向由 `dir` 标识。
+调用 `rl.commit()` 以查看此方法的效果，除非构造函数传入了 `autoCommit: true`。
 
 #### `rl.clearScreenDown()`
 
@@ -621,13 +539,10 @@ was passed to the constructor.
 added: v17.0.0
 -->
 
-* Returns: this
+* 返回：this
 
-The `rl.clearScreenDown()` method adds to the internal list of pending action an
-action that clears the associated stream from the current position of the
-cursor down.
-Call `rl.commit()` to see the effect of this method, unless `autoCommit: true`
-was passed to the constructor.
+`rl.clearScreenDown()` 方法将从光标当前位置向下清除关联流的操作添加到内部待处理操作列表中。
+调用 `rl.commit()` 以查看此方法的效果，除非构造函数传入了 `autoCommit: true`。
 
 #### `rl.commit()`
 
@@ -635,10 +550,9 @@ was passed to the constructor.
 added: v17.0.0
 -->
 
-* Returns: {Promise}
+* 返回：{Promise}
 
-The `rl.commit()` method sends all the pending actions to the associated
-`stream` and clears the internal list of pending actions.
+`rl.commit()` 方法将所有待处理操作发送到关联的 `stream` 并清除内部待处理操作列表。
 
 #### `rl.cursorTo(x[, y])`
 
@@ -648,12 +562,10 @@ added: v17.0.0
 
 * `x` {integer}
 * `y` {integer}
-* Returns: this
+* 返回：this
 
-The `rl.cursorTo()` method adds to the internal list of pending action an action
-that moves cursor to the specified position in the associated `stream`.
-Call `rl.commit()` to see the effect of this method, unless `autoCommit: true`
-was passed to the constructor.
+`rl.cursorTo()` 方法将移动光标到关联 `stream` 中指定位置的操作添加到内部待处理操作列表中。
+调用 `rl.commit()` 以查看此方法的效果，除非构造函数传入了 `autoCommit: true`。
 
 #### `rl.moveCursor(dx, dy)`
 
@@ -663,13 +575,10 @@ added: v17.0.0
 
 * `dx` {integer}
 * `dy` {integer}
-* Returns: this
+* 返回：this
 
-The `rl.moveCursor()` method adds to the internal list of pending action an
-action that moves the cursor _relative_ to its current position in the
-associated `stream`.
-Call `rl.commit()` to see the effect of this method, unless `autoCommit: true`
-was passed to the constructor.
+`rl.moveCursor()` 方法将相对于关联 `stream` 中当前位置移动光标的操作添加到内部待处理操作列表中。
+调用 `rl.commit()` 以查看此方法的效果，除非构造函数传入了 `autoCommit: true`。
 
 #### `rl.rollback()`
 
@@ -677,10 +586,9 @@ was passed to the constructor.
 added: v17.0.0
 -->
 
-* Returns: this
+* 返回：this
 
-The `rl.rollback` methods clears the internal list of pending actions without
-sending it to the associated `stream`.
+`rl.rollback` 方法清除内部待处理操作列表，而不将其发送到关联的 `stream`。
 
 ### `readlinePromises.createInterface(options)`
 
@@ -689,45 +597,26 @@ added: v17.0.0
 -->
 
 * `options` {Object}
-  * `input` {stream.Readable} The [Readable][] stream to listen to. This option
-    is _required_.
-  * `output` {stream.Writable} The [Writable][] stream to write readline data
-    to.
-  * `completer` {Function} An optional function used for Tab autocompletion.
-  * `terminal` {boolean} `true` if the `input` and `output` streams should be
-    treated like a TTY, and have ANSI/VT100 escape codes written to it.
-    **Default:** checking `isTTY` on the `output` stream upon instantiation.
-  * `history` {string\[]} Initial list of history lines. This option makes sense
-    only if `terminal` is set to `true` by the user or by an internal `output`
-    check, otherwise the history caching mechanism is not initialized at all.
-    **Default:** `[]`.
-  * `historySize` {number} Maximum number of history lines retained. To disable
-    the history set this value to `0`. This option makes sense only if
-    `terminal` is set to `true` by the user or by an internal `output` check,
-    otherwise the history caching mechanism is not initialized at all.
-    **Default:** `30`.
-  * `removeHistoryDuplicates` {boolean} If `true`, when a new input line added
-    to the history list duplicates an older one, this removes the older line
-    from the list. **Default:** `false`.
-  * `prompt` {string} The prompt string to use. **Default:** `'> '`.
-  * `crlfDelay` {number} If the delay between `\r` and `\n` exceeds
-    `crlfDelay` milliseconds, both `\r` and `\n` will be treated as separate
-    end-of-line input. `crlfDelay` will be coerced to a number no less than
-    `100`. It can be set to `Infinity`, in which case `\r` followed by `\n`
-    will always be considered a single newline (which may be reasonable for
-    [reading files][] with `\r\n` line delimiter). **Default:** `100`.
-  * `escapeCodeTimeout` {number} The duration `readlinePromises` will wait for a
-    character (when reading an ambiguous key sequence in milliseconds one that
-    can both form a complete key sequence using the input read so far and can
-    take additional input to complete a longer key sequence).
-    **Default:** `500`.
-  * `tabSize` {integer} The number of spaces a tab is equal to (minimum 1).
-    **Default:** `8`.
-  * `signal` {AbortSignal} Allows closing the interface using an AbortSignal.
-* Returns: {readlinePromises.Interface}
+  * `input` {stream.Readable} 要监听的 [Readable][] 流。此选项是_必需的_。
+  * `output` {stream.Writable} 要写入 readline 数据的 [Writable][] 流。
+  * `completer` {Function} 一个可选函数，用于 Tab 自动补全。
+  * `terminal` {boolean} 如果 `input` 和 `output` 流应被视为 TTY，并向其写入 ANSI/VT100 转义码，则为 `true`。
+    **默认：** 实例化时检查 `output` 流上的 `isTTY`。
+  * `history` {string\[]} 历史记录行的初始列表。仅当用户将 `terminal` 设置为 `true` 或通过内部 `output` 检查设置为 `true` 时，此选项才有意义，否则历史记录缓存机制根本不会初始化。
+    **默认：** `[]`。
+  * `historySize` {number} 保留的最大历史记录行数。要禁用历史记录，请将此值设置为 `0`。仅当用户将 `terminal` 设置为 `true` 或通过内部 `output` 检查设置为 `true` 时，此选项才有意义，否则历史记录缓存机制根本不会初始化。
+    **默认：** `30`。
+  * `removeHistoryDuplicates` {boolean} 如果为 `true`，当添加到历史记录列表的新输入行重复较旧的行时，这会从列表中删除较旧的行。**默认：** `false`。
+  * `prompt` {string} 要使用的提示符字符串。**默认：** `'> '`。
+  * `crlfDelay` {number} 如果 `\r` 和 `\n` 之间的延迟超过 `crlfDelay` 毫秒，则 `\r` 和 `\n` 都将被视为单独的行尾输入。`crlfDelay` 将被强制转换为不小于 `100` 的数字。它可以设置为 `Infinity`，在这种情况下，`\r` 后跟 `\n` 将始终被视为单个换行符（这对于 [读取文件][] 使用 `\r\n` 行分隔符可能是合理的）。**默认：** `100`。
+  * `escapeCodeTimeout` {number} `readlinePromises` 等待字符的持续时间（当读取模糊键序列时，以毫秒为单位，该序列既可以使用到目前为止读取的输入形成完整的键序列，又可以接受额外的输入来完成更长的键序列）。
+    **默认：** `500`。
+  * `tabSize` {integer} 制表符等于的空格数（最小 1）。
+    **默认：** `8`。
+  * `signal` {AbortSignal} 允许使用 AbortSignal 关闭接口。
+* 返回：{readlinePromises.Interface}
 
-The `readlinePromises.createInterface()` method creates a new `readlinePromises.Interface`
-instance.
+`readlinePromises.createInterface()` 方法创建一个新的 `readlinePromises.Interface` 实例。
 
 ```mjs
 import { createInterface } from 'node:readline/promises';
@@ -746,8 +635,7 @@ const rl = createInterface({
 });
 ```
 
-Once the `readlinePromises.Interface` instance is created, the most common case
-is to listen for the `'line'` event:
+一旦创建了 `readlinePromises.Interface` 实例，最常见的情况是监听 `'line'` 事件：
 
 ```js
 rl.on('line', (line) => {
@@ -755,31 +643,27 @@ rl.on('line', (line) => {
 });
 ```
 
-If `terminal` is `true` for this instance then the `output` stream will get
-the best compatibility if it defines an `output.columns` property and emits
-a `'resize'` event on the `output` if or when the columns ever change
-([`process.stdout`][] does this automatically when it is a TTY).
+如果此实例的 `terminal` 为 `true`，则如果 `output` 流定义了 `output.columns` 属性，并且在列发生变化时或如果列发生变化时在 `output` 上发出 `'resize'` 事件，将获得最佳兼容性（[`process.stdout`][] 在它是 TTY 时会自动执行此操作）。
 
-#### Use of the `completer` function
+#### 使用 `completer` 函数
 
-The `completer` function takes the current line entered by the user
-as an argument, and returns an `Array` with 2 entries:
+`completer` 函数将用户输入的当前行作为参数，并返回一个包含 2 个条目的 `Array`：
 
-* An `Array` with matching entries for the completion.
-* The substring that was used for the matching.
+* 一个 `Array`，包含匹配的补全条目。
+* 用于匹配的子字符串。
 
-For instance: `[[substr1, substr2, ...], originalsubstring]`.
+例如：`[[substr1, substr2, ...], originalsubstring]`。
 
 ```js
 function completer(line) {
   const completions = '.help .error .exit .quit .q'.split(' ');
   const hits = completions.filter((c) => c.startsWith(line));
-  // Show all completions if none found
+  // 如果未找到则显示所有补全
   return [hits.length ? hits : completions, line];
 }
 ```
 
-The `completer` function can also return a {Promise}, or be asynchronous:
+`completer` 函数也可以返回一个 {Promise}，或者是异步的：
 
 ```js
 async function completer(linePartial) {
@@ -788,29 +672,25 @@ async function completer(linePartial) {
 }
 ```
 
-## Callback API
+## 回调 API
 
 <!-- YAML
 added: v0.1.104
 -->
 
-### Class: `readline.Interface`
+### 类：`readline.Interface`
 
 <!-- YAML
 added: v0.1.104
 changes:
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/37947
-    description: The class `readline.Interface` now inherits from `Interface`.
+    description: 类 `readline.Interface` 现在继承自 `Interface`。
 -->
 
-* Extends: {readline.InterfaceConstructor}
+* 继承：{readline.InterfaceConstructor}
 
-Instances of the `readline.Interface` class are constructed using the
-`readline.createInterface()` method. Every instance is associated with a
-single `input` [Readable][] stream and a single `output` [Writable][] stream.
-The `output` stream is used to print prompts for user input that arrives on,
-and is read from, the `input` stream.
+`readline.Interface` 类的实例是使用 `readline.createInterface()` 方法构造的。每个实例都与单个 `input` [Readable][] 流和单个 `output` [Writable][] 流相关联。`output` 流用于打印提示符，以获取在 `input` 流上到达并从中读取的用户输入。
 
 #### `rl.question(query[, options], callback)`
 
@@ -818,31 +698,23 @@ and is read from, the `input` stream.
 added: v0.3.3
 -->
 
-* `query` {string} A statement or query to write to `output`, prepended to the
-  prompt.
+* `query` {string} 要写入 `output` 的语句或查询，prepend 到提示符之前。
 * `options` {Object}
-  * `signal` {AbortSignal} Optionally allows the `question()` to be canceled
-    using an `AbortController`.
-* `callback` {Function} A callback function that is invoked with the user's
-  input in response to the `query`.
+  * `signal` {AbortSignal} 可选地允许使用 `AbortController` 取消 `question()`。
+* `callback` {Function} 一个回调函数，使用用户响应 `query` 的输入来调用。
 
-The `rl.question()` method displays the `query` by writing it to the `output`,
-waits for user input to be provided on `input`, then invokes the `callback`
-function passing the provided input as the first argument.
+`rl.question()` 方法通过将 `query` 写入 `output` 来显示它，等待在 `input` 上提供用户输入，然后调用 `callback` 函数并将提供的输入作为第一个参数传递。
 
-When called, `rl.question()` will resume the `input` stream if it has been
-paused.
+调用时，如果 `input` 流已暂停，`rl.question()` 将恢复它。
 
-If the `readline.Interface` was created with `output` set to `null` or
-`undefined` the `query` is not written.
+如果 `readline.Interface` 创建时 `output` 设为 `null` 或 `undefined`，则不会写入 `query`。
 
-The `callback` function passed to `rl.question()` does not follow the typical
-pattern of accepting an `Error` object or `null` as the first argument.
-The `callback` is called with the provided answer as the only argument.
+传递给 `rl.question()` 的 `callback` 函数不遵循接受 `Error` 对象或 `null` 作为第一个参数的典型模式。
+`callback` 仅使用提供的答案作为唯一参数调用。
 
-An error will be thrown if calling `rl.question()` after `rl.close()`.
+如果在 `rl.close()` 之后调用 `rl.question()`，将抛出错误。
 
-Example usage:
+使用示例：
 
 ```js
 rl.question('What is your favorite food? ', (answer) => {
@@ -850,7 +722,7 @@ rl.question('What is your favorite food? ', (answer) => {
 });
 ```
 
-Using an `AbortController` to cancel a question.
+使用 `AbortController` 取消问题。
 
 ```js
 const ac = new AbortController();
@@ -874,26 +746,21 @@ added: v0.7.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: Passing an invalid callback to the `callback` argument
-                 now throws `ERR_INVALID_ARG_TYPE` instead of
-                 `ERR_INVALID_CALLBACK`.
+    description: 现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
   - version: v12.7.0
     pr-url: https://github.com/nodejs/node/pull/28674
-    description: The stream's write() callback and return value are exposed.
+    description: 流的 write() 回调和返回值被暴露。
 -->
 
 * `stream` {stream.Writable}
 * `dir` {number}
-  * `-1`: to the left from cursor
-  * `1`: to the right from cursor
-  * `0`: the entire line
-* `callback` {Function} Invoked once the operation completes.
-* Returns: {boolean} `false` if `stream` wishes for the calling code to wait for
-  the `'drain'` event to be emitted before continuing to write additional data;
-  otherwise `true`.
+  * `-1`：光标左侧
+  * `1`：光标右侧
+  * `0`：整行
+* `callback` {Function} 操作完成后调用。
+* 返回：{boolean} 如果 `stream` 希望调用代码在继续写入更多数据之前等待 `'drain'` 事件发出，则为 `false`；否则为 `true`。
 
-The `readline.clearLine()` method clears current line of given [TTY][] stream
-in a specified direction identified by `dir`.
+`readline.clearLine()` 方法清除给定 [TTY][] 流的当前行，清除方向由 `dir` 标识。
 
 ### `readline.clearScreenDown(stream[, callback])`
 
@@ -902,22 +769,17 @@ added: v0.7.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: Passing an invalid callback to the `callback` argument
-                 now throws `ERR_INVALID_ARG_TYPE` instead of
-                 `ERR_INVALID_CALLBACK`.
+    description: 现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
   - version: v12.7.0
     pr-url: https://github.com/nodejs/node/pull/28641
-    description: The stream's write() callback and return value are exposed.
+    description: 流的 write() 回调和返回值被暴露。
 -->
 
 * `stream` {stream.Writable}
-* `callback` {Function} Invoked once the operation completes.
-* Returns: {boolean} `false` if `stream` wishes for the calling code to wait for
-  the `'drain'` event to be emitted before continuing to write additional data;
-  otherwise `true`.
+* `callback` {Function} 操作完成后调用。
+* 返回：{boolean} 如果 `stream` 希望调用代码在继续写入更多数据之前等待 `'drain'` 事件发出，则为 `false`；否则为 `true`。
 
-The `readline.clearScreenDown()` method clears the given [TTY][] stream from
-the current position of the cursor down.
+`readline.clearScreenDown()` 方法从光标的当前位置向下清除给定 [TTY][] 流。
 
 ### `readline.createInterface(options)`
 
@@ -928,72 +790,53 @@ changes:
       - v15.14.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37932
-    description: The `signal` option is supported now.
+    description: 现在支持 `signal` 选项。
   - version:
       - v15.8.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/33662
-    description: The `history` option is supported now.
+    description: 现在支持 `history` 选项。
   - version: v13.9.0
     pr-url: https://github.com/nodejs/node/pull/31318
-    description: The `tabSize` option is supported now.
+    description: 现在支持 `tabSize` 选项。
   - version:
     - v8.3.0
     - v6.11.4
     pr-url: https://github.com/nodejs/node/pull/13497
-    description: Remove max limit of `crlfDelay` option.
+    description: 移除 `crlfDelay` 选项的最大限制。
   - version: v6.6.0
     pr-url: https://github.com/nodejs/node/pull/8109
-    description: The `crlfDelay` option is supported now.
+    description: 现在支持 `crlfDelay` 选项。
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/7125
-    description: The `prompt` option is supported now.
+    description: 现在支持 `prompt` 选项。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/6352
-    description: The `historySize` option can be `0` now.
+    description: `historySize` 现在可以为 `0`。
 -->
 
 * `options` {Object}
-  * `input` {stream.Readable} The [Readable][] stream to listen to. This option
-    is _required_.
-  * `output` {stream.Writable} The [Writable][] stream to write readline data
-    to.
-  * `completer` {Function} An optional function used for Tab autocompletion.
-  * `terminal` {boolean} `true` if the `input` and `output` streams should be
-    treated like a TTY, and have ANSI/VT100 escape codes written to it.
-    **Default:** checking `isTTY` on the `output` stream upon instantiation.
-  * `history` {string\[]} Initial list of history lines. This option makes sense
-    only if `terminal` is set to `true` by the user or by an internal `output`
-    check, otherwise the history caching mechanism is not initialized at all.
-    **Default:** `[]`.
-  * `historySize` {number} Maximum number of history lines retained. To disable
-    the history set this value to `0`. This option makes sense only if
-    `terminal` is set to `true` by the user or by an internal `output` check,
-    otherwise the history caching mechanism is not initialized at all.
-    **Default:** `30`.
-  * `removeHistoryDuplicates` {boolean} If `true`, when a new input line added
-    to the history list duplicates an older one, this removes the older line
-    from the list. **Default:** `false`.
-  * `prompt` {string} The prompt string to use. **Default:** `'> '`.
-  * `crlfDelay` {number} If the delay between `\r` and `\n` exceeds
-    `crlfDelay` milliseconds, both `\r` and `\n` will be treated as separate
-    end-of-line input. `crlfDelay` will be coerced to a number no less than
-    `100`. It can be set to `Infinity`, in which case `\r` followed by `\n`
-    will always be considered a single newline (which may be reasonable for
-    [reading files][] with `\r\n` line delimiter). **Default:** `100`.
-  * `escapeCodeTimeout` {number} The duration `readline` will wait for a
-    character (when reading an ambiguous key sequence in milliseconds one that
-    can both form a complete key sequence using the input read so far and can
-    take additional input to complete a longer key sequence).
-    **Default:** `500`.
-  * `tabSize` {integer} The number of spaces a tab is equal to (minimum 1).
-    **Default:** `8`.
-  * `signal` {AbortSignal} Allows closing the interface using an AbortSignal.
-    Aborting the signal will internally call `close` on the interface.
-* Returns: {readline.Interface}
+  * `input` {stream.Readable} 要监听的 [Readable][] 流。此选项是_必需的_。
+  * `output` {stream.Writable} 要写入 readline 数据的 [Writable][] 流。
+  * `completer` {Function} 一个可选函数，用于 Tab 自动补全。
+  * `terminal` {boolean} 如果 `input` 和 `output` 流应被视为 TTY，并向其写入 ANSI/VT100 转义码，则为 `true`。
+    **默认：** 实例化时检查 `output` 流上的 `isTTY`。
+  * `history` {string\[]} 历史记录行的初始列表。仅当用户将 `terminal` 设置为 `true` 或通过内部 `output` 检查设置为 `true` 时，此选项才有意义，否则历史记录缓存机制根本不会初始化。
+    **默认：** `[]`。
+  * `historySize` {number} 保留的最大历史记录行数。要禁用历史记录，请将此值设置为 `0`。仅当用户将 `terminal` 设置为 `true` 或通过内部 `output` 检查设置为 `true` 时，此选项才有意义，否则历史记录缓存机制根本不会初始化。
+    **默认：** `30`。
+  * `removeHistoryDuplicates` {boolean} 如果为 `true`，当添加到历史记录列表的新输入行重复较旧的行时，这会从列表中删除较旧的行。**默认：** `false`。
+  * `prompt` {string} 要使用的提示符字符串。**默认：** `'> '`。
+  * `crlfDelay` {number} 如果 `\r` 和 `\n` 之间的延迟超过 `crlfDelay` 毫秒，则 `\r` 和 `\n` 都将被视为单独的行尾输入。`crlfDelay` 将被强制转换为不小于 `100` 的数字。它可以设置为 `Infinity`，在这种情况下，`\r` 后跟 `\n` 将始终被视为单个换行符（这对于 [读取文件][] 使用 `\r\n` 行分隔符可能是合理的）。**默认：** `100`。
+  * `escapeCodeTimeout` {number} `readline` 等待字符的持续时间（当读取模糊键序列时，以毫秒为单位，该序列既可以使用到目前为止读取的输入形成完整的键序列，又可以接受额外的输入来完成更长的键序列）。
+    **默认：** `500`。
+  * `tabSize` {integer} 制表符等于的空格数（最小 1）。
+    **默认：** `8`。
+  * `signal` {AbortSignal} 允许使用 AbortSignal 关闭接口。
+    中止信号将在内部调用接口上的 `close`。
+* 返回：{readline.Interface}
 
-The `readline.createInterface()` method creates a new `readline.Interface`
-instance.
+`readline.createInterface()` 方法创建一个新的 `readline.Interface` 实例。
 
 ```mjs
 import { createInterface } from 'node:readline';
@@ -1012,8 +855,7 @@ const rl = createInterface({
 });
 ```
 
-Once the `readline.Interface` instance is created, the most common case is to
-listen for the `'line'` event:
+一旦创建了 `readline.Interface` 实例，最常见的情况是监听 `'line'` 事件：
 
 ```js
 rl.on('line', (line) => {
@@ -1021,36 +863,29 @@ rl.on('line', (line) => {
 });
 ```
 
-If `terminal` is `true` for this instance then the `output` stream will get
-the best compatibility if it defines an `output.columns` property and emits
-a `'resize'` event on the `output` if or when the columns ever change
-([`process.stdout`][] does this automatically when it is a TTY).
+如果此实例的 `terminal` 为 `true`，则如果 `output` 流定义了 `output.columns` 属性，并且在列发生变化时或如果列发生变化时在 `output` 上发出 `'resize'` 事件，将获得最佳兼容性（[`process.stdout`][] 在它是 TTY 时会自动执行此操作）。
 
-When creating a `readline.Interface` using `stdin` as input, the program
-will not terminate until it receives an [EOF character][]. To exit without
-waiting for user input, call `process.stdin.unref()`.
+当使用 `stdin` 作为输入创建 `readline.Interface` 时，程序将不会终止，直到它收到 [EOF 字符][]。要在不等待用户输入的情况下退出，请调用 `process.stdin.unref()`。
 
-#### Use of the `completer` function
+#### 使用 `completer` 函数
 
-The `completer` function takes the current line entered by the user
-as an argument, and returns an `Array` with 2 entries:
+`completer` 函数将用户输入的当前行作为参数，并返回一个包含 2 个条目的 `Array`：
 
-* An `Array` with matching entries for the completion.
-* The substring that was used for the matching.
+* 一个 `Array`，包含匹配的补全条目。
+* 用于匹配的子字符串。
 
-For instance: `[[substr1, substr2, ...], originalsubstring]`.
+例如：`[[substr1, substr2, ...], originalsubstring]`。
 
 ```js
 function completer(line) {
   const completions = '.help .error .exit .quit .q'.split(' ');
   const hits = completions.filter((c) => c.startsWith(line));
-  // Show all completions if none found
+  // 如果未找到则显示所有补全
   return [hits.length ? hits : completions, line];
 }
 ```
 
-The `completer` function can be called asynchronously if it accepts two
-arguments:
+如果 `completer` 函数接受两个参数，则可以异步调用它：
 
 ```js
 function completer(linePartial, callback) {
@@ -1065,24 +900,19 @@ added: v0.7.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: Passing an invalid callback to the `callback` argument
-                 now throws `ERR_INVALID_ARG_TYPE` instead of
-                 `ERR_INVALID_CALLBACK`.
+    description: 现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
   - version: v12.7.0
     pr-url: https://github.com/nodejs/node/pull/28674
-    description: The stream's write() callback and return value are exposed.
+    description: 流的 write() 回调和返回值被暴露。
 -->
 
 * `stream` {stream.Writable}
 * `x` {number}
 * `y` {number}
-* `callback` {Function} Invoked once the operation completes.
-* Returns: {boolean} `false` if `stream` wishes for the calling code to wait for
-  the `'drain'` event to be emitted before continuing to write additional data;
-  otherwise `true`.
+* `callback` {Function} 操作完成后调用。
+* 返回：{boolean} 如果 `stream` 希望调用代码在继续写入更多数据之前等待 `'drain'` 事件发出，则为 `false`；否则为 `true`。
 
-The `readline.cursorTo()` method moves cursor to the specified position in a
-given [TTY][] `stream`.
+`readline.cursorTo()` 方法将光标移动到给定 [TTY][] `stream` 中的指定位置。
 
 ### `readline.moveCursor(stream, dx, dy[, callback])`
 
@@ -1091,24 +921,19 @@ added: v0.7.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: Passing an invalid callback to the `callback` argument
-                 now throws `ERR_INVALID_ARG_TYPE` instead of
-                 `ERR_INVALID_CALLBACK`.
+    description: 现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。
   - version: v12.7.0
     pr-url: https://github.com/nodejs/node/pull/28674
-    description: The stream's write() callback and return value are exposed.
+    description: 流的 write() 回调和返回值被暴露。
 -->
 
 * `stream` {stream.Writable}
 * `dx` {number}
 * `dy` {number}
-* `callback` {Function} Invoked once the operation completes.
-* Returns: {boolean} `false` if `stream` wishes for the calling code to wait for
-  the `'drain'` event to be emitted before continuing to write additional data;
-  otherwise `true`.
+* `callback` {Function} 操作完成后调用。
+* 返回：{boolean} 如果 `stream` 希望调用代码在继续写入更多数据之前等待 `'drain'` 事件发出，则为 `false`；否则为 `true`。
 
-The `readline.moveCursor()` method moves the cursor _relative_ to its current
-position in a given [TTY][] `stream`.
+`readline.moveCursor()` 方法将光标相对于给定 [TTY][] `stream` 中的当前位置移动。
 
 ## `readline.emitKeypressEvents(stream[, interface])`
 
@@ -1119,17 +944,13 @@ added: v0.7.7
 * `stream` {stream.Readable}
 * `interface` {readline.InterfaceConstructor}
 
-The `readline.emitKeypressEvents()` method causes the given [Readable][]
-stream to begin emitting `'keypress'` events corresponding to received input.
+`readline.emitKeypressEvents()` 方法使给定的 [Readable][] 流开始发出与接收输入相对应的 `'keypress'` 事件。
 
-Optionally, `interface` specifies a `readline.Interface` instance for which
-autocompletion is disabled when copy-pasted input is detected.
+可选地，`interface` 指定一个 `readline.Interface` 实例，当检测到复制粘贴输入时，该实例禁用自动完成。
 
-If the `stream` is a [TTY][], then it must be in raw mode.
+如果 `stream` 是 [TTY][]，则它必须处于原始模式。
 
-This is automatically called by any readline instance on its `input` if the
-`input` is a terminal. Closing the `readline` instance does not stop
-the `input` from emitting `'keypress'` events.
+如果 `input` 是终端，任何 readline 实例都会在其 `input` 上自动调用此方法。关闭 `readline` 实例不会停止 `input` 发出 `'keypress'` 事件。
 
 ```js
 readline.emitKeypressEvents(process.stdin);
@@ -1137,10 +958,9 @@ if (process.stdin.isTTY)
   process.stdin.setRawMode(true);
 ```
 
-## Example: Tiny CLI
+## 示例：微型 CLI
 
-The following example illustrates the use of `readline.Interface` class to
-implement a small command-line interface:
+以下示例说明了如何使用 `readline.Interface` 类来实现一个小型命令行界面：
 
 ```mjs
 import { createInterface } from 'node:readline';
@@ -1195,11 +1015,9 @@ rl.on('line', (line) => {
 });
 ```
 
-## Example: Read file stream line-by-Line
+## 示例：逐行读取文件流
 
-A common use case for `readline` is to consume an input file one line at a
-time. The easiest way to do so is leveraging the [`fs.ReadStream`][] API as
-well as a `for await...of` loop:
+`readline` 的一个常见用例是逐行消耗输入文件。最简单的方法是利用 [`fs.ReadStream`][] API 以及 `for await...of` 循环：
 
 ```mjs
 import { createReadStream } from 'node:fs';
@@ -1212,11 +1030,11 @@ async function processLineByLine() {
     input: fileStream,
     crlfDelay: Infinity,
   });
-  // Note: we use the crlfDelay option to recognize all instances of CR LF
-  // ('\r\n') in input.txt as a single line break.
+  // 注意：我们使用 crlfDelay 选项来识别 input.txt 中所有 CR LF
+  // ('\r\n') 实例作为单个换行符。
 
   for await (const line of rl) {
-    // Each line in input.txt will be successively available here as `line`.
+    // input.txt 中的每一行将在此处作为 `line` 连续可用。
     console.log(`Line from file: ${line}`);
   }
 }
@@ -1235,11 +1053,11 @@ async function processLineByLine() {
     input: fileStream,
     crlfDelay: Infinity,
   });
-  // Note: we use the crlfDelay option to recognize all instances of CR LF
-  // ('\r\n') in input.txt as a single line break.
+  // 注意：我们使用 crlfDelay 选项来识别 input.txt 中所有 CR LF
+  // ('\r\n') 实例作为单个换行符。
 
   for await (const line of rl) {
-    // Each line in input.txt will be successively available here as `line`.
+    // input.txt 中的每一行将在此处作为 `line` 连续可用。
     console.log(`Line from file: ${line}`);
   }
 }
@@ -1247,7 +1065,7 @@ async function processLineByLine() {
 processLineByLine();
 ```
 
-Alternatively, one could use the [`'line'`][] event:
+或者，可以使用 [`'line'`][] 事件：
 
 ```mjs
 import { createReadStream } from 'node:fs';
@@ -1277,8 +1095,7 @@ rl.on('line', (line) => {
 });
 ```
 
-Currently, `for await...of` loop can be a bit slower. If `async` / `await`
-flow and speed are both essential, a mixed approach can be applied:
+目前，`for await...of` 循环可能有点慢。如果 `async` / `await` 流程和速度都至关重要，则可以应用混合方法：
 
 ```mjs
 import { once } from 'node:events';
@@ -1293,7 +1110,7 @@ import { createInterface } from 'node:readline';
     });
 
     rl.on('line', (line) => {
-      // Process the line.
+      // 处理该行。
     });
 
     await once(rl, 'close');
@@ -1318,7 +1135,7 @@ const { createInterface } = require('node:readline');
     });
 
     rl.on('line', (line) => {
-      // Process the line.
+      // 处理该行。
     });
 
     await once(rl, 'close');
@@ -1330,160 +1147,149 @@ const { createInterface } = require('node:readline');
 })();
 ```
 
-## TTY keybindings
+## TTY 键绑定
 
 <table>
   <tr>
-    <th>Keybindings</th>
-    <th>Description</th>
-    <th>Notes</th>
+    <th>键绑定</th>
+    <th>描述</th>
+    <th>备注</th>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Backspace</kbd></td>
-    <td>Delete line left</td>
-    <td>Doesn't work on Linux, Mac and Windows</td>
+    <td>删除左侧行</td>
+    <td>在 Linux、Mac 和 Windows 上不起作用</td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Delete</kbd></td>
-    <td>Delete line right</td>
-    <td>Doesn't work on Mac</td>
+    <td>删除右侧行</td>
+    <td>在 Mac 上不起作用</td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>C</kbd></td>
-    <td>Emit <code>SIGINT</code> or close the readline instance</td>
+    <td>发出 <code>SIGINT</code> 或关闭 readline 实例</td>
     <td></td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>H</kbd></td>
-    <td>Delete left</td>
+    <td>向左删除</td>
     <td></td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>D</kbd></td>
-    <td>Delete right or close the readline instance in case the current line is empty / EOF</td>
-    <td>Doesn't work on Windows</td>
+    <td>向右删除，或者如果当前行为空 / EOF 则关闭 readline 实例</td>
+    <td>在 Windows 上不起作用</td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>U</kbd></td>
-    <td>Delete from the current position to the line start</td>
+    <td>从当前位置删除到行首</td>
     <td></td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>K</kbd></td>
-    <td>Delete from the current position to the end of line</td>
+    <td>从当前位置删除到行尾</td>
     <td></td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>Y</kbd></td>
-    <td>Yank (Recall) the previously deleted text</td>
-    <td>Only works with text deleted by <kbd>Ctrl</kbd>+<kbd>U</kbd> or <kbd>Ctrl</kbd>+<kbd>K</kbd></td>
+    <td>粘贴（召回）之前删除的文本</td>
+    <td>仅适用于由 <kbd>Ctrl</kbd>+<kbd>U</kbd> 或 <kbd>Ctrl</kbd>+<kbd>K</kbd> 删除的文本</td>
   </tr>
   <tr>
     <td><kbd>Meta</kbd>+<kbd>Y</kbd></td>
-    <td>Cycle among previously deleted texts</td>
-    <td>Only available when the last keystroke is <kbd>Ctrl</kbd>+<kbd>Y</kbd> or <kbd>Meta</kbd>+<kbd>Y</kbd></td>
+    <td>在之前删除的文本之间循环</td>
+    <td>仅当最后一次按键是 <kbd>Ctrl</kbd>+<kbd>Y</kbd> 或 <kbd>Meta</kbd>+<kbd>Y</kbd> 时可用</td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>A</kbd></td>
-    <td>Go to start of line</td>
+    <td>转到行首</td>
     <td></td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>E</kbd></td>
-    <td>Go to end of line</td>
+    <td>转到行尾</td>
     <td></td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>B</kbd></td>
-    <td>Back one character</td>
+    <td>后退一个字符</td>
     <td></td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>F</kbd></td>
-    <td>Forward one character</td>
+    <td>前进一个字符</td>
     <td></td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>L</kbd></td>
-    <td>Clear screen</td>
+    <td>清屏</td>
     <td></td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>N</kbd></td>
-    <td>Next history item</td>
+    <td>下一条历史记录</td>
     <td></td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>P</kbd></td>
-    <td>Previous history item</td>
+    <td>上一条历史记录</td>
     <td></td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>-</kbd></td>
-    <td>Undo previous change</td>
-    <td>Any keystroke that emits key code <code>0x1F</code> will do this action.
-    In many terminals, for example <code>xterm</code>,
-    this is bound to <kbd>Ctrl</kbd>+<kbd>-</kbd>.</td>
+    <td>撤销上一次更改</td>
+    <td>任何发出键码 <code>0x1F</code> 的按键都会执行此操作。在许多终端中，例如 <code>xterm</code>，这绑定到 <kbd>Ctrl</kbd>+<kbd>-</kbd>。</td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>6</kbd></td>
-    <td>Redo previous change</td>
-    <td>Many terminals don't have a default redo keystroke.
-    We choose key code <code>0x1E</code> to perform redo.
-    In <code>xterm</code>, it is bound to <kbd>Ctrl</kbd>+<kbd>6</kbd>
-    by default.</td>
+    <td>重做上一次更改</td>
+    <td>许多终端没有默认的重做按键。我们选择键码 <code>0x1E</code> 来执行重做。在 <code>xterm</code> 中，默认绑定到 <kbd>Ctrl</kbd>+<kbd>6</kbd>。</td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td>
-    <td>Moves running process into background. Type
-    <code>fg</code> and press <kbd>Enter</kbd>
-    to return.</td>
-    <td>Doesn't work on Windows</td>
+    <td>将运行中的进程移到后台。输入 <code>fg</code> 并按 <kbd>Enter</kbd> 返回。</td>
+    <td>在 Windows 上不起作用</td>
   </tr>
   <tr>
-    <td><kbd>Ctrl</kbd>+<kbd>W</kbd> or <kbd>Ctrl</kbd>
+    <td><kbd>Ctrl</kbd>+<kbd>W</kbd> 或 <kbd>Ctrl</kbd>
    +<kbd>Backspace</kbd></td>
-    <td>Delete backward to a word boundary</td>
-    <td><kbd>Ctrl</kbd>+<kbd>Backspace</kbd> Doesn't
-    work on Linux, Mac and Windows</td>
+    <td>向后删除到单词边界</td>
+    <td><kbd>Ctrl</kbd>+<kbd>Backspace</kbd> 在 Linux、Mac 和 Windows 上不起作用</td>
   </tr>
   <tr>
     <td><kbd>Ctrl</kbd>+<kbd>Delete</kbd></td>
-    <td>Delete forward to a word boundary</td>
-    <td>Doesn't work on Mac</td>
+    <td>向前删除到单词边界</td>
+    <td>在 Mac 上不起作用</td>
   </tr>
   <tr>
-    <td><kbd>Ctrl</kbd>+<kbd>Left arrow</kbd> or
+    <td><kbd>Ctrl</kbd>+<kbd>左箭头</kbd> 或
     <kbd>Meta</kbd>+<kbd>B</kbd></td>
-    <td>Word left</td>
-    <td><kbd>Ctrl</kbd>+<kbd>Left arrow</kbd> Doesn't work
-    on Mac</td>
+    <td>向左移动一个单词</td>
+    <td><kbd>Ctrl</kbd>+<kbd>左箭头</kbd> 在 Mac 上不起作用</td>
   </tr>
   <tr>
-    <td><kbd>Ctrl</kbd>+<kbd>Right arrow</kbd> or
+    <td><kbd>Ctrl</kbd>+<kbd>右箭头</kbd> 或
     <kbd>Meta</kbd>+<kbd>F</kbd></td>
-    <td>Word right</td>
-    <td><kbd>Ctrl</kbd>+<kbd>Right arrow</kbd> Doesn't work
-    on Mac</td>
+    <td>向右移动一个单词</td>
+    <td><kbd>Ctrl</kbd>+<kbd>右箭头</kbd> 在 Mac 上不起作用</td>
   </tr>
   <tr>
-    <td><kbd>Meta</kbd>+<kbd>D</kbd> or <kbd>Meta</kbd>
+    <td><kbd>Meta</kbd>+<kbd>D</kbd> 或 <kbd>Meta</kbd>
    +<kbd>Delete</kbd></td>
-    <td>Delete word right</td>
-    <td><kbd>Meta</kbd>+<kbd>Delete</kbd> Doesn't work
-    on windows</td>
+    <td>向右删除单词</td>
+    <td><kbd>Meta</kbd>+<kbd>Delete</kbd> 在 Windows 上不起作用</td>
   </tr>
   <tr>
     <td><kbd>Meta</kbd>+<kbd>Backspace</kbd></td>
-    <td>Delete word left</td>
-    <td>Doesn't work on Mac</td>
+    <td>向左删除单词</td>
+    <td>在 Mac 上不起作用</td>
   </tr>
 </table>
 
-[EOF character]: https://en.wikipedia.org/wiki/End-of-file#EOF_character
+[EOF 字符]: https://en.wikipedia.org/wiki/End-of-file#EOF_character
 [Readable]: stream.md#readable-streams
 [TTY]: tty.md
-[TTY keybindings]: #tty-keybindings
+[TTY 键绑定]: #tty-keybindings
 [Writable]: stream.md#writable-streams
 [`'SIGCONT'`]: #event-sigcont
 [`'SIGTSTP'`]: #event-sigtstp
@@ -1492,4 +1298,4 @@ const { createInterface } = require('node:readline');
 [`process.stdin`]: process.md#processstdin
 [`process.stdout`]: process.md#processstdout
 [`rl.close()`]: #rlclose
-[reading files]: #example-read-file-stream-line-by-line
+[读取文件]: #example-read-file-stream-line-by-line

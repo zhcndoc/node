@@ -7,20 +7,20 @@ added: v22.5.0
 changes:
   - version: v25.7.0
     pr-url: https://github.com/nodejs/node/pull/61262
-    description: SQLite is now a release candidate.
+    description: SQLite 现在是发布候选版本。
   - version:
     - v23.4.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/55890
-    description: SQLite is no longer behind `--experimental-sqlite` but still experimental.
+    description: SQLite 不再位于 `--experimental-sqlite` 之后，但仍为实验性。
 -->
 
-> Stability: 1.2 - Release candidate.
+> 稳定性：1.2 - 发布候选版本。
 
 <!-- source_link=lib/sqlite.js -->
 
-The `node:sqlite` module facilitates working with SQLite databases.
-To access it:
+`node:sqlite` 模块用于方便地操作 SQLite 数据库。
+要访问它：
 
 ```mjs
 import sqlite from 'node:sqlite';
@@ -30,32 +30,32 @@ import sqlite from 'node:sqlite';
 const sqlite = require('node:sqlite');
 ```
 
-This module is only available under the `node:` scheme.
+此模块仅在 `node:` 方案下可用。
 
-The following example shows the basic usage of the `node:sqlite` module to open
-an in-memory database, write data to the database, and then read the data back.
+以下示例展示了 `node:sqlite` 模块的基本用法，用于打开
+一个内存数据库，向数据库写入数据，然后读回数据。
 
 ```mjs
 import { DatabaseSync } from 'node:sqlite';
 const database = new DatabaseSync(':memory:');
 
-// Execute SQL statements from strings.
+// 从字符串执行 SQL 语句。
 database.exec(`
   CREATE TABLE data(
     key INTEGER PRIMARY KEY,
     value TEXT
   ) STRICT
 `);
-// Create a prepared statement to insert data into the database.
+// 创建一个预准备语句以将数据插入数据库。
 const insert = database.prepare('INSERT INTO data (key, value) VALUES (?, ?)');
-// Execute the prepared statement with bound values.
+// 执行绑定了值的预准备语句。
 insert.run(1, 'hello');
 insert.run(2, 'world');
-// Create a prepared statement to read data from the database.
+// 创建一个预准备语句以从数据库读取数据。
 const query = database.prepare('SELECT * FROM data ORDER BY key');
-// Execute the prepared statement and log the result set.
+// 执行预准备语句并记录结果集。
 console.log(query.all());
-// Prints: [ { key: 1, value: 'hello' }, { key: 2, value: 'world' } ]
+// 输出：[ { key: 1, value: 'hello' }, { key: 2, value: 'world' } ]
 ```
 
 ```cjs
@@ -63,49 +63,47 @@ console.log(query.all());
 const { DatabaseSync } = require('node:sqlite');
 const database = new DatabaseSync(':memory:');
 
-// Execute SQL statements from strings.
+// 从字符串执行 SQL 语句。
 database.exec(`
   CREATE TABLE data(
     key INTEGER PRIMARY KEY,
     value TEXT
   ) STRICT
 `);
-// Create a prepared statement to insert data into the database.
+// 创建一个预准备语句以将数据插入数据库。
 const insert = database.prepare('INSERT INTO data (key, value) VALUES (?, ?)');
-// Execute the prepared statement with bound values.
+// 执行绑定了值的预准备语句。
 insert.run(1, 'hello');
 insert.run(2, 'world');
-// Create a prepared statement to read data from the database.
+// 创建一个预准备语句以从数据库读取数据。
 const query = database.prepare('SELECT * FROM data ORDER BY key');
-// Execute the prepared statement and log the result set.
+// 执行预准备语句并记录结果集。
 console.log(query.all());
-// Prints: [ { key: 1, value: 'hello' }, { key: 2, value: 'world' } ]
+// 输出：[ { key: 1, value: 'hello' }, { key: 2, value: 'world' } ]
 ```
 
-## Type conversion between JavaScript and SQLite
+## JavaScript 和 SQLite 之间的类型转换
 
-When Node.js writes to or reads from SQLite, it is necessary to convert between
-JavaScript data types and SQLite's [data types][]. Because JavaScript supports
-more data types than SQLite, only a subset of JavaScript types are supported.
-Attempting to write an unsupported data type to SQLite will result in an
-exception.
+当 Node.js 写入或读取 SQLite 时，需要在
+JavaScript 数据类型和 SQLite 的 [数据类型][] 之间进行转换。因为 JavaScript 支持
+比 SQLite 更多的数据类型，所以只支持 JavaScript 类型的子集。
+尝试将不支持的数据类型写入 SQLite 将导致
+异常。
 
-| Storage class | JavaScript to SQLite       | SQLite to JavaScript                  |
+| 存储类 | JavaScript 到 SQLite | SQLite 到 JavaScript |
 | ------------- | -------------------------- | ------------------------------------- |
-| `NULL`        | {null}                     | {null}                                |
-| `INTEGER`     | {number} or {bigint}       | {number} or {bigint} _(configurable)_ |
-| `REAL`        | {number}                   | {number}                              |
-| `TEXT`        | {string}                   | {string}                              |
-| `BLOB`        | {TypedArray} or {DataView} | {Uint8Array}                          |
+| `NULL` | {null} | {null} |
+| `INTEGER` | {number} 或 {bigint} | {number} 或 {bigint} _（可配置）_ |
+| `REAL` | {number} | {number} |
+| `TEXT` | {string} | {string} |
+| `BLOB` | {TypedArray} 或 {DataView} | {Uint8Array} |
 
-APIs that read values from SQLite have a configuration option that determines
-whether `INTEGER` values are converted to `number` or `bigint` in JavaScript,
-such as the `readBigInts` option for statements and the `useBigIntArguments`
-option for user-defined functions. If Node.js reads an `INTEGER` value from
-SQLite that is outside the JavaScript [safe integer][] range, and the option to
-read BigInts is not enabled, then an `ERR_OUT_OF_RANGE` error will be thrown.
+从 SQLite 读取值的 API 有一个配置选项，用于确定
+`INTEGER` 值在 JavaScript 中是转换为 `number` 还是 `bigint`，
+例如语句的 `readBigInts` 选项和用户定义函数的 `useBigIntArguments`
+选项。如果 Node.js 从 SQLite 读取的 `INTEGER` 值超出 JavaScript [安全整数][] 范围，且未启用读取 BigInt 的选项，则将抛出 `ERR_OUT_OF_RANGE` 错误。
 
-## Class: `DatabaseSync`
+## 类：`DatabaseSync`
 
 <!-- YAML
 added: v22.5.0
@@ -114,16 +112,16 @@ changes:
     - v24.0.0
     - v22.16.0
     pr-url: https://github.com/nodejs/node/pull/57752
-    description: Add `timeout` option.
+    description: 添加 `timeout` 选项。
   - version:
     - v23.10.0
     - v22.15.0
     pr-url: https://github.com/nodejs/node/pull/56991
-    description: The `path` argument now supports Buffer and URL objects.
+    description: `path` 参数现在支持 Buffer 和 URL 对象。
 -->
 
-This class represents a single [connection][] to a SQLite database. All APIs
-exposed by this class execute synchronously.
+此类表示到 SQLite 数据库的单个 [连接][]。此类暴露的所有 API
+均同步执行。
 
 ### `new DatabaseSync(path[, options])`
 
@@ -134,77 +132,70 @@ changes:
      - v25.5.0
      - v24.14.0
     pr-url: https://github.com/nodejs/node/pull/61266
-    description: Enable `defensive` by default.
+    description: 默认启用 `defensive`。
   - version:
       - v25.1.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/60217
-    description: Add `defensive` option.
+    description: 添加 `defensive` 选项。
   - version:
       - v24.4.0
       - v22.18.0
     pr-url: https://github.com/nodejs/node/pull/58697
-    description: Add new SQLite database options.
+    description: 添加新的 SQLite 数据库选项。
 -->
 
-* `path` {string | Buffer | URL} The path of the database. A SQLite database can be
-  stored in a file or completely [in memory][]. To use a file-backed database,
-  the path should be a file path. To use an in-memory database, the path
-  should be the special name `':memory:'`.
-* `options` {Object} Configuration options for the database connection. The
-  following options are supported:
-  * `open` {boolean} If `true`, the database is opened by the constructor. When
-    this value is `false`, the database must be opened via the `open()` method.
-    **Default:** `true`.
-  * `readOnly` {boolean} If `true`, the database is opened in read-only mode.
-    If the database does not exist, opening it will fail. **Default:** `false`.
-  * `enableForeignKeyConstraints` {boolean} If `true`, foreign key constraints
-    are enabled. This is recommended but can be disabled for compatibility with
-    legacy database schemas. The enforcement of foreign key constraints can be
-    enabled and disabled after opening the database using
-    [`PRAGMA foreign_keys`][]. **Default:** `true`.
-  * `enableDoubleQuotedStringLiterals` {boolean} If `true`, SQLite will accept
-    [double-quoted string literals][]. This is not recommended but can be
-    enabled for compatibility with legacy database schemas.
-    **Default:** `false`.
-  * `allowExtension` {boolean} If `true`, the `loadExtension` SQL function
-    and the `loadExtension()` method are enabled.
-    You can call `enableLoadExtension(false)` later to disable this feature.
-    **Default:** `false`.
-  * `timeout` {number} The [busy timeout][] in milliseconds. This is the maximum amount of
-    time that SQLite will wait for a database lock to be released before
-    returning an error. **Default:** `0`.
-  * `readBigInts` {boolean} If `true`, integer fields are read as JavaScript `BigInt` values. If `false`,
-    integer fields are read as JavaScript numbers. **Default:** `false`.
-  * `returnArrays` {boolean} If `true`, query results are returned as arrays instead of objects.
-    **Default:** `false`.
-  * `allowBareNamedParameters` {boolean} If `true`, allows binding named parameters without the prefix
-    character (e.g., `foo` instead of `:foo`). **Default:** `true`.
-  * `allowUnknownNamedParameters` {boolean} If `true`, unknown named parameters are ignored when binding.
-    If `false`, an exception is thrown for unknown named parameters. **Default:** `false`.
-  * `defensive` {boolean} If `true`, enables the defensive flag. When the defensive flag is enabled,
-    language features that allow ordinary SQL to deliberately corrupt the database file are disabled.
-    The defensive flag can also be set using `enableDefensive()`.
-    **Default:** `true`.
-  * `limits` {Object} Configuration for various SQLite limits. These limits
-    can be used to prevent excessive resource consumption when handling
-    potentially malicious input. See [Run-Time Limits][] and [Limit Constants][]
-    in the SQLite documentation for details. Default values are determined by
-    SQLite's compile-time defaults and may vary depending on how SQLite was
-    built. The following properties are supported:
-    * `length` {number} Maximum length of a string or BLOB.
-    * `sqlLength` {number} Maximum length of an SQL statement.
-    * `column` {number} Maximum number of columns.
-    * `exprDepth` {number} Maximum depth of an expression tree.
-    * `compoundSelect` {number} Maximum number of terms in a compound SELECT.
-    * `vdbeOp` {number} Maximum number of VDBE instructions.
-    * `functionArg` {number} Maximum number of function arguments.
-    * `attach` {number} Maximum number of attached databases.
-    * `likePatternLength` {number} Maximum length of a LIKE pattern.
-    * `variableNumber` {number} Maximum number of SQL variables.
-    * `triggerDepth` {number} Maximum trigger recursion depth.
+* `path` {string | Buffer | URL} 数据库的路径。SQLite 数据库可以
+  存储在文件中或完全 [在内存中][]。要使用基于文件的数据库，
+  路径应为文件路径。要使用内存数据库，路径
+  应为特殊名称 `':memory:'`。
+* `options` {Object} 数据库连接的配置选项。支持
+  以下选项：
+  * `open` {boolean} 如果为 `true`，数据库由构造函数打开。当
+    此值为 `false` 时，必须通过 `open()` 方法打开数据库。
+    **默认：** `true`。
+  * `readOnly` {boolean} 如果为 `true`，数据库以只读模式打开。
+    如果数据库不存在，打开它将失败。**默认：** `false`。
+  * `enableForeignKeyConstraints` {boolean} 如果为 `true`，则启用外键约束。
+    推荐使用，但为了与旧数据库模式兼容可以禁用。外键约束的执行可以在
+    打开数据库后使用 [`PRAGMA foreign_keys`][] 启用和禁用。**默认：** `true`。
+  * `enableDoubleQuotedStringLiterals` {boolean} 如果为 `true`，SQLite 将接受
+    [双引号字符串字面量][]。不推荐使用，但为了与旧数据库模式兼容可以
+    启用。**默认：** `false`。
+  * `allowExtension` {boolean} 如果为 `true`，则启用 `loadExtension` SQL 函数
+    和 `loadExtension()` 方法。
+    你可以稍后调用 `enableLoadExtension(false)` 来禁用此功能。
+    **默认：** `false`。
+  * `timeout` {number} [繁忙超时][]（毫秒）。这是
+    SQLite 在返回错误之前等待数据库锁释放的最大时间量。**默认：** `0`。
+  * `readBigInts` {boolean} 如果为 `true`，整数字段作为 JavaScript `BigInt` 值读取。如果为 `false`，
+    整数字段作为 JavaScript 数字读取。**默认：** `false`。
+  * `returnArrays` {boolean} 如果为 `true`，查询结果作为数组返回而不是对象。
+    **默认：** `false`。
+  * `allowBareNamedParameters` {boolean} 如果为 `true`，允许绑定不带前缀
+    字符的命名参数（例如，`foo` 而不是 `:foo`）。**默认：** `true`。
+  * `allowUnknownNamedParameters` {boolean} 如果为 `true`，绑定时忽略未知的命名参数。
+    如果为 `false`，则对未知的命名参数抛出异常。**默认：** `false`。
+  * `defensive` {boolean} 如果为 `true`，则启用防御标志。当启用防御标志时，
+    允许普通 SQL 故意破坏数据库文件的语言功能将被禁用。
+    防御标志也可以使用 `enableDefensive()` 设置。
+    **默认：** `true`。
+  * `limits` {Object} 各种 SQLite 限制的配置。这些限制
+    可用于在处理潜在恶意输入时防止过度消耗资源。详见 SQLite 文档中的 [运行时限制][] 和 [限制常量][]。默认值由
+    SQLite 的编译时默认值确定，并可能因 SQLite 的构建方式而异。支持以下属性：
+    * `length` {number} 字符串或 BLOB 的最大长度。
+    * `sqlLength` {number} SQL 语句的最大长度。
+    * `column` {number} 最大列数。
+    * `exprDepth` {number} 表达式树的最大深度。
+    * `compoundSelect` {number} 复合 SELECT 中的最大项数。
+    * `vdbeOp` {number} VDBE 指令的最大数量。
+    * `functionArg` {number} 函数参数的最大数量。
+    * `attach` {number} 附加数据库的最大数量。
+    * `likePatternLength` {number} LIKE 模式的最大长度。
+    * `variableNumber` {number} SQL 变量的最大数量。
+    * `triggerDepth` {number} 触发器递归的最大深度。
 
-Constructs a new `DatabaseSync` instance.
+构造一个新的 `DatabaseSync` 实例。
 
 ### `database.aggregate(name, options)`
 
@@ -214,36 +205,31 @@ added:
  - v22.16.0
 -->
 
-Registers a new aggregate function with the SQLite database. This method is a wrapper around
-[`sqlite3_create_window_function()`][].
+向 SQLite 数据库注册一个新的聚合函数。此方法是
+[`sqlite3_create_window_function()`][] 的包装器。
 
-* `name` {string} The name of the SQLite function to create.
-* `options` {Object} Function configuration settings.
-  * `deterministic` {boolean} If `true`, the [`SQLITE_DETERMINISTIC`][] flag is
-    set on the created function. **Default:** `false`.
-  * `directOnly` {boolean} If `true`, the [`SQLITE_DIRECTONLY`][] flag is set on
-    the created function. **Default:** `false`.
-  * `useBigIntArguments` {boolean} If `true`, integer arguments to `options.step` and `options.inverse`
-    are converted to `BigInt`s. If `false`, integer arguments are passed as
-    JavaScript numbers. **Default:** `false`.
-  * `varargs` {boolean} If `true`, `options.step` and `options.inverse` may be invoked with any number of
-    arguments (between zero and [`SQLITE_MAX_FUNCTION_ARG`][]). If `false`,
-    `inverse` and `step` must be invoked with exactly `length` arguments.
-    **Default:** `false`.
-  * `start` {number | string | null | Array | Object | Function} The identity
-    value for the aggregation function. This value is used when the aggregation
-    function is initialized. When a {Function} is passed the identity will be its return value.
-  * `step` {Function} The function to call for each row in the aggregation. The
-    function receives the current state and the row value. The return value of
-    this function should be the new state.
-  * `result` {Function} The function to call to get the result of the
-    aggregation. The function receives the final state and should return the
-    result of the aggregation.
-  * `inverse` {Function} When this function is provided, the `aggregate` method will work as a window function.
-    The function receives the current state and the dropped row value. The return value of this function should be the
-    new state.
+* `name` {string} 要创建的 SQLite 函数的名称。
+* `options` {Object} 函数配置设置。
+  * `deterministic` {boolean} 如果为 `true`，则在创建的函数上设置 [`SQLITE_DETERMINISTIC`][] 标志。**默认：** `false`。
+  * `directOnly` {boolean} 如果为 `true`，则在创建的函数上设置 [`SQLITE_DIRECTONLY`][] 标志。**默认：** `false`。
+  * `useBigIntArguments` {boolean} 如果为 `true`，`options.step` 和 `options.inverse` 的整数参数
+    转换为 `BigInt`。如果为 `false`，整数参数作为
+    JavaScript 数字传递。**默认：** `false`。
+  * `varargs` {boolean} 如果为 `true`，`options.step` 和 `options.inverse` 可以使用任意数量的
+    参数调用（介于零和 [`SQLITE_MAX_FUNCTION_ARG`][] 之间）。如果为 `false`，
+    `inverse` 和 `step` 必须使用恰好 `length` 个参数调用。
+    **默认：** `false`。
+  * `start` {number | string | null | Array | Object | Function} 聚合函数的身份
+    值。当聚合函数初始化时使用此值。当传递 {Function} 时，身份值将是其返回值。
+  * `step` {Function} 为聚合中的每一行调用的函数。该
+    函数接收当前状态和行值。此函数的返回值应为新状态。
+  * `result` {Function} 调用以获取聚合结果的函数。该函数接收最终状态并应返回聚合的
+    结果。
+  * `inverse` {Function} 当提供此函数时，`aggregate` 方法将作为窗口函数工作。
+    该函数接收当前状态和丢弃的行值。此函数的返回值应为
+    新状态。
 
-When used as a window function, the `result` function will be called multiple times.
+当用作窗口函数时，`result` 函数将被调用多次。
 
 ```cjs
 const { DatabaseSync } = require('node:sqlite');
@@ -293,8 +279,8 @@ db.prepare('SELECT sumint(y) as total FROM t3').get(); // { total: 21 }
 added: v22.5.0
 -->
 
-Closes the database connection. An exception is thrown if the database is not
-open. This method is a wrapper around [`sqlite3_close_v2()`][].
+关闭数据库连接。如果数据库未
+打开，则抛出异常。此方法是 [`sqlite3_close_v2()`][] 的包装器。
 
 ### `database.loadExtension(path)`
 
@@ -304,11 +290,11 @@ added:
   - v22.13.0
 -->
 
-* `path` {string} The path to the shared library to load.
+* `path` {string} 要加载的共享库的路径。
 
-Loads a shared library into the database connection. This method is a wrapper
-around [`sqlite3_load_extension()`][]. It is required to enable the
-`allowExtension` option when constructing the `DatabaseSync` instance.
+将共享库加载到数据库连接中。此方法是
+[`sqlite3_load_extension()`][] 的包装器。构造 `DatabaseSync` 实例时需要启用
+`allowExtension` 选项。
 
 ### `database.enableLoadExtension(allow)`
 
@@ -318,11 +304,11 @@ added:
   - v22.13.0
 -->
 
-* `allow` {boolean} Whether to allow loading extensions.
+* `allow` {boolean} 是否允许加载扩展。
 
-Enables or disables the `loadExtension` SQL function, and the `loadExtension()`
-method. When `allowExtension` is `false` when constructing, you cannot enable
-loading extensions for security reasons.
+启用或禁用 `loadExtension` SQL 函数和 `loadExtension()`
+方法。当构造时 `allowExtension` 为 `false` 时，出于安全原因无法启用
+加载扩展。
 
 ### `database.enableDefensive(active)`
 
@@ -332,11 +318,11 @@ added:
   - v24.12.0
 -->
 
-* `active` {boolean} Whether to set the defensive flag.
+* `active` {boolean} 是否设置防御标志。
 
-Enables or disables the defensive flag. When the defensive flag is active,
-language features that allow ordinary SQL to deliberately corrupt the database file are disabled.
-See [`SQLITE_DBCONFIG_DEFENSIVE`][] in the SQLite documentation for details.
+启用或禁用防御标志。当防御标志激活时，
+允许普通 SQL 故意破坏数据库文件的语言功能将被禁用。
+详见 SQLite 文档中的 [`SQLITE_DBCONFIG_DEFENSIVE`][]。
 
 ### `database.location([dbName])`
 
@@ -346,12 +332,11 @@ added:
   - v22.16.0
 -->
 
-* `dbName` {string} Name of the database. This can be `'main'` (the default primary database) or any other
-  database that has been added with [`ATTACH DATABASE`][] **Default:** `'main'`.
-* Returns: {string | null} The location of the database file. When using an in-memory database,
-  this method returns null.
+* `dbName` {string} 数据库名称。这可以是 `'main'`（默认主数据库）或任何已通过 [`ATTACH DATABASE`][] 添加的其他数据库。**默认：** `'main'`。
+* 返回值：{string | null} 数据库文件的位置。当使用内存数据库时，
+  此方法返回 null。
 
-This method is a wrapper around [`sqlite3_db_filename()`][]
+此方法是 [`sqlite3_db_filename()`][] 的包装器。
 
 ### `database.exec(sql)`
 
@@ -359,11 +344,10 @@ This method is a wrapper around [`sqlite3_db_filename()`][]
 added: v22.5.0
 -->
 
-* `sql` {string} A SQL string to execute.
+* `sql` {string} 要执行的 SQL 字符串。
 
-This method allows one or more SQL statements to be executed without returning
-any results. This method is useful when executing SQL statements read from a
-file. This method is a wrapper around [`sqlite3_exec()`][].
+此方法允许执行一个或多个 SQL 语句而不返回
+任何结果。当执行从文件读取的 SQL 语句时，此方法很有用。此方法是 [`sqlite3_exec()`][] 的包装器。
 
 ### `database.function(name[, options], fn)`
 
@@ -373,27 +357,25 @@ added:
   - v22.13.0
 -->
 
-* `name` {string} The name of the SQLite function to create.
-* `options` {Object} Optional configuration settings for the function. The
-  following properties are supported:
-  * `deterministic` {boolean} If `true`, the [`SQLITE_DETERMINISTIC`][] flag is
-    set on the created function. **Default:** `false`.
-  * `directOnly` {boolean} If `true`, the [`SQLITE_DIRECTONLY`][] flag is set on
-    the created function. **Default:** `false`.
-  * `useBigIntArguments` {boolean} If `true`, integer arguments to `function`
-    are converted to `BigInt`s. If `false`, integer arguments are passed as
-    JavaScript numbers. **Default:** `false`.
-  * `varargs` {boolean} If `true`, `function` may be invoked with any number of
-    arguments (between zero and [`SQLITE_MAX_FUNCTION_ARG`][]). If `false`,
-    `function` must be invoked with exactly `function.length` arguments.
-    **Default:** `false`.
-* `fn` {Function} The JavaScript function to call when the SQLite function is
-  invoked. The return value of this function should be a valid SQLite data type:
-  see [Type conversion between JavaScript and SQLite][]. The result defaults to
-  `NULL` if the return value is `undefined`.
+* `name` {string} 要创建的 SQLite 函数的名称。
+* `options` {Object} 函数的可选配置设置。支持
+  以下属性：
+  * `deterministic` {boolean} 如果为 `true`，则在创建的函数上设置 [`SQLITE_DETERMINISTIC`][] 标志。**默认：** `false`。
+  * `directOnly` {boolean} 如果为 `true`，则在创建的函数上设置 [`SQLITE_DIRECTONLY`][] 标志。**默认：** `false`。
+  * `useBigIntArguments` {boolean} 如果为 `true`，`function` 的整数参数
+    转换为 `BigInt`。如果为 `false`，整数参数作为
+    JavaScript 数字传递。**默认：** `false`。
+  * `varargs` {boolean} 如果为 `true`，`function` 可以使用任意数量的
+    参数调用（介于零和 [`SQLITE_MAX_FUNCTION_ARG`][] 之间）。如果为 `false`，
+    `function` 必须使用恰好 `function.length` 个参数调用。
+    **默认：** `false`。
+* `fn` {Function} 当调用 SQLite 函数时要调用的 JavaScript 函数。
+  此函数的返回值应为有效的 SQLite 数据类型：
+  详见 [JavaScript 和 SQLite 之间的类型转换][]。如果返回值为 `undefined`，则结果默认为
+  `NULL`。
 
-This method is used to create SQLite user-defined functions. This method is a
-wrapper around [`sqlite3_create_function_v2()`][].
+此方法用于创建 SQLite 用户定义函数。此方法是
+[`sqlite3_create_function_v2()`][] 的包装器。
 
 ### `database.setAuthorizer(callback)`
 
@@ -401,34 +383,34 @@ wrapper around [`sqlite3_create_function_v2()`][].
 added: v24.10.0
 -->
 
-* `callback` {Function|null} The authorizer function to set, or `null` to
-  clear the current authorizer.
+* `callback` {Function|null} 要设置的授权器函数，或 `null` 以
+  清除当前授权器。
 
-Sets an authorizer callback that SQLite will invoke whenever it attempts to
-access data or modify the database schema through prepared statements.
-This can be used to implement security policies, audit access, or restrict certain operations.
-This method is a wrapper around [`sqlite3_set_authorizer()`][].
+设置一个授权器回调，每当 SQLite 尝试通过预准备语句
+访问数据或修改数据库模式时，将调用该回调。
+这可用于实施安全策略、审计访问或限制某些操作。
+此方法是 [`sqlite3_set_authorizer()`][] 的包装器。
 
-When invoked, the callback receives five arguments:
+调用时，回调接收五个参数：
 
-* `actionCode` {number} The type of operation being performed (e.g.,
-  `SQLITE_INSERT`, `SQLITE_UPDATE`, `SQLITE_SELECT`).
-* `arg1` {string|null} The first argument (context-dependent, often a table name).
-* `arg2` {string|null} The second argument (context-dependent, often a column name).
-* `dbName` {string|null} The name of the database.
-* `triggerOrView` {string|null} The name of the trigger or view causing the access.
+* `actionCode` {number} 正在执行的操作类型（例如，
+  `SQLITE_INSERT`、`SQLITE_UPDATE`、`SQLITE_SELECT`）。
+* `arg1` {string|null} 第一个参数（取决于上下文，通常是表名）。
+* `arg2` {string|null} 第二个参数（取决于上下文，通常是列名）。
+* `dbName` {string|null} 数据库名称。
+* `triggerOrView` {string|null} 导致访问的触发器或视图的名称。
 
-The callback must return one of the following constants:
+回调必须返回以下常量之一：
 
-* `SQLITE_OK` - Allow the operation.
-* `SQLITE_DENY` - Deny the operation (causes an error).
-* `SQLITE_IGNORE` - Ignore the operation (silently skip).
+* `SQLITE_OK` - 允许操作。
+* `SQLITE_DENY` - 拒绝操作（导致错误）。
+* `SQLITE_IGNORE` - 忽略操作（静默跳过）。
 
 ```cjs
 const { DatabaseSync, constants } = require('node:sqlite');
 const db = new DatabaseSync(':memory:');
 
-// Set up an authorizer that denies all table creation
+// 设置一个拒绝所有表创建的授权器
 db.setAuthorizer((actionCode) => {
   if (actionCode === constants.SQLITE_CREATE_TABLE) {
     return constants.SQLITE_DENY;
@@ -436,10 +418,10 @@ db.setAuthorizer((actionCode) => {
   return constants.SQLITE_OK;
 });
 
-// This will work
+// 这将正常工作
 db.prepare('SELECT 1').get();
 
-// This will throw an error due to authorization denial
+// 由于授权拒绝，这将抛出错误
 try {
   db.exec('CREATE TABLE blocked (id INTEGER)');
 } catch (err) {
@@ -451,7 +433,7 @@ try {
 import { DatabaseSync, constants } from 'node:sqlite';
 const db = new DatabaseSync(':memory:');
 
-// Set up an authorizer that denies all table creation
+// 设置一个拒绝所有表创建的授权器
 db.setAuthorizer((actionCode) => {
   if (actionCode === constants.SQLITE_CREATE_TABLE) {
     return constants.SQLITE_DENY;
@@ -459,10 +441,10 @@ db.setAuthorizer((actionCode) => {
   return constants.SQLITE_OK;
 });
 
-// This will work
+// 这将正常工作
 db.prepare('SELECT 1').get();
 
-// This will throw an error due to authorization denial
+// 由于授权拒绝，这将抛出错误
 try {
   db.exec('CREATE TABLE blocked (id INTEGER)');
 } catch (err) {
@@ -478,7 +460,7 @@ added:
   - v22.15.0
 -->
 
-* Type: {boolean} Whether the database is currently open or not.
+* 类型：{boolean} 数据库当前是否打开。
 
 ### `database.isTransaction`
 
@@ -488,8 +470,8 @@ added:
   - v22.16.0
 -->
 
-* Type: {boolean} Whether the database is currently within a transaction. This method
-  is a wrapper around [`sqlite3_get_autocommit()`][].
+* 类型：{boolean} 数据库当前是否在事务中。此方法
+  是 [`sqlite3_get_autocommit()`][] 的包装器。
 
 ### `database.limits`
 
@@ -497,29 +479,29 @@ added:
 added: v25.8.0
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-An object for getting and setting SQLite database limits at runtime.
-Each property corresponds to an SQLite limit and can be read or written.
+一个用于在运行时获取和设置 SQLite 数据库限制的对象。
+每个属性对应一个 SQLite 限制，可以读取或写入。
 
 ```js
 const db = new DatabaseSync(':memory:');
 
-// Read current limit
+// 读取当前限制
 console.log(db.limits.length);
 
-// Set a new limit
+// 设置新限制
 db.limits.sqlLength = 100000;
 
-// Reset a limit to its compile-time maximum
+// 将限制重置为其编译时最大值
 db.limits.sqlLength = Infinity;
 ```
 
-Available properties: `length`, `sqlLength`, `column`, `exprDepth`,
-`compoundSelect`, `vdbeOp`, `functionArg`, `attach`, `likePatternLength`,
-`variableNumber`, `triggerDepth`.
+可用属性：`length`、`sqlLength`、`column`、`exprDepth`、
+`compoundSelect`、`vdbeOp`、`functionArg`、`attach`、`likePatternLength`、
+`variableNumber`、`triggerDepth`。
 
-Setting a property to `Infinity` resets the limit to its compile-time maximum value.
+将属性设置为 `Infinity` 会将限制重置为其编译时最大值。
 
 ### `database.open()`
 
@@ -527,9 +509,8 @@ Setting a property to `Infinity` resets the limit to its compile-time maximum va
 added: v22.5.0
 -->
 
-Opens the database specified in the `path` argument of the `DatabaseSync`
-constructor. This method should only be used when the database is not opened via
-the constructor. An exception is thrown if the database is already open.
+打开 `DatabaseSync` 构造函数的 `path` 参数中指定的数据库。
+此方法仅应在数据库未通过构造函数打开时使用。如果数据库已打开，则抛出异常。
 
 ### `database.prepare(sql[, options])`
 
@@ -537,21 +518,20 @@ the constructor. An exception is thrown if the database is already open.
 added: v22.5.0
 -->
 
-* `sql` {string} A SQL string to compile to a prepared statement.
-* `options` {Object} Optional configuration for the prepared statement.
-  * `readBigInts` {boolean} If `true`, integer fields are read as `BigInt`s.
-    **Default:** inherited from database options or `false`.
-  * `returnArrays` {boolean} If `true`, results are returned as arrays.
-    **Default:** inherited from database options or `false`.
-  * `allowBareNamedParameters` {boolean} If `true`, allows binding named
-    parameters without the prefix character. **Default:** inherited from
-    database options or `true`.
-  * `allowUnknownNamedParameters` {boolean} If `true`, unknown named parameters
-    are ignored. **Default:** inherited from database options or `false`.
-* Returns: {StatementSync} The prepared statement.
+* `sql` {string} 要编译为预准备语句的 SQL 字符串。
+* `options` {Object} 预准备语句的可选配置。
+  * `readBigInts` {boolean} 如果为 `true`，整数字段作为 `BigInt` 读取。
+    **默认：** 继承自数据库选项或 `false`。
+  * `returnArrays` {boolean} 如果为 `true`，结果作为数组返回。
+    **默认：** 继承自数据库选项或 `false`。
+  * `allowBareNamedParameters` {boolean} 如果为 `true`，允许绑定不带前缀字符的命名
+    参数。**默认：** 继承自数据库选项或 `true`。
+  * `allowUnknownNamedParameters` {boolean} 如果为 `true`，忽略未知的命名参数。
+    **默认：** 继承自数据库选项或 `false`。
+* 返回值：{StatementSync} 预准备语句。
 
-Compiles a SQL statement into a [prepared statement][]. This method is a wrapper
-around [`sqlite3_prepare_v2()`][].
+将 SQL 语句编译为 [预准备语句][]。此方法是
+[`sqlite3_prepare_v2()`][] 的包装器。
 
 ### `database.createTagStore([maxSize])`
 
@@ -559,72 +539,67 @@ around [`sqlite3_prepare_v2()`][].
 added: v24.9.0
 -->
 
-* `maxSize` {integer} The maximum number of prepared statements to cache.
-  **Default:** `1000`.
-* Returns: {SQLTagStore} A new SQL tag store for caching prepared statements.
+* `maxSize` {integer} 要缓存的预准备语句的最大数量。
+  **默认：** `1000`。
+* 返回值：{SQLTagStore} 一个用于缓存预准备语句的新 SQL 标签存储。
 
-Creates a new [`SQLTagStore`][], which is a Least Recently Used (LRU) cache
-for storing prepared statements. This allows for the efficient reuse of
-prepared statements by tagging them with a unique identifier.
+创建一个新的 [`SQLTagStore`][]，它是一个最近最少使用 (LRU) 缓存，
+用于存储预准备语句。这允许通过为预准备语句标记唯一标识符来高效地重用它们。
 
-When a tagged SQL literal is executed, the `SQLTagStore` checks if a prepared
-statement for the corresponding SQL query string already exists in the cache.
-If it does, the cached statement is used. If not, a new prepared statement is
-created, executed, and then stored in the cache for future use. This mechanism
-helps to avoid the overhead of repeatedly parsing and preparing the same SQL
-statements.
+当执行标记的 SQL 字面量时，`SQLTagStore` 检查缓存中是否已存在
+相应 SQL 查询字符串的预准备语句。如果存在，则使用缓存的语句。如果不存在，则创建
+一个新的预准备语句，执行它，然后存储在缓存中供将来使用。此机制
+有助于避免重复解析和准备相同 SQL 语句的开销。
 
-Tagged statements bind the placeholder values from the template literal as
-parameters to the underlying prepared statement. For example:
+标记语句将模板字面量中的占位符值绑定为
+底层预准备语句的参数。例如：
 
 ```js
 sqlTagStore.get`SELECT ${value}`;
 ```
 
-is equivalent to:
+等价于：
 
 ```js
 db.prepare('SELECT ?').get(value);
 ```
 
-However, in the first example, the tag store will cache the underlying prepared
-statement for future use.
+但是，在第一个示例中，标签存储将缓存底层预准备
+语句供将来使用。
 
-> **Note:** The `${value}` syntax in tagged statements _binds_ a parameter to
-> the prepared statement. This differs from its behavior in _untagged_ template
-> literals, where it performs string interpolation.
+> **注意：** 标记语句中的 `${value}` 语法将参数 _绑定_ 到
+> 预准备语句。这与 _未标记_ 模板字面量中的行为不同，后者执行字符串插值。
 >
 > ```js
-> // This a safe example of binding a parameter to a tagged statement.
+> // 这是一个将参数绑定到标记语句的安全示例。
 > sqlTagStore.run`INSERT INTO t1 (id) VALUES (${id})`;
 >
-> // This is an *unsafe* example of an untagged template string.
-> // `id` is interpolated into the query text as a string.
-> // This can lead to SQL injection and data corruption.
+> // 这是一个未标记模板字符串的 *不安全* 示例。
+> // `id` 作为字符串插值到查询文本中。
+> // 这可能导致 SQL 注入和数据损坏。
 > db.run(`INSERT INTO t1 (id) VALUES (${id})`);
 > ```
 
-The tag store will match a statement from the cache if the query strings
-(including the positions of any bound placeholders) are identical.
+如果查询字符串（包括任何绑定占位符的位置）相同，则标签存储将从缓存中匹配语句。
 
 ```js
-// The following statements will match in the cache:
+// 以下语句将在缓存中匹配：
 sqlTagStore.get`SELECT * FROM t1 WHERE id = ${id} AND active = 1`;
 sqlTagStore.get`SELECT * FROM t1 WHERE id = ${12345} AND active = 1`;
 
-// The following statements will not match, as the query strings
-// and bound placeholders differ:
+// 以下语句将不匹配，因为查询字符串
+// 和绑定的占位符不同：
 sqlTagStore.get`SELECT * FROM t1 WHERE id = ${id} AND active = 1`;
 sqlTagStore.get`SELECT * FROM t1 WHERE id = 12345 AND active = 1`;
 
-// The following statements will not match, as matches are case-sensitive:
+// 以下语句将不匹配，因为匹配是区分大小写的：
 sqlTagStore.get`SELECT * FROM t1 WHERE id = ${id} AND active = 1`;
 sqlTagStore.get`select * from t1 where id = ${id} and active = 1`;
 ```
 
-The only way of binding parameters in tagged statements is with the `${value}`
-syntax. Do not add parameter binding placeholders (`?` etc.) to the SQL query
-string itself.
+在标记语句中绑定参数的唯一方法是使用 `${value}`
+语法。不要将参数绑定占位符（`?` 等）添加到 SQL 查询
+字符串本身。
 
 ```mjs
 import { DatabaseSync } from 'node:sqlite';
@@ -634,17 +609,17 @@ const sql = db.createTagStore();
 
 db.exec('CREATE TABLE users (id INT, name TEXT)');
 
-// Using the 'run' method to insert data.
-// The tagged literal is used to identify the prepared statement.
+// 使用 'run' 方法插入数据。
+// 标记字面量用于标识预准备语句。
 sql.run`INSERT INTO users VALUES (1, 'Alice')`;
 sql.run`INSERT INTO users VALUES (2, 'Bob')`;
 
-// Using the 'get' method to retrieve a single row.
+// 使用 'get' 方法检索单行。
 const name = 'Alice';
 const user = sql.get`SELECT * FROM users WHERE name = ${name}`;
 console.log(user); // { id: 1, name: 'Alice' }
 
-// Using the 'all' method to retrieve all rows.
+// 使用 'all' 方法检索所有行。
 const allUsers = sql.all`SELECT * FROM users ORDER BY id`;
 console.log(allUsers);
 // [
@@ -661,17 +636,17 @@ const sql = db.createTagStore();
 
 db.exec('CREATE TABLE users (id INT, name TEXT)');
 
-// Using the 'run' method to insert data.
-// The tagged literal is used to identify the prepared statement.
+// 使用 'run' 方法插入数据。
+// 标记字面量用于标识预准备语句。
 sql.run`INSERT INTO users VALUES (1, 'Alice')`;
 sql.run`INSERT INTO users VALUES (2, 'Bob')`;
 
-// Using the 'get' method to retrieve a single row.
+// 使用 'get' 方法检索单行。
 const name = 'Alice';
 const user = sql.get`SELECT * FROM users WHERE name = ${name}`;
 console.log(user); // { id: 1, name: 'Alice' }
 
-// Using the 'all' method to retrieve all rows.
+// 使用 'all' 方法检索所有行。
 const allUsers = sql.all`SELECT * FROM users ORDER BY id`;
 console.log(allUsers);
 // [
@@ -688,12 +663,12 @@ added:
   - v22.12.0
 -->
 
-* `options` {Object} The configuration options for the session.
-  * `table` {string} A specific table to track changes for. By default, changes to all tables are tracked.
-  * `db` {string} Name of the database to track. This is useful when multiple databases have been added using [`ATTACH DATABASE`][]. **Default**: `'main'`.
-* Returns: {Session} A session handle.
+* `options` {Object} 会话的配置选项。
+  * `table` {string} 要跟踪更改的特定表。默认情况下，跟踪所有表的更改。
+  * `db` {string} 要跟踪的数据库名称。当使用 [`ATTACH DATABASE`][] 添加了多个数据库时，这很有用。**默认**：`'main'`。
+* 返回值：{Session} 会话句柄。
 
-Creates and attaches a session to the database. This method is a wrapper around [`sqlite3session_create()`][] and [`sqlite3session_attach()`][].
+创建并将会话附加到数据库。此方法是 [`sqlite3session_create()`][] 和 [`sqlite3session_attach()`][] 的包装器。
 
 ### `database.applyChangeset(changeset[, options])`
 
@@ -703,35 +678,35 @@ added:
   - v22.12.0
 -->
 
-* `changeset` {Uint8Array} A binary changeset or patchset.
-* `options` {Object} The configuration options for how the changes will be applied.
-  * `filter` {Function} Skip changes that, when targeted table name is supplied to this function, return a truthy value.
-    By default, all changes are attempted.
-  * `onConflict` {Function} A function that determines how to handle conflicts. The function receives one argument,
-    which can be one of the following values:
+* `changeset` {Uint8Array} 二进制变更集或补丁集。
+* `options` {Object} 如何应用更改的配置选项。
+  * `filter` {Function} 跳过那些当目标表名提供给此函数时返回真值的更改。
+    默认情况下，尝试所有更改。
+  * `onConflict` {Function} 一个确定如何处理冲突的函数。该函数接收一个参数，
+    该参数可以是以下值之一：
 
-    * `SQLITE_CHANGESET_DATA`: A `DELETE` or `UPDATE` change does not contain the expected "before" values.
-    * `SQLITE_CHANGESET_NOTFOUND`: A row matching the primary key of the `DELETE` or `UPDATE` change does not exist.
-    * `SQLITE_CHANGESET_CONFLICT`: An `INSERT` change results in a duplicate primary key.
-    * `SQLITE_CHANGESET_FOREIGN_KEY`: Applying a change would result in a foreign key violation.
-    * `SQLITE_CHANGESET_CONSTRAINT`: Applying a change results in a `UNIQUE`, `CHECK`, or `NOT NULL` constraint
-      violation.
+    * `SQLITE_CHANGESET_DATA`：`DELETE` 或 `UPDATE` 更改不包含预期的 "之前" 值。
+    * `SQLITE_CHANGESET_NOTFOUND`：不存在与 `DELETE` 或 `UPDATE` 更改的主键匹配的行。
+    * `SQLITE_CHANGESET_CONFLICT`：`INSERT` 更改导致主键重复。
+    * `SQLITE_CHANGESET_FOREIGN_KEY`：应用更改将导致外键违规。
+    * `SQLITE_CHANGESET_CONSTRAINT`：应用更改将导致 `UNIQUE`、`CHECK` 或 `NOT NULL` 约束
+      违规。
 
-    The function should return one of the following values:
+    该函数应返回以下值之一：
 
-    * `SQLITE_CHANGESET_OMIT`: Omit conflicting changes.
-    * `SQLITE_CHANGESET_REPLACE`: Replace existing values with conflicting changes (only valid with
-      `SQLITE_CHANGESET_DATA` or `SQLITE_CHANGESET_CONFLICT` conflicts).
-    * `SQLITE_CHANGESET_ABORT`: Abort on conflict and roll back the database.
+    * `SQLITE_CHANGESET_OMIT`：省略冲突的更改。
+    * `SQLITE_CHANGESET_REPLACE`：用冲突的更改替换现有值（仅对
+      `SQLITE_CHANGESET_DATA` 或 `SQLITE_CHANGESET_CONFLICT` 冲突有效）。
+    * `SQLITE_CHANGESET_ABORT`：冲突时中止并回滚数据库。
 
-    When an error is thrown in the conflict handler or when any other value is returned from the handler,
-    applying the changeset is aborted and the database is rolled back.
+    当冲突处理程序中抛出错误或处理程序返回任何其他值时，
+    应用变更集将中止并回滚数据库。
 
-    **Default**: A function that returns `SQLITE_CHANGESET_ABORT`.
-* Returns: {boolean} Whether the changeset was applied successfully without being aborted.
+    **默认**：返回 `SQLITE_CHANGESET_ABORT` 的函数。
+* 返回值：{boolean} 变更集是否成功应用而未被中止。
 
-An exception is thrown if the database is not
-open. This method is a wrapper around [`sqlite3changeset_apply()`][].
+如果数据库未
+打开，则抛出异常。此方法是 [`sqlite3changeset_apply()`][] 的包装器。
 
 ```mjs
 import { DatabaseSync } from 'node:sqlite';
@@ -750,7 +725,7 @@ insert.run(2, 'world');
 
 const changeset = session.changeset();
 targetDb.applyChangeset(changeset);
-// Now that the changeset has been applied, targetDb contains the same data as sourceDb.
+// 现在已应用变更集，targetDb 包含与 sourceDb 相同的数据。
 ```
 
 ```cjs
@@ -770,7 +745,7 @@ insert.run(2, 'world');
 
 const changeset = session.changeset();
 targetDb.applyChangeset(changeset);
-// Now that the changeset has been applied, targetDb contains the same data as sourceDb.
+// 现在已应用变更集，targetDb 包含与 sourceDb 相同的数据。
 ```
 
 ### `database[Symbol.dispose]()`
@@ -782,13 +757,13 @@ added:
 changes:
  - version: v24.2.0
    pr-url: https://github.com/nodejs/node/pull/58467
-   description: No longer experimental.
+   description: 不再是实验性的。
 -->
 
-Closes the database connection. If the database connection is already closed
-then this is a no-op.
+关闭数据库连接。如果数据库连接已关闭，
+则此操作为空操作。
 
-## Class: `Session`
+## 类：`Session`
 
 <!-- YAML
 added:
@@ -804,10 +779,10 @@ added:
   - v22.12.0
 -->
 
-* Returns: {Uint8Array} Binary changeset that can be applied to other databases.
+* 返回值：{Uint8Array} 可应用于其他数据库的二进制变更集。
 
-Retrieves a changeset containing all changes since the changeset was created. Can be called multiple times.
-An exception is thrown if the database or the session is not open. This method is a wrapper around [`sqlite3session_changeset()`][].
+检索自变更集创建以来包含所有变更的变更集。可以被多次调用。
+如果数据库或会话未打开，则抛出异常。此方法是对 [`sqlite3session_changeset()`][] 的封装。
 
 ### `session.patchset()`
 
@@ -817,16 +792,16 @@ added:
   - v22.12.0
 -->
 
-* Returns: {Uint8Array} Binary patchset that can be applied to other databases.
+* 返回值：{Uint8Array} 可应用于其他数据库的二进制补丁集。
 
-Similar to the method above, but generates a more compact patchset. See [Changesets and Patchsets][]
-in the documentation of SQLite. An exception is thrown if the database or the session is not open. This method is a
-wrapper around [`sqlite3session_patchset()`][].
+与上述方法类似，但生成更紧凑的补丁集。请参阅 SQLite 文档中的 [变更集和补丁集][]
+。如果数据库或会话未打开，则抛出异常。此方法是
+对 [`sqlite3session_patchset()`][] 的封装。
 
 ### `session.close()`
 
-Closes the session. An exception is thrown if the database or the session is not open. This method is a
-wrapper around [`sqlite3session_delete()`][].
+关闭会话。如果数据库或会话未打开，则抛出异常。此方法是
+对 [`sqlite3session_delete()`][] 的封装。
 
 ### `session[Symbol.dispose]()`
 
@@ -834,24 +809,23 @@ wrapper around [`sqlite3session_delete()`][].
 added: v24.9.0
 -->
 
-Closes the session. If the session is already closed, does nothing.
+关闭会话。如果会话已关闭，则不执行任何操作。
 
-## Class: `StatementSync`
+## 类：`StatementSync`
 
 <!-- YAML
 added: v22.5.0
 -->
 
-This class represents a single [prepared statement][]. This class cannot be
-instantiated via its constructor. Instead, instances are created via the
-`database.prepare()` method. All APIs exposed by this class execute
-synchronously.
+此类表示单个 [预准备语句][]。此类不能
+通过其构造函数实例化。相反，实例是通过
+`database.prepare()` 方法创建的。此类暴露的所有 API 均执行
+同步。
 
-A prepared statement is an efficient binary representation of the SQL used to
-create it. Prepared statements are parameterizable, and can be invoked multiple
-times with different bound values. Parameters also offer protection against
-[SQL injection][] attacks. For these reasons, prepared statements are preferred
-over hand-crafted SQL strings when handling user input.
+预准备语句是用于创建它的 SQL 的高效二进制表示。预准备语句是可参数化的，
+并且可以使用不同的绑定值多次调用。参数还提供针对
+[SQL 注入][] 攻击的保护。出于这些原因，在处理用户输入时，预准备语句优于
+手工编写的 SQL 字符串。
 
 ### `statement.all([namedParameters][, ...anonymousParameters])`
 
@@ -862,21 +836,19 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56385
-    description: Add support for `DataView` and typed array objects for `anonymousParameters`.
+    description: 为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。
 -->
 
-* `namedParameters` {Object} An optional object used to bind named parameters.
-  The keys of this object are used to configure the mapping.
-* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} Zero or
-  more values to bind to anonymous parameters.
-* Returns: {Array} An array of objects. Each object corresponds to a row
-  returned by executing the prepared statement. The keys and values of each
-  object correspond to the column names and values of the row.
+* `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
+  此对象的键用于配置映射。
+* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 零或
+  多个绑定到匿名参数的值。
+* 返回值：{Array} 对象数组。每个对象对应于执行预准备语句返回的一行
+  数据。每个对象的键和值对应于行的列名和值。
 
-This method executes a prepared statement and returns all results as an array of
-objects. If the prepared statement does not return any results, this method
-returns an empty array. The prepared statement [parameters are bound][] using
-the values in `namedParameters` and `anonymousParameters`.
+此方法执行预准备语句并将所有结果作为对象数组返回。如果预准备语句
+不返回任何结果，此方法返回一个空数组。预准备语句 [参数被绑定][] 使用
+`namedParameters` 和 `anonymousParameters` 中的值。
 
 ### `statement.columns()`
 
@@ -886,27 +858,26 @@ added:
   - v22.16.0
 -->
 
-* Returns: {Array} An array of objects. Each object corresponds to a column
-  in the prepared statement, and contains the following properties:
+* 返回值：{Array} 对象数组。每个对象对应于预准备语句中的一列，
+  并包含以下属性：
 
-  * `column` {string|null} The unaliased name of the column in the origin
-    table, or `null` if the column is the result of an expression or subquery.
-    This property is the result of [`sqlite3_column_origin_name()`][].
-  * `database` {string|null} The unaliased name of the origin database, or
-    `null` if the column is the result of an expression or subquery. This
-    property is the result of [`sqlite3_column_database_name()`][].
-  * `name` {string} The name assigned to the column in the result set of a
-    `SELECT` statement. This property is the result of
-    [`sqlite3_column_name()`][].
-  * `table` {string|null} The unaliased name of the origin table, or `null` if
-    the column is the result of an expression or subquery. This property is the
-    result of [`sqlite3_column_table_name()`][].
-  * `type` {string|null} The declared data type of the column, or `null` if the
-    column is the result of an expression or subquery. This property is the
-    result of [`sqlite3_column_decltype()`][].
+  * `column` {string|null} 源表中列的未别名化名称，
+    如果列是表达式或子查询的结果，则为 `null`。此属性是
+    [`sqlite3_column_origin_name()`][] 的结果。
+  * `database` {string|null} 源数据库的未别名化名称，或
+    如果列是表达式或子查询的结果，则为 `null`。此
+    属性是 [`sqlite3_column_database_name()`][] 的结果。
+  * `name` {string} 在 `SELECT` 语句的结果集中分配给列的名称。此
+    属性是
+    [`sqlite3_column_name()`][] 的结果。
+  * `table` {string|null} 源表的未别名化名称，如果
+    列是表达式或子查询的结果，则为 `null`。此属性是
+    [`sqlite3_column_table_name()`][] 的结果。
+  * `type` {string|null} 列的声明数据类型，如果
+    列是表达式或子查询的结果，则为 `null`。此属性是
+    [`sqlite3_column_decltype()`][] 的结果。
 
-This method is used to retrieve information about the columns returned by the
-prepared statement.
+此方法用于检索有关预准备语句返回的列的信息。
 
 ### `statement.expandedSQL`
 
@@ -914,12 +885,11 @@ prepared statement.
 added: v22.5.0
 -->
 
-* Type: {string} The source SQL expanded to include parameter values.
+* 类型：{string} 扩展为包含参数值的源 SQL。
 
-The source SQL text of the prepared statement with parameter
-placeholders replaced by the values that were used during the most recent
-execution of this prepared statement. This property is a wrapper around
-[`sqlite3_expanded_sql()`][].
+预准备语句的源 SQL 文本，其中参数
+占位符已被此预准备语句最近一次执行期间使用的值替换。此属性是
+对 [`sqlite3_expanded_sql()`][] 的封装。
 
 ### `statement.get([namedParameters][, ...anonymousParameters])`
 
@@ -930,22 +900,20 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56385
-    description: Add support for `DataView` and typed array objects for `anonymousParameters`.
+    description: 为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。
 -->
 
-* `namedParameters` {Object} An optional object used to bind named parameters.
-  The keys of this object are used to configure the mapping.
-* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} Zero or
-  more values to bind to anonymous parameters.
-* Returns: {Object|undefined} An object corresponding to the first row returned
-  by executing the prepared statement. The keys and values of the object
-  correspond to the column names and values of the row. If no rows were returned
-  from the database then this method returns `undefined`.
+* `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
+  此对象的键用于配置映射。
+* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 零或
+  多个绑定到匿名参数的值。
+* 返回值：{Object|undefined} 对应于执行预准备语句返回的第一行的对象。
+  对象的键和值对应于行的列名和值。如果数据库
+  未返回任何行，则此方法返回 `undefined`。
 
-This method executes a prepared statement and returns the first result as an
-object. If the prepared statement does not return any results, this method
-returns `undefined`. The prepared statement [parameters are bound][] using the
-values in `namedParameters` and `anonymousParameters`.
+此方法执行预准备语句并将第一个结果作为对象返回。如果预准备语句
+不返回任何结果，此方法返回 `undefined`。预准备语句 [参数被绑定][] 使用
+`namedParameters` 和 `anonymousParameters` 中的值。
 
 ### `statement.iterate([namedParameters][, ...anonymousParameters])`
 
@@ -958,21 +926,19 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56385
-    description: Add support for `DataView` and typed array objects for `anonymousParameters`.
+    description: 为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。
 -->
 
-* `namedParameters` {Object} An optional object used to bind named parameters.
-  The keys of this object are used to configure the mapping.
-* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} Zero or
-  more values to bind to anonymous parameters.
-* Returns: {Iterator} An iterable iterator of objects. Each object corresponds to a row
-  returned by executing the prepared statement. The keys and values of each
-  object correspond to the column names and values of the row.
+* `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
+  此对象的键用于配置映射。
+* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 零或
+  多个绑定到匿名参数的值。
+* 返回值：{Iterator} 对象的可迭代迭代器。每个对象对应于执行预准备语句返回的一行
+  数据。每个对象的键和值对应于行的列名和值。
 
-This method executes a prepared statement and returns an iterator of
-objects. If the prepared statement does not return any results, this method
-returns an empty iterator. The prepared statement [parameters are bound][] using
-the values in `namedParameters` and `anonymousParameters`.
+此方法执行预准备语句并返回对象的迭代器。如果预准备语句
+不返回任何结果，此方法返回一个空迭代器。预准备语句 [参数被绑定][] 使用
+`namedParameters` 和 `anonymousParameters` 中的值。
 
 ### `statement.run([namedParameters][, ...anonymousParameters])`
 
@@ -983,27 +949,24 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56385
-    description: Add support for `DataView` and typed array objects for `anonymousParameters`.
+    description: 为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。
 -->
 
-* `namedParameters` {Object} An optional object used to bind named parameters.
-  The keys of this object are used to configure the mapping.
-* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} Zero or
-  more values to bind to anonymous parameters.
-* Returns: {Object}
-  * `changes` {number|bigint} The number of rows modified, inserted, or deleted
-    by the most recently completed `INSERT`, `UPDATE`, or `DELETE` statement.
-    This field is either a number or a `BigInt` depending on the prepared
-    statement's configuration. This property is the result of
-    [`sqlite3_changes64()`][].
-  * `lastInsertRowid` {number|bigint} The most recently inserted rowid. This
-    field is either a number or a `BigInt` depending on the prepared statement's
-    configuration. This property is the result of
-    [`sqlite3_last_insert_rowid()`][].
+* `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
+  此对象的键用于配置映射。
+* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 零或
+  多个绑定到匿名参数的值。
+* 返回值：{Object}
+  * `changes` {number|bigint} 最近完成的 `INSERT`、`UPDATE` 或 `DELETE` 语句
+    修改、插入或删除的行数。此字段是数字或 `BigInt`，取决于预准备语句
+    的配置。此属性是 [`sqlite3_changes64()`][] 的结果。
+  * `lastInsertRowid` {number|bigint} 最近插入的 rowid。此
+    字段是数字或 `BigInt`，取决于预准备语句的
+    配置。此属性是
+    [`sqlite3_last_insert_rowid()`][] 的结果。
 
-This method executes a prepared statement and returns an object summarizing the
-resulting changes. The prepared statement [parameters are bound][] using the
-values in `namedParameters` and `anonymousParameters`.
+此方法执行预准备语句并返回一个总结结果变更的对象。预准备语句 [参数被绑定][] 使用
+`namedParameters` 和 `anonymousParameters` 中的值。
 
 ### `statement.setAllowBareNamedParameters(enabled)`
 
@@ -1011,24 +974,23 @@ values in `namedParameters` and `anonymousParameters`.
 added: v22.5.0
 -->
 
-* `enabled` {boolean} Enables or disables support for binding named parameters
-  without the prefix character.
+* `enabled` {boolean} 启用或禁用对绑定命名参数
+  无前缀字符的支持。
 
-The names of SQLite parameters begin with a prefix character. By default,
-`node:sqlite` requires that this prefix character is present when binding
-parameters. However, with the exception of dollar sign character, these
-prefix characters also require extra quoting when used in object keys.
+SQLite 参数的名称以前缀字符开头。默认情况下，
+`node:sqlite` 要求绑定参数时存在此前缀字符。但是，除了美元
+符号字符外，这些前缀字符在对象键中使用时也需要额外引号。
 
-To improve ergonomics, this method can be used to also allow bare named
-parameters, which do not require the prefix character in JavaScript code. There
-are several caveats to be aware of when enabling bare named parameters:
+为了提高易用性，此方法也可用于允许裸命名参数，
+即在 JavaScript 代码中不需要前缀字符。启用裸命名参数时有几个
+注意事项需要注意：
 
-* The prefix character is still required in SQL.
-* The prefix character is still allowed in JavaScript. In fact, prefixed names
-  will have slightly better binding performance.
-* Using ambiguous named parameters, such as `$k` and `@k`, in the same prepared
-  statement will result in an exception as it cannot be determined how to bind
-  a bare name.
+* SQL 中仍然需要前缀字符。
+* JavaScript 中仍然允许前缀字符。事实上，前缀名称
+  将具有稍好的绑定性能。
+* 在同一预准备语句中使用歧义的命名参数，例如 `$k` 和 `@k`，
+  将导致异常，因为无法确定如何绑定
+  裸名称。
 
 ### `statement.setAllowUnknownNamedParameters(enabled)`
 
@@ -1038,10 +1000,10 @@ added:
   - v22.15.0
 -->
 
-* `enabled` {boolean} Enables or disables support for unknown named parameters.
+* `enabled` {boolean} 启用或禁用对未知命名参数的支持。
 
-By default, if an unknown name is encountered while binding parameters, an
-exception is thrown. This method allows unknown named parameters to be ignored.
+默认情况下，如果在绑定参数时遇到未知名称，则
+抛出异常。此方法允许忽略未知的命名参数。
 
 ### `statement.setReturnArrays(enabled)`
 
@@ -1051,10 +1013,10 @@ added:
   - v22.16.0
 -->
 
-* `enabled` {boolean} Enables or disables the return of query results as arrays.
+* `enabled` {boolean} 启用或禁用将查询结果作为数组返回。
 
-When enabled, query results returned by the `all()`, `get()`, and `iterate()` methods will be returned as arrays instead
-of objects.
+启用时，`all()`、`get()` 和 `iterate()` 方法返回的查询结果将作为数组返回，而不是
+对象。
 
 ### `statement.setReadBigInts(enabled)`
 
@@ -1062,15 +1024,14 @@ of objects.
 added: v22.5.0
 -->
 
-* `enabled` {boolean} Enables or disables the use of `BigInt`s when reading
-  `INTEGER` fields from the database.
+* `enabled` {boolean} 启用或禁用读取
+  数据库中的 `INTEGER` 字段时使用 `BigInt`。
 
-When reading from the database, SQLite `INTEGER`s are mapped to JavaScript
-numbers by default. However, SQLite `INTEGER`s can store values larger than
-JavaScript numbers are capable of representing. In such cases, this method can
-be used to read `INTEGER` data using JavaScript `BigInt`s. This method has no
-impact on database write operations where numbers and `BigInt`s are both
-supported at all times.
+从数据库读取时，SQLite `INTEGER` 默认映射到 JavaScript
+数字。但是，SQLite `INTEGER` 可以存储比
+JavaScript 数字能够表示的值更大的值。在这种情况下，此方法可用于
+使用 JavaScript `BigInt` 读取 `INTEGER` 数据。此方法对数据库写入操作
+没有影响，其中数字和 `BigInt` 始终都受支持。
 
 ### `statement.sourceSQL`
 
@@ -1078,29 +1039,22 @@ supported at all times.
 added: v22.5.0
 -->
 
-* Type: {string} The source SQL used to create this prepared statement.
+* 类型：{string} 用于创建此预准备语句的源 SQL。
 
-The source SQL text of the prepared statement. This property is a
-wrapper around [`sqlite3_sql()`][].
+预准备语句的源 SQL 文本。此属性是
+对 [`sqlite3_sql()`][] 的封装。
 
-## Class: `SQLTagStore`
+## 类：`SQLTagStore`
 
 <!-- YAML
 added: v24.9.0
 -->
 
-This class represents a single LRU (Least Recently Used) cache for storing
-prepared statements.
+此类表示一个用于存储预编译语句的单 LRU（最近最少使用）缓存。
 
-Instances of this class are created via the [`database.createTagStore()`][]
-method, not by using a constructor. The store caches prepared statements based
-on the provided SQL query string. When the same query is seen again, the store
-retrieves the cached statement and safely applies the new values through
-parameter binding, thereby preventing attacks like SQL injection.
+此类的实例是通过 [`database.createTagStore()`][] 方法创建的，而不是使用构造函数。该存储基于提供的 SQL 查询字符串缓存预编译语句。当再次看到相同的查询时，存储会检索缓存的语句并通过参数绑定安全地应用新值，从而防止 SQL 注入等攻击。
 
-The cache has a maxSize that defaults to 1000 statements, but a custom size can
-be provided (e.g., `database.createTagStore(100)`). All APIs exposed by this
-class execute synchronously.
+缓存有一个默认为 1000 条语句的 `maxSize`，但可以提供自定义大小（例如，`database.createTagStore(100)`）。此类暴露的所有 API 均同步执行。
 
 ### `sqlTagStore.all(stringElements[, ...boundParameters])`
 
@@ -1108,17 +1062,13 @@ class execute synchronously.
 added: v24.9.0
 -->
 
-* `stringElements` {string\[]} Template literal elements containing the SQL
-  query.
-* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView}
-  Parameter values to be bound to placeholders in the template string.
-* Returns: {Array} An array of objects representing the rows returned by the query.
+* `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
+* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 要绑定到模板字符串中占位符的参数值。
+* 返回：{Array} 一个对象数组，表示查询返回的行。
 
-Executes the given SQL query and returns all resulting rows as an array of
-objects.
+执行给定的 SQL 查询并将所有结果行作为对象数组返回。
 
-This function is intended to be used as a template literal tag, not to be
-called directly.
+此函数旨在用作模板字面量标签，而不是直接调用。
 
 ### `sqlTagStore.get(stringElements[, ...boundParameters])`
 
@@ -1126,17 +1076,13 @@ called directly.
 added: v24.9.0
 -->
 
-* `stringElements` {string\[]} Template literal elements containing the SQL
-  query.
-* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView}
-  Parameter values to be bound to placeholders in the template string.
-* Returns: {Object | undefined} An object representing the first row returned by
-  the query, or `undefined` if no rows are returned.
+* `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
+* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 要绑定到模板字符串中占位符的参数值。
+* 返回：{Object | undefined} 一个对象，表示查询返回的第一行，如果没有返回行则为 `undefined`。
 
-Executes the given SQL query and returns the first resulting row as an object.
+执行给定的 SQL 查询并将第一行结果作为对象返回。
 
-This function is intended to be used as a template literal tag, not to be
-called directly.
+此函数旨在用作模板字面量标签，而不是直接调用。
 
 ### `sqlTagStore.iterate(stringElements[, ...boundParameters])`
 
@@ -1144,16 +1090,13 @@ called directly.
 added: v24.9.0
 -->
 
-* `stringElements` {string\[]} Template literal elements containing the SQL
-  query.
-* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView}
-  Parameter values to be bound to placeholders in the template string.
-* Returns: {Iterator} An iterator that yields objects representing the rows returned by the query.
+* `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
+* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 要绑定到模板字符串中占位符的参数值。
+* 返回：{Iterator} 一个迭代器，生成表示查询返回的行的对象。
 
-Executes the given SQL query and returns an iterator over the resulting rows.
+执行给定的 SQL 查询并返回结果行的迭代器。
 
-This function is intended to be used as a template literal tag, not to be
-called directly.
+此函数旨在用作模板字面量标签，而不是直接调用。
 
 ### `sqlTagStore.run(stringElements[, ...boundParameters])`
 
@@ -1161,16 +1104,13 @@ called directly.
 added: v24.9.0
 -->
 
-* `stringElements` {string\[]} Template literal elements containing the SQL
-  query.
-* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView}
-  Parameter values to be bound to placeholders in the template string.
-* Returns: {Object} An object containing information about the execution, including `changes` and `lastInsertRowid`.
+* `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
+* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 要绑定到模板字符串中占位符的参数值。
+* 返回：{Object} 一个包含执行信息的对象，包括 `changes` 和 `lastInsertRowid`。
 
-Executes the given SQL query, which is expected to not return any rows (e.g., INSERT, UPDATE, DELETE).
+执行给定的 SQL 查询，预期不返回任何行（例如，INSERT、UPDATE、DELETE）。
 
-This function is intended to be used as a template literal tag, not to be
-called directly.
+此函数旨在用作模板字面量标签，而不是直接调用。
 
 ### `sqlTagStore.size`
 
@@ -1181,12 +1121,12 @@ changes:
      - v25.5.0
      - v24.13.1
     pr-url: https://github.com/nodejs/node/pull/60246
-    description: Changed from a method to a getter.
+    description: 从方法更改为 getter。
 -->
 
-* Type: {integer}
+* 类型：{integer}
 
-A read-only property that returns the number of prepared statements currently in the cache.
+一个只读属性，返回缓存中当前预编译语句的数量。
 
 ### `sqlTagStore.capacity`
 
@@ -1194,9 +1134,9 @@ A read-only property that returns the number of prepared statements currently in
 added: v24.9.0
 -->
 
-* Type: {integer}
+* 类型：{integer}
 
-A read-only property that returns the maximum number of prepared statements the cache can hold.
+一个只读属性，返回缓存可以容纳的最大预编译语句数量。
 
 ### `sqlTagStore.db`
 
@@ -1204,9 +1144,9 @@ A read-only property that returns the maximum number of prepared statements the 
 added: v24.9.0
 -->
 
-* Type: {DatabaseSync}
+* 类型：{DatabaseSync}
 
-A read-only property that returns the `DatabaseSync` object associated with this `SQLTagStore`.
+一个只读属性，返回与此 `SQLTagStore` 关联的 `DatabaseSync` 对象。
 
 ### `sqlTagStore.clear()`
 
@@ -1214,7 +1154,7 @@ A read-only property that returns the `DatabaseSync` object associated with this
 added: v24.9.0
 -->
 
-Resets the LRU cache, clearing all stored prepared statements.
+重置 LRU 缓存，清除所有存储的预编译语句。
 
 ## `sqlite.backup(sourceDb, path[, options])`
 
@@ -1225,31 +1165,21 @@ added:
 changes:
   - version: v23.10.0
     pr-url: https://github.com/nodejs/node/pull/56991
-    description: The `path` argument now supports Buffer and URL objects.
+    description: `path` 参数现在支持 Buffer 和 URL 对象。
 -->
 
-* `sourceDb` {DatabaseSync} The database to backup. The source database must be open.
-* `path` {string | Buffer | URL} The path where the backup will be created. If the file already exists,
-  the contents will be overwritten.
-* `options` {Object} Optional configuration for the backup. The
-  following properties are supported:
-  * `source` {string} Name of the source database. This can be `'main'` (the default primary database) or any other
-    database that have been added with [`ATTACH DATABASE`][] **Default:** `'main'`.
-  * `target` {string} Name of the target database. This can be `'main'` (the default primary database) or any other
-    database that have been added with [`ATTACH DATABASE`][] **Default:** `'main'`.
-  * `rate` {number} Number of pages to be transmitted in each batch of the backup. **Default:** `100`.
-  * `progress` {Function} An optional callback function that will be called after each backup step. The argument passed
-    to this callback is an {Object} with `remainingPages` and `totalPages` properties, describing the current progress
-    of the backup operation.
-* Returns: {Promise} A promise that fulfills with the total number of backed-up pages upon completion, or rejects if an
-  error occurs.
+* `sourceDb` {DatabaseSync} 要备份的数据库。源数据库必须处于打开状态。
+* `path` {string | Buffer | URL} 创建备份的路径。如果文件已存在，内容将被覆盖。
+* `options` {Object} 备份的可选配置。支持以下属性：
+  * `source` {string} 源数据库的名称。可以是 `'main'`（默认主数据库）或任何已通过 [`ATTACH DATABASE`][] 添加的其他数据库 **默认值：** `'main'`。
+  * `target` {string} 目标数据库的名称。可以是 `'main'`（默认主数据库）或任何已通过 [`ATTACH DATABASE`][] 添加的其他数据库 **默认值：** `'main'`。
+  * `rate` {number} 每批备份中传输的页数。 **默认值：** `100`。
+  * `progress` {Function} 一个可选的回调函数，将在每个备份步骤后调用。传递给此回调的参数是一个 {Object}，具有 `remainingPages` 和 `totalPages` 属性，描述备份操作的当前进度。
+* 返回：{Promise} 一个 Promise，完成时 fulfilled 值为备份的总页数，如果发生错误则 rejected。
 
-This method makes a database backup. This method abstracts the [`sqlite3_backup_init()`][], [`sqlite3_backup_step()`][]
-and [`sqlite3_backup_finish()`][] functions.
+此方法进行数据库备份。此方法抽象了 [`sqlite3_backup_init()`][]、[`sqlite3_backup_step()`][] 和 [`sqlite3_backup_finish()`][] 函数。
 
-The backed-up database can be used normally during the backup process. Mutations coming from the same connection - same
-{DatabaseSync} - object will be reflected in the backup right away. However, mutations from other connections will cause
-the backup process to restart.
+备份的数据库在备份过程中可以正常使用。来自同一连接（同一 {DatabaseSync} 对象）的变更会立即反映在备份中。但是，来自其他连接的变更会导致备份过程重新启动。
 
 ```cjs
 const { backup, DatabaseSync } = require('node:sqlite');
@@ -1257,7 +1187,7 @@ const { backup, DatabaseSync } = require('node:sqlite');
 (async () => {
   const sourceDb = new DatabaseSync('source.db');
   const totalPagesTransferred = await backup(sourceDb, 'backup.db', {
-    rate: 1, // Copy one page at a time.
+    rate: 1, // 一次复制一页。
     progress: ({ totalPages, remainingPages }) => {
       console.log('Backup in progress', { totalPages, remainingPages });
     },
@@ -1272,7 +1202,7 @@ import { backup, DatabaseSync } from 'node:sqlite';
 
 const sourceDb = new DatabaseSync('source.db');
 const totalPagesTransferred = await backup(sourceDb, 'backup.db', {
-  rate: 1, // Copy one page at a time.
+  rate: 1, // 一次复制一页。
   progress: ({ totalPages, remainingPages }) => {
     console.log('Backup in progress', { totalPages, remainingPages });
   },
@@ -1289,253 +1219,247 @@ added:
   - v22.13.0
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-An object containing commonly used constants for SQLite operations.
+一个包含 SQLite 操作常用常量的对象。
 
-### SQLite constants
+### SQLite 常量
 
-The following constants are exported by the `sqlite.constants` object.
+以下常量由 `sqlite.constants` 对象导出。
 
-#### Conflict resolution constants
+#### 冲突解决常量
 
-One of the following constants is available as an argument to the `onConflict`
-conflict resolution handler passed to [`database.applyChangeset()`][]. See also
-[Constants Passed To The Conflict Handler][] in the SQLite documentation.
+以下常量之一可作为传递给 [`database.applyChangeset()`][] 的 `onConflict` 冲突解决处理程序的参数。另请参阅 SQLite 文档中的 [传递给冲突处理程序的常量][]。
 
 <table>
   <tr>
-    <th>Constant</th>
-    <th>Description</th>
+    <th>常量</th>
+    <th>描述</th>
   </tr>
   <tr>
     <td><code>SQLITE_CHANGESET_DATA</code></td>
-    <td>The conflict handler is invoked with this constant when processing a DELETE or UPDATE change if a row with the required PRIMARY KEY fields is present in the database, but one or more other (non primary-key) fields modified by the update do not contain the expected "before" values.</td>
+    <td>当处理 DELETE 或 UPDATE 变更时，如果数据库中存在具有所需主键字段的行，但更新修改的一个或多个其他（非主键）字段不包含预期的“之前”值，则使用此常量调用冲突处理程序。</td>
   </tr>
   <tr>
     <td><code>SQLITE_CHANGESET_NOTFOUND</code></td>
-    <td>The conflict handler is invoked with this constant when processing a DELETE or UPDATE change if a row with the required PRIMARY KEY fields is not present in the database.</td>
+    <td>当处理 DELETE 或 UPDATE 变更时，如果数据库中不存在具有所需主键字段的行，则使用此常量调用冲突处理程序。</td>
   </tr>
   <tr>
     <td><code>SQLITE_CHANGESET_CONFLICT</code></td>
-    <td>This constant is passed to the conflict handler while processing an INSERT change if the operation would result in duplicate primary key values.</td>
+    <td>在处理 INSERT 变更时，如果操作会导致主键值重复，则将此常量传递给冲突处理程序。</td>
   </tr>
   <tr>
     <td><code>SQLITE_CHANGESET_CONSTRAINT</code></td>
-    <td>If foreign key handling is enabled, and applying a changeset leaves the database in a state containing foreign key violations, the conflict handler is invoked with this constant exactly once before the changeset is committed. If the conflict handler returns <code>SQLITE_CHANGESET_OMIT</code>, the changes, including those that caused the foreign key constraint violation, are committed. Or, if it returns <code>SQLITE_CHANGESET_ABORT</code>, the changeset is rolled back.</td>
+    <td>如果启用了外键处理，并且应用变更集使数据库处于包含外键违规的状态，则在提交变更集之前恰好一次使用此常量调用冲突处理程序。如果冲突处理程序返回 <code>SQLITE_CHANGESET_OMIT</code>，则提交更改，包括导致外键约束违规的更改。或者，如果它返回 <code>SQLITE_CHANGESET_ABORT</code>，则回滚变更集。</td>
   </tr>
   <tr>
     <td><code>SQLITE_CHANGESET_FOREIGN_KEY</code></td>
-    <td>If any other constraint violation occurs while applying a change (i.e. a UNIQUE, CHECK or NOT NULL constraint), the conflict handler is invoked with this constant.</td>
+    <td>如果在应用变更时发生任何其他约束违规（即 UNIQUE、CHECK 或 NOT NULL 约束），则使用此常量调用冲突处理程序。</td>
   </tr>
 </table>
 
-One of the following constants must be returned from the `onConflict` conflict
-resolution handler passed to [`database.applyChangeset()`][]. See also
-[Constants Returned From The Conflict Handler][] in the SQLite documentation.
+以下常量之一必须从传递给 [`database.applyChangeset()`][] 的 `onConflict` 冲突解决处理程序返回。另请参阅 SQLite 文档中的 [从冲突处理程序返回的常量][]。
 
 <table>
   <tr>
-    <th>Constant</th>
-    <th>Description</th>
+    <th>常量</th>
+    <th>描述</th>
   </tr>
   <tr>
     <td><code>SQLITE_CHANGESET_OMIT</code></td>
-    <td>Conflicting changes are omitted.</td>
+    <td>省略冲突的更改。</td>
   </tr>
   <tr>
     <td><code>SQLITE_CHANGESET_REPLACE</code></td>
-    <td>Conflicting changes replace existing values. Note that this value can only be returned when the type of conflict is either <code>SQLITE_CHANGESET_DATA</code> or <code>SQLITE_CHANGESET_CONFLICT</code>.</td>
+    <td>冲突的更改替换现有值。请注意，仅当冲突类型为 <code>SQLITE_CHANGESET_DATA</code> 或 <code>SQLITE_CHANGESET_CONFLICT</code> 时，才能返回此值。</td>
   </tr>
   <tr>
     <td><code>SQLITE_CHANGESET_ABORT</code></td>
-    <td>Abort when a change encounters a conflict and roll back database.</td>
+    <td>当更改遇到冲突时中止并回滚数据库。</td>
   </tr>
 </table>
 
-#### Authorization constants
+#### 授权常量
 
-The following constants are used with the [`database.setAuthorizer()`][] method.
+以下常量与 [`database.setAuthorizer()`][] 方法一起使用。
 
-##### Authorization result codes
+##### 授权结果代码
 
-One of the following constants must be returned from the authorizer callback
-function passed to [`database.setAuthorizer()`][].
+以下常量之一必须从传递给 [`database.setAuthorizer()`][] 的授权回调函数返回。
 
 <table>
   <tr>
-    <th>Constant</th>
-    <th>Description</th>
+    <th>常量</th>
+    <th>描述</th>
   </tr>
   <tr>
     <td><code>SQLITE_OK</code></td>
-    <td>Allow the operation to proceed normally.</td>
+    <td>允许操作正常进行。</td>
   </tr>
   <tr>
     <td><code>SQLITE_DENY</code></td>
-    <td>Deny the operation and cause an error to be returned.</td>
+    <td>拒绝操作并导致返回错误。</td>
   </tr>
   <tr>
     <td><code>SQLITE_IGNORE</code></td>
-    <td>Ignore the operation and continue as if it had never been requested.</td>
+    <td>忽略操作并继续，就好像从未请求过它一样。</td>
   </tr>
 </table>
 
-##### Authorization action codes
+##### 授权操作代码
 
-The following constants are passed as the first argument to the authorizer
-callback function to indicate what type of operation is being authorized.
+以下常量作为第一个参数传递给授权回调函数，以指示正在授权的操作类型。
 
 <table>
   <tr>
-    <th>Constant</th>
-    <th>Description</th>
+    <th>常量</th>
+    <th>描述</th>
   </tr>
   <tr>
     <td><code>SQLITE_CREATE_INDEX</code></td>
-    <td>Create an index</td>
+    <td>创建索引</td>
   </tr>
   <tr>
     <td><code>SQLITE_CREATE_TABLE</code></td>
-    <td>Create a table</td>
+    <td>创建表</td>
   </tr>
   <tr>
     <td><code>SQLITE_CREATE_TEMP_INDEX</code></td>
-    <td>Create a temporary index</td>
+    <td>创建临时索引</td>
   </tr>
   <tr>
     <td><code>SQLITE_CREATE_TEMP_TABLE</code></td>
-    <td>Create a temporary table</td>
+    <td>创建临时表</td>
   </tr>
   <tr>
     <td><code>SQLITE_CREATE_TEMP_TRIGGER</code></td>
-    <td>Create a temporary trigger</td>
+    <td>创建临时触发器</td>
   </tr>
   <tr>
     <td><code>SQLITE_CREATE_TEMP_VIEW</code></td>
-    <td>Create a temporary view</td>
+    <td>创建临时视图</td>
   </tr>
   <tr>
     <td><code>SQLITE_CREATE_TRIGGER</code></td>
-    <td>Create a trigger</td>
+    <td>创建触发器</td>
   </tr>
   <tr>
     <td><code>SQLITE_CREATE_VIEW</code></td>
-    <td>Create a view</td>
+    <td>创建视图</td>
   </tr>
   <tr>
     <td><code>SQLITE_DELETE</code></td>
-    <td>Delete from a table</td>
+    <td>从表中删除</td>
   </tr>
   <tr>
     <td><code>SQLITE_DROP_INDEX</code></td>
-    <td>Drop an index</td>
+    <td>删除索引</td>
   </tr>
   <tr>
     <td><code>SQLITE_DROP_TABLE</code></td>
-    <td>Drop a table</td>
+    <td>删除表</td>
   </tr>
   <tr>
     <td><code>SQLITE_DROP_TEMP_INDEX</code></td>
-    <td>Drop a temporary index</td>
+    <td>删除临时索引</td>
   </tr>
   <tr>
     <td><code>SQLITE_DROP_TEMP_TABLE</code></td>
-    <td>Drop a temporary table</td>
+    <td>删除临时表</td>
   </tr>
   <tr>
     <td><code>SQLITE_DROP_TEMP_TRIGGER</code></td>
-    <td>Drop a temporary trigger</td>
+    <td>删除临时触发器</td>
   </tr>
   <tr>
     <td><code>SQLITE_DROP_TEMP_VIEW</code></td>
-    <td>Drop a temporary view</td>
+    <td>删除临时视图</td>
   </tr>
   <tr>
     <td><code>SQLITE_DROP_TRIGGER</code></td>
-    <td>Drop a trigger</td>
+    <td>删除触发器</td>
   </tr>
   <tr>
     <td><code>SQLITE_DROP_VIEW</code></td>
-    <td>Drop a view</td>
+    <td>删除视图</td>
   </tr>
   <tr>
     <td><code>SQLITE_INSERT</code></td>
-    <td>Insert into a table</td>
+    <td>插入到表中</td>
   </tr>
   <tr>
     <td><code>SQLITE_PRAGMA</code></td>
-    <td>Execute a PRAGMA statement</td>
+    <td>执行 PRAGMA 语句</td>
   </tr>
   <tr>
     <td><code>SQLITE_READ</code></td>
-    <td>Read from a table</td>
+    <td>从表中读取</td>
   </tr>
   <tr>
     <td><code>SQLITE_SELECT</code></td>
-    <td>Execute a SELECT statement</td>
+    <td>执行 SELECT 语句</td>
   </tr>
   <tr>
     <td><code>SQLITE_TRANSACTION</code></td>
-    <td>Begin, commit, or rollback a transaction</td>
+    <td>开始、提交或回滚事务</td>
   </tr>
   <tr>
     <td><code>SQLITE_UPDATE</code></td>
-    <td>Update a table</td>
+    <td>更新表</td>
   </tr>
   <tr>
     <td><code>SQLITE_ATTACH</code></td>
-    <td>Attach a database</td>
+    <td>附加数据库</td>
   </tr>
   <tr>
     <td><code>SQLITE_DETACH</code></td>
-    <td>Detach a database</td>
+    <td>分离数据库</td>
   </tr>
   <tr>
     <td><code>SQLITE_ALTER_TABLE</code></td>
-    <td>Alter a table</td>
+    <td>修改表</td>
   </tr>
   <tr>
     <td><code>SQLITE_REINDEX</code></td>
-    <td>Reindex</td>
+    <td>重新索引</td>
   </tr>
   <tr>
     <td><code>SQLITE_ANALYZE</code></td>
-    <td>Analyze the database</td>
+    <td>分析数据库</td>
   </tr>
   <tr>
     <td><code>SQLITE_CREATE_VTABLE</code></td>
-    <td>Create a virtual table</td>
+    <td>创建虚拟表</td>
   </tr>
   <tr>
     <td><code>SQLITE_DROP_VTABLE</code></td>
-    <td>Drop a virtual table</td>
+    <td>删除虚拟表</td>
   </tr>
   <tr>
     <td><code>SQLITE_FUNCTION</code></td>
-    <td>Use a function</td>
+    <td>使用函数</td>
   </tr>
   <tr>
     <td><code>SQLITE_SAVEPOINT</code></td>
-    <td>Create, release, or rollback a savepoint</td>
+    <td>创建、释放或回滚保存点</td>
   </tr>
   <tr>
     <td><code>SQLITE_COPY</code></td>
-    <td>Copy data (legacy)</td>
+    <td>复制数据（旧版）</td>
   </tr>
   <tr>
     <td><code>SQLITE_RECURSIVE</code></td>
-    <td>Recursive query</td>
+    <td>递归查询</td>
   </tr>
 </table>
 
-[Changesets and Patchsets]: https://www.sqlite.org/sessionintro.html#changesets_and_patchsets
-[Constants Passed To The Conflict Handler]: https://www.sqlite.org/session/c_changeset_conflict.html
-[Constants Returned From The Conflict Handler]: https://www.sqlite.org/session/c_changeset_abort.html
-[Limit Constants]: https://www.sqlite.org/c3ref/c_limit_attached.html
-[Run-Time Limits]: https://www.sqlite.org/c3ref/limit.html
-[SQL injection]: https://en.wikipedia.org/wiki/SQL_injection
-[Type conversion between JavaScript and SQLite]: #type-conversion-between-javascript-and-sqlite
+[Changesets 和 Patchsets]: https://www.sqlite.org/sessionintro.html#changesets_and_patchsets
+[传递给冲突处理程序的常量]: https://www.sqlite.org/session/c_changeset_conflict.html
+[从冲突处理程序返回的常量]: https://www.sqlite.org/session/c_changeset_abort.html
+[限制常量]: https://www.sqlite.org/c3ref/c_limit_attached.html
+[运行时限制]: https://www.sqlite.org/c3ref/limit.html
+[SQL 注入]: https://en.wikipedia.org/wiki/SQL_injection
+[JavaScript 和 SQLite 之间的类型转换]: #type-conversion-between-javascript-and-sqlite
 [`ATTACH DATABASE`]: https://www.sqlite.org/lang_attach.html
 [`PRAGMA foreign_keys`]: https://www.sqlite.org/pragma.html#pragma_foreign_keys
 [`SQLITE_DBCONFIG_DEFENSIVE`]: https://www.sqlite.org/c3ref/c_dbconfig_defensive.html#sqlitedbconfigdefensive

@@ -1,19 +1,14 @@
-# WebAssembly System Interface (WASI)
+# WebAssembly 系统接口 (WASI)
 
 <!--introduced_in=v12.16.0-->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-<strong class="critical">The `node:wasi` module does not currently provide the
-comprehensive file system security properties provided by some WASI runtimes.
-Full support for secure file system sandboxing may or may not be implemented in
-future. In the mean time, do not rely on it to run untrusted code. </strong>
+<strong class="critical">`node:wasi` 模块目前不提供某些 WASI 运行时提供的全面文件系统安全属性。未来可能会也可能不会实现了对安全文件系统沙箱的完整支持。与此同时，不要依赖它来运行不受信任的代码。</strong>
 
 <!-- source_link=lib/wasi.js -->
 
-The WASI API provides an implementation of the [WebAssembly System Interface][]
-specification. WASI gives WebAssembly applications access to the underlying
-operating system via a collection of POSIX-like functions.
+WASI API 提供了 [WebAssembly 系统接口][] 规范的实现。WASI 通过一组类 POSIX 函数使 WebAssembly 应用程序能够访问底层操作系统。
 
 ```mjs
 import { readFile } from 'node:fs/promises';
@@ -63,46 +58,45 @@ const wasi = new WASI({
 })();
 ```
 
-To run the above example, create a new WebAssembly text format file named
-`demo.wat`:
+要运行上面的示例，创建一个名为 `demo.wat` 的新 WebAssembly 文本格式文件：
 
 ```text
 (module
-    ;; Import the required fd_write WASI function which will write the given io vectors to stdout
-    ;; The function signature for fd_write is:
-    ;; (File Descriptor, *iovs, iovs_len, nwritten) -> Returns number of bytes written
+    ;; 导入所需的 fd_write WASI 函数，它将把给定的 io 向量写入 stdout
+    ;; fd_write 的函数签名是：
+    ;; (文件描述符，*iovs, iovs_len, nwritten) -> 返回写入的字节数
     (import "wasi_snapshot_preview1" "fd_write" (func $fd_write (param i32 i32 i32 i32) (result i32)))
 
     (memory 1)
     (export "memory" (memory 0))
 
-    ;; Write 'hello world\n' to memory at an offset of 8 bytes
-    ;; Note the trailing newline which is required for the text to appear
+    ;; 将 'hello world\n' 写入偏移量为 8 字节的内存
+    ;; 注意尾随换行符，文本显示需要它
     (data (i32.const 8) "hello world\n")
 
     (func $main (export "_start")
-        ;; Creating a new io vector within linear memory
-        (i32.store (i32.const 0) (i32.const 8))  ;; iov.iov_base - This is a pointer to the start of the 'hello world\n' string
-        (i32.store (i32.const 4) (i32.const 12))  ;; iov.iov_len - The length of the 'hello world\n' string
+        ;; 在线性内存中创建一个新的 io 向量
+        (i32.store (i32.const 0) (i32.const 8))  ;; iov.iov_base - 这是指向 'hello world\n' 字符串开头的指针
+        (i32.store (i32.const 4) (i32.const 12))  ;; iov.iov_len - 'hello world\n' 字符串的长度
 
         (call $fd_write
-            (i32.const 1) ;; file_descriptor - 1 for stdout
-            (i32.const 0) ;; *iovs - The pointer to the iov array, which is stored at memory location 0
-            (i32.const 1) ;; iovs_len - We're printing 1 string stored in an iov - so one.
-            (i32.const 20) ;; nwritten - A place in memory to store the number of bytes written
+            (i32.const 1) ;; file_descriptor - 1 代表 stdout
+            (i32.const 0) ;; *iovs - 指向 iov 数组的指针，存储在内存位置 0
+            (i32.const 1) ;; iovs_len - 我们打印存储在 iov 中的 1 个字符串 - 所以是 1。
+            (i32.const 20) ;; nwritten - 内存中用于存储写入字节数的位置
         )
-        drop ;; Discard the number of bytes written from the top of the stack
+        drop ;; 从栈顶丢弃写入的字节数
     )
 )
 ```
 
-Use [wabt](https://github.com/WebAssembly/wabt) to compile `.wat` to `.wasm`
+使用 [wabt](https://github.com/WebAssembly/wabt) 将 `.wat` 编译为 `.wasm`
 
 ```bash
 wat2wasm demo.wat
 ```
 
-## Security
+## 安全性
 
 <!-- YAML
 added:
@@ -116,19 +110,13 @@ changes:
     description: Clarify WASI security properties.
 -->
 
-WASI provides a capabilities-based model through which applications are provided
-their own custom `env`, `preopens`, `stdin`, `stdout`, `stderr`, and `exit`
-capabilities.
+WASI 提供了一种基于能力的模型，通过该模型为应用程序提供它们自己的自定义 `env`、`preopens`、`stdin`、`stdout`、`stderr` 和 `exit` 能力。
 
-**The current Node.js threat model does not provide secure sandboxing as is
-present in some WASI runtimes.**
+**当前的 Node.js 威胁模型不提供某些 WASI 运行时中存在的安全沙箱。**
 
-While the capability features are supported, they do not form a security model
-in Node.js. For example, the file system sandboxing can be escaped with various
-techniques. The project is exploring whether these security guarantees could be
-added in future.
+虽然支持能力特性，但它们在 Node.js 中并不构成安全模型。例如，可以使用各种技术逃脱文件系统沙箱。该项目正在探索未来是否可以添加这些安全保证。
 
-## Class: `WASI`
+## 类：`WASI`
 
 <!-- YAML
 added:
@@ -136,9 +124,7 @@ added:
  - v12.16.0
 -->
 
-The `WASI` class provides the WASI system call API and additional convenience
-methods for working with WASI-based applications. Each `WASI` instance
-represents a distinct environment.
+`WASI` 类提供了 WASI 系统调用 API 以及用于处理基于 WASI 的应用程序的其他便捷方法。每个 `WASI` 实例代表一个独立的环境。
 
 ### `new WASI([options])`
 
@@ -159,29 +145,14 @@ changes:
 -->
 
 * `options` {Object}
-  * `args` {Array} An array of strings that the WebAssembly application will
-    see as command-line arguments. The first argument is the virtual path to the
-    WASI command itself. **Default:** `[]`.
-  * `env` {Object} An object similar to `process.env` that the WebAssembly
-    application will see as its environment. **Default:** `{}`.
-  * `preopens` {Object} This object represents the WebAssembly application's
-    local directory structure. The string keys of `preopens` are treated as
-    directories within the file system. The corresponding values in `preopens`
-    are the real paths to those directories on the host machine.
-  * `returnOnExit` {boolean} By default, when WASI applications call
-    `__wasi_proc_exit()`  `wasi.start()` will return with the exit code
-    specified rather than terminating the process. Setting this option to
-    `false` will cause the Node.js process to exit with the specified
-    exit code instead.  **Default:** `true`.
-  * `stdin` {integer} The file descriptor used as standard input in the
-    WebAssembly application. **Default:** `0`.
-  * `stdout` {integer} The file descriptor used as standard output in the
-    WebAssembly application. **Default:** `1`.
-  * `stderr` {integer} The file descriptor used as standard error in the
-    WebAssembly application. **Default:** `2`.
-  * `version` {string} The version of WASI requested. Currently the only
-    supported versions are `unstable` and `preview1`. This option is
-    mandatory.
+  * `args` {Array} 字符串数组，WebAssembly 应用程序将其视为命令行参数。第一个参数是 WASI 命令本身的虚拟路径。**默认值：** `[]`。
+  * `env` {Object} 类似于 `process.env` 的对象，WebAssembly 应用程序将其视为其环境。**默认值：** `{}`。
+  * `preopens` {Object} 此对象表示 WebAssembly 应用程序的本地目录结构。`preopens` 的字符串键被视为文件系统内的目录。`preopens` 中的对应值是主机上这些目录的真实路径。
+  * `returnOnExit` {boolean} 默认情况下，当 WASI 应用程序调用 `__wasi_proc_exit()` 时，`wasi.start()` 将返回指定的退出代码，而不是终止进程。将此选项设置为 `false` 将导致 Node.js 进程以指定的退出代码退出。**默认值：** `true`。
+  * `stdin` {integer} WebAssembly 应用程序中用作标准输入的文件描述符。**默认值：** `0`。
+  * `stdout` {integer} WebAssembly 应用程序中用作标准输出的文件描述符。**默认值：** `1`。
+  * `stderr` {integer} WebAssembly 应用程序中用作标准错误输出的文件描述符。**默认值：** `2`。
+  * `version` {string} 请求的 WASI 版本。目前支持的版本只有 `unstable` 和 `preview1`。此选项是必填的。
 
 ### `wasi.getImportObject()`
 
@@ -189,17 +160,15 @@ changes:
 added: v19.8.0
 -->
 
-Return an import object that can be passed to `WebAssembly.instantiate()` if
-no other WASM imports are needed beyond those provided by WASI.
+返回一个导入对象，如果除了 WASI 提供的导入之外不需要其他 WASM 导入，则可以将其传递给 `WebAssembly.instantiate()`。
 
-If version `unstable` was passed into the constructor it will return:
+如果构造函数传入了版本 `unstable`，它将返回：
 
 ```json
 { wasi_unstable: wasi.wasiImport }
 ```
 
-If version `preview1` was passed into the constructor or no version was
-specified it will return:
+如果构造函数传入了版本 `preview1` 或未指定版本，它将返回：
 
 ```json
 { wasi_snapshot_preview1: wasi.wasiImport }
@@ -215,14 +184,11 @@ added:
 
 * `instance` {WebAssembly.Instance}
 
-Attempt to begin execution of `instance` as a WASI command by invoking its
-`_start()` export. If `instance` does not contain a `_start()` export, or if
-`instance` contains an `_initialize()` export, then an exception is thrown.
+尝试通过调用 `instance` 的 `_start()` 导出，开始将 `instance` 作为 WASI 命令执行。如果 `instance` 不包含 `_start()` 导出，或者如果 `instance` 包含 `_initialize()` 导出，则会抛出异常。
 
-`start()` requires that `instance` exports a [`WebAssembly.Memory`][] named
-`memory`. If `instance` does not have a `memory` export an exception is thrown.
+`start()` 要求 `instance` 导出一个名为 `memory` 的 [`WebAssembly.Memory`][]。如果 `instance` 没有 `memory` 导出，则会抛出异常。
 
-If `start()` is called more than once, an exception is thrown.
+如果 `start()` 被调用超过一次，则会抛出异常。
 
 ### `wasi.initialize(instance)`
 
@@ -234,14 +200,11 @@ added:
 
 * `instance` {WebAssembly.Instance}
 
-Attempt to initialize `instance` as a WASI reactor by invoking its
-`_initialize()` export, if it is present. If `instance` contains a `_start()`
-export, then an exception is thrown.
+尝试通过调用 `instance` 的 `_initialize()` 导出（如果存在）将 `instance` 初始化为 WASI 反应器。如果 `instance` 包含 `_start()` 导出，则会抛出异常。
 
-`initialize()` requires that `instance` exports a [`WebAssembly.Memory`][] named
-`memory`. If `instance` does not have a `memory` export an exception is thrown.
+`initialize()` 要求 `instance` 导出一个名为 `memory` 的 [`WebAssembly.Memory`][]。如果 `instance` 没有 `memory` 导出，则会抛出异常。
 
-If `initialize()` is called more than once, an exception is thrown.
+如果 `initialize()` 被调用超过一次，则会抛出异常。
 
 ### `wasi.finalizeBindings(instance[, options])`
 
@@ -251,19 +214,13 @@ added: v24.4.0
 
 * `instance` {WebAssembly.Instance}
 * `options` {Object}
-  * `memory` {WebAssembly.Memory} **Default:** `instance.exports.memory`.
+  * `memory` {WebAssembly.Memory} **默认值：** `instance.exports.memory`。
 
-Set up WASI host bindings to `instance` without calling `initialize()`
-or `start()`. This method is useful when the WASI module is instantiated in
-child threads for sharing the memory across threads.
+在不调用 `initialize()` 或 `start()` 的情况下为 `instance` 设置 WASI 主机绑定。当 WASI 模块在子线程中实例化以在线程间共享内存时，此方法很有用。
 
-`finalizeBindings()` requires that either `instance` exports a
-[`WebAssembly.Memory`][] named `memory` or user specify a
-[`WebAssembly.Memory`][] object in `options.memory`. If the `memory` is invalid
-an exception is thrown.
+`finalizeBindings()` 要求 `instance` 导出一个名为 `memory` 的 [`WebAssembly.Memory`][]，或者用户在 `options.memory` 中指定一个 [`WebAssembly.Memory`][] 对象。如果 `memory` 无效，则会抛出异常。
 
-`start()` and `initialize()` will call `finalizeBindings()` internally.
-If `finalizeBindings()` is called more than once, an exception is thrown.
+`start()` 和 `initialize()` 将在内部调用 `finalizeBindings()`。如果 `finalizeBindings()` 被调用超过一次，则会抛出异常。
 
 ### `wasi.wasiImport`
 
@@ -273,12 +230,10 @@ added:
  - v12.16.0
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-`wasiImport` is an object that implements the WASI system call API. This object
-should be passed as the `wasi_snapshot_preview1` import during the instantiation
-of a [`WebAssembly.Instance`][].
+`wasiImport` 是一个实现 WASI 系统调用 API 的对象。在实例化 [`WebAssembly.Instance`][] 期间，此对象应作为 `wasi_snapshot_preview1` 导入传递。
 
-[WebAssembly System Interface]: https://wasi.dev/
+[WebAssembly 系统接口]: https://wasi.dev/
 [`WebAssembly.Instance`]: https://developer.mozilla.org/en-US/docs/WebAssembly/Reference/JavaScript_interface/Instance
 [`WebAssembly.Memory`]: https://developer.mozilla.org/en-US/docs/WebAssembly/Reference/JavaScript_interface/Memory

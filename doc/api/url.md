@@ -2,12 +2,11 @@
 
 <!--introduced_in=v0.10.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/url.js -->
 
-The `node:url` module provides utilities for URL resolution and parsing. It can
-be accessed using:
+`node:url` 模块提供用于 URL 解析和处理的工具。可以使用以下方式访问它：
 
 ```mjs
 import url from 'node:url';
@@ -17,23 +16,18 @@ import url from 'node:url';
 const url = require('node:url');
 ```
 
-## URL strings and URL objects
+## URL 字符串和 URL 对象
 
-A URL string is a structured string containing multiple meaningful components.
-When parsed, a URL object is returned containing properties for each of these
-components.
+URL 字符串是一个包含多个有意义组件的结构化字符串。
+解析后，将返回一个 URL 对象，其中包含这些组件各自的属性。
 
-The `node:url` module provides two APIs for working with URLs: a legacy API that
-is Node.js specific, and a newer API that implements the same
-[WHATWG URL Standard][] used by web browsers.
+`node:url` 模块提供了两个用于处理 URL 的 API：一个是 Node.js 特有的旧版 API，另一个是实现与 Web 浏览器相同的 [WHATWG URL 标准][] 的新版 API。
 
-A comparison between the WHATWG and legacy APIs is provided below. Above the URL
-`'https://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash'`, properties
-of an object returned by the legacy `url.parse()` are shown. Below it are
-properties of a WHATWG `URL` object.
+下面提供了 WHATWG API 和旧版 API 之间的比较。在 URL
+`'https://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash'` 上方，显示了旧版 `url.parse()` 返回的对象的属性。在其下方是 WHATWG `URL` 对象的属性。
 
-WHATWG URL's `origin` property includes `protocol` and `host`, but not
-`username` or `password`.
+WHATWG URL 的 `origin` 属性包括 `protocol` 和 `host`，但不包括
+`username` 或 `password`。
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -56,14 +50,14 @@ WHATWG URL's `origin` property includes `protocol` and `host`, but not
 (All spaces in the "" line should be ignored. They are purely for formatting.)
 ```
 
-Parsing the URL string using the WHATWG API:
+使用 WHATWG API 解析 URL 字符串：
 
 ```js
 const myURL =
   new URL('https://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash');
 ```
 
-Parsing the URL string using the legacy API:
+使用旧版 API 解析 URL 字符串：
 
 ```mjs
 import url from 'node:url';
@@ -77,10 +71,9 @@ const myURL =
   url.parse('https://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash');
 ```
 
-### Constructing a URL from component parts and getting the constructed string
+### 从组件部分构造 URL 并获取构造后的字符串
 
-It is possible to construct a WHATWG URL from component parts using either the
-property setters or a template literal string:
+可以使用属性设置器或模板字符串从组件部分构造 WHATWG URL：
 
 ```js
 const myURL = new URL('https://example.org');
@@ -96,15 +89,15 @@ const hash = '#fgh';
 const myURL = new URL(`https://example.org${pathname}${search}${hash}`);
 ```
 
-To get the constructed URL string, use the `href` property accessor:
+要获取构造后的 URL 字符串，请使用 `href` 属性访问器：
 
 ```js
 console.log(myURL.href);
 ```
 
-## The WHATWG URL API
+## WHATWG URL API
 
-### Class: `URL`
+### 类：`URL`
 
 <!-- YAML
 added:
@@ -116,16 +109,16 @@ changes:
     description: The class is now available on the global object.
 -->
 
-Browser-compatible `URL` class, implemented by following the WHATWG URL
-Standard. [Examples of parsed URLs][] may be found in the Standard itself.
-The `URL` class is also available on the global object.
+浏览器兼容的 `URL` 类，遵循 WHATWG URL
+标准实现。[解析后的 URL 示例][] 可在标准本身中找到。
+`URL` 类也可在全局对象上使用。
 
-In accordance with browser conventions, all properties of `URL` objects
-are implemented as getters and setters on the class prototype, rather than as
-data properties on the object itself. Thus, unlike [legacy `urlObject`][]s,
-using the `delete` keyword on any properties of `URL` objects (e.g. `delete
-myURL.protocol`, `delete myURL.pathname`, etc) has no effect but will still
-return `true`.
+根据浏览器约定，`URL` 对象的所有属性
+都实现为类原型上的 getter 和 setter，而不是对象本身上的
+数据属性。因此，与 [旧版 `urlObject`][] 不同，
+对 `URL` 对象的任何属性使用 `delete` 关键字（例如 `delete
+myURL.protocol`、`delete myURL.pathname` 等）不会产生任何效果，但仍会
+返回 `true`。
 
 #### `new URL(input[, base])`
 
@@ -138,52 +131,50 @@ changes:
     description: ICU requirement is removed.
 -->
 
-* `input` {string} The absolute or relative input URL to parse. If `input`
-  is relative, then `base` is required. If `input` is absolute, the `base`
-  is ignored. If `input` is not a string, it is [converted to a string][] first.
-* `base` {string} The base URL to resolve against if the `input` is not
-  absolute. If `base` is not a string, it is [converted to a string][] first.
+* `input` {string} 要解析的绝对或相对输入 URL。如果 `input`
+  是相对的，则 `base` 是必需的。如果 `input` 是绝对的，则忽略 `base`。如果 `input` 不是字符串，则首先 [转换为字符串][]。
+* `base` {string} 如果 `input` 不是
+  绝对的，则用于解析的基 URL。如果 `base` 不是字符串，则首先 [转换为字符串][]。
 
-Creates a new `URL` object by parsing the `input` relative to the `base`. If
-`base` is passed as a string, it will be parsed equivalent to `new URL(base)`.
+通过相对于 `base` 解析 `input` 创建一个新的 `URL` 对象。如果
+`base` 作为字符串传递，它将被解析为等同于 `new URL(base)`。
 
 ```js
 const myURL = new URL('/foo', 'https://example.org/');
 // https://example.org/foo
 ```
 
-The URL constructor is accessible as a property on the global object.
-It can also be imported from the built-in url module:
+URL 构造函数可作为全局对象上的属性访问。
+它也可以从内置的 url 模块导入：
 
 ```mjs
 import { URL } from 'node:url';
-console.log(URL === globalThis.URL); // Prints 'true'.
+console.log(URL === globalThis.URL); // 打印 'true'。
 ```
 
 ```cjs
-console.log(URL === require('node:url').URL); // Prints 'true'.
+console.log(URL === require('node:url').URL); // 打印 'true'。
 ```
 
-A `TypeError` will be thrown if the `input` or `base` are not valid URLs. Note
-that an effort will be made to coerce the given values into strings. For
-instance:
+如果 `input` 或 `base` 不是有效的 URL，将抛出
+`TypeError`。请注意，将尽力把给定值强制转换为字符串。例如：
 
 ```js
 const myURL = new URL({ toString: () => 'https://example.org/' });
 // https://example.org/
 ```
 
-Unicode characters appearing within the host name of `input` will be
-automatically converted to ASCII using the [Punycode][] algorithm.
+出现在 `input` 主机名中的 Unicode 字符将
+自动使用 [Punycode][] 算法转换为 ASCII。
 
 ```js
 const myURL = new URL('https://測試');
 // https://xn--g6w251d/
 ```
 
-In cases where it is not known in advance if `input` is an absolute URL
-and a `base` is provided, it is advised to validate that the `origin` of
-the `URL` object is what is expected.
+在事先不知道 `input` 是否为绝对 URL
+且提供了 `base` 的情况下，建议验证
+`URL` 对象的 `origin` 是否符合预期。
 
 ```js
 let myURL = new URL('http://Example.com/', 'https://example.org/');
@@ -207,94 +198,93 @@ myURL = new URL('foo:Example.com/', 'https://example.org/');
 
 #### `url.hash`
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the fragment portion of the URL.
+获取和设置 URL 的片段部分。
 
 ```js
 const myURL = new URL('https://example.org/foo#bar');
 console.log(myURL.hash);
-// Prints #bar
+// 打印 #bar
 
 myURL.hash = 'baz';
 console.log(myURL.href);
-// Prints https://example.org/foo#baz
+// 打印 https://example.org/foo#baz
 ```
 
-Invalid URL characters included in the value assigned to the `hash` property
-are [percent-encoded][]. The selection of which characters to
-percent-encode may vary somewhat from what the [`url.parse()`][] and
-[`url.format()`][] methods would produce.
+分配给 `hash` 属性的值中包含的无效 URL 字符
+将进行 [百分号编码][]。选择哪些字符进行
+百分号编码可能与 [`url.parse()`][] 和
+[`url.format()`][] 方法产生的结果略有不同。
 
 #### `url.host`
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the host portion of the URL.
+获取和设置 URL 的主机部分。
 
 ```js
 const myURL = new URL('https://example.org:81/foo');
 console.log(myURL.host);
-// Prints example.org:81
+// 打印 example.org:81
 
 myURL.host = 'example.com:82';
 console.log(myURL.href);
-// Prints https://example.com:82/foo
+// 打印 https://example.com:82/foo
 ```
 
-Invalid host values assigned to the `host` property are ignored.
+分配给 `host` 属性的无效主机值将被忽略。
 
 #### `url.hostname`
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the host name portion of the URL. The key difference between
-`url.host` and `url.hostname` is that `url.hostname` does _not_ include the
-port.
+获取和设置 URL 的主机名部分。`url.host` 和
+`url.hostname` 之间的主要区别在于 `url.hostname` _不_ 包括
+端口。
 
 ```js
 const myURL = new URL('https://example.org:81/foo');
 console.log(myURL.hostname);
-// Prints example.org
+// 打印 example.org
 
-// Setting the hostname does not change the port
+// 设置主机名不会改变端口
 myURL.hostname = 'example.com';
 console.log(myURL.href);
-// Prints https://example.com:81/foo
+// 打印 https://example.com:81/foo
 
-// Use myURL.host to change the hostname and port
+// 使用 myURL.host 更改主机名和端口
 myURL.host = 'example.org:82';
 console.log(myURL.href);
-// Prints https://example.org:82/foo
+// 打印 https://example.org:82/foo
 ```
 
-Invalid host name values assigned to the `hostname` property are ignored.
+分配给 `hostname` 属性的无效主机名值将被忽略。
 
 #### `url.href`
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the serialized URL.
+获取和设置序列化的 URL。
 
 ```js
 const myURL = new URL('https://example.org/foo');
 console.log(myURL.href);
-// Prints https://example.org/foo
+// 打印 https://example.org/foo
 
 myURL.href = 'https://example.com/bar';
 console.log(myURL.href);
-// Prints https://example.com/bar
+// 打印 https://example.com/bar
 ```
 
-Getting the value of the `href` property is equivalent to calling
-[`url.toString()`][].
+获取 `href` 属性的值等同于调用
+[`url.toString()`][]。
 
-Setting the value of this property to a new value is equivalent to creating a
-new `URL` object using [`new URL(value)`][`new URL()`]. Each of the `URL`
-object's properties will be modified.
+将此属性的值设置为新值等同于使用 [`new URL(value)`][`new URL()`] 创建一个新的
+`URL` 对象。`URL`
+对象的每个属性都将被修改。
 
-If the value assigned to the `href` property is not a valid URL, a `TypeError`
-will be thrown.
+如果分配给 `href` 属性的值不是有效的 URL，将抛出 `TypeError`。
 
 #### `url.origin`
 
@@ -306,66 +296,66 @@ changes:
                  returns `'null'` for it.
 -->
 
-* Type: {string}
+* 类型：{string}
 
-Gets the read-only serialization of the URL's origin.
+获取 URL 源头的只读序列化。
 
 ```js
 const myURL = new URL('https://example.org/foo/bar?baz');
 console.log(myURL.origin);
-// Prints https://example.org
+// 打印 https://example.org
 ```
 
 ```js
 const idnURL = new URL('https://測試');
 console.log(idnURL.origin);
-// Prints https://xn--g6w251d
+// 打印 https://xn--g6w251d
 
 console.log(idnURL.hostname);
-// Prints xn--g6w251d
+// 打印 xn--g6w251d
 ```
 
 #### `url.password`
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the password portion of the URL.
+获取和设置 URL 的密码部分。
 
 ```js
 const myURL = new URL('https://abc:xyz@example.com');
 console.log(myURL.password);
-// Prints xyz
+// 打印 xyz
 
 myURL.password = '123';
 console.log(myURL.href);
-// Prints https://abc:123@example.com/
+// 打印 https://abc:123@example.com/
 ```
 
-Invalid URL characters included in the value assigned to the `password` property
-are [percent-encoded][]. The selection of which characters to
-percent-encode may vary somewhat from what the [`url.parse()`][] and
-[`url.format()`][] methods would produce.
+分配给 `password` 属性的值中包含的无效 URL 字符
+将进行 [百分号编码][]。选择哪些字符进行
+百分号编码可能与 [`url.parse()`][] 和
+[`url.format()`][] 方法产生的结果略有不同。
 
 #### `url.pathname`
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the path portion of the URL.
+获取和设置 URL 的路径部分。
 
 ```js
 const myURL = new URL('https://example.org/abc/xyz?123');
 console.log(myURL.pathname);
-// Prints /abc/xyz
+// 打印 /abc/xyz
 
 myURL.pathname = '/abcdef';
 console.log(myURL.href);
-// Prints https://example.org/abcdef?123
+// 打印 https://example.org/abcdef?123
 ```
 
-Invalid URL characters included in the value assigned to the `pathname`
-property are [percent-encoded][]. The selection of which characters
-to percent-encode may vary somewhat from what the [`url.parse()`][] and
-[`url.format()`][] methods would produce.
+分配给 `pathname`
+属性的值中包含的无效 URL 字符将进行 [百分号编码][]。选择哪些字符
+进行百分号编码可能与 [`url.parse()`][] 和
+[`url.format()`][] 方法产生的结果略有不同。
 
 #### `url.port`
 
@@ -376,19 +366,19 @@ changes:
     description: The scheme "gopher" is no longer special.
 -->
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the port portion of the URL.
+获取和设置 URL 的端口部分。
 
-The port value may be a number or a string containing a number in the range
-`0` to `65535` (inclusive). Setting the value to the default port of the
-`URL` objects given `protocol` will result in the `port` value becoming
-the empty string (`''`).
+端口值可以是数字，也可以是包含 `0`
+到 `65535`（含）范围内数字的字符串。将值设置为给定 `protocol` 的
+`URL` 对象的默认端口将导致 `port` 值变为
+空字符串 (`''`)。
 
-The port value can be an empty string in which case the port depends on
-the protocol/scheme:
+端口值可以是空字符串，在这种情况下端口取决于
+协议/方案：
 
-| protocol | port |
+| 协议 | 端口 |
 | -------- | ---- |
 | "ftp"    | 21   |
 | "file"   |      |
@@ -397,85 +387,85 @@ the protocol/scheme:
 | "ws"     | 80   |
 | "wss"    | 443  |
 
-Upon assigning a value to the port, the value will first be converted to a
-string using `.toString()`.
+给端口赋值时，值将首先使用 `.toString()` 转换为
+字符串。
 
-If that string is invalid but it begins with a number, the leading number is
-assigned to `port`.
-If the number lies outside the range denoted above, it is ignored.
+如果该字符串无效但以数字开头，则将前导数字分配给
+`port`。
+如果数字超出上述表示的范围，则将其忽略。
 
 ```js
 const myURL = new URL('https://example.org:8888');
 console.log(myURL.port);
-// Prints 8888
+// 打印 8888
 
-// Default ports are automatically transformed to the empty string
-// (HTTPS protocol's default port is 443)
+// 默认端口自动转换为空字符串
+// (HTTPS 协议的默认端口是 443)
 myURL.port = '443';
 console.log(myURL.port);
-// Prints the empty string
+// 打印空字符串
 console.log(myURL.href);
-// Prints https://example.org/
+// 打印 https://example.org/
 
 myURL.port = 1234;
 console.log(myURL.port);
-// Prints 1234
+// 打印 1234
 console.log(myURL.href);
-// Prints https://example.org:1234/
+// 打印 https://example.org:1234/
 
-// Completely invalid port strings are ignored
+// 完全无效的端口字符串将被忽略
 myURL.port = 'abcd';
 console.log(myURL.port);
-// Prints 1234
+// 打印 1234
 
-// Leading numbers are treated as a port number
+// 前导数字被视为端口号
 myURL.port = '5678abcd';
 console.log(myURL.port);
-// Prints 5678
+// 打印 5678
 
-// Non-integers are truncated
+// 非整数将被截断
 myURL.port = 1234.5678;
 console.log(myURL.port);
-// Prints 1234
+// 打印 1234
 
-// Out-of-range numbers which are not represented in scientific notation
-// will be ignored.
-myURL.port = 1e10; // 10000000000, will be range-checked as described below
+// 超出范围且未用科学记数法表示的数字
+// 将被忽略。
+myURL.port = 1e10; // 10000000000，将如下所述进行范围检查
 console.log(myURL.port);
-// Prints 1234
+// 打印 1234
 ```
 
-Numbers which contain a decimal point,
-such as floating-point numbers or numbers in scientific notation,
-are not an exception to this rule.
-Leading numbers up to the decimal point will be set as the URL's port,
-assuming they are valid:
+包含小数点的数字，
+例如浮点数或科学记数法中的数字，
+不是此规则的例外。
+小数点前的前导数字将设置为 URL 的端口，
+前提是它们有效：
 
 ```js
 myURL.port = 4.567e21;
 console.log(myURL.port);
-// Prints 4 (because it is the leading number in the string '4.567e21')
+// 打印 4（因为它是字符串 '4.567e21' 中的前导数字）
 ```
 
 #### `url.protocol`
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the protocol portion of the URL.
+获取和设置 URL 的协议部分。
 
 ```js
 const myURL = new URL('https://example.org');
 console.log(myURL.protocol);
-// Prints https:
+// 打印 https:
 
 myURL.protocol = 'ftp';
 console.log(myURL.href);
-// Prints ftp://example.org/
+// 打印 ftp://example.org/
 ```
 
-Invalid URL protocol values assigned to the `protocol` property are ignored.
+分配给 `protocol` 属性的无效 URL 协议值将被忽略。
 
-##### Special schemes
+##### 特殊方案
 
 <!-- YAML
 changes:
@@ -484,13 +474,11 @@ changes:
     description: The scheme "gopher" is no longer special.
 -->
 
-The [WHATWG URL Standard][] considers a handful of URL protocol schemes to be
-_special_ in terms of how they are parsed and serialized. When a URL is
-parsed using one of these special protocols, the `url.protocol` property
-may be changed to another special protocol but cannot be changed to a
-non-special protocol, and vice versa.
+[WHATWG URL 标准][] 认为少数 URL 协议方案在解析和序列化方面是_特殊_的。当使用这些特殊协议之一解析 URL 时，`url.protocol` 属性
+可以更改为另一个特殊协议，但不能更改为
+非特殊协议，反之亦然。
 
-For instance, changing from `http` to `https` works:
+例如，从 `http` 更改为 `https` 是有效的：
 
 ```js
 const u = new URL('http://example.org');
@@ -499,8 +487,8 @@ console.log(u.href);
 // https://example.org/
 ```
 
-However, changing from `http` to a hypothetical `fish` protocol does not
-because the new protocol is not special.
+但是，从 `http` 更改为假设的 `fish` 协议无效，
+因为新协议不是特殊的。
 
 ```js
 const u = new URL('http://example.org');
@@ -509,8 +497,7 @@ console.log(u.href);
 // http://example.org/
 ```
 
-Likewise, changing from a non-special protocol to a special protocol is also
-not permitted:
+同样，也不允许从非特殊协议更改为特殊协议：
 
 ```js
 const u = new URL('fish://example.org');
@@ -519,84 +506,83 @@ console.log(u.href);
 // fish://example.org
 ```
 
-According to the WHATWG URL Standard, special protocol schemes are `ftp`,
-`file`, `http`, `https`, `ws`, and `wss`.
+根据 WHATWG URL 标准，特殊协议方案是 `ftp`、
+`file`、`http`、`https`、`ws` 和 `wss`。
 
 #### `url.search`
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the serialized query portion of the URL.
+获取和设置 URL 的序列化查询部分。
 
 ```js
 const myURL = new URL('https://example.org/abc?123');
 console.log(myURL.search);
-// Prints ?123
+// 打印 ?123
 
 myURL.search = 'abc=xyz';
 console.log(myURL.href);
-// Prints https://example.org/abc?abc=xyz
+// 打印 https://example.org/abc?abc=xyz
 ```
 
-Any invalid URL characters appearing in the value assigned the `search`
-property will be [percent-encoded][]. The selection of which
-characters to percent-encode may vary somewhat from what the [`url.parse()`][]
-and [`url.format()`][] methods would produce.
+分配给 `search`
+属性的值中出现的任何无效 URL 字符都将进行 [百分号编码][]。选择哪些
+字符进行百分号编码可能与 [`url.parse()`][]
+和 [`url.format()`][] 方法产生的结果略有不同。
 
 #### `url.searchParams`
 
-* Type: {URLSearchParams}
+* 类型：{URLSearchParams}
 
-Gets the [`URLSearchParams`][] object representing the query parameters of the
-URL. This property is read-only but the `URLSearchParams` object it provides
-can be used to mutate the URL instance; to replace the entirety of query
-parameters of the URL, use the [`url.search`][] setter. See
-[`URLSearchParams`][] documentation for details.
+获取表示 URL 查询参数的 [`URLSearchParams`][] 对象。此属性是只读的，但它提供的 `URLSearchParams` 对象
+可用于突变 URL 实例；要替换 URL 的整个查询
+参数，请使用 [`url.search`][] 设置器。详见
+[`URLSearchParams`][] 文档。
 
-Use care when using `.searchParams` to modify the `URL` because,
-per the WHATWG specification, the `URLSearchParams` object uses
-different rules to determine which characters to percent-encode. For
-instance, the `URL` object will not percent encode the ASCII tilde (`~`)
-character, while `URLSearchParams` will always encode it:
+使用 `.searchParams` 修改 `URL` 时要小心，因为
+根据 WHATWG 规范，`URLSearchParams` 对象使用
+不同的规则来确定哪些字符进行百分号编码。例
+如，`URL` 对象不会对 ASCII 波浪号 (`~`)
+字符进行百分号编码，而 `URLSearchParams` 将始终对其进行编码：
 
 ```js
 const myURL = new URL('https://example.org/abc?foo=~bar');
 
-console.log(myURL.search);  // prints ?foo=~bar
+console.log(myURL.search);  // 打印 ?foo=~bar
 
-// Modify the URL via searchParams...
+// 通过 searchParams 修改 URL...
 myURL.searchParams.sort();
 
-console.log(myURL.search);  // prints ?foo=%7Ebar
+console.log(myURL.search);  // 打印 ?foo=%7Ebar
 ```
 
 #### `url.username`
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the username portion of the URL.
+获取和设置 URL 的用户名部分。
 
 ```js
 const myURL = new URL('https://abc:xyz@example.com');
 console.log(myURL.username);
-// Prints abc
+// 打印 abc
 
 myURL.username = '123';
 console.log(myURL.href);
-// Prints https://123:xyz@example.com/
+// 打印 https://123:xyz@example.com/
 ```
 
-Any invalid URL characters appearing in the value assigned the `username`
-property will be [percent-encoded][]. The selection of which
-characters to percent-encode may vary somewhat from what the [`url.parse()`][]
-and [`url.format()`][] methods would produce.
+分配给 `username`
+属性的值中出现的任何无效 URL 字符都将进行 [百分号编码][]。选择哪些
+字符进行百分号编码可能与 [`url.parse()`][]
+和 [`url.format()`][] 方法产生的结果略有不同。
 
 #### `url.toString()`
 
-* Returns: {string}
+* 返回：{string}
 
-The `toString()` method on the `URL` object returns the serialized URL. The
-value returned is equivalent to that of [`url.href`][] and [`url.toJSON()`][].
+`URL` 对象上的 `toString()` 方法返回序列化的 URL。返回
+的值等同于 [`url.href`][] 和 [`url.toJSON()`][] 的值。
 
 #### `url.toJSON()`
 
@@ -606,14 +592,14 @@ added:
   - v6.13.0
 -->
 
-* Returns: {string}
+* 返回：{string}
 
-The `toJSON()` method on the `URL` object returns the serialized URL. The
-value returned is equivalent to that of [`url.href`][] and
-[`url.toString()`][].
+`URL` 对象上的 `toJSON()` 方法返回序列化的 URL。返回
+的值等同于 [`url.href`][] 和
+[`url.toString()`][] 的值。
 
-This method is automatically called when an `URL` object is serialized
-with [`JSON.stringify()`][].
+当 `URL` 对象使用 [`JSON.stringify()`][] 序列化时，
+此方法会自动调用。
 
 ```js
 const myURLs = [
@@ -621,7 +607,7 @@ const myURLs = [
   new URL('https://test.example.org'),
 ];
 console.log(JSON.stringify(myURLs));
-// Prints ["https://www.example.com/","https://test.example.org/"]
+// 打印 ["https://www.example.com/","https://test.example.org/"]
 ```
 
 #### `URL.createObjectURL(blob)`
@@ -637,10 +623,10 @@ changes:
 -->
 
 * `blob` {Blob}
-* Returns: {string}
+* 返回：{string}
 
-Creates a `'blob:nodedata:...'` URL string that represents the given {Blob}
-object and can be used to retrieve the `Blob` later.
+创建一个表示给定 {Blob} 对象的 `'blob:nodedata:...'` URL 字符串，
+可用于稍后检索 `Blob`。
 
 ```js
 const {
@@ -651,18 +637,18 @@ const {
 const blob = new Blob(['hello']);
 const id = URL.createObjectURL(blob);
 
-// later...
+// 稍后...
 
 const otherBlob = resolveObjectURL(id);
 console.log(otherBlob.size);
 ```
 
-The data stored by the registered {Blob} will be retained in memory until
-`URL.revokeObjectURL()` is called to remove it.
+注册的 {Blob} 存储的数据将保留在内存中，直到
+调用 `URL.revokeObjectURL()` 将其移除。
 
-`Blob` objects are registered within the current thread. If using Worker
-Threads, `Blob` objects registered within one Worker will not be available
-to other workers or the main thread.
+`Blob` 对象在当前线程内注册。如果使用 Worker
+线程，在一个 Worker 内注册的 `Blob` 对象将不可用于
+其他 worker 或主线程。
 
 #### `URL.revokeObjectURL(id)`
 
@@ -676,11 +662,11 @@ changes:
    description: Marking the API stable.
 -->
 
-* `id` {string} A `'blob:nodedata:...` URL string returned by a prior call to
-  `URL.createObjectURL()`.
+* `id` {string} 先前调用
+  `URL.createObjectURL()` 返回的 `'blob:nodedata:...` URL 字符串。
 
-Removes the stored {Blob} identified by the given ID. Attempting to revoke a
-ID that isn't registered will silently fail.
+移除由给定 ID 标识的存储的 {Blob}。尝试撤销未注册的
+ID 将静默失败。
 
 #### `URL.canParse(input[, base])`
 
@@ -690,14 +676,13 @@ added:
   - v18.17.0
 -->
 
-* `input` {string} The absolute or relative input URL to parse. If `input`
-  is relative, then `base` is required. If `input` is absolute, the `base`
-  is ignored. If `input` is not a string, it is [converted to a string][] first.
-* `base` {string} The base URL to resolve against if the `input` is not
-  absolute. If `base` is not a string, it is [converted to a string][] first.
-* Returns: {boolean}
+* `input` {string} 要解析的绝对或相对输入 URL。如果 `input`
+  是相对的，则 `base` 是必需的。如果 `input` 是绝对的，则忽略 `base`。如果 `input` 不是字符串，则首先 [转换为字符串][]。
+* `base` {string} 如果 `input` 不是
+  绝对的，则用于解析的基 URL。如果 `base` 不是字符串，则首先 [转换为字符串][]。
+* 返回：{boolean}
 
-Checks if an `input` relative to the `base` can be parsed to a `URL`.
+检查相对于 `base` 的 `input` 是否可以解析为 `URL`。
 
 ```js
 const isValid = URL.canParse('/foo', 'https://example.org/'); // true
@@ -711,32 +696,29 @@ const isNotValid = URL.canParse('/foo'); // false
 added: v22.1.0
 -->
 
-* `input` {string} The absolute or relative input URL to parse. If `input`
-  is relative, then `base` is required. If `input` is absolute, the `base`
-  is ignored. If `input` is not a string, it is [converted to a string][] first.
-* `base` {string} The base URL to resolve against if the `input` is not
-  absolute. If `base` is not a string, it is [converted to a string][] first.
-* Returns: {URL|null}
+* `input` {string} 要解析的绝对或相对输入 URL。如果 `input`
+  是相对的，则 `base` 是必需的。如果 `input` 是绝对的，则忽略 `base`。如果 `input` 不是字符串，则首先 [转换为字符串][]。
+* `base` {string} 如果 `input` 不是
+  绝对的，则用于解析的基 URL。如果 `base` 不是字符串，则首先 [转换为字符串][]。
+* 返回：{URL|null}
 
-Parses a string as a URL. If `base` is provided, it will be used as the base
-URL for the purpose of resolving non-absolute `input` URLs. Returns `null`
-if the parameters can't be resolved to a valid URL.
+将字符串解析为 URL。如果提供了 `base`，它将用作解析非绝对 `input` URL 的基
+URL。如果参数无法解析为有效的 URL，则返回 `null`。
 
-### Class: `URLPattern`
+### 类：`URLPattern`
 
 <!-- YAML
 added: v23.8.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-The `URLPattern` API provides an interface to match URLs or parts of URLs
-against a pattern.
+`URLPattern` API 提供一个接口，用于根据模式匹配 URL 或 URL 的部分。
 
 ```js
 const myPattern = new URLPattern('https://nodejs.org/docs/latest/api/*.html');
 console.log(myPattern.exec('https://nodejs.org/docs/latest/api/dns.html'));
-// Prints:
+// 打印：
 // {
 //  "hash": { "groups": {  "0": "" },  "input": "" },
 //  "hostname": { "groups": {}, "input": "nodejs.org" },
@@ -752,65 +734,64 @@ console.log(myPattern.exec('https://nodejs.org/docs/latest/api/dns.html'));
 // }
 
 console.log(myPattern.test('https://nodejs.org/docs/latest/api/dns.html'));
-// Prints: true
+// 打印：true
 ```
 
 #### `new URLPattern()`
 
-Instantiate a new empty `URLPattern` object.
+实例化一个新的空 `URLPattern` 对象。
 
 #### `new URLPattern(string[, baseURL][, options])`
 
-* `string` {string} A URL string
-* `baseURL` {string | undefined} A base URL string
-* `options` {Object} Options
+* `string` {string} 一个 URL 字符串
+* `baseURL` {string | undefined} 一个基 URL 字符串
+* `options` {Object} 选项
 
-Parse the `string` as a URL, and use it to instantiate a new
-`URLPattern` object.
+将 `string` 解析为 URL，并使用它实例化一个新的
+`URLPattern` 对象。
 
-If `baseURL` is not specified, it defaults to `undefined`.
+如果未指定 `baseURL`，则默认为 `undefined`。
 
-An option can have `ignoreCase` boolean attribute which enables
-case-insensitive matching if set to true.
+选项可以具有 `ignoreCase` 布尔属性，如果设置为 true，则启用
+不区分大小写的匹配。
 
-The constructor can throw a `TypeError` to indicate parsing failure.
+构造函数可以抛出 `TypeError` 以指示解析失败。
 
 #### `new URLPattern(obj[, baseURL][, options])`
 
-* `obj` {Object} An input pattern
-* `baseURL` {string | undefined} A base URL string
-* `options` {Object} Options
+* `obj` {Object} 一个输入模式
+* `baseURL` {string | undefined} 一个基 URL 字符串
+* `options` {Object} 选项
 
-Parse the `Object` as an input pattern, and use it to instantiate a new
-`URLPattern` object. The object members can be any of `protocol`, `username`,
-`password`, `hostname`, `port`, `pathname`, `search`, `hash` or `baseURL`.
+将 `Object` 解析为输入模式，并使用它实例化一个新的
+`URLPattern` 对象。对象成员可以是 `protocol`、`username`、
+`password`、`hostname`、`port`、`pathname`、`search`、`hash` 或 `baseURL` 中的任何一项。
 
-If `baseURL` is not specified, it defaults to `undefined`.
+如果未指定 `baseURL`，则默认为 `undefined`。
 
-An option can have `ignoreCase` boolean attribute which enables
-case-insensitive matching if set to true.
+选项可以具有 `ignoreCase` 布尔属性，如果设置为 true，则启用
+不区分大小写的匹配。
 
-The constructor can throw a `TypeError` to indicate parsing failure.
+构造函数可以抛出 `TypeError` 以指示解析失败。
 
 #### `urlPattern.exec(input[, baseURL])`
 
-* `input` {string | Object} A URL or URL parts
-* `baseURL` {string | undefined} A base URL string
+* `input` {string | Object} 一个 URL 或 URL 部分
+* `baseURL` {string | undefined} 一个基 URL 字符串
 
-Input can be a string or an object providing the individual URL parts. The
-object members can be any of `protocol`, `username`, `password`, `hostname`,
-`port`, `pathname`, `search`, `hash` or `baseURL`.
+输入可以是字符串或提供各个 URL 部分的对象。对象
+成员可以是 `protocol`、`username`、`password`、`hostname`、
+`port`、`pathname`、`search`、`hash` 或 `baseURL` 中的任何一项。
 
-If `baseURL` is not specified, it will default to `undefined`.
+如果未指定 `baseURL`，则默认为 `undefined`。
 
-Returns an object with an `inputs` key containing the array of arguments
-passed into the function and keys of the URL components which contains the
-matched input and matched groups.
+返回一个对象，其中包含一个 `inputs` 键，该键包含传递给函数的参数数组，以及 URL 组件的键，其中包含匹配的
+输入和匹配的组。
 
 ```js
 const myPattern = new URLPattern('https://nodejs.org/docs/latest/api/*.html');
 console.log(myPattern.exec('https://nodejs.org/docs/latest/api/dns.html'));
-// Prints:
+// 打印：
 // {
 //  "hash": { "groups": {  "0": "" },  "input": "" },
 //  "hostname": { "groups": {}, "input": "nodejs.org" },
@@ -828,24 +809,24 @@ console.log(myPattern.exec('https://nodejs.org/docs/latest/api/dns.html'));
 
 #### `urlPattern.test(input[, baseURL])`
 
-* `input` {string | Object} A URL or URL parts
-* `baseURL` {string | undefined} A base URL string
+* `input` {string | Object} 一个 URL 或 URL 部分
+* `baseURL` {string | undefined} 一个基 URL 字符串
 
-Input can be a string or an object providing the individual URL parts. The
-object members can be any of `protocol`, `username`, `password`, `hostname`,
-`port`, `pathname`, `search`, `hash` or `baseURL`.
+输入可以是字符串或提供各个 URL 部分的对象。对象
+成员可以是 `protocol`、`username`、`password`、`hostname`、
+`port`、`pathname`、`search`、`hash` 或 `baseURL` 中的任何一项。
 
-If `baseURL` is not specified, it will default to `undefined`.
+如果未指定 `baseURL`，则默认为 `undefined`。
 
-Returns a boolean indicating if the input matches the current pattern.
+返回一个布尔值，指示输入是否匹配当前模式。
 
 ```js
 const myPattern = new URLPattern('https://nodejs.org/docs/latest/api/*.html');
 console.log(myPattern.test('https://nodejs.org/docs/latest/api/dns.html'));
-// Prints: true
+// 打印：true
 ```
 
-### Class: `URLSearchParams`
+### 类：`URLSearchParams`
 
 <!-- YAML
 added:
@@ -857,72 +838,71 @@ changes:
     description: The class is now available on the global object.
 -->
 
-The `URLSearchParams` API provides read and write access to the query of a
-`URL`. The `URLSearchParams` class can also be used standalone with one of the
-four following constructors.
-The `URLSearchParams` class is also available on the global object.
+`URLSearchParams` API 提供对 `URL` 查询的读写访问。`URLSearchParams` 类也可以独立使用，具有以下
+四种构造函数之一。
+`URLSearchParams` 类也可在全局对象上使用。
 
-The WHATWG `URLSearchParams` interface and the [`querystring`][] module have
-similar purpose, but the purpose of the [`querystring`][] module is more
-general, as it allows the customization of delimiter characters (`&` and `=`).
-On the other hand, this API is designed purely for URL query strings.
+WHATWG `URLSearchParams` 接口和 [`querystring`][] 模块具有
+相似的目的，但 [`querystring`][] 模块的目的更
+通用，因为它允许自定义分隔符字符（`&` 和 `=`）。
+另一方面，此 API 专为 URL 查询字符串设计。
 
 ```js
 const myURL = new URL('https://example.org/?abc=123');
 console.log(myURL.searchParams.get('abc'));
-// Prints 123
+// 打印 123
 
 myURL.searchParams.append('abc', 'xyz');
 console.log(myURL.href);
-// Prints https://example.org/?abc=123&abc=xyz
+// 打印 https://example.org/?abc=123&abc=xyz
 
 myURL.searchParams.delete('abc');
 myURL.searchParams.set('a', 'b');
 console.log(myURL.href);
-// Prints https://example.org/?a=b
+// 打印 https://example.org/?a=b
 
 const newSearchParams = new URLSearchParams(myURL.searchParams);
-// The above is equivalent to
+// 上面等同于
 // const newSearchParams = new URLSearchParams(myURL.search);
 
 newSearchParams.append('a', 'c');
 console.log(myURL.href);
-// Prints https://example.org/?a=b
+// 打印 https://example.org/?a=b
 console.log(newSearchParams.toString());
-// Prints a=b&a=c
+// 打印 a=b&a=c
 
-// newSearchParams.toString() is implicitly called
+// newSearchParams.toString() 被隐式调用
 myURL.search = newSearchParams;
 console.log(myURL.href);
-// Prints https://example.org/?a=b&a=c
+// 打印 https://example.org/?a=b&a=c
 newSearchParams.delete('a');
 console.log(myURL.href);
-// Prints https://example.org/?a=b&a=c
+// 打印 https://example.org/?a=b&a=c
 ```
 
 #### `new URLSearchParams()`
 
-Instantiate a new empty `URLSearchParams` object.
+实例化一个新的空 `URLSearchParams` 对象。
 
 #### `new URLSearchParams(string)`
 
-* `string` {string} A query string
+* `string` {string} 一个查询字符串
 
-Parse the `string` as a query string, and use it to instantiate a new
-`URLSearchParams` object. A leading `'?'`, if present, is ignored.
+将 `string` 解析为查询字符串，并使用它实例化一个新的
+`URLSearchParams` 对象。如果存在前导 `'?'`，则将其忽略。
 
 ```js
 let params;
 
 params = new URLSearchParams('user=abc&query=xyz');
 console.log(params.get('user'));
-// Prints 'abc'
+// 打印 'abc'
 console.log(params.toString());
-// Prints 'user=abc&query=xyz'
+// 打印 'user=abc&query=xyz'
 
 params = new URLSearchParams('?user=abc&query=xyz');
 console.log(params.toString());
-// Prints 'user=abc&query=xyz'
+// 打印 'user=abc&query=xyz'
 ```
 
 #### `new URLSearchParams(obj)`
@@ -933,14 +913,13 @@ added:
   - v6.13.0
 -->
 
-* `obj` {Object} An object representing a collection of key-value pairs
+* `obj` {Object} 一个表示键值对集合的对象
 
-Instantiate a new `URLSearchParams` object with a query hash map. The key and
-value of each property of `obj` are always coerced to strings.
+使用查询哈希映射实例化一个新的 `URLSearchParams` 对象。`obj` 的每个属性的键和
+值始终被强制转换为字符串。
 
-Unlike [`querystring`][] module, duplicate keys in the form of array values are
-not allowed. Arrays are stringified using [`array.toString()`][], which simply
-joins all array elements with commas.
+与 [`querystring`][] 模块不同，不允许使用数组值形式的重复键。数组使用 [`array.toString()`][] 进行字符串化，该函数简单地
+用逗号连接所有数组元素。
 
 ```js
 const params = new URLSearchParams({
@@ -948,9 +927,9 @@ const params = new URLSearchParams({
   query: ['first', 'second'],
 });
 console.log(params.getAll('query'));
-// Prints [ 'first,second' ]
+// 打印 [ 'first,second' ]
 console.log(params.toString());
-// Prints 'user=abc&query=first%2Csecond'
+// 打印 'user=abc&query=first%2Csecond'
 ```
 
 #### `new URLSearchParams(iterable)`
@@ -961,38 +940,37 @@ added:
   - v6.13.0
 -->
 
-* `iterable` {Iterable} An iterable object whose elements are key-value pairs
+* `iterable` {Iterable} 一个元素为键值对的可迭代对象
 
-Instantiate a new `URLSearchParams` object with an iterable map in a way that
-is similar to {Map}'s constructor. `iterable` can be an `Array` or any
-iterable object. That means `iterable` can be another `URLSearchParams`, in
-which case the constructor will simply create a clone of the provided
-`URLSearchParams`. Elements of `iterable` are key-value pairs, and can
-themselves be any iterable object.
+以类似于 {Map} 构造函数的方法使用可迭代映射实例化一个新的 `URLSearchParams` 对象。`iterable` 可以是 `Array` 或任何
+可迭代对象。这意味着 `iterable` 可以是另一个 `URLSearchParams`，在
+这种情况下，构造函数将简单地创建提供的
+`URLSearchParams` 的克隆。`iterable` 的元素是键值对，并且
+它们本身可以是任何可迭代对象。
 
-Duplicate keys are allowed.
+允许重复键。
 
 ```js
 let params;
 
-// Using an array
+// 使用数组
 params = new URLSearchParams([
   ['user', 'abc'],
   ['query', 'first'],
   ['query', 'second'],
 ]);
 console.log(params.toString());
-// Prints 'user=abc&query=first&query=second'
+// 打印 'user=abc&query=first&query=second'
 
-// Using a Map object
+// 使用 Map 对象
 const map = new Map();
 map.set('user', 'abc');
 map.set('query', 'xyz');
 params = new URLSearchParams(map);
 console.log(params.toString());
-// Prints 'user=abc&query=xyz'
+// 打印 'user=abc&query=xyz'
 
-// Using a generator function
+// 使用生成器函数
 function* getQueryPairs() {
   yield ['user', 'abc'];
   yield ['query', 'first'];
@@ -1000,14 +978,14 @@ function* getQueryPairs() {
 }
 params = new URLSearchParams(getQueryPairs());
 console.log(params.toString());
-// Prints 'user=abc&query=first&query=second'
+// 打印 'user=abc&query=first&query=second'
 
-// Each key-value pair must have exactly two elements
+// 每个键值对必须正好有两个元素
 new URLSearchParams([
   ['user', 'abc', 'error'],
 ]);
-// Throws TypeError [ERR_INVALID_TUPLE]:
-//        Each query pair must be an iterable [name, value] tuple
+// 抛出 TypeError [ERR_INVALID_TUPLE]:
+//        每个查询对必须是可迭代的 [name, value] 元组
 ```
 
 #### `urlSearchParams.append(name, value)`
@@ -1015,7 +993,7 @@ new URLSearchParams([
 * `name` {string}
 * `value` {string}
 
-Append a new name-value pair to the query string.
+将新的名称 - 值对附加到查询字符串。
 
 #### `urlSearchParams.delete(name[, value])`
 
@@ -1031,20 +1009,18 @@ changes:
 * `name` {string}
 * `value` {string}
 
-If `value` is provided, removes all name-value pairs
-where name is `name` and value is `value`..
+如果提供了 `value`，则移除所有名称为 `name` 且值为 `value` 的名称 - 值对。
 
-If `value` is not provided, removes all name-value pairs whose name is `name`.
+如果未提供 `value`，则移除所有名称为 `name` 的名称 - 值对。
 
 #### `urlSearchParams.entries()`
 
-* Returns: {Iterator}
+* 返回：{Iterator}
 
-Returns an ES6 `Iterator` over each of the name-value pairs in the query.
-Each item of the iterator is a JavaScript `Array`. The first item of the `Array`
-is the `name`, the second item of the `Array` is the `value`.
+返回一个 ES6 `Iterator`，遍历查询中的每个名称 - 值对。迭代器的每个项都是一个 JavaScript `Array`。`Array` 的第一项是
+`name`，`Array` 的第二项是 `value`。
 
-Alias for [`urlSearchParams[Symbol.iterator]()`][`urlSearchParamsSymbol.iterator()`].
+[`urlSearchParams[Symbol.iterator]()`][`urlSearchParamsSymbol.iterator()`] 的别名。
 
 #### `urlSearchParams.forEach(fn[, thisArg])`
 
@@ -1057,17 +1033,17 @@ changes:
                  `ERR_INVALID_CALLBACK`.
 -->
 
-* `fn` {Function} Invoked for each name-value pair in the query
-* `thisArg` {Object} To be used as `this` value for when `fn` is called
+* `fn` {Function} 为查询中的每个名称 - 值对调用
+* `thisArg` {Object} 当调用 `fn` 时用作 `this` 值
 
-Iterates over each name-value pair in the query and invokes the given function.
+遍历查询中的每个名称 - 值对并调用给定函数。
 
 ```js
 const myURL = new URL('https://example.org/?a=b&c=d');
 myURL.searchParams.forEach((value, name, searchParams) => {
   console.log(name, value, myURL.searchParams === searchParams);
 });
-// Prints:
+// 打印：
 //   a b true
 //   c d true
 ```
@@ -1075,19 +1051,18 @@ myURL.searchParams.forEach((value, name, searchParams) => {
 #### `urlSearchParams.get(name)`
 
 * `name` {string}
-* Returns: {string | null} A string or `null` if there is no name-value pair
-  with the given `name`.
+* 返回：{string | null} 一个字符串，如果没有具有给定 `name` 的名称 - 值对，则为 `null`。
 
-Returns the value of the first name-value pair whose name is `name`. If there
-are no such pairs, `null` is returned.
+返回名称为 `name` 的第一个名称 - 值对的值。如果没有
+这样的对，则返回 `null`。
 
 #### `urlSearchParams.getAll(name)`
 
 * `name` {string}
-* Returns: {string\[]}
+* 返回：{string\[]}
 
-Returns the values of all name-value pairs whose name is `name`. If there are
-no such pairs, an empty array is returned.
+返回名称为 `name` 的所有名称 - 值对的值。如果没有
+这样的对，则返回一个空数组。
 
 #### `urlSearchParams.has(name[, value])`
 
@@ -1102,29 +1077,29 @@ changes:
 
 * `name` {string}
 * `value` {string}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Checks if the `URLSearchParams` object contains key-value pair(s) based on
-`name` and an optional `value` argument.
+检查 `URLSearchParams` 对象是否包含基于
+`name` 和可选 `value` 参数的键值对。
 
-If `value` is provided, returns `true` when name-value pair with
-same `name` and `value` exists.
+如果提供了 `value`，当存在具有相同
+`name` 和 `value` 的名称 - 值对时，返回 `true`。
 
-If `value` is not provided, returns `true` if there is at least one name-value
-pair whose name is `name`.
+如果未提供 `value`，如果存在至少一个名称为 `name` 的名称 - 值
+对，则返回 `true`。
 
 #### `urlSearchParams.keys()`
 
-* Returns: {Iterator}
+* 返回：{Iterator}
 
-Returns an ES6 `Iterator` over the names of each name-value pair.
+返回一个 ES6 `Iterator`，遍历每个名称 - 值对的名称。
 
 ```js
 const params = new URLSearchParams('foo=bar&foo=baz');
 for (const name of params.keys()) {
   console.log(name);
 }
-// Prints:
+// 打印：
 //   foo
 //   foo
 ```
@@ -1134,10 +1109,10 @@ for (const name of params.keys()) {
 * `name` {string}
 * `value` {string}
 
-Sets the value in the `URLSearchParams` object associated with `name` to
-`value`. If there are any pre-existing name-value pairs whose names are `name`,
-set the first such pair's value to `value` and remove all others. If not,
-append the name-value pair to the query string.
+将 `URLSearchParams` 对象中与 `name` 关联的值设置为
+`value`。如果存在任何名称为 `name` 的现有名称 - 值对，
+则将第一个这样的对的值设置为 `value` 并移除所有其他对。如果不存在，
+则将名称 - 值对附加到查询字符串。
 
 ```js
 const params = new URLSearchParams();
@@ -1145,12 +1120,12 @@ params.append('foo', 'bar');
 params.append('foo', 'baz');
 params.append('abc', 'def');
 console.log(params.toString());
-// Prints foo=bar&foo=baz&abc=def
+// 打印 foo=bar&foo=baz&abc=def
 
 params.set('foo', 'def');
 params.set('xyz', 'opq');
 console.log(params.toString());
-// Prints foo=def&abc=def&xyz=opq
+// 打印 foo=def&abc=def&xyz=opq
 ```
 
 #### `urlSearchParams.size`
@@ -1161,7 +1136,7 @@ added:
  - v18.16.0
 -->
 
-The total number of parameter entries.
+参数条目的总数。
 
 #### `urlSearchParams.sort()`
 
@@ -1171,48 +1146,47 @@ added:
   - v6.13.0
 -->
 
-Sort all existing name-value pairs in-place by their names. Sorting is done
-with a [stable sorting algorithm][], so relative order between name-value pairs
-with the same name is preserved.
+就地按其名称对所有现有名称 - 值对进行排序。排序使用
+[稳定排序算法][] 完成，因此具有相同名称的名称 - 值对
+之间的相对顺序保持不变。
 
-This method can be used, in particular, to increase cache hits.
+此方法特别可用于增加缓存命中率。
 
 ```js
 const params = new URLSearchParams('query[]=abc&type=search&query[]=123');
 params.sort();
 console.log(params.toString());
-// Prints query%5B%5D=abc&query%5B%5D=123&type=search
+// 打印 query%5B%5D=abc&query%5B%5D=123&type=search
 ```
 
 #### `urlSearchParams.toString()`
 
-* Returns: {string}
+* 返回：{string}
 
-Returns the search parameters serialized as a string, with characters
-percent-encoded where necessary.
+返回序列化为字符串的搜索参数，必要时对字符
+进行百分号编码。
 
 #### `urlSearchParams.values()`
 
-* Returns: {Iterator}
+* 返回：{Iterator}
 
-Returns an ES6 `Iterator` over the values of each name-value pair.
+返回一个 ES6 `Iterator`，遍历每个名称 - 值对的值。
 
 #### `urlSearchParams[Symbol.iterator]()`
 
-* Returns: {Iterator}
+* 返回：{Iterator}
 
-Returns an ES6 `Iterator` over each of the name-value pairs in the query string.
-Each item of the iterator is a JavaScript `Array`. The first item of the `Array`
-is the `name`, the second item of the `Array` is the `value`.
+返回一个 ES6 `Iterator`，遍历查询字符串中的每个名称 - 值对。迭代器的每个项都是一个 JavaScript `Array`。`Array` 的第一项是
+`name`，`Array` 的第二项是 `value`。
 
-Alias for [`urlSearchParams.entries()`][].
+[`urlSearchParams.entries()`][] 的别名。
 
 ```js
 const params = new URLSearchParams('foo=bar&xyz=baz');
 for (const [name, value] of params) {
   console.log(name, value);
 }
-// Prints:
+// 打印：
 //   foo bar
 //   xyz baz
 ```
@@ -1232,33 +1206,33 @@ changes:
 -->
 
 * `domain` {string}
-* Returns: {string}
+* 返回：{string}
 
-Returns the [Punycode][] ASCII serialization of the `domain`. If `domain` is an
-invalid domain, the empty string is returned.
+返回 `domain` 的 [Punycode][] ASCII 序列化。如果 `domain` 是
+无效的域，则返回空字符串。
 
-It performs the inverse operation to [`url.domainToUnicode()`][].
+它执行与 [`url.domainToUnicode()`][] 相反的操作。
 
 ```mjs
 import url from 'node:url';
 
 console.log(url.domainToASCII('español.com'));
-// Prints xn--espaol-zwa.com
+// 打印 xn--espaol-zwa.com
 console.log(url.domainToASCII('中文.com'));
-// Prints xn--fiq228c.com
+// 打印 xn--fiq228c.com
 console.log(url.domainToASCII('xn--iñvalid.com'));
-// Prints an empty string
+// 打印空字符串
 ```
 
 ```cjs
 const url = require('node:url');
 
 console.log(url.domainToASCII('español.com'));
-// Prints xn--espaol-zwa.com
+// 打印 xn--espaol-zwa.com
 console.log(url.domainToASCII('中文.com'));
-// Prints xn--fiq228c.com
+// 打印 xn--fiq228c.com
 console.log(url.domainToASCII('xn--iñvalid.com'));
-// Prints an empty string
+// 打印空字符串
 ```
 
 ### `url.domainToUnicode(domain)`
@@ -1276,33 +1250,33 @@ changes:
 -->
 
 * `domain` {string}
-* Returns: {string}
+* 返回：{string}
 
-Returns the Unicode serialization of the `domain`. If `domain` is an invalid
-domain, the empty string is returned.
+返回 `domain` 的 Unicode 序列化。如果 `domain` 是无效的
+域，则返回空字符串。
 
-It performs the inverse operation to [`url.domainToASCII()`][].
+它执行与 [`url.domainToASCII()`][] 相反的操作。
 
 ```mjs
 import url from 'node:url';
 
 console.log(url.domainToUnicode('xn--espaol-zwa.com'));
-// Prints español.com
+// 打印 español.com
 console.log(url.domainToUnicode('xn--fiq228c.com'));
-// Prints 中文.com
+// 打印 中文.com
 console.log(url.domainToUnicode('xn--iñvalid.com'));
-// Prints an empty string
+// 打印空字符串
 ```
 
 ```cjs
 const url = require('node:url');
 
 console.log(url.domainToUnicode('xn--espaol-zwa.com'));
-// Prints español.com
+// 打印 español.com
 console.log(url.domainToUnicode('xn--fiq228c.com'));
-// Prints 中文.com
+// 打印 中文.com
 console.log(url.domainToUnicode('xn--iñvalid.com'));
-// Prints an empty string
+// 打印空字符串
 ```
 
 ### `url.fileURLToPath(url[, options])`
@@ -1318,61 +1292,61 @@ changes:
                  determine how to parse the `path` argument.
 -->
 
-* `url` {URL | string} The file URL string or URL object to convert to a path.
+* `url` {URL | string} 要转换为路径的文件 URL 字符串或 URL 对象。
 * `options` {Object}
-  * `windows` {boolean|undefined} `true` if the `path` should be
-    return as a windows filepath, `false` for posix, and
-    `undefined` for the system default.
-    **Default:** `undefined`.
-* Returns: {string} The fully-resolved platform-specific Node.js file path.
+  * `windows` {boolean|undefined} 如果 `path` 应该
+    作为 windows 文件路径返回，则为 `true`，如果是 posix 则为 `false`，
+    如果是系统默认值则为 `undefined`。
+    **默认值：** `undefined`。
+* 返回：{string} 完全解析的特定于平台的 Node.js 文件路径。
 
-This function ensures the correct decodings of percent-encoded characters as
-well as ensuring a cross-platform valid absolute path string.
+此函数确保正确解码百分号编码的字符，并
+确保跨平台有效的绝对路径字符串。
 
-**Security Considerations:**
+**安全注意事项：**
 
-This function decodes percent-encoded characters, including encoded dot-segments
-(`%2e` as `.` and `%2e%2e` as `..`), and then normalizes the resulting path.
-This means that encoded directory traversal sequences (such as `%2e%2e`) are
-decoded and processed as actual path traversal, even though encoded slashes
-(`%2F`, `%5C`) are correctly rejected.
+此函数解码百分号编码的字符，包括编码的点段
+（`%2e` 作为 `.` 和 `%2e%2e` 作为 `..`），然后规范化结果路径。
+这意味着编码的目录遍历序列（例如 `%2e%2e`）被
+解码并作为实际路径遍历处理，即使编码的斜杠
+（`%2F`、`%5C`）被正确拒绝。
 
-**Applications must not rely on `fileURLToPath()` alone to prevent directory
-traversal attacks.** Always perform explicit path validation and security checks
-on the returned path value to ensure it remains within expected boundaries
-before using it for file system operations.
+**应用程序不得仅依赖 `fileURLToPath()` 来防止目录
+遍历攻击。** 在使用返回的路径值进行文件系统操作之前，
+始终对返回的路径值执行显式路径验证和安全检查，
+以确保它保持在预期边界内。
 
 ```mjs
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 
-new URL('file:///C:/path/').pathname;      // Incorrect: /C:/path/
-fileURLToPath('file:///C:/path/');         // Correct:   C:\path\ (Windows)
+new URL('file:///C:/path/').pathname;      // 不正确：/C:/path/
+fileURLToPath('file:///C:/path/');         // 正确：C:\path\ (Windows)
 
-new URL('file://nas/foo.txt').pathname;    // Incorrect: /foo.txt
-fileURLToPath('file://nas/foo.txt');       // Correct:   \\nas\foo.txt (Windows)
+new URL('file://nas/foo.txt').pathname;    // 不正确：/foo.txt
+fileURLToPath('file://nas/foo.txt');       // 正确：\\nas\foo.txt (Windows)
 
-new URL('file:///你好.txt').pathname;      // Incorrect: /%E4%BD%A0%E5%A5%BD.txt
-fileURLToPath('file:///你好.txt');         // Correct:   /你好.txt (POSIX)
+new URL('file:///你好.txt').pathname;      // 不正确：/%E4%BD%A0%E5%A5%BD.txt
+fileURLToPath('file:///你好.txt');         // 正确：/你好.txt (POSIX)
 
-new URL('file:///hello world').pathname;   // Incorrect: /hello%20world
-fileURLToPath('file:///hello world');      // Correct:   /hello world (POSIX)
+new URL('file:///hello world').pathname;   // 不正确：/hello%20world
+fileURLToPath('file:///hello world');      // 正确：/hello world (POSIX)
 ```
 
 ```cjs
 const { fileURLToPath } = require('node:url');
-new URL('file:///C:/path/').pathname;      // Incorrect: /C:/path/
-fileURLToPath('file:///C:/path/');         // Correct:   C:\path\ (Windows)
+new URL('file:///C:/path/').pathname;      // 不正确：/C:/path/
+fileURLToPath('file:///C:/path/');         // 正确：C:\path\ (Windows)
 
-new URL('file://nas/foo.txt').pathname;    // Incorrect: /foo.txt
-fileURLToPath('file://nas/foo.txt');       // Correct:   \\nas\foo.txt (Windows)
+new URL('file://nas/foo.txt').pathname;    // 不正确：/foo.txt
+fileURLToPath('file://nas/foo.txt');       // 正确：\\nas\foo.txt (Windows)
 
-new URL('file:///你好.txt').pathname;      // Incorrect: /%E4%BD%A0%E5%A5%BD.txt
-fileURLToPath('file:///你好.txt');         // Correct:   /你好.txt (POSIX)
+new URL('file:///你好.txt').pathname;      // 不正确：/%E4%BD%A0%E5%A5%BD.txt
+fileURLToPath('file:///你好.txt');         // 正确：/你好.txt (POSIX)
 
-new URL('file:///hello world').pathname;   // Incorrect: /hello%20world
-fileURLToPath('file:///hello world');      // Correct:   /hello world (POSIX)
+new URL('file:///hello world').pathname;   // 不正确：/hello%20world
+fileURLToPath('file:///hello world');      // 正确：/hello world (POSIX)
 ```
 
 ### `url.fileURLToPathBuffer(url[, options])`
@@ -1383,28 +1357,28 @@ added:
  - v22.18.0
 -->
 
-* `url` {URL | string} The file URL string or URL object to convert to a path.
+* `url` {URL | string} 要转换为路径的文件 URL 字符串或 URL 对象。
 * `options` {Object}
-  * `windows` {boolean|undefined} `true` if the `path` should be
-    return as a windows filepath, `false` for posix, and
-    `undefined` for the system default.
-    **Default:** `undefined`.
-* Returns: {Buffer} The fully-resolved platform-specific Node.js file path
-  as a {Buffer}.
+  * `windows` {boolean|undefined} 如果 `path` 应该
+    作为 windows 文件路径返回，则为 `true`，如果是 posix 则为 `false`，
+    如果是系统默认值则为 `undefined`。
+    **默认值：** `undefined`。
+* 返回：{Buffer} 完全解析的特定于平台的 Node.js 文件路径
+  作为 {Buffer}。
 
-Like `url.fileURLToPath(...)` except that instead of returning a string
-representation of the path, a `Buffer` is returned. This conversion is
-helpful when the input URL contains percent-encoded segments that are
-not valid UTF-8 / Unicode sequences.
+类似于 `url.fileURLToPath(...)`，不同之处在于它返回路径的
+`Buffer` 而不是字符串表示。当输入 URL 包含
+不是有效 UTF-8 / Unicode 序列的百分号编码段时，此转换
+很有用。
 
-**Security Considerations:**
+**安全注意事项：**
 
-This function has the same security considerations as [`url.fileURLToPath()`][].
-It decodes percent-encoded characters, including encoded dot-segments
-(`%2e` as `.` and `%2e%2e` as `..`), and normalizes the path. **Applications
-must not rely on this function alone to prevent directory traversal attacks.**
-Always perform explicit path validation on the returned buffer value before
-using it for file system operations.
+此函数具有与 [`url.fileURLToPath()`][] 相同的安全注意事项。
+它解码百分号编码的字符，包括编码的点段
+（`%2e` 作为 `.` 和 `%2e%2e` 作为 `..`），并规范化路径。**应用程序
+不得仅依赖此函数来防止目录遍历攻击。**
+在使用返回的 buffer 值进行文件系统操作之前，
+始终对返回的 buffer 值执行显式路径验证。
 
 ### `url.format(URL[, options])`
 
@@ -1412,53 +1386,51 @@ using it for file system operations.
 added: v7.6.0
 -->
 
-* `URL` {URL} A [WHATWG URL][] object
+* `URL` {URL} 一个 [WHATWG URL][] 对象
 * `options` {Object}
-  * `auth` {boolean} `true` if the serialized URL string should include the
-    username and password, `false` otherwise. **Default:** `true`.
-  * `fragment` {boolean} `true` if the serialized URL string should include the
-    fragment, `false` otherwise. **Default:** `true`.
-  * `search` {boolean} `true` if the serialized URL string should include the
-    search query, `false` otherwise. **Default:** `true`.
-  * `unicode` {boolean} `true` if Unicode characters appearing in the host
-    component of the URL string should be encoded directly as opposed to being
-    Punycode encoded. **Default:** `false`.
-* Returns: {string}
+  * `auth` {boolean} 如果序列化的 URL 字符串应包含
+    用户名和密码，则为 `true`，否则为 `false`。**默认值：** `true`。
+  * `fragment` {boolean} 如果序列化的 URL 字符串应包含
+    片段，则为 `true`，否则为 `false`。**默认值：** `true`。
+  * `search` {boolean} 如果序列化的 URL 字符串应包含
+    搜索查询，则为 `true`，否则为 `false`。**默认值：** `true`。
+  * `unicode` {boolean} 如果 URL 字符串主机
+    组件中出现的 Unicode 字符应直接编码而不是
+    进行 Punycode 编码，则为 `true`。**默认值：** `false`。
+* 返回：{string}
 
-Returns a customizable serialization of a URL `String` representation of a
-[WHATWG URL][] object.
+返回 [WHATWG URL][] 对象的 URL `String` 表示的可自定义序列化。
 
-The URL object has both a `toString()` method and `href` property that return
-string serializations of the URL. These are not, however, customizable in
-any way. The `url.format(URL[, options])` method allows for basic customization
-of the output.
+URL 对象具有 `toString()` 方法和 `href` 属性，它们返回
+URL 的字符串序列化。然而，这些在任何方面都不可自定义。
+`url.format(URL[, options])` 方法允许对输出进行基本自定义。
 
 ```mjs
 import url from 'node:url';
-const myURL = new URL('https://a:b@測試?abc#foo');
+const myURL = new URL('https://a:b@測試？abc#foo');
 
 console.log(myURL.href);
-// Prints https://a:b@xn--g6w251d/?abc#foo
+// 打印 https://a:b@xn--g6w251d/?abc#foo
 
 console.log(myURL.toString());
-// Prints https://a:b@xn--g6w251d/?abc#foo
+// 打印 https://a:b@xn--g6w251d/?abc#foo
 
 console.log(url.format(myURL, { fragment: false, unicode: true, auth: false }));
-// Prints 'https://測試/?abc'
+// 打印 'https://測試/?abc'
 ```
 
 ```cjs
 const url = require('node:url');
-const myURL = new URL('https://a:b@測試?abc#foo');
+const myURL = new URL('https://a:b@測試？abc#foo');
 
 console.log(myURL.href);
-// Prints https://a:b@xn--g6w251d/?abc#foo
+// 打印 https://a:b@xn--g6w251d/?abc#foo
 
 console.log(myURL.toString());
-// Prints https://a:b@xn--g6w251d/?abc#foo
+// 打印 https://a:b@xn--g6w251d/?abc#foo
 
 console.log(url.format(myURL, { fragment: false, unicode: true, auth: false }));
-// Prints 'https://測試/?abc'
+// 打印 'https://測試/?abc'
 ```
 
 ### `url.pathToFileURL(path[, options])`
@@ -1474,39 +1446,39 @@ changes:
                  determine how to return the `path` value.
 -->
 
-* `path` {string} The path to convert to a File URL.
+* `path` {string} 要转换为文件 URL 的路径。
 * `options` {Object}
-  * `windows` {boolean|undefined} `true` if the `path` should be
-    treated as a windows filepath, `false` for posix, and
-    `undefined` for the system default.
-    **Default:** `undefined`.
-* Returns: {URL} The file URL object.
+  * `windows` {boolean|undefined} 如果 `path` 应该
+    被视为 windows 文件路径，则为 `true`，如果是 posix 则为 `false`，
+    如果是系统默认值则为 `undefined`。
+    **默认值：** `undefined`。
+* 返回：{URL} 文件 URL 对象。
 
-This function ensures that `path` is resolved absolutely, and that the URL
-control characters are correctly encoded when converting into a File URL.
+此函数确保 `path` 被绝对解析，并且在转换为文件 URL 时
+正确编码 URL 控制字符。
 
 ```mjs
 import { pathToFileURL } from 'node:url';
 
-new URL('/foo#1', 'file:');           // Incorrect: file:///foo#1
-pathToFileURL('/foo#1');              // Correct:   file:///foo%231 (POSIX)
+new URL('/foo#1', 'file:');           // 不正确：file:///foo#1
+pathToFileURL('/foo#1');              // 正确：file:///foo%231 (POSIX)
 
-new URL('/some/path%.c', 'file:');    // Incorrect: file:///some/path%.c
-pathToFileURL('/some/path%.c');       // Correct:   file:///some/path%25.c (POSIX)
+new URL('/some/path%.c', 'file:');    // 不正确：file:///some/path%.c
+pathToFileURL('/some/path%.c');       // 正确：file:///some/path%25.c (POSIX)
 ```
 
 ```cjs
 const { pathToFileURL } = require('node:url');
-new URL(__filename);                  // Incorrect: throws (POSIX)
-new URL(__filename);                  // Incorrect: C:\... (Windows)
-pathToFileURL(__filename);            // Correct:   file:///... (POSIX)
-pathToFileURL(__filename);            // Correct:   file:///C:/... (Windows)
+new URL(__filename);                  // 不正确：抛出 (POSIX)
+new URL(__filename);                  // 不正确：C:\... (Windows)
+pathToFileURL(__filename);            // 正确：file:///... (POSIX)
+pathToFileURL(__filename);            // 正确：file:///C:/... (Windows)
 
-new URL('/foo#1', 'file:');           // Incorrect: file:///foo#1
-pathToFileURL('/foo#1');              // Correct:   file:///foo%231 (POSIX)
+new URL('/foo#1', 'file:');           // 不正确：file:///foo#1
+pathToFileURL('/foo#1');              // 正确：file:///foo%231 (POSIX)
 
-new URL('/some/path%.c', 'file:');    // Incorrect: file:///some/path%.c
-pathToFileURL('/some/path%.c');       // Correct:   file:///some/path%25.c (POSIX)
+new URL('/some/path%.c', 'file:');    // 不正确：file:///some/path%.c
+pathToFileURL('/some/path%.c');       // 正确：file:///some/path%25.c (POSIX)
 ```
 
 ### `url.urlToHttpOptions(url)`
@@ -1524,29 +1496,27 @@ changes:
                  properties of the `url` argument.
 -->
 
-* `url` {URL} The [WHATWG URL][] object to convert to an options object.
-* Returns: {Object} Options object
-  * `protocol` {string} Protocol to use.
-  * `hostname` {string} A domain name or IP address of the server to issue the
-    request to.
-  * `hash` {string} The fragment portion of the URL.
-  * `search` {string} The serialized query portion of the URL.
-  * `pathname` {string} The path portion of the URL.
-  * `path` {string} Request path. Should include query string if any.
-    E.G. `'/index.html?page=12'`. An exception is thrown when the request path
-    contains illegal characters. Currently, only spaces are rejected but that
-    may change in the future.
-  * `href` {string} The serialized URL.
-  * `port` {number} Port of remote server.
-  * `auth` {string} Basic authentication i.e. `'user:password'` to compute an
-    Authorization header.
+* `url` {URL} 要转换为选项对象的 [WHATWG URL][] 对象。
+* 返回：{Object} 选项对象
+  * `protocol` {string} 要使用的协议。
+  * `hostname` {string} 发出请求的服务器的域名或 IP 地址。
+  * `hash` {string} URL 的片段部分。
+  * `search` {string} URL 的序列化查询部分。
+  * `pathname` {string} URL 的路径部分。
+  * `path` {string} 请求路径。如果有的话，应包括查询字符串。
+    例如 `'/index.html?page=12'`。当请求路径
+    包含非法字符时会抛出异常。目前，只拒绝空格，但这
+    将来可能会改变。
+  * `href` {string} 序列化的 URL。
+  * `port` {number} 远程服务器的端口。
+  * `auth` {string} 基本认证，即 `'user:password'`，用于计算
+    Authorization 头。
 
-This utility function converts a URL object into an ordinary options object as
-expected by the [`http.request()`][] and [`https.request()`][] APIs.
+此实用函数将 URL 对象转换为 [`http.request()`][] 和 [`https.request()`][] API 预期的普通选项对象。
 
 ```mjs
 import { urlToHttpOptions } from 'node:url';
-const myURL = new URL('https://a:b@測試?abc#foo');
+const myURL = new URL('https://a:b@測試？abc#foo');
 
 console.log(urlToHttpOptions(myURL));
 /*
@@ -1565,7 +1535,7 @@ console.log(urlToHttpOptions(myURL));
 
 ```cjs
 const { urlToHttpOptions } = require('node:url');
-const myURL = new URL('https://a:b@測試?abc#foo');
+const myURL = new URL('https://a:b@測試？abc#foo');
 
 console.log(urlToHttpOptions(myURL));
 /*
@@ -1582,7 +1552,7 @@ console.log(urlToHttpOptions(myURL));
 */
 ```
 
-## Legacy URL API
+## 旧版 URL API
 
 <!-- YAML
 changes:
@@ -1590,15 +1560,15 @@ changes:
       - v15.13.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/37784
-    description: Deprecation revoked. Status changed to "Legacy".
+    description: 弃用已撤销。状态更改为“旧版”。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22715
-    description: This API is deprecated.
+    description: 此 API 已弃用。
 -->
 
-> Stability: 3 - Legacy: Use the WHATWG URL API instead.
+> 稳定性：3 - 旧版：请改用 WHATWG URL API。
 
-### Legacy `urlObject`
+### 旧版 `urlObject`
 
 <!-- YAML
 changes:
@@ -1606,112 +1576,91 @@ changes:
       - v15.13.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/37784
-    description: Deprecation revoked. Status changed to "Legacy".
+    description: 弃用已撤销。状态更改为“旧版”。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22715
-    description: The Legacy URL API is deprecated. Use the WHATWG URL API.
+    description: 旧版 URL API 已弃用。请改用 WHATWG URL API。
 -->
 
-The legacy `urlObject` (`require('node:url').Url` or
-`import { Url } from 'node:url'`) is
-created and returned by the `url.parse()` function.
+旧版 `urlObject`（`require('node:url').Url` 或 `import { Url } from 'node:url'`）由 `url.parse()` 函数创建并返回。
 
 #### `urlObject.auth`
 
-The `auth` property is the username and password portion of the URL, also
-referred to as _userinfo_. This string subset follows the `protocol` and
-double slashes (if present) and precedes the `host` component, delimited by `@`.
-The string is either the username, or it is the username and password separated
-by `:`.
+`auth` 属性是 URL 的用户名和密码部分，也称为 _userinfo_。此字符串子集跟随 `protocol` 和双斜杠（如果存在）之后，并在 `host` 组件之前，由 `@` 分隔。该字符串要么是用户名，要么是由 `:` 分隔的用户名和密码。
 
-For example: `'user:pass'`.
+例如：`'user:pass'`。
 
 #### `urlObject.hash`
 
-The `hash` property is the fragment identifier portion of the URL including the
-leading `#` character.
+`hash` 属性是 URL 的片段标识符部分，包括前导 `#` 字符。
 
-For example: `'#hash'`.
+例如：`'#hash'`。
 
 #### `urlObject.host`
 
-The `host` property is the full lower-cased host portion of the URL, including
-the `port` if specified.
+`host` 属性是 URL 的完整小写主机部分，包括指定的 `port`（如果存在）。
 
-For example: `'sub.example.com:8080'`.
+例如：`'sub.example.com:8080'`。
 
 #### `urlObject.hostname`
 
-The `hostname` property is the lower-cased host name portion of the `host`
-component _without_ the `port` included.
+`hostname` 属性是 `host` 组件的小写主机名部分，_不包含_ `port`。
 
-For example: `'sub.example.com'`.
+例如：`'sub.example.com'`。
 
 #### `urlObject.href`
 
-The `href` property is the full URL string that was parsed with both the
-`protocol` and `host` components converted to lower-case.
+`href` 属性是完整的 URL 字符串，解析时 `protocol` 和 `host` 组件已转换为小写。
 
-For example: `'http://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash'`.
+例如：`'http://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash'`。
 
 #### `urlObject.path`
 
-The `path` property is a concatenation of the `pathname` and `search`
-components.
+`path` 属性是 `pathname` 和 `search` 组件的连接。
 
-For example: `'/p/a/t/h?query=string'`.
+例如：`'/p/a/t/h?query=string'`。
 
-No decoding of the `path` is performed.
+不对 `path` 进行解码。
 
 #### `urlObject.pathname`
 
-The `pathname` property consists of the entire path section of the URL. This
-is everything following the `host` (including the `port`) and before the start
-of the `query` or `hash` components, delimited by either the ASCII question
-mark (`?`) or hash (`#`) characters.
+`pathname` 属性由 URL 的整个路径部分组成。这是跟随 `host`（包括 `port`）之后且在 `query` 或 `hash` 组件开始之前的所有内容，由 ASCII 问号（`?`）或哈希（`#`）字符分隔。
 
-For example: `'/p/a/t/h'`.
+例如：`'/p/a/t/h'`。
 
-No decoding of the path string is performed.
+不对路径字符串进行解码。
 
 #### `urlObject.port`
 
-The `port` property is the numeric port portion of the `host` component.
+`port` 属性是 `host` 组件的数字端口部分。
 
-For example: `'8080'`.
+例如：`'8080'`。
 
 #### `urlObject.protocol`
 
-The `protocol` property identifies the URL's lower-cased protocol scheme.
+`protocol` 属性标识 URL 的小写协议方案。
 
-For example: `'http:'`.
+例如：`'http:'`。
 
 #### `urlObject.query`
 
-The `query` property is either the query string without the leading ASCII
-question mark (`?`), or an object returned by the [`querystring`][] module's
-`parse()` method. Whether the `query` property is a string or object is
-determined by the `parseQueryString` argument passed to `url.parse()`.
+`query` 属性要么是不带前导 ASCII 问号（`?`）的查询字符串，要么是由 [`querystring`][] 模块的 `parse()` 方法返回的对象。`query` 属性是字符串还是对象取决于传递给 `url.parse()` 的 `parseQueryString` 参数。
 
-For example: `'query=string'` or `{'query': 'string'}`.
+例如：`'query=string'` 或 `{'query': 'string'}`。
 
-If returned as a string, no decoding of the query string is performed. If
-returned as an object, both keys and values are decoded.
+如果作为字符串返回，则不对查询字符串进行解码。如果作为对象返回，则键和值都会被解码。
 
 #### `urlObject.search`
 
-The `search` property consists of the entire "query string" portion of the
-URL, including the leading ASCII question mark (`?`) character.
+`search` 属性由 URL 的整个“查询字符串”部分组成，包括前导 ASCII 问号（`?`）字符。
 
-For example: `'?query=string'`.
+例如：`'?query=string'`。
 
-No decoding of the query string is performed.
+不对查询字符串进行解码。
 
 #### `urlObject.slashes`
 
-The `slashes` property is a `boolean` with a value of `true` if two ASCII
-forward-slash characters (`/`) are required following the colon in the
-`protocol`.
+如果 `protocol` 中的冒号后面需要两个 ASCII 正斜杠字符（`/`），则 `slashes` 属性是一个值为 `true` 的 `boolean`。
 
 ### `url.format(urlObject)`
 
@@ -1720,30 +1669,23 @@ added: v0.1.25
 changes:
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/38631
-    description: Now throws an `ERR_INVALID_URL` exception when Punycode
-                 conversion of a hostname introduces changes that could cause
-                 the URL to be re-parsed differently.
+    description: 现在当主机名的 Punycode 转换引入可能导致 URL 被不同地重新解析的更改时，会抛出 `ERR_INVALID_URL` 异常。
   - version:
       - v15.13.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/37784
-    description: Deprecation revoked. Status changed to "Legacy".
+    description: 弃用已撤销。状态更改为“旧版”。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22715
-    description: The Legacy URL API is deprecated. Use the WHATWG URL API.
+    description: 旧版 URL API 已弃用。请改用 WHATWG URL API。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7234
-    description: URLs with a `file:` scheme will now always use the correct
-                 number of slashes regardless of `slashes` option. A falsy
-                 `slashes` option with no protocol is now also respected at all
-                 times.
+    description: 带有 `file:` 方案的 URL 现在将始终使用正确数量的斜杠，无论 `slashes` 选项如何。不带协议且 `slashes` 选项为假值的情况现在也始终受到尊重。
 -->
 
-* `urlObject` {Object} A URL object (as returned by `url.parse()` or
-  constructed otherwise).
+* `urlObject` {Object} 一个 URL 对象（由 `url.parse()` 返回或以其他方式构造）。
 
-The `url.format()` method returns a formatted URL string derived from
-`urlObject`.
+`url.format()` 方法返回源自 `urlObject` 的格式化 URL 字符串。
 
 ```js
 const url = require('node:url');
@@ -1760,62 +1702,41 @@ url.format({
 // => 'https://example.com/some/path?page=1&format=json'
 ```
 
-If `urlObject` is not an object or a string, `url.format()` will throw a
-[`TypeError`][].
+如果 `urlObject` 不是对象或字符串，`url.format()` 将抛出 [`TypeError`][]。
 
-The formatting process operates as follows:
+格式化过程操作如下：
 
-* A new empty string `result` is created.
-* If `urlObject.protocol` is a string, it is appended as-is to `result`.
-* Otherwise, if `urlObject.protocol` is not `undefined` and is not a string, an
-  [`Error`][] is thrown.
-* For all string values of `urlObject.protocol` that _do not end_ with an ASCII
-  colon (`:`) character, the literal string `:` will be appended to `result`.
-* If either of the following conditions is true, then the literal string `//`
-  will be appended to `result`:
-  * `urlObject.slashes` property is true;
-  * `urlObject.protocol` begins with `http`, `https`, `ftp`, `gopher`, or
-    `file`;
-* If the value of the `urlObject.auth` property is truthy, and either
-  `urlObject.host` or `urlObject.hostname` are not `undefined`, the value of
-  `urlObject.auth` will be coerced into a string and appended to `result`
-  followed by the literal string `@`.
-* If the `urlObject.host` property is `undefined` then:
-  * If the `urlObject.hostname` is a string, it is appended to `result`.
-  * Otherwise, if `urlObject.hostname` is not `undefined` and is not a string,
-    an [`Error`][] is thrown.
-  * If the `urlObject.port` property value is truthy, and `urlObject.hostname`
-    is not `undefined`:
-    * The literal string `:` is appended to `result`, and
-    * The value of `urlObject.port` is coerced to a string and appended to
-      `result`.
-* Otherwise, if the `urlObject.host` property value is truthy, the value of
-  `urlObject.host` is coerced to a string and appended to `result`.
-* If the `urlObject.pathname` property is a string that is not an empty string:
-  * If the `urlObject.pathname` _does not start_ with an ASCII forward slash
-    (`/`), then the literal string `'/'` is appended to `result`.
-  * The value of `urlObject.pathname` is appended to `result`.
-* Otherwise, if `urlObject.pathname` is not `undefined` and is not a string, an
-  [`Error`][] is thrown.
-* If the `urlObject.search` property is `undefined` and if the `urlObject.query`
-  property is an `Object`, the literal string `?` is appended to `result`
-  followed by the output of calling the [`querystring`][] module's `stringify()`
-  method passing the value of `urlObject.query`.
-* Otherwise, if `urlObject.search` is a string:
-  * If the value of `urlObject.search` _does not start_ with the ASCII question
-    mark (`?`) character, the literal string `?` is appended to `result`.
-  * The value of `urlObject.search` is appended to `result`.
-* Otherwise, if `urlObject.search` is not `undefined` and is not a string, an
-  [`Error`][] is thrown.
-* If the `urlObject.hash` property is a string:
-  * If the value of `urlObject.hash` _does not start_ with the ASCII hash (`#`)
-    character, the literal string `#` is appended to `result`.
-  * The value of `urlObject.hash` is appended to `result`.
-* Otherwise, if the `urlObject.hash` property is not `undefined` and is not a
-  string, an [`Error`][] is thrown.
-* `result` is returned.
+* 创建一个新的空字符串 `result`。
+* 如果 `urlObject.protocol` 是字符串，则按原样附加到 `result`。
+* 否则，如果 `urlObject.protocol` 不是 `undefined` 且不是字符串，则抛出 [`Error`][]。
+* 对于所有_不以_ ASCII 冒号（`:`）字符结尾的 `urlObject.protocol` 字符串值，字面字符串 `:` 将附加到 `result`。
+* 如果以下任一条件为真，则字面字符串 `//` 将附加到 `result`：
+  * `urlObject.slashes` 属性为 true；
+  * `urlObject.protocol` 以 `http`、`https`、`ftp`、`gopher` 或 `file` 开头；
+* 如果 `urlObject.auth` 属性的值为真值，并且 `urlObject.host` 或 `urlObject.hostname` 都不是 `undefined`，则 `urlObject.auth` 的值将被强制转换为字符串并附加到 `result`，后跟字面字符串 `@`。
+* 如果 `urlObject.host` 属性为 `undefined`，则：
+  * 如果 `urlObject.hostname` 是字符串，则附加到 `result`。
+  * 否则，如果 `urlObject.hostname` 不是 `undefined` 且不是字符串，则抛出 [`Error`][]。
+  * 如果 `urlObject.port` 属性值为真值，且 `urlObject.hostname` 不是 `undefined`：
+    * 字面字符串 `:` 附加到 `result`，并且
+    * `urlObject.port` 的值被强制转换为字符串并附加到 `result`。
+* 否则，如果 `urlObject.host` 属性值为真值，则 `urlObject.host` 的值被强制转换为字符串并附加到 `result`。
+* 如果 `urlObject.pathname` 属性是一个非空字符串：
+  * 如果 `urlObject.pathname` _不以_ ASCII 正斜杠（`/`）开头，则字面字符串 `'/'` 附加到 `result`。
+  * `urlObject.pathname` 的值附加到 `result`。
+* 否则，如果 `urlObject.pathname` 不是 `undefined` 且不是字符串，则抛出 [`Error`][]。
+* 如果 `urlObject.search` 属性为 `undefined` 且 `urlObject.query` 属性是 `Object`，则字面字符串 `?` 附加到 `result`，后跟调用 [`querystring`][] 模块的 `stringify()` 方法的输出，传递 `urlObject.query` 的值。
+* 否则，如果 `urlObject.search` 是字符串：
+  * 如果 `urlObject.search` 的值_不以_ ASCII 问号（`?`）字符开头，则字面字符串 `?` 附加到 `result`。
+  * `urlObject.search` 的值附加到 `result`。
+* 否则，如果 `urlObject.search` 不是 `undefined` 且不是字符串，则抛出 [`Error`][]。
+* 如果 `urlObject.hash` 属性是字符串：
+  * 如果 `urlObject.hash` 的值_不以_ ASCII 哈希（`#`）字符开头，则字面字符串 `#` 附加到 `result`。
+  * `urlObject.hash` 的值附加到 `result`。
+* 否则，如果 `urlObject.hash` 属性不是 `undefined` 且不是字符串，则抛出 [`Error`][]。
+* 返回 `result`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/node-url-to-whatwg-url)).
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/node-url-to-whatwg-url)）。
 
 ```bash
 npx codemod@latest @nodejs/node-url-to-whatwg-url
@@ -1829,21 +1750,18 @@ changes:
   - version:
       - v24.0.0
     pr-url: https://github.com/nodejs/node/pull/55017
-    description: Application deprecation.
+    description: 应用弃用。
 -->
 
-> Stability: 0 - Deprecated: Use the WHATWG URL API instead.
+> 稳定性：0 - 已弃用：请改用 WHATWG URL API。
 
-* `urlString` {string} A string that will be passed to `url.parse()` and then
-  formatted.
+* `urlString` {string} 一个将传递给 `url.parse()` 然后格式化的字符串。
 
-`url.format(urlString)` is shorthand for `url.format(url.parse(urlString))`.
+`url.format(urlString)` 是 `url.format(url.parse(urlString))` 的简写。
 
-Because it invokes the deprecated [`url.parse()`][] internally, passing a string argument
-to `url.format()` is itself deprecated.
+因为它在内部调用了已弃用的 [`url.parse()`][]，所以向 `url.format()` 传递字符串参数本身也是已弃用的。
 
-Canonicalizing a URL string can be performed using the WHATWG URL API, by
-constructing a new URL object and calling [`url.toString()`][].
+可以通过构造一个新的 URL 对象并调用 [`url.toString()`][] 来使用 WHATWG URL API 执行 URL 字符串的规范化。
 
 ```mjs
 import { URL } from 'node:url';
@@ -1851,7 +1769,7 @@ import { URL } from 'node:url';
 const unformatted = 'http://[fe80:0:0:0:0:0:0:1]:/a/b?a=b#abc';
 const formatted = new URL(unformatted).toString();
 
-console.log(formatted); // Prints: http://[fe80::1]/a/b?a=b#abc
+console.log(formatted); // 打印：http://[fe80::1]/a/b?a=b#abc
 ```
 
 ```cjs
@@ -1860,7 +1778,7 @@ const { URL } = require('node:url');
 const unformatted = 'http://[fe80:0:0:0:0:0:0:1]:/a/b?a=b#abc';
 const formatted = new URL(unformatted).toString();
 
-console.log(formatted); // Prints: http://[fe80::1]/a/b?a=b#abc
+console.log(formatted); // 打印：http://[fe80::1]/a/b?a=b#abc
 ```
 
 ### `url.parse(urlString[, parseQueryString[, slashesDenoteHost]])`
@@ -1871,61 +1789,46 @@ changes:
   - version:
       - v24.0.0
     pr-url: https://github.com/nodejs/node/pull/55017
-    description: Application deprecation.
+    description: 应用弃用。
   - version:
       - v19.9.0
       - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47203
-    description: Added support for `--pending-deprecation`.
+    description: 添加了对 `--pending-deprecation` 的支持。
   - version:
       - v19.0.0
       - v18.13.0
     pr-url: https://github.com/nodejs/node/pull/44919
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
   - version:
       - v15.13.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/37784
-    description: Deprecation revoked. Status changed to "Legacy".
+    description: 弃用已撤销。状态更改为“旧版”。
   - version: v11.14.0
     pr-url: https://github.com/nodejs/node/pull/26941
-    description: The `pathname` property on the returned URL object is now `/`
-                 when there is no path and the protocol scheme is `ws:` or
-                 `wss:`.
+    description: 当没有路径且协议方案为 `ws:` 或 `wss:` 时，返回的 URL 对象上的 `pathname` 属性现在为 `/`。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22715
-    description: The Legacy URL API is deprecated. Use the WHATWG URL API.
+    description: 旧版 URL API 已弃用。请改用 WHATWG URL API。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/13606
-    description: The `search` property on the returned URL object is now `null`
-                 when no query string is present.
+    description: 当不存在查询字符串时，返回的 URL 对象上的 `search` 属性现在为 `null`。
 -->
 
-> Stability: 0 - Deprecated: Use the WHATWG URL API instead.
+> 稳定性：0 - 已弃用：请改用 WHATWG URL API。
 
-* `urlString` {string} The URL string to parse.
-* `parseQueryString` {boolean} If `true`, the `query` property will always
-  be set to an object returned by the [`querystring`][] module's `parse()`
-  method. If `false`, the `query` property on the returned URL object will be an
-  unparsed, undecoded string. **Default:** `false`.
-* `slashesDenoteHost` {boolean} If `true`, the first token after the literal
-  string `//` and preceding the next `/` will be interpreted as the `host`.
-  For instance, given `//foo/bar`, the result would be
-  `{host: 'foo', pathname: '/bar'}` rather than `{pathname: '//foo/bar'}`.
-  **Default:** `false`.
+* `urlString` {string} 要解析的 URL 字符串。
+* `parseQueryString` {boolean} 如果为 `true`，`query` 属性将始终设置为由 [`querystring`][] 模块的 `parse()` 方法返回的对象。如果为 `false`，返回的 URL 对象上的 `query` 属性将是未解析、未解码的字符串。**默认值：** `false`。
+* `slashesDenoteHost` {boolean} 如果为 `true`，字面字符串 `//` 之后的第一个令牌且在前一个 `/` 之前将被解释为 `host`。例如，给定 `//foo/bar`，结果将是 `{host: 'foo', pathname: '/bar'}` 而不是 `{pathname: '//foo/bar'}`。**默认值：** `false`。
 
-The `url.parse()` method takes a URL string, parses it, and returns a URL
-object.
+`url.parse()` 方法接受 URL 字符串，解析它，并返回 URL 对象。
 
-A `TypeError` is thrown if `urlString` is not a string.
+如果 `urlString` 不是字符串，则抛出 `TypeError`。
 
-A `URIError` is thrown if the `auth` property is present but cannot be decoded.
+如果 `auth` 属性存在但无法解码，则抛出 `URIError`。
 
-`url.parse()` uses a lenient, non-standard algorithm for parsing URL
-strings. It is prone to security issues such as [host name spoofing][]
-and incorrect handling of usernames and passwords. Do not use with untrusted
-input. CVEs are not issued for `url.parse()` vulnerabilities. Use the
-[WHATWG URL][] API instead, for example:
+`url.parse()` 使用一种宽松、非标准的算法来解析 URL 字符串。它容易出现安全问题，例如 [主机名欺骗][] 以及用户名和密码的处理不正确。不要与不可信的输入一起使用。不会为 `url.parse()` 漏洞发布 CVE。请改用 [WHATWG URL][] API，例如：
 
 ```js
 function getURL(req) {
@@ -1935,9 +1838,7 @@ function getURL(req) {
 }
 ```
 
-The example above assumes well-formed headers are forwarded from a reverse
-proxy to your Node.js server. If you are not using a reverse proxy, you should
-use the example below:
+上面的示例假设格式正确的头是从反向代理转发到你的 Node.js 服务器的。如果你没有使用反向代理，你应该使用下面的示例：
 
 ```js
 function getURL(req) {
@@ -1945,7 +1846,7 @@ function getURL(req) {
 }
 ```
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/node-url-to-whatwg-url)).
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/node-url-to-whatwg-url)）。
 
 ```bash
 npx codemod@latest @nodejs/node-url-to-whatwg-url
@@ -1959,37 +1860,34 @@ changes:
   - version:
       - v24.0.0
     pr-url: https://github.com/nodejs/node/pull/55017
-    description: Deprecated again through DEP0169.
+    description: 通过 DEP0169 再次弃用。
   - version:
       - v15.13.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/37784
-    description: Deprecation revoked. Status changed to "Legacy".
+    description: 弃用已撤销。状态更改为“旧版”。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22715
-    description: The Legacy URL API is deprecated. Use the WHATWG URL API.
+    description: 旧版 URL API 已弃用。请改用 WHATWG URL API。
   - version: v6.6.0
     pr-url: https://github.com/nodejs/node/pull/8215
-    description: The `auth` fields are now kept intact when `from` and `to`
-                 refer to the same host.
+    description: 当 `from` 和 `to` 引用同一主机时，`auth` 字段现在保持完整。
   - version:
     - v6.5.0
     - v4.6.2
     pr-url: https://github.com/nodejs/node/pull/8214
-    description: The `port` field is copied correctly now.
+    description: `port` 字段现在已正确复制。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/1480
-    description: The `auth` fields is cleared now the `to` parameter
-                 contains a hostname.
+    description: 当 `to` 参数包含主机名时，`auth` 字段现在被清除。
 -->
 
-> Stability: 0 - Deprecated: Use the WHATWG URL API instead.
+> 稳定性：0 - 已弃用：请改用 WHATWG URL API。
 
-* `from` {string} The base URL to use if `to` is a relative URL.
-* `to` {string} The target URL to resolve.
+* `from` {string} 如果 `to` 是相对 URL，则使用的基础 URL。
+* `to` {string} 要解析的目标 URL。
 
-The `url.resolve()` method resolves a target URL relative to a base URL in a
-manner similar to that of a web browser resolving an anchor tag.
+`url.resolve()` 方法以类似于 Web 浏览器解析锚标签的方式，相对于基础 URL 解析目标 URL。
 
 ```js
 const url = require('node:url');
@@ -1998,15 +1896,15 @@ url.resolve('http://example.com/', '/one');    // 'http://example.com/one'
 url.resolve('http://example.com/one', '/two'); // 'http://example.com/two'
 ```
 
-Because it invokes the deprecated [`url.parse()`][] internally, `url.resolve()` is itself deprecated.
+因为它在内部调用了已弃用的 [`url.parse()`][]，所以 `url.resolve()` 本身也是已弃用的。
 
-To achieve the same result using the WHATWG URL API:
+要使用 WHATWG URL API 实现相同的结果：
 
 ```js
 function resolve(from, to) {
   const resolvedUrl = new URL(to, new URL(from, 'resolve://'));
   if (resolvedUrl.protocol === 'resolve:') {
-    // `from` is a relative URL.
+    // `from` 是一个相对 URL。
     const { pathname, search, hash } = resolvedUrl;
     return pathname + search + hash;
   }
@@ -2020,69 +1918,49 @@ resolve('http://example.com/one', '/two'); // 'http://example.com/two'
 
 <a id="whatwg-percent-encoding"></a>
 
-## Percent-encoding in URLs
+## URL 中的百分号编码
 
-URLs are permitted to only contain a certain range of characters. Any character
-falling outside of that range must be encoded. How such characters are encoded,
-and which characters to encode depends entirely on where the character is
-located within the structure of the URL.
+URL 只允许包含特定范围的字符。任何超出该范围的字符都必须进行编码。如何编码这些字符以及编码哪些字符完全取决于字符在 URL 结构中的位置。
 
-### Legacy API
+### 遗留 API
 
-Within the Legacy API, spaces (`' '`) and the following characters will be
-automatically escaped in the properties of URL objects:
+在遗留 API 中，空格（`' '`）和以下字符将在 URL 对象的属性中自动被转义：
 
 ```text
 < > " ` \r \n \t { } | \ ^ '
 ```
 
-For example, the ASCII space character (`' '`) is encoded as `%20`. The ASCII
-forward slash (`/`) character is encoded as `%3C`.
+例如，ASCII 空格字符（`' '`）被编码为 `%20`。ASCII 正斜杠（`/`）字符被编码为 `%3C`。
 
 ### WHATWG API
 
-The [WHATWG URL Standard][] uses a more selective and fine grained approach to
-selecting encoded characters than that used by the Legacy API.
+[WHATWG URL 标准][] 在选择编码字符方面比遗留 API 使用了更具选择性和更细粒度的方法。
 
-The WHATWG algorithm defines four "percent-encode sets" that describe ranges
-of characters that must be percent-encoded:
+WHATWG 算法定义了四个“百分号编码集”，用于描述必须进行了百分号编码的字符范围：
 
-* The _C0 control percent-encode set_ includes code points in range U+0000 to
-  U+001F (inclusive) and all code points greater than U+007E (\~).
+* _C0 控制百分号编码集_ 包括范围在 U+0000 到 U+001F（含）之间的代码点以及所有大于 U+007E（\~）的代码点。
 
-* The _fragment percent-encode set_ includes the _C0 control percent-encode set_
-  and code points U+0020 SPACE, U+0022 ("), U+003C (<), U+003E (>),
-  and U+0060 (\`).
+* _片段百分号编码集_ 包括 _C0 控制百分号编码集_ 以及代码点 U+0020 SPACE、U+0022 (")、U+003C (<)、U+003E (>) 和 U+0060 (\`)。
 
-* The _path percent-encode set_ includes the _C0 control percent-encode set_
-  and code points U+0020 SPACE, U+0022 ("), U+0023 (#), U+003C (<), U+003E (>),
-  U+003F (?), U+0060 (\`), U+007B ({), and U+007D (}).
+* _路径百分号编码集_ 包括 _C0 控制百分号编码集_ 以及代码点 U+0020 SPACE、U+0022 (")、U+0023 (#)、U+003C (<)、U+003E (>)、U+003F (?)、U+0060 (\`)、U+007B ({) 和 U+007D (})。
 
-* The _userinfo encode set_ includes the _path percent-encode set_ and code
-  points U+002F (/), U+003A (:), U+003B (;), U+003D (=), U+0040 (@),
-  U+005B (\[) to U+005E(^), and U+007C (|).
+* _用户信息编码集_ 包括 _路径百分号编码集_ 以及代码点 U+002F (/)、U+003A (:)、U+003B (;)、U+003D (=)、U+0040 (@)、U+005B (\[) 到 U+005E(^) 以及 U+007C (|)。
 
-The _userinfo percent-encode set_ is used exclusively for username and
-passwords encoded within the URL. The _path percent-encode set_ is used for the
-path of most URLs. The _fragment percent-encode set_ is used for URL fragments.
-The _C0 control percent-encode set_ is used for host and path under certain
-specific conditions, in addition to all other cases.
+_用户信息百分号编码集_ 仅用于编码 URL 内的用户名和密码。_路径百分号编码集_ 用于大多数 URL 的路径。_片段百分号编码集_ 用于 URL 片段。_C0 控制百分号编码集_ 用于主机和路径在某些特定条件下，以及所有其他情况。
 
-When non-ASCII characters appear within a host name, the host name is encoded
-using the [Punycode][] algorithm. Note, however, that a host name _may_ contain
-_both_ Punycode encoded and percent-encoded characters:
+当非 ASCII 字符出现在主机名中时，主机名使用 [Punycode][] 算法进行编码。但请注意，主机名 _可能_ 包含 _既_ Punycode 编码 _又_ 百分号编码的字符：
 
 ```js
 const myURL = new URL('https://%CF%80.example.com/foo');
 console.log(myURL.href);
-// Prints https://xn--1xa.example.com/foo
+// 输出 https://xn--1xa.example.com/foo
 console.log(myURL.origin);
-// Prints https://xn--1xa.example.com
+// 输出 https://xn--1xa.example.com
 ```
 
 [Punycode]: https://tools.ietf.org/html/rfc5891#section-4.4
 [WHATWG URL]: #the-whatwg-url-api
-[WHATWG URL Standard]: https://url.spec.whatwg.org/
+[WHATWG URL 标准]: https://url.spec.whatwg.org/
 [`Error`]: errors.md#class-error
 [`JSON.stringify()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
 [`TypeError`]: errors.md#class-typeerror
@@ -2103,9 +1981,9 @@ console.log(myURL.origin);
 [`url.toString()`]: #urltostring
 [`urlSearchParams.entries()`]: #urlsearchparamsentries
 [`urlSearchParamsSymbol.iterator()`]: #urlsearchparamssymboliterator
-[converted to a string]: https://tc39.es/ecma262/#sec-tostring
-[examples of parsed URLs]: https://url.spec.whatwg.org/#example-url-parsing
-[host name spoofing]: https://hackerone.com/reports/678487
-[legacy `urlObject`]: #legacy-urlobject
-[percent-encoded]: #percent-encoding-in-urls
-[stable sorting algorithm]: https://en.wikipedia.org/wiki/Sorting_algorithm#Stability
+[转换为字符串]: https://tc39.es/ecma262/#sec-tostring
+[已解析 URL 的示例]: https://url.spec.whatwg.org/#example-url-parsing
+[主机名欺骗]: https://hackerone.com/reports/678487
+[遗留 `urlObject`]: #legacy-urlobject
+[百分号编码]: #percent-encoding-in-urls
+[稳定排序算法]: https://en.wikipedia.org/wiki/Sorting_algorithm#Stability

@@ -1,44 +1,33 @@
-# C++ embedder API
+# C++ 嵌入器 API
 
 <!--introduced_in=v12.19.0-->
 
-Node.js provides a number of C++ APIs that can be used to execute JavaScript
-in a Node.js environment from other C++ software.
+Node.js 提供了许多 C++ API，可用于从其他 C++ 软件在 Node.js 环境中执行 JavaScript。
 
-The documentation for these APIs can be found in [src/node.h][] in the Node.js
-source tree. In addition to the APIs exposed by Node.js, some required concepts
-are provided by the V8 embedder API.
+这些 API 的文档可以在 Node.js 源代码树中的 [src/node.h][] 找到。除了 Node.js 暴露的 API 外，一些必需的概念由 V8 嵌入器 API 提供。
 
-Because using Node.js as an embedded library is different from writing code
-that is executed by Node.js, breaking changes do not follow typical Node.js
-[deprecation policy][] and may occur on each semver-major release without prior
-warning.
+因为将 Node.js 用作嵌入库与编写由 Node.js 执行的代码不同，所以破坏性变更不遵循典型的 Node.js [弃用策略][]，并且可能在每个语义化主版本发布时发生，而无需事先警告。
 
-## Example embedding application
+## 嵌入应用程序示例
 
-The following sections will provide an overview over how to use these APIs
-to create an application from scratch that will perform the equivalent of
-`node -e <code>`, i.e. that will take a piece of JavaScript and run it in
-a Node.js-specific environment.
+以下章节将概述如何使用这些 API 从头创建一个应用程序，该应用程序将执行相当于 `node -e <code>` 的操作，即获取一段 JavaScript 并在特定于 Node.js 的环境中运行它。
 
-The full code can be found [in the Node.js source tree][embedtest.cc].
+完整代码可以在 [Node.js 源代码树中找到][embedtest.cc]。
 
-### Setting up a per-process state
+### 设置每进程状态
 
-Node.js requires some per-process state management in order to run:
+Node.js 运行需要一些每进程状态管理：
 
-* Arguments parsing for Node.js [CLI options][],
-* V8 per-process requirements, such as a `v8::Platform` instance.
+* 解析 Node.js [命令行选项][] 的参数，
+* V8 每进程要求，例如 `v8::Platform` 实例。
 
-The following example shows how these can be set up. Some class names are from
-the `node` and `v8` C++ namespaces, respectively.
+以下示例展示了如何设置这些。一些类名分别来自 `node` 和 `v8` C++ 命名空间。
 
 ```cpp
 int main(int argc, char** argv) {
   argv = uv_setup_args(argc, argv);
   std::vector<std::string> args(argv, argv + argc);
-  // Parse Node.js CLI options, and print any errors that have occurred while
-  // trying to parse them.
+  // 解析 Node.js CLI 选项，并打印任何尝试解析它们时发生的错误。
   std::unique_ptr<node::InitializationResult> result =
       node::InitializeOncePerProcess(args, {
         node::ProcessInitializationFlags::kNoInitializeV8,
@@ -51,16 +40,15 @@ int main(int argc, char** argv) {
     return result->exit_code();
   }
 
-  // Create a v8::Platform instance. `MultiIsolatePlatform::Create()` is a way
-  // to create a v8::Platform instance that Node.js can use when creating
-  // Worker threads. When no `MultiIsolatePlatform` instance is present,
-  // Worker threads are disabled.
+  // 创建一个 v8::Platform 实例。`MultiIsolatePlatform::Create()` 是一种
+  // 创建一个 Node.js 在创建 Worker 线程时可以使用的 v8::Platform 实例的方法。当不存在 `MultiIsolatePlatform` 实例时，
+  // Worker 线程将被禁用。
   std::unique_ptr<MultiIsolatePlatform> platform =
       MultiIsolatePlatform::Create(4);
   V8::InitializePlatform(platform.get());
   V8::Initialize();
 
-  // See below for the contents of this function.
+  // 参见下方了解此函数的内容。
   int ret = RunNodeInstance(
       platform.get(), result->args(), result->exec_args());
 
@@ -72,42 +60,28 @@ int main(int argc, char** argv) {
 }
 ```
 
-### Setting up a per-instance state
+### 设置每实例状态
 
 <!-- YAML
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35597
     description:
-      The `CommonEnvironmentSetup` and `SpinEventLoop` utilities were added.
+      添加了 `CommonEnvironmentSetup` 和 `SpinEventLoop` 工具。
 -->
 
-Node.js has a concept of a “Node.js instance”, that is commonly being referred
-to as `node::Environment`. Each `node::Environment` is associated with:
+Node.js 有一个"Node.js 实例”的概念，通常被称为 `node::Environment`。每个 `node::Environment` 关联着：
 
-* Exactly one `v8::Isolate`, i.e. one JS Engine instance,
-* Exactly one `uv_loop_t`, i.e. one event loop,
-* A number of `v8::Context`s, but exactly one main `v8::Context`, and
-* One `node::IsolateData` instance that contains information that could be
-  shared by multiple `node::Environment`s. The embedder should make sure
-  that `node::IsolateData` is shared only among `node::Environment`s that
-  use the same `v8::Isolate`, Node.js does not perform this check.
+* 恰好一个 `v8::Isolate`，即一个 JS 引擎实例，
+* 恰好一个 `uv_loop_t`，即一个事件循环，
+* 若干个 `v8::Context`，但恰好一个主 `v8::Context`，以及
+* 一个 `node::IsolateData` 实例，其中包含可由多个 `node::Environment` 共享的信息。嵌入器应确保 `node::IsolateData` 仅在共享相同 `v8::Isolate` 的 `node::Environment` 之间共享，Node.js 不执行此检查。
 
-In order to set up a `v8::Isolate`, an `v8::ArrayBuffer::Allocator` needs
-to be provided. One possible choice is the default Node.js allocator, which
-can be created through `node::ArrayBufferAllocator::Create()`. Using the Node.js
-allocator allows minor performance optimizations when addons use the Node.js
-C++ `Buffer` API, and is required in order to track `ArrayBuffer` memory in
-[`process.memoryUsage()`][].
+为了设置 `v8::Isolate`，需要提供一个 `v8::ArrayBuffer::Allocator`。一个可能的选择是默认的 Node.js 分配器，可以通过 `node::ArrayBufferAllocator::Create()` 创建。使用 Node.js 分配器可以在插件使用 Node.js C++ `Buffer` API 时允许轻微的性能优化，并且是跟踪 [`process.memoryUsage()`][] 中 `ArrayBuffer` 内存所必需的。
 
-Additionally, each `v8::Isolate` that is used for a Node.js instance needs to
-be registered and unregistered with the `MultiIsolatePlatform` instance, if one
-is being used, in order for the platform to know which event loop to use
-for tasks scheduled by the `v8::Isolate`.
+此外，每个用于 Node.js 实例的 `v8::Isolate` 都需要向 `MultiIsolatePlatform` 实例注册和注销（如果正在使用），以便平台知道为该 `v8::Isolate` 调度的任务使用哪个事件循环。
 
-The `node::NewIsolate()` helper function creates a `v8::Isolate`,
-sets it up with some Node.js-specific hooks (e.g. the Node.js error handler),
-and registers it with the platform automatically.
+`node::NewIsolate()` 辅助函数创建一个 `v8::Isolate`，使用一些特定于 Node.js 的钩子（例如 Node.js 错误处理程序）对其进行设置，并自动将其注册到平台。
 
 ```cpp
 int RunNodeInstance(MultiIsolatePlatform* platform,
@@ -115,7 +89,7 @@ int RunNodeInstance(MultiIsolatePlatform* platform,
                     const std::vector<std::string>& exec_args) {
   int exit_code = 0;
 
-  // Setup up a libuv event loop, v8::Isolate, and Node.js Environment.
+  // 设置一个 libuv 事件循环，v8::Isolate 和 Node.js Environment。
   std::vector<std::string> errors;
   std::unique_ptr<CommonEnvironmentSetup> setup =
       CommonEnvironmentSetup::Create(platform, &errors, args, exec_args);
@@ -132,19 +106,19 @@ int RunNodeInstance(MultiIsolatePlatform* platform,
     Locker locker(isolate);
     Isolate::Scope isolate_scope(isolate);
     HandleScope handle_scope(isolate);
-    // The v8::Context needs to be entered when node::CreateEnvironment() and
-    // node::LoadEnvironment() are being called.
+    // 在调用 node::CreateEnvironment() 和
+    // node::LoadEnvironment() 时需要进入 v8::Context。
     Context::Scope context_scope(setup->context());
 
-    // Set up the Node.js instance for execution, and run code inside of it.
-    // There is also a variant that takes a callback and provides it with
-    // the `require` and `process` objects, so that it can manually compile
-    // and run scripts as needed.
-    // The `require` function inside this script does *not* access the file
-    // system, and can only load built-in Node.js modules.
-    // `module.createRequire()` is being used to create one that is able to
-    // load files from the disk, and uses the standard CommonJS file loader
-    // instead of the internal-only `require` function.
+    // 设置 Node.js 实例以执行，并在其中运行代码。
+    // 还有一个变体接受一个回调并向其提供
+    // `require` 和 `process` 对象，以便它可以手动编译
+    // 并按需运行脚本。
+    // 此脚本内的 `require` 函数*不*访问文件
+    // 系统，并且只能加载内置 Node.js 模块。
+    // 正在使用 `module.createRequire()` 创建一个能够从
+    // 磁盘加载文件的对象，并使用标准的 CommonJS 文件加载器
+    // 而不是内部专用的 `require` 函数。
     MaybeLocal<Value> loadenv_ret = node::LoadEnvironment(
         env,
         "const publicRequire ="
@@ -152,14 +126,14 @@ int RunNodeInstance(MultiIsolatePlatform* platform,
         "globalThis.require = publicRequire;"
         "require('node:vm').runInThisContext(process.argv[1]);");
 
-    if (loadenv_ret.IsEmpty())  // There has been a JS exception.
+    if (loadenv_ret.IsEmpty())  // 发生了 JS 异常。
       return 1;
 
     exit_code = node::SpinEventLoop(env).FromMaybe(1);
 
-    // node::Stop() can be used to explicitly stop the event loop and keep
-    // further JavaScript from running. It can be called from any thread,
-    // and will act like worker.terminate() if called from another thread.
+    // node::Stop() 可用于显式停止事件循环并阻止
+    // 进一步运行 JavaScript。它可以从任何线程调用，
+    // 如果从另一个线程调用，其行为将类似于 worker.terminate()。
     node::Stop(env);
   }
 
@@ -167,8 +141,8 @@ int RunNodeInstance(MultiIsolatePlatform* platform,
 }
 ```
 
-[CLI options]: cli.md
+[命令行选项]: cli.md
 [`process.memoryUsage()`]: process.md#processmemoryusage
-[deprecation policy]: deprecations.md
+[弃用策略]: deprecations.md
 [embedtest.cc]: https://github.com/nodejs/node/blob/HEAD/test/embedding/embedtest.cc
 [src/node.h]: https://github.com/nodejs/node/blob/HEAD/src/node.h

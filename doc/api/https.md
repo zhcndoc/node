@@ -2,20 +2,17 @@
 
 <!--introduced_in=v0.10.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/https.js -->
 
-HTTPS is the HTTP protocol over TLS/SSL. In Node.js this is implemented as a
-separate module.
+HTTPS 是基於 TLS/SSL 的 HTTP 協議。在 Node.js 中，這是作為一個單獨的模塊實現的。
 
-## Determining if crypto support is unavailable
+## 確定是否無法使用 crypto 支持
 
-It is possible for Node.js to be built without including support for the
-`node:crypto` module. In such cases, attempting to `import` from `https` or
-calling `require('node:https')` will result in an error being thrown.
+Node.js 有可能在不包含 `node:crypto` 模塊支持的情況下構建。在這種情況下，嘗試從 `https` `import` 或調用 `require('node:https')` 將導致拋出錯誤。
 
-When using CommonJS, the error thrown can be caught using try/catch:
+使用 CommonJS 時，拋出的錯誤可以使用 try/catch 捕獲：
 
 ```cjs
 let https;
@@ -26,14 +23,9 @@ try {
 }
 ```
 
-When using the lexical ESM `import` keyword, the error can only be
-caught if a handler for `process.on('uncaughtException')` is registered
-_before_ any attempt to load the module is made (using, for instance,
-a preload module).
+使用詞法 ESM `import` 關鍵字時，只有在嘗試加載模塊_之前_註冊了 `process.on('uncaughtException')` 的處理程序（例如，使用預加載模塊），才能捕獲錯誤。
 
-When using ESM, if there is a chance that the code may be run on a build
-of Node.js where crypto support is not enabled, consider using the
-[`import()`][] function instead of the lexical `import` keyword:
+使用 ESM 時，如果代碼有可能在尚未啟用 crypto 支持的 Node.js 構建上運行，請考慮使用 [`import()`][] 函數而不是詞法 `import` 關鍵字：
 
 ```mjs
 let https;
@@ -44,28 +36,24 @@ try {
 }
 ```
 
-## Class: `https.Agent`
+## 類：`https.Agent`
 
 <!-- YAML
 added: v0.4.5
 changes:
   - version: v5.3.0
     pr-url: https://github.com/nodejs/node/pull/4252
-    description: support `0` `maxCachedSessions` to disable TLS session caching.
+    description: 支持 `0` `maxCachedSessions` 以禁用 TLS 會話緩存。
   - version: v2.5.0
     pr-url: https://github.com/nodejs/node/pull/2228
-    description: parameter `maxCachedSessions` added to `options` for TLS
-                 sessions reuse.
+    description: 參數 `maxCachedSessions` 添加到 `options` 用於 TLS 會話復用。
 -->
 
-An [`Agent`][] object for HTTPS similar to [`http.Agent`][]. See
-[`https.request()`][] for more information.
+一個用於 HTTPS 的 [`Agent`][] 對象，類似於 [`http.Agent`][]。詳見 [`https.request()`][] 獲取更多信息。
 
-Like `http.Agent`, the `createConnection(options[, callback])` method can be overridden
-to customize how TLS connections are established.
+類似於 `http.Agent`，`createConnection(options[, callback])` 方法可以被重寫以自定義 TLS 連接的建立方式。
 
-> See [`agent.createConnection()`][] for details on overriding this method,
-> including asynchronous socket creation with a callback.
+> 詳見 [`agent.createConnection()`][] 了解重寫此方法的詳細信息，包括使用回調異步創建 socket。
 
 ### `new Agent([options])`
 
@@ -75,32 +63,28 @@ changes:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: Add support for `proxyEnv`.
+    description: 添加對 `proxyEnv` 的支持。
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: Add support for `defaultPort` and `protocol`.
+    description: 添加對 `defaultPort` 和 `protocol` 的支持。
   - version: v12.5.0
     pr-url: https://github.com/nodejs/node/pull/28209
-    description: do not automatically set servername if the target host was
-                 specified using an IP address.
+    description: 如果目標主機是使用 IP 地址指定的，則不自動設置 servername。
 -->
 
-* `options` {Object} Set of configurable options to set on the agent.
-  Can have the same fields as for [`http.Agent(options)`][], and
-  * `maxCachedSessions` {number} maximum number of TLS cached sessions.
-    Use `0` to disable TLS session caching. **Default:** `100`.
-  * `servername` {string} the value of
-    [Server Name Indication extension][sni wiki] to be sent to the server. Use
-    empty string `''` to disable sending the extension.
-    **Default:** host name of the target server, unless the target server
-    is specified using an IP address, in which case the default is `''` (no
-    extension).
+* `options` {Object} 要在 agent 上設置的可配置選項集。
+  可以擁有與 [`http.Agent(options)`][] 相同的字段，以及
+  * `maxCachedSessions` {number} TLS 緩存會話的最大數量。
+    使用 `0` 禁用 TLS 會話緩存。**默認值：** `100`。
+  * `servername` {string} 要發送到服務器的 [服務器名稱指示擴展][sni wiki] 的值。使用
+    空字符串 `''` 禁用發送該擴展。
+    **默認值：** 目標服務器的主機名，除非目標服務器是使用 IP 地址指定的，在這種情況下默認值是 `''`（無擴展）。
 
-    See [`Session Resumption`][] for information about TLS session reuse.
+    詳見 [`Session Resumption`][] 了解 TLS 會話復用的信息。
 
-#### Event: `'keylog'`
+#### 事件：`'keylog'`
 
 <!-- YAML
 added:
@@ -108,18 +92,12 @@ added:
  - v12.16.0
 -->
 
-* `line` {Buffer} Line of ASCII text, in NSS `SSLKEYLOGFILE` format.
-* `tlsSocket` {tls.TLSSocket} The `tls.TLSSocket` instance on which it was
-  generated.
+* `line` {Buffer} ASCII 文本行，採用 NSS `SSLKEYLOGFILE` 格式。
+* `tlsSocket` {tls.TLSSocket} 生成該事件的 `tls.TLSSocket` 實例。
 
-The `keylog` event is emitted when key material is generated or received by a
-connection managed by this agent (typically before handshake has completed, but
-not necessarily). This keying material can be stored for debugging, as it
-allows captured TLS traffic to be decrypted. It may be emitted multiple times
-for each socket.
+當由此 agent 管理的連接生成或接收密鑰材料時，會發出 `keylog` 事件（通常在手握完成之前，但不一定）。此密鑰材料可以存儲用於調試，因為它允許解密捕獲的 TLS 流量。每個 socket 可能會發出多次。
 
-A typical use case is to append received lines to a common text file, which is
-later used by software (such as Wireshark) to decrypt the traffic:
+一個典型的用例是將接收到的行追加到一個公共文本文件中，該軟件（例如 Wireshark）稍後使用該文件來解密流量：
 
 ```js
 // ...
@@ -128,15 +106,15 @@ https.globalAgent.on('keylog', (line, tlsSocket) => {
 });
 ```
 
-## Class: `https.Server`
+## 類：`https.Server`
 
 <!-- YAML
 added: v0.3.4
 -->
 
-* Extends: {tls.Server}
+* 繼承：{tls.Server}
 
-See [`http.Server`][] for more information.
+詳見 [`http.Server`][] 獲取更多信息。
 
 ### `server.close([callback])`
 
@@ -145,9 +123,9 @@ added: v0.1.90
 -->
 
 * `callback` {Function}
-* Returns: {https.Server}
+* 返回：{https.Server}
 
-See [`server.close()`][] in the `node:http` module.
+詳見 `node:http` 模塊中的 [`server.close()`][]。
 
 ### `server[Symbol.asyncDispose]()`
 
@@ -156,11 +134,10 @@ added: v20.4.0
 changes:
  - version: v24.2.0
    pr-url: https://github.com/nodejs/node/pull/58467
-   description: No longer experimental.
+   description: 不再是實驗性的。
 -->
 
-Calls [`server.close()`][httpsServerClose] and returns a promise that
-fulfills when the server has closed.
+調用 [`server.close()`][httpsServerClose] 並返回一個 promise，當服務器關閉時該 promise 會 fulfilled。
 
 ### `server.closeAllConnections()`
 
@@ -168,7 +145,7 @@ fulfills when the server has closed.
 added: v18.2.0
 -->
 
-See [`server.closeAllConnections()`][] in the `node:http` module.
+詳見 `node:http` 模塊中的 [`server.closeAllConnections()`][]。
 
 ### `server.closeIdleConnections()`
 
@@ -176,7 +153,7 @@ See [`server.closeAllConnections()`][] in the `node:http` module.
 added: v18.2.0
 -->
 
-See [`server.closeIdleConnections()`][] in the `node:http` module.
+詳見 `node:http` 模塊中的 [`server.closeIdleConnections()`][]。
 
 ### `server.headersTimeout`
 
@@ -184,20 +161,20 @@ See [`server.closeIdleConnections()`][] in the `node:http` module.
 added: v11.3.0
 -->
 
-* Type: {number} **Default:** `60000`
+* 類型：{number} **默認值：** `60000`
 
-See [`server.headersTimeout`][] in the `node:http` module.
+詳見 `node:http` 模塊中的 [`server.headersTimeout`][]。
 
 ### `server.listen()`
 
-Starts the HTTPS server listening for encrypted connections.
-This method is identical to [`server.listen()`][] from [`net.Server`][].
+啟動 HTTPS 服務器監聽加密連接。
+此方法等同於 [`net.Server`][] 中的 [`server.listen()`][]。
 
 ### `server.maxHeadersCount`
 
-* Type: {number} **Default:** `2000`
+* 類型：{number} **默認值：** `2000`
 
-See [`server.maxHeadersCount`][] in the `node:http` module.
+詳見 `node:http` 模塊中的 [`server.maxHeadersCount`][]。
 
 ### `server.requestTimeout`
 
@@ -206,13 +183,12 @@ added: v14.11.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41263
-    description: The default request timeout changed
-                 from no timeout to 300s (5 minutes).
+    description: 默認請求超時從無超時更改為 300 秒（5 分鐘）。
 -->
 
-* Type: {number} **Default:** `300000`
+* 類型：{number} **默認值：** `300000`
 
-See [`server.requestTimeout`][] in the `node:http` module.
+詳見 `node:http` 模塊中的 [`server.requestTimeout`][]。
 
 ### `server.setTimeout([msecs][, callback])`
 
@@ -220,11 +196,11 @@ See [`server.requestTimeout`][] in the `node:http` module.
 added: v0.11.2
 -->
 
-* `msecs` {number} **Default:** `120000` (2 minutes)
+* `msecs` {number} **默認值：** `120000`（2 分鐘）
 * `callback` {Function}
-* Returns: {https.Server}
+* 返回：{https.Server}
 
-See [`server.setTimeout()`][] in the `node:http` module.
+詳見 `node:http` 模塊中的 [`server.setTimeout()`][]。
 
 ### `server.timeout`
 
@@ -233,12 +209,12 @@ added: v0.11.2
 changes:
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27558
-    description: The default timeout changed from 120s to 0 (no timeout).
+    description: 默認超時從 120 秒更改為 0（無超時）。
 -->
 
-* Type: {number} **Default:** 0 (no timeout)
+* 類型：{number} **默認值：** 0（無超時）
 
-See [`server.timeout`][] in the `node:http` module.
+詳見 `node:http` 模塊中的 [`server.timeout`][]。
 
 ### `server.keepAliveTimeout`
 
@@ -246,9 +222,9 @@ See [`server.timeout`][] in the `node:http` module.
 added: v8.0.0
 -->
 
-* Type: {number} **Default:** `5000` (5 seconds)
+* 類型：{number} **默認值：** `5000`（5 秒）
 
-See [`server.keepAliveTimeout`][] in the `node:http` module.
+詳見 `node:http` 模塊中的 [`server.keepAliveTimeout`][]。
 
 ## `https.createServer([options][, requestListener])`
 
@@ -256,10 +232,9 @@ See [`server.keepAliveTimeout`][] in the `node:http` module.
 added: v0.3.4
 -->
 
-* `options` {Object} Accepts `options` from [`tls.createServer()`][],
-  [`tls.createSecureContext()`][] and [`http.createServer()`][].
-* `requestListener` {Function} A listener to be added to the `'request'` event.
-* Returns: {https.Server}
+* `options` {Object} 接受來自 [`tls.createServer()`][]、[`tls.createSecureContext()`][] 和 [`http.createServer()`][] 的 `options`。
+* `requestListener` {Function} 要添加到 `'request'` 事件的監聽器。
+* 返回：{https.Server}
 
 ```mjs
 // curl -k https://localhost:8000/
@@ -293,7 +268,7 @@ https.createServer(options, (req, res) => {
 }).listen(8000);
 ```
 
-Or
+或
 
 ```mjs
 import { createServer } from 'node:https';
@@ -325,14 +300,14 @@ https.createServer(options, (req, res) => {
 }).listen(8000);
 ```
 
-To generate the certificate and key for this example, run:
+要為此示例生成證書和密鑰，請運行：
 
 ```bash
 openssl req -x509 -newkey rsa:2048 -nodes -sha256 -subj '/CN=localhost' \
   -keyout private-key.pem -out certificate.pem
 ```
 
-Then, to generate the `pfx` certificate for this example, run:
+然後，要為此示例生成 `pfx` 證書，請運行：
 
 ```bash
 openssl pkcs12 -certpbe AES-256-CBC -export -out test_cert.pfx \
@@ -348,24 +323,20 @@ added: v0.3.6
 changes:
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21616
-    description: The `url` parameter can now be passed along with a separate
-                 `options` object.
+    description: `url` 參數現在可以與單獨的 `options` 對象一起傳遞。
   - version: v7.5.0
     pr-url: https://github.com/nodejs/node/pull/10638
-    description: The `options` parameter can be a WHATWG `URL` object.
+    description: `options` 參數可以是 WHATWG `URL` 對象。
 -->
 
 * `url` {string | URL}
-* `options` {Object | string | URL} Accepts the same `options` as
-  [`https.request()`][], with the method set to GET by default.
+* `options` {Object | string | URL} 接受與 [`https.request()`][] 相同的 `options`，默認方法設置為 GET。
 * `callback` {Function}
-* Returns: {http.ClientRequest}
+* 返回：{http.ClientRequest}
 
-Like [`http.get()`][] but for HTTPS.
+類似於 [`http.get()`][] 但用於 HTTPS。
 
-`options` can be an object, a string, or a [`URL`][] object. If `options` is a
-string, it is automatically parsed with [`new URL()`][]. If it is a [`URL`][]
-object, it will be automatically converted to an ordinary `options` object.
+`options` 可以是一個對象、一個字符串或一個 [`URL`][] 對象。如果 `options` 是字符串，它會自動被 [`new URL()`][] 解析。如果它是 [`URL`][] 對象，它將自動轉換為普通 `options` 對象。
 
 ```mjs
 import { get } from 'node:https';
@@ -408,13 +379,10 @@ changes:
   - version:
       - v19.0.0
     pr-url: https://github.com/nodejs/node/pull/43522
-    description: The agent now uses HTTP Keep-Alive and a 5 second timeout by
-                 default.
+    description: agent 現在默認使用 HTTP Keep-Alive 和 5 秒超時。
 -->
 
-Global instance of [`https.Agent`][] for all HTTPS client requests. Diverges
-from a default [`https.Agent`][] configuration by having `keepAlive` enabled and
-a `timeout` of 5 seconds.
+所有 HTTPS 客戶端請求的 [`https.Agent`][] 全局實例。與默認 [`https.Agent`][] 配置的不同之處在於啟用了 `keepAlive` 且 `timeout` 為 5 秒。
 
 ## `https.request(options[, callback])`
 
@@ -427,55 +395,47 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53329
-    description: The `clientCertEngine` option depends on custom engine
-                 support in OpenSSL which is deprecated in OpenSSL 3.
+    description: `clientCertEngine` 选项依赖于 OpenSSL 中的自定义引擎支持，该支持在 OpenSSL 3 中已弃用。
   - version:
       - v16.7.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/39310
-    description: When using a `URL` object parsed username
-                 and password will now be properly URI decoded.
+    description: 当使用 `URL` 对象时，解析后的用户名和密码现在将进行正确的 URI 解码。
   - version:
       - v14.1.0
       - v13.14.0
     pr-url: https://github.com/nodejs/node/pull/32786
-    description: The `highWaterMark` option is accepted now.
+    description: 现在接受 `highWaterMark` 选项。
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21616
-    description: The `url` parameter can now be passed along with a separate
-                 `options` object.
+    description: 现在可以连同单独的 `options` 对象一起传递 `url` 参数。
   - version: v9.3.0
     pr-url: https://github.com/nodejs/node/pull/14903
-    description: The `options` parameter can now include `clientCertEngine`.
+    description: `options` 参数现在可以包含 `clientCertEngine`。
   - version: v7.5.0
     pr-url: https://github.com/nodejs/node/pull/10638
-    description: The `options` parameter can be a WHATWG `URL` object.
+    description: `options` 参数可以是 WHATWG `URL` 对象。
 -->
 
 * `url` {string | URL}
-* `options` {Object | string | URL} Accepts all `options` from
-  [`http.request()`][], with some differences in default values:
+* `options` {Object | string | URL} 接受来自 [`http.request()`][] 的所有 `options`，但默认值存在一些差异：
   * `protocol` **Default:** `'https:'`
   * `port` **Default:** `443`
   * `agent` **Default:** `https.globalAgent`
 * `callback` {Function}
-* Returns: {http.ClientRequest}
+* 返回：{http.ClientRequest}
 
-Makes a request to a secure web server.
+向安全 Web 服务器发出请求。
 
-The following additional `options` from [`tls.connect()`][] are also accepted:
+还接受来自 [`tls.connect()`][] 的以下附加 `options`：
 `ca`, `cert`, `ciphers`, `clientCertEngine` (deprecated), `crl`, `dhparam`, `ecdhCurve`,
 `honorCipherOrder`, `key`, `passphrase`, `pfx`, `rejectUnauthorized`,
 `secureOptions`, `secureProtocol`, `servername`, `sessionIdContext`,
-`highWaterMark`.
+`highWaterMark`。
 
-`options` can be an object, a string, or a [`URL`][] object. If `options` is a
-string, it is automatically parsed with [`new URL()`][]. If it is a [`URL`][]
-object, it will be automatically converted to an ordinary `options` object.
+`options` 可以是一个对象、一个字符串或一个 [`URL`][] 对象。如果 `options` 是字符串，它将使用 [`new URL()`][] 自动解析。如果它是 [`URL`][] 对象，它将自动转换为普通 `options` 对象。
 
-`https.request()` returns an instance of the [`http.ClientRequest`][]
-class. The `ClientRequest` instance is a writable stream. If one needs to
-upload a file with a POST request, then write to the `ClientRequest` object.
+`https.request()` 返回 [`http.ClientRequest`][] 类的一个实例。`ClientRequest` 实例是一个可写流。如果需要使用 POST 请求上传文件，则写入 `ClientRequest` 对象。
 
 ```mjs
 import { request } from 'node:https';
@@ -591,13 +551,13 @@ const options = {
   path: '/',
   method: 'GET',
   checkServerIdentity: function(host, cert) {
-    // Make sure the certificate is issued to the host we are connected to
+    // 确保证书是颁发给我们所连接的主机的
     const err = checkServerIdentity(host, cert);
     if (err) {
       return err;
     }
 
-    // Pin the public key, similar to HPKP pin-sha256 pinning
+    // 锁定公钥，类似于 HPKP pin-sha256 锁定
     const pubkey256 = 'SIXvRyDmBJSgatgTQRGbInBaAK+hZOQ18UmrSwnDlK8=';
     if (sha256(cert.pubkey) !== pubkey256) {
       const msg = 'Certificate verification error: ' +
@@ -606,7 +566,7 @@ const options = {
       return new Error(msg);
     }
 
-    // Pin the exact certificate, rather than the pub key
+    // 锁定确切的证书，而不是公钥
     const cert256 = 'FD:6E:9B:0E:F3:98:BC:D9:04:C3:B2:EC:16:7A:7B:' +
       '0F:DA:72:01:C9:03:C5:3A:6A:6A:E5:D0:41:43:63:EF:65';
     if (cert.fingerprint256 !== cert256) {
@@ -616,11 +576,10 @@ const options = {
       return new Error(msg);
     }
 
-    // This loop is informational only.
-    // Print the certificate and public key fingerprints of all certs in the
-    // chain. Its common to pin the public key of the issuer on the public
-    // internet, while pinning the public key of the service in sensitive
-    // environments.
+    // 此循环仅用于提供信息。
+    // 打印链中所有证书的证书和公钥指纹
+    //。通常在公共互联网上锁定颁发者的公钥，
+    // 而在敏感环境中锁定服务的公钥。
     let lastprint256;
     do {
       console.log('Subject Common Name:', cert.subject.CN);
@@ -664,13 +623,13 @@ const options = {
   path: '/',
   method: 'GET',
   checkServerIdentity: function(host, cert) {
-    // Make sure the certificate is issued to the host we are connected to
+    // 确保证书是颁发给我们所连接的主机的
     const err = tls.checkServerIdentity(host, cert);
     if (err) {
       return err;
     }
 
-    // Pin the public key, similar to HPKP pin-sha256 pinning
+    // 锁定公钥，类似于 HPKP pin-sha256 锁定
     const pubkey256 = 'SIXvRyDmBJSgatgTQRGbInBaAK+hZOQ18UmrSwnDlK8=';
     if (sha256(cert.pubkey) !== pubkey256) {
       const msg = 'Certificate verification error: ' +
@@ -679,7 +638,7 @@ const options = {
       return new Error(msg);
     }
 
-    // Pin the exact certificate, rather than the pub key
+    // 锁定确切的证书，而不是公钥
     const cert256 = 'FD:6E:9B:0E:F3:98:BC:D9:04:C3:B2:EC:16:7A:7B:' +
       '0F:DA:72:01:C9:03:C5:3A:6A:6A:E5:D0:41:43:63:EF:65';
     if (cert.fingerprint256 !== cert256) {
@@ -689,11 +648,10 @@ const options = {
       return new Error(msg);
     }
 
-    // This loop is informational only.
-    // Print the certificate and public key fingerprints of all certs in the
-    // chain. Its common to pin the public key of the issuer on the public
-    // internet, while pinning the public key of the service in sensitive
-    // environments.
+    // 此循环仅用于提供信息。
+    // 打印链中所有证书的证书和公钥指纹
+    //。通常在公共互联网上锁定颁发者的公钥，
+    // 而在敏感环境中锁定服务的公钥。
     do {
       console.log('Subject Common Name:', cert.subject.CN);
       console.log('  Certificate SHA256 fingerprint:', cert.fingerprint256);

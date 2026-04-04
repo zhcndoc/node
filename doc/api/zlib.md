@@ -2,14 +2,13 @@
 
 <!--introduced_in=v0.10.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/zlib.js -->
 
-The `node:zlib` module provides compression functionality implemented using
-Gzip, Deflate/Inflate, Brotli, and Zstd.
+`node:zlib` 模块提供了使用 Gzip、Deflate/Inflate、Brotli 和 Zstd 实现的压缩功能。
 
-To access it:
+要访问它：
 
 ```mjs
 import zlib from 'node:zlib';
@@ -19,11 +18,9 @@ import zlib from 'node:zlib';
 const zlib = require('node:zlib');
 ```
 
-Compression and decompression are built around the Node.js [Streams API][].
+压缩和解压缩是围绕 Node.js [Streams API][] 构建的。
 
-Compressing or decompressing a stream (such as a file) can be accomplished by
-piping the source stream through a `zlib` `Transform` stream into a destination
-stream:
+压缩或解压缩流（例如文件）可以通过将源流通过 `zlib` `Transform` 流管道传输到目标流来实现：
 
 ```mjs
 import {
@@ -67,7 +64,7 @@ pipeline(source, gzip, destination, (err) => {
 });
 ```
 
-Or, using the promise `pipeline` API:
+或者，使用 promise `pipeline` API：
 
 ```mjs
 import {
@@ -110,7 +107,7 @@ do_gzip('input.txt', 'input.txt.gz')
   });
 ```
 
-It is also possible to compress or decompress data in a single step:
+也可以单步压缩或解压缩数据：
 
 ```mjs
 import process from 'node:process';
@@ -135,7 +132,7 @@ unzip(buffer, (err, buffer) => {
   console.log(buffer.toString());
 });
 
-// Or, Promisified
+// 或者，Promise 化
 
 import { promisify } from 'node:util';
 const do_unzip = promisify(unzip);
@@ -165,7 +162,7 @@ unzip(buffer, (err, buffer) => {
   console.log(buffer.toString());
 });
 
-// Or, Promisified
+// 或者，Promise 化
 
 const { promisify } = require('node:util');
 const do_unzip = promisify(unzip);
@@ -178,14 +175,11 @@ do_unzip(buffer)
   });
 ```
 
-## Threadpool usage and performance considerations
+## 线程池用法和性能注意事项
 
-All `zlib` APIs, except those that are explicitly synchronous, use the Node.js
-internal threadpool. This can lead to surprising effects and performance
-limitations in some applications.
+所有 `zlib` API，除了那些明确同步的 API 外，都使用 Node.js 内部线程池。这可能会导致某些应用程序中出现意想不到的效果和性能限制。
 
-Creating and using a large number of zlib objects simultaneously can cause
-significant memory fragmentation.
+同时创建和使用大量 zlib 对象可能会导致严重的内存碎片化。
 
 ```mjs
 import zlib from 'node:zlib';
@@ -193,7 +187,7 @@ import { Buffer } from 'node:buffer';
 
 const payload = Buffer.from('This is some data');
 
-// WARNING: DO NOT DO THIS!
+// 警告：不要这样做！
 for (let i = 0; i < 30000; ++i) {
   zlib.deflate(payload, (err, buffer) => {});
 }
@@ -204,37 +198,26 @@ const zlib = require('node:zlib');
 
 const payload = Buffer.from('This is some data');
 
-// WARNING: DO NOT DO THIS!
+// 警告：不要这样做！
 for (let i = 0; i < 30000; ++i) {
   zlib.deflate(payload, (err, buffer) => {});
 }
 ```
 
-In the preceding example, 30,000 deflate instances are created concurrently.
-Because of how some operating systems handle memory allocation and
-deallocation, this may lead to significant memory fragmentation.
+在前面的示例中，同时创建了 30,000 个 deflate 实例。由于某些操作系统处理内存分配和释放的方式，这可能会导致严重的内存碎片化。
 
-It is strongly recommended that the results of compression
-operations be cached to avoid duplication of effort.
+强烈建议缓存压缩操作的结果以避免重复工作。
 
-## Compressing HTTP requests and responses
+## 压缩 HTTP 请求和响应
 
-The `node:zlib` module can be used to implement support for the `gzip`, `deflate`,
-`br`, and `zstd` content-encoding mechanisms defined by
-[HTTP](https://tools.ietf.org/html/rfc7230#section-4.2).
+`node:zlib` 模块可用于实现支持由 [HTTP](https://tools.ietf.org/html/rfc7230#section-4.2) 定义的 `gzip`、`deflate`、`br` 和 `zstd` 内容编码机制。
 
-The HTTP [`Accept-Encoding`][] header is used within an HTTP request to identify
-the compression encodings accepted by the client. The [`Content-Encoding`][]
-header is used to identify the compression encodings actually applied to a
-message.
+HTTP [`Accept-Encoding`][] 头用于 HTTP 请求中标识客户端接受的压缩编码。[`Content-Encoding`][] 头用于标识实际应用于消息的压缩编码。
 
-The examples given below are drastically simplified to show the basic concept.
-Using `zlib` encoding can be expensive, and the results ought to be cached.
-See [Memory usage tuning][] for more information on the speed/memory/compression
-tradeoffs involved in `zlib` usage.
+下面给出的示例经过了大幅简化以展示基本概念。使用 `zlib` 编码可能开销很大，结果应该被缓存。请参阅 [内存使用调优][] 以获取有关 `zlib` 使用中速度/内存/压缩权衡的更多信息。
 
 ```mjs
-// Client request example
+// 客户端请求示例
 import fs from 'node:fs';
 import zlib from 'node:zlib';
 import http from 'node:http';
@@ -259,7 +242,7 @@ request.on('response', (response) => {
     case 'br':
       pipeline(response, zlib.createBrotliDecompress(), output, onError);
       break;
-    // Or, just use zlib.createUnzip() to handle both of the following cases:
+    // 或者，只需使用 zlib.createUnzip() 来处理以下两种情况：
     case 'gzip':
       pipeline(response, zlib.createGunzip(), output, onError);
       break;
@@ -277,7 +260,7 @@ request.on('response', (response) => {
 ```
 
 ```cjs
-// Client request example
+// 客户端请求示例
 const zlib = require('node:zlib');
 const http = require('node:http');
 const fs = require('node:fs');
@@ -301,7 +284,7 @@ request.on('response', (response) => {
     case 'br':
       pipeline(response, zlib.createBrotliDecompress(), output, onError);
       break;
-    // Or, just use zlib.createUnzip() to handle both of the following cases:
+    // 或者，只需使用 zlib.createUnzip() 来处理以下两种情况：
     case 'gzip':
       pipeline(response, zlib.createGunzip(), output, onError);
       break;
@@ -319,9 +302,9 @@ request.on('response', (response) => {
 ```
 
 ```mjs
-// server example
-// Running a gzip operation on every request is quite expensive.
-// It would be much more efficient to cache the compressed buffer.
+// 服务器示例
+// 对每个请求运行 gzip 操作开销很大。
+// 缓存压缩缓冲区会高效得多。
 import zlib from 'node:zlib';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -329,24 +312,24 @@ import { pipeline } from 'node:stream';
 
 http.createServer((request, response) => {
   const raw = fs.createReadStream('index.html');
-  // Store both a compressed and an uncompressed version of the resource.
+  // 存储资源的压缩版本和未压缩版本。
   response.setHeader('Vary', 'Accept-Encoding');
   const acceptEncoding = request.headers['accept-encoding'] || '';
 
   const onError = (err) => {
     if (err) {
-      // If an error occurs, there's not much we can do because
-      // the server has already sent the 200 response code and
-      // some amount of data has already been sent to the client.
-      // The best we can do is terminate the response immediately
-      // and log the error.
+      // 如果发生错误，我们无能为力，因为
+      // 服务器已经发送了 200 响应代码，并且
+      // 已经向客户端发送了一些数据。
+      // 我们所能做的最好的事情就是立即终止响应
+      // 并记录错误。
       response.end();
       console.error('An error occurred:', err);
     }
   };
 
-  // Note: This is not a conformant accept-encoding parser.
-  // See https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
+  // 注意：这不是一个符合规范的 accept-encoding 解析器。
+  // 参见 https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
   if (/\bdeflate\b/.test(acceptEncoding)) {
     response.writeHead(200, { 'Content-Encoding': 'deflate' });
     pipeline(raw, zlib.createDeflate(), response, onError);
@@ -367,9 +350,9 @@ http.createServer((request, response) => {
 ```
 
 ```cjs
-// server example
-// Running a gzip operation on every request is quite expensive.
-// It would be much more efficient to cache the compressed buffer.
+// 服务器示例
+// 对每个请求运行 gzip 操作开销很大。
+// 缓存压缩缓冲区会高效得多。
 const zlib = require('node:zlib');
 const http = require('node:http');
 const fs = require('node:fs');
@@ -377,24 +360,24 @@ const { pipeline } = require('node:stream');
 
 http.createServer((request, response) => {
   const raw = fs.createReadStream('index.html');
-  // Store both a compressed and an uncompressed version of the resource.
+  // 存储资源的压缩版本和未压缩版本。
   response.setHeader('Vary', 'Accept-Encoding');
   const acceptEncoding = request.headers['accept-encoding'] || '';
 
   const onError = (err) => {
     if (err) {
-      // If an error occurs, there's not much we can do because
-      // the server has already sent the 200 response code and
-      // some amount of data has already been sent to the client.
-      // The best we can do is terminate the response immediately
-      // and log the error.
+      // 如果发生错误，我们无能为力，因为
+      // 服务器已经发送了 200 响应代码，并且
+      // 已经向客户端发送了一些数据。
+      // 我们所能做的最好的事情就是立即终止响应
+      // 并记录错误。
       response.end();
       console.error('An error occurred:', err);
     }
   };
 
-  // Note: This is not a conformant accept-encoding parser.
-  // See https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
+  // 注意：这不是一个符合规范的 accept-encoding 解析器。
+  // 参见 https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
   if (/\bdeflate\b/.test(acceptEncoding)) {
     response.writeHead(200, { 'Content-Encoding': 'deflate' });
     pipeline(raw, zlib.createDeflate(), response, onError);
@@ -414,20 +397,16 @@ http.createServer((request, response) => {
 }).listen(1337);
 ```
 
-By default, the `zlib` methods will throw an error when decompressing
-truncated data. However, if it is known that the data is incomplete, or
-the desire is to inspect only the beginning of a compressed file, it is
-possible to suppress the default error handling by changing the flushing
-method that is used to decompress the last chunk of input data:
+默认情况下，当解压缩截断的数据时，`zlib` 方法将抛出错误。但是，如果已知数据不完整，或者只想检查压缩文件的开头，可以通过更改用于解压缩最后一块输入数据的刷新方法来抑制默认错误处理：
 
 ```js
-// This is a truncated version of the buffer from the above examples
+// 这是上面示例中缓冲区的截断版本
 const buffer = Buffer.from('eJzT0yMA', 'base64');
 
 zlib.unzip(
   buffer,
-  // For Brotli, the equivalent is zlib.constants.BROTLI_OPERATION_FLUSH.
-  // For Zstd, the equivalent is zlib.constants.ZSTD_e_flush.
+  // 对于 Brotli，等效的是 zlib.constants.BROTLI_OPERATION_FLUSH。
+  // 对于 Zstd，等效的是 zlib.constants.ZSTD_e_flush。
   { finishFlush: zlib.constants.Z_SYNC_FLUSH },
   (err, buffer) => {
     if (err) {
@@ -438,21 +417,17 @@ zlib.unzip(
   });
 ```
 
-This will not change the behavior in other error-throwing situations, e.g.
-when the input data has an invalid format. Using this method, it will not be
-possible to determine whether the input ended prematurely or lacks the
-integrity checks, making it necessary to manually check that the
-decompressed result is valid.
+这不会改变其他抛出错误的情况下的行为，例如当输入数据格式无效时。使用此方法，将无法确定输入是否过早结束或缺少完整性检查，因此需要手动检查解压缩结果是否有效。
 
-## Memory usage tuning
+## 内存使用调优
 
 <!--type=misc-->
 
-### For zlib-based streams
+### 对于基于 zlib 的流
 
-From `zlib/zconf.h`, modified for Node.js usage:
+出自 `zlib/zconf.h`，已修改为适用于 Node.js：
 
-The memory requirements for deflate are (in bytes):
+deflate 的内存需求（单位：字节）：
 
 <!-- eslint-disable @stylistic/js/semi -->
 
@@ -460,65 +435,65 @@ The memory requirements for deflate are (in bytes):
 (1 << (windowBits + 2)) + (1 << (memLevel + 9))
 ```
 
-That is: 128K for `windowBits` = 15 + 128K for `memLevel` = 8
-(default values) plus a few kilobytes for small objects.
+即：`windowBits` = 15 时为 128K + `memLevel` = 8 时为 128K
+（默认值）加上少量小对象所需的几千字节。
 
-For example, to reduce the default memory requirements from 256K to 128K, the
-options should be set to:
+例如，要将默认内存需求从 256K 减少到 128K，
+选项应设置为：
 
 ```js
 const options = { windowBits: 14, memLevel: 7 };
 ```
 
-This will, however, generally degrade compression.
+但这通常会降低压缩率。
 
-The memory requirements for inflate are (in bytes) `1 << windowBits`.
-That is, 32K for `windowBits` = 15 (default value) plus a few kilobytes
-for small objects.
+inflate 的内存需求（单位：字节）为 `1 << windowBits`。
+即，`windowBits` = 15（默认值）时为 32K，加上少量
+小对象所需的几千字节。
 
-This is in addition to a single internal output slab buffer of size
-`chunkSize`, which defaults to 16K.
+此外，还有一个大小为
+`chunkSize` 的内部输出板缓冲区，默认为 16K。
 
-The speed of `zlib` compression is affected most dramatically by the
-`level` setting. A higher level will result in better compression, but
-will take longer to complete. A lower level will result in less
-compression, but will be much faster.
+`zlib` 压缩的速度受
+`level` 设置的影响最大。较高的级别会带来更好的压缩效果，但
+完成时间会更长。较低的级别会导致压缩
+效果较差，但速度会快得多。
 
-In general, greater memory usage options will mean that Node.js has to make
-fewer calls to `zlib` because it will be able to process more data on
-each `write` operation. So, this is another factor that affects the
-speed, at the cost of memory usage.
+通常，更大的内存使用选项意味着 Node.js 必须
+减少对 `zlib` 的调用次数，因为它能够在每次
+`write` 操作上处理更多数据。因此，这是另一个影响
+速度的因素，代价是内存使用量。
 
-### For Brotli-based streams
+### 对于基于 Brotli 的流
 
-There are equivalents to the zlib options for Brotli-based streams, although
-these options have different ranges than the zlib ones:
+基于 Brotli 的流有与 zlib 选项等效的选项，尽管
+这些选项的范围与 zlib 的不同：
 
-* zlib's `level` option matches Brotli's `BROTLI_PARAM_QUALITY` option.
-* zlib's `windowBits` option matches Brotli's `BROTLI_PARAM_LGWIN` option.
+* zlib 的 `level` 选项对应 Brotli 的 `BROTLI_PARAM_QUALITY` 选项。
+* zlib 的 `windowBits` 选项对应 Brotli 的 `BROTLI_PARAM_LGWIN` 选项。
 
-See [below][Brotli parameters] for more details on Brotli-specific options.
+有关 Brotli 特定选项的更多详细信息，请参阅 [下方][Brotli 参数]。
 
-### For Zstd-based streams
+### 对于基于 Zstd 的流
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-There are equivalents to the zlib options for Zstd-based streams, although
-these options have different ranges than the zlib ones:
+基于 Zstd 的流有与 zlib 选项等效的选项，尽管
+这些选项的范围与 zlib 的不同：
 
-* zlib's `level` option matches Zstd's `ZSTD_c_compressionLevel` option.
-* zlib's `windowBits` option matches Zstd's `ZSTD_c_windowLog` option.
+* zlib 的 `level` 选项对应 Zstd 的 `ZSTD_c_compressionLevel` 选项。
+* zlib 的 `windowBits` 选项对应 Zstd 的 `ZSTD_c_windowLog` 选项。
 
-See [below][Zstd parameters] for more details on Zstd-specific options.
+有关 Zstd 特定选项的更多详细信息，请参阅 [下方][Zstd 参数]。
 
-## Flushing
+## 刷新
 
-Calling [`.flush()`][] on a compression stream will make `zlib` return as much
-output as currently possible. This may come at the cost of degraded compression
-quality, but can be useful when data needs to be available as soon as possible.
+在压缩流上调用 [`.flush()`][] 会使 `zlib` 返回尽可能多的
+当前可能的输出。这可能会以降低压缩
+质量为代价，但当需要数据尽快可用时很有用。
 
-In the following example, `flush()` is used to write a compressed partial
-HTTP response to the client:
+在以下示例中，`flush()` 用于将压缩的部分
+HTTP 响应写入客户端：
 
 ```mjs
 import zlib from 'node:zlib';
@@ -526,18 +501,18 @@ import http from 'node:http';
 import { pipeline } from 'node:stream';
 
 http.createServer((request, response) => {
-  // For the sake of simplicity, the Accept-Encoding checks are omitted.
+  // 为简单起见，省略了 Accept-Encoding 检查。
   response.writeHead(200, { 'content-encoding': 'gzip' });
   const output = zlib.createGzip();
   let i;
 
   pipeline(output, response, (err) => {
     if (err) {
-      // If an error occurs, there's not much we can do because
-      // the server has already sent the 200 response code and
-      // some amount of data has already been sent to the client.
-      // The best we can do is terminate the response immediately
-      // and log the error.
+      // 如果发生错误，我们无能为力，因为
+      // 服务器已经发送了 200 响应代码，并且
+      // 一些数据已经发送给了客户端。
+      // 我们所能做的最好的办法是立即终止响应
+      // 并记录错误。
       clearInterval(i);
       response.end();
       console.error('An error occurred:', err);
@@ -546,10 +521,10 @@ http.createServer((request, response) => {
 
   i = setInterval(() => {
     output.write(`The current time is ${Date()}\n`, () => {
-      // The data has been passed to zlib, but the compression algorithm may
-      // have decided to buffer the data for more efficient compression.
-      // Calling .flush() will make the data available as soon as the client
-      // is ready to receive it.
+      // 数据已传递给 zlib，但压缩算法可能
+      // 决定缓冲数据以更有效地压缩。
+      // 调用 .flush() 将使数据在客户端
+      // 准备好接收时立即可用。
       output.flush();
     });
   }, 1000);
@@ -562,18 +537,18 @@ const http = require('node:http');
 const { pipeline } = require('node:stream');
 
 http.createServer((request, response) => {
-  // For the sake of simplicity, the Accept-Encoding checks are omitted.
+  // 为简单起见，省略了 Accept-Encoding 检查。
   response.writeHead(200, { 'content-encoding': 'gzip' });
   const output = zlib.createGzip();
   let i;
 
   pipeline(output, response, (err) => {
     if (err) {
-      // If an error occurs, there's not much we can do because
-      // the server has already sent the 200 response code and
-      // some amount of data has already been sent to the client.
-      // The best we can do is terminate the response immediately
-      // and log the error.
+      // 如果发生错误，我们无能为力，因为
+      // 服务器已经发送了 200 响应代码，并且
+      // 一些数据已经发送给了客户端。
+      // 我们所能做的最好的办法是立即终止响应
+      // 并记录错误。
       clearInterval(i);
       response.end();
       console.error('An error occurred:', err);
@@ -582,17 +557,17 @@ http.createServer((request, response) => {
 
   i = setInterval(() => {
     output.write(`The current time is ${Date()}\n`, () => {
-      // The data has been passed to zlib, but the compression algorithm may
-      // have decided to buffer the data for more efficient compression.
-      // Calling .flush() will make the data available as soon as the client
-      // is ready to receive it.
+      // 数据已传递给 zlib，但压缩算法可能
+      // 决定缓冲数据以更有效地压缩。
+      // 调用 .flush() 将使数据在客户端
+      // 准备好接收时立即可用。
       output.flush();
     });
   }, 1000);
 }).listen(1337);
 ```
 
-## Constants
+## 常量
 
 <!-- YAML
 added: v0.5.8
@@ -600,19 +575,19 @@ added: v0.5.8
 
 <!--type=misc-->
 
-### zlib constants
+### zlib 常量
 
-All of the constants defined in `zlib.h` are also defined on
-`require('node:zlib').constants`. In the normal course of operations, it will
-not be necessary to use these constants. They are documented so that their
-presence is not surprising. This section is taken almost directly from the
-[zlib documentation][].
+`zlib.h` 中定义的所有常量也定义在
+`require('node:zlib').constants` 上。在正常操作过程中，
+没有必要使用这些常量。记录它们是为了
+避免它们的存在令人惊讶。本节几乎直接取自
+[zlib 文档][]。
 
-Previously, the constants were available directly from `require('node:zlib')`,
-for instance `zlib.Z_NO_FLUSH`. Accessing the constants directly from the module
-is currently still possible but is deprecated.
+以前，常量可以直接从 `require('node:zlib')` 获取，
+例如 `zlib.Z_NO_FLUSH`。直接从模块访问常量
+目前仍然可能，但已弃用。
 
-Allowed flush values.
+允许的刷新值。
 
 * `zlib.constants.Z_NO_FLUSH`
 * `zlib.constants.Z_PARTIAL_FLUSH`
@@ -621,9 +596,9 @@ Allowed flush values.
 * `zlib.constants.Z_FINISH`
 * `zlib.constants.Z_BLOCK`
 
-Return codes for the compression/decompression functions. Negative
-values are errors, positive values are used for special but normal
-events.
+压缩/解压函数的返回代码。负
+值表示错误，正值用于特殊但正常的
+事件。
 
 * `zlib.constants.Z_OK`
 * `zlib.constants.Z_STREAM_END`
@@ -635,14 +610,14 @@ events.
 * `zlib.constants.Z_BUF_ERROR`
 * `zlib.constants.Z_VERSION_ERROR`
 
-Compression levels.
+压缩级别。
 
 * `zlib.constants.Z_NO_COMPRESSION`
 * `zlib.constants.Z_BEST_SPEED`
 * `zlib.constants.Z_BEST_COMPRESSION`
 * `zlib.constants.Z_DEFAULT_COMPRESSION`
 
-Compression strategy.
+压缩策略。
 
 * `zlib.constants.Z_FILTERED`
 * `zlib.constants.Z_HUFFMAN_ONLY`
@@ -650,7 +625,7 @@ Compression strategy.
 * `zlib.constants.Z_FIXED`
 * `zlib.constants.Z_DEFAULT_STRATEGY`
 
-### Brotli constants
+### Brotli 常量
 
 <!-- YAML
 added:
@@ -658,75 +633,73 @@ added:
  - v10.16.0
 -->
 
-There are several options and other constants available for Brotli-based
-streams:
+基于 Brotli 的流有几个选项和其他可用常量：
 
-#### Flush operations
+#### 刷新操作
 
-The following values are valid flush operations for Brotli-based streams:
+以下值是基于 Brotli 的流的有效刷新操作：
 
-* `zlib.constants.BROTLI_OPERATION_PROCESS` (default for all operations)
-* `zlib.constants.BROTLI_OPERATION_FLUSH` (default when calling `.flush()`)
-* `zlib.constants.BROTLI_OPERATION_FINISH` (default for the last chunk)
+* `zlib.constants.BROTLI_OPERATION_PROCESS`（所有操作的默认值）
+* `zlib.constants.BROTLI_OPERATION_FLUSH`（调用 `.flush()` 时的默认值）
+* `zlib.constants.BROTLI_OPERATION_FINISH`（最后一个块的默认值）
 * `zlib.constants.BROTLI_OPERATION_EMIT_METADATA`
-  * This particular operation may be hard to use in a Node.js context,
-    as the streaming layer makes it hard to know which data will end up
-    in this frame. Also, there is currently no way to consume this data through
-    the Node.js API.
+  * 此特定操作在 Node.js 上下文中可能难以使用，
+    因为流层使得很难知道哪些数据最终会
+    出现在此帧中。此外，目前无法通过
+    Node.js API 使用此数据。
 
-#### Compressor options
+#### 压缩器选项
 
-There are several options that can be set on Brotli encoders, affecting
-compression efficiency and speed. Both the keys and the values can be accessed
-as properties of the `zlib.constants` object.
+可以在 Brotli 编码器上设置几个选项，影响
+压缩效率和速度。键和值都可以作为
+`zlib.constants` 对象的属性进行访问。
 
-The most important options are:
+最重要的选项是：
 
 * `BROTLI_PARAM_MODE`
-  * `BROTLI_MODE_GENERIC` (default)
-  * `BROTLI_MODE_TEXT`, adjusted for UTF-8 text
-  * `BROTLI_MODE_FONT`, adjusted for WOFF 2.0 fonts
+  * `BROTLI_MODE_GENERIC`（默认）
+  * `BROTLI_MODE_TEXT`，针对 UTF-8 文本调整
+  * `BROTLI_MODE_FONT`，针对 WOFF 2.0 字体调整
 * `BROTLI_PARAM_QUALITY`
-  * Ranges from `BROTLI_MIN_QUALITY` to `BROTLI_MAX_QUALITY`,
-    with a default of `BROTLI_DEFAULT_QUALITY`.
+  * 范围从 `BROTLI_MIN_QUALITY` 到 `BROTLI_MAX_QUALITY`，
+    默认为 `BROTLI_DEFAULT_QUALITY`。
 * `BROTLI_PARAM_SIZE_HINT`
-  * Integer value representing the expected input size;
-    defaults to `0` for an unknown input size.
+  * 表示预期输入大小的整数值；
+    未知输入大小默认为 `0`。
 
-The following flags can be set for advanced control over the compression
-algorithm and memory usage tuning:
+可以设置以下标志以高级控制压缩
+算法和内存使用调优：
 
 * `BROTLI_PARAM_LGWIN`
-  * Ranges from `BROTLI_MIN_WINDOW_BITS` to `BROTLI_MAX_WINDOW_BITS`,
-    with a default of `BROTLI_DEFAULT_WINDOW`, or up to
-    `BROTLI_LARGE_MAX_WINDOW_BITS` if the `BROTLI_PARAM_LARGE_WINDOW` flag
-    is set.
+  * 范围从 `BROTLI_MIN_WINDOW_BITS` 到 `BROTLI_MAX_WINDOW_BITS`，
+    默认为 `BROTLI_DEFAULT_WINDOW`，或者最高
+    `BROTLI_LARGE_MAX_WINDOW_BITS`（如果设置了 `BROTLI_PARAM_LARGE_WINDOW` 标志）。
 * `BROTLI_PARAM_LGBLOCK`
-  * Ranges from `BROTLI_MIN_INPUT_BLOCK_BITS` to `BROTLI_MAX_INPUT_BLOCK_BITS`.
+  * 范围从 `BROTLI_MIN_INPUT_BLOCK_BITS` 到 `BROTLI_MAX_INPUT_BLOCK_BITS`。
 * `BROTLI_PARAM_DISABLE_LITERAL_CONTEXT_MODELING`
-  * Boolean flag that decreases compression ratio in favour of
-    decompression speed.
+  * 布尔标志，降低压缩率以换取
+    解压速度。
 * `BROTLI_PARAM_LARGE_WINDOW`
-  * Boolean flag enabling “Large Window Brotli” mode (not compatible with the
-    Brotli format as standardized in [RFC 7932][]).
+  * 启用"Large Window Brotli"模式的布尔标志（与
+    [RFC 7932][] 中标准化的 Brotli 格式不兼容）。
 * `BROTLI_PARAM_NPOSTFIX`
-  * Ranges from `0` to `BROTLI_MAX_NPOSTFIX`.
+  * 范围从 `0` 到 `BROTLI_MAX_NPOSTFIX`。
 * `BROTLI_PARAM_NDIRECT`
-  * Ranges from `0` to `15 << NPOSTFIX` in steps of `1 << NPOSTFIX`.
+  * 范围从 `0` 到 `15 << NPOSTFIX`，步长为 `1 << NPOSTFIX`。
 
-#### Decompressor options
+#### 解压器选项
 
-These advanced options are available for controlling decompression:
+这些高级选项可用于控制解压：
 
 * `BROTLI_DECODER_PARAM_DISABLE_RING_BUFFER_REALLOCATION`
-  * Boolean flag that affects internal memory allocation patterns.
+  * 影响内部内存分配模式的布尔标志。
 * `BROTLI_DECODER_PARAM_LARGE_WINDOW`
-  * Boolean flag enabling “Large Window Brotli” mode (not compatible with the
-    Brotli format as standardized in [RFC 7932][]).
+  * 启用"Large Window Brotli"模式的布尔标志（与
+    [RFC 7932][] 中标准化的 Brotli 格式不兼容）。
 
-### Zstd constants
+### Zstd 常量
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 <!-- YAML
 added:
@@ -734,36 +707,35 @@ added:
   - v22.15.0
 -->
 
-There are several options and other constants available for Zstd-based
-streams:
+基于 Zstd 的流有几个选项和其他可用常量：
 
-#### Flush operations
+#### 刷新操作
 
-The following values are valid flush operations for Zstd-based streams:
+以下值是基于 Zstd 的流的有效刷新操作：
 
-* `zlib.constants.ZSTD_e_continue` (default for all operations)
-* `zlib.constants.ZSTD_e_flush` (default when calling `.flush()`)
-* `zlib.constants.ZSTD_e_end` (default for the last chunk)
+* `zlib.constants.ZSTD_e_continue`（所有操作的默认值）
+* `zlib.constants.ZSTD_e_flush`（调用 `.flush()` 时的默认值）
+* `zlib.constants.ZSTD_e_end`（最后一个块的默认值）
 
-#### Compressor options
+#### 压缩器选项
 
-There are several options that can be set on Zstd encoders, affecting
-compression efficiency and speed. Both the keys and the values can be accessed
-as properties of the `zlib.constants` object.
+可以在 Zstd 编码器上设置几个选项，影响
+压缩效率和速度。键和值都可以作为
+`zlib.constants` 对象的属性进行访问。
 
-The most important options are:
+最重要的选项是：
 
 * `ZSTD_c_compressionLevel`
-  * Set compression parameters according to pre-defined cLevel table. Default
-    level is ZSTD\_CLEVEL\_DEFAULT==3.
+  * 根据预定义的 cLevel 表设置压缩参数。默认
+    级别是 ZSTD\_CLEVEL\_DEFAULT==3。
 * `ZSTD_c_strategy`
-  * Select the compression strategy.
-  * Possible values are listed in the strategy options section below.
+  * 选择压缩策略。
+  * 可能的值列在下面的策略选项部分。
 
-#### Strategy options
+#### 策略选项
 
-The following constants can be used as values for the `ZSTD_c_strategy`
-parameter:
+以下常量可用作 `ZSTD_c_strategy`
+参数的值：
 
 * `zlib.constants.ZSTD_fast`
 * `zlib.constants.ZSTD_dfast`
@@ -775,7 +747,7 @@ parameter:
 * `zlib.constants.ZSTD_btultra`
 * `zlib.constants.ZSTD_btultra2`
 
-Example:
+示例：
 
 ```js
 const stream = zlib.createZstdCompress({
@@ -785,22 +757,23 @@ const stream = zlib.createZstdCompress({
 });
 ```
 
-#### Pledged Source Size
+#### 承诺源大小
 
-It's possible to specify the expected total size of the uncompressed input via
-`opts.pledgedSrcSize`. If the size doesn't match at the end of the input,
-compression will fail with the code `ZSTD_error_srcSize_wrong`.
+可以通过
+`opts.pledgedSrcSize` 指定未压缩输入的预期总大小。
+如果输入结束时大小不匹配，
+压缩将失败，代码为 `ZSTD_error_srcSize_wrong`。
 
-#### Decompressor options
+#### 解压器选项
 
-These advanced options are available for controlling decompression:
+这些高级选项可用于控制解压：
 
 * `ZSTD_d_windowLogMax`
-  * Select a size limit (in power of 2) beyond which the streaming API will
-    refuse to allocate memory buffer in order to protect the host from
-    unreasonable memory requirements.
+  * 选择一个大小限制（2 的幂），超过该限制流 API 将
+    拒绝分配内存缓冲区，以保护主机免受
+    不合理内存需求的影响。
 
-## Class: `Options`
+## 类：`Options`
 
 <!-- YAML
 added: v0.11.1
@@ -809,42 +782,40 @@ changes:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33516
-    description: The `maxOutputLength` option is supported now.
+    description: 现在支持 `maxOutputLength` 选项。
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `dictionary` option can be an `ArrayBuffer`.
+    description: `dictionary` 选项可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `dictionary` option can be an `Uint8Array` now.
+    description: `dictionary` 选项现在可以是 `Uint8Array`。
   - version: v5.11.0
     pr-url: https://github.com/nodejs/node/pull/6069
-    description: The `finishFlush` option is supported now.
+    description: 现在支持 `finishFlush` 选项。
 -->
 
 <!--type=misc-->
 
-Each zlib-based class takes an `options` object. No options are required.
+每个基于 zlib 的类都接受一个 `options` 对象。不需要任何选项。
 
-Some options are only relevant when compressing and are
-ignored by the decompression classes.
+某些选项仅在压缩时相关，会被解压缩类忽略。
 
-* `flush` {integer} **Default:** `zlib.constants.Z_NO_FLUSH`
-* `finishFlush` {integer} **Default:** `zlib.constants.Z_FINISH`
-* `chunkSize` {integer} **Default:** `16 * 1024`
-* `windowBits` {integer}
-* `level` {integer} (compression only)
-* `memLevel` {integer} (compression only)
-* `strategy` {integer} (compression only)
-* `dictionary` {Buffer|TypedArray|DataView|ArrayBuffer} (deflate/inflate only,
-  empty dictionary by default)
-* `info` {boolean} (If `true`, returns an object with `buffer` and `engine`.)
-* `maxOutputLength` {integer} Limits output size when using
-  [convenience methods][]. **Default:** [`buffer.kMaxLength`][]
+* `flush` {整数} **默认：** `zlib.constants.Z_NO_FLUSH`
+* `finishFlush` {整数} **默认：** `zlib.constants.Z_FINISH`
+* `chunkSize` {整数} **默认：** `16 * 1024`
+* `windowBits` {整数}
+* `level` {整数}（仅压缩）
+* `memLevel` {整数}（仅压缩）
+* `strategy` {整数}（仅压缩）
+* `dictionary` {Buffer|TypedArray|DataView|ArrayBuffer}（仅 deflate/inflate，
+  默认为空字典）
+* `info` {布尔值}（如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。）
+* `maxOutputLength` {整数} 使用
+  [便捷方法][] 时限制输出大小。**默认：** [`buffer.kMaxLength`][]
 
-See the [`deflateInit2` and `inflateInit2`][] documentation for more
-information.
+有关更多信息，请参阅 [`deflateInit2` 和 `inflateInit2`][] 文档。
 
-## Class: `BrotliOptions`
+## 类：`BrotliOptions`
 
 <!-- YAML
 added: v11.7.0
@@ -853,22 +824,22 @@ changes:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33516
-    description: The `maxOutputLength` option is supported now.
+    description: 现在支持 `maxOutputLength` 选项。
 -->
 
 <!--type=misc-->
 
-Each Brotli-based class takes an `options` object. All options are optional.
+每个基于 Brotli 的类都接受一个 `options` 对象。所有选项都是可选的。
 
-* `flush` {integer} **Default:** `zlib.constants.BROTLI_OPERATION_PROCESS`
-* `finishFlush` {integer} **Default:** `zlib.constants.BROTLI_OPERATION_FINISH`
-* `chunkSize` {integer} **Default:** `16 * 1024`
-* `params` {Object} Key-value object containing indexed [Brotli parameters][].
-* `maxOutputLength` {integer} Limits output size when using
-  [convenience methods][]. **Default:** [`buffer.kMaxLength`][]
-* `info` {boolean} If `true`, returns an object with `buffer` and `engine`. **Default:** `false`
+* `flush` {整数} **默认：** `zlib.constants.BROTLI_OPERATION_PROCESS`
+* `finishFlush` {整数} **默认：** `zlib.constants.BROTLI_OPERATION_FINISH`
+* `chunkSize` {整数} **默认：** `16 * 1024`
+* `params` {对象} 包含索引 [Brotli 参数][] 的键值对象。
+* `maxOutputLength` {整数} 使用
+  [便捷方法][] 时限制输出大小。**默认：** [`buffer.kMaxLength`][]
+* `info` {布尔值} 如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。**默认：** `false`
 
-For example:
+例如：
 
 ```js
 const stream = zlib.createBrotliCompress({
@@ -881,7 +852,7 @@ const stream = zlib.createBrotliCompress({
 });
 ```
 
-## Class: `zlib.BrotliCompress`
+## 类：`zlib.BrotliCompress`
 
 <!-- YAML
 added:
@@ -889,11 +860,11 @@ added:
  - v10.16.0
 -->
 
-* Extends: [`ZlibBase`][]
+* 继承自：[`ZlibBase`][]
 
-Compress data using the Brotli algorithm.
+使用 Brotli 算法压缩数据。
 
-## Class: `zlib.BrotliDecompress`
+## 类：`zlib.BrotliDecompress`
 
 <!-- YAML
 added:
@@ -901,104 +872,102 @@ added:
  - v10.16.0
 -->
 
-* Extends: [`ZlibBase`][]
+* 继承自：[`ZlibBase`][]
 
-Decompress data using the Brotli algorithm.
+使用 Brotli 算法解压缩数据。
 
-## Class: `zlib.Deflate`
-
-<!-- YAML
-added: v0.5.8
--->
-
-* Extends: [`ZlibBase`][]
-
-Compress data using deflate.
-
-## Class: `zlib.DeflateRaw`
+## 类：`zlib.Deflate`
 
 <!-- YAML
 added: v0.5.8
 -->
 
-* Extends: [`ZlibBase`][]
+* 继承自：[`ZlibBase`][]
 
-Compress data using deflate, and do not append a `zlib` header.
+使用 deflate 压缩数据。
 
-## Class: `zlib.Gunzip`
+## 类：`zlib.DeflateRaw`
+
+<!-- YAML
+added: v0.5.8
+-->
+
+* 继承自：[`ZlibBase`][]
+
+使用 deflate 压缩数据，且不附加 `zlib` 头。
+
+## 类：`zlib.Gunzip`
 
 <!-- YAML
 added: v0.5.8
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5883
-    description: Trailing garbage at the end of the input stream will now
-                 result in an `'error'` event.
+    description: 输入流末尾的尾部垃圾数据现在将导致 `'error'` 事件。
   - version: v5.9.0
     pr-url: https://github.com/nodejs/node/pull/5120
-    description: Multiple concatenated gzip file members are supported now.
+    description: 现在支持多个连接的 gzip 文件成员。
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2595
-    description: A truncated input stream will now result in an `'error'` event.
+    description: 截断的输入流现在将导致 `'error'` 事件。
 -->
 
-* Extends: [`ZlibBase`][]
+* 继承自：[`ZlibBase`][]
 
-Decompress a gzip stream.
+解压缩 gzip 流。
 
-## Class: `zlib.Gzip`
+## 类：`zlib.Gzip`
 
 <!-- YAML
 added: v0.5.8
 -->
 
-* Extends: [`ZlibBase`][]
+* 继承自：[`ZlibBase`][]
 
-Compress data using gzip.
+使用 gzip 压缩数据。
 
-## Class: `zlib.Inflate`
+## 类：`zlib.Inflate`
 
 <!-- YAML
 added: v0.5.8
 changes:
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2595
-    description: A truncated input stream will now result in an `'error'` event.
+    description: 截断的输入流现在将导致 `'error'` 事件。
 -->
 
-* Extends: [`ZlibBase`][]
+* 继承自：[`ZlibBase`][]
 
-Decompress a deflate stream.
+解压缩 deflate 流。
 
-## Class: `zlib.InflateRaw`
+## 类：`zlib.InflateRaw`
 
 <!-- YAML
 added: v0.5.8
 changes:
   - version: v6.8.0
     pr-url: https://github.com/nodejs/node/pull/8512
-    description: Custom dictionaries are now supported by `InflateRaw`.
+    description: `InflateRaw` 现在支持自定义字典。
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2595
-    description: A truncated input stream will now result in an `'error'` event.
+    description: 截断的输入流现在将导致 `'error'` 事件。
 -->
 
-* Extends: [`ZlibBase`][]
+* 继承自：[`ZlibBase`][]
 
-Decompress a raw deflate stream.
+解压缩 raw deflate 流。
 
-## Class: `zlib.Unzip`
+## 类：`zlib.Unzip`
 
 <!-- YAML
 added: v0.5.8
 -->
 
-* Extends: [`ZlibBase`][]
+* 继承自：[`ZlibBase`][]
 
-Decompress either a Gzip- or Deflate-compressed stream by auto-detecting
-the header.
+通过自动检测头来解压缩 Gzip 或 Deflate 压缩流。
 
-## Class: `zlib.ZlibBase`
+## 类：`zlib.ZlibBase`
 
 <!-- YAML
 added: v0.5.8
@@ -1007,16 +976,14 @@ changes:
      - v11.7.0
      - v10.16.0
     pr-url: https://github.com/nodejs/node/pull/24939
-    description: This class was renamed from `Zlib` to `ZlibBase`.
+    description: 此类已从 `Zlib` 重命名为 `ZlibBase`。
 -->
 
-* Extends: [`stream.Transform`][]
+* 继承自：[`stream.Transform`][]
 
-Not exported by the `node:zlib` module. It is documented here because it is the
-base class of the compressor/decompressor classes.
+不由 `node:zlib` 模块导出。在此处文档化是因为它是压缩器/解压缩器类的基类。
 
-This class inherits from [`stream.Transform`][], allowing `node:zlib` objects to
-be used in pipes and similar stream operations.
+此类继承自 [`stream.Transform`][]，允许 `node:zlib` 对象用于管道和类似的流操作。
 
 ### `zlib.bytesWritten`
 
@@ -1024,11 +991,9 @@ be used in pipes and similar stream operations.
 added: v10.0.0
 -->
 
-* Type: {number}
+* 类型：{数字}
 
-The `zlib.bytesWritten` property specifies the number of bytes written to
-the engine, before the bytes are processed (compressed or decompressed,
-as appropriate for the derived class).
+`zlib.bytesWritten` 属性指定写入引擎的字节数，在这些字节被处理之前（压缩或解压缩，视派生类而定）。
 
 ### `zlib.close([callback])`
 
@@ -1036,9 +1001,9 @@ as appropriate for the derived class).
 added: v0.9.4
 -->
 
-* `callback` {Function}
+* `callback` {函数}
 
-Close the underlying handle.
+关闭底层句柄。
 
 ### `zlib.flush([kind, ]callback)`
 
@@ -1046,17 +1011,12 @@ Close the underlying handle.
 added: v0.5.8
 -->
 
-* `kind` **Default:** `zlib.constants.Z_FULL_FLUSH` for zlib-based streams,
-  `zlib.constants.BROTLI_OPERATION_FLUSH` for Brotli-based streams.
-* `callback` {Function}
+* `kind` **默认：** 基于 zlib 的流为 `zlib.constants.Z_FULL_FLUSH`，基于 Brotli 的流为 `zlib.constants.BROTLI_OPERATION_FLUSH`。
+* `callback` {函数}
 
-Flush pending data. Don't call this frivolously, premature flushes negatively
-impact the effectiveness of the compression algorithm.
+刷新待处理数据。不要随意调用此方法，过早刷新会对压缩算法的有效性产生负面影响。
 
-Calling this only flushes data from the internal `zlib` state, and does not
-perform flushing of any kind on the streams level. Rather, it behaves like a
-normal call to `.write()`, i.e. it will be queued up behind other pending
-writes and will only produce output when data is being read from the stream.
+调用此方法仅刷新内部 `zlib` 状态中的数据，并不在流级别执行任何类型的刷新。相反，它的行为类似于正常调用 `.write()`，即它将在其他待处理写入之后排队，并且仅在从流读取数据时产生输出。
 
 ### `zlib.params(level, strategy, callback)`
 
@@ -1064,14 +1024,13 @@ writes and will only produce output when data is being read from the stream.
 added: v0.11.4
 -->
 
-* `level` {integer}
-* `strategy` {integer}
-* `callback` {Function}
+* `level` {整数}
+* `strategy` {整数}
+* `callback` {函数}
 
-This function is only available for zlib-based streams, i.e. not Brotli.
+此函数仅适用于基于 zlib 的流，即不适用于 Brotli。
 
-Dynamically update the compression level and compression strategy.
-Only applicable to deflate algorithm.
+动态更新压缩级别和压缩策略。仅适用于 deflate 算法。
 
 ### `zlib.reset()`
 
@@ -1079,12 +1038,11 @@ Only applicable to deflate algorithm.
 added: v0.7.0
 -->
 
-Reset the compressor/decompressor to factory defaults. Only applicable to
-the inflate and deflate algorithms.
+将压缩器/解压缩器重置为工厂默认值。仅适用于 inflate 和 deflate 算法。
 
-## Class: `ZstdOptions`
+## 类：`ZstdOptions`
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 <!-- YAML
 added:
@@ -1094,20 +1052,18 @@ added:
 
 <!--type=misc-->
 
-Each Zstd-based class takes an `options` object. All options are optional.
+每个基于 Zstd 的类都接受一个 `options` 对象。所有选项都是可选的。
 
-* `flush` {integer} **Default:** `zlib.constants.ZSTD_e_continue`
-* `finishFlush` {integer} **Default:** `zlib.constants.ZSTD_e_end`
-* `chunkSize` {integer} **Default:** `16 * 1024`
-* `params` {Object} Key-value object containing indexed [Zstd parameters][].
-* `maxOutputLength` {integer} Limits output size when using
-  [convenience methods][]. **Default:** [`buffer.kMaxLength`][]
-* `info` {boolean} If `true`, returns an object with `buffer` and `engine`. **Default:** `false`
-* `dictionary` {Buffer} Optional dictionary used to
-  improve compression efficiency when compressing or decompressing data that
-  shares common patterns with the dictionary.
+* `flush` {整数} **默认：** `zlib.constants.ZSTD_e_continue`
+* `finishFlush` {整数} **默认：** `zlib.constants.ZSTD_e_end`
+* `chunkSize` {整数} **默认：** `16 * 1024`
+* `params` {对象} 包含索引 [Zstd 参数][] 的键值对象。
+* `maxOutputLength` {整数} 使用
+  [便捷方法][] 时限制输出大小。**默认：** [`buffer.kMaxLength`][]
+* `info` {布尔值} 如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。**默认：** `false`
+* `dictionary` {Buffer} 可选字典，用于在与字典共享常见模式的数据压缩或解压缩时提高压缩效率。
 
-For example:
+例如：
 
 ```js
 const stream = zlib.createZstdCompress({
@@ -1119,21 +1075,9 @@ const stream = zlib.createZstdCompress({
 });
 ```
 
-## Class: `zlib.ZstdCompress`
+## 类：`zlib.ZstdCompress`
 
-> Stability: 1 - Experimental
-
-<!-- YAML
-added:
-  - v23.8.0
-  - v22.15.0
--->
-
-Compress data using the Zstd algorithm.
-
-## Class: `zlib.ZstdDecompress`
-
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 <!-- YAML
 added:
@@ -1141,7 +1085,19 @@ added:
   - v22.15.0
 -->
 
-Decompress data using the Zstd algorithm.
+使用 Zstd 算法压缩数据。
+
+## 类：`zlib.ZstdDecompress`
+
+> 稳定性：1 - 实验性
+
+<!-- YAML
+added:
+  - v23.8.0
+  - v22.15.0
+-->
+
+使用 Zstd 算法解压缩数据。
 
 ## `zlib.constants`
 
@@ -1149,7 +1105,7 @@ Decompress data using the Zstd algorithm.
 added: v7.0.0
 -->
 
-Provides an object enumerating Zlib-related constants.
+提供一个枚举 Zlib 相关常量的对象。
 
 ## `zlib.crc32(data[, value])`
 
@@ -1159,38 +1115,20 @@ added:
   - v20.15.0
 -->
 
-* `data` {string|Buffer|TypedArray|DataView} When `data` is a string,
-  it will be encoded as UTF-8 before being used for computation.
-* `value` {integer} An optional starting value. It must be a 32-bit unsigned
-  integer. **Default:** `0`
-* Returns: {integer} A 32-bit unsigned integer containing the checksum.
+* `data` {字符串|Buffer|TypedArray|DataView} 当 `data` 是字符串时，它将在用于计算之前被编码为 UTF-8。
+* `value` {整数} 可选的起始值。它必须是 32 位无符号整数。**默认：** `0`
+* 返回：{整数} 一个包含校验和的 32 位无符号整数。
 
-Computes a 32-bit [Cyclic Redundancy Check][] checksum of `data`. If
-`value` is specified, it is used as the starting value of the checksum,
-otherwise, 0 is used as the starting value.
+计算 `data` 的 32 位 [循环冗余校验][] 校验和。如果指定了 `value`，则将其用作校验和的起始值，否则，使用 0 作为起始值。
 
-The CRC algorithm is designed to compute checksums and to detect error
-in data transmission. It's not suitable for cryptographic authentication.
+CRC 算法旨在计算校验和并检测数据传输中的错误。它不适用于加密身份验证。
 
-To be consistent with other APIs, if the `data` is a string, it will
-be encoded with UTF-8 before being used for computation. If users only
-use Node.js to compute and match the checksums, this works well with
-other APIs that uses the UTF-8 encoding by default.
+为了与其他 API 保持一致，如果 `data` 是字符串，它将在用于计算之前使用 UTF-8 进行编码。如果用户仅使用 Node.js 来计算和匹配校验和，这与默认使用 UTF-8 编码的其他 API 配合良好。
 
-Some third-party JavaScript libraries compute the checksum on a
-string based on `str.charCodeAt()` so that it can be run in browsers.
-If users want to match the checksum computed with this kind of library
-in the browser, it's better to use the same library in Node.js
-if it also runs in Node.js. If users have to use `zlib.crc32()` to
-match the checksum produced by such a third-party library:
+一些第三方 JavaScript 库基于 `str.charCodeAt()` 计算字符串的校验和，以便可以在浏览器中运行。如果用户想要匹配在浏览器中用此类库计算的校验和，最好也在 Node.js 中使用相同的库（如果它也在 Node.js 中运行）。如果用户必须使用 `zlib.crc32()` 来匹配此类第三方库生成的校验和：
 
-1. If the library accepts `Uint8Array` as input, use `TextEncoder`
-   in the browser to encode the string into a `Uint8Array` with UTF-8
-   encoding, and compute the checksum based on the UTF-8 encoded string
-   in the browser.
-2. If the library only takes a string and compute the data based on
-   `str.charCodeAt()`, on the Node.js side, convert the string into
-   a buffer using `Buffer.from(str, 'utf16le')`.
+1. 如果库接受 `Uint8Array` 作为输入，在浏览器中使用 `TextEncoder` 将字符串编码为 UTF-8 的 `Uint8Array`，并在浏览器中基于 UTF-8 编码的字符串计算校验和。
+2. 如果库只接受字符串并基于 `str.charCodeAt()` 计算数据，在 Node.js 端，使用 `Buffer.from(str, 'utf16le')` 将字符串转换为缓冲区。
 
 ```mjs
 import zlib from 'node:zlib';
@@ -1222,9 +1160,9 @@ added:
  - v10.16.0
 -->
 
-* `options` {brotli options}
+* `options` {brotli 选项}
 
-Creates and returns a new [`BrotliCompress`][] object.
+创建并返回一个新的 [`BrotliCompress`][] 对象。
 
 ## `zlib.createBrotliDecompress([options])`
 
@@ -1234,9 +1172,9 @@ added:
  - v10.16.0
 -->
 
-* `options` {brotli options}
+* `options` {brotli 选项}
 
-Creates and returns a new [`BrotliDecompress`][] object.
+创建并返回一个新的 [`BrotliDecompress`][] 对象。
 
 ## `zlib.createDeflate([options])`
 
@@ -1244,9 +1182,9 @@ Creates and returns a new [`BrotliDecompress`][] object.
 added: v0.5.8
 -->
 
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Creates and returns a new [`Deflate`][] object.
+创建并返回一个新的 [`Deflate`][] 对象。
 
 ## `zlib.createDeflateRaw([options])`
 
@@ -1254,16 +1192,11 @@ Creates and returns a new [`Deflate`][] object.
 added: v0.5.8
 -->
 
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Creates and returns a new [`DeflateRaw`][] object.
+创建并返回一个新的 [`DeflateRaw`][] 对象。
 
-An upgrade of zlib from 1.2.8 to 1.2.11 changed behavior when `windowBits`
-is set to 8 for raw deflate streams. zlib would automatically set `windowBits`
-to 9 if was initially set to 8. Newer versions of zlib will throw an exception,
-so Node.js restored the original behavior of upgrading a value of 8 to 9,
-since passing `windowBits = 9` to zlib actually results in a compressed stream
-that effectively uses an 8-bit window only.
+zlib 从 1.2.8 升级到 1.2.11 改变了当 `windowBits` 设置为 8 时原始 deflate 流的行为。如果最初设置为 8，zlib 会自动将 `windowBits` 设置为 9。较新版本的 zlib 将抛出异常，因此 Node.js 恢复了将值 8 升级为 9 的原始行为，因为传递 `windowBits = 9` 给 zlib 实际上会产生一个仅有效使用 8 位窗口的压缩流。
 
 ## `zlib.createGunzip([options])`
 
@@ -1271,9 +1204,9 @@ that effectively uses an 8-bit window only.
 added: v0.5.8
 -->
 
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Creates and returns a new [`Gunzip`][] object.
+创建并返回一个新的 [`Gunzip`][] 对象。
 
 ## `zlib.createGzip([options])`
 
@@ -1281,10 +1214,10 @@ Creates and returns a new [`Gunzip`][] object.
 added: v0.5.8
 -->
 
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Creates and returns a new [`Gzip`][] object.
-See [example][zlib.createGzip example].
+创建并返回一个新的 [`Gzip`][] 对象。
+参见 [示例][zlib.createGzip example]。
 
 ## `zlib.createInflate([options])`
 
@@ -1292,9 +1225,9 @@ See [example][zlib.createGzip example].
 added: v0.5.8
 -->
 
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Creates and returns a new [`Inflate`][] object.
+创建并返回一个新的 [`Inflate`][] 对象。
 
 ## `zlib.createInflateRaw([options])`
 
@@ -1302,9 +1235,9 @@ Creates and returns a new [`Inflate`][] object.
 added: v0.5.8
 -->
 
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Creates and returns a new [`InflateRaw`][] object.
+创建并返回一个新的 [`InflateRaw`][] 对象。
 
 ## `zlib.createUnzip([options])`
 
@@ -1312,13 +1245,13 @@ Creates and returns a new [`InflateRaw`][] object.
 added: v0.5.8
 -->
 
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Creates and returns a new [`Unzip`][] object.
+创建并返回一个新的 [`Unzip`][] 对象。
 
 ## `zlib.createZstdCompress([options])`
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 <!-- YAML
 added:
@@ -1326,13 +1259,13 @@ added:
   - v22.15.0
 -->
 
-* `options` {zstd options}
+* `options` {zstd 选项}
 
-Creates and returns a new [`ZstdCompress`][] object.
+创建并返回一个新的 [`ZstdCompress`][] 对象。
 
 ## `zlib.createZstdDecompress([options])`
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 <!-- YAML
 added:
@@ -1340,21 +1273,17 @@ added:
   - v22.15.0
 -->
 
-* `options` {zstd options}
+* `options` {zstd 选项}
 
-Creates and returns a new [`ZstdDecompress`][] object.
+创建并返回一个新的 [`ZstdDecompress`][] 对象。
 
-## Convenience methods
+## 便捷方法
 
 <!--type=misc-->
 
-All of these take a {Buffer}, {TypedArray}, {DataView}, {ArrayBuffer}, or string
-as the first argument, an optional second argument
-to supply options to the `zlib` classes and will call the supplied callback
-with `callback(error, result)`.
+所有这些方法接受一个 {Buffer}、{TypedArray}、{DataView}、{ArrayBuffer} 或字符串作为第一个参数，一个可选的第二个参数用于向 `zlib` 类提供选项，并将使用 `callback(error, result)` 调用提供的回调。
 
-Every method has a `*Sync` counterpart, which accept the same arguments, but
-without a callback.
+每个方法都有一个 `*Sync` 对应方法，它接受相同的参数，但不带回调。
 
 ### `zlib.brotliCompress(buffer[, options], callback)`
 
@@ -1365,7 +1294,7 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {brotli options}
+* `options` {brotli 选项}
 * `callback` {Function}
 
 ### `zlib.brotliCompressSync(buffer[, options])`
@@ -1377,9 +1306,9 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {brotli options}
+* `options` {brotli 选项}
 
-Compress a chunk of data with [`BrotliCompress`][].
+使用 [`BrotliCompress`][] 压缩一块数据。
 
 ### `zlib.brotliDecompress(buffer[, options], callback)`
 
@@ -1390,7 +1319,7 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {brotli options}
+* `options` {brotli 选项}
 * `callback` {Function}
 
 ### `zlib.brotliDecompressSync(buffer[, options])`
@@ -1402,9 +1331,9 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {brotli options}
+* `options` {brotli 选项}
 
-Decompress a chunk of data with [`BrotliDecompress`][].
+使用 [`BrotliDecompress`][] 解压缩一块数据。
 
 ### `zlib.deflate(buffer[, options], callback)`
 
@@ -1413,17 +1342,17 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 * `callback` {Function}
 
 ### `zlib.deflateSync(buffer[, options])`
@@ -1433,19 +1362,19 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Compress a chunk of data with [`Deflate`][].
+使用 [`Deflate`][] 压缩一块数据。
 
 ### `zlib.deflateRaw(buffer[, options], callback)`
 
@@ -1454,14 +1383,14 @@ added: v0.6.0
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 * `callback` {Function}
 
 ### `zlib.deflateRawSync(buffer[, options])`
@@ -1471,19 +1400,19 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Compress a chunk of data with [`DeflateRaw`][].
+使用 [`DeflateRaw`][] 压缩一块数据。
 
 ### `zlib.gunzip(buffer[, options], callback)`
 
@@ -1492,17 +1421,17 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 * `callback` {Function}
 
 ### `zlib.gunzipSync(buffer[, options])`
@@ -1512,19 +1441,19 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Decompress a chunk of data with [`Gunzip`][].
+使用 [`Gunzip`][] 解压缩一块数据。
 
 ### `zlib.gzip(buffer[, options], callback)`
 
@@ -1533,17 +1462,17 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 * `callback` {Function}
 
 ### `zlib.gzipSync(buffer[, options])`
@@ -1553,19 +1482,19 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Compress a chunk of data with [`Gzip`][].
+使用 [`Gzip`][] 压缩一块数据。
 
 ### `zlib.inflate(buffer[, options], callback)`
 
@@ -1574,17 +1503,17 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 * `callback` {Function}
 
 ### `zlib.inflateSync(buffer[, options])`
@@ -1594,19 +1523,19 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Decompress a chunk of data with [`Inflate`][].
+使用 [`Inflate`][] 解压缩一块数据。
 
 ### `zlib.inflateRaw(buffer[, options], callback)`
 
@@ -1615,17 +1544,17 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 * `callback` {Function}
 
 ### `zlib.inflateRawSync(buffer[, options])`
@@ -1635,19 +1564,19 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Decompress a chunk of data with [`InflateRaw`][].
+使用 [`InflateRaw`][] 解压缩一块数据。
 
 ### `zlib.unzip(buffer[, options], callback)`
 
@@ -1656,17 +1585,17 @@ added: v0.6.0
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 * `callback` {Function}
 
 ### `zlib.unzipSync(buffer[, options])`
@@ -1676,23 +1605,23 @@ added: v0.11.12
 changes:
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/16042
-    description: The `buffer` parameter can be an `ArrayBuffer`.
+    description: `buffer` 参数可以是 `ArrayBuffer`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12223
-    description: The `buffer` parameter can be any `TypedArray` or `DataView`.
+    description: `buffer` 参数可以是任何 `TypedArray` 或 `DataView`。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12001
-    description: The `buffer` parameter can be an `Uint8Array` now.
+    description: `buffer` 参数现在可以是 `Uint8Array`。
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib options}
+* `options` {zlib 选项}
 
-Decompress a chunk of data with [`Unzip`][].
+使用 [`Unzip`][] 解压缩一块数据。
 
 ### `zlib.zstdCompress(buffer[, options], callback)`
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 <!-- YAML
 added:
@@ -1701,12 +1630,12 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zstd options}
+* `options` {zstd 选项}
 * `callback` {Function}
 
 ### `zlib.zstdCompressSync(buffer[, options])`
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 <!-- YAML
 added:
@@ -1715,9 +1644,9 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zstd options}
+* `options` {zstd 选项}
 
-Compress a chunk of data with [`ZstdCompress`][].
+使用 [`ZstdCompress`][] 压缩一块数据。
 
 ### `zlib.zstdDecompress(buffer[, options], callback)`
 
@@ -1728,12 +1657,12 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zstd options}
+* `options` {zstd 选项}
 * `callback` {Function}
 
 ### `zlib.zstdDecompressSync(buffer[, options])`
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 <!-- YAML
 added:
@@ -1742,9 +1671,9 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zstd options}
+* `options` {zstd 选项}
 
-Decompress a chunk of data with [`ZstdDecompress`][].
+使用 [`ZstdDecompress`][] 解压缩一块数据。
 
 [Brotli parameters]: #brotli-constants
 [Cyclic redundancy check]: https://en.wikipedia.org/wiki/Cyclic_redundancy_check

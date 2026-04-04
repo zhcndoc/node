@@ -1,15 +1,14 @@
-# Global objects
+# 全局对象
 
 <!--introduced_in=v0.10.0-->
 
 <!-- type=misc -->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
-These objects are available in all modules.
+这些对象在所有模块中均可用。
 
-The following variables may appear to be global but are not. They exist only in
-the scope of [CommonJS modules][]:
+以下变量可能看起来是全局的，但实际上不是。它们仅存在于 [CommonJS 模块][] 的作用域中：
 
 * [`__dirname`][]
 * [`__filename`][]
@@ -17,19 +16,17 @@ the scope of [CommonJS modules][]:
 * [`module`][]
 * [`require()`][]
 
-The objects listed here are specific to Node.js. There are [built-in objects][]
-that are part of the JavaScript language itself, which are also globally
-accessible.
+此处列出的对象是 Node.js 特有的。还有 [内置对象][] 是 JavaScript 语言本身的一部分，它们也是全局可访问的。
 
 ## `__dirname`
 
-This variable may appear to be global but is not. See [`__dirname`][].
+此变量可能看起来是全局的，但实际上不是。参见 [`__dirname`][]。
 
 ## `__filename`
 
-This variable may appear to be global but is not. See [`__filename`][].
+此变量可能看起来是全局的，但实际上不是。参见 [`__filename`][]。
 
-## Class: `AbortController`
+## 类：`AbortController`
 
 <!-- YAML
 added:
@@ -38,11 +35,10 @@ added:
 changes:
   - version: v15.4.0
     pr-url: https://github.com/nodejs/node/pull/35949
-    description: No longer experimental.
+    description: 不再处于实验阶段。
 -->
 
-A utility class used to signal cancelation in selected `Promise`-based APIs.
-The API is based on the Web API {AbortController}.
+一个用于在选定的基于 `Promise` 的 API 中信号取消的工具类。该 API 基于 Web API {AbortController}。
 
 ```js
 const ac = new AbortController();
@@ -52,7 +48,7 @@ ac.signal.addEventListener('abort', () => console.log('Aborted!'),
 
 ac.abort();
 
-console.log(ac.signal.aborted);  // Prints true
+console.log(ac.signal.aborted);  // 打印 true
 ```
 
 ### `abortController.abort([reason])`
@@ -66,14 +62,12 @@ changes:
       - v17.2.0
       - v16.14.0
     pr-url: https://github.com/nodejs/node/pull/40807
-    description: Added the new optional reason argument.
+    description: 新增了可选的 reason 参数。
 -->
 
-* `reason` {any} An optional reason, retrievable on the `AbortSignal`'s
-  `reason` property.
+* `reason` {any} 一个可选的原因，可在 `AbortSignal` 的 `reason` 属性上检索。
 
-Triggers the abort signal, causing the `abortController.signal` to emit
-the `'abort'` event.
+触发中止信号，导致 `abortController.signal` 发出 `'abort'` 事件。
 
 ### `abortController.signal`
 
@@ -83,9 +77,9 @@ added:
   - v14.17.0
 -->
 
-* Type: {AbortSignal}
+* 类型：{AbortSignal}
 
-## Class: `AbortSignal`
+## 类：`AbortSignal`
 
 <!-- YAML
 added:
@@ -93,12 +87,11 @@ added:
   - v14.17.0
 -->
 
-* Extends: {EventTarget}
+* 继承自：{EventTarget}
 
-The `AbortSignal` is used to notify observers when the
-`abortController.abort()` method is called.
+`AbortSignal` 用于在调用 `abortController.abort()` 方法时通知观察者。
 
-### Static method: `AbortSignal.abort([reason])`
+### 静态方法：`AbortSignal.abort([reason])`
 
 <!-- YAML
 added:
@@ -109,15 +102,15 @@ changes:
       - v17.2.0
       - v16.14.0
     pr-url: https://github.com/nodejs/node/pull/40807
-    description: Added the new optional reason argument.
+    description: 新增了可选的 reason 参数。
 -->
 
 * `reason` {any}
-* Returns: {AbortSignal}
+* 返回：{AbortSignal}
 
-Returns a new already aborted `AbortSignal`.
+返回一个新的已中止的 `AbortSignal`。
 
-### Static method: `AbortSignal.timeout(delay)`
+### 静态方法：`AbortSignal.timeout(delay)`
 
 <!-- YAML
 added:
@@ -125,12 +118,11 @@ added:
   - v16.14.0
 -->
 
-* `delay` {number} The number of milliseconds to wait before triggering
-  the AbortSignal.
+* `delay` {number} 触发 AbortSignal 之前等待的毫秒数。
 
-Returns a new `AbortSignal` which will be aborted in `delay` milliseconds.
+返回一个新的 `AbortSignal`，它将在 `delay` 毫秒后中止。
 
-### Static method: `AbortSignal.any(signals)`
+### 静态方法：`AbortSignal.any(signals)`
 
 <!-- YAML
 added:
@@ -138,13 +130,11 @@ added:
   - v18.17.0
 -->
 
-* `signals` {AbortSignal\[]} The `AbortSignal`s of which to compose a new `AbortSignal`.
+* `signals` {AbortSignal\[]} 用于组合成新 `AbortSignal` 的 `AbortSignal`。
 
-Returns a new `AbortSignal` which will be aborted if any of the provided
-signals are aborted. Its [`abortSignal.reason`][] will be set to whichever
-one of the `signals` caused it to be aborted.
+返回一个新的 `AbortSignal`，如果任何提供的信号被中止，它也将被中止。其 [`abortSignal.reason`][] 将设置为导致其被中止的任一 `signals`。
 
-### Event: `'abort'`
+### 事件：`'abort'`
 
 <!-- YAML
 added:
@@ -152,34 +142,25 @@ added:
   - v14.17.0
 -->
 
-The `'abort'` event is emitted when the `abortController.abort()` method
-is called. The callback is invoked with a single object argument with a
-single `type` property set to `'abort'`:
+当调用 `abortController.abort()` 方法时，会发出 `'abort'` 事件。回调被调用时传入单个对象参数，该对象具有单个 `type` 属性，设置为 `'abort'`：
 
 ```js
 const ac = new AbortController();
 
-// Use either the onabort property...
+// 使用 onabort 属性...
 ac.signal.onabort = () => console.log('aborted!');
 
-// Or the EventTarget API...
+// 或使用 EventTarget API...
 ac.signal.addEventListener('abort', (event) => {
-  console.log(event.type);  // Prints 'abort'
+  console.log(event.type);  // 打印 'abort'
 }, { once: true });
 
 ac.abort();
 ```
 
-The `AbortController` with which the `AbortSignal` is associated will only
-ever trigger the `'abort'` event once. We recommended that code check
-that the `abortSignal.aborted` attribute is `false` before adding an `'abort'`
-event listener.
+关联 `AbortSignal` 的 `AbortController` 只会触发一次 `'abort'` 事件。我们建议代码在添加 `'abort'` 事件监听器之前检查 `abortSignal.aborted` 属性是否为 `false`。
 
-Any event listeners attached to the `AbortSignal` should use the
-`{ once: true }` option (or, if using the `EventEmitter` APIs to attach a
-listener, use the `once()` method) to ensure that the event listener is
-removed as soon as the `'abort'` event is handled. Failure to do so may
-result in memory leaks.
+附加到 `AbortSignal` 的任何事件监听器都应使用 `{ once: true }` 选项（或者，如果使用 `EventEmitter` API 附加监听器，请使用 `once()` 方法），以确保一旦 `'abort'` 事件被处理，事件监听器即被移除。否则可能导致内存泄漏。
 
 ### `abortSignal.aborted`
 
@@ -189,9 +170,9 @@ added:
   - v14.17.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-True after the `AbortController` has been aborted.
+在 `AbortController` 被中止后为 true。
 
 ### `abortSignal.onabort`
 
@@ -201,10 +182,9 @@ added:
   - v14.17.0
 -->
 
-* Type: {Function}
+* 类型：{Function}
 
-An optional callback function that may be set by user code to be notified
-when the `abortController.abort()` function has been called.
+一个可选的回调函数，可由用户代码设置，以便在调用 `abortController.abort()` 函数时收到通知。
 
 ### `abortSignal.reason`
 
@@ -214,14 +194,14 @@ added:
   - v16.14.0
 -->
 
-* Type: {any}
+* 类型：{any}
 
-An optional reason specified when the `AbortSignal` was triggered.
+在触发 `AbortSignal` 时指定的可选原因。
 
 ```js
 const ac = new AbortController();
 ac.abort(new Error('boom!'));
-console.log(ac.signal.reason);  // Error: boom!
+console.log(ac.signal.reason);  // 错误：boom!
 ```
 
 ### `abortSignal.throwIfAborted()`
@@ -232,7 +212,7 @@ added:
   - v16.17.0
 -->
 
-If `abortSignal.aborted` is `true`, throws `abortSignal.reason`.
+如果 `abortSignal.aborted` 为 `true`，则抛出 `abortSignal.reason`。
 
 ## `atob(data)`
 
@@ -240,31 +220,31 @@ If `abortSignal.aborted` is `true`, throws `abortSignal.reason`.
 added: v16.0.0
 -->
 
-> Stability: 3 - Legacy. Use `Buffer.from(data, 'base64')` instead.
+> 稳定性：3 - 遗留。请改用 `Buffer.from(data, 'base64')`。
 
-Global alias for [`buffer.atob()`][].
+[`buffer.atob()`][] 的全局别名。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/buffer-atob-btoa)):
+提供了一个自动迁移工具 ([来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/buffer-atob-btoa))：
 
 ```bash
 npx codemod@latest @nodejs/buffer-atob-btoa
 ```
 
-## Class: `Blob`
+## 类：`Blob`
 
 <!-- YAML
 added: v18.0.0
 -->
 
-See {Blob}.
+参见 {Blob}。
 
-## Class: `BroadcastChannel`
+## 类：`BroadcastChannel`
 
 <!-- YAML
 added: v18.0.0
 -->
 
-See {BroadcastChannel}.
+参见 {BroadcastChannel}。
 
 ## `btoa(data)`
 
@@ -272,27 +252,27 @@ See {BroadcastChannel}.
 added: v16.0.0
 -->
 
-> Stability: 3 - Legacy. Use `buf.toString('base64')` instead.
+> 稳定性：3 - 遗留。请改用 `buf.toString('base64')`。
 
-Global alias for [`buffer.btoa()`][].
+[`buffer.btoa()`][] 的全局别名。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/buffer-atob-btoa)):
+提供了一个自动迁移工具 ([来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/buffer-atob-btoa))：
 
 ```bash
 npx codemod@latest @nodejs/buffer-atob-btoa
 ```
 
-## Class: `Buffer`
+## 类：`Buffer`
 
 <!-- YAML
 added: v0.1.103
 -->
 
-* Type: {Function}
+* 类型：{Function}
 
-Used to handle binary data. See the [buffer section][].
+用于处理二进制数据。参见 [buffer 部分][]。
 
-## Class: `ByteLengthQueuingStrategy`
+## 类：`ByteLengthQueuingStrategy`
 
 <!-- YAML
 added: v18.0.0
@@ -301,10 +281,10 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`ByteLengthQueuingStrategy`][].
+[`ByteLengthQueuingStrategy`][] 的与浏览器兼容的实现。
 
 ## `clearImmediate(immediateObject)`
 
@@ -312,7 +292,7 @@ A browser-compatible implementation of [`ByteLengthQueuingStrategy`][].
 added: v0.9.1
 -->
 
-[`clearImmediate`][] is described in the [timers][] section.
+[`clearImmediate`][] 在 [计时器][] 部分中描述。
 
 ## `clearInterval(intervalObject)`
 
@@ -320,7 +300,7 @@ added: v0.9.1
 added: v0.0.1
 -->
 
-[`clearInterval`][] is described in the [timers][] section.
+[`clearInterval`][] 在 [计时器][] 部分中描述。
 
 ## `clearTimeout(timeoutObject)`
 
@@ -328,18 +308,17 @@ added: v0.0.1
 added: v0.0.1
 -->
 
-[`clearTimeout`][] is described in the [timers][] section.
+[`clearTimeout`][] 在 [计时器][] 部分中描述。
 
-## Class: `CloseEvent`
+## 类：`CloseEvent`
 
 <!-- YAML
 added: v23.0.0
 -->
 
-A browser-compatible implementation of {CloseEvent}. Disable this API
-with the [`--no-experimental-websocket`][] CLI flag.
+{CloseEvent} 的与浏览器兼容的实现。使用 [`--no-experimental-websocket`][] CLI 标志禁用此 API。
 
-## Class: `CompressionStream`
+## 类：`CompressionStream`
 
 <!-- YAML
 added: v18.0.0
@@ -348,15 +327,15 @@ changes:
    - v24.7.0
    - v22.20.0
    pr-url: https://github.com/nodejs/node/pull/59464
-   description: format now accepts `brotli` value.
+   description: format 现在接受 `brotli` 值。
  - version:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`CompressionStream`][].
+[`CompressionStream`][] 的与浏览器兼容的实现。
 
 ## `console`
 
@@ -364,11 +343,11 @@ A browser-compatible implementation of [`CompressionStream`][].
 added: v0.1.100
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-Used to print to stdout and stderr. See the [`console`][] section.
+用于打印到 stdout 和 stderr。参见 [`console`][] 部分。
 
-## Class: `CountQueuingStrategy`
+## 类：`CountQueuingStrategy`
 
 <!-- YAML
 added: v18.0.0
@@ -377,12 +356,12 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`CountQueuingStrategy`][].
+[`CountQueuingStrategy`][] 的与浏览器兼容的实现。
 
-## Class: `Crypto`
+## 类：`Crypto`
 
 <!-- YAML
 added:
@@ -391,15 +370,13 @@ added:
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52564
-    description: No longer experimental.
+    description: 不再处于实验阶段。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42083
-    description: No longer behind `--experimental-global-webcrypto` CLI flag.
+    description: 不再受 `--experimental-global-webcrypto` CLI 标志限制。
 -->
 
-A browser-compatible implementation of {Crypto}. This global is available
-only if the Node.js binary was compiled with including support for the
-`node:crypto` module.
+{Crypto} 的与浏览器兼容的实现。仅当编译 Node.js 二进制文件时包含对 `node:crypto` 模块的支持，此全局对象才可用。
 
 ## `crypto`
 
@@ -410,15 +387,15 @@ added:
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52564
-    description: No longer experimental.
+    description: 不再处于实验阶段。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42083
-    description: No longer behind `--experimental-global-webcrypto` CLI flag.
+    description: 不再受 `--experimental-global-webcrypto` CLI 标志限制。
 -->
 
-A browser-compatible implementation of the [Web Crypto API][].
+[Web Crypto API][] 的与浏览器兼容的实现。
 
-## Class: `CryptoKey`
+## 类：`CryptoKey`
 
 <!-- YAML
 added:
@@ -427,17 +404,15 @@ added:
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52564
-    description: No longer experimental.
+    description: 不再处于实验阶段。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42083
-    description: No longer behind `--experimental-global-webcrypto` CLI flag.
+    description: 不再受 `--experimental-global-webcrypto` CLI 标志限制。
 -->
 
-A browser-compatible implementation of {CryptoKey}. This global is available
-only if the Node.js binary was compiled with including support for the
-`node:crypto` module.
+{CryptoKey} 的与浏览器兼容的实现。仅当编译 Node.js 二进制文件时包含对 `node:crypto` 模块的支持，此全局对象才可用。
 
-## Class: `CustomEvent`
+## 类：`CustomEvent`
 
 <!-- YAML
 added:
@@ -446,20 +421,20 @@ added:
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52723
-    description: No longer experimental.
+    description: 不再处于实验阶段。
   - version:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52618
-    description: CustomEvent is now stable.
+    description: CustomEvent 现在已稳定。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44860
-    description: No longer behind `--experimental-global-customevent` CLI flag.
+    description: 不再受 `--experimental-global-customevent` CLI 标志限制。
 -->
 
-A browser-compatible implementation of {CustomEvent}.
+{CustomEvent} 的与浏览器兼容的实现。
 
-## Class: `DecompressionStream`
+## 类：`DecompressionStream`
 
 <!-- YAML
 added: v18.0.0
@@ -468,23 +443,23 @@ changes:
     - v24.7.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59464
-    description: format now accepts `brotli` value.
+    description: format 现在接受 `brotli` 值。
   - version:
     - v23.11.0
     - v22.15.0
     pr-url: https://github.com/nodejs/node/pull/57510
-    description: Marking the API stable.
+    description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`DecompressionStream`][].
+[`DecompressionStream`][] 的与浏览器兼容的实现。
 
-## Class: `DOMException`
+## 类：`DOMException`
 
 <!-- YAML
 added: v17.0.0
 -->
 
-The WHATWG {DOMException} class.
+WHATWG {DOMException} 类。
 
 ## `ErrorEvent`
 
@@ -492,22 +467,22 @@ The WHATWG {DOMException} class.
 added: v25.0.0
 -->
 
-A browser-compatible implementation of {ErrorEvent}.
+{ErrorEvent} 的与浏览器兼容的实现。
 
-## Class: `Event`
+## 类：`Event`
 
 <!-- YAML
 added: v15.0.0
 changes:
   - version: v15.4.0
     pr-url: https://github.com/nodejs/node/pull/35949
-    description: No longer experimental.
+    description: 不再是实验性的。
 -->
 
-A browser-compatible implementation of the `Event` class. See
-[`EventTarget` and `Event` API][] for more details.
+与浏览器兼容的 `Event` 类实现。有关更多详细信息，请参阅
+[`EventTarget` 和 `Event` API][]。
 
-## Class: `EventSource`
+## 类：`EventSource`
 
 <!-- YAML
 added:
@@ -515,27 +490,27 @@ added:
   - v20.18.0
 -->
 
-> Stability: 1 - Experimental. Enable this API with the [`--experimental-eventsource`][]
-> CLI flag.
+> 稳定性：1 - 实验性。使用 [`--experimental-eventsource`][]
+> CLI 标志启用此 API。
 
-A browser-compatible implementation of {EventSource}.
+与浏览器兼容的 {EventSource} 实现。
 
-## Class: `EventTarget`
+## 类：`EventTarget`
 
 <!-- YAML
 added: v15.0.0
 changes:
   - version: v15.4.0
     pr-url: https://github.com/nodejs/node/pull/35949
-    description: No longer experimental.
+    description: 不再是实验性的。
 -->
 
-A browser-compatible implementation of the `EventTarget` class. See
-[`EventTarget` and `Event` API][] for more details.
+与浏览器兼容的 `EventTarget` 类实现。有关更多详细信息，请参阅
+[`EventTarget` 和 `Event` API][]。
 
 ## `exports`
 
-This variable may appear to be global but is not. See [`exports`][].
+此变量可能看起来是全局的，但并不是。请参阅 [`exports`][]。
 
 ## `fetch`
 
@@ -547,13 +522,13 @@ changes:
   - version:
     - v21.0.0
     pr-url: https://github.com/nodejs/node/pull/45684
-    description: No longer experimental.
+    description: 不再是实验性的。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41811
-    description: No longer behind `--experimental-fetch` CLI flag.
+    description: 不再位于 `--experimental-fetch` CLI 标志之后。
 -->
 
-A browser-compatible implementation of the [`fetch()`][] function.
+与浏览器兼容的 [`fetch()`][] 函数实现。
 
 ```mjs
 const res = await fetch('https://nodejs.org/api/documentation.json');
@@ -563,47 +538,45 @@ if (res.ok) {
 }
 ```
 
-The implementation is based upon [undici](https://undici.nodejs.org), an HTTP/1.1 client
-written from scratch for Node.js. You can figure out which version of `undici` is bundled
-in your Node.js process reading the `process.versions.undici` property.
+该实现基于 [undici](https://undici.nodejs.org)，这是一个专为 Node.js 从头编写的 HTTP/1.1 客户端。你可以通过读取 `process.versions.undici` 属性来确定你的 Node.js 进程中捆绑了哪个版本的 `undici`。
 
-### Custom dispatcher
+### 自定义 dispatcher
 
-You can use a custom dispatcher to dispatch requests passing it in fetch's options object.
-The dispatcher must be compatible with `undici`'s
-[`Dispatcher` class](https://undici.nodejs.org/#/docs/api/Dispatcher.md).
+你可以使用自定义 dispatcher 来分发请求，将其传入 fetch 的选项对象中。
+dispatcher 必须兼容 `undici` 的
+[`Dispatcher` 类](https://undici.nodejs.org/#/docs/api/Dispatcher.md)。
 
 ```js
 fetch(url, { dispatcher: new MyAgent() });
 ```
 
-It is possible to change the global dispatcher in Node.js by installing `undici` and using
-the `setGlobalDispatcher()` method. Calling this method will affect both `undici` and
-Node.js.
+可以通过安装 `undici` 并使用
+`setGlobalDispatcher()` 方法来更改 Node.js 中的全局 dispatcher。调用此方法将影响 `undici` 和
+Node.js 两者。
 
 ```mjs
 import { setGlobalDispatcher } from 'undici';
 setGlobalDispatcher(new MyAgent());
 ```
 
-### Related classes
+### 相关类
 
-The following globals are available to use with `fetch`:
+以下全局变量可与 `fetch` 一起使用：
 
 * [`FormData`][]
 * [`Headers`][]
 * [`Request`][]
 * [`Response`][]
 
-## Class: `File`
+## 类：`File`
 
 <!-- YAML
 added: v20.0.0
 -->
 
-See {File}.
+请参阅 {File}。
 
-## Class: `FormData`
+## 类：`FormData`
 
 <!-- YAML
 added:
@@ -613,13 +586,13 @@ changes:
   - version:
     - v21.0.0
     pr-url: https://github.com/nodejs/node/pull/45684
-    description: No longer experimental.
+    description: 不再是实验性的。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41811
-    description: No longer behind `--experimental-fetch` CLI flag.
+    description: 不再位于 `--experimental-fetch` CLI 标志之后。
 -->
 
-A browser-compatible implementation of {FormData}.
+与浏览器兼容的 {FormData} 实现。
 
 ## `global`
 
@@ -627,18 +600,18 @@ A browser-compatible implementation of {FormData}.
 added: v0.1.27
 -->
 
-> Stability: 3 - Legacy. Use [`globalThis`][] instead.
+> 稳定性：3 - 遗留。请改用 [`globalThis`][]。
 
-* Type: {Object} The global namespace object.
+* 类型：{Object} 全局命名空间对象。
 
-In browsers, the top-level scope has traditionally been the global scope. This
-means that `var something` will define a new global variable, except within
-ECMAScript modules. In Node.js, this is different. The top-level scope is not
-the global scope; `var something` inside a Node.js module will be local to that
-module, regardless of whether it is a [CommonJS module][] or an
-[ECMAScript module][].
+在浏览器中，顶层作用域传统上是全局作用域。这
+意味着 `var something` 将定义一个新的全局变量，除了在
+ECMAScript 模块内。在 Node.js 中，这是不同的。顶层作用域不是
+全局作用域；Node.js 模块内的 `var something` 将局限于该
+模块，无论它是 [CommonJS 模块][] 还是
+[ECMAScript 模块][]。
 
-## Class: `Headers`
+## 类：`Headers`
 
 <!-- YAML
 added:
@@ -648,13 +621,13 @@ changes:
   - version:
     - v21.0.0
     pr-url: https://github.com/nodejs/node/pull/45684
-    description: No longer experimental.
+    description: 不再是实验性的。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41811
-    description: No longer behind `--experimental-fetch` CLI flag.
+    description: 不再位于 `--experimental-fetch` CLI 标志之后。
 -->
 
-A browser-compatible implementation of {Headers}.
+与浏览器兼容的 {Headers} 实现。
 
 ## `localStorage`
 
@@ -663,66 +636,65 @@ added: v22.4.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/60351
-    description: Accessing the `localStorage` global without providing
-                 `--localstorage-file` now throws a `DOMException`, for
-                 compliance with the Web Storage specification.
+    description: 在不提供
+                 `--localstorage-file` 的情况下访问 `localStorage` 全局现在会抛出 `DOMException`，以
+                 符合 Web Storage 规范。
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/57666
-    description: When webstorage is enabled and `--localstorage-file` is not
-                 provided, accessing the `localStorage` global now returns an
-                 empty object.
+    description: 当启用 webstorage 且未提供
+                 `--localstorage-file` 时，访问 `localStorage` 全局现在返回一个
+                 空对象。
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/57666
-    description: This API is no longer behind `--experimental-webstorage` runtime flag.
+    description: 此 API 不再位于 `--experimental-webstorage` 运行时标志之后。
 -->
 
-> Stability: 1.2 - Release candidate. Disable this API with [`--no-experimental-webstorage`][].
+> 稳定性：1.2 - 发布候选。使用 [`--no-experimental-webstorage`][] 禁用此 API。
 
-A browser-compatible implementation of [`localStorage`][]. Data is stored
-unencrypted in the file specified by the [`--localstorage-file`][] CLI flag.
-The maximum amount of data that can be stored is 10 MB.
-Any modification of this data outside of the Web Storage API is not supported.
-`localStorage` data is not stored per user or per request when used in the context
-of a server, it is shared across all users and requests.
+与浏览器兼容的 [`localStorage`][] 实现。数据存储在
+由 [`--localstorage-file`][] CLI 标志指定的文件中，未加密。
+可存储的最大数据量为 10 MB。
+不支持在 Web Storage API 之外对此数据进行任何修改。
+在服务器上下文中使用时，`localStorage` 数据不是按用户或按请求存储的，它在所有用户和请求之间共享。
 
-## Class: `MessageChannel`
+## 类：`MessageChannel`
 
 <!-- YAML
 added: v15.0.0
 -->
 
-The `MessageChannel` class. See [`MessageChannel`][] for more details.
+`MessageChannel` 类。有关更多详细信息，请参阅 [`MessageChannel`][]。
 
-## Class: `MessageEvent`
-
-<!-- YAML
-added: v15.0.0
--->
-
-A browser-compatible implementation of {MessageEvent}.
-
-## Class: `MessagePort`
+## 类：`MessageEvent`
 
 <!-- YAML
 added: v15.0.0
 -->
 
-The `MessagePort` class. See [`MessagePort`][] for more details.
+与浏览器兼容的 {MessageEvent} 实现。
+
+## 类：`MessagePort`
+
+<!-- YAML
+added: v15.0.0
+-->
+
+`MessagePort` 类。有关更多详细信息，请参阅 [`MessagePort`][]。
 
 ## `module`
 
-This variable may appear to be global but is not. See [`module`][].
+此变量可能看起来是全局的，但并不是。请参阅 [`module`][]。
 
-## Class: `Navigator`
+## 类：`Navigator`
 
 <!-- YAML
 added: v21.0.0
 -->
 
-> Stability: 1.1 - Active development. Disable this API with the
-> [`--no-experimental-global-navigator`][] CLI flag.
+> 稳定性：1.1 - 积极开发中。使用
+> [`--no-experimental-global-navigator`][] CLI 标志禁用此 API。
 
-A partial implementation of the [Navigator API][].
+[Navigator API][] 的部分实现。
 
 ## `navigator`
 
@@ -730,10 +702,10 @@ A partial implementation of the [Navigator API][].
 added: v21.0.0
 -->
 
-> Stability: 1.1 - Active development. Disable this API with the
-> [`--no-experimental-global-navigator`][] CLI flag.
+> 稳定性：1.1 - 积极开发中。使用
+> [`--no-experimental-global-navigator`][] CLI 标志禁用此 API。
 
-A partial implementation of [`window.navigator`][].
+[`window.navigator`][] 的部分实现。
 
 ### `navigator.hardwareConcurrency`
 
@@ -741,10 +713,10 @@ A partial implementation of [`window.navigator`][].
 added: v21.0.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The `navigator.hardwareConcurrency` read-only property returns the number of
-logical processors available to the current Node.js instance.
+`navigator.hardwareConcurrency` 只读属性返回当前 Node.js 实例可用的
+逻辑处理器数量。
 
 ```js
 console.log(`This process is running on ${navigator.hardwareConcurrency} logical processors`);
@@ -756,16 +728,16 @@ console.log(`This process is running on ${navigator.hardwareConcurrency} logical
 added: v21.2.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The `navigator.language` read-only property returns a string representing the
-preferred language of the Node.js instance. The language will be determined by
-the ICU library used by Node.js at runtime based on the
-default language of the operating system.
+`navigator.language` 只读属性返回一个字符串，表示
+Node.js 实例的首选语言。语言将由
+运行时基于操作系统的默认语言使用的 Node.js 的
+ICU 库确定。
 
-The value is representing the language version as defined in [RFC 5646][].
+该值表示 [RFC 5646][] 中定义的语言版本。
 
-The fallback value on builds without ICU is `'en-US'`.
+在没有 ICU 的构建上，回退值为 `'en-US'`。
 
 ```js
 console.log(`The preferred language of the Node.js instance has the tag '${navigator.language}'`);
@@ -777,15 +749,15 @@ console.log(`The preferred language of the Node.js instance has the tag '${navig
 added: v21.2.0
 -->
 
-* Type: {string\[]}
+* 类型：{string\[]}
 
-The `navigator.languages` read-only property returns an array of strings
-representing the preferred languages of the Node.js instance.
-By default `navigator.languages` contains only the value of
-`navigator.language`, which will be determined by the ICU library used by
-Node.js at runtime based on the default language of the operating system.
+`navigator.languages` 只读属性返回一个字符串数组，
+表示 Node.js 实例的首选语言。
+默认情况下，`navigator.languages` 仅包含
+`navigator.language` 的值，该值将由
+运行时基于操作系统的默认语言使用的 Node.js 的 ICU 库确定。
 
-The fallback value on builds without ICU is `['en-US']`.
+在没有 ICU 的构建上，回退值为 `['en-US']`。
 
 ```js
 console.log(`The preferred languages are '${navigator.languages}'`);
@@ -797,48 +769,48 @@ console.log(`The preferred languages are '${navigator.languages}'`);
 added: v24.5.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-The `navigator.locks` read-only property returns a [`LockManager`][] instance that
-can be used to coordinate access to resources that may be shared across multiple
-threads within the same process. This global implementation matches the semantics
-of the [browser `LockManager`][] API.
+`navigator.locks` 只读属性返回一个 [`LockManager`][] 实例，该实例
+可用于协调对可能在同一进程内多个
+线程之间共享的资源的访问。此全局实现匹配
+[浏览器 `LockManager`][] API 的语义。
 
 ```mjs
-// Request an exclusive lock
+// 请求独占锁
 await navigator.locks.request('my_resource', async (lock) => {
-  // The lock has been acquired.
+  // 锁已获取。
   console.log(`Lock acquired: ${lock.name}`);
-  // Lock is automatically released when the function returns
+  // 函数返回时锁会自动释放
 });
 
-// Request a shared lock
+// 请求共享锁
 await navigator.locks.request('shared_resource', { mode: 'shared' }, async (lock) => {
-  // Multiple shared locks can be held simultaneously
+  // 可以同时持有多个共享锁
   console.log(`Shared lock acquired: ${lock.name}`);
 });
 ```
 
 ```cjs
-// Request an exclusive lock
+// 请求独占锁
 navigator.locks.request('my_resource', async (lock) => {
-  // The lock has been acquired.
+  // 锁已获取。
   console.log(`Lock acquired: ${lock.name}`);
-  // Lock is automatically released when the function returns
+  // 函数返回时锁会自动释放
 }).then(() => {
   console.log('Lock released');
 });
 
-// Request a shared lock
+// 请求共享锁
 navigator.locks.request('shared_resource', { mode: 'shared' }, async (lock) => {
-  // Multiple shared locks can be held simultaneously
+  // 可以同时持有多个共享锁
   console.log(`Shared lock acquired: ${lock.name}`);
 }).then(() => {
   console.log('Shared lock released');
 });
 ```
 
-See [`worker_threads.locks`][] for detailed API documentation.
+有关详细的 API 文档，请参阅 [`worker_threads.locks`][]。
 
 ### `navigator.platform`
 
@@ -846,10 +818,10 @@ See [`worker_threads.locks`][] for detailed API documentation.
 added: v21.2.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The `navigator.platform` read-only property returns a string identifying the
-platform on which the Node.js instance is running.
+`navigator.platform` 只读属性返回一个字符串，标识
+运行 Node.js 实例的平台。
 
 ```js
 console.log(`This process is running on ${navigator.platform}`);
@@ -861,10 +833,10 @@ console.log(`This process is running on ${navigator.platform}`);
 added: v21.1.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The `navigator.userAgent` read-only property returns user agent
-consisting of the runtime name and major version number.
+`navigator.userAgent` 只读属性返回用户代理，
+由运行时名称和主版本号组成。
 
 ```js
 console.log(`The user-agent is ${navigator.userAgent}`); // Prints "Node.js/21"
@@ -876,57 +848,55 @@ console.log(`The user-agent is ${navigator.userAgent}`); // Prints "Node.js/21"
 added: v16.0.0
 -->
 
-The [`perf_hooks.performance`][] object.
+[`perf_hooks.performance`][] 对象。
 
-## Class: `PerformanceEntry`
-
-<!-- YAML
-added: v19.0.0
--->
-
-The `PerformanceEntry` class. See [`PerformanceEntry`][] for more details.
-
-## Class: `PerformanceMark`
+## 类：`PerformanceEntry`
 
 <!-- YAML
 added: v19.0.0
 -->
 
-The `PerformanceMark` class. See [`PerformanceMark`][] for more details.
+`PerformanceEntry` 类。有关更多详细信息，请参阅 [`PerformanceEntry`][]。
 
-## Class: `PerformanceMeasure`
-
-<!-- YAML
-added: v19.0.0
--->
-
-The `PerformanceMeasure` class. See [`PerformanceMeasure`][] for more details.
-
-## Class: `PerformanceObserver`
+## 类：`PerformanceMark`
 
 <!-- YAML
 added: v19.0.0
 -->
 
-The `PerformanceObserver` class. See [`PerformanceObserver`][] for more details.
+`PerformanceMark` 类。有关更多详细信息，请参阅 [`PerformanceMark`][]。
 
-## Class: `PerformanceObserverEntryList`
-
-<!-- YAML
-added: v19.0.0
--->
-
-The `PerformanceObserverEntryList` class. See
-[`PerformanceObserverEntryList`][] for more details.
-
-## Class: `PerformanceResourceTiming`
+## 类：`PerformanceMeasure`
 
 <!-- YAML
 added: v19.0.0
 -->
 
-The `PerformanceResourceTiming` class. See [`PerformanceResourceTiming`][] for
-more details.
+`PerformanceMeasure` 类。有关更多详细信息，请参阅 [`PerformanceMeasure`][]。
+
+## 类：`PerformanceObserver`
+
+<!-- YAML
+added: v19.0.0
+-->
+
+`PerformanceObserver` 类。有关更多详细信息，请参阅 [`PerformanceObserver`][]。
+
+## 类：`PerformanceObserverEntryList`
+
+<!-- YAML
+added: v19.0.0
+-->
+
+`PerformanceObserverEntryList` 类。详见 [`PerformanceObserverEntryList`][] 以获取更多详情。
+
+## 类：`PerformanceResourceTiming`
+
+<!-- YAML
+added: v19.0.0
+-->
+
+`PerformanceResourceTiming` 类。详见 [`PerformanceResourceTiming`][] 以获取更多详情。
 
 ## `process`
 
@@ -934,9 +904,9 @@ more details.
 added: v0.1.7
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-The process object. See the [`process` object][] section.
+`process` 对象。详见 [`process` 对象][] 部分。
 
 ## `queueMicrotask(callback)`
 
@@ -944,22 +914,17 @@ The process object. See the [`process` object][] section.
 added: v11.0.0
 -->
 
-* `callback` {Function} Function to be queued.
+* `callback` {Function} 要排队等待执行的函数。
 
-The `queueMicrotask()` method queues a microtask to invoke `callback`. If
-`callback` throws an exception, the [`process` object][] `'uncaughtException'`
-event will be emitted.
+`queueMicrotask()` 方法将一个微任务排队以调用 `callback`。如果 `callback` 抛出异常，将发出 [`process` 对象][] 的 `'uncaughtException'` 事件。
 
-The microtask queue is managed by V8 and may be used in a similar manner to
-the [`process.nextTick()`][] queue, which is managed by Node.js. The
-`process.nextTick()` queue is always processed before the microtask queue
-within each turn of the Node.js event loop.
+微任务队列由 V8 管理，其使用方式可能与由 Node.js 管理的 [`process.nextTick()`][] 队列类似。在 Node.js 事件循环的每一轮中，`process.nextTick()` 队列总是在微任务队列之前被处理。
 
 ```js
-// Here, `queueMicrotask()` is used to ensure the 'load' event is always
-// emitted asynchronously, and therefore consistently. Using
-// `process.nextTick()` here would result in the 'load' event always emitting
-// before any other promise jobs.
+// 这里，`queueMicrotask()` 用于确保 'load' 事件总是
+// 异步发出，因此保持一致。使用
+// `process.nextTick()` 会导致 'load' 事件总是在
+// 任何其他 Promise 作业之前发出。
 
 DataHandler.prototype.load = async function load(key) {
   const hit = this._cache.get(key);
@@ -976,29 +941,15 @@ DataHandler.prototype.load = async function load(key) {
 };
 ```
 
-## Class: `QuotaExceededError`
+## 类：`QuotaExceededError`
 
 <!-- YAML
 added: REPLACEME
 -->
 
-The WHATWG {QuotaExceededError} class. Extends {DOMException}.
+WHATWG {QuotaExceededError} 类。继承自 {DOMException}。
 
-## Class: `ReadableByteStreamController`
-
-<!-- YAML
-added: v18.0.0
-changes:
- - version:
-    - v23.11.0
-    - v22.15.0
-   pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
--->
-
-A browser-compatible implementation of [`ReadableByteStreamController`][].
-
-## Class: `ReadableStream`
+## 类：`ReadableByteStreamController`
 
 <!-- YAML
 added: v18.0.0
@@ -1007,12 +958,26 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`ReadableStream`][].
+与浏览器兼容的 [`ReadableByteStreamController`][] 实现。
 
-## Class: `ReadableStreamBYOBReader`
+## 类：`ReadableStream`
+
+<!-- YAML
+added: v18.0.0
+changes:
+ - version:
+    - v23.11.0
+    - v22.15.0
+   pr-url: https://github.com/nodejs/node/pull/57510
+   description: 标记 API 为稳定。
+-->
+
+与浏览器兼容的 [`ReadableStream`][] 实现。
+
+## 类：`ReadableStreamBYOBReader`
 
 <!-- YAML
 added: v18.0.0
@@ -1021,12 +986,12 @@ changes:
   - v23.11.0
   - v22.15.0
   pr-url: https://github.com/nodejs/node/pull/57510
-  description: Marking the API stable.
+  description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`ReadableStreamBYOBReader`][].
+与浏览器兼容的 [`ReadableStreamBYOBReader`][] 实现。
 
-## Class: `ReadableStreamBYOBRequest`
+## 类：`ReadableStreamBYOBRequest`
 
 <!-- YAML
 added: v18.0.0
@@ -1035,12 +1000,12 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`ReadableStreamBYOBRequest`][].
+与浏览器兼容的 [`ReadableStreamBYOBRequest`][] 实现。
 
-## Class: `ReadableStreamDefaultController`
+## 类：`ReadableStreamDefaultController`
 
 <!-- YAML
 added: v18.0.0
@@ -1049,12 +1014,12 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`ReadableStreamDefaultController`][].
+与浏览器兼容的 [`ReadableStreamDefaultController`][] 实现。
 
-## Class: `ReadableStreamDefaultReader`
+## 类：`ReadableStreamDefaultReader`
 
 <!-- YAML
 added: v18.0.0
@@ -1063,12 +1028,12 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`ReadableStreamDefaultReader`][].
+与浏览器兼容的 [`ReadableStreamDefaultReader`][] 实现。
 
-## Class: `Request`
+## 类：`Request`
 
 <!-- YAML
 added:
@@ -1078,19 +1043,19 @@ changes:
   - version:
     - v21.0.0
     pr-url: https://github.com/nodejs/node/pull/45684
-    description: No longer experimental.
+    description: 不再是实验性的。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41811
-    description: No longer behind `--experimental-fetch` CLI flag.
+    description: 不再位于 `--experimental-fetch` CLI 标志之后。
 -->
 
-A browser-compatible implementation of {Request}.
+与浏览器兼容的 {Request} 实现。
 
 ## `require()`
 
-This variable may appear to be global but is not. See [`require()`][].
+此变量可能看起来是全局的，但并非如此。详见 [`require()`][]。
 
-## Class: `Response`
+## 类：`Response`
 
 <!-- YAML
 added:
@@ -1100,13 +1065,13 @@ changes:
   - version:
     - v21.0.0
     pr-url: https://github.com/nodejs/node/pull/45684
-    description: No longer experimental.
+    description: 不再是实验性的。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41811
-    description: No longer behind `--experimental-fetch` CLI flag.
+    description: 不再位于 `--experimental-fetch` CLI 标志之后。
 -->
 
-A browser-compatible implementation of {Response}.
+与浏览器兼容的 {Response} 实现。
 
 ## `sessionStorage`
 
@@ -1115,14 +1080,12 @@ added: v22.4.0
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/57666
-    description: This API is no longer behind `--experimental-webstorage` runtime flag.
+    description: 此 API 不再位于 `--experimental-webstorage` 运行时标志之后。
 -->
 
-> Stability: 1.2 - Release candidate. Disable this API with [`--no-experimental-webstorage`][].
+> 稳定性：1.2 - 发布候选。使用 [`--no-experimental-webstorage`][] 禁用此 API。
 
-A browser-compatible implementation of [`sessionStorage`][]. Data is stored in
-memory, with a storage quota of 10 MB. `sessionStorage` data persists only within
-the currently running process, and is not shared between workers.
+与浏览器兼容的 [`sessionStorage`][] 实现。数据存储在内存中，存储配额为 10 MB。`sessionStorage` 数据仅在当前运行的进程内持久存在，且不在 worker 之间共享。
 
 ## `setImmediate(callback[, ...args])`
 
@@ -1130,7 +1093,7 @@ the currently running process, and is not shared between workers.
 added: v0.9.1
 -->
 
-[`setImmediate`][] is described in the [timers][] section.
+[`setImmediate`][] 在 [定时器][] 部分中描述。
 
 ## `setInterval(callback, delay[, ...args])`
 
@@ -1138,7 +1101,7 @@ added: v0.9.1
 added: v0.0.1
 -->
 
-[`setInterval`][] is described in the [timers][] section.
+[`setInterval`][] 在 [定时器][] 部分中描述。
 
 ## `setTimeout(callback, delay[, ...args])`
 
@@ -1146,17 +1109,17 @@ added: v0.0.1
 added: v0.0.1
 -->
 
-[`setTimeout`][] is described in the [timers][] section.
+[`setTimeout`][] 在 [定时器][] 部分中描述。
 
-## Class: `Storage`
+## 类：`Storage`
 
 <!-- YAML
 added: v22.4.0
 -->
 
-> Stability: 1.2 - Release candidate. Disable this API with [`--no-experimental-webstorage`][].
+> 稳定性：1.2 - 发布候选。使用 [`--no-experimental-webstorage`][] 禁用此 API。
 
-A browser-compatible implementation of {Storage}.
+与浏览器兼容的 {Storage} 实现。
 
 ## `structuredClone(value[, options])`
 
@@ -1164,9 +1127,9 @@ A browser-compatible implementation of {Storage}.
 added: v17.0.0
 -->
 
-The WHATWG [`structuredClone`][] method.
+WHATWG [`structuredClone`][] 方法。
 
-## Class: `SubtleCrypto`
+## 类：`SubtleCrypto`
 
 <!-- YAML
 added:
@@ -1175,22 +1138,20 @@ added:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/42083
-    description: No longer behind `--experimental-global-webcrypto` CLI flag.
+    description: 不再位于 `--experimental-global-webcrypto` CLI 标志之后。
 -->
 
-A browser-compatible implementation of {SubtleCrypto}. This global is available
-only if the Node.js binary was compiled with including support for the
-`node:crypto` module.
+与浏览器兼容的 {SubtleCrypto} 实现。仅当 Node.js 二进制文件编译时包含对 `node:crypto` 模块的支持时，此全局变量才可用。
 
-## Class: `TextDecoder`
+## 类：`TextDecoder`
 
 <!-- YAML
 added: v11.0.0
 -->
 
-The WHATWG `TextDecoder` class. See the [`TextDecoder`][] section.
+WHATWG `TextDecoder` 类。详见 [`TextDecoder`][] 部分。
 
-## Class: `TextDecoderStream`
+## 类：`TextDecoderStream`
 
 <!-- YAML
 added: v18.0.0
@@ -1199,34 +1160,20 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`TextDecoderStream`][].
+与浏览器兼容的 [`TextDecoderStream`][] 实现。
 
-## Class: `TextEncoder`
+## 类：`TextEncoder`
 
 <!-- YAML
 added: v11.0.0
 -->
 
-The WHATWG `TextEncoder` class. See the [`TextEncoder`][] section.
+WHATWG `TextEncoder` 类。详见 [`TextEncoder`][] 部分。
 
-## Class: `TextEncoderStream`
-
-<!-- YAML
-added: v18.0.0
-changes:
- - version:
-    - v23.11.0
-    - v22.15.0
-   pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
--->
-
-A browser-compatible implementation of [`TextEncoderStream`][].
-
-## Class: `TransformStream`
+## 类：`TextEncoderStream`
 
 <!-- YAML
 added: v18.0.0
@@ -1235,12 +1182,12 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`TransformStream`][].
+与浏览器兼容的 [`TextEncoderStream`][] 实现。
 
-## Class: `TransformStreamDefaultController`
+## 类：`TransformStream`
 
 <!-- YAML
 added: v18.0.0
@@ -1249,50 +1196,62 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`TransformStreamDefaultController`][].
+与浏览器兼容的 [`TransformStream`][] 实现。
 
-## Class: `URL`
+## 类：`TransformStreamDefaultController`
+
+<!-- YAML
+added: v18.0.0
+changes:
+ - version:
+    - v23.11.0
+    - v22.15.0
+   pr-url: https://github.com/nodejs/node/pull/57510
+   description: 标记 API 为稳定。
+-->
+
+与浏览器兼容的 [`TransformStreamDefaultController`][] 实现。
+
+## 类：`URL`
 
 <!-- YAML
 added: v10.0.0
 -->
 
-The WHATWG `URL` class. See the [`URL`][] section.
+WHATWG `URL` 类。详见 [`URL`][] 部分。
 
-## Class: `URLPattern`
+## 类：`URLPattern`
 
 <!-- YAML
 added: v24.0.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性的
 
-The WHATWG `URLPattern` class. See the [`URLPattern`][] section.
+WHATWG `URLPattern` 类。详见 [`URLPattern`][] 部分。
 
-## Class: `URLSearchParams`
+## 类：`URLSearchParams`
 
 <!-- YAML
 added: v10.0.0
 -->
 
-The WHATWG `URLSearchParams` class. See the [`URLSearchParams`][] section.
+WHATWG `URLSearchParams` 类。详见 [`URLSearchParams`][] 部分。
 
-## Class: `WebAssembly`
+## 类：`WebAssembly`
 
 <!-- YAML
 added: v8.0.0
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-The object that acts as the namespace for all W3C
-[WebAssembly][webassembly-org] related functionality. See the
-[Mozilla Developer Network][webassembly-mdn] for usage and compatibility.
+作为所有 W3C [WebAssembly][webassembly-org] 相关功能命名空间的对象。用法和兼容性请参阅 [Mozilla 开发者网络][webassembly-mdn]。
 
-## Class: `WebSocket`
+## 类：`WebSocket`
 
 <!-- YAML
 added:
@@ -1301,16 +1260,15 @@ added:
 changes:
   - version: v22.4.0
     pr-url: https://github.com/nodejs/node/pull/53352
-    description: No longer experimental.
+    description: 不再是实验性的。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/51594
-    description: No longer behind `--experimental-websocket` CLI flag.
+    description: 不再位于 `--experimental-websocket` CLI 标志之后。
 -->
 
-A browser-compatible implementation of {WebSocket}. Disable this API
-with the [`--no-experimental-websocket`][] CLI flag.
+与浏览器兼容的 {WebSocket} 实现。使用 [`--no-experimental-websocket`][] CLI 标志禁用此 API。
 
-## Class: `WritableStream`
+## 类：`WritableStream`
 
 <!-- YAML
 added: v18.0.0
@@ -1319,12 +1277,12 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`WritableStream`][].
+与浏览器兼容的 [`WritableStream`][] 实现。
 
-## Class: `WritableStreamDefaultController`
+## 类：`WritableStreamDefaultController`
 
 <!-- YAML
 added: v18.0.0
@@ -1333,12 +1291,12 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`WritableStreamDefaultController`][].
+与浏览器兼容的 [`WritableStreamDefaultController`][] 实现。
 
-## Class: `WritableStreamDefaultWriter`
+## 类：`WritableStreamDefaultWriter`
 
 <!-- YAML
 added: v18.0.0
@@ -1347,14 +1305,14 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-A browser-compatible implementation of [`WritableStreamDefaultWriter`][].
+与浏览器兼容的 [`WritableStreamDefaultWriter`][] 实现。
 
-[CommonJS module]: modules.md
-[CommonJS modules]: modules.md
-[ECMAScript module]: esm.md
+[CommonJS 模块]: modules.md
+[CommonJS 模块]: modules.md
+[ECMAScript 模块]: esm.md
 [Navigator API]: https://html.spec.whatwg.org/multipage/system-state.html#the-navigator-object
 [RFC 5646]: https://www.rfc-editor.org/rfc/rfc5646.txt
 [Web Crypto API]: webcrypto.md
@@ -1367,7 +1325,7 @@ A browser-compatible implementation of [`WritableStreamDefaultWriter`][].
 [`CompressionStream`]: webstreams.md#class-compressionstream
 [`CountQueuingStrategy`]: webstreams.md#class-countqueuingstrategy
 [`DecompressionStream`]: webstreams.md#class-decompressionstream
-[`EventTarget` and `Event` API]: events.md#eventtarget-and-event-api
+[`EventTarget` 和 `Event` API]: events.md#eventtarget-and-event-api
 [`FormData`]: #class-formdata
 [`Headers`]: #class-headers
 [`LockManager`]: worker_threads.md#class-lockmanager
@@ -1415,7 +1373,7 @@ A browser-compatible implementation of [`WritableStreamDefaultWriter`][].
 [`module`]: modules.md#module
 [`perf_hooks.performance`]: perf_hooks.md#perf_hooksperformance
 [`process.nextTick()`]: process.md#processnexttickcallback-args
-[`process` object]: process.md#process
+[`process` 对象]: process.md#process
 [`require()`]: modules.md#requireid
 [`sessionStorage`]: https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
 [`setImmediate`]: timers.md#setimmediatecallback-args
@@ -1425,8 +1383,8 @@ A browser-compatible implementation of [`WritableStreamDefaultWriter`][].
 [`window.navigator`]: https://developer.mozilla.org/en-US/docs/Web/API/Window/navigator
 [`worker_threads.locks`]: worker_threads.md#worker_threadslocks
 [browser `LockManager`]: https://developer.mozilla.org/en-US/docs/Web/API/LockManager
-[buffer section]: buffer.md
-[built-in objects]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
-[timers]: timers.md
+[buffer 部分]: buffer.md
+[内置对象]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
+[定时器]: timers.md
 [webassembly-mdn]: https://developer.mozilla.org/en-US/docs/WebAssembly
 [webassembly-org]: https://webassembly.org

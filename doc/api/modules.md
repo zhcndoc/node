@@ -1,27 +1,24 @@
-# Modules: CommonJS modules
+# 模块：CommonJS 模块
 
 <!--introduced_in=v0.10.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!--name=module-->
 
-CommonJS modules are the original way to package JavaScript code for Node.js.
-Node.js also supports the [ECMAScript modules][] standard used by browsers
-and other JavaScript runtimes.
+CommonJS 模块是用于 Node.js 打包 JavaScript 代码的原始方式。
+Node.js 也支持浏览器和其他 JavaScript 运行时使用的 [ECMAScript 模块][] 标准。
 
-In Node.js, each file is treated as a separate module. For
-example, consider a file named `foo.js`:
+在 Node.js 中，每个文件都被视为一个单独的模块。例如，考虑一个名为 `foo.js` 的文件：
 
 ```js
 const circle = require('./circle.js');
 console.log(`The area of a circle of radius 4 is ${circle.area(4)}`);
 ```
 
-On the first line, `foo.js` loads the module `circle.js` that is in the same
-directory as `foo.js`.
+在第一行，`foo.js` 加载了与 `foo.js` 位于同一目录的模块 `circle.js`。
 
-Here are the contents of `circle.js`:
+以下是 `circle.js` 的内容：
 
 ```js
 const { PI } = Math;
@@ -31,19 +28,14 @@ exports.area = (r) => PI * r ** 2;
 exports.circumference = (r) => 2 * PI * r;
 ```
 
-The module `circle.js` has exported the functions `area()` and
-`circumference()`. Functions and objects are added to the root of a module
-by specifying additional properties on the special `exports` object.
+模块 `circle.js` 导出了 `area()` 和 `circumference()` 函数。函数和对象通过在特殊的 `exports` 对象上指定附加属性来添加到模块的根目录。
 
-Variables local to the module will be private, because the module is wrapped
-in a function by Node.js (see [module wrapper](#the-module-wrapper)).
-In this example, the variable `PI` is private to `circle.js`.
+模块局部的变量将是私有的，因为模块被 Node.js 包装在一个函数中（参见 [模块包装器](#the-module-wrapper)）。
+在此示例中，变量 `PI` 对 `circle.js` 是私有的。
 
-The `module.exports` property can be assigned a new value (such as a function
-or object).
+`module.exports` 属性可以被赋予一个新值（例如函数或对象）。
 
-In the following code, `bar.js` makes use of the `square` module, which exports
-a Square class:
+在以下代码中，`bar.js` 使用了 `square` 模块，该模块导出一个 Square 类：
 
 ```js
 const Square = require('./square.js');
@@ -51,10 +43,10 @@ const mySquare = new Square(2);
 console.log(`The area of mySquare is ${mySquare.area()}`);
 ```
 
-The `square` module is defined in `square.js`:
+`square` 模块定义在 `square.js` 中：
 
 ```js
-// Assigning to exports will not modify module, must use module.exports
+// 赋值给 exports 不会修改 module，必须使用 module.exports
 module.exports = class Square {
   constructor(width) {
     this.width = width;
@@ -66,109 +58,67 @@ module.exports = class Square {
 };
 ```
 
-The CommonJS module system is implemented in the [`module` core module][].
+CommonJS 模块系统是在 [`module` 核心模块][] 中实现的。
 
-## Enabling
-
-<!-- type=misc -->
-
-Node.js has two module systems: CommonJS modules and [ECMAScript modules][].
-
-By default, Node.js will treat the following as CommonJS modules:
-
-* Files with a `.cjs` extension;
-
-* Files with a `.js` extension when the nearest parent `package.json` file
-  contains a top-level field [`"type"`][] with a value of `"commonjs"`.
-
-* Files with a `.js` extension or without an extension, when the nearest parent
-  `package.json` file doesn't contain a top-level field [`"type"`][] or there is
-  no `package.json` in any parent folder; unless the file contains syntax that
-  errors unless it is evaluated as an ES module. Package authors should include
-  the [`"type"`][] field, even in packages where all sources are CommonJS. Being
-  explicit about the `type` of the package will make things easier for build
-  tools and loaders to determine how the files in the package should be
-  interpreted.
-
-* Files with an extension that is not `.mjs`, `.cjs`, `.json`, `.node`, or `.js`
-  (when the nearest parent `package.json` file contains a top-level field
-  [`"type"`][] with a value of `"module"`, those files will be recognized as
-  CommonJS modules only if they are being included via `require()`, not when
-  used as the command-line entry point of the program).
-
-See [Determining module system][] for more details.
-
-Calling `require()` always use the CommonJS module loader. Calling `import()`
-always use the ECMAScript module loader.
-
-## Accessing the main module
+## 启用
 
 <!-- type=misc -->
 
-When a file is run directly from Node.js, `require.main` is set to its
-`module`. That means that it is possible to determine whether a file has been
-run directly by testing `require.main === module`.
+Node.js 有两个模块系统：CommonJS 模块和 [ECMAScript 模块][]。
 
-For a file `foo.js`, this will be `true` if run via `node foo.js`, but
-`false` if run by `require('./foo')`.
+默认情况下，Node.js 会将以下内容视为 CommonJS 模块：
 
-When the entry point is not a CommonJS module, `require.main` is `undefined`,
-and the main module is out of reach.
+* 扩展名为 `.cjs` 的文件；
 
-## Package manager tips
+* 当最近的父级 `package.json` 文件包含值为 `"commonjs"` 的顶层字段 [`"type"`][] 时，扩展名为 `.js` 的文件；
+
+* 当最近的父级 `package.json` 文件不包含顶层字段 [`"type"`][] 或任何父文件夹中都没有 `package.json` 时，扩展名为 `.js` 或没有扩展名的文件；除非文件包含除非作为 ES 模块评估否则会出错的语法。包作者应该包含 [`"type"`][] 字段，即使包中的所有源都是 CommonJS。明确包的 `type` 将使构建工具和加载器更容易确定包中的文件应如何被解释。
+
+* 扩展名不是 `.mjs`、`.cjs`、`.json`、`.node` 或 `.js` 的文件（当最近的父级 `package.json` 文件包含值为 `"module"` 的顶层字段 [`"type"`][] 时，这些文件仅当通过 `require()` 包含时才会被识别为 CommonJS 模块，而不是当用作程序的命令行入口点时）。
+
+参见 [确定模块系统][] 了解更多详情。
+
+调用 `require()` 始终使用 CommonJS 模块加载器。调用 `import()` 始终使用 ECMAScript 模块加载器。
+
+## 访问主模块
 
 <!-- type=misc -->
 
-The semantics of the Node.js `require()` function were designed to be general
-enough to support reasonable directory structures. Package manager programs
-such as `dpkg`, `rpm`, and `npm` will hopefully find it possible to build
-native packages from Node.js modules without modification.
+当文件直接由 Node.js 运行时，`require.main` 被设置为其 `module`。这意味着可以通过测试 `require.main === module` 来确定文件是否被直接运行。
 
-In the following, we give a suggested directory structure that could work:
+对于文件 `foo.js`，如果通过 `node foo.js` 运行，这将为 `true`，但如果通过 `require('./foo')` 运行，则为 `false`。
 
-Let's say that we wanted to have the folder at
-`/usr/lib/node/<some-package>/<some-version>` hold the contents of a
-specific version of a package.
+当入口点不是 CommonJS 模块时，`require.main` 为 `undefined`，并且主模块无法访问。
 
-Packages can depend on one another. In order to install package `foo`, it
-may be necessary to install a specific version of package `bar`. The `bar`
-package may itself have dependencies, and in some cases, these may even collide
-or form cyclic dependencies.
+## 包管理器提示
 
-Because Node.js looks up the `realpath` of any modules it loads (that is, it
-resolves symlinks) and then [looks for their dependencies in `node_modules` folders](#loading-from-node_modules-folders),
-this situation can be resolved with the following architecture:
+<!-- type=misc -->
 
-* `/usr/lib/node/foo/1.2.3/`: Contents of the `foo` package, version 1.2.3.
-* `/usr/lib/node/bar/4.3.2/`: Contents of the `bar` package that `foo` depends
-  on.
-* `/usr/lib/node/foo/1.2.3/node_modules/bar`: Symbolic link to
-  `/usr/lib/node/bar/4.3.2/`.
-* `/usr/lib/node/bar/4.3.2/node_modules/*`: Symbolic links to the packages that
-  `bar` depends on.
+Node.js `require()` 函数的语义设计得足够通用，以支持合理的目录结构。像 `dpkg`、`rpm` 和 `npm` 这样的包管理器程序有望能够在无需修改的情况下从 Node.js 模块构建原生包。
 
-Thus, even if a cycle is encountered, or if there are dependency
-conflicts, every module will be able to get a version of its dependency
-that it can use.
+以下是建议的可行目录结构：
 
-When the code in the `foo` package does `require('bar')`, it will get the
-version that is symlinked into `/usr/lib/node/foo/1.2.3/node_modules/bar`.
-Then, when the code in the `bar` package calls `require('quux')`, it'll get
-the version that is symlinked into
-`/usr/lib/node/bar/4.3.2/node_modules/quux`.
+假设我们想让位于 `/usr/lib/node/<some-package>/<some-version>` 的文件夹持有特定版本包的内容。
 
-Furthermore, to make the module lookup process even more optimal, rather
-than putting packages directly in `/usr/lib/node`, we could put them in
-`/usr/lib/node_modules/<name>/<version>`. Then Node.js will not bother
-looking for missing dependencies in `/usr/node_modules` or `/node_modules`.
+包可以相互依赖。为了安装包 `foo`，可能需要安装包 `bar` 的特定版本。`bar` 包本身可能有依赖项，在某些情况下，这些依赖项甚至可能冲突或形成循环依赖。
 
-In order to make modules available to the Node.js REPL, it might be useful to
-also add the `/usr/lib/node_modules` folder to the `$NODE_PATH` environment
-variable. Since the module lookups using `node_modules` folders are all
-relative, and based on the real path of the files making the calls to
-`require()`, the packages themselves can be anywhere.
+因为 Node.js 查找它加载的任何模块的 `realpath`（即，它解析符号链接），然后 [在 `node_modules` 文件夹中查找它们的依赖项](#loading-from-node_modules-folders)，
+这种情况可以通过以下架构解决：
 
-## Loading ECMAScript modules using `require()`
+* `/usr/lib/node/foo/1.2.3/`：`foo` 包的内容，版本 1.2.3。
+* `/usr/lib/node/bar/4.3.2/`：`foo` 依赖的 `bar` 包的内容。
+* `/usr/lib/node/foo/1.2.3/node_modules/bar`：到 `/usr/lib/node/bar/4.3.2/` 的符号链接。
+* `/usr/lib/node/bar/4.3.2/node_modules/*`：到 `bar` 依赖的包的符号链接。
+
+因此，即使遇到循环，或者存在依赖冲突，每个模块都能够获得它可以使用的依赖版本。
+
+当 `foo` 包中的代码执行 `require('bar')` 时，它将获取符号链接到 `/usr/lib/node/foo/1.2.3/node_modules/bar` 的版本。然后，当 `bar` 包中的代码调用 `require('quux')` 时，它将获取符号链接到 `/usr/lib/node/bar/4.3.2/node_modules/quux` 的版本。
+
+此外，为了使模块查找过程更加优化，我们可以将包放在 `/usr/lib/node_modules/<name>/<version>` 中，而不是直接放在 `/usr/lib/node` 中。这样 Node.js 就不会费力去 `/usr/node_modules` 或 `/node_modules` 中查找缺失的依赖项。
+
+为了使模块可用于 Node.js REPL，将 `/usr/lib/node_modules` 文件夹添加到 `$NODE_PATH` 环境变量中可能很有用。由于使用 `node_modules` 文件夹的模块查找都是相对的，并且基于调用 `require()` 的文件的真实路径，包本身可以位于任何地方。
+
+## 使用 `require()` 加载 ECMAScript 模块
 
 <!-- YAML
 added:
@@ -178,46 +128,42 @@ changes:
   - version:
     - v25.4.0
     pr-url: https://github.com/nodejs/node/pull/60959
-    description: This feature is no longer experimental.
+    description: 此功能不再是实验性的。
   - version:
     - v23.5.0
     - v22.13.0
     - v20.19.0
     pr-url: https://github.com/nodejs/node/pull/56194
-    description: This feature no longer emits an experimental warning by default,
-                 though the warning can still be emitted by --trace-require-module.
+    description: 此功能默认不再发出实验性警告，
+                 尽管仍可以通过 --trace-require-module 发出警告。
   - version:
     - v23.0.0
     - v22.12.0
     - v20.19.0
     pr-url: https://github.com/nodejs/node/pull/55085
-    description: This feature is no longer behind the `--experimental-require-module` CLI flag.
+    description: 此功能不再隐藏在 `--experimental-require-module` CLI 标志后面。
   - version:
     - v23.0.0
     - v22.12.0
     pr-url: https://github.com/nodejs/node/pull/54563
-    description: Support `'module.exports'` interop export in `require(esm)`.
+    description: 在 `require(esm)` 中支持 `'module.exports'` 互操作导出。
 -->
 
-The `.mjs` extension is reserved for [ECMAScript Modules][].
-See [Determining module system][] section for more info
-regarding which files are parsed as ECMAScript modules.
+`.mjs` 扩展名保留给 [ECMAScript 模块][]。
+参见 [确定模块系统][] 部分了解更多关于哪些文件被解析为 ECMAScript 模块的信息。
 
-`require()` only supports loading ECMAScript modules that meet the following requirements:
+`require()` 仅支持加载满足以下要求的 ECMAScript 模块：
 
-* The module is fully synchronous (contains no top-level `await`); and
-* One of these conditions are met:
-  1. The file has a `.mjs` extension.
-  2. The file has a `.js` extension, and the closest `package.json` contains `"type": "module"`
-  3. The file has a `.js` extension, the closest `package.json` does not contain
-     `"type": "commonjs"`, and the module contains ES module syntax.
+* 模块完全是同步的（不包含顶层 `await`）；并且
+* 满足以下条件之一：
+  1. 文件具有 `.mjs` 扩展名。
+  2. 文件具有 `.js` 扩展名，并且最近的 `package.json` 包含 `"type": "module"`
+  3. 文件具有 `.js` 扩展名，最近的 `package.json` 不包含
+     `"type": "commonjs"`，并且模块包含 ES 模块语法。
 
-If the ES Module being loaded meets the requirements, `require()` can load it and
-return the [module namespace object][]. In this case it is similar to dynamic
-`import()` but is run synchronously and returns the name space object
-directly.
+如果加载的 ES 模块满足要求，`require()` 可以加载它并返回 [模块命名空间对象][]。在这种情况下，它类似于动态 `import()`，但是同步运行并直接返回命名空间对象。
 
-With the following ES Modules:
+使用以下 ES 模块：
 
 ```mjs
 // distance.mjs
@@ -231,36 +177,29 @@ export default class Point {
 }
 ```
 
-A CommonJS module can load them with `require()`:
+CommonJS 模块可以使用 `require()` 加载它们：
 
 ```cjs
 const distance = require('./distance.mjs');
 console.log(distance);
-// [Module: null prototype] {
-//   distance: [Function: distance]
+// [模块：null 原型] {
+//   distance: [函数：distance]
 // }
 
 const point = require('./point.mjs');
 console.log(point);
-// [Module: null prototype] {
-//   default: [class Point],
+// [模块：null 原型] {
+//   default: [类 Point],
 //   __esModule: true,
 // }
 ```
 
-For interoperability with existing tools that convert ES Modules into CommonJS,
-which could then load real ES Modules through `require()`, the returned namespace
-would contain a `__esModule: true` property if it has a `default` export so that
-consuming code generated by tools can recognize the default exports in real
-ES Modules. If the namespace already defines `__esModule`, this would not be added.
-This property is experimental and can change in the future. It should only be used
-by tools converting ES modules into CommonJS modules, following existing ecosystem
-conventions. Code authored directly in CommonJS should avoid depending on it.
+为了与将 ES 模块转换为 CommonJS 的现有工具互操作，
+这些工具随后可以通过 `require()` 加载真正的 ES 模块，如果返回的命名空间具有 `default` 导出，它将包含一个 `__esModule: true` 属性，以便工具生成的消费代码可以识别真正 ES 模块中的默认导出。如果命名空间已经定义了 `__esModule`，则不会添加此属性。
+此属性是实验性的，未来可能会更改。它应仅被将 ES 模块转换为 CommonJS 模块的工具使用，遵循现有的生态系统约定。直接用 CommonJS 编写的代码应避免依赖它。
 
-The result returned by `require()` is the [module namespace object][], which places
-the default export in the `.default` property, similar to the results returned by `import()`.
-To customize what should be returned by `require(esm)` directly, the ES Module can export the
-desired value using the string name `"module.exports"`.
+`require()` 返回的结果是 [模块命名空间对象][]，它将默认导出放在 `.default` 属性中，类似于 `import()` 返回的结果。
+要自定义 `require(esm)` 直接返回的内容，ES 模块可以使用字符串名称 `"module.exports"` 导出所需的值。
 
 <!-- eslint-disable @stylistic/js/semi -->
 
@@ -270,8 +209,7 @@ export default class Point {
   constructor(x, y) { this.x = x; this.y = y; }
 }
 
-// `distance` is lost to CommonJS consumers of this module, unless it's
-// added to `Point` as a static property.
+// `distance` 对此模块的 CommonJS 使用者来说会丢失，除非它作为静态属性添加到 `Point`。
 export function distance(a, b) { return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2); }
 export { Point as 'module.exports' }
 ```
@@ -280,18 +218,14 @@ export { Point as 'module.exports' }
 
 ```cjs
 const Point = require('./point.mjs');
-console.log(Point); // [class Point]
+console.log(Point); // [类 Point]
 
-// Named exports are lost when 'module.exports' is used
+// 当使用 'module.exports' 时，命名导出会丢失
 const { distance } = require('./point.mjs');
 console.log(distance); // undefined
 ```
 
-Notice in the example above, when the `module.exports` export name is used, named exports
-will be lost to CommonJS consumers. To allow  CommonJS consumers to continue accessing
-named exports, the module can make sure that the default export is an object with the
-named exports attached to it as properties. For example with the example above,
-`distance` can be attached to the default export, the `Point` class, as a static method.
+注意在上面的示例中，当使用 `module.exports` 导出名称时，命名导出将对 CommonJS 使用者丢失。为了允许 CommonJS 使用者继续访问命名导出，模块可以确保默认导出是一个对象，并将命名导出作为属性附加到它上面。例如，对于上面的示例，`distance` 可以作为静态方法附加到默认导出（即 `Point` 类）上。
 
 <!-- eslint-disable @stylistic/js/semi -->
 
@@ -310,190 +244,164 @@ export { Point as 'module.exports' }
 
 ```cjs
 const Point = require('./point.mjs');
-console.log(Point); // [class Point]
+console.log(Point); // [类 Point]
 
 const { distance } = require('./point.mjs');
-console.log(distance); // [Function: distance]
+console.log(distance); // [函数：distance]
 ```
 
-If the module being `require()`'d contains top-level `await`, or the module
-graph it `import`s contains top-level `await`,
-[`ERR_REQUIRE_ASYNC_MODULE`][] will be thrown. In this case, users should
-load the asynchronous module using [`import()`][].
+如果被 `require()` 的模块包含顶层 `await`，或者它 `import` 的模块图包含顶层 `await`，
+将抛出 [`ERR_REQUIRE_ASYNC_MODULE`][]。在这种情况下，用户应使用 [`import()`][] 加载异步模块。
 
-If `--experimental-print-required-tla` is enabled, instead of throwing
-`ERR_REQUIRE_ASYNC_MODULE` before evaluation, Node.js will evaluate the
-module, try to locate the top-level awaits, and print their location to
-help users fix them.
+如果启用了 `--experimental-print-required-tla`，Node.js 将在评估之前不会抛出 `ERR_REQUIRE_ASYNC_MODULE`，而是评估模块，尝试定位顶层 await，并打印它们的位置以帮助用户修复它们。
 
-If support for loading ES modules using `require()` results in unexpected
-breakage, it can be disabled using `--no-require-module`.
-To print where this feature is used, use [`--trace-require-module`][].
+如果使用 `require()` 加载 ES 模块的支持导致意外的破坏，可以使用 `--no-require-module` 禁用它。
+要打印此功能的使用位置，使用 [`--trace-require-module`][]。
 
-This feature can be detected by checking if
-[`process.features.require_module`][] is `true`.
+可以通过检查 [`process.features.require_module`][] 是否为 `true` 来检测此功能。
 
-## All together
+## 汇总
 
 <!-- type=misc -->
 
-To get the exact filename that will be loaded when `require()` is called, use
-the `require.resolve()` function.
+要获取调用 `require()` 时加载的确切文件名，请使用 `require.resolve()` 函数。
 
-Putting together all of the above, here is the high-level algorithm
-in pseudocode of what `require()` does:
+综合以上内容，以下是 `require()` 所执行操作的高级算法伪代码：
 
 ```text
 require(X) from module at path Y
-1. If X is a core module,
-   a. return the core module
-   b. STOP
-2. If X begins with '/'
-   a. set Y to the file system root
-3. If X is equal to '.', or X begins with './', '/' or '../'
+1. 如果 X 是核心模块，
+   a. 返回核心模块
+   b. 停止
+2. 如果 X 以 '/' 开头
+   a. 设置 Y 为文件系统根目录
+3. 如果 X 等于 '.'，或 X 以 './'、'/' 或 '../' 开头
    a. LOAD_AS_FILE(Y + X)
    b. LOAD_AS_DIRECTORY(Y + X)
-   c. THROW "not found"
-4. If X begins with '#'
+   c. 抛出 "not found"
+4. 如果 X 以 '#' 开头
    a. LOAD_PACKAGE_IMPORTS(X, dirname(Y))
 5. LOAD_PACKAGE_SELF(X, dirname(Y))
 6. LOAD_NODE_MODULES(X, dirname(Y))
-7. THROW "not found"
+7. 抛出 "not found"
 
 MAYBE_DETECT_AND_LOAD(X)
-1. If X parses as a CommonJS module, load X as a CommonJS module. STOP.
-2. Else, if the source code of X can be parsed as ECMAScript module using
-  <a href="esm.md#resolver-algorithm-specification">DETECT_MODULE_SYNTAX defined in
-  the ESM resolver</a>,
-  a. Load X as an ECMAScript module. STOP.
-3. THROW the SyntaxError from attempting to parse X as CommonJS in 1. STOP.
+1. 如果 X 解析为 CommonJS 模块，将 X 作为 CommonJS 模块加载。停止。
+2. 否则，如果 X 的源代码可以使用 <a href="esm.md#resolver-algorithm-specification">ESM 解析器中定义的 DETECT_MODULE_SYNTAX</a> 解析为 ECMAScript 模块，
+  a. 将 X 作为 ECMAScript 模块加载。停止。
+3. 抛出尝试在 1 中将 X 解析为 CommonJS 时产生的 SyntaxError。停止。
 
 LOAD_AS_FILE(X)
-1. If X is a file, load X as its file extension format. STOP
-2. If X.js is a file,
-    a. Find the closest package scope SCOPE to X.
-    b. If no scope was found
+1. 如果 X 是一个文件，按其文件扩展格式加载 X。停止
+2. 如果 X.js 是一个文件，
+    a. 找到离 X 最近的包作用域 SCOPE。
+    b. 如果未找到作用域
       1. MAYBE_DETECT_AND_LOAD(X.js)
-    c. If the SCOPE/package.json contains "type" field,
-      1. If the "type" field is "module", load X.js as an ECMAScript module. STOP.
-      2. If the "type" field is "commonjs", load X.js as a CommonJS module. STOP.
+    c. 如果 SCOPE/package.json 包含 "type" 字段，
+      1. 如果 "type" 字段是 "module"，将 X.js 作为 ECMAScript 模块加载。停止。
+      2. 如果 "type" 字段是 "commonjs"，将 X.js 作为 CommonJS 模块加载。停止。
     d. MAYBE_DETECT_AND_LOAD(X.js)
-3. If X.json is a file, load X.json to a JavaScript Object. STOP
-4. If X.node is a file, load X.node as binary addon. STOP
+3. 如果 X.json 是一个文件，将 X.json 加载为 JavaScript 对象。停止
+4. 如果 X.node 是一个文件，将 X.node 作为二进制插件加载。停止
 
 LOAD_INDEX(X)
-1. If X/index.js is a file
-    a. Find the closest package scope SCOPE to X.
-    b. If no scope was found, load X/index.js as a CommonJS module. STOP.
-    c. If the SCOPE/package.json contains "type" field,
-      1. If the "type" field is "module", load X/index.js as an ECMAScript module. STOP.
-      2. Else, load X/index.js as a CommonJS module. STOP.
-2. If X/index.json is a file, parse X/index.json to a JavaScript object. STOP
-3. If X/index.node is a file, load X/index.node as binary addon. STOP
+1. 如果 X/index.js 是一个文件
+    a. 找到离 X 最近的包作用域 SCOPE。
+    b. 如果未找到作用域，将 X/index.js 作为 CommonJS 模块加载。停止。
+    c. 如果 SCOPE/package.json 包含 "type" 字段，
+      1. 如果 "type" 字段是 "module"，将 X/index.js 作为 ECMAScript 模块加载。停止。
+      2. 否则，将 X/index.js 作为 CommonJS 模块加载。停止。
+2. 如果 X/index.json 是一个文件，将 X/index.json 解析为 JavaScript 对象。停止
+3. 如果 X/index.node 是一个文件，将 X/index.node 作为二进制插件加载。停止
 
 LOAD_AS_DIRECTORY(X)
-1. If X/package.json is a file,
-   a. Parse X/package.json, and look for "main" field.
-   b. If "main" is a falsy value, GOTO 2.
-   c. let M = X + (json main field)
+1. 如果 X/package.json 是一个文件，
+   a. 解析 X/package.json，并查找 "main" 字段。
+   b. 如果 "main" 是假值，跳转到 2。
+   c. 设 M = X + (json main 字段)
    d. LOAD_AS_FILE(M)
    e. LOAD_INDEX(M)
-   f. LOAD_INDEX(X) DEPRECATED
-   g. THROW "not found"
+   f. LOAD_INDEX(X) 已弃用
+   g. 抛出 "not found"
 2. LOAD_INDEX(X)
 
 LOAD_NODE_MODULES(X, START)
-1. let DIRS = NODE_MODULES_PATHS(START)
-2. for each DIR in DIRS:
+1. 设 DIRS = NODE_MODULES_PATHS(START)
+2. 对于 DIRS 中的每个 DIR：
    a. LOAD_PACKAGE_EXPORTS(X, DIR)
    b. LOAD_AS_FILE(DIR/X)
    c. LOAD_AS_DIRECTORY(DIR/X)
 
 NODE_MODULES_PATHS(START)
-1. let PARTS = path split(START)
-2. let I = count of PARTS - 1
-3. let DIRS = []
-4. while I >= 0,
-   a. if PARTS[I] = "node_modules", GOTO d.
+1. 设 PARTS = path split(START)
+2. 设 I = PARTS 的数量 - 1
+3. 设 DIRS = []
+4. 当 I >= 0 时，
+   a. 如果 PARTS[I] = "node_modules"，跳转到 d。
    b. DIR = path join(PARTS[0 .. I] + "node_modules")
    c. DIRS = DIRS + DIR
-   d. let I = I - 1
-5. return DIRS + GLOBAL_FOLDERS
+   d. 设 I = I - 1
+5. 返回 DIRS + GLOBAL_FOLDERS
 
 LOAD_PACKAGE_IMPORTS(X, DIR)
-1. Find the closest package scope SCOPE to DIR.
-2. If no scope was found, return.
-3. If the SCOPE/package.json "imports" is null or undefined, return.
-4. If `--no-require-module` is not enabled
-  a. let CONDITIONS = ["node", "require", "module-sync"]
-  b. Else, let CONDITIONS = ["node", "require"]
-5. let MATCH = PACKAGE_IMPORTS_RESOLVE(X, pathToFileURL(SCOPE),
-  CONDITIONS) <a href="esm.md#resolver-algorithm-specification">defined in the ESM resolver</a>.
-6. RESOLVE_ESM_MATCH(MATCH).
+1. 找到离 DIR 最近的包作用域 SCOPE。
+2. 如果未找到作用域，返回。
+3. 如果 SCOPE/package.json "imports" 为 null 或 undefined，返回。
+4. 如果未启用 `--no-require-module`
+  a. 设 CONDITIONS = ["node", "require", "module-sync"]
+  b. 否则，设 CONDITIONS = ["node", "require"]
+5. 设 MATCH = PACKAGE_IMPORTS_RESOLVE(X, pathToFileURL(SCOPE),
+  CONDITIONS) <a href="esm.md#resolver-algorithm-specification">在 ESM 解析器中定义</a>。
+6. RESOLVE_ESM_MATCH(MATCH)。
 
 LOAD_PACKAGE_EXPORTS(X, DIR)
-1. Try to interpret X as a combination of NAME and SUBPATH where the name
-   may have a @scope/ prefix and the subpath begins with a slash (`/`).
-2. If X does not match this pattern or DIR/NAME/package.json is not a file,
-   return.
-3. Parse DIR/NAME/package.json, and look for "exports" field.
-4. If "exports" is null or undefined, return.
-5. If `--no-require-module` is not enabled
-  a. let CONDITIONS = ["node", "require", "module-sync"]
-  b. Else, let CONDITIONS = ["node", "require"]
-6. let MATCH = PACKAGE_EXPORTS_RESOLVE(pathToFileURL(DIR/NAME), "." + SUBPATH,
-   `package.json` "exports", CONDITIONS) <a href="esm.md#resolver-algorithm-specification">defined in the ESM resolver</a>.
+1. 尝试将 X 解释为 NAME 和 SUBPATH 的组合，其中名称可能有 @scope/ 前缀，子路径以斜杠 (`/`) 开头。
+2. 如果 X 不匹配此模式或 DIR/NAME/package.json 不是文件，
+   返回。
+3. 解析 DIR/NAME/package.json，并查找 "exports" 字段。
+4. 如果 "exports" 为 null 或 undefined，返回。
+5. 如果未启用 `--no-require-module`
+  a. 设 CONDITIONS = ["node", "require", "module-sync"]
+  b. 否则，设 CONDITIONS = ["node", "require"]
+6. 设 MATCH = PACKAGE_EXPORTS_RESOLVE(pathToFileURL(DIR/NAME), "." + SUBPATH,
+   `package.json` "exports", CONDITIONS) <a href="esm.md#resolver-algorithm-specification">在 ESM 解析器中定义</a>。
 7. RESOLVE_ESM_MATCH(MATCH)
 
 LOAD_PACKAGE_SELF(X, DIR)
-1. Find the closest package scope SCOPE to DIR.
-2. If no scope was found, return.
-3. If the SCOPE/package.json "exports" is null or undefined, return.
-4. If the SCOPE/package.json "name" is not the first segment of X, return.
-5. let MATCH = PACKAGE_EXPORTS_RESOLVE(pathToFileURL(SCOPE),
+1. 找到离 DIR 最近的包作用域 SCOPE。
+2. 如果未找到作用域，返回。
+3. 如果 SCOPE/package.json "exports" 为 null 或 undefined，返回。
+4. 如果 SCOPE/package.json "name" 不是 X 的第一段，返回。
+5. 设 MATCH = PACKAGE_EXPORTS_RESOLVE(pathToFileURL(SCOPE),
    "." + X.slice("name".length), `package.json` "exports", ["node", "require"])
-   <a href="esm.md#resolver-algorithm-specification">defined in the ESM resolver</a>.
+   <a href="esm.md#resolver-algorithm-specification">在 ESM 解析器中定义</a>。
 6. RESOLVE_ESM_MATCH(MATCH)
 
 RESOLVE_ESM_MATCH(MATCH)
-1. let RESOLVED_PATH = fileURLToPath(MATCH)
-2. If the file at RESOLVED_PATH exists, load RESOLVED_PATH as its extension
-   format. STOP
-3. THROW "not found"
+1. 设 RESOLVED_PATH = fileURLToPath(MATCH)
+2. 如果 RESOLVED_PATH 处的文件存在，按其扩展格式加载 RESOLVED_PATH。停止
+3. 抛出 "not found"
 ```
 
-## Caching
+## 缓存
 
 <!--type=misc-->
 
-Modules are cached after the first time they are loaded. This means (among other
-things) that every call to `require('foo')` will get exactly the same object
-returned, if it would resolve to the same file.
+模块在首次加载后会被缓存。这意味着（除其他外）每次调用 `require('foo')` 都将获得完全相同的对象返回，前提是它解析到相同的文件。
 
-Provided `require.cache` is not modified, multiple calls to `require('foo')`
-will not cause the module code to be executed multiple times. This is an
-important feature. With it, "partially done" objects can be returned, thus
-allowing transitive dependencies to be loaded even when they would cause cycles.
+只要 `require.cache` 未被修改，多次调用 `require('foo')` 不会导致模块代码被执行多次。这是一个重要的特性。有了它，可以返回“部分完成”的对象，从而允许加载传递依赖，即使它们会导致循环。
 
-To have a module execute code multiple times, export a function, and call that
-function.
+要让模块多次执行代码，请导出一个函数，并调用该函数。
 
-### Module caching caveats
+### 模块缓存注意事项
 
 <!--type=misc-->
 
-Modules are cached based on their resolved filename. Since modules may resolve
-to a different filename based on the location of the calling module (loading
-from `node_modules` folders), it is not a _guarantee_ that `require('foo')` will
-always return the exact same object, if it would resolve to different files.
+模块根据其解析后的文件名进行缓存。由于模块可能根据调用模块的位置（从 `node_modules` 文件夹加载）解析到不同的文件名，因此不能_保证_ `require('foo')` 总是返回完全相同的对象，如果它解析到不同的文件。
 
-Additionally, on case-insensitive file systems or operating systems, different
-resolved filenames can point to the same file, but the cache will still treat
-them as different modules and will reload the file multiple times. For example,
-`require('./foo')` and `require('./FOO')` return two different objects,
-irrespective of whether or not `./foo` and `./FOO` are the same file.
+此外，在不区分大小写的文件系统或操作系统上，不同的解析文件名可能指向同一个文件，但缓存仍会将它们视为不同的模块，并多次重新加载文件。例如，`require('./foo')` 和 `require('./FOO')` 返回两个不同的对象，无论 `./foo` 和 `./FOO` 是否是同一个文件。
 
-## Built-in modules
+## 内置模块
 
 <!--type=misc-->
 
@@ -506,49 +414,37 @@ changes:
     description: Added `node:` import support to `require(...)`.
 -->
 
-Node.js has several modules compiled into the binary. These modules are
-described in greater detail elsewhere in this documentation.
+Node.js 有几个编译到二进制文件中的模块。这些模块在本文档的其他部分有更详细的描述。
 
-The built-in modules are defined within the Node.js source and are located in the
-`lib/` folder.
+内置模块在 Node.js 源代码中定义，位于 `lib/` 文件夹中。
 
-Built-in modules can be identified using the `node:` prefix, in which case
-it bypasses the `require` cache. For instance, `require('node:http')` will
-always return the built in HTTP module, even if there is `require.cache` entry
-by that name.
+内置模块可以使用 `node:` 前缀来识别，在这种情况下，它会绕过 `require` 缓存。例如，`require('node:http')` 将始终返回内置 HTTP 模块，即使 `require.cache` 中有该名称的条目。
 
-Some built-in modules are always preferentially loaded if their identifier is
-passed to `require()`. For instance, `require('http')` will always
-return the built-in HTTP module, even if there is a file by that name.
+如果某些内置模块的标识符传递给 `require()`，它们总是被优先加载。例如，`require('http')` 将始终返回内置 HTTP 模块，即使存在同名的文件。
 
-The list of all the built-in modules can be retrieved from [`module.builtinModules`][].
-The modules being all listed without the `node:` prefix, except those that mandate such
-prefix (as explained in the next section).
+所有内置模块的列表可以从 [`module.builtinModules`][] 检索。
+列出的模块都不带 `node:` 前缀，除了那些强制要求此类前缀的模块（如下一节所述）。
 
-### Built-in modules with mandatory `node:` prefix
+### 带有强制 `node:` 前缀的内置模块
 
-When being loaded by `require()`, some built-in modules must be requested with the
-`node:` prefix. This requirement exists to prevent newly introduced built-in
-modules from having a conflict with user land packages that already have
-taken the name. Currently the built-in modules that requires the `node:` prefix are:
+当被 `require()` 加载时，某些内置模块必须使用 `node:` 前缀请求。此要求存在是为了防止新引入的内置模块与已经占用该名称的用户土地包发生冲突。目前需要 `node:` 前缀的内置模块有：
 
 * [`node:sea`][]
 * [`node:sqlite`][]
 * [`node:test`][]
 * [`node:test/reporters`][]
 
-The list of these modules is exposed in [`module.builtinModules`][], including the prefix.
+这些模块的列表暴露在 [`module.builtinModules`][] 中，包括前缀。
 
-## Cycles
+## 循环
 
 <!--type=misc-->
 
-When there are circular `require()` calls, a module might not have finished
-executing when it is returned.
+当存在循环 `require()` 调用时，模块在返回时可能尚未完成执行。
 
-Consider this situation:
+考虑这种情况：
 
-`a.js`:
+`a.js`：
 
 ```js
 console.log('a starting');
@@ -559,7 +455,7 @@ exports.done = true;
 console.log('a done');
 ```
 
-`b.js`:
+`b.js`：
 
 ```js
 console.log('b starting');
@@ -570,7 +466,7 @@ exports.done = true;
 console.log('b done');
 ```
 
-`main.js`:
+`main.js`：
 
 ```js
 console.log('main starting');
@@ -579,14 +475,10 @@ const b = require('./b.js');
 console.log('in main, a.done = %j, b.done = %j', a.done, b.done);
 ```
 
-When `main.js` loads `a.js`, then `a.js` in turn loads `b.js`. At that
-point, `b.js` tries to load `a.js`. In order to prevent an infinite
-loop, an **unfinished copy** of the `a.js` exports object is returned to the
-`b.js` module. `b.js` then finishes loading, and its `exports` object is
-provided to the `a.js` module.
+当 `main.js` 加载 `a.js` 时，`a.js` 转而加载 `b.js`。此时，`b.js` 尝试加载 `a.js`。为了防止无限循环，一个 **未完成的副本** 的 `a.js` 导出对象被返回给 `b.js` 模块。然后 `b.js` 完成加载，其 `exports` 对象被提供给 `a.js` 模块。
 
-By the time `main.js` has loaded both modules, they're both finished.
-The output of this program would thus be:
+当 `main.js` 加载完两个模块时，它们都已 finished。
+因此，该程序的输出将是：
 
 ```console
 $ node main.js
@@ -600,173 +492,117 @@ a done
 in main, a.done = true, b.done = true
 ```
 
-Careful planning is required to allow cyclic module dependencies to work
-correctly within an application.
+需要仔细规划才能允许循环模块依赖在应用程序中正常工作。
 
-## File modules
-
-<!--type=misc-->
-
-If the exact filename is not found, then Node.js will attempt to load the
-required filename with the added extensions: `.js`, `.json`, and finally
-`.node`. When loading a file that has a different extension (e.g. `.cjs`), its
-full name must be passed to `require()`, including its file extension (e.g.
-`require('./file.cjs')`).
-
-`.json` files are parsed as JSON text files, `.node` files are interpreted as
-compiled addon modules loaded with `process.dlopen()`. Files using any other
-extension (or no extension at all) are parsed as JavaScript text files. Refer to
-the [Determining module system][] section to understand what parse goal will be
-used.
-
-A required module prefixed with `'/'` is an absolute path to the file. For
-example, `require('/home/marco/foo.js')` will load the file at
-`/home/marco/foo.js`.
-
-A required module prefixed with `'./'` is relative to the file calling
-`require()`. That is, `circle.js` must be in the same directory as `foo.js` for
-`require('./circle')` to find it.
-
-Without a leading `'/'`, `'./'`, or `'../'` to indicate a file, the module must
-either be a core module or is loaded from a `node_modules` folder.
-
-If the given path does not exist, `require()` will throw a
-[`MODULE_NOT_FOUND`][] error.
-
-## Folders as modules
+## 文件模块
 
 <!--type=misc-->
 
-> Stability: 3 - Legacy: Use [subpath exports][] or [subpath imports][] instead.
+如果未找到确切的文件名，Node.js 将尝试加载带有添加扩展名的所需文件名：`.js`、`.json`，最后是 `.node`。当加载具有不同扩展名的文件（例如 `.cjs`）时，必须将其完整名称传递给 `require()`，包括其文件扩展名（例如 `require('./file.cjs')`）。
 
-There are three ways in which a folder may be passed to `require()` as
-an argument.
+`.json` 文件被解析为 JSON 文本文件，`.node` 文件被解释为使用 `process.dlopen()` 加载的编译插件模块。使用任何其他扩展名（或根本没有扩展名）的文件被解析为 JavaScript 文本文件。请参阅 [确定模块系统][] 部分以了解将使用什么解析目标。
 
-The first is to create a [`package.json`][] file in the root of the folder,
-which specifies a `main` module. An example [`package.json`][] file might
-look like this:
+以 `'/'` 前缀开头的所需模块是文件的绝对路径。例如，`require('/home/marco/foo.js')` 将加载 `/home/marco/foo.js` 处的文件。
+
+以 `'./'` 前缀开头的所需模块相对于调用 `require()` 的文件。也就是说，`circle.js` 必须与 `foo.js` 在同一目录中，`require('./circle')` 才能找到它。
+
+如果没有前导 `'/'`、`'./'` 或 `'../'` 来指示文件，该模块必须是核心模块或从 `node_modules` 文件夹加载。
+
+如果给定路径不存在，`require()` 将抛出 [`MODULE_NOT_FOUND`][] 错误。
+
+## 文件夹作为模块
+
+<!--type=misc-->
+
+> 稳定性：3 - 遗留：请改用 [子路径导出][] 或 [子路径导入][]。
+
+文件夹可以通过三种方式作为参数传递给 `require()`。
+
+第一种是在文件夹的根目录创建一个 [`package.json`][] 文件，指定一个 `main` 模块。例如 [`package.json`][] 文件可能如下所示：
 
 ```json
 { "name" : "some-library",
   "main" : "./lib/some-library.js" }
 ```
 
-If this was in a folder at `./some-library`, then
-`require('./some-library')` would attempt to load
-`./some-library/lib/some-library.js`.
+如果这位于 `./some-library` 文件夹中，那么 `require('./some-library')` 将尝试加载 `./some-library/lib/some-library.js`。
 
-If there is no [`package.json`][] file present in the directory, or if the
-[`"main"`][] entry is missing or cannot be resolved, then Node.js
-will attempt to load an `index.js` or `index.node` file out of that
-directory. For example, if there was no [`package.json`][] file in the previous
-example, then `require('./some-library')` would attempt to load:
+如果目录中不存在 [`package.json`][] 文件，或者 [`"main"`][] 条目缺失或无法解析，则 Node.js 将尝试从该目录加载 `index.js` 或 `index.node` 文件。例如，如果上一个示例中没有 [`package.json`][] 文件，那么 `require('./some-library')` 将尝试加载：
 
 * `./some-library/index.js`
 * `./some-library/index.node`
 
-If these attempts fail, then Node.js will report the entire module as missing
-with the default error:
+如果这些尝试都失败了，那么 Node.js 将报告整个模块缺失，并显示默认错误：
 
 ```console
 Error: Cannot find module 'some-library'
 ```
 
-In all three above cases, an `import('./some-library')` call would result in a
-[`ERR_UNSUPPORTED_DIR_IMPORT`][] error. Using package [subpath exports][] or
-[subpath imports][] can provide the same containment organization benefits as
-folders as modules, and work for both `require` and `import`.
+在上述所有三种情况下，`import('./some-library')` 调用将导致 [`ERR_UNSUPPORTED_DIR_IMPORT`][] 错误。使用包 [子路径导出][] 或 [子路径导入][] 可以提供与文件夹作为模块相同的包含组织优势，并且适用于 `require` 和 `import`。
 
-## Loading from `node_modules` folders
+## 从 `node_modules` 文件夹加载
 
 <!--type=misc-->
 
-If the module identifier passed to `require()` is not a
-[built-in](#built-in-modules) module, and does not begin with `'/'`, `'../'`, or
-`'./'`, then Node.js starts at the directory of the current module, and
-adds `/node_modules`, and attempts to load the module from that location.
-Node.js will not append `node_modules` to a path already ending in
-`node_modules`.
+如果传递给 `require()` 的模块标识符不是 [内置](#built-in-modules) 模块，并且不以 `'/'`、`'../'` 或 `'./'` 开头，那么 Node.js 会从当前模块的目录开始，添加 `/node_modules`，并尝试从该位置加载模块。Node.js 不会将 `node_modules` 附加到已经以 `node_modules` 结尾的路径上。
 
-If it is not found there, then it moves to the parent directory, and so
-on, until the root of the file system is reached.
+如果在那里没有找到，它会移动到父目录，依此类推，直到到达文件系统的根目录。
 
-For example, if the file at `'/home/ry/projects/foo.js'` called
-`require('bar.js')`, then Node.js would look in the following locations, in
-this order:
+例如，如果位于 `'/home/ry/projects/foo.js'` 的文件调用了 `require('bar.js')`，那么 Node.js 将按以下顺序在以下位置查找：
 
 * `/home/ry/projects/node_modules/bar.js`
 * `/home/ry/node_modules/bar.js`
 * `/home/node_modules/bar.js`
 * `/node_modules/bar.js`
 
-This allows programs to localize their dependencies, so that they do not
-clash.
+这允许程序本地化它们的依赖项，以便它们不会冲突。
 
-It is possible to require specific files or sub modules distributed with a
-module by including a path suffix after the module name. For instance
-`require('example-module/path/to/file')` would resolve `path/to/file`
-relative to where `example-module` is located. The suffixed path follows the
-same module resolution semantics.
+可以通过在模块名后包含路径后缀来要求模块分发的特定文件或子模块。例如 `require('example-module/path/to/file')` 将相对于 `example-module` 的位置解析 `path/to/file`。后缀路径遵循相同的模块解析语义。
 
-## Loading from the global folders
+## 从全局文件夹加载
 
 <!-- type=misc -->
 
-If the `NODE_PATH` environment variable is set to a colon-delimited list
-of absolute paths, then Node.js will search those paths for modules if they
-are not found elsewhere.
+如果 `NODE_PATH` 环境变量设置为冒号分隔的绝对路径列表，那么如果模块在其他地方没有找到，Node.js 将在这些路径中搜索模块。
 
-On Windows, `NODE_PATH` is delimited by semicolons (`;`) instead of colons.
+在 Windows 上，`NODE_PATH` 由分号（`;`）而不是冒号分隔。
 
-`NODE_PATH` was originally created to support loading modules from
-varying paths before the current [module resolution][] algorithm was defined.
+`NODE_PATH` 最初是为了在当前 [模块解析][] 算法定义之前支持从不同路径加载模块而创建的。
 
-`NODE_PATH` is still supported, but is less necessary now that the Node.js
-ecosystem has settled on a convention for locating dependent modules.
-Sometimes deployments that rely on `NODE_PATH` show surprising behavior
-when people are unaware that `NODE_PATH` must be set. Sometimes a
-module's dependencies change, causing a different version (or even a
-different module) to be loaded as the `NODE_PATH` is searched.
+`NODE_PATH` 仍然受支持，但现在不那么必要了，因为 Node.js 生态系统已经就定位依赖模块的约定达成了共识。有时依赖 `NODE_PATH` 的部署会在人们不知道必须设置 `NODE_PATH` 时表现出令人惊讶的行为。有时模块的依赖项会发生变化，导致在搜索 `NODE_PATH` 时加载不同的版本（甚至是不同的模块）。
 
-Additionally, Node.js will search in the following list of GLOBAL\_FOLDERS:
+此外，Node.js 将在以下 GLOBAL\_FOLDERS 列表中搜索：
 
 * 1: `$HOME/.node_modules`
 * 2: `$HOME/.node_libraries`
 * 3: `$PREFIX/lib/node`
 
-Where `$HOME` is the user's home directory, and `$PREFIX` is the Node.js
-configured `node_prefix`.
+其中 `$HOME` 是用户的主目录，`$PREFIX` 是 Node.js 配置的 `node_prefix`。
 
-These are mostly for historic reasons.
+这些主要是出于历史原因。
 
-It is strongly encouraged to place dependencies in the local `node_modules`
-folder. These will be loaded faster, and more reliably.
+强烈建议将依赖项放在本地 `node_modules` 文件夹中。这些将加载得更快、更可靠。
 
-## The module wrapper
+## 模块包装器
 
 <!-- type=misc -->
 
-Before a module's code is executed, Node.js will wrap it with a function
-wrapper that looks like the following:
+在模块代码执行之前，Node.js 会用一个如下所示的函数包装器包裹它：
 
 ```js
 (function(exports, require, module, __filename, __dirname) {
-// Module code actually lives in here
+// 模块代码实际位于此处
 });
 ```
 
-By doing this, Node.js achieves a few things:
+通过这样做，Node.js 实现了几件事：
 
-* It keeps top-level variables (defined with `var`, `const`, or `let`) scoped to
-  the module rather than the global object.
-* It helps to provide some global-looking variables that are actually specific
-  to the module, such as:
-  * The `module` and `exports` objects that the implementor can use to export
-    values from the module.
-  * The convenience variables `__filename` and `__dirname`, containing the
-    module's absolute filename and directory path.
+* 它保持顶层变量（用 `var`、`const` 或 `let` 定义）作用于模块而不是全局对象。
+* 它有助于提供一些看起来全局但实际上特定于模块的变量，例如：
+  * 实现者可用于从模块导出值的 `module` 和 `exports` 对象。
+  * 便利变量 `__filename` 和 `__dirname`，包含模块的绝对文件名和目录路径。
 
-## The module scope
+## 模块作用域
 
 ### `__dirname`
 
@@ -774,18 +610,17 @@ By doing this, Node.js achieves a few things:
 added: v0.1.27
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The directory name of the current module. This is the same as the
-[`path.dirname()`][] of the [`__filename`][].
+当前模块的目录名称。这与 [`path.dirname()`][] 的 [`__filename`][] 相同。
 
-Example: running `node example.js` from `/Users/mjr`
+示例：从 `/Users/mjr` 运行 `node example.js`
 
 ```js
 console.log(__dirname);
-// Prints: /Users/mjr
+// 打印：/Users/mjr
 console.log(path.dirname(__filename));
-// Prints: /Users/mjr
+// 打印：/Users/mjr
 ```
 
 ### `__filename`
@@ -794,36 +629,31 @@ console.log(path.dirname(__filename));
 added: v0.0.1
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The file name of the current module. This is the current module file's absolute
-path with symlinks resolved.
+当前模块的文件名。这是当前模块文件的绝对路径，已解析符号链接。
 
-For a main program this is not necessarily the same as the file name used in the
-command line.
+对于主程序，这不一定与命令行中使用的文件名相同。
 
-See [`__dirname`][] for the directory name of the current module.
+有关当前模块的目录名称，请参阅 [`__dirname`][]。
 
-Examples:
+示例：
 
-Running `node example.js` from `/Users/mjr`
+从 `/Users/mjr` 运行 `node example.js`
 
 ```js
 console.log(__filename);
-// Prints: /Users/mjr/example.js
+// 打印：/Users/mjr/example.js
 console.log(__dirname);
-// Prints: /Users/mjr
+// 打印：/Users/mjr
 ```
 
-Given two modules: `a` and `b`, where `b` is a dependency of
-`a` and there is a directory structure of:
+给定两个模块：`a` 和 `b`，其中 `b` 是 `a` 的依赖项，并且目录结构为：
 
 * `/Users/mjr/app/a.js`
 * `/Users/mjr/app/node_modules/b/b.js`
 
-References to `__filename` within `b.js` will return
-`/Users/mjr/app/node_modules/b/b.js` while references to `__filename` within
-`a.js` will return `/Users/mjr/app/a.js`.
+`b.js` 中对 `__filename` 的引用将返回 `/Users/mjr/app/node_modules/b/b.js`，而 `a.js` 中对 `__filename` 的引用将返回 `/Users/mjr/app/a.js`。
 
 ### `exports`
 
@@ -831,11 +661,9 @@ References to `__filename` within `b.js` will return
 added: v0.1.12
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-A reference to the `module.exports` that is shorter to type.
-See the section about the [exports shortcut][] for details on when to use
-`exports` and when to use `module.exports`.
+对 `module.exports` 的引用，输入更短。有关何时使用 `exports` 以及何时使用 `module.exports` 的详细信息，请参阅关于 [导出快捷方式][] 的部分。
 
 ### `module`
 
@@ -843,11 +671,9 @@ See the section about the [exports shortcut][] for details on when to use
 added: v0.1.16
 -->
 
-* Type: {module}
+* 类型：{module}
 
-A reference to the current module, see the section about the
-[`module` object][]. In particular, `module.exports` is used for defining what
-a module exports and makes available through `require()`.
+对当前模块的引用，请参阅关于 [`module` 对象][] 的部分。特别是，`module.exports` 用于定义模块导出什么以及通过 `require()` 提供什么。
 
 ### `require(id)`
 
@@ -855,26 +681,20 @@ a module exports and makes available through `require()`.
 added: v0.1.13
 -->
 
-* `id` {string} module name or path
-* Returns: {any} exported module content
+* `id` {string} 模块名称或路径
+* 返回值：{any} 导出的模块内容
 
-Used to import modules, `JSON`, and local files. Modules can be imported
-from `node_modules`. Local modules and JSON files can be imported using
-a relative path (e.g. `./`, `./foo`, `./bar/baz`, `../foo`) that will be
-resolved against the directory named by [`__dirname`][] (if defined) or
-the current working directory. The relative paths of POSIX style are resolved
-in an OS independent fashion, meaning that the examples above will work on
-Windows in the same way they would on Unix systems.
+用于导入模块、`JSON` 和本地文件。模块可以从 `node_modules` 导入。本地模块和 JSON 文件可以使用相对路径（例如 `./`、`./foo`、`./bar/baz`、`../foo`）导入，这将针对由 [`__dirname`][]（如果定义）或当前工作目录命名的目录进行解析。POSIX 样式的相对路径以与操作系统无关的方式解析，意味着上述示例在 Windows 上的工作方式与在 Unix 系统上相同。
 
 ```js
-// Importing a local module with a path relative to the `__dirname` or current
-// working directory. (On Windows, this would resolve to .\path\myLocalModule.)
+// 导入一个本地模块，路径相对于 `__dirname` 或当前
+// 工作目录。（在 Windows 上，这将解析为 .\path\myLocalModule。）
 const myLocalModule = require('./path/myLocalModule');
 
-// Importing a JSON file:
+// 导入一个 JSON 文件：
 const jsonData = require('./path/filename.json');
 
-// Importing a module from node_modules or Node.js built-in module:
+// 从 node_modules 或 Node.js 内置模块导入模块：
 const crypto = require('node:crypto');
 ```
 
@@ -884,17 +704,11 @@ const crypto = require('node:crypto');
 added: v0.3.0
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-Modules are cached in this object when they are required. By deleting a key
-value from this object, the next `require` will reload the module.
-This does not apply to [native addons][], for which reloading will result in an
-error.
+模块在被要求时会被缓存到此对象中。通过从此对象中删除键值，下一个 `require` 将重新加载模块。这不适用于 [原生插件][]，重新加载将导致错误。
 
-Adding or replacing entries is also possible. This cache is checked before
-built-in modules and if a name matching a built-in module is added to the cache,
-only `node:`-prefixed require calls are going to receive the built-in module.
-Use with care!
+添加或替换条目也是可能的。在内置模块之前检查此缓存，如果将匹配内置模块的名称添加到缓存中，只有 `node:` 前缀的 require 调用才会接收内置模块。小心使用！
 
 <!-- eslint-disable node-core/no-duplicate-requires, no-restricted-syntax -->
 
@@ -916,25 +730,21 @@ added: v0.3.0
 deprecated: v0.10.6
 -->
 
-> Stability: 0 - Deprecated
+> 稳定性：0 - 已弃用
 
-* Type: {Object}
+* 类型：{Object}
 
-Instruct `require` on how to handle certain file extensions.
+指示 `require` 如何处理某些文件扩展名。
 
-Process files with the extension `.sjs` as `.js`:
+将扩展名为 `.sjs` 的文件作为 `.js` 处理：
 
 ```js
 require.extensions['.sjs'] = require.extensions['.js'];
 ```
 
-**Deprecated.** In the past, this list has been used to load non-JavaScript
-modules into Node.js by compiling them on-demand. However, in practice, there
-are much better ways to do this, such as loading modules via some other Node.js
-program, or compiling them to JavaScript ahead of time.
+**已弃用。** 过去，此列表用于通过按需编译将非 JavaScript 模块加载到 Node.js 中。然而，在实践中，有更好的方法可以做到这一点，例如通过其他 Node.js 程序加载模块，或提前将它们编译为 JavaScript。
 
-Avoid using `require.extensions`. Use could cause subtle bugs and resolving the
-extensions gets slower with each registered extension.
+避免使用 `require.extensions`。使用可能会导致细微的错误，并且随着每个注册的扩展名，解析扩展名会变得更慢。
 
 #### `require.main`
 
@@ -942,14 +752,11 @@ extensions gets slower with each registered extension.
 added: v0.1.17
 -->
 
-* Type: {module | undefined}
+* 类型：{module | undefined}
 
-The `Module` object representing the entry script loaded when the Node.js
-process launched, or `undefined` if the entry point of the program is not a
-CommonJS module.
-See ["Accessing the main module"](#accessing-the-main-module).
+表示启动 Node.js 进程时加载的入口脚本的 `Module` 对象，如果程序的入口点不是 CommonJS 模块，则为 `undefined`。请参阅 ["访问主模块"](#accessing-the-main-module)。
 
-In `entry.js` script:
+在 `entry.js` 脚本中：
 
 ```js
 console.log(require.main);
@@ -986,20 +793,14 @@ changes:
     description: The `paths` option is now supported.
 -->
 
-* `request` {string} The module path to resolve.
+* `request` {string} 要解析的模块路径。
 * `options` {Object}
-  * `paths` {string\[]} Paths to resolve module location from. If present, these
-    paths are used instead of the default resolution paths, with the exception
-    of [GLOBAL\_FOLDERS][GLOBAL_FOLDERS] like `$HOME/.node_modules`, which are
-    always included. Each of these paths is used as a starting point for
-    the module resolution algorithm, meaning that the `node_modules` hierarchy
-    is checked from this location.
-* Returns: {string}
+  * `paths` {string\[]} 从中解析模块位置的路径。如果存在，这些路径将代替默认解析路径使用，除了 [全局文件夹][GLOBAL\_FOLDERS] 如 `$HOME/.node_modules`，它们总是被包含。这些路径中的每一个都用作模块解析算法的起点，意味着 `node_modules` 层次结构将从此位置检查。
+* 返回值：{string}
 
-Use the internal `require()` machinery to look up the location of a module,
-but rather than loading the module, just return the resolved filename.
+使用内部 `require()` 机制查找模块的位置，而不是加载模块，只返回解析后的文件名。
 
-If the module can not be found, a `MODULE_NOT_FOUND` error is thrown.
+如果找不到模块，将抛出 `MODULE_NOT_FOUND` 错误。
 
 ##### `require.resolve.paths(request)`
 
@@ -1007,14 +808,12 @@ If the module can not be found, a `MODULE_NOT_FOUND` error is thrown.
 added: v8.9.0
 -->
 
-* `request` {string} The module path whose lookup paths are being retrieved.
-* Returns: {string\[]|null}
+* `request` {string} 正在检索其查找路径的模块路径。
+* 返回值：{string\[]|null}
 
-Returns an array containing the paths searched during resolution of `request` or
-`null` if the `request` string references a core module, for example `http` or
-`fs`.
+返回一个包含在解析 `request` 期间搜索的路径的数组，如果 `request` 字符串引用核心模块（例如 `http` 或 `fs`），则返回 `null`。
 
-## The `module` object
+## `module` 对象
 
 <!-- YAML
 added: v0.1.16
@@ -1022,12 +821,9 @@ added: v0.1.16
 
 <!-- name=module -->
 
-* Type: {Object}
+* 类型：{对象}
 
-In each module, the `module` free variable is a reference to the object
-representing the current module. For convenience, `module.exports` is
-also accessible via the `exports` module-global. `module` is not actually
-a global but rather local to each module.
+在每个模块中，`module` 自由变量是一个引用，指向表示当前模块的对象。为了方便，`module.exports` 也可以通过 `exports` 模块全局变量访问。`module` 实际上不是一个全局变量，而是每个模块局部的。
 
 ### `module.children`
 
@@ -1035,9 +831,9 @@ a global but rather local to each module.
 added: v0.1.16
 -->
 
-* Type: {module\[]}
+* 类型：{模块[]}
 
-The module objects required for the first time by this one.
+此模块首次要求的模块对象。
 
 ### `module.exports`
 
@@ -1045,29 +841,25 @@ The module objects required for the first time by this one.
 added: v0.1.16
 -->
 
-* Type: {Object}
+* 类型：{对象}
 
-The `module.exports` object is created by the `Module` system. Sometimes this is
-not acceptable; many want their module to be an instance of some class. To do
-this, assign the desired export object to `module.exports`. Assigning
-the desired object to `exports` will simply rebind the local `exports` variable,
-which is probably not what is desired.
+`module.exports` 对象由 `Module` 系统创建。有时这是不可接受的；许多人希望他们的模块是某个类的实例。为此，将所需的导出对象赋值给 `module.exports`。将所需对象赋值给 `exports` 只会重新绑定局部 `exports` 变量，这可能不是想要的结果。
 
-For example, suppose we were making a module called `a.js`:
+例如，假设我们正在制作一个名为 `a.js` 的模块：
 
 ```js
 const EventEmitter = require('node:events');
 
 module.exports = new EventEmitter();
 
-// Do some work, and after some time emit
-// the 'ready' event from the module itself.
+// 做一些工作，一段时间后发出
+// 模块本身的 'ready' 事件。
 setTimeout(() => {
   module.exports.emit('ready');
 }, 1000);
 ```
 
-Then in another file we could do:
+然后在另一个文件中我们可以这样做：
 
 ```js
 const a = require('./a');
@@ -1076,10 +868,9 @@ a.on('ready', () => {
 });
 ```
 
-Assignment to `module.exports` must be done immediately. It cannot be
-done in any callbacks. This does not work:
+对 `module.exports` 的赋值必须立即完成。不能在任何回调中完成。这样不起作用：
 
-`x.js`:
+`x.js`：
 
 ```js
 setTimeout(() => {
@@ -1087,57 +878,52 @@ setTimeout(() => {
 }, 0);
 ```
 
-`y.js`:
+`y.js`：
 
 ```js
 const x = require('./x');
 console.log(x.a);
 ```
 
-#### `exports` shortcut
+#### `exports` 快捷方式
 
 <!-- YAML
 added: v0.1.16
 -->
 
-The `exports` variable is available within a module's file-level scope, and is
-assigned the value of `module.exports` before the module is evaluated.
+`exports` 变量在模块的文件级作用域内可用，并且在模块评估之前被赋值为 `module.exports` 的值。
 
-It allows a shortcut, so that `module.exports.f = ...` can be written more
-succinctly as `exports.f = ...`. However, be aware that like any variable, if a
-new value is assigned to `exports`, it is no longer bound to `module.exports`:
+它允许一个快捷方式，因此 `module.exports.f = ...` 可以更简洁地写为 `exports.f = ...`。但是，请注意，像任何变量一样，如果将新值赋值给 `exports`，它不再绑定到 `module.exports`：
 
 ```js
-module.exports.hello = true; // Exported from require of module
-exports = { hello: false };  // Not exported, only available in the module
+module.exports.hello = true; // 从模块的 require 导出
+exports = { hello: false };  // 未导出，仅在模块内可用
 ```
 
-When the `module.exports` property is being completely replaced by a new
-object, it is common to also reassign `exports`:
+当 `module.exports` 属性被新对象完全替换时，通常也会重新赋值 `exports`：
 
 <!-- eslint-disable func-name-matching -->
 
 ```js
 module.exports = exports = function Constructor() {
-  // ... etc.
+  // ... 等等。
 };
 ```
 
-To illustrate the behavior, imagine this hypothetical implementation of
-`require()`, which is quite similar to what is actually done by `require()`:
+为了说明这种行为，想象这个假设的 `require()` 实现，它与 `require()` 实际所做的非常相似：
 
 ```js
 function require(/* ... */) {
   const module = { exports: {} };
   ((module, exports) => {
-    // Module code here. In this example, define a function.
+    // 模块代码在这里。在此示例中，定义一个函数。
     function someFunc() {}
     exports = someFunc;
-    // At this point, exports is no longer a shortcut to module.exports, and
-    // this module will still export an empty default object.
+    // 此时，exports 不再是 module.exports 的快捷方式，并且
+    // 此模块仍将导出一个空的默认对象。
     module.exports = someFunc;
-    // At this point, the module will now export someFunc, instead of the
-    // default object.
+    // 此时，模块现在将导出 someFunc，而不是
+    // 默认对象。
   })(module, module.exports);
   return module.exports;
 }
@@ -1149,9 +935,9 @@ function require(/* ... */) {
 added: v0.1.16
 -->
 
-* Type: {string}
+* 类型：{字符串}
 
-The fully resolved filename of the module.
+模块的完全解析文件名。
 
 ### `module.id`
 
@@ -1159,10 +945,9 @@ The fully resolved filename of the module.
 added: v0.1.16
 -->
 
-* Type: {string}
+* 类型：{字符串}
 
-The identifier for the module. Typically this is the fully resolved
-filename.
+模块的标识符。通常这是完全解析的文件名。
 
 ### `module.isPreloading`
 
@@ -1172,8 +957,7 @@ added:
   - v14.17.0
 -->
 
-* Type: {boolean} `true` if the module is running during the Node.js preload
-  phase.
+* 类型：{布尔值} 如果模块在 Node.js 预加载阶段运行，则为 `true`。
 
 ### `module.loaded`
 
@@ -1181,10 +965,9 @@ added:
 added: v0.1.16
 -->
 
-* Type: {boolean}
+* 类型：{布尔值}
 
-Whether or not the module is done loading, or is in the process of
-loading.
+模块是否已完成加载，或正在加载过程中。
 
 ### `module.parent`
 
@@ -1195,14 +978,12 @@ deprecated:
   - v12.19.0
 -->
 
-> Stability: 0 - Deprecated: Please use [`require.main`][] and
-> [`module.children`][] instead.
+> 稳定性：0 - 已弃用：请改用 [`require.main`][] 和
+> [`module.children`][]。
 
-* Type: {module | null | undefined}
+* 类型：{模块 | null | undefined}
 
-The module that first required this one, or `null` if the current module is the
-entry point of the current process, or `undefined` if the module was loaded by
-something that is not a CommonJS module (E.G.: REPL or `import`).
+首次要求此模块的模块，如果当前模块是当前进程的入口点则为 `null`，如果模块是由非 CommonJS 模块的内容加载的（例如：REPL 或 `import`），则为 `undefined`。
 
 ### `module.path`
 
@@ -1210,10 +991,9 @@ something that is not a CommonJS module (E.G.: REPL or `import`).
 added: v11.14.0
 -->
 
-* Type: {string}
+* 类型：{字符串}
 
-The directory name of the module. This is usually the same as the
-[`path.dirname()`][] of the [`module.id`][].
+模块的目录名。这通常与 [`module.id`][] 的 [`path.dirname()`][] 相同。
 
 ### `module.paths`
 
@@ -1221,9 +1001,9 @@ The directory name of the module. This is usually the same as the
 added: v0.4.0
 -->
 
-* Type: {string\[]}
+* 类型：{字符串\[]}
 
-The search paths for the module.
+模块的搜索路径。
 
 ### `module.require(id)`
 
@@ -1231,21 +1011,17 @@ The search paths for the module.
 added: v0.5.1
 -->
 
-* `id` {string}
-* Returns: {any} exported module content
+* `id` {字符串}
+* 返回：{任何} 导出的模块内容
 
-The `module.require()` method provides a way to load a module as if
-`require()` was called from the original module.
+`module.require()` 方法提供了一种加载模块的方式，就像 `require()` 是从原始模块中调用的一样。
 
-In order to do this, it is necessary to get a reference to the `module` object.
-Since `require()` returns the `module.exports`, and the `module` is typically
-_only_ available within a specific module's code, it must be explicitly exported
-in order to be used.
+为了做到这一点，有必要获取 `module` 对象的引用。由于 `require()` 返回 `module.exports`，并且 `module` 通常只在特定模块的代码内可用，因此必须显式导出才能使用。
 
-## The `Module` object
+## `Module` 对象
 
-This section was moved to
-[Modules: `module` core module](module.md#the-module-object).
+本节已移至
+[模块：`module` 核心模块](module.md#the-module-object)。
 
 <!-- Anchors to make sure old links find a target -->
 
@@ -1253,15 +1029,15 @@ This section was moved to
 * <a id="modules_module_createrequire_filename" href="module.html#modulecreaterequirefilename">`module.createRequire(filename)`</a>
 * <a id="modules_module_syncbuiltinesmexports" href="module.html#modulesyncbuiltinesmexports">`module.syncBuiltinESMExports()`</a>
 
-## Source map v3 support
+## Source map v3 支持
 
-This section was moved to
-[Modules: `module` core module](module.md#source-map-support).
+本节已移至
+[模块：`module` 核心模块](module.md#source-map-support)。
 
 <!-- Anchors to make sure old links find a target -->
 
 * <a id="modules_module_findsourcemap_path_error" href="module.html#modulefindsourcemappath">`module.findSourceMap(path)`</a>
-* <a id="modules_class_module_sourcemap" href="module.html#class-modulesourcemap">Class: `module.SourceMap`</a>
+* <a id="modules_class_module_sourcemap" href="module.html#class-modulesourcemap">类：`module.SourceMap`</a>
   * <a id="modules_new_sourcemap_payload" href="module.html#new-sourcemappayload--linelengths-">`new SourceMap(payload)`</a>
   * <a id="modules_sourcemap_payload" href="module.html#sourcemappayload">`sourceMap.payload`</a>
   * <a id="modules_sourcemap_findentry_linenumber_columnnumber" href="module.html#sourcemapfindentrylineoffset-columnoffset">`sourceMap.findEntry(lineNumber, columnNumber)`</a>
