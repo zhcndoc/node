@@ -1318,6 +1318,250 @@ added: v25.9.0
 
 用于 `pull()`、`pullSync()`、`pipeTo()` 和 `pipeToSync()` 的压缩和解压缩转换可通过 [`node:zlib/iter`][] 模块获得。详见 [`node:zlib/iter` 文档][]。
 
+## 经典流互操作
+
+这些工具函数在经典
+[`stream.Readable`][]/[`stream.Writable`][] 流和 `stream/iter`
+API 之间架起了桥梁。
+
+`fromReadable()` 和 `fromWritable()` 都接受 duck-typed 对象 -- 它们
+不要求输入直接扩展 `stream.Readable` 或 `stream.Writable`。
+每个函数的最低契约如下所述。
+
+### `fromReadable(readable)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+* `readable` {stream.Readable|Object} 经典 Readable 流或任何具有
+  `read()` 和 `on()` 方法的对象。
+* 返回：{AsyncIterable\<Uint8Array\[]>} 一个 stream/iter 异步可迭代源。
+
+将经典 Readable 流（或 duck-typed 等效对象）转换为
+stream/iter 异步可迭代源，可以传递给 [`from()`][]、
+[`pull()`][]、[`text()`][] 等。
+
+如果对象实现了 [`toAsyncStreamable`][] 协议（如
+`stream.Readable` 所做的那样），则使用该协议。否则，函数
+对 `read()` 和 `on()` (EventEmitter) 进行 duck-type 检查，并用
+批处理异步迭代器包装流。
+
+结果按实例缓存 -- 使用同一流调用 `fromReadable()` 两次
+返回相同的可迭代对象。
+
+对于 object-mode 或编码的 Readable 流，块会自动
+标准化为 `Uint8Array`。
+
+```mjs
+import { Readable } from 'node:stream';
+import { fromReadable, text } from 'node:stream/iter';
+
+const readable = new Readable({
+  read() { this.push('hello world'); this.push(null); },
+});
+
+const result = await text(fromReadable(readable));
+console.log(result); // 'hello world'
+```
+
+```cjs
+const { Readable } = require('node:stream');
+const { fromReadable, text } = require('node:stream/iter');
+
+const readable = new Readable({
+  read() { this.push('hello world'); this.push(null); },
+});
+
+async function run() {
+  const result = await text(fromReadable(readable));
+  console.log(result); // 'hello world'
+}
+run();
+```
+
+### `fromWritable(writable[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+* `writable` {stream.Writable|Object} 经典 Writable 流或任何对象
+  具有 `write()` 和 `on()` 方法。
+* `options` {Object}
+  * `backpressure` {string} 背压策略。**默认：** `'strict'`。
+    * `'strict'` -- 当缓冲区满时写入被拒绝。捕获
+      忽略背压的调用者。
+    * `'block'` -- 当缓冲区满时写入等待排空。推荐
+      与 [`pipeTo()`][] 一起使用。
+    * `'drop-newest'` -- 当缓冲区满时写入被静默丢弃。
+    * `'drop-oldest'` -- **不支持**。抛出 `ERR_INVALID_ARG_VALUE`。
+* 返回：{Object} 一个 stream/iter Writer 适配器。
+
+从经典 Writable 流（或
+duck-typed 等效对象）创建 stream/iter Writer 适配器。该适配器可以作为
+目的地传递给 [`pipeTo()`][]。
+
+由于经典 Writable 上的所有写入本质上是异步的，
+同步 Writer 方法（`writeSync`、`writevSync`、`endSync`）始终
+返回 `false` 或 `-1`，defer 到异步路径。每次写入
+来自 Writer 接口的 `options.signal` 参数也会被忽略。
+
+结果按实例缓存 -- 使用同一流调用 `fromWritable()` 两次
+返回相同的 Writer。
+
+对于不暴露 `writableHighWaterMark`、
+`writableLength` 或类似属性的 duck-typed 流，
+会使用合理的默认值。Object-mode writable（如果可检测）会被拒绝，因为 Writer
+接口仅支持字节。
+
+```mjs
+import { Writable } from 'node:stream';
+import { from, fromWritable, pipeTo } from 'node:stream/iter';
+
+const writable = new Writable({
+  write(chunk, encoding, cb) { console.log(chunk.toString()); cb(); },
+});
+
+await pipeTo(from('hello world'),
+             fromWritable(writable, { backpressure: 'block' }));
+```
+
+```cjs
+const { Writable } = require('node:stream');
+const { from, fromWritable, pipeTo } = require('node:stream/iter');
+
+async function run() {
+  const writable = new Writable({
+    write(chunk, encoding, cb) { console.log(chunk.toString()); cb(); },
+  });
+
+  await pipeTo(from('hello world'),
+               fromWritable(writable, { backpressure: 'block' }));
+}
+run();
+```
+
+### `toReadable(source[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+* `source` {AsyncIterable} 一个 `AsyncIterable<Uint8Array[]>` 源，例如
+  [`pull()`][] 或 [`from()`][] 的返回值。
+* `options` {Object}
+  * `highWaterMark` {number} 应用背压前的内部缓冲区大小（以字节为单位）。**默认：** `65536` (64 KB)。
+  * `signal` {AbortSignal} 用于中止 readable 的可选 signal。
+* 返回：{stream.Readable}
+
+从 `AsyncIterable<Uint8Array[]>`
+（stream/iter API 使用的原生批处理格式）创建字节模式 [`stream.Readable`][]。yielded 批次中的每个 `Uint8Array` 作为单独的块推送到 Readable 中。
+
+```mjs
+import { createWriteStream } from 'node:fs';
+import { from, pull, toReadable } from 'node:stream/iter';
+import { compressGzip } from 'node:zlib/iter';
+
+const source = pull(from('hello world'), compressGzip());
+const readable = toReadable(source);
+
+readable.pipe(createWriteStream('output.gz'));
+```
+
+```cjs
+const { createWriteStream } = require('node:fs');
+const { from, pull, toReadable } = require('node:stream/iter');
+const { compressGzip } = require('node:zlib/iter');
+
+const source = pull(from('hello world'), compressGzip());
+const readable = toReadable(source);
+
+readable.pipe(createWriteStream('output.gz'));
+```
+
+### `toReadableSync(source[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+* `source` {Iterable} 一个 `Iterable<Uint8Array[]>` 源，例如
+  [`pullSync()`][] 或 [`fromSync()`][] 的返回值。
+* `options` {Object}
+  * `highWaterMark` {number} 应用背压前的内部缓冲区大小（以字节为单位）。**默认：** `65536` (64 KB)。
+* 返回：{stream.Readable}
+
+从同步
+`Iterable<Uint8Array[]>` 创建字节模式 [`stream.Readable`][]。`_read()` 方法同步地从迭代器拉取，因此数据可以通过 `readable.read()` 立即可用。
+
+```mjs
+import { fromSync, toReadableSync } from 'node:stream/iter';
+
+const source = fromSync('hello world');
+const readable = toReadableSync(source);
+
+console.log(readable.read().toString()); // 'hello world'
+```
+
+```cjs
+const { fromSync, toReadableSync } = require('node:stream/iter');
+
+const source = fromSync('hello world');
+const readable = toReadableSync(source);
+
+console.log(readable.read().toString()); // 'hello world'
+```
+
+### `toWritable(writer)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+* `writer` {Object} 一个 stream/iter Writer。仅需要 `write()` 方法；`end()`、`fail()`、`writeSync()`、`writevSync()`、`endSync()`、
+  和 `writev()` 是可选的。
+* 返回：{stream.Writable}
+
+创建由 stream/iter Writer 支持的经典 [`stream.Writable`][]。
+
+每次 `_write()` / `_writev()` 调用首先尝试 Writer 的同步方法
+（`writeSync` / `writevSync`），如果同步路径返回 `false` 或抛出异常，则回退到异步方法。同样，`_final()` 在 `end()` 之前尝试 `endSync()`。当同步路径成功时，回调通过 `queueMicrotask` 延迟，以保持异步解析契约。
+
+Writable 的 `highWaterMark` 设置为 `Number.MAX_SAFE_INTEGER` 以
+有效禁用其内部缓冲，允许底层 Writer
+直接管理背压。
+
+```mjs
+import { push, toWritable } from 'node:stream/iter';
+
+const { writer, readable } = push();
+const writable = toWritable(writer);
+
+writable.write('hello');
+writable.end();
+```
+
+```cjs
+const { push, toWritable } = require('node:stream/iter');
+
+const { writer, readable } = push();
+const writable = toWritable(writer);
+
+writable.write('hello');
+writable.end();
+```
+
 ## 协议符号
 
 这些众所周知的符号允许第三方对象参与流协议，而无需直接从 `node:stream/iter` 导入。
@@ -1689,10 +1933,15 @@ console.log(textSync(stream)); // 'hello world'
 [`arrayBuffer()`]: #arraybuffersource-options
 [`bytes()`]: #bytessource-options
 [`from()`]: #frominput
+[`fromSync()`]: #fromsyncinput
 [`node:zlib/iter`]: zlib_iter.md
 [`node:zlib/iter` 文档]: zlib_iter.md
 [`pipeTo()`]: #pipetosource-transforms-writer-options
 [`pull()`]: #pullsource-transforms-options
+[`pullSync()`]: #pullsyncsource-transforms-options
 [`share()`]: #sharesource-options
+[`stream.Readable`]: stream.md#class-streamreadable
+[`stream.Writable`]: stream.md#class-streamwritable
 [`tap()`]: #tapcallback
 [`text()`]: #textsource-options
+[`toAsyncStreamable`]: #streamtoasyncstreamable

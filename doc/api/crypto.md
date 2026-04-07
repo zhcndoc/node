@@ -2522,17 +2522,17 @@ added: v15.6.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41600
-    description: "The subject option now defaults to `'default'`."
+    description: "subject 选项现在默认为 `'default'`。"
   - version:
       - v17.5.0
       - v16.14.1
     pr-url: https://github.com/nodejs/node/pull/41599
-    description: "The `wildcards`, `partialWildcards`, `multiLabelWildcards`, and`singleLabelSubdomains` options have been removed since theyhad no effect."
+    description: "wildcards、partialWildcards、multiLabelWildcards 和 singleLabelSubdomains 选项已被移除，因为它们没有效果。"
   - version:
     - v17.5.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41569
-    description: "The subject option can now be set to `'default'`."
+    description: "subject 选项现在可以设置为 `'default'`。"
 -->
 
 * `email` {string}
@@ -2556,12 +2556,12 @@ added: v15.6.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41600
-    description: "The subject option now defaults to `'default'`."
+    description: "subject 选项现在默认为 `'default'`。"
   - version:
     - v17.5.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41569
-    description: "The subject option can now be set to `'default'`."
+    description: "subject 选项现在可以设置为 `'default'`。"
 -->
 
 * `name` {string}
@@ -2593,7 +2593,7 @@ changes:
       - v17.5.0
       - v16.14.1
     pr-url: https://github.com/nodejs/node/pull/41571
-    description: "The `options` argument has been removed since it had no effect."
+    description: "options 参数已被移除，因为它没有效果。"
 -->
 
 * `ip` {string}
@@ -2680,7 +2680,7 @@ changes:
       - v17.3.1
       - v16.13.2
     pr-url: https://github.com/nodejs-private/node-private/pull/300
-    description: "Parts of this string may be encoded as JSON string literalsin response to CVE-2021-44532."
+    description: "作为对 CVE-2021-44532 的响应，此字符串的部分内容可能被编码为 JSON 字符串字面量。"
 -->
 
 * 类型：{string}
@@ -2772,7 +2772,7 @@ changes:
       - v17.3.1
       - v16.13.2
     pr-url: https://github.com/nodejs-private/node-private/pull/300
-    description: "Parts of this string may be encoded as JSON string literalsin response to CVE-2021-44532."
+    description: "作为对 CVE-2021-44532 的响应，此字符串的部分内容可能被编码为 JSON 字符串字面量。"
 -->
 
 * 类型：{string}
@@ -2907,7 +2907,7 @@ added: v24.7.0
   * `parallelism` {number} 必需，并行度决定可以运行多少个计算链（lane）。必须大于 1 且小于 `2**24-1`。
   * `tagLength` {number} 必需，要生成的密钥的长度。必须大于 4 且小于 `2**32-1`。
   * `memory` {number} 必需，以 1KiB 块为单位的内存成本。必须大于 `8 * parallelism` 且小于 `2**32-1`。实际的块数向下舍入到最接近的 `4 * parallelism` 的倍数。
-  * `passes` {number} 必需， passes（迭代）次数。必须大于 1 且小于 `2**32-1`。
+  * `passes` {number} 必需，passes（迭代）次数。必须大于 1 且小于 `2**32-1`。
   * `secret` {string|ArrayBuffer|Buffer|TypedArray|DataView|undefined} 可选，随机额外输入，类似于盐，但**不应**与派生密钥一起存储。这在密码哈希应用中被称为 pepper。如果使用，长度不得大于 `2**32-1` 字节。
   * `associatedData` {string|ArrayBuffer|Buffer|TypedArray|DataView|undefined} 可选，要添加到哈希中的额外数据，功能上等同于盐或 secret，但用于非随机数据。如果使用，长度不得大于 `2**32-1` 字节。
 * `callback` {Function}
@@ -3967,7 +3967,7 @@ changes:
 
 默认情况下，素数编码为 {ArrayBuffer} 中的大端字节序列。如果 `bigint` 选项为 `true`，则提供 {bigint}。
 
-素数的 `size` 将直接影响生成素数所需的时间。大小越大，所需时间越长。因为我们使用 OpenSSL 的 `BN_generate_prime_ex` 函数，它只提供 minimal 控制我们中断生成过程的能力，所以不建议生成过大的素数，因为这样做可能会使进程无响应。
+素数的 `size` 将直接影响生成素数所需的时间。大小越大，所需时间越长。因为我们使用 OpenSSL 的 `BN_generate_prime_ex` 函数，它只提供最小控制我们中断生成过程的能力，所以不建议生成过大的素数，因为这样做可能会使进程无响应。
 
 ### `crypto.generatePrimeSync(size[, options])`
 
@@ -3998,7 +3998,7 @@ added: v15.8.0
 
 默认情况下，素数编码为 {ArrayBuffer} 中的大端字节序列。如果 `bigint` 选项为 `true`，则提供 {bigint}。
 
-素数的 `size` 将直接影响生成素数所需的时间。大小越大，所需时间越长。因为我们使用 OpenSSL 的 `BN_generate_prime_ex` 函数，它只提供 minimal 控制我们中断生成过程的能力，所以不建议生成过大的素数，因为这样做可能会使进程无响应。
+素数的 `size` 将直接影响生成素数所需的时间。大小越大，所需时间越长。因为我们使用 OpenSSL 的 `BN_generate_prime_ex` 函数，它只提供最小控制我们中断生成过程的能力，所以不建议生成过大的素数，因为这样做可能会使进程无响应。
 
 ### `crypto.getCipherInfo(nameOrNid[, options])`
 
@@ -4973,6 +4973,18 @@ added:
 
 生成一个随机 [RFC 4122][] 版本 4 UUID。UUID 是使用加密伪随机数生成器生成的。
 
+### `crypto.randomUUIDv7([options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `options` {Object}
+  * `disableEntropyCache` {boolean} 默认情况下，为了提高性能，Node.js 生成并缓存足够的随机数据以生成最多 128 个随机 UUID。要生成不使用缓存的 UUID，请将 `disableEntropyCache` 设置为 `true`。**默认：** `false`。
+* Returns: {string}
+
+生成一个随机 [RFC 9562][] 版本 7 UUID。UUID 在最显著的 48 位中包含毫秒精度的 Unix 时间戳，其余字段随后是加密安全的随机位，使其适合用作具有基于时间排序的数据库键。
+
 ### `crypto.scrypt(password, salt, keylen[, options], callback)`
 
 <!-- YAML
@@ -5395,7 +5407,7 @@ added: v15.0.0
 * 并非所有字节序列都是有效的 UTF-8 字符串。因此，当长度为 `n` 的字节
   序列源自字符串时，其熵通常低于随机或伪随机 `n` 字节序列的熵。
   例如，没有 UTF-8 字符串会产生字节序列 `c0 af`。秘密
-  密钥几乎应 exclusively 是随机或伪随机字节序列。
+  密钥几乎应仅是随机或伪随机字节序列。
 * 同样，当将随机或伪随机字节序列转换为 UTF-8
   字符串时，不代表有效码点的子序列可能会被
   Unicode 替换字符（`U+FFFD`）替换。因此，生成的 Unicode 字符串的字节表示
@@ -5677,7 +5689,7 @@ default_properties = fips=yes
   </tr>
   <tr>
     <td><code>SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION</code></td>
-    <td>允许 OpenSSL 与未修补的客户端或服务器之间进行旧版不安全 renegotiation。详见
+    <td>允许 OpenSSL 与未修补的客户端或服务器之间进行旧版不安全重新协商。详见
     <a href="https://www.openssl.org/docs/man3.0/man3/SSL_CTX_set_options.html">https://www.openssl.org/docs/man3.0/man3/SSL_CTX_set_options.html</a>。</td>
   </tr>
   <tr>
@@ -5711,7 +5723,7 @@ default_properties = fips=yes
   </tr>
   <tr>
     <td><code>SSL_OP_NO_ENCRYPT_THEN_MAC</code></td>
-    <td>指示 OpenSSL 禁用 encrypt-then-MAC。</td>
+    <td>指示 OpenSSL 禁用先加密后认证（encrypt-then-MAC）。</td>
   </tr>
   <tr>
     <td><code>SSL_OP_NO_QUERY_MTU</code></td>
@@ -5719,11 +5731,11 @@ default_properties = fips=yes
   </tr>
   <tr>
     <td><code>SSL_OP_NO_RENEGOTIATION</code></td>
-    <td>指示 OpenSSL 禁用 renegotiation。</td>
+    <td>指示 OpenSSL 禁用重新协商。</td>
   </tr>
   <tr>
     <td><code>SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION</code></td>
-    <td>指示 OpenSSL 在执行 renegotiation 时始终启动新会话。</td>
+    <td>指示 OpenSSL 在执行重新协商时始终启动新会话。</td>
   </tr>
   <tr>
     <td><code>SSL_OP_NO_SSLv2</code></td>
@@ -5735,7 +5747,7 @@ default_properties = fips=yes
   </tr>
   <tr>
     <td><code>SSL_OP_NO_TICKET</code></td>
-    <td>指示 OpenSSL 禁用使用 RFC4507bis tickets。</td>
+    <td>指示 OpenSSL 禁用使用 RFC4507bis 票据。</td>
   </tr>
   <tr>
     <td><code>SSL_OP_NO_TLSv1</code></td>
@@ -5944,7 +5956,8 @@ default_properties = fips=yes
 [RFC 5280]: https://www.rfc-editor.org/rfc/rfc5280.txt
 [RFC 7517]: https://www.rfc-editor.org/rfc/rfc7517.txt
 [RFC 8032]: https://www.rfc-editor.org/rfc/rfc8032.txt
-[Web Crypto API 文档]: webcrypto.md
+[RFC 9562]: https://www.rfc-editor.org/rfc/rfc9562.txt
+[Web Crypto API documentation]: webcrypto.md
 [`BN_is_prime_ex`]: https://www.openssl.org/docs/man1.1.1/man3/BN_is_prime_ex.html
 [`Buffer`]: buffer.md
 [`DH_generate_key()`]: https://www.openssl.org/docs/man3.0/man3/DH_generate_key.html

@@ -234,7 +234,7 @@ console.log(symptom);
 ```js
 const err = new Error('The message');
 console.error(err.message);
-// 打印：The message
+// 打印：消息
 ```
 
 ### `error.stack`
@@ -272,7 +272,7 @@ makeFaster();
 //   /home/gbusey/file.js:6
 //       throw new Error('oh no!');
 //           ^
-//   Error: oh no!
+//   Error: 哦不！
 //       at speedy (/home/gbusey/file.js:6:11)
 //       at makeFaster (/home/gbusey/file.js:5:3)
 //       at Object.<anonymous> (/home/gbusey/file.js:10:1)
@@ -440,7 +440,7 @@ try {
 ### 常见系统错误
 
 这是在编写 Node.js
-程序时 commonly-encountered 的系统错误列表。有关完整列表，请参阅 [`errno`(3) 手册页][]。
+程序时常见的系统错误列表。有关完整列表，请参阅 [`errno`(3) 手册页][]。
 
 * `EACCES`（权限被拒绝）：试图以文件访问权限
   禁止的方式访问文件。
@@ -693,10 +693,10 @@ changes:
       - v16.2.0
       - v14.17.1
     pr-url: https://github.com/nodejs/node/pull/38510
-    description: The error message was reintroduced.
+    description: 错误消息被重新引入。
   - version: v11.12.0
     pr-url: https://github.com/nodejs/node/pull/26487
-    description: The error message was removed.
+    description: 错误消息被移除。
 -->
 
 试图在关闭
@@ -1207,7 +1207,7 @@ added: v15.0.0
 ### `ERR_EXECUTION_ENVIRONMENT_NOT_AVAILABLE`
 
 JS 执行上下文不与 Node.js 环境关联。
-当 Node.js 用作嵌入库且某些 JS 引擎钩子
+当 Node.js 用作嵌入图书馆且某些 JS 引擎钩子
 未正确设置时，可能会发生这种情况。
 
 <a id="ERR_FALSY_VALUE_REJECTION"></a>
@@ -2052,7 +2052,7 @@ changes:
       - v23.7.0
       - v22.14.0
       pr-url: https://github.com/nodejs/node/pull/56610
-      description: This error is no longer thrown on valid yet unsupported syntax.
+      description: 对于有效但不支持的语法，不再抛出此错误。
 -->
 
 提供的 TypeScript 语法无效。
@@ -2690,6 +2690,12 @@ added: v22.5.0
 ### `ERR_STREAM_DESTROYED`
 
 调用了流方法，但由于流已使用 `stream.destroy()` 销毁，无法完成。
+
+<a id="ERR_STREAM_ITER_MISSING_FLAG"></a>
+
+### `ERR_STREAM_ITER_MISSING_FLAG`
+
+在未启用 `--experimental-stream-iter` CLI 标志的情况下使用了 stream/iter API。
 
 <a id="ERR_STREAM_NULL_VALUES"></a>
 

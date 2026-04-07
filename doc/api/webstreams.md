@@ -958,7 +958,7 @@ added: v16.5.0
 added: v16.5.0
 -->
 
-释放此写入器对底层 {ReadableStream} 的锁。
+释放此写入器对底层 {WritableStream} 的锁。
 
 #### `writableStreamDefaultWriter.write([chunk])`
 
@@ -1030,6 +1030,12 @@ await Promise.all([
 
 <!-- YAML
 added: v16.5.0
+changes:
+  - version:
+    - v21.5.0
+    - v20.14.0
+    pr-url: https://github.com/nodejs/node/pull/50126
+    description: 支持 `cancel` 转换器回调。
 -->
 
 * `transformer` {Object}
@@ -1042,6 +1048,9 @@ added: v16.5.0
     * 返回：一个兑现值为 `undefined` 的 promise。
   * `flush` {Function} 用户定义的函数，在 `TransformStream` 的可写侧关闭之前立即调用，信号表明转换过程结束。
     * `controller` {TransformStreamDefaultController}
+    * 返回：一个兑现值为 `undefined` 的 promise。
+  * `cancel` {Function} 用户定义的函数，当 `TransformStream` 的可读侧被取消或可写侧被中止时调用。
+    * `reason` {any}
     * 返回：一个兑现值为 `undefined` 的 promise。
   * `readableType` {any} `readableType` 选项保留供将来使用，_必须_ 为 `undefined`。
   * `writableType` {any} `writableType` 选项保留供将来使用，_必须_ 为 `undefined`。

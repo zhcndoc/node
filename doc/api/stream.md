@@ -356,7 +356,7 @@ const server = http.createServer((req, res) => {
       res.write(typeof data);
       res.end();
     } catch (er) {
-      //  uh oh! 错误的 json！
+      //  uh oh! JSON 错误！
       res.statusCode = 400;
       return res.end(`error: ${er.message}`);
     }
@@ -1646,6 +1646,51 @@ print(fs.createReadStream('file')).catch(console.error);
 
 如果循环因 `break`、`return` 或 `throw` 终止，流将被销毁。换句话说，迭代流将完全消费流。流将以等于 `highWaterMark` 选项大小的块读取。在上面的代码示例中，如果文件数据少于 64 KiB，数据将在一个块中，因为没有向 [`fs.createReadStream()`][] 提供 `highWaterMark` 选项。
 
+##### `readable[Symbol.for('Stream.toAsyncStreamable')]()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+* 返回：{AsyncIterable} 一个 `AsyncIterable<Uint8Array[]>`，用于产生来自流的批处理块。
+
+当启用 `--experimental-stream-iter` 标志时，`Readable` 流实现 [`Stream.toAsyncStreamable`][] 协议，从而能够通过 [`stream/iter`][] API 高效消费。
+
+这提供了一个批处理异步迭代器，它将流的内部缓冲区排空到 `Uint8Array[]` 批处理中，分摊了标准 `Symbol.asyncIterator` 路径的每块 Promise 开销。对于字节模式流，块直接作为 `Buffer` 实例产生（它是 `Uint8Array` 的子类）。对于对象模式或编码流，每个块在批处理之前被标准化为 `Uint8Array`。
+
+返回的迭代器被标记为已验证源，因此 [`from()`][stream-iter-from] 会直接传递它而无需额外的标准化。
+
+```mjs
+import { Readable } from 'node:stream';
+import { text, from } from 'node:stream/iter';
+
+const readable = new Readable({
+  read() { this.push('hello'); this.push(null); },
+});
+
+// Readable 通过 toAsyncStreamable 自动消费
+console.log(await text(from(readable))); // 'hello'
+```
+
+```cjs
+const { Readable } = require('node:stream');
+const { text, from } = require('node:stream/iter');
+
+async function run() {
+  const readable = new Readable({
+    read() { this.push('hello'); this.push(null); },
+  });
+
+  console.log(await text(from(readable))); // 'hello'
+}
+
+run().catch(console.error);
+```
+
+如果没有 `--experimental-stream-iter` 标志，调用此方法将抛出 [`ERR_STREAM_ITER_MISSING_FLAG`][]。
+
 ##### `readable[Symbol.asyncDispose]()`
 
 <!-- YAML
@@ -2230,7 +2275,7 @@ added: v0.9.4
 changes:
   - version: v6.8.0
     pr-url: https://github.com/nodejs/node/pull/8834
-    description: "Instances of `Duplex` now return `true` whenchecking `instanceof stream.Writable`."
+    description: "Duplex 的实例现在在检查 `instanceof stream.Writable` 时返回 `true`。"
 -->
 
 <!--type=class-->
@@ -2239,9 +2284,9 @@ Duplex 流是同时实现 [`Readable`][] 和 [`Writable`][] 接口的流。
 
 `Duplex` 流的示例包括：
 
-* [TCP sockets][]
-* [zlib streams][zlib]
-* [crypto streams][crypto]
+* [TCP 套接字][]
+* [zlib 流][zlib]
+* [crypto 流][crypto]
 
 ##### `duplex.allowHalfOpen`
 
@@ -2267,8 +2312,8 @@ Transform 流是输出以某种方式与输入相关的 [`Duplex`][] 流。像�
 
 `Transform` 流的示例包括：
 
-* [zlib streams][zlib]
-* [crypto streams][crypto]
+* [zlib 流][zlib]
+* [crypto 流][crypto]
 
 ##### `transform.destroy([error])`
 
@@ -2277,7 +2322,7 @@ added: v8.0.0
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/29197
-    description: Work as a no-op on a stream that has already been destroyed.
+    description: 在已销毁的流上作为空操作运行。
 -->
 
 * `error` {Error}
@@ -2317,19 +2362,19 @@ added: v10.0.0
 changes:
   - version: v19.5.0
     pr-url: https://github.com/nodejs/node/pull/46205
-    description: "Added support for `ReadableStream` and `WritableStream`."
+    description: "增加了对 `ReadableStream` 和 `WritableStream` 的支持。"
   - version: v15.11.0
     pr-url: https://github.com/nodejs/node/pull/37354
-    description: "The `signal` option was added."
+    description: "添加了 `signal` 选项。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/32158
-    description: "The `finished(stream, cb)` will wait for the `'close'` eventbefore invoking the callback. The implementation tries todetect legacy streams and only apply this behavior to streamswhich are expected to emit `'close'`."
+    description: "`finished(stream, cb)` 将在调用回调之前等待 `'close'` 事件。实现尝试检测旧版流，并且仅将此行为应用于预期会发出 `'close'` 的流。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31545
-    description: "Emitting `'close'` before `'end'` on a `Readable` streamwill cause an `ERR_STREAM_PREMATURE_CLOSE` error."
+    description: "在 `Readable` 流上于 `'end'` 之前发出 `'close'` 将导致 `ERR_STREAM_PREMATURE_CLOSE` 错误。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31509
-    description: "Callback will be invoked on streams which have alreadyfinished before the call to `finished(stream, cb)`."
+    description: "回调将在调用 `finished(stream, cb)` 之前已经完成的流上被调用。"
 -->
 
 * `stream` {Stream|ReadableStream|WritableStream} 一个 readable 和/或 writable 流/webstream。
@@ -2385,16 +2430,16 @@ changes:
     - v19.7.0
     - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46307
-    description: Added support for webstreams.
+    description: 增加了对 webstreams 的支持。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "Passing an invalid callback to the `callback` argumentnow throws `ERR_INVALID_ARG_TYPE` instead of`ERR_INVALID_CALLBACK`."
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/32158
-    description: "The `pipeline(..., cb)` will wait for the `'close'` eventbefore invoking the callback. The implementation tries todetect legacy streams and only apply this behavior to streamswhich are expected to emit `'close'`."
+    description: "`pipeline(..., cb)` 将在调用回调之前等待 `'close'` 事件。实现尝试检测旧版流，并且仅将此行为应用于预期会发出 `'close'` 的流。"
   - version: v13.10.0
-    pr-url: https://github.com/nodejs/node/pull/31223
-    description: Add support for async generators.
+    pr-url: https://github.com/nodejs/pull/31223
+    description: 添加了对异步生成器的支持。
 -->
 
 * `streams` {Stream\[]|Iterable\[]|AsyncIterable\[]|Function\[]|
@@ -2477,12 +2522,12 @@ changes:
     - v21.1.0
     - v20.10.0
     pr-url: https://github.com/nodejs/node/pull/50187
-    description: Added support for stream class.
+    description: 添加了对流类的支持。
   - version:
     - v19.8.0
     - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46675
-    description: Added support for webstreams.
+    description: 增加了对 webstreams 的支持。
 -->
 
 > 稳定性：1 - `stream.compose` 是实验性的。
@@ -2571,7 +2616,7 @@ changes:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: Marking the API stable.
+    description: 标记 API 为稳定。
 -->
 
 * `stream` {Readable|Writable|Duplex|WritableStream|ReadableStream}
@@ -2590,7 +2635,7 @@ changes:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: Marking the API stable.
+    description: 标记 API 为稳定。
 -->
 
 * `stream` {Readable|Duplex|ReadableStream}
@@ -2656,7 +2701,7 @@ changes:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: Marking the API stable.
+    description: 标记 API 为稳定。
 -->
 
 * `readableStream` {ReadableStream}
@@ -2676,7 +2721,7 @@ changes:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: Marking the API stable.
+    description: 标记 API 为稳定。
 -->
 
 * `stream` {stream.Readable|ReadableStream}
@@ -2693,16 +2738,16 @@ changes:
      - v25.4.0
      - v24.14.0
     pr-url: https://github.com/nodejs/node/pull/58664
-    description: Add 'type' option to specify 'bytes'.
+    description: 添加 'type' 选项以指定 'bytes'。
   - version:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: Marking the API stable.
+    description: 标记 API 为稳定。
   - version:
     - v18.7.0
     pr-url: https://github.com/nodejs/node/pull/43515
-    description: include strategy options on Readable.
+    description: 在 Readable 上包含 strategy 选项。
 -->
 
 * `streamReadable` {stream.Readable}
@@ -2725,7 +2770,7 @@ changes:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: Marking the API stable.
+    description: 标记 API 为稳定。
 -->
 
 * `writableStream` {WritableStream}
@@ -2745,7 +2790,7 @@ changes:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: Marking the API stable.
+    description: 标记 API 为稳定。
 -->
 
 * `streamWritable` {stream.Writable}
@@ -2760,7 +2805,7 @@ changes:
     - v19.5.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/46190
-    description: "The `src` argument can now be a `ReadableStream` or`WritableStream`."
+    description: "`src` 参数现在可以是 `ReadableStream` 或 `WritableStream`。"
 -->
 
 * `src` {Stream|Blob|ArrayBuffer|string|Iterable|AsyncIterable|
@@ -2802,7 +2847,7 @@ changes:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: Marking the API stable.
+    description: 标记 API 为稳定。
 -->
 
 * `pair` {Object}
@@ -2885,17 +2930,17 @@ added: v17.0.0
 changes:
   - version: v25.7.0
     pr-url: https://github.com/nodejs/node/pull/61632
-    description: "Added the 'readableType' option to specify the ReadableStreamtype. The 'type' option is deprecated."
+    description: "添加了 'readableType' 选项以指定 ReadableStream 类型。'type' 选项已弃用。"
   - version:
      - v25.4.0
      - v24.14.0
     pr-url: https://github.com/nodejs/node/pull/58664
-    description: Added the 'type' option to specify the ReadableStream type.
+    description: 添加了 'type' 选项以指定 ReadableStream 类型。
   - version:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: Marking the API stable.
+    description: 标记 API 为稳定。
 -->
 
 * `streamDuplex` {stream.Duplex}
@@ -2960,7 +3005,7 @@ changes:
     - v19.7.0
     - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46273
-    description: "Added support for `ReadableStream` and`WritableStream`."
+    description: "增加了对 `ReadableStream` 和 `WritableStream` 的支持。"
 -->
 
 * `signal` {AbortSignal} 一个表示可能取消的信号
@@ -3063,6 +3108,7 @@ added:
 * `value` {integer} highWaterMark 值
 
 设置流使用的默认 highWaterMark。
+```
 
 ## 流实现者的 API
 
@@ -3085,7 +3131,7 @@ class MyWritable extends Writable {
 }
 ```
 
-在扩展流时，请记住用户在转发给基础构造函数之前可以且应该提供哪些选项。例如，如果实现在 regard to `autoDestroy` 和 `emitClose` 选项方面做出了假设，则不允许用户覆盖这些选项。明确说明转发了哪些选项，而不是隐式地转发所有选项。
+在扩展流时，请记住用户在转发给基础构造函数之前可以且应该提供哪些选项。例如，如果实现在 `autoDestroy` 和 `emitClose` 选项方面做出了假设，则不允许用户覆盖这些选项。明确说明转发了哪些选项，而不是隐式地转发所有选项。
 
 然后，新的流类必须实现一个或多个特定方法，具体取决于所创建的流类型，如下表所示：
 
@@ -3096,7 +3142,7 @@ class MyWritable extends Writable {
 | 读取和写入                           | [`Duplex`][]    | [`_read()`][stream-_read], [`_write()`][stream-_write], [`_writev()`][stream-_writev], [`_final()`][stream-_final] |
 | 对写入的数据进行操作，然后读取结果 | [`Transform`][] | [`_transform()`][stream-_transform], [`_flush()`][stream-_flush], [`_final()`][stream-_final]                      |
 
-流的实现代码 _绝不_ 应调用流 intended for use by consumers 的“公共”方法（如 [流使用者 API][] 部分所述）。这样做可能会导致使用该流的应用程序代码产生不良反应。
+流的实现代码 _绝不_ 应调用流供使用者使用的“公共”方法（如 [流使用者 API][] 部分所述）。这样做可能会导致使用该流的应用程序代码产生不良反应。
 
 避免覆盖公共方法，例如 `write()`、`end()`、`cork()`、`uncork()`、`read()` 和 `destroy()`，或通过 `.emit()` 发出内部事件，例如 `'error'`、`'data'`、`'end'`、`'finish'` 和 `'close'`。这样做可能会破坏当前和未来的流不变量，导致与其他流、流实用程序和用户期望的行为和/或兼容性问题。
 
@@ -3285,7 +3331,7 @@ changes:
 
 * `chunk` {Buffer|string|any} 要写入的 `Buffer`，由传递给 [`stream.write()`][stream-write] 的 `string` 转换而来。如果流的 `decodeStrings` 选项为 `false` 或流在对象模式下运行，则 chunk 不会被转换 & 将是传递给 [`stream.write()`][stream-write] 的任何内容。
 * `encoding` {string} 如果 chunk 是字符串，则 `encoding` 是该字符串的字符编码。如果 chunk 是 `Buffer`，或者流在对象模式下运行，`encoding` 可能会被忽略。
-* `callback` {Function} 当 supplied chunk 的处理完成时调用此函数（可选带错误参数）。
+* `callback` {Function} 当提供的 chunk 处理完成时调用此函数（可选带错误参数）。
 
 所有 `Writable` 流实现必须提供 [`writable._write()`][stream-_write] 和/或 [`writable._writev()`][stream-_writev] 方法以将数据发送到基础资源。
 
@@ -3306,7 +3352,7 @@ changes:
 * `chunks` {Object\[]} 要写入的数据。值是一个 {Object} 数组，每个对象代表一个要写入的离散数据块。这些对象的属性是：
   * `chunk` {Buffer|string} 包含要写入数据的 buffer 实例或字符串。如果 `Writable` 创建时 `decodeStrings` 选项设置为 `false` 并且字符串传递给 `write()`，则 `chunk` 将是字符串。
   * `encoding` {string} `chunk` 的字符编码。如果 `chunk` 是 `Buffer`，则 `encoding` 将是 `'buffer'`。
-* `callback` {Function} 当 supplied chunks 的处理完成时调用的回调函数（可选带错误参数）。
+* `callback` {Function} 当提供的 chunks 处理完成时调用的回调函数（可选带错误参数）。
 
 此函数不得由应用程序代码直接调用。它应由子类实现，并仅由内部 `Writable` 类方法调用。
 
@@ -3377,7 +3423,7 @@ class MyWritable extends Writable {
 
 #### 在可写流中解码 buffers
 
-解码 buffers 是一项常见任务，例如，当使用输入为字符串的转换器时。当使用多字节字符编码（如 UTF-8）时，这不是一个 trivial 的过程。以下示例展示了如何使用 `StringDecoder` 和 [`Writable`][] 解码多字节字符串。
+解码 buffers 是一项常见任务，例如，当使用输入为字符串的转换器时。当使用多字节字符编码（如 UTF-8）时，这不是一个简单的过程。以下示例展示了如何使用 `StringDecoder` 和 [`Writable`][] 解码多字节字符串。
 
 ```js
 const { Writable } = require('node:stream');
@@ -3959,7 +4005,7 @@ const myTransform = new Transform({
 
 * `chunk` {Buffer|string|any} 要转换的 `Buffer`，由传递给 [`stream.write()`][stream-write] 的 `string` 转换而来。如果流的 `decodeStrings` 选项为 `false` 或流在对象模式下运行，则 chunk 不会被转换 & 将是传递给 [`stream.write()`][stream-write] 的任何内容。
 * `encoding` {string} 如果 chunk 是字符串，则这是编码类型。如果 chunk 是 buffer，则这是特殊值 `'buffer'`。在这种情况下忽略它。
-* `callback` {Function} 在 supplied `chunk` 处理完成后调用的回调函数（可选带错误参数和数据）。
+* `callback` {Function} 在提供的 `chunk` 处理完成后调用的回调函数（可选带错误参数和数据）。
 
 此函数不得由应用程序代码直接调用。它应由子类实现，并仅由内部 `Readable` 类方法调用。
 
@@ -3988,7 +4034,7 @@ transform.prototype._transform = function(data, encoding, callback) {
 
 #### 类：`stream.PassThrough`
 
-`stream.PassThrough` 类是 [`Transform`][] 流的 trivial 实现，它简单地将输入字节传递到输出。其主要目的是用于示例和测试，但在某些用例中，`stream.PassThrough` 可用作新型流的构建块。
+`stream.PassThrough` 类是 [`Transform`][] 流的简单实现，它简单地将输入字节传递到输出。其主要目的是用于示例和测试，但在某些用例中，`stream.PassThrough` 可用作新型流的构建块。
 
 ## 补充说明
 
@@ -4151,21 +4197,23 @@ net.createServer((socket) => {
 
 这在 `latin1` 或 `ascii` 的常见情况下不是问题。但是，当处理可能包含多字节字符的字符串时，建议注意此行为。
 
-[API for stream consumers]: #api-for-stream-consumers
-[API for stream implementers]: #api-for-stream-implementers
-[Compatibility]: #compatibility-with-older-nodejs-versions
-[HTTP requests, on the client]: http.md#class-httpclientrequest
-[HTTP responses, on the server]: http.md#class-httpserverresponse
-[TCP sockets]: net.md#class-netsocket
-[Three states]: #three-states
+[流使用者 API]: #api-for-stream-consumers
+[流实现者 API]: #api-for-stream-implementers
+[兼容性]: #compatibility-with-older-nodejs-versions
+[客户端 HTTP 请求]: http.md#class-httpclientrequest
+[服务器 HTTP 响应]: http.md#class-httpserverresponse
+[TCP 套接字]: net.md#class-netsocket
+[三种状态]: #three-states
 [`'data'`]: #event-data
 [`'drain'`]: #event-drain
 [`'end'`]: #event-end
 [`'finish'`]: #event-finish
 [`'readable'`]: #event-readable
 [`Duplex`]: #class-streamduplex
+[`ERR_STREAM_ITER_MISSING_FLAG`]: errors.md#err_stream_iter_missing_flag
 [`EventEmitter`]: events.md#class-eventemitter
 [`Readable`]: #class-streamreadable
+[`Stream.toAsyncStreamable`]: stream_iter.md#streamtoasyncstreamable
 [`Symbol.hasInstance`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/hasInstance
 [`Transform`]: #class-streamtransform
 [`Writable`]: #class-streamwritable
@@ -4191,6 +4239,7 @@ net.createServer((socket) => {
 [`stream.uncork()`]: #writableuncork
 [`stream.unpipe()`]: #readableunpipedestination
 [`stream.wrap()`]: #readablewrapstream
+[`stream/iter`]: stream_iter.md
 [`writable._final()`]: #writable_finalcallback
 [`writable._write()`]: #writable_writechunk-encoding-callback
 [`writable._writev()`]: #writable_writevchunks-callback
@@ -4199,11 +4248,11 @@ net.createServer((socket) => {
 [`writable.uncork()`]: #writableuncork
 [`writable.writableFinished`]: #writablewritablefinished
 [`zlib.createDeflate()`]: zlib.md#zlibcreatedeflateoptions
-[child process stdin]: child_process.md#subprocessstdin
-[child process stdout and stderr]: child_process.md#subprocessstdout
+[子进程 stdin]: child_process.md#subprocessstdin
+[子进程 stdout 和 stderr]: child_process.md#subprocessstdout
 [crypto]: crypto.md
-[fs read streams]: fs.md#class-fsreadstream
-[fs write streams]: fs.md#class-fswritestream
+[fs 读流]: fs.md#class-fsreadstream
+[fs 写流]: fs.md#class-fswritestream
 [http-incoming-message]: http.md#class-httpincomingmessage
 [hwm-gotcha]: #highwatermark-discrepancy-after-calling-readablesetencoding
 [object-mode]: #object-mode
@@ -4219,6 +4268,7 @@ net.createServer((socket) => {
 [stream-end]: #writableendchunk-encoding-callback
 [stream-finished]: #streamfinishedstream-options-callback
 [stream-finished-promise]: #streamfinishedstream-options
+[stream-iter-from]: stream_iter.md#frominput
 [stream-pause]: #readablepause
 [stream-pipeline]: #streampipelinesource-transforms-destination-callback
 [stream-pipeline-promise]: #streampipelinesource-transforms-destination-options

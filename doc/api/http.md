@@ -56,32 +56,32 @@ changes:
     - v24.7.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59315
-    description: "Add support for `agentKeepAliveTimeoutBuffer`."
+    description: "添加对 \`agentKeepAliveTimeoutBuffer\` 的支持。"
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: "Add support for `proxyEnv`."
+    description: "添加对 \`proxyEnv\` 的支持。"
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: "Add support for `defaultPort` and `protocol`."
+    description: "添加对 \`defaultPort\` 和 \`protocol\` 的支持。"
   - version:
       - v15.6.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/36685
-    description: Change the default scheduling from 'fifo' to 'lifo'.
+    description: 将默认调度从 'fifo' 更改为 'lifo'。
   - version:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33617
-    description: "Add `maxTotalSockets` option to agent constructor."
+    description: "向 agent 构造函数添加 \`maxTotalSockets\` 选项。"
   - version:
       - v14.5.0
       - v12.20.0
     pr-url: https://github.com/nodejs/node/pull/33278
-    description: "Add `scheduling` option to specify the free socketscheduling strategy."
+    description: "添加 \`scheduling\` 选项以指定空闲套接字调度策略。"
 -->
 
 * `options` {Object} 要在 agent 上设置的可配置选项集。
@@ -171,32 +171,32 @@ changes:
     - v24.7.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59315
-    description: "Add support for `agentKeepAliveTimeoutBuffer`."
+    description: "添加对 \`agentKeepAliveTimeoutBuffer\` 的支持。"
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: "Add support for `proxyEnv`."
+    description: "添加对 \`proxyEnv\` 的支持。"
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: "Add support for `defaultPort` and `protocol`."
+    description: "添加对 \`defaultPort\` 和 \`protocol\` 的支持。"
   - version:
       - v15.6.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/36685
-    description: Change the default scheduling from 'fifo' to 'lifo'.
+    description: 将默认调度从 'fifo' 更改为 'lifo'。
   - version:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33617
-    description: "Add `maxTotalSockets` option to agent constructor."
+    description: "向 agent 构造函数添加 \`maxTotalSockets\` 选项。"
   - version:
       - v14.5.0
       - v12.20.0
     pr-url: https://github.com/nodejs/node/pull/33278
-    description: "Add `scheduling` option to specify the free socketscheduling strategy."
+    description: "添加 \`scheduling\` 选项以指定空闲套接字调度策略。"
 -->
 
 * `options` {Object} 要在 agent 上设置的可配置选项集。
@@ -379,7 +379,7 @@ added: v0.11.4
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: "The property now has a `null` prototype."
+    description: "该属性现在具有 \`null\` 原型。"
 -->
 
 * 类型：{Object}
@@ -399,7 +399,7 @@ changes:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41906
-    description: "The `options` parameter is now optional."
+    description: "\`options\` 参数现在是可选的。"
 -->
 
 * `options` {Object} 提供名称生成信息的一组选项
@@ -457,7 +457,7 @@ added: v0.5.9
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: "The property now has a `null` prototype."
+    description: "该属性现在具有 \`null\` 原型。"
 -->
 
 * 类型：{Object}
@@ -472,7 +472,7 @@ added: v0.3.6
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: "The property now has a `null` prototype."
+    description: "该属性现在具有 \`null\` 原型。"
 -->
 
 * 类型：{Object}
@@ -1615,7 +1615,7 @@ added: v0.1.94
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/60016
-    description: "请求主体不再以原始（未解析）形式暴露在socket 参数上。相反，如果收到主体，流参数将是一个双工流，仅在请求主体之后发出 socket 内容，而解析后的请求主体数据将从请求中发出，就像在普通服务器`'request'` 事件中一样。"
+    description: "请求主体不再以原始（未解析）形式暴露在 socket 参数上。相反，如果收到主体，流参数将是一个双工流，仅在请求主体之后发出 socket 内容，而解析后的请求主体数据将从请求中发出，就像在普通服务器`'request'` 事件中一样。"
   - version:
      - v24.9.0
      - v22.21.0
@@ -1623,7 +1623,7 @@ changes:
     description: "是否触发此事件现在可以通过`shouldUpgradeCallback` 控制，如果没有事件处理程序监听，socket 将在升级时被销毁。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19981
-    description: "不再监听此事件不再导致 socket在客户端发送 Upgrade 头部时被销毁。"
+    description: "不再监听此事件不再导致 socket 在客户端发送 Upgrade 头部时被销毁。"
 -->
 
 * `request` {http.IncomingMessage} HTTP 请求的参数，与
@@ -2746,6 +2746,48 @@ added: v0.5.9
 * 返回：{http.IncomingMessage}
 
 调用 `message.socket.setTimeout(msecs, callback)`。
+
+### `message.signal`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{AbortSignal}
+
+当底层 socket 关闭或请求被销毁时中止的 {AbortSignal}。该信号在首次访问时惰性创建——对于从未使用此属性的请求，不会分配 {AbortController}。
+
+当客户端在请求中途断开连接时，这对于取消下游异步工作（例如数据库查询或 `fetch` 调用）非常有用。
+
+```mjs
+import http from 'node:http';
+
+http.createServer(async (req, res) => {
+  try {
+    const data = await fetch('https://example.com/api', { signal: req.signal });
+    res.end(JSON.stringify(await data.json()));
+  } catch (err) {
+    if (err.name === 'AbortError') return;
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
+}).listen(3000);
+```
+
+```cjs
+const http = require('node:http');
+
+http.createServer(async (req, res) => {
+  try {
+    const data = await fetch('https://example.com/api', { signal: req.signal });
+    res.end(JSON.stringify(await data.json()));
+  } catch (err) {
+    if (err.name === 'AbortError') return;
+    res.statusCode = 500;
+    res.end('Internal Server Error');
+  }
+}).listen(3000);
+```
 
 ### `message.socket`
 
