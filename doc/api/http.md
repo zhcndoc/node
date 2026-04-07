@@ -56,17 +56,17 @@ changes:
     - v24.7.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59315
-    description: "添加对 \`agentKeepAliveTimeoutBuffer\` 的支持。"
+    description: "添加对 `agentKeepAliveTimeoutBuffer` 的支持。"
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: "添加对 \`proxyEnv\` 的支持。"
+    description: "添加对 `proxyEnv` 的支持。"
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: "添加对 \`defaultPort\` 和 \`protocol\` 的支持。"
+    description: "添加对 `defaultPort` 和 `protocol` 的支持。"
   - version:
       - v15.6.0
       - v14.17.0
@@ -76,12 +76,12 @@ changes:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33617
-    description: "向 agent 构造函数添加 \`maxTotalSockets\` 选项。"
+    description: "向 agent 构造函数添加 `maxTotalSockets` 选项。"
   - version:
       - v14.5.0
       - v12.20.0
     pr-url: https://github.com/nodejs/node/pull/33278
-    description: "添加 \`scheduling\` 选项以指定空闲套接字调度策略。"
+    description: "添加 `scheduling` 选项以指定空闲套接字调度策略。"
 -->
 
 * `options` {Object} 要在 agent 上设置的可配置选项集。
@@ -171,17 +171,17 @@ changes:
     - v24.7.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59315
-    description: "添加对 \`agentKeepAliveTimeoutBuffer\` 的支持。"
+    description: "添加对 `agentKeepAliveTimeoutBuffer` 的支持。"
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: "添加对 \`proxyEnv\` 的支持。"
+    description: "添加对 `proxyEnv` 的支持。"
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: "添加对 \`defaultPort\` 和 \`protocol\` 的支持。"
+    description: "添加对 `defaultPort` 和 `protocol` 的支持。"
   - version:
       - v15.6.0
       - v14.17.0
@@ -191,12 +191,12 @@ changes:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33617
-    description: "向 agent 构造函数添加 \`maxTotalSockets\` 选项。"
+    description: "向 agent 构造函数添加 `maxTotalSockets` 选项。"
   - version:
       - v14.5.0
       - v12.20.0
     pr-url: https://github.com/nodejs/node/pull/33278
-    description: "添加 \`scheduling\` 选项以指定空闲套接字调度策略。"
+    description: "添加 `scheduling` 选项以指定空闲套接字调度策略。"
 -->
 
 * `options` {Object} 要在 agent 上设置的可配置选项集。
@@ -379,7 +379,7 @@ added: v0.11.4
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: "该属性现在具有 \`null\` 原型。"
+    description: "该属性现在具有 `null` 原型。"
 -->
 
 * 类型：{Object}
@@ -399,7 +399,7 @@ changes:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41906
-    description: "\`options\` 参数现在是可选的。"
+    description: "`options` 参数现在是可选的。"
 -->
 
 * `options` {Object} 提供名称生成信息的一组选项
@@ -457,7 +457,7 @@ added: v0.5.9
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: "该属性现在具有 \`null\` 原型。"
+    description: "该属性现在具有 `null` 原型。"
 -->
 
 * 类型：{Object}
@@ -472,7 +472,7 @@ added: v0.3.6
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: "该属性现在具有 \`null\` 原型。"
+    description: "该属性现在具有 `null` 原型。"
 -->
 
 * 类型：{Object}
