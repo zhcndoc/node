@@ -1,10 +1,10 @@
-# Class: H2CClient
+# 类: H2CClient
 
-Extends: `undici.Dispatcher`
+继承自: `undici.Dispatcher`
 
-A basic H2C client.
+一个基本的 H2C 客户端。
 
-**Example**
+**示例**
 
 ```js
 const { createServer } = require('node:http2')
@@ -30,41 +30,41 @@ once(server, 'listening').then(() => {
 
 ## `new H2CClient(url[, options])`
 
-Arguments:
+参数:
 
-- **url** `URL | string` - Should only include the **protocol, hostname, and port**. It only supports `http` protocol.
-- **options** `H2CClientOptions` (optional)
+- **url** `URL | string` - 应仅包含**协议、主机名和端口**。仅支持 `http` 协议。
+- **options** `H2CClientOptions` (可选)
 
-Returns: `H2CClient`
+返回值: `H2CClient`
 
-### Parameter: `H2CClientOptions`
+### 参数: `H2CClientOptions`
 
-- **bodyTimeout** `number | null` (optional) - Default: `300e3` - The timeout after which a request will time out, in milliseconds. Monitors time between receiving body data. Use `0` to disable it entirely. Defaults to 300 seconds. Please note the `timeout` will be reset if you keep writing data to the socket everytime.
-- **headersTimeout** `number | null` (optional) - Default: `300e3` - The amount of time, in milliseconds, the parser will wait to receive the complete HTTP headers while not sending the request. Defaults to 300 seconds.
-- **keepAliveMaxTimeout** `number | null` (optional) - Default: `600e3` - The maximum allowed `keepAliveTimeout`, in milliseconds, when overridden by _keep-alive_ hints from the server. Defaults to 10 minutes.
-- **keepAliveTimeout** `number | null` (optional) - Default: `4e3` - The timeout, in milliseconds, after which a socket without active requests will time out. Monitors time between activity on a connected socket. This value may be overridden by _keep-alive_ hints from the server. See [MDN: HTTP - Headers - Keep-Alive directives](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive#directives) for more details. Defaults to 4 seconds.
-- **keepAliveTimeoutThreshold** `number | null` (optional) - Default: `2e3` - A number of milliseconds subtracted from server _keep-alive_ hints when overriding `keepAliveTimeout` to account for timing inaccuracies caused by e.g. transport latency. Defaults to 2 seconds.
-- **maxHeaderSize** `number | null` (optional) - Default: `--max-http-header-size` or `16384` - The maximum length of request headers in bytes. Defaults to Node.js' --max-http-header-size or 16KiB.
-- **maxResponseSize** `number | null` (optional) - Default: `-1` - The maximum length of response body in bytes. Set to `-1` to disable.
-- **maxConcurrentStreams**: `number` - Default: `100`. Dictates the maximum number of concurrent streams for a single H2 session. It can be overridden by a SETTINGS remote frame.
-- **pipelining** `number | null` (optional) - Default to `maxConcurrentStreams` - The amount of concurrent requests sent over a single HTTP/2 session in accordance with [RFC-7540](https://httpwg.org/specs/rfc7540.html#StreamsLayer) Stream specification. Streams can be closed up by remote server at any time.
-- **pingInterval**: `number` - Default: `60e3`. The time interval in milliseconds between PING frames sent to the server. Set to `0` to disable PING frames. This is only applicable for HTTP/2 connections.
-- **connect** `ConnectOptions | null` (optional) - Default: `null`.
-- **strictContentLength** `Boolean` (optional) - Default: `true` - Whether to treat request content length mismatches as errors. If true, an error is thrown when the request content-length header doesn't match the length of the request body. **Security Warning:** Disabling this option can expose your application to HTTP Request Smuggling attacks, where mismatched content-length headers cause servers and proxies to interpret request boundaries differently. This can lead to cache poisoning, credential hijacking, and bypassing security controls. Only disable this in controlled environments where you fully trust the request source.
-- **autoSelectFamily**: `boolean` (optional) - Default: depends on local Node version, on Node 18.13.0 and above is `false`. Enables a family autodetection algorithm that loosely implements section 5 of [RFC 8305](https://tools.ietf.org/html/rfc8305#section-5). See [here](https://nodejs.org/api/net.html#socketconnectoptions-connectlistener) for more details. This option is ignored if not supported by the current Node version.
-- **autoSelectFamilyAttemptTimeout**: `number` - Default: depends on local Node version, on Node 18.13.0 and above is `250`. The amount of time in milliseconds to wait for a connection attempt to finish before trying the next address when using the `autoSelectFamily` option. See [here](https://nodejs.org/api/net.html#socketconnectoptions-connectlistener) for more details.
+- **bodyTimeout** `number | null` (可选) - 默认值: `300e3` - 请求在多少毫秒后超时，以接收 body 数据的时间为准。使用 `0` 可完全禁用此功能。默认为 300 秒。请注意，如果您每次向 socket 写入数据时都会重置 `timeout`。
+- **headersTimeout** `number | null` (可选) - 解析器在发送请求前等待接收完整 HTTP headers 的时间（毫秒）。默认为 300 秒。
+- **keepAliveMaxTimeout** `number | null` (可选) - 默认值: `600e3` - 当服务器 _keep-alive_ hints 覆盖时，允许的最大 `keepAliveTimeout`（毫秒）。默认为 10 分钟。
+- **keepAliveTimeout** `number | null` (可选) - 默认值: `4e3` - 无活动请求的 socket 在多少毫秒后超时的值。监控连接 socket 上的活动时间。此值可能会被服务器的 _keep-alive_ hints 覆盖。有关更多详细信息，请参阅 [MDN: HTTP - Headers - Keep-Alive directives](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive#directives)。默认为 4 秒。
+- **keepAliveTimeoutThreshold** `number | null` (可选) - 默认值: `2e3` - 从服务器 _keep-alive_ hints 中减去的时间（毫秒），用于补偿由例如传输延迟引起的计时不准确。默认为 2 秒。
+- **maxHeaderSize** `number | null` (可选) - 默认值: `--max-http-header-size` 或 `16384` - 请求 headers 的最大长度（字节）。默认为 Node.js 的 --max-http-header-size 或 16KiB。
+- **maxResponseSize** `number | null` (可选) - 默认值: `-1` - 响应 body 的最大长度（字节）。设置为 `-1` 表示禁用。
+- **maxConcurrentStreams**: `number` - 默认值: `100`。规定单个 H2 会话的最大并发流数。可由 SETTINGS remote frame 覆盖。
+- **pipelining** `number | null` (可选) - 默认值为 `maxConcurrentStreams` - 根据 [RFC-7540](https://httpwg.org/specs/rfc7540.html#StreamsLayer) Stream 规范，单个 HTTP/2 会话上发送的并发请求数量。远程服务器可随时关闭流。
+- **pingInterval**: `number` - 默认值: `60e3`。向服务器发送 PING frames 的时间间隔（毫秒）。设置为 `0` 可禁用 PING frames。仅适用于 HTTP/2 连接。
+- **connect** `ConnectOptions | null` (可选) - 默认值: `null`。
+- **strictContentLength** `Boolean` (可选) - 默认值: `true` - 是否将请求 content length 不匹配视为错误。如果为 true，当请求 content-length header 与请求 body 的长度不匹配时，会抛出错误。**安全警告:** 禁用此选项可能会使您的应用程序暴露于 HTTP Request Smuggling 攻击之下，其中不匹配的 content-length headers 会导致服务器和代理对请求边界进行不同的解释。这可能导致缓存中毒、凭据劫持以及绕过安全控制。仅在您完全信任请求来源的受控环境中才应禁用此选项。
+- **autoSelectFamily**: `boolean` (可选) - 默认值取决于本地 Node 版本，在 Node 18.13.0 及以上版本中默认为 `false`。启用一个松散实现 [RFC 8305](https://tools.ietf.org/html/rfc8305#section-5) 第 5 节的 family 自动检测算法。有关更多详细信息，请参见 [此处](https://nodejs.org/api/net.html#socketconnectoptions-connectlistener)。如果当前 Node 版本不支持，则忽略此选项。
+- **autoSelectFamilyAttemptTimeout**: `number` - 默认值取决于本地 Node 版本，在 Node 18.13.0 及以上版本中默认为 `250`。当使用 `autoSelectFamily` 选项时，尝试下一个地址前等待连接尝试完成的时间（毫秒）。有关更多详细信息，请参见 [此处](https://nodejs.org/api/net.html#socketconnectoptions-connectlistener)。
 
-#### Parameter: `H2CConnectOptions`
+#### 参数: `H2CConnectOptions`
 
-- **socketPath** `string | null` (optional) - Default: `null` - An IPC endpoint, either Unix domain socket or Windows named pipe.
-- **timeout** `number | null` (optional) - In milliseconds, Default `10e3`.
-- **servername** `string | null` (optional)
-- **keepAlive** `boolean | null` (optional) - Default: `true` - TCP keep-alive enabled
-- **keepAliveInitialDelay** `number | null` (optional) - Default: `60000` - TCP keep-alive interval for the socket in milliseconds
+- **socketPath** `string | null` (可选) - 默认值: `null` - IPC 端点，可以是 Unix domain socket 或 Windows named pipe。
+- **timeout** `number | null` (可选) - 毫秒为单位，默认值 `10e3`。
+- **servername** `string | null` (可选)
+- **keepAlive** `boolean | null` (可选) - 默认值: `true` - 启用 TCP keep-alive
+- **keepAliveInitialDelay** `number | null` (可选) - 默认值: `60000` - socket 的 TCP keep-alive 间隔（毫秒）
 
-### Example - Basic Client instantiation
+### 示例 - 基本客户端实例化
 
-This will instantiate the undici H2CClient, but it will not connect to the origin until something is queued. Consider using `client.connect` to prematurely connect to the origin, or just call `client.request`.
+这将实例化 undici H2CClient，但直到有任务排队时才会连接到源。考虑使用 `client.connect` 提前连接到源，或者直接调用 `client.request`。
 
 ```js
 "use strict";
@@ -73,76 +73,76 @@ import { H2CClient } from "undici";
 const client = new H2CClient("http://localhost:3000");
 ```
 
-## Instance Methods
+## 实例方法
 
 ### `H2CClient.close([callback])`
 
-Implements [`Dispatcher.close([callback])`](/docs/docs/api/Dispatcher.md#dispatcherclosecallback-promise).
+实现 [`Dispatcher.close([callback])`](/docs/docs/api/Dispatcher.md#dispatcherclosecallback-promise)。
 
 ### `H2CClient.destroy([error, callback])`
 
-Implements [`Dispatcher.destroy([error, callback])`](/docs/docs/api/Dispatcher.md#dispatcherdestroyerror-callback-promise).
+实现 [`Dispatcher.destroy([error, callback])`](/docs/docs/api/Dispatcher.md#dispatcherdestroyerror-callback-promise)。
 
-Waits until socket is closed before invoking the callback (or returning a promise if no callback is provided).
+在 socket 关闭后调用回调（如果没有提供回调，则返回一个 promise）。
 
 ### `H2CClient.connect(options[, callback])`
 
-See [`Dispatcher.connect(options[, callback])`](/docs/docs/api/Dispatcher.md#dispatcherconnectoptions-callback).
+参见 [`Dispatcher.connect(options[, callback])`](/docs/docs/api/Dispatcher.md#dispatcherconnectoptions-callback)。
 
 ### `H2CClient.dispatch(options, handlers)`
 
-Implements [`Dispatcher.dispatch(options, handlers)`](/docs/docs/api/Dispatcher.md#dispatcherdispatchoptions-handler).
+实现 [`Dispatcher.dispatch(options, handlers)`](/docs/docs/api/Dispatcher.md#dispatcherdispatchoptions-handler)。
 
 ### `H2CClient.pipeline(options, handler)`
 
-See [`Dispatcher.pipeline(options, handler)`](/docs/docs/api/Dispatcher.md#dispatcherpipelineoptions-handler).
+参见 [`Dispatcher.pipeline(options, handler)`](/docs/docs/api/Dispatcher.md#dispatcherpipelineoptions-handler)。
 
 ### `H2CClient.request(options[, callback])`
 
-See [`Dispatcher.request(options [, callback])`](/docs/docs/api/Dispatcher.md#dispatcherrequestoptions-callback).
+参见 [`Dispatcher.request(options [, callback])`](/docs/docs/api/Dispatcher.md#dispatcherrequestoptions-callback)。
 
 ### `H2CClient.stream(options, factory[, callback])`
 
-See [`Dispatcher.stream(options, factory[, callback])`](/docs/docs/api/Dispatcher.md#dispatcherstreamoptions-factory-callback).
+参见 [`Dispatcher.stream(options, factory[, callback])`](/docs/docs/api/Dispatcher.md#dispatcherstreamoptions-factory-callback)。
 
 ### `H2CClient.upgrade(options[, callback])`
 
-See [`Dispatcher.upgrade(options[, callback])`](/docs/docs/api/Dispatcher.md#dispatcherupgradeoptions-callback).
+参见 [`Dispatcher.upgrade(options[, callback])`](/docs/docs/api/Dispatcher.md#dispatcherupgradeoptions-callback)。
 
-## Instance Properties
+## 实例属性
 
 ### `H2CClient.closed`
 
 - `boolean`
 
-`true` after `H2CClient.close()` has been called.
+在调用 `H2CClient.close()` 后为 `true`。
 
 ### `H2CClient.destroyed`
 
 - `boolean`
 
-`true` after `client.destroyed()` has been called or `client.close()` has been called and the client shutdown has completed.
+在调用 `client.destroyed()` 或 `client.close()` 且客户端关闭完成后为 `true`。
 
 ### `H2CClient.pipelining`
 
 - `number`
 
-Property to get and set the pipelining factor.
+获取和设置管道因子的属性。
 
-## Instance Events
+## 实例事件
 
-### Event: `'connect'`
+### 事件: `'connect'`
 
-See [Dispatcher Event: `'connect'`](/docs/docs/api/Dispatcher.md#event-connect).
+参见 [Dispatcher 事件: `'connect'`](/docs/docs/api/Dispatcher.md#event-connect)。
 
-Parameters:
+参数:
 
 - **origin** `URL`
 - **targets** `Array<Dispatcher>`
 
-Emitted when a socket has been created and connected. The client will connect once `client.size > 0`.
+当 socket 已创建并连接时触发。客户端将在 `client.size > 0` 时连接一次。
 
-#### Example - Client connect event
+#### 示例 - 客户端连接事件
 
 ```js
 import { createServer } from "node:http2";
@@ -177,19 +177,19 @@ try {
 }
 ```
 
-### Event: `'disconnect'`
+### 事件: `'disconnect'`
 
-See [Dispatcher Event: `'disconnect'`](/docs/docs/api/Dispatcher.md#event-disconnect).
+参见 [Dispatcher 事件: `'disconnect'`](/docs/docs/api/Dispatcher.md#event-disconnect)。
 
-Parameters:
+参数:
 
 - **origin** `URL`
 - **targets** `Array<Dispatcher>`
 - **error** `Error`
 
-Emitted when socket has disconnected. The error argument of the event is the error which caused the socket to disconnect. The client will reconnect if or once `client.size > 0`.
+当 socket 断开连接时触发。事件的 error 参数是导致 socket 断开的错误。如果 `client.size > 0`，客户端将重新连接。
 
-#### Example - Client disconnect event
+#### 示例 - 客户端断开连接事件
 
 ```js
 import { createServer } from "node:http2";
@@ -220,13 +220,13 @@ try {
 }
 ```
 
-### Event: `'drain'`
+### 事件: `'drain'`
 
-Emitted when pipeline is no longer busy.
+当 pipeline 不再繁忙时触发。
 
-See [Dispatcher Event: `'drain'`](/docs/docs/api/Dispatcher.md#event-drain).
+参见 [Dispatcher 事件: `'drain'`](/docs/docs/api/Dispatcher.md#event-drain)。
 
-#### Example - Client drain event
+#### 示例 - 客户端 drain 事件
 
 ```js
 import { createServer } from "node:http2";
@@ -258,6 +258,6 @@ await Promise.all(requests);
 console.log("requests completed");
 ```
 
-### Event: `'error'`
+### 事件: `'error'`
 
-Invoked for users errors such as throwing in the `onError` handler.
+为用户错误（例如在 `onResponseError` handler 中抛出异常）调用。

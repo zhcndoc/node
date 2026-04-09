@@ -6,7 +6,7 @@
 
 <!--name=module-->
 
-CommonJS 模块是用于 Node.js 打包 JavaScript 代码的原始方式。
+CommonJS 模块是 Node.js 打包 JavaScript 代码的原始方式。
 Node.js 也支持浏览器和其他 JavaScript 运行时使用的 [ECMAScript 模块][] 标准。
 
 在 Node.js 中，每个文件都被视为一个单独的模块。例如，考虑一个名为 `foo.js` 的文件：
@@ -68,13 +68,13 @@ Node.js 有两个模块系统：CommonJS 模块和 [ECMAScript 模块][]。
 
 默认情况下，Node.js 会将以下内容视为 CommonJS 模块：
 
-* 扩展名为 `.cjs` 的文件；
+* 扩展名为 `.cjs` 的文件。
 
-* 当最近的父级 `package.json` 文件包含值为 `"commonjs"` 的顶层字段 [`"type"`][] 时，扩展名为 `.js` 的文件；
+* 扩展名为 `.js` 或无扩展名的文件，当最近的父级 `package.json` 文件包含顶层字段 [`"type"`][] 且其值为 `"commonjs"` 时。
 
-* 当最近的父级 `package.json` 文件不包含顶层字段 [`"type"`][] 或任何父文件夹中都没有 `package.json` 时，扩展名为 `.js` 或没有扩展名的文件；除非文件包含除非作为 ES 模块评估否则会出错的语法。包作者应该包含 [`"type"`][] 字段，即使包中的所有源都是 CommonJS。明确包的 `type` 将使构建工具和加载器更容易确定包中的文件应如何被解释。
+* 当最近的父级 `package.json` 文件不包含顶层字段 [`"type"`][] 或任何父文件夹中都没有 `package.json` 时，扩展名为 `.js` 或无扩展名的文件；除非文件包含除非作为 ES 模块评估否则会出错的语法。包作者应该包含 [`"type"`][] 字段，即使包中的所有源都是 CommonJS。明确包的 `type` 将使构建工具和加载器更容易确定包中的文件应如何被解释。
 
-* 扩展名不是 `.mjs`、`.cjs`、`.json`、`.node` 或 `.js` 的文件（当最近的父级 `package.json` 文件包含值为 `"module"` 的顶层字段 [`"type"`][] 时，这些文件仅当通过 `require()` 包含时才会被识别为 CommonJS 模块，而不是当用作程序的命令行入口点时）。
+* 扩展名不是 `.mjs`、`.cjs`、`.json`、`.node` 或 `.js` 的文件，当最近的父级 `package.json` 文件包含顶层字段 [`"type"`][] 且其值为 `"module"` 时。
 
 参见 [确定模块系统][] 了解更多详情。
 

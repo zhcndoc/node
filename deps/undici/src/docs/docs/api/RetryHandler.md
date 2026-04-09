@@ -1,56 +1,54 @@
-# Class: RetryHandler
+# 类：RetryHandler
 
-Extends: `undici.DispatcherHandlers`
+继承自：`undici.DispatcherHandlers`
 
-A handler class that implements the retry logic for a request.
+一个实现请求重试逻辑的处理程序类。
 
 ## `new RetryHandler(dispatchOptions, retryHandlers, [retryOptions])`
 
-Arguments:
+参数：
 
-- **options** `Dispatch.DispatchOptions & RetryOptions` (required) - It is an intersection of `Dispatcher.DispatchOptions` and `RetryOptions`.
-- **retryHandlers** `RetryHandlers` (required) - Object containing the `dispatch` to be used on every retry, and `handler` for handling the `dispatch` lifecycle.
+- **options** `Dispatch.DispatchOptions & RetryOptions`（必需）——它是 `Dispatcher.DispatchOptions` 和 `RetryOptions` 的交集。
+- **retryHandlers** `RetryHandlers`（必需）——包含每次重试时要使用的 `dispatch` 函数，以及用于处理 `dispatch` 生命周期的 `handler`。
 
-Returns: `retryHandler`
+返回值：`retryHandler`
 
-### Parameter: `Dispatch.DispatchOptions & RetryOptions`
+### 参数：`Dispatch.DispatchOptions & RetryOptions`
 
-Extends: [`Dispatch.DispatchOptions`](/docs/docs/api/Dispatcher.md#parameter-dispatchoptions).
+继承自：[`Dispatch.DispatchOptions`](/docs/docs/api/Dispatcher.md#parameter-dispatchoptions)。
 
 #### `RetryOptions`
 
-- **throwOnError** `boolean` (optional) - Disable to prevent throwing error on last retry attept, useful if you need the body on errors from server or if you have custom error handler.
-- **retry** `(err: Error, context: RetryContext, callback: (err?: Error | null) => void) => number | null` (optional) - Function to be called after every retry. It should pass error if no more retries should be performed.
-- **maxRetries** `number` (optional) - Maximum number of retries. Default: `5`
-- **maxTimeout** `number` (optional) - Maximum number of milliseconds to wait before retrying. Default: `30000` (30 seconds)
-- **minTimeout** `number` (optional) - Minimum number of milliseconds to wait before retrying. Default: `500` (half a second)
-- **timeoutFactor** `number` (optional) - Factor to multiply the timeout by for each retry attempt. Default: `2`
-- **retryAfter** `boolean` (optional) - It enables automatic retry after the `Retry-After` header is received. Default: `true`
--
-- **methods** `string[]` (optional) - Array of HTTP methods to retry. Default: `['GET', 'PUT', 'HEAD', 'OPTIONS', 'DELETE']`
-- **statusCodes** `number[]` (optional) - Array of HTTP status codes to retry. Default: `[429, 500, 502, 503, 504]`
-- **errorCodes** `string[]` (optional) - Array of Error codes to retry. Default: `['ECONNRESET', 'ECONNREFUSED', 'ENOTFOUND', 'ENETDOWN','ENETUNREACH', 'EHOSTDOWN', 'UND_ERR_SOCKET']`
+- **throwOnError** `boolean`（可选）——禁用此选项可防止在最后一次重试时抛出错误，如果您需要从服务器获取错误响应体或拥有自定义错误处理器，这将非常有用。
+- **retry** `(err: Error, context: RetryContext, callback: (err?: Error | null) => void) => number | null`（可选）——每次重试后调用的函数。如果没有更多重试应执行，则应传递错误。
+- **maxRetries** `number`（可选）——最大重试次数。默认值：`5`
+- **maxTimeout** `number`（可选）——重试前等待的最大毫秒数。默认值：`30000`（30秒）
+- **minTimeout** `number`（可选）——重试前等待的最小毫秒数。默认值：`500`（半秒）
+- **timeoutFactor** `number`（可选）——每次重试尝试的超时时间乘数。默认值：`2`
+- **retryAfter** `boolean`（可选）——启用后，当收到 `Retry-After` 标头时将自动重试。默认值：`true`
+- **methods** `string[]`（可选）——要重试的 HTTP 方法数组。默认值：`['GET', 'PUT', 'HEAD', 'OPTIONS', 'DELETE']`
+- **statusCodes** `number[]`（可选）——要重试的 HTTP 状态码数组。默认值：`[429, 500, 502, 503, 504]`
+- **errorCodes** `string[]`（可选）——要重试的错误代码数组。默认值：`['ECONNRESET', 'ECONNREFUSED', 'ENOTFOUND', 'ENETDOWN','ENETUNREACH', 'EHOSTDOWN', 'UND_ERR_SOCKET']`
 
 **`RetryContext`**
 
-- `state`: `RetryState` - Current retry state. It can be mutated.
-- `opts`: `Dispatch.DispatchOptions & RetryOptions` - Options passed to the retry handler.
+- `state`: `RetryState` - 当前重试状态。可以修改。
+- `opts`: `Dispatch.DispatchOptions & RetryOptions` - 传递给重试处理器的选项。
 
 **`RetryState`**
 
-It represents the retry state for a given request.
+它表示给定请求的重试状态。
 
-- `counter`: `number` - Current retry attempt.
+- `counter`: `number` - 当前重试次数。
 
-### Parameter `RetryHandlers`
+### 参数 `RetryHandlers`
 
-- **dispatch** `(options: Dispatch.DispatchOptions, handlers: Dispatch.DispatchHandler) => Promise<Dispatch.DispatchResponse>` (required) - Dispatch function to be called after every retry.
-- **handler** Extends [`Dispatch.DispatchHandler`](/docs/docs/api/Dispatcher.md#dispatcherdispatchoptions-handler) (required) - Handler function to be called after the request is successful or the retries are exhausted.
+- **dispatch** `(options: Dispatch.DispatchOptions, handlers: Dispatch.DispatchHandler) => Promise<Dispatch.DispatchResponse>`（必需）——每次重试时要调用的调度函数。
+- **handler** 继承自 [`Dispatch.DispatchHandler`](/docs/docs/api/Dispatcher.md#dispatcherdispatchoptions-handler)（必需）——请求成功或重试耗尽后要调用的处理函数。
 
->__Note__: The `RetryHandler` does not retry over stateful bodies (e.g. streams, AsyncIterable) as those, once consumed, are left in a state that cannot be reutilized. For these situations the `RetryHandler` will identify
->the body as stateful and will not retry the request rejecting with the error `UND_ERR_REQ_RETRY`.
+>__注意__：`RetryHandler` 不会对状态化主体（例如流、AsyncIterable）进行重试，因为这些主体一旦被消费就会处于无法重新利用的状态。对于这些情况，`RetryHandler` 将识别主体为状态化的，并且不会重试请求，而是通过错误 `UND_ERR_REQ_RETRY` 拒绝。
 
-Examples:
+示例：
 
 ```js
 const client = new Client(`http://localhost:${server.address().port}`);
@@ -59,7 +57,7 @@ const handler = new RetryHandler(
   {
     ...dispatchOptions,
     retryOptions: {
-      // custom retry function
+      // 自定义重试函数
       retry: function (err, state, callback) {
         counter++;
 
@@ -82,37 +80,36 @@ const handler = new RetryHandler(
       return client.dispatch(...args);
     },
     handler: {
-      onConnect() {},
-      onBodySent() {},
-      onHeaders(status, _rawHeaders, resume, _statusMessage) {
-        // do something with headers
+      onRequestStart() {},
+      onBodySent(chunk) {},
+      onResponseStart(_controller, status, headers) {
+        // 处理标头
       },
-      onData(chunk) {
+      onResponseData(_controller, chunk) {
         chunks.push(chunk);
-        return true;
       },
-      onComplete() {},
-      onError() {
-        // handle error properly
+      onResponseEnd() {},
+      onResponseError(_controller, err) {
+        // 正确处理错误
       },
     },
   }
 );
 ```
 
-#### Example - Basic RetryHandler with defaults
+#### 示例 - 使用默认值的 Basic RetryHandler
 
 ```js
 const client = new Client(`http://localhost:${server.address().port}`);
 const handler = new RetryHandler(dispatchOptions, {
   dispatch: client.dispatch.bind(client),
   handler: {
-    onConnect() {},
-    onBodySent() {},
-    onHeaders(status, _rawHeaders, resume, _statusMessage) {},
-    onData(chunk) {},
-    onComplete() {},
-    onError(err) {},
+    onRequestStart() {},
+    onBodySent(chunk) {},
+    onResponseStart(_controller, status, headers) {},
+    onResponseData(_controller, chunk) {},
+    onResponseEnd() {},
+    onResponseError(_controller, err) {},
   },
 });
 ```

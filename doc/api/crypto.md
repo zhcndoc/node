@@ -1805,7 +1805,7 @@ added: v0.1.92
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: "默认 `inputEncoding` 从 `binary` 改为 `utf8`。"
+    description: "默认 `inputEncoding` 从 `binary` 更改为 `utf8`。"
 -->
 
 * `data` {string|Buffer|TypedArray|DataView}
@@ -1822,7 +1822,7 @@ changes:
 added: v0.1.94
 -->
 
-* 继承：{stream.Transform}
+* 继承自：{stream.Transform}
 
 `Hmac` 类是一个用于创建加密 HMAC 摘要的工具。它可以通过以下两种方式使用：
 
@@ -2204,7 +2204,7 @@ added: v11.6.0
 added: v0.1.92
 -->
 
-* 继承：{stream.Writable}
+* 继承自：{stream.Writable}
 
 `Sign` 类是一个用于生成签名的工具。它可以通过以下两种方式使用：
 
@@ -2387,7 +2387,7 @@ changes:
 added: v0.1.92
 -->
 
-* 继承：{stream.Writable}
+* 继承自：{stream.Writable}
 
 `Verify` 类是一个用于验证签名的工具。它可以通过以下两种方式使用：
 
@@ -4983,7 +4983,7 @@ added: REPLACEME
   * `disableEntropyCache` {boolean} 默认情况下，为了提高性能，Node.js 生成并缓存足够的随机数据以生成最多 128 个随机 UUID。要生成不使用缓存的 UUID，请将 `disableEntropyCache` 设置为 `true`。**默认：** `false`。
 * Returns: {string}
 
-生成一个随机 [RFC 9562][] 版本 7 UUID。UUID 在最显著的 48 位中包含毫秒精度的 Unix 时间戳，其余字段随后是加密安全的随机位，使其适合用作具有基于时间排序的数据库键。
+生成一个随机的 [RFC 9562] 版本 7 UUID。该 UUID 在最高 48 位包含一个以毫秒为精度的 Unix 时间戳，随后在其余字段中包含加密安全的随机比特，因此适合作为带有基于时间排序能力的数据库键。嵌入的时间戳依赖于非单调的时钟，并不保证严格递增。
 
 ### `crypto.scrypt(password, salt, keylen[, options], callback)`
 

@@ -2,14 +2,14 @@
 
 Stability: Experimental.
 
-Undici supports the [`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html) (currently available only on Node.js v16+).
-It is the preferred way to instrument Undici and retrieve internal information.
+Undici 支持 [`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html)（目前仅在 Node.js v16+ 上可用）。
+这是对 Undici 进行插桩并获取内部信息的推荐方式。
 
-The channels available are the following.
+可用的通道如下。
 
 ## `undici:request:create`
 
-This message is published when a new outgoing request is created.
+当创建新的出站请求时发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
@@ -19,205 +19,207 @@ diagnosticsChannel.channel('undici:request:create').subscribe(({ request }) => {
   console.log('completed', request.completed)
   console.log('method', request.method)
   console.log('path', request.path)
-  console.log('headers', request.headers) // array of strings, e.g: ['foo', 'bar']
+  console.log('headers', request.headers) // 字符串数组，例如：['foo', 'bar']
   request.addHeader('hello', 'world')
-  console.log('headers', request.headers) // e.g. ['foo', 'bar', 'hello', 'world']
+  console.log('headers', request.headers) // 例如：['foo', 'bar', 'hello', 'world']
 })
 ```
 
-Note: a request is only loosely completed to a given socket.
+注意：请求仅松散地与给定套接字完成。
 
 ## `undici:request:bodyChunkSent`
 
-This message is published when a chunk of the request body is being sent.
+当请求正文的块正在发送时发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:request:bodyChunkSent').subscribe(({ request, chunk }) => {
-  // request is the same object undici:request:create
+  // request 与 undici:request:create 中的对象相同
 })
 ```
 
 ## `undici:request:bodySent`
 
-This message is published after the request body has been fully sent.
+在请求正文完全发送后发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:request:bodySent').subscribe(({ request }) => {
-  // request is the same object undici:request:create
+  // request 与 undici:request:create 中的对象相同
 })
 ```
 
 ## `undici:request:headers`
 
-This message is published after the response headers have been received.
+在收到响应头后发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:request:headers').subscribe(({ request, response }) => {
-  // request is the same object undici:request:create
+  // request 与 undici:request:create 中的对象相同
   console.log('statusCode', response.statusCode)
   console.log(response.statusText)
-  // response.headers are buffers.
+  // response.headers 是缓冲区。
   console.log(response.headers.map((x) => x.toString()))
 })
 ```
 
 ## `undici:request:bodyChunkReceived`
 
-This message is published after a chunk of the response body has been received.
+在接收到响应正文的块后发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:request:bodyChunkReceived').subscribe(({ request, chunk }) => {
-  // request is the same object undici:request:create
+  // request 与 undici:request:create 中的对象相同
 })
 ```
 
 ## `undici:request:trailers`
 
-This message is published after the response body and trailers have been received, i.e. the response has been completed.
+在收到响应正文和尾部信息后发布此消息，即响应已完成。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:request:trailers').subscribe(({ request, trailers }) => {
-  // request is the same object undici:request:create
+  // request 与 undici:request:create 中的对象相同
   console.log('completed', request.completed)
-  // trailers are buffers.
+  // trailers 是缓冲区。
   console.log(trailers.map((x) => x.toString()))
 })
 ```
 
 ## `undici:request:error`
 
-This message is published if the request is going to error, but it has not errored yet.
+如果请求将出错但尚未出错，则发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:request:error').subscribe(({ request, error }) => {
-  // request is the same object undici:request:create
+  // request 与 undici:request:create 中的对象相同
 })
 ```
 
 ## `undici:client:sendHeaders`
 
-This message is published right before the first byte of the request is written to the socket.
+在第一个请求字节写入套接字之前立即发布此消息。
 
-*Note*: It will publish the exact headers that will be sent to the server in raw format.
+*注意*：它将发布将以原始格式发送到服务器的确切标头。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:client:sendHeaders').subscribe(({ request, headers, socket }) => {
-  // request is the same object undici:request:create
-  console.log(`Full headers list ${headers.split('\r\n')}`);
+  // request 与 undici:request:create 中的对象相同
+  console.log(`完整标头列表 ${headers.split('\r\n')}`);
 })
 ```
 
 ## `undici:client:beforeConnect`
 
-This message is published before creating a new connection for **any** request.
-You can not assume that this event is related to any specific request.
+在任何请求创建新连接之前发布此消息。
+您不能假定此事件与任何特定请求相关。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:client:beforeConnect').subscribe(({ connectParams, connector }) => {
   // const { host, hostname, protocol, port, servername, version } = connectParams
-  // connector is a function that creates the socket
+  // connector 是创建套接字的函数
 })
 ```
 
 ## `undici:client:connected`
 
-This message is published after a connection is established.
+在连接建立后发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:client:connected').subscribe(({ socket, connectParams, connector }) => {
   // const { host, hostname, protocol, port, servername, version } = connectParams
- // connector is a function that creates the socket
+ // connector 是创建套接字的函数
 })
 ```
 
 ## `undici:client:connectError`
 
-This message is published if it did not succeed to create new connection
+如果未能成功创建新连接，则发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:client:connectError').subscribe(({ error, socket, connectParams, connector }) => {
   // const { host, hostname, protocol, port, servername, version } = connectParams
-  // connector is a function that creates the socket
-  console.log(`Connect failed with ${error.message}`)
+  // connector 是创建套接字的函数
+  console.log(`连接失败，错误：${error.message}`)
 })
 ```
 
 ## `undici:websocket:open`
 
-This message is published after the client has successfully connected to a server.
+在客户端成功连接到服务器后发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:websocket:open').subscribe(({ 
   address,           // { address: string, family: string, port: number }
-  protocol,          // string - negotiated subprotocol
-  extensions,        // string - negotiated extensions
-  websocket,         // WebSocket - the WebSocket instance
-  handshakeResponse  // object - HTTP response that upgraded the connection
+  protocol,          // string - 协商的子协议
+  extensions,        // string - 协商的扩展
+  websocket,         // WebSocket - WebSocket 实例
+  handshakeResponse  // object - 升级连接的 HTTP 响应
 }) => {
-  console.log(address) // address, family, and port
-  console.log(protocol) // negotiated subprotocols
-  console.log(extensions) // negotiated extensions
-  console.log(websocket) // the WebSocket instance
+  console.log(address) // 地址、family 和端口
+  console.log(protocol) // 协商的子协议
+  console.log(extensions) // 协商的扩展
+  console.log(websocket) // WebSocket 实例
   
-  // Handshake response details
-  console.log(handshakeResponse.status) // 101 for successful WebSocket upgrade
-  console.log(handshakeResponse.statusText) // 'Switching Protocols'
-  console.log(handshakeResponse.headers) // Object containing response headers
+  // 握手响应详情
+  console.log(handshakeResponse.status) // HTTP/1.1 为 101，HTTP/2 extended CONNECT 为 200
+  console.log(handshakeResponse.statusText) // HTTP/1.1 为 'Switching Protocols'，Node.js 中 HTTP/2 通常为 'OK'
+  console.log(handshakeResponse.headers) // 包含响应头的对象
 })
 ```
 
-### Handshake Response Object
+### 握手响应对象
 
-The `handshakeResponse` object contains the HTTP response that upgraded the connection to WebSocket:
+`handshakeResponse` 对象包含建立 WebSocket 连接的 HTTP 响应：
 
-- `status` (number): The HTTP status code (101 for successful WebSocket upgrade)
-- `statusText` (string): The HTTP status message ('Switching Protocols' for successful upgrade)
-- `headers` (object): The HTTP response headers from the server, including:
+- `status` (number): HTTP 状态码（HTTP/1.1 升级时为 `101`，HTTP/2 extended CONNECT 时为 `200`）
+- `statusText` (string): HTTP 状态消息（HTTP/1.1 为 `'Switching Protocols'`，Node.js 中 HTTP/2 通常为 `'OK'`）
+- `headers` (object): 来自服务器的 HTTP 响应头，包括：
+  - `sec-websocket-accept` 和其他 WebSocket 相关头
   - `upgrade: 'websocket'`
   - `connection: 'upgrade'`
-  - `sec-websocket-accept` and other WebSocket-related headers
 
-This information is particularly useful for debugging and monitoring WebSocket connections, as it provides access to the initial HTTP handshake response that established the WebSocket connection.
+  `upgrade` 和 `connection` 头仅存在于 HTTP/1.1 握手时。
+
+此信息对于调试和监控 WebSocket 连接特别有用，因为它提供了访问建立 WebSocket 连接的初始 HTTP 握手响应的信息。
 
 ## `undici:websocket:close`
 
-This message is published after the connection has closed.
+在连接关闭后发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:websocket:close').subscribe(({ websocket, code, reason }) => {
-  console.log(websocket) // the WebSocket instance
-  console.log(code) // the closing status code
-  console.log(reason) // the closing reason
+  console.log(websocket) // WebSocket 实例
+  console.log(code) // 关闭状态码
+  console.log(reason) // 关闭原因
 })
 ```
 
 ## `undici:websocket:socket_error`
 
-This message is published if the socket experiences an error.
+如果套接字遇到错误，则发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
@@ -229,35 +231,35 @@ diagnosticsChannel.channel('undici:websocket:socket_error').subscribe((error) =>
 
 ## `undici:websocket:ping`
 
-This message is published after the client receives a ping frame, if the connection is not closing.
+如果连接未关闭，则在客户端收到 ping 帧后发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:websocket:ping').subscribe(({ payload, websocket }) => {
-  // a Buffer or undefined, containing the optional application data of the frame
+  // Buffer 或 undefined，包含帧的可选应用程序数据
   console.log(payload)
-  console.log(websocket) // the WebSocket instance
+  console.log(websocket) // WebSocket 实例
 })
 ```
 
 ## `undici:websocket:pong`
 
-This message is published after the client receives a pong frame.
+在客户端收到 pong 帧后发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:websocket:pong').subscribe(({ payload, websocket }) => {
-  // a Buffer or undefined, containing the optional application data of the frame
+  // Buffer 或 undefined，包含帧的可选应用程序数据
   console.log(payload)
-  console.log(websocket) // the WebSocket instance
+  console.log(websocket) // WebSocket 实例
 })
 ```
 
 ## `undici:proxy:connected`
 
-This message is published after the `ProxyAgent` establishes a connection to the proxy server.
+在 `ProxyAgent` 建立到代理服务器的连接后发布此消息。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
@@ -271,27 +273,27 @@ diagnosticsChannel.channel('undici:proxy:connected').subscribe(({ socket, connec
 
 ## `undici:request:pending-requests`
 
-This message is published when the deduplicate interceptor's pending request map changes. This is useful for monitoring and debugging request deduplication behavior.
+当去重拦截器的待处理请求映射发生变化时发布此消息。这对于监控和调试请求去重行为很有用。
 
-The deduplicate interceptor automatically deduplicates concurrent requests for the same resource. When multiple identical requests are made while one is already in-flight, only one request is sent to the origin server, and all waiting handlers receive the same response.
+去重拦截器会自动去重对同一资源的并发请求。当多个相同的请求在其中一个已在进行中时发出，只有一个请求会发送到源服务器，所有等待的处理程序都会收到相同的响应。
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
 
 diagnosticsChannel.channel('undici:request:pending-requests').subscribe(({ type, size, key }) => {
-  console.log(type)  // 'added' or 'removed'
-  console.log(size)  // current number of pending requests
-  console.log(key)   // the deduplication key for this request
+  console.log(type)  // 'added' 或 'removed'
+  console.log(size)  // 更改后的当前待处理请求数
+  console.log(key)   // 此请求的去重键
 })
 ```
 
-### Event Properties
+### 事件属性
 
-- `type` (`string`): Either `'added'` when a new pending request is registered, or `'removed'` when a pending request completes (successfully or with an error).
-- `size` (`number`): The current number of pending requests after the change.
-- `key` (`string`): The deduplication key for the request, composed of the origin, method, path, and request headers.
+- `type` (`string`): 当注册新的待处理请求时为 `'added'`，当待处理请求完成（成功或出错）时为 `'removed'`。
+- `size` (`number`): 更改后的当前待处理请求数。
+- `key` (`string`): 请求的去重键，由源、方法、路径和请求头组成。
 
-### Example: Monitoring Request Deduplication
+### 示例：监控请求去重
 
 ```js
 import diagnosticsChannel from 'diagnostics_channel'
@@ -300,14 +302,14 @@ const channel = diagnosticsChannel.channel('undici:request:pending-requests')
 
 channel.subscribe(({ type, size, key }) => {
   if (type === 'added') {
-    console.log(`New pending request: ${key} (${size} total pending)`)
+    console.log(`新的待处理请求：${key}（共 ${size} 个待处理）`)
   } else {
-    console.log(`Request completed: ${key} (${size} remaining)`)
+    console.log(`请求完成：${key}（剩余 ${size} 个）`)
   }
 })
 ```
 
-This can be useful for:
-- Verifying that request deduplication is working as expected
-- Monitoring the number of concurrent in-flight requests
-- Debugging deduplication behavior in production environments
+这在以下方面可能很有用：
+- 验证请求去重是否按预期工作
+- 监控并发进行中的请求数量
+- 在生产环境中调试去重行为

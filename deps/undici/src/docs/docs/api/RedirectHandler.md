@@ -1,96 +1,98 @@
-# Class: RedirectHandler
+# 类: RedirectHandler
 
-A class that handles redirection logic for HTTP requests.
+一个用于处理 HTTP 请求重定向逻辑的类。
 
-## `new RedirectHandler(dispatch, maxRedirections, opts, handler, redirectionLimitReached)`
+## `new RedirectHandler(dispatch, maxRedirections, opts, handler)`
 
-Arguments:
+参数:
 
-- **dispatch** `function` - The dispatch function to be called after every retry.
-- **maxRedirections** `number` - Maximum number of redirections allowed.
-- **opts** `object` - Options for handling redirection.
-- **handler** `object` - An object containing handlers for different stages of the request lifecycle.
-- **redirectionLimitReached** `boolean` (default: `false`) - A flag that the implementer can provide to enable or disable the feature. If set to `false`, it indicates that the caller doesn't want to use the feature and prefers the old behavior.
+- **dispatch** `function` - 每次重试后要调用的调度函数。
+- **maxRedirections** `number` - 允许的最大重定向次数。
+- **opts** `object` - 处理重定向的选项。
+- **handler** `object` - 包含请求生命周期不同阶段处理器的对象。
 
-Returns: `RedirectHandler`
+返回值: `RedirectHandler`
 
-### Parameters
+### 参数
 
-- **dispatch** `(options: Dispatch.DispatchOptions, handlers: Dispatch.DispatchHandler) => Promise<Dispatch.DispatchResponse>` (required) - Dispatch function to be called after every redirection.
-- **maxRedirections** `number` (required) - Maximum number of redirections allowed.
-- **opts** `object` (required) - Options for handling redirection.
-- **handler** `object` (required) - Handlers for different stages of the request lifecycle.
-- **redirectionLimitReached** `boolean` (default: `false`) - A flag that the implementer can provide to enable or disable the feature. If set to `false`, it indicates that the caller doesn't want to use the feature and prefers the old behavior.
+- **dispatch** `(options: Dispatch.DispatchOptions, handlers: Dispatch.DispatchHandler) => Promise<Dispatch.DispatchResponse>` (必需) - 每次重定向后要调用的调度函数。
+- **maxRedirections** `number` (必需) - 允许的最大重定向次数。
+- **opts** `object` (必需) - 处理重定向的选项。
+- **handler** `object` (必需) - 请求生命周期不同阶段的处理器。
 
-### Properties
+### 属性
 
-- **location** `string` - The current redirection location.
-- **abort** `function` - The abort function.
-- **opts** `object` - The options for handling redirection.
-- **maxRedirections** `number` - Maximum number of redirections allowed.
-- **handler** `object` - Handlers for different stages of the request lifecycle.
-- **history** `Array` - An array representing the history of URLs during redirection.
-- **redirectionLimitReached** `boolean` - Indicates whether the redirection limit has been reached.
+- **location** `string` - 当前重定向位置。
+- **abort** `function` - 中止函数。
+- **opts** `object` - 处理重定向的选项。
+- **maxRedirections** `number` - 允许的最大重定向次数。
+- **handler** `object` - 请求生命周期不同阶段的处理器。
+- **history** `Array` - 表示重定向过程中 URL 历史的数组。
 
-### Methods
+### 方法
 
-#### `onConnect(abort)`
+#### `onRequestStart(controller, context)`
 
-Called when the connection is established.
+请求开始时调用。
 
-Parameters:
+参数:
 
-- **abort** `function` - The abort function.
+- **controller** `DispatchController` - 请求控制器。
+- **context** `object` - 调度上下文。
 
-#### `onUpgrade(statusCode, headers, socket)`
+#### `onRequestUpgrade(controller, statusCode, headers, socket)`
 
-Called when an upgrade is requested.
+当请求升级时调用。
 
-Parameters:
+参数:
 
-- **statusCode** `number` - The HTTP status code.
-- **headers** `object` - The headers received in the response.
-- **socket** `object` - The socket object.
+- **controller** `DispatchController` - 请求控制器。
+- **statusCode** `number` - HTTP 状态码。
+- **headers** `object` - 响应中接收到的头部。
+- **socket** `object` - 套接字对象。
 
-#### `onError(error)`
+#### `onResponseError(controller, error)`
 
-Called when an error occurs.
+发生错误时调用。
 
-Parameters:
+参数:
 
-- **error** `Error` - The error that occurred.
+- **controller** `DispatchController` - 请求控制器。
+- **error** `Error` - 发生的错误。
 
-#### `onHeaders(statusCode, headers, resume, statusText)`
+#### `onResponseStart(controller, statusCode, headers, statusText)`
 
-Called when headers are received.
+接收到头部时调用。
 
-Parameters:
+参数:
 
-- **statusCode** `number` - The HTTP status code.
-- **headers** `object` - The headers received in the response.
-- **resume** `function` - The resume function.
-- **statusText** `string` - The status text.
+- **controller** `DispatchController` - 请求控制器。
+- **statusCode** `number` - HTTP 状态码。
+- **headers** `object` - 响应中接收到的头部。
+- **statusText** `string` - 状态文本。
 
-#### `onData(chunk)`
+#### `onResponseData(controller, chunk)`
 
-Called when data is received.
+接收到数据时调用。
 
-Parameters:
+参数:
 
-- **chunk** `Buffer` - The data chunk received.
+- **controller** `DispatchController` - 请求控制器。
+- **chunk** `Buffer` - 接收到的数据块。
 
-#### `onComplete(trailers)`
+#### `onResponseEnd(controller, trailers)`
 
-Called when the request is complete.
+请求完成时调用。
 
-Parameters:
+参数:
 
-- **trailers** `object` - The trailers received.
+- **controller** `DispatchController` - 请求控制器。
+- **trailers** `object` - 接收到的尾部信息。
 
 #### `onBodySent(chunk)`
 
-Called when the request body is sent.
+请求体发送时调用。
 
-Parameters:
+参数:
 
-- **chunk** `Buffer` - The chunk of the request body sent.
+- **chunk** `Buffer` - 已发送的请求体块。

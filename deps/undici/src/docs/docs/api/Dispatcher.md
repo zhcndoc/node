@@ -1,29 +1,29 @@
 # Dispatcher
 
-Extends: `events.EventEmitter`
+扩展自：`events.EventEmitter`
 
-Dispatcher is the core API used to dispatch requests.
+Dispatcher 是用于分发请求的核心 API。
 
-Requests are not guaranteed to be dispatched in order of invocation.
+不保证请求会按照调用顺序进行分发。
 
-## Instance Methods
+## 实例方法
 
 ### `Dispatcher.close([callback]): Promise`
 
-Closes the dispatcher and gracefully waits for enqueued requests to complete before resolving.
+关闭 dispatcher，并在解析之前优雅地等待排队中的请求完成。
 
-Arguments:
+参数：
 
-* **callback** `(error: Error | null, data: null) => void` (optional)
+* **callback** `(error: Error | null, data: null) => void`（可选）
 
-Returns: `void | Promise<null>` - Only returns a `Promise` if no `callback` argument was passed
+返回值：`void | Promise<null>` - 只有在没有传递 `callback` 参数时才返回 `Promise`
 
 ```js
 dispatcher.close() // -> Promise
 dispatcher.close(() => {}) // -> void
 ```
 
-#### Example - Request resolves before Client closes
+#### 示例 - 请求在 Client 关闭前解析
 
 ```js
 import { createServer } from 'http'
@@ -55,30 +55,30 @@ server.close()
 
 ### `Dispatcher.connect(options[, callback])`
 
-Starts two-way communications with the requested resource using [HTTP CONNECT](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/CONNECT).
+使用 [HTTP CONNECT](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/CONNECT) 与请求的资源建立双向通信。
 
-Arguments:
+参数：
 
 * **options** `ConnectOptions`
-* **callback** `(err: Error | null, data: ConnectData | null) => void` (optional)
+* **callback** `(err: Error | null, data: ConnectData | null) => void`（可选）
 
-Returns: `void | Promise<ConnectData>` - Only returns a `Promise` if no `callback` argument was passed
+返回值：`void | Promise<ConnectData>` - 只有在没有传递 `callback` 参数时才返回 `Promise`
 
-#### Parameter: `ConnectOptions`
+#### 参数：`ConnectOptions`
 
 * **path** `string`
-* **headers** `UndiciHeaders` (optional) - Default: `null`
-* **signal** `AbortSignal | events.EventEmitter | null` (optional) - Default: `null`
-* **opaque** `unknown` (optional) - This argument parameter is passed through to `ConnectData`
+* **headers** `UndiciHeaders`（可选）- 默认值：`null`
+* **signal** `AbortSignal | events.EventEmitter | null`（可选）- 默认值：`null`
+* **opaque** `unknown`（可选）- 此参数将传递给 `ConnectData`
 
-#### Parameter: `ConnectData`
+#### 参数：`ConnectData`
 
 * **statusCode** `number`
 * **headers** `Record<string, string | string[] | undefined>`
 * **socket** `stream.Duplex`
 * **opaque** `unknown`
 
-#### Example - Connect request with echo
+#### 示例 - 带回显的 Connect 请求
 
 ```js
 import { createServer } from 'http'
@@ -125,16 +125,16 @@ try {
 
 ### `Dispatcher.destroy([error, callback]): Promise`
 
-Destroy the dispatcher abruptly with the given error. All the pending and running requests will be asynchronously aborted and error. Since this operation is asynchronously dispatched there might still be some progress on dispatched requests.
+使用给定的错误突然销毁 dispatcher。所有待处理和正在处理的请求都将被异步中止并出错。由于此操作是异步分发的，因此可能仍有一些已分发的请求正在进行中。
 
-Both arguments are optional; the method can be called in four different ways:
+两个参数都是可选的；该方法可以以四种不同的方式调用：
 
-Arguments:
+参数：
 
-* **error** `Error | null` (optional)
-* **callback** `(error: Error | null, data: null) => void` (optional)
+* **error** `Error | null`（可选）
+* **callback** `(error: Error | null, data: null) => void`（可选）
 
-Returns: `void | Promise<void>` - Only returns a `Promise` if no `callback` argument was passed
+返回值：`void | Promise<void>` - 只有在没有传递 `callback` 参数时才返回 `Promise`
 
 ```js
 dispatcher.destroy() // -> Promise
@@ -143,7 +143,7 @@ dispatcher.destroy(() => {}) // -> void
 dispatcher.destroy(new Error(), () => {}) // -> void
 ```
 
-#### Example - Request is aborted when Client is destroyed
+#### 示例 - 当 Client 被销毁时请求被中止
 
 ```js
 import { createServer } from 'http'
@@ -176,43 +176,78 @@ try {
 
 ### `Dispatcher.dispatch(options, handler)`
 
-This is the low level API which all the preceding APIs are implemented on top of.
-This API is expected to evolve through semver-major versions and is less stable than the preceding higher level APIs.
-It is primarily intended for library developers who implement higher level APIs on top of this.
+这是底层 API，所有前面的 API 都构建在其之上。
+预计该 API 会通过 semver-major 版本演进，并且比前面的高级 API 更不稳定。
+它主要面向那些希望在此基础之上实现高级别 API 的库开发者。
 
-Arguments:
+参数：
 
 * **options** `DispatchOptions`
 * **handler** `DispatchHandler`
 
-Returns: `Boolean` - `false` if dispatcher is busy and further dispatch calls won't make any progress until the `'drain'` event has been emitted.
+返回值：`Boolean` - 如果 dispatcher 正忙且进一步的 dispatch 调用不会产生任何进展，则返回 `false`，直到发出 `'drain'` 事件为止。
 
-#### Parameter: `DispatchOptions`
+#### 参数：`DispatchOptions`
 
 * **origin** `string | URL`
 * **path** `string`
 * **method** `string`
-* **reset** `boolean` (optional) - Default: `false` - If `false`, the request will attempt to create a long-living connection by sending the `connection: keep-alive` header,otherwise will attempt to close it immediately after response by sending `connection: close` within the request and closing the socket afterwards.
-* **body** `string | Buffer | Uint8Array | stream.Readable | Iterable | AsyncIterable | null` (optional) - Default: `null`
-* **headers** `UndiciHeaders` (optional) - Default: `null`.
-* **query** `Record<string, any> | null` (optional) - Default: `null` - Query string params to be embedded in the request URL. Note that both keys and values of query are encoded using `encodeURIComponent`. If for some reason you need to send them unencoded, embed query params into path directly instead.
-* **idempotent** `boolean` (optional) - Default: `true` if `method` is `'HEAD'` or `'GET'` - Whether the requests can be safely retried or not. If `false` the request won't be sent until all preceding requests in the pipeline has completed.
-* **blocking** `boolean` (optional) - Default: `method !== 'HEAD'` - Whether the response is expected to take a long time and would end up blocking the pipeline. When this is set to `true` further pipelining will be avoided on the same connection until headers have been received.
-* **upgrade** `string | null` (optional) - Default: `null` - Upgrade the request. Should be used to specify the kind of upgrade i.e. `'Websocket'`.
-* **bodyTimeout** `number | null` (optional) - The timeout after which a request will time out, in milliseconds. Monitors time between receiving body data. Use `0` to disable it entirely. Defaults to 300 seconds.
-* **headersTimeout** `number | null` (optional) - The amount of time, in milliseconds, the parser will wait to receive the complete HTTP headers while not sending the request. Defaults to 300 seconds.
-* **expectContinue** `boolean` (optional) - Default: `false` - For H2, it appends the expect: 100-continue header, and halts the request body until a 100-continue is received from the remote server
+* **reset** `boolean`（可选）- 默认值：`false` - 如果为 `false`，请求将尝试通过发送 `connection: keep-alive` 标头创建长连接，否则将通过在请求内发送 `connection: close` 立即关闭响应后的连接，并在之后关闭套接字。
+* **body** `string | Buffer | Uint8Array | stream.Readable | Iterable | AsyncIterable | null`（可选）- 默认值：`null`
+* **headers** `UndiciHeaders`（可选）- 默认值：`null`.
+* **query** `Record<string, any> | null`（可选）- 默认值：`null` - 要嵌入请求 URL 的查询字符串参数。注意，查询的键和值都使用 `encodeURIComponent` 编码。如果出于某种原因需要发送未编码的查询参数，请直接将查询参数嵌入到路径中。
+* **idempotent** `boolean`（可选）- 默认值：如果 `method` 是 `'HEAD'` 或 `'GET'` 则为 `true` - 请求是否可以安全重试。如果为 `false`，请求将不会发送，直到管道中的所有前面的请求都已完成。
+* **blocking** `boolean`（可选）- 默认值：`method !== 'HEAD'` - 响应是否预期会花费很长时间并阻塞管道。当设置为 `true` 时，在收到标头之前将避免同一连接上的进一步流水线传输。
+* **upgrade** `string | null`（可选）- 默认值：`null` - 升级请求。应用于指定升级的类型，例如 `'Websocket'`。
+* **bodyTimeout** `number | null`（可选）- 请求在超时前的时间（以毫秒为单位），监控接收主体数据之间的时间。使用 `0` 完全禁用。默认为 300 秒。
+* **headersTimeout** `number | null`（可选）- 解析器在发送请求前等待接收完整 HTTP 标头的时间（以毫秒为单位）。默认为 300 秒。
+* **expectContinue** `boolean`（可选）- 默认值：`false` - 对于 H2，附加 expect: 100-continue 标头，并在收到远程服务器的 100-continue 前暂停请求体
 
-#### Parameter: `DispatchHandler`
+#### 参数：`DispatchHandler`
 
-* **onRequestStart** `(controller: DispatchController, context: object) => void` - Invoked before request is dispatched on socket. May be invoked multiple times when a request is retried when the request at the head of the pipeline fails.
-* **onRequestUpgrade** `(controller: DispatchController, statusCode: number, headers: Record<string, string | string[]>, socket: Duplex) => void` (optional) - Invoked when request is upgraded. Required if `DispatchOptions.upgrade` is defined or `DispatchOptions.method === 'CONNECT'`.
-* **onResponseStart** `(controller: DispatchController, statusCode: number, headers: Record<string, string | string []>, statusMessage?: string) => void` - Invoked when statusCode and headers have been received. May be invoked multiple times due to 1xx informational headers. Not required for `upgrade` requests. Any return value is ignored.
-* **onResponseData** `(controller: DispatchController, chunk: Buffer) => void` - Invoked when response payload data is received. Not required for `upgrade` requests.
-* **onResponseEnd** `(controller: DispatchController, trailers: Record<string, string | string[]>) => void` - Invoked when response payload and trailers have been received and the request has completed. Not required for `upgrade` requests.
-* **onResponseError** `(controller: DispatchController, error: Error) => void` - Invoked when an error has occurred. May not throw.
+* **onRequestStart** `(controller: DispatchController, context: object) => void` - 在套接字上分发请求前调用。当管道顶部的请求失败时，可能会多次调用。
+* **onRequestUpgrade** `(controller: DispatchController, statusCode: number, headers: Record<string, string | string[]>, socket: Duplex) => void`（可选）- 当请求升级时调用。如果定义了 `DispatchOptions.upgrade` 或 `DispatchOptions.method === 'CONNECT'`，则为必需。
+* **onResponseStart** `(controller: DispatchController, statusCode: number, headers: Record<string, string | string []>, statusMessage?: string) => void` - 当状态码和标头已接收时调用。可能会因 1xx 信息性标头而多次调用。不适用于 `upgrade` 请求。任何返回值都被忽略。
+* **onResponseData** `(controller: DispatchController, chunk: Buffer) => void` - 当响应负载数据接收时调用。不适用于 `upgrade` 请求。
+* **onResponseEnd** `(controller: DispatchController, trailers: Record<string, string | string[]>) => void` - 当响应负载和尾部已接收且请求完成时调用。不适用于 `upgrade` 请求。
+* **onResponseError** `(controller: DispatchController, error: Error) => void` - 当发生错误时调用。可能不会抛出。
 
-#### Example 1 - Dispatch GET request
+#### 从旧版处理程序 API 迁移
+
+如果您之前使用的是 `onConnect/onHeaders/onData/onComplete/onError`，请切换到新的回调：
+
+- `onConnect(abort)` → `onRequestStart(controller)` 并调用 `controller.abort(reason)`
+- `onHeaders(status, rawHeaders, resume, statusText)` → `onResponseStart(controller, status, headers, statusText)`
+- `onData(chunk)` → `onResponseData(controller, chunk)`
+- `onComplete(trailers)` → `onResponseEnd(controller, trailers)`
+- `onError(err)` → `onResponseError(controller, err)`
+- `onUpgrade(status, rawHeaders, socket)` → `onRequestUpgrade(controller, status, headers, socket)`
+
+要访问原始标头数组（用于保留重复项/大小写），请从控制器读取：
+
+- `controller.rawHeaders` 用于响应标头
+- `controller.rawTrailers` 用于尾部
+
+暂停/恢复现在使用控制器：
+
+- 调用 `controller.pause()` 和 `controller.resume()` 而不是从处理程序返回 `false`。
+
+#### 兼容性说明
+
+Undici 现在将全局 dispatcher 存储在 `Symbol.for('undici.globalDispatcher.2')` 下。
+这避免了与仍依赖旧版 dispatcher 处理程序接口的运行时的冲突（例如 Node.js 内置的 `fetch`）。
+
+`setGlobalDispatcher()` 还会使用 `Dispatcher1Wrapper` 将配置的 dispatcher 镜像到 `Symbol.for('undici.globalDispatcher.1')`，以便 Node 的内置 `fetch` 可以继续使用旧版处理程序契约。
+
+如果您需要将新的 dispatcher/agent 暴露给旧版 v1 处理程序消费者（`onConnect/onHeaders/onData/onComplete/onError/onUpgrade`），请使用 `Dispatcher1Wrapper`：
+
+```js
+import { Agent, Dispatcher1Wrapper } from 'undici'
+
+const legacyCompatibleDispatcher = new Dispatcher1Wrapper(new Agent())
+```
+
+#### 示例 1 - 分发 GET 请求
 
 ```js
 import { createServer } from 'http'
@@ -236,21 +271,21 @@ client.dispatch({
     'x-foo': 'bar'
   }
 }, {
-  onConnect: () => {
+  onRequestStart: () => {
     console.log('Connected!')
   },
-  onError: (error) => {
+  onResponseError: (_controller, error) => {
     console.error(error)
   },
-  onHeaders: (statusCode, headers) => {
-    console.log(`onHeaders | statusCode: ${statusCode} | headers: ${headers}`)
+  onResponseStart: (_controller, statusCode, headers) => {
+    console.log(`onResponseStart | statusCode: ${statusCode} | headers: ${JSON.stringify(headers)}`)
   },
-  onData: (chunk) => {
-    console.log('onData: chunk received')
+  onResponseData: (_controller, chunk) => {
+    console.log('onResponseData: chunk received')
     data.push(chunk)
   },
-  onComplete: (trailers) => {
-    console.log(`onComplete | trailers: ${trailers}`)
+  onResponseEnd: (_controller, trailers) => {
+    console.log(`onResponseEnd | trailers: ${JSON.stringify(trailers)}`)
     const res = Buffer.concat(data).toString('utf8')
     console.log(`Data: ${res}`)
     client.close()
@@ -259,7 +294,7 @@ client.dispatch({
 })
 ```
 
-#### Example 2 - Dispatch Upgrade Request
+#### 示例 2 - 分发升级请求
 
 ```js
 import { createServer } from 'http'
@@ -288,15 +323,15 @@ client.dispatch({
   method: 'GET',
   upgrade: 'websocket'
 }, {
-  onConnect: () => {
-    console.log('Undici Client - onConnect')
+  onRequestStart: () => {
+    console.log('Undici Client - onRequestStart')
   },
-  onError: (error) => {
-    console.log('onError') // shouldn't print
+  onResponseError: () => {
+    console.log('onResponseError') // shouldn't print
   },
-  onUpgrade: (statusCode, headers, socket) => {
-    console.log('Undici Client - onUpgrade')
-    console.log(`onUpgrade Headers: ${headers}`)
+  onRequestUpgrade: (_controller, statusCode, headers, socket) => {
+    console.log('Undici Client - onRequestUpgrade')
+    console.log(`onRequestUpgrade Headers: ${JSON.stringify(headers)}`)
     socket.on('data', buffer => {
       console.log(buffer.toString('utf8'))
     })
@@ -309,7 +344,7 @@ client.dispatch({
 })
 ```
 
-#### Example 3 - Dispatch POST request
+#### 示例 3 - 分发 POST 请求
 
 ```js
 import { createServer } from 'http'
@@ -339,21 +374,21 @@ client.dispatch({
   },
   body: JSON.stringify({ message: 'Hello' })
 }, {
-  onConnect: () => {
+  onRequestStart: () => {
     console.log('Connected!')
   },
-  onError: (error) => {
+  onResponseError: (_controller, error) => {
     console.error(error)
   },
-  onHeaders: (statusCode, headers) => {
-    console.log(`onHeaders | statusCode: ${statusCode} | headers: ${headers}`)
+  onResponseStart: (_controller, statusCode, headers) => {
+    console.log(`onResponseStart | statusCode: ${statusCode} | headers: ${JSON.stringify(headers)}`)
   },
-  onData: (chunk) => {
-    console.log('onData: chunk received')
+  onResponseData: (_controller, chunk) => {
+    console.log('onResponseData: chunk received')
     data.push(chunk)
   },
-  onComplete: (trailers) => {
-    console.log(`onComplete | trailers: ${trailers}`)
+  onResponseEnd: (_controller, trailers) => {
+    console.log(`onResponseEnd | trailers: ${JSON.stringify(trailers)}`)
     const res = Buffer.concat(data).toString('utf8')
     console.log(`Response Data: ${res}`)
     client.close()
@@ -364,31 +399,31 @@ client.dispatch({
 
 ### `Dispatcher.pipeline(options, handler)`
 
-For easy use with [stream.pipeline](https://nodejs.org/api/stream.html#stream_stream_pipeline_source_transforms_destination_callback). The `handler` argument should return a `Readable` from which the result will be read. Usually it should just return the `body` argument unless some kind of transformation needs to be performed based on e.g. `headers` or `statusCode`. The `handler` should validate the response and save any required state. If there is an error, it should be thrown. The function returns a `Duplex` which writes to the request and reads from the response.
+便于与 [stream.pipeline](https://nodejs.org/api/stream.html#streampipelinesource-transforms-destination-options) 一起使用。`handler` 参数应返回一个 `Readable`，从中读取结果。通常它应该只返回 `body` 参数，除非需要基于例如 `headers` 或 `statusCode` 执行某种转换。`handler` 应验证响应并保存任何所需的状态。如果有错误，应抛出。该函数返回一个 `Duplex`，写入请求并从响应中读取。
 
-Arguments:
+参数：
 
 * **options** `PipelineOptions`
 * **handler** `(data: PipelineHandlerData) => stream.Readable`
 
-Returns: `stream.Duplex`
+返回值：`stream.Duplex`
 
-#### Parameter: PipelineOptions
+#### 参数：PipelineOptions
 
-Extends: [`RequestOptions`](/docs/docs/api/Dispatcher.md#parameter-requestoptions)
+扩展自：[`RequestOptions`](/docs/docs/api/Dispatcher.md#parameter-requestoptions)
 
-* **objectMode** `boolean` (optional) - Default: `false` - Set to `true` if the `handler` will return an object stream.
+* **objectMode** `boolean`（可选）- 默认值：`false` - 如果 `handler` 将返回对象流，则设置为 `true`。
 
-#### Parameter: PipelineHandlerData
+#### 参数：PipelineHandlerData
 
 * **statusCode** `number`
 * **headers** `Record<string, string | string[] | undefined>`
 * **opaque** `unknown`
 * **body** `stream.Readable`
 * **context** `object`
-* **onInfo** `({statusCode: number, headers: Record<string, string | string[]>}) => void | null` (optional) - Default: `null` - Callback collecting all the info headers (HTTP 100-199) received.
+* **onInfo** `({statusCode: number, headers: Record<string, string | string[]>}) => void | null`（可选）- 默认值：`null` - 收集所有接收到的信息标头（HTTP 100-199）的回调。
 
-#### Example 1 - Pipeline Echo
+#### 示例 1 - Pipeline 回显
 
 ```js
 import { Readable, Writable, PassThrough, pipeline } from 'stream'
@@ -444,47 +479,42 @@ pipeline(
 
 ### `Dispatcher.request(options[, callback])`
 
-Performs a HTTP request.
+执行 HTTP 请求。
 
-Non-idempotent requests will not be pipelined in order
-to avoid indirect failures.
+非幂等请求不会进行流水线传输，以避免间接故障。
 
-Idempotent requests will be automatically retried if
-they fail due to indirect failure from the request
-at the head of the pipeline. This does not apply to
-idempotent requests with a stream request body.
+幂等请求将在由于管道顶部的请求间接失败时自动重试。这不适用于具有流请求体的幂等请求。
 
-All response bodies must always be fully consumed or destroyed.
+始终必须完全消耗或销毁所有响应体。
 
-Arguments:
+参数：
 
 * **options** `RequestOptions`
-* **callback** `(error: Error | null, data: ResponseData) => void` (optional)
+* **callback** `(error: Error | null, data: ResponseData) => void`（可选）
 
-Returns: `void | Promise<ResponseData>` - Only returns a `Promise` if no `callback` argument was passed.
+返回值：`void | Promise<ResponseData>` - 只有在没有传递 `callback` 参数时才返回 `Promise`
 
-#### Parameter: `RequestOptions`
+#### 参数：`RequestOptions`
 
-Extends: [`DispatchOptions`](/docs/docs/api/Dispatcher.md#parameter-dispatchoptions)
+扩展自：[`DispatchOptions`](/docs/docs/api/Dispatcher.md#parameter-dispatchoptions)
 
-* **opaque** `unknown` (optional) - Default: `null` - Used for passing through context to `ResponseData`.
-* **signal** `AbortSignal | events.EventEmitter | null` (optional) - Default: `null`.
-* **onInfo** `({statusCode: number, headers: Record<string, string | string[]>}) => void | null` (optional) - Default: `null` - Callback collecting all the info headers (HTTP 100-199) received.
+* **opaque** `unknown`（可选）- 默认值：`null` - 用于将上下文传递给 `ResponseData`。
+* **signal** `AbortSignal | events.EventEmitter | null`（可选）- 默认值：`null`
+* **onInfo** `({statusCode: number, headers: Record<string, string | string[]>}) => void | null`（可选）- 默认值：`null` - 收集所有接收到的信息标头（HTTP 100-199）的回调。
 
-The `RequestOptions.method` property should not be value `'CONNECT'`.
+`RequestOptions.method` 属性不应为值 `'CONNECT'`。
 
-#### Parameter: `ResponseData`
+#### 参数：`ResponseData`
 
 * **statusCode** `number`
-* **statusText** `string` - The status message from the response (e.g., "OK", "Not Found").
-* **headers** `Record<string, string | string[]>` - Note that all header keys are lower-cased, e.g. `content-type`.
-* **body** `stream.Readable` which also implements [the body mixin from the Fetch Standard](https://fetch.spec.whatwg.org/#body-mixin).
-* **trailers** `Record<string, string>` - This object starts out
-  as empty and will be mutated to contain trailers after `body` has emitted `'end'`.
+* **statusText** `string` - 响应的状态消息（例如，"OK"、"Not Found"）。
+* **headers** `Record<string, string | string[]>` - 注意，所有标头键都转换为小写，例如 `content-type`。
+* **body** `stream.Readable`，也实现了 [Fetch 标准中的 body mixin](https://fetch.spec.whatwg.org/#body-mixin)。
+* **trailers** `Record<string, string>` - 此对象最初为空，在 `body` 发出 `'end'` 后将被修改为包含尾部。
 * **opaque** `unknown`
 * **context** `object`
 
-`body` contains the following additional [body mixin](https://fetch.spec.whatwg.org/#body-mixin) methods and properties:
+`body` 包含以下额外的 [body mixin](https://fetch.spec.whatwg.org/#body-mixin) 方法和属性：
 
 * [`.arrayBuffer()`](https://fetch.spec.whatwg.org/#dom-body-arraybuffer)
 * [`.blob()`](https://fetch.spec.whatwg.org/#dom-body-blob)
@@ -494,15 +524,15 @@ The `RequestOptions.method` property should not be value `'CONNECT'`.
 * `body`
 * `bodyUsed`
 
-`body` can not be consumed twice. For example, calling `text()` after `json()` throws `TypeError`.
+`body` 不能消费两次。例如，在 `json()` 之后调用 `text()` 会抛出 `TypeError`。
 
-`body` contains the following additional extensions:
+`body` 包含以下额外扩展：
 
-- `dump({ limit: Integer })`, dump the response by reading up to `limit` bytes without killing the socket (optional) - Default: 262144.
+- `dump({ limit: Integer })`，读取最多 `limit` 字节来转储响应而不杀死套接字（可选）- 默认值：262144。
 
-Note that body will still be a `Readable` even if it is empty, but attempting to deserialize it with `json()` will result in an exception. Recommended way to ensure there is a body to deserialize is to check if status code is not 204, and `content-type` header starts with `application/json`.
+注意，即使为空，`body` 仍将是一个 `Readable`，但尝试使用 `json()` 反序列化它将导致异常。确保有要反序列化的体的推荐方法是检查状态码不是 204，且 `content-type` 标头以 `application/json` 开头。
 
-#### Example 1 - Basic GET Request
+#### 示例 1 - 基本 GET 请求
 
 ```js
 import { createServer } from 'http'
@@ -538,9 +568,9 @@ try {
 }
 ```
 
-#### Example 2 - Aborting a request
+#### 示例 2 - 中止请求
 
-> Node.js v15+ is required to run this example
+> 运行此示例需要 Node.js v15+
 
 ```js
 import { createServer } from 'http'
@@ -571,7 +601,7 @@ try {
 abortController.abort()
 ```
 
-Alternatively, any `EventEmitter` that emits an `'abort'` event may be used as an abort controller:
+或者，任何发出 `'abort'` 事件的 `EventEmitter` 都可以用作中止控制器：
 
 ```js
 import { createServer } from 'http'
@@ -602,7 +632,7 @@ try {
 ee.emit('abort')
 ```
 
-Destroying the request or response body will have the same effect.
+销毁请求或响应体会产生相同效果。
 
 ```js
 import { createServer } from 'http'
@@ -630,9 +660,9 @@ try {
 }
 ```
 
-#### Example 3 - Conditionally reading the body
+#### 示例 3 - 有条件地读取 body
 
-Remember to fully consume the body even in the case when it is not read.
+记住，即使在未读取的情况下也要完全消耗 body。
 
 ```js
 const { body, statusCode } = await client.request({
@@ -651,32 +681,32 @@ return null
 
 ### `Dispatcher.stream(options, factory[, callback])`
 
-A faster version of `Dispatcher.request`. This method expects the second argument `factory` to return a [`stream.Writable`](https://nodejs.org/api/stream.html#stream_class_stream_writable) stream which the response will be written to. This improves performance by avoiding creating an intermediate [`stream.Readable`](https://nodejs.org/api/stream.html#stream_readable_streams) stream when the user expects to directly pipe the response body to a [`stream.Writable`](https://nodejs.org/api/stream.html#stream_class_stream_writable) stream.
+`Dispatcher.request` 的快速版本。此方法期望第二个参数 `factory` 返回一个 [`stream.Writable`](https://nodejs.org/api/stream.html#stream_class_stream_writable) 流，响应将写入其中。通过避免在使用者预期直接将响应体管道传输到 [`stream.Writable`](https://nodejs.org/api/stream.html#stream_class_stream_writable) 流时创建中间 [`stream.Readable`](https://nodejs.org/api/stream.html#stream_readable_streams) 流来提高性能。
 
-As demonstrated in [Example 1 - Basic GET stream request](/docs/docs/api/Dispatcher.md#example-1-basic-get-stream-request), it is recommended to use the `option.opaque` property to avoid creating a closure for the `factory` method. This pattern works well with Node.js Web Frameworks such as [Fastify](https://fastify.io). See [Example 2 - Stream to Fastify Response](/docs/docs/api/Dispatch.md#example-2-stream-to-fastify-response) for more details.
+如 [示例 1 - 基本 GET 流请求](/docs/docs/api/Dispatcher.md#example-1-basic-get-stream-request) 所示，建议使用 `option.opaque` 属性来避免为 `factory` 方法创建闭包。此模式与 Node.js Web 框架（如 [Fastify](https://fastify.io)）配合良好。有关更多详细信息，请参阅 [示例 2 - 流到 Fastify 响应](/docs/docs/api/Dispatch.md#example-2-stream-to-fastify-response)。
 
-Arguments:
+参数：
 
 * **options** `RequestOptions`
 * **factory** `(data: StreamFactoryData) => stream.Writable`
-* **callback** `(error: Error | null, data: StreamData) => void` (optional)
+* **callback** `(error: Error | null, data: StreamData) => void`（可选）
 
-Returns: `void | Promise<StreamData>` - Only returns a `Promise` if no `callback` argument was passed
+返回值：`void | Promise<StreamData>` - 只有在没有传递 `callback` 参数时才返回 `Promise`
 
-#### Parameter: `StreamFactoryData`
+#### 参数：`StreamFactoryData`
 
 * **statusCode** `number`
 * **headers** `Record<string, string | string[] | undefined>`
 * **opaque** `unknown`
-* **onInfo** `({statusCode: number, headers: Record<string, string | string[]>}) => void | null` (optional) - Default: `null` - Callback collecting all the info headers (HTTP 100-199) received.
+* **onInfo** `({statusCode: number, headers: Record<string, string | string[]>}) => void | null`（可选）- 默认值：`null` - 收集所有接收到的信息标头（HTTP 100-199）的回调。
 
-#### Parameter: `StreamData`
+#### 参数：`StreamData`
 
 * **opaque** `unknown`
 * **trailers** `Record<string, string>`
 * **context** `object`
 
-#### Example 1 - Basic GET stream request
+#### 示例 1 - 基本 GET 流请求
 
 ```js
 import { createServer } from 'http'
@@ -719,9 +749,9 @@ try {
 }
 ```
 
-#### Example 2 - Stream to Fastify Response
+#### 示例 2 - 流到 Fastify 响应
 
-In this example, a (fake) request is made to the fastify server using `fastify.inject()`. This request then executes the fastify route handler which makes a subsequent request to the raw Node.js http server using `undici.dispatcher.stream()`. The fastify response is passed to the `opaque` option so that undici can tap into the underlying writable stream using `response.raw`. This methodology demonstrates how one could use undici and fastify together to create fast-as-possible requests from one backend server to another.
+在此示例中，使用 `fastify.inject()` 向 fastify 服务器发出（假定的）请求。此请求然后执行 fastify 路由处理程序，后者使用 `undici.dispatcher.stream()` 向原始 Node.js http 服务器发出后续请求。fastify 响应传递给 `opaque` 选项，以便 undici 可以使用 `response.raw` 访问底层的可写流。此方法演示了如何结合使用 undici 和 fastify 从后端服务器到另一个后端服务器创建尽可能快的请求。
 
 ```js
 import { createServer } from 'http'
@@ -778,31 +808,31 @@ try {
 
 ### `Dispatcher.upgrade(options[, callback])`
 
-Upgrade to a different protocol. Visit [MDN - HTTP - Protocol upgrade mechanism](https://developer.mozilla.org/en-US/docs/Web/HTTP/Protocol_upgrade_mechanism) for more details.
+升级到不同的协议。有关更多详细信息，请访问 [MDN - HTTP - 协议升级机制](https://developer.mozilla.org/en-US/docs/Web/HTTP/Protocol_upgrade_mechanism)。
 
-Arguments:
+参数：
 
 * **options** `UpgradeOptions`
 
-* **callback** `(error: Error | null, data: UpgradeData) => void` (optional)
+* **callback** `(error: Error | null, data: UpgradeData) => void`（可选）
 
-Returns: `void | Promise<UpgradeData>` - Only returns a `Promise` if no `callback` argument was passed
+返回值：`void | Promise<UpgradeData>` - 只有在没有传递 `callback` 参数时才返回 `Promise`
 
-#### Parameter: `UpgradeOptions`
+#### 参数：`UpgradeOptions`
 
 * **path** `string`
-* **method** `string` (optional) - Default: `'GET'`
-* **headers** `UndiciHeaders` (optional) - Default: `null`
-* **protocol** `string` (optional) - Default: `'Websocket'` - A string of comma separated protocols, in descending preference order.
-* **signal** `AbortSignal | EventEmitter | null` (optional) - Default: `null`
+* **method** `string`（可选）- 默认值：`'GET'`
+* **headers** `UndiciHeaders`（可选）- 默认值：`null`
+* **protocol** `string`（可选）- 默认值：`'Websocket'` - 逗号分隔的协议字符串，按降序偏好排列。
+* **signal** `AbortSignal | EventEmitter | null`（可选）- 默认值：`null`
 
-#### Parameter: `UpgradeData`
+#### 参数：`UpgradeData`
 
 * **headers** `http.IncomingHeaders`
 * **socket** `stream.Duplex`
 * **opaque** `unknown`
 
-#### Example 1 - Basic Upgrade Request
+#### 示例 1 - 基本升级请求
 
 ```js
 import { createServer } from 'http'
@@ -839,18 +869,18 @@ try {
 
 ### `Dispatcher.compose(interceptors[, interceptor])`
 
-Compose a new dispatcher from the current dispatcher and the given interceptors.
+从当前 dispatcher 和给定的拦截器组成一个新的 dispatcher。
 
-> _Notes_:
-> - The order of the interceptors matters. The last interceptor will be the first to be called.
-> - It is important to note that the `interceptor` function should return a function that follows the `Dispatcher.dispatch` signature.
-> - Any fork of the chain of `interceptors` can lead to unexpected results.
+> _注意_：
+> - 拦截器的顺序很重要。最后一个拦截器将首先被调用。
+> - 重要的是要注意，`interceptor` 函数应返回一个遵循 `Dispatcher.dispatch` 签名的函数。
+> - 任何 `interceptors` 链的分叉都可能导致意外结果。
 >
-> **Interceptor Stack Visualization:**
+> **拦截器堆栈可视化：**
 > ```
 > compose([interceptor1, interceptor2, interceptor3])
 >
-> Request Flow:
+> 请求流程：
 > ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
 > │   Request   │───▶│interceptor3 │───▶│interceptor2 │───▶│interceptor1 │───▶│  dispatcher │
 > └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘    │   .dispatch │
@@ -862,20 +892,20 @@ Compose a new dispatcher from the current dispatcher and the given interceptors.
 > │  Response   │◀───│interceptor3 │◀───│interceptor2 │◀───│interceptor1 │◀─────────┘
 > └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
 >
-> The interceptors are composed in reverse order due to function composition.
+> 由于函数组合的原因，拦截器按相反顺序组合。
 > ```
 
-Arguments:
+参数：
 
-* **interceptors** `Interceptor[interceptor[]]`: It is an array of `Interceptor` functions passed as only argument, or several interceptors passed as separate arguments.
+* **interceptors** `Interceptor[interceptor[]]`：作为唯一参数的 `Interceptor` 函数数组，或作为单独参数的多个拦截器。
 
-Returns: `Dispatcher`.
+返回值：`Dispatcher`
 
-#### Parameter: `Interceptor`
+#### 参数：`Interceptor`
 
-A function that takes a `dispatch` method and returns a `dispatch`-like function.
+一个函数，它接受一个 `dispatch` 方法并返回一个类似 `dispatch` 的函数。
 
-#### Example 1 - Basic Compose
+#### 示例 1 - 基本 Compose
 
 ```js
 const { Client, RedirectHandler } = require('undici')
@@ -905,7 +935,7 @@ const client = new Client('http://localhost:3000')
 await client.request({ path: '/', method: 'GET' })
 ```
 
-#### Example 2 - Chained Compose
+#### 示例 2 - 链式 Compose
 
 ```js
 const { Client, RedirectHandler, RetryHandler } = require('undici')
@@ -948,33 +978,33 @@ const client = new Client('http://localhost:3000')
 await client.request({ path: '/', method: 'GET' })
 ```
 
-#### Pre-built interceptors
+#### 预构建的拦截器
 
 ##### `redirect`
 
-The `redirect` interceptor allows you to customize the way your dispatcher handles redirects.
+`redirect` 拦截器允许您自定义 dispatcher 处理重定向的方式。
 
-It accepts the same arguments as the [`RedirectHandler` constructor](/docs/docs/api/RedirectHandler.md).
+它接受与 [`RedirectHandler` 构造函数](/docs/docs/api/RedirectHandler.md) 相同的参数。
 
-**Example - Basic Redirect Interceptor**
+**示例 - 基本重定向拦截器**
 
 ```js
 const { Client, interceptors } = require("undici");
 const { redirect } = interceptors;
 
 const client = new Client("http://service.example").compose(
-  redirect({ maxRedirections: 3, throwOnMaxRedirects: true })
+  redirect({ maxRedirections: 3, throwOnMaxRedirect: true })
 );
 client.request({ path: "/" })
 ```
 
 ##### `retry`
 
-The `retry` interceptor allows you to customize the way your dispatcher handles retries.
+`retry` 拦截器允许您自定义 dispatcher 处理重试的方式。
 
-It accepts the same arguments as the [`RetryHandler` constructor](/docs/docs/api/RetryHandler.md).
+它接受与 [`RetryHandler` 构造函数](/docs/docs/api/RetryHandler.md) 相同的参数。
 
-**Example - Basic Redirect Interceptor**
+**示例 - 基本重试拦截器**
 
 ```js
 const { Client, interceptors } = require("undici");
@@ -993,14 +1023,14 @@ const client = new Client("http://service.example").compose(
 
 ##### `dump`
 
-The `dump` interceptor enables you to dump the response body from a request upon a given limit.
+`dump` 拦截器使您能够在给定限制下转储请求的响应体。
 
-**Options**
-- `maxSize` - The maximum size (in bytes) of the response body to dump. If the size of the request's body exceeds this value then the connection will be closed. Default: `1048576`.
+**选项**
+- `maxSize` - 要转储的响应体的最大大小（以字节为单位）。如果请求体的大小超过此值，则连接将被关闭。默认值：`1048576`。
 
-> The `Dispatcher#options` also gets extended with the options `dumpMaxSize`, `abortOnDumped`, and `waitForTrailers` which can be used to configure the interceptor at a request-per-request basis.
+> `Dispatcher#options` 还扩展了选项 `dumpMaxSize`、`abortOnDumped` 和 `waitForTrailers`，可用于在每个请求的基础上配置拦截器。
 
-**Example - Basic Dump Interceptor**
+**示例 - 基本 Dump 拦截器**
 
 ```js
 const { Client, interceptors } = require("undici");
@@ -1025,49 +1055,49 @@ client.dispatch(
 
 ##### `dns`
 
-The `dns` interceptor enables you to cache DNS lookups for a given duration, per origin.
+`dns` 拦截器使您能够为给定的持续时间（每源）缓存 DNS 查找。
 
->It is well suited for scenarios where you want to cache DNS lookups to avoid the overhead of resolving the same domain multiple times
+> 它非常适合您想要缓存 DNS 查找以避免多次解析同一域名的开销的场景
 
-**Options**
-- `maxTTL` - The maximum time-to-live (in milliseconds) of the DNS cache. It should be a positive integer. Default: `10000`.
-  - Set `0` to disable TTL.
-- `maxItems` - The maximum number of items to cache. It should be a positive integer. Default: `Infinity`.
-- `dualStack` - Whether to resolve both IPv4 and IPv6 addresses. Default: `true`.
-  - It will also attempt a happy-eyeballs-like approach to connect to the available addresses in case of a connection failure.
-- `affinity` - Whether to use IPv4 or IPv6 addresses. Default: `4`.
-  - It can be either `'4` or `6`.
-  - It will only take effect if `dualStack` is `false`.
-- `lookup: (hostname: string, options: LookupOptions, callback: (err: NodeJS.ErrnoException | null, addresses: DNSInterceptorRecord[]) => void) => void` - Custom lookup function. Default: `dns.lookup`.
-  - For more info see [dns.lookup](https://nodejs.org/api/dns.html#dns_dns_lookup_hostname_options_callback).
-- `pick: (origin: URL, records: DNSInterceptorRecords, affinity: 4 | 6) => DNSInterceptorRecord` - Custom pick function. Default: `RoundRobin`.
-  - The function should return a single record from the records array.
-  - By default a simplified version of Round Robin is used.
-  - The `records` property can be mutated to store the state of the balancing algorithm.
-- `storage: DNSStorage` - Custom storage for resolved DNS records
+**选项**
+- `maxTTL` - DNS 缓存的最大生存时间（以毫秒为单位）。应为正整数。默认值：`10000`。
+  - 设置 `0` 以禁用 TTL。
+- `maxItems` - 要缓存的最大项目数。应为正整数。默认值：`Infinity`。
+- `dualStack` - 是否解析 IPv4 和 IPv6 地址。默认值：`true`。
+  - 如果出现连接失败，还将尝试类似 happy-eyeballs 的方法连接到可用的地址。
+- `affinity` - 是否使用 IPv4 或 IPv6 地址。默认值：`4`。
+  - 可以是 `4` 或 `6`。
+  - 只有当 `dualStack` 为 `false` 时才会生效。
+- `lookup: (hostname: string, options: LookupOptions, callback: (err: NodeJS.ErrnoException | null, addresses: DNSInterceptorRecord[]) => void) => void` - 自定义查找函数。默认值：`dns.lookup`。
+  - 有关更多信息，请参阅 [dns.lookup](https://nodejs.org/api/dns.html#dnslookuphostname-options-callback)。
+- `pick: (origin: URL, records: DNSInterceptorRecords, affinity: 4 | 6) => DNSInterceptorRecord` - 自定义选择函数。默认值：`RoundRobin`。
+  - 函数应从记录数组中返回单个记录。
+  - 默认情况下使用简化的轮询算法。
+  - `records` 属性可以被修改以存储平衡算法的状态。
+- `storage: DNSStorage` - 已解析 DNS 记录的定制存储
 
-> The `Dispatcher#options` also gets extended with the options `dns.affinity`, `dns.dualStack`, `dns.lookup` and `dns.pick` which can be used to configure the interceptor at a request-per-request basis.
+> `Dispatcher#options` 还扩展了选项 `dns.affinity`、`dns.dualStack`、`dns.lookup` 和 `dns.pick`，可用于在每个请求的基础上配置拦截器。
 
 
 **DNSInterceptorRecord**
-It represents a DNS record.
-- `family` - (`number`) The IP family of the address. It can be either `4` or `6`.
-- `address` - (`string`) The IP address.
+它表示一个 DNS 记录。
+- `family` - (`number`) 地址的 IP 族。可以是 `4` 或 `6`。
+- `address` - (`string`) IP 地址。
 
 **DNSInterceptorOriginRecords**
-It represents a map of DNS IP addresses records for a single origin.
-- `4.ips` - (`DNSInterceptorRecord[] | null`) The IPv4 addresses.
-- `6.ips` - (`DNSInterceptorRecord[] | null`) The IPv6 addresses.
+它表示单个源的 DNS IP 地址记录的映射。
+- `4.ips` - (`DNSInterceptorRecord[] | null`) IPv4 地址。
+- `6.ips` - (`DNSInterceptorRecord[] | null`) IPv6 地址。
 
 **DNSStorage**
-It represents a storage object for resolved DNS records.
-- `size` - (`number`) current size of the storage.
-- `get` - (`(origin: string) => DNSInterceptorOriginRecords | null`) method to get the records for a given origin.
-- `set` - (`(origin: string, records: DNSInterceptorOriginRecords | null, options: { ttl: number }) => void`) method to set the records for a given origin.
-- `delete` - (`(origin: string) => void`) method to delete records for a given origin.
-- `full` - (`() => boolean`) method to check if the storage is full, if returns `true`, DNS lookup will be skipped in this interceptor and new records will not be stored.
+它表示已解析 DNS 记录的存储对象。
+- `size` - (`number`) 存储的当前大小。
+- `get` - (`(origin: string) => DNSInterceptorOriginRecords | null`) 获取给定源的记录的方法。
+- `set` - (`(origin: string, records: DNSInterceptorOriginRecords | null, options: { ttl: number }) => void`) 设置给定源的记录的方法。
+- `delete` - (`(origin: string) => void`) 删除给定源的记录的方法。
+- `full` - (`() => boolean`) 检查存储是否已满的方法，如果返回 `true`，此拦截器中将跳过 DNS 查找且不存储新记录。
 
-**Example - Basic DNS Interceptor**
+**示例 - 基本 DNS 拦截器**
 
 ```js
 const { Client, interceptors } = require("undici");
@@ -1083,7 +1113,7 @@ const response = await client.request({
 })
 ```
 
-**Example - DNS Interceptor and LRU cache as a storage**
+**示例 - DNS 拦截器和 LRU 缓存作为存储**
 
 ```js
 const { Client, interceptors } = require("undici");
@@ -1124,9 +1154,9 @@ const response = await client.request({
 
 ##### `responseError`
 
-The `responseError` interceptor throws an error for responses with status code errors (>= 400).
+`responseError` 拦截器对状态码错误（>= 400）的响应抛出错误。
 
-**Example**
+**示例**
 
 ```js
 const { Client, interceptors } = require("undici");
@@ -1145,16 +1175,16 @@ await client.request({
 
 ##### `decompress`
 
-⚠️ The decompress interceptor is experimental and subject to change.
+⚠️ `decompress` 拦截器是实验性的，可能会发生变化。
 
-The `decompress` interceptor automatically decompresses response bodies that are compressed with gzip, deflate, brotli, or zstd compression. It removes the `content-encoding` and `content-length` headers from decompressed responses and supports RFC-9110 compliant multiple encodings.
+`decompress` 拦截器自动解压缩使用 gzip、deflate、brotli 或 zstd 压缩的响应体。它从解压的响应中删除 `content-encoding` 和 `content-length` 标头，并支持符合 RFC-9110 的多个编码。
 
-**Options**
+**选项**
 
-- `skipErrorResponses` - Whether to skip decompression for error responses (status codes >= 400). Default: `true`.
-- `skipStatusCodes` - Array of status codes to skip decompression for. Default: `[204, 304]`.
+- `skipErrorResponses` - 是否跳过错误响应（状态码 >= 400）的解压缩。默认值：`true`。
+- `skipStatusCodes` - 要跳过解压缩的状态码数组。默认值：`[204, 304]`。
 
-**Example - Basic Decompress Interceptor**
+**示例 - 基本 Decompress 拦截器**
 
 ```js
 const { Client, interceptors } = require("undici");
@@ -1171,7 +1201,7 @@ const response = await client.request({
 });
 ```
 
-**Example - Custom Options**
+**示例 - 自定义选项**
 
 ```js
 const { Client, interceptors } = require("undici");
@@ -1185,36 +1215,35 @@ const client = new Client("http://service.example").compose(
 );
 ```
 
-**Supported Encodings**
+**支持的编码**
 
-- `gzip` / `x-gzip` - GZIP compression
-- `deflate` / `x-compress` - DEFLATE compression  
-- `br` - Brotli compression
-- `zstd` - Zstandard compression
-- Multiple encodings (e.g., `gzip, deflate`) are supported per RFC-9110
+- `gzip` / `x-gzip` - GZIP 压缩
+- `deflate` / `x-compress` - DEFLATE 压缩  
+- `br` - Brotli 压缩
+- `zstd` - Zstandard 压缩
+- 支持多个编码（例如，`gzip, deflate`）根据 RFC-9110
 
-**Behavior**
+**行为**
 
-- Skips decompression for status codes < 200 or >= 400 (configurable)
-- Skips decompression for 204 No Content and 304 Not Modified by default
-- Removes `content-encoding` and `content-length` headers when decompressing
-- Passes through unsupported encodings unchanged
-- Handles case-insensitive encoding names
-- Supports streaming decompression without buffering
+- 默认跳过状态码 < 200 或 >= 400 的解压缩（可配置）
+- 默认跳过 204 No Content 和 304 Not Modified
+- 解压缩时移除 `content-encoding` 和 `content-length` 标头
+- 不支持的编码将透传
+- 支持编码名称的大小写不敏感
+- 支持无需缓冲的流式解压缩
 
 ##### `Cache Interceptor`
 
-The `cache` interceptor implements client-side response caching as described in
-[RFC9111](https://www.rfc-editor.org/rfc/rfc9111.html).
+`cache` 拦截器实现了客户端响应缓存，如 [RFC9111](https://www.rfc-editor.org/rfc/rfc9111.html) 所述。
 
-**Options**
+**选项**
 
-- `store` - The [`CacheStore`](/docs/docs/api/CacheStore.md) to store and retrieve responses from. Default is [`MemoryCacheStore`](/docs/docs/api/CacheStore.md#memorycachestore).
-- `methods` - The [**safe** HTTP methods](https://www.rfc-editor.org/rfc/rfc9110#section-9.2.1) to cache the response of.
-- `cacheByDefault` - The default expiration time to cache responses by if they don't have an explicit expiration and cannot have an heuristic expiry computed. If this isn't present, responses neither with an explicit expiration nor heuristically cacheable will not be cached. Default `undefined`.
-- `type` - The [type of cache](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching#types_of_caches) for Undici to act as. Can be `shared` or `private`. Default `shared`. `private` implies privately cacheable responses will be cached and potentially shared with other users of your application.
+- `store` - 用于存储和检索响应的 [`CacheStore`](/docs/docs/api/CacheStore.md)。默认为 [`MemoryCacheStore`](/docs/docs/api/CacheStore.md#memorycachestore)。
+- `methods` - 要缓存响应的 [**安全** HTTP 方法](https://www.rfc-editor.org/rfc/rfc9110#section-9.2.1)。
+- `cacheByDefault` - 如果响应没有显式过期且无法计算启发式过期时间，则默认缓存响应的时间。如果不存在此选项，则既没有显式过期也没有启发式可缓存的响应将不会被缓存。默认值：`undefined`。
+- `type` - Undici 充当的 [缓存类型](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching#types_of_caches)。可以是 `shared` 或 `private`。默认为 `shared`。`private` 意味着将缓存私有可缓存响应，并可能与应用程序的其他用户共享。
 
-**Usage with `fetch`**
+**与 `fetch` 一起使用**
 
 ```js
 const { Agent, cacheStores, interceptors, setGlobalDispatcher } = require('undici')
@@ -1238,16 +1267,16 @@ const second = await fetch('https://example.com/data')
 
 ##### `Deduplicate Interceptor`
 
-The `deduplicate` interceptor deduplicates concurrent identical requests. When multiple identical requests are made while one is already in-flight, only one request is sent to the origin server, and all waiting handlers receive the same response. This reduces server load and improves performance.
+`deduplicate` 拦截器去重并发相同的请求。当多个相同请求发出而其中一个已在进行中时，只有一个请求发送到源服务器，所有等待的处理程序都会收到相同的响应。这减少了服务器负载并提高了性能。
 
-**Options**
+**选项**
 
-- `methods` - The [**safe** HTTP methods](https://www.rfc-editor.org/rfc/rfc9110#section-9.2.1) to deduplicate. Default `['GET']`.
-- `skipHeaderNames` - Header names that, if present in a request, will cause the request to skip deduplication entirely. Useful for headers like `idempotency-key` where presence indicates unique processing. Header name matching is case-insensitive. Default `[]`.
-- `excludeHeaderNames` - Header names to exclude from the deduplication key. Requests with different values for these headers will still be deduplicated together. Useful for headers like `x-request-id` that vary per request but shouldn't affect deduplication. Header name matching is case-insensitive. Default `[]`.
-- `maxBufferSize` - Maximum bytes buffered per paused waiting deduplicated handler. If a waiting handler remains paused and exceeds this threshold, it is failed with an abort error to prevent unbounded memory growth. Default `5 * 1024 * 1024`.
+- `methods` - 要去重的 [**安全** HTTP 方法](https://www.rfc-editor.org/rfc/rfc9110#section-9.2.1)。默认为 `['GET']`。
+- `skipHeaderNames` - 如果请求中存在这些标头名，将完全跳过去重。对于像 `idempotency-key` 这样的标头很有用，其存在表示唯一处理。标头名匹配不区分大小写。默认为 `[]`。
+- `excludeHeaderNames` - 要从去重键中排除的标头名。具有这些标头不同值的请求仍将一起去重。对于像 `x-request-id` 这样随每个请求变化的标头很有用，但不应该影响去重。标头名匹配不区分大小写。默认为 `[]`。
+- `maxBufferSize` - 每个暂停的等待去重处理器的最大缓冲字节数。如果等待的处理程序保持暂停并超过此阈值，则会因中止错误而失败，以防止无界内存增长。默认为 `5 * 1024 * 1024`。
 
-**Usage**
+**用法**
 
 ```js
 const { Client, interceptors } = require("undici");
@@ -1265,75 +1294,74 @@ const clientWithCache = new Client("http://service.example").compose(
 );
 ```
 
-Requests are considered identical if they have the same:
-- Origin
-- HTTP method
-- Path
-- Request headers (excluding any headers specified in `excludeHeaderNames`)
+请求如果具有以下相同内容则被视为相同：
+- 源
+- HTTP 方法
+- 路径
+- 请求标头（排除 `excludeHeaderNames` 中指定的任何标头）
 
-All deduplicated requests receive the complete response including status code, headers, and body.
+所有去重的请求都会收到完整的响应，包括状态码、标头和正文。
 
-For observability, request deduplication events are published to the `undici:request:pending-requests` [diagnostic channel](/docs/docs/api/DiagnosticsChannel.md#undicirequestpending-requests).
+为了可观察性，请求去重事件会发布到 `undici:request:pending-requests` [诊断通道](/docs/docs/api/DiagnosticsChannel.md#undicirequestpending-requests)。
 
-## Instance Events
+## 实例事件
 
-### Event: `'connect'`
+### 事件：`'connect'`
 
-Parameters:
-
-* **origin** `URL`
-* **targets** `Array<Dispatcher>`
-
-### Event: `'disconnect'`
-
-Parameters:
+参数：
 
 * **origin** `URL`
 * **targets** `Array<Dispatcher>`
-* **error** `Error`
 
-Emitted when the dispatcher has been disconnected from the origin.
+### 事件：`'disconnect'`
 
-> **Note**: For HTTP/2, this event is also emitted when the dispatcher has received the [GOAWAY Frame](https://webconcepts.info/concepts/http2-frame-type/0x7) with an Error with the message `HTTP/2: "GOAWAY" frame received` and the code `UND_ERR_INFO`.
-> Due to nature of the protocol of using binary frames, it is possible that requests gets hanging as a frame can be received between the `HEADER` and `DATA` frames.
-> It is recommended to handle this event and close the dispatcher to create a new HTTP/2 session.
-
-### Event: `'connectionError'`
-
-Parameters:
+参数：
 
 * **origin** `URL`
 * **targets** `Array<Dispatcher>`
 * **error** `Error`
 
-Emitted when dispatcher fails to connect to
-origin.
+当调度器与源断开连接时触发。
 
-### Event: `'drain'`
+> **注意**：对于 HTTP/2，当调度器收到带有错误消息 `"HTTP/2: "GOAWAY" frame received"` 和代码 `UND_ERR_INFO` 的 [GOAWAY Frame](https://webconcepts.info/concepts/http2-frame-type/0x7) 时，也会触发此事件。
+> 由于使用二进制帧的协议特性，请求可能会挂起，因为可以在 `HEADER` 和 `DATA` 帧之间接收到帧。
+> 建议处理此事件并关闭调度器以创建新的 HTTP/2 会话。
 
-Parameters:
+### 事件：`'connectionError'`
+
+参数：
+
+* **origin** `URL`
+* **targets** `Array<Dispatcher>`
+* **error** `Error`
+
+当调度器无法连接到源时触发。
+
+### 事件：`'drain'`
+
+参数：
 
 * **origin** `URL`
 
-Emitted when dispatcher is no longer busy.
+当调度器不再繁忙时触发。
 
-## Parameter: `UndiciHeaders`
+## 参数：`UndiciHeaders`
 
 * `Record<string, string | string[] | undefined> | string[] | Iterable<[string, string | string[] | undefined]> | null`
 
-Header arguments such as `options.headers` in [`Client.dispatch`](/docs/docs/api/Client.md#clientdispatchoptions-handlers) can be specified in three forms:
-* As an object specified by the `Record<string, string | string[] | undefined>` (`IncomingHttpHeaders`) type.
-* As an array of strings. An array representation of a header list must have an even length, or an `InvalidArgumentError` will be thrown.
-* As an iterable that can encompass `Headers`, `Map`, or a custom iterator returning key-value pairs.
-Keys are lowercase and values are not modified.
+在 [`Client.dispatch`](/docs/docs/api/Client.md#clientdispatchoptions-handlers) 中，如 `options.headers 等标头参数可以以三种形式指定：
+* 通过 `Record<string, string | string[] | undefined>`（`IncomingHttpHeaders` 类型）指定的对象。
+* 字符串数组。标头列表的数组表示必须具有偶数长度，否则将抛出 `InvalidArgumentError`。
+* 可迭代的对象，可以包含 `Headers`、`Map` 或返回键值对的自定义迭代器。
+键为小写，值不会被修改。
 
-Undici validates header syntax at the protocol level (for example, invalid header names and invalid control characters in string values), but it does not sanitize untrusted application input. Validate and sanitize any user-provided header names and values before passing them to Undici to prevent header/body injection vulnerabilities.
+Undici 会在协议级别验证标头发送语法（例如，无效的标头名称或字符串值中的无效控制字符），但不会清理不受信任的应用程序输入。在传递给 Undici 之前，请验证并清理任何用户提供的标头名称和值，以防止标头/正文注入漏洞。
 
-When using the array header format (`string[]`), Undici processes only indexed elements. Additional properties assigned to the array object are ignored.
+在使用数组标头格式（`string[]`）时，Undici 仅处理索引元素。分配给数组对象的附加属性将被忽略。
 
-Response headers will derive a `host` from the `url` of the [Client](/docs/docs/api/Client.md#class-client) instance if no `host` header was previously specified.
+如果之前未指定 `host` 标头，响应标头将从 [Client](/docs/docs/api/Client.md#class-client) 实例的 `url` 派生 `host`。
 
-### Example 1 - Object
+### 示例 1 - 对象
 
 ```js
 {
@@ -1345,7 +1373,7 @@ Response headers will derive a `host` from the `url` of the [Client](/docs/docs/
 }
 ```
 
-### Example 2 - Array
+### 示例 2 - 数组
 
 ```js
 [
@@ -1357,7 +1385,7 @@ Response headers will derive a `host` from the `url` of the [Client](/docs/docs/
 ]
 ```
 
-### Example 3 - Iterable
+### 示例 3 - 可迭代对象
 
 ```js
 new Headers({
@@ -1368,7 +1396,7 @@ new Headers({
   accept: '*/*'
 })
 ```
-or
+或者
 ```js
 new Map([
   ['content-length', '123'],
@@ -1378,7 +1406,7 @@ new Map([
   ['accept', '*/*']
 ])
 ```
-or
+或者
 ```js
 {
   *[Symbol.iterator] () {
