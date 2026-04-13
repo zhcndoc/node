@@ -664,14 +664,18 @@ added:
 <!-- YAML
 added: v10.0.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/57775
+    description: Now accepts an additional `signal` property to allow aborting the operation.
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: "接受一个额外的 `options` 对象来指定返回的数值是否应为 bigint。"
+    description: Accepts an additional `options` object to specify whether the numeric values returned should be bigint.
 -->
 
 * `options` {Object}
-  * `bigint` {boolean} 返回的 {fs.Stats} 对象中的数值是否应为 `bigint`。**默认：** `false`。
-* 返回：{Promise} fulfilled 为文件的 {fs.Stats}。
+  * `bigint` {boolean} 返回的 {fs.Stats} 对象中的数值是否应为 `bigint`。**Default:** `false`.
+  * `signal` {AbortSignal} An AbortSignal to cancel the operation. **Default:** `undefined`.
+* Returns: {Promise} Fulfills with an {fs.Stats} for the file.
 
 #### `filehandle.sync()`
 
@@ -1224,7 +1228,7 @@ added: v10.0.0
 changes:
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: "接受一个额外的 `options` 对象来指定返回的数值是否应为 bigint。"
+    description: "接受一个额外的 `options` 对象以指定返回的数值是否应为 bigint。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -1930,7 +1934,7 @@ changes:
     description: "直接存在于 `fs` 上的常量 `fs.F_OK`、`fs.R_OK`、`fs.W_OK` 和 `fs.X_OK` 已被移除。"
   - version: v20.8.0
     pr-url: https://github.com/nodejs/node/pull/49683
-    description: "直接存在于 `fs` 上的常量 `fs.F_OK`、`fs.R_OK`、`fs.W_OK` 和 `fs.X_OK` 已弃用。"
+    description: "直接存在于 `fs` 上的常量 `fs.F_OK`、`fs.R_OK`、`fs.W_OK` 和 `fs.X_OK` 已被弃用。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
     description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
@@ -2214,7 +2218,7 @@ chmod('my_file.txt', 0o775, (err) => {
 `fs.chmod()` 和 `fs.chmodSync()` 方法中使用的 `mode` 参数是一个数字位掩码，使用以下常量的逻辑 OR 创建：
 
 | 常量 | 八进制 | 描述 |
-| ---------------------- | ------- | ------------------------ |
+| ------ | ------- | ------------------------ |
 | `fs.constants.S_IRUSR` | `0o400` | 所有者可读 |
 | `fs.constants.S_IWUSR` | `0o200` | 所有者可写 |
 | `fs.constants.S_IXUSR` | `0o100` | 所有者可执行/搜索 |
@@ -2835,7 +2839,7 @@ added: v0.8.6
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
     description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
@@ -2974,7 +2978,7 @@ deprecated: v0.4.7
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37460
     description: "如果返回多个错误，返回的错误可能是 `AggregateError`。"
@@ -3038,7 +3042,7 @@ added:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -3058,7 +3062,7 @@ added: v0.1.31
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
     description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
@@ -3084,7 +3088,7 @@ added: v0.1.30
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
     description: "接受额外的 `options` 对象以指定返回的数值是否应为 bigint。"
@@ -4368,6 +4372,9 @@ changes:
 <!-- YAML
 added: v0.5.10
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/61870
+    description: Added `throwIfNoEntry` option.
   - version: v19.1.0
     pr-url: https://github.com/nodejs/node/pull/45098
     description: 为 Linux、AIX 和 IBMi 添加了递归支持。
@@ -4386,20 +4393,22 @@ changes:
 
 * `filename` {string|Buffer|URL}
 * `options` {string|Object}
-  * `persistent` {boolean} 指示进程是否应继续运行
-    只要文件被监视。**默认值：** `true`。
-  * `recursive` {boolean} 指示是否应监视所有子目录，
-    或仅当前目录。这在指定目录时适用，
-    且仅在受支持的平台上（参见 [注意事项][]）。**默认值：**
-    `false`。
-  * `encoding` {string} 指定要用于传递给
-    监听器的文件名的字符编码。**默认值：** `'utf8'`。
-  * `signal` {AbortSignal} 允许使用 AbortSignal 关闭 watcher。
-  * `ignore` {string|RegExp|Function|Array} 要忽略的模式。字符串是
-    glob 模式（使用 [`minimatch`][]），RegExp 模式针对
-    文件名测试，函数接收文件名并返回 `true` 以
-    忽略。**默认值：** `undefined`。
-* `listener` {Function|undefined} **默认值：** `undefined`
+  * `persistent` {boolean} Indicates whether the process should continue to run
+    as long as files are being watched. **Default:** `true`.
+  * `recursive` {boolean} Indicates whether all subdirectories should be
+    watched, or only the current directory. This applies when a directory is
+    specified, and only on supported platforms (See [caveats][]). **Default:**
+    `false`.
+  * `encoding` {string} Specifies the character encoding to be used for the
+    filename passed to the listener. **Default:** `'utf8'`.
+  * `signal` {AbortSignal} allows closing the watcher with an AbortSignal.
+  * `throwIfNoEntry` {boolean} Indicates whether an exception should be thrown when the
+    path does not exist. **Default:** `true`.
+  * `ignore` {string|RegExp|Function|Array} Pattern(s) to ignore. Strings are
+    glob patterns (using [`minimatch`][]), RegExp patterns are tested against
+    the filename, and functions receive the filename and return `true` to
+    ignore. **Default:** `undefined`.
+* `listener` {Function|undefined} **Default:** `undefined`
   * `eventType` {string}
   * `filename` {string|Buffer|null}
 * 返回：{fs.FSWatcher}
@@ -5618,9 +5627,7 @@ changes:
 * `offset` {integer}
 * `length` {integer}
 * `position` {integer|bigint|null} **默认：** `null`
-* 返回：{number}
-
-返回 `bytesRead` 的数量。
+* 返回：{number} `bytesRead` 的数量。
 
 详细信息，请参阅此 API 异步版本的文档：[`fs.read()`][]。
 
@@ -5644,9 +5651,7 @@ changes:
   * `offset` {integer} **默认：** `0`
   * `length` {integer} **默认：** `buffer.byteLength - offset`
   * `position` {integer|bigint|null} **默认：** `null`
-* 返回：{number}
-
-返回 `bytesRead` 的数量。
+* 返回：{number} `bytesRead` 的数量。
 
 类似于上面的 `fs.readSync` 函数，此版本接受可选的 `options` 对象。
 如果未指定 `options` 对象，它将默认使用上述值。
@@ -6646,7 +6651,8 @@ added: v0.1.10
 
 * 返回：{boolean}
 
-如果 {fs.Stats} 对象描述文件系统目录，则返回 `true`。
+如果 {fs.Stats} 对象描述文件系统
+目录，则返回 `true`。
 
 如果 {fs.Stats} 对象是通过在符号链接上调用 [`fs.lstat()`][] 获得的，
 该符号链接解析为目录，则此方法将返回 `false`。
@@ -7621,11 +7627,11 @@ const fs = require('node:fs');
 
 fs.rename('/tmp/hello', '/tmp/world', (err) => {
   if (err) throw err;
-  console.log('renamed complete');
+  console.log('重命名完成');
 });
 fs.stat('/tmp/world', (err, stats) => {
   if (err) throw err;
-  console.log(`stats: ${JSON.stringify(stats)}`);
+  console.log(`统计信息: ${JSON.stringify(stats)}`);
 });
 ```
 
@@ -7640,9 +7646,9 @@ const newPath = '/tmp/world';
 try {
   await rename(oldPath, newPath);
   const stats = await stat(newPath);
-  console.log(`stats: ${JSON.stringify(stats)}`);
+  console.log(`统计信息: ${JSON.stringify(stats)}`);
 } catch (error) {
-  console.error('there was an error:', error.message);
+  console.error('发生错误:', error.message);
 }
 ```
 
@@ -7653,9 +7659,9 @@ const { rename, stat } = require('node:fs/promises');
   try {
     await rename(oldPath, newPath);
     const stats = await stat(newPath);
-    console.log(`stats: ${JSON.stringify(stats)}`);
+    console.log(`统计信息: ${JSON.stringify(stats)}`);
   } catch (error) {
-    console.error('there was an error:', error.message);
+    console.error('发生错误:', error.message);
   }
 })('/tmp/hello', '/tmp/world');
 ```
@@ -7669,7 +7675,7 @@ rename('/tmp/hello', '/tmp/world', (err) => {
   if (err) throw err;
   stat('/tmp/world', (err, stats) => {
     if (err) throw err;
-    console.log(`stats: ${JSON.stringify(stats)}`);
+    console.log(`统计信息: ${JSON.stringify(stats)}`);
   });
 });
 ```
@@ -7681,7 +7687,7 @@ rename('/tmp/hello', '/tmp/world', (err) => {
   if (err) throw err;
   stat('/tmp/world', (err, stats) => {
     if (err) throw err;
-    console.log(`stats: ${JSON.stringify(stats)}`);
+    console.log(`统计信息: ${JSON.stringify(stats)}`);
   });
 });
 ```
@@ -7882,7 +7888,7 @@ open('/open/some/file.txt', 'r', (err, fd) => {
         throw err;
       }
 
-      // use stat
+      // 使用 stat
 
       closeFd(fd);
     });
@@ -7904,7 +7910,7 @@ let file;
 try {
   file = await open('/open/some/file.txt', 'r');
   const stat = await file.stat();
-  // use stat
+  // 使用 stat
 } finally {
   await file.close();
 }

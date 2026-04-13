@@ -38,7 +38,7 @@ Node.js 有可能在不包含 `node:crypto` 模块支持的情况下构建。在
 
 使用 CommonJS 时，可以使用 try/catch 捕获抛出的错误：
 
-<!-- eslint-disable no-global-assign -->
+<!--eslint-disable no-global-assign -->
 
 ```cjs
 let crypto;
@@ -49,7 +49,7 @@ try {
 }
 ```
 
-<!-- eslint-enable no-global-assign -->
+<!--eslint-enable no-global-assign -->
 
 使用词法 ESM `import` 关键字时，只有在尝试加载模块**之前**注册了 `process.on('uncaughtException')` 的处理程序（例如，使用预加载模块），才能捕获错误。
 
@@ -842,6 +842,82 @@ added: v0.1.94
 * 使用 [`decipher.update()`][] 和 [`decipher.final()`][] 方法来产生未加密数据。
 
 [`crypto.createDecipheriv()`][] 方法用于创建 `Decipheriv` 实例。不应直接使用 `new` 关键字创建 `Decipheriv` 对象。
+
+示例：将 `Decipheriv` 对象用作流：
+
+```mjs
+import { Buffer } from 'node:buffer';
+const {
+  scryptSync,
+  createDecipheriv,
+} = await import('node:crypto');
+
+const algorithm = 'aes-192-cbc';
+const password = 'Password used to generate key';
+// 密钥长度取决于算法。在这种情况下，对于 aes192，它是
+// 24 字节（192 位）。
+// 请改用异步的 `crypto.scrypt()`。
+const key = scryptSync(password, 'salt', 24);
+// IV 通常与密文一起传递。
+const iv = Buffer.alloc(16, 0); // 初始化向量。
+
+const decipher = createDecipheriv(algorithm, key, iv);
+
+let decrypted = '';
+decipher.on('readable', () => {
+  let chunk;
+  while (null !== (chunk = decipher.read())) {
+    decrypted += chunk.toString('utf8');
+  }
+});
+decipher.on('end', () => {
+  console.log(decrypted);
+  // 打印：一些明文数据
+});
+
+// 使用相同的算法、密钥和 iv 加密。
+const encrypted =
+  'e5f79c5915c02171eec6b212d5520d44480993d7d622a7c4c2da32f6efda0ffa';
+decipher.write(encrypted, 'hex');
+decipher.end();
+```
+
+```cjs
+const {
+  scryptSync,
+  createDecipheriv,
+} = require('node:crypto');
+const { Buffer } = require('node:buffer');
+
+const algorithm = 'aes-192-cbc';
+const password = 'Password used to generate key';
+// 密钥长度取决于算法。在这种情况下，对于 aes192，它是
+// 24 字节（192 位）。
+// 请改用异步的 `crypto.scrypt()`。
+const key = scryptSync(password, 'salt', 24);
+// IV 通常与密文一起传递。
+const iv = Buffer.alloc(16, 0); // 初始化向量。
+
+const decipher = createDecipheriv(algorithm, key, iv);
+
+let decrypted = '';
+decipher.on('readable', () => {
+  let chunk;
+  while (null !== (chunk = decipher.read())) {
+    decrypted += chunk.toString('utf8');
+  }
+});
+decipher.on('end', () => {
+  console.log(decrypted);
+  // 打印：一些明文数据
+});
+
+// 使用相同的算法、密钥和 iv 加密。
+const encrypted =
+  'e5f79c5915c02171eec6b212d5520d44480993d7d622a7c4c2da32f6efda0ffa';
+decipher.write(encrypted, 'hex');
+decipher.end();
+```
 
 示例：将 `Decipheriv` 对象用作流：
 
@@ -2416,14 +2492,14 @@ changes:
 
 随着数据流式传输，可以多次调用此方法并传入新数据。
 
-### `verify.verify(object, signature[, signatureEncoding])`
+### `verify.verify(key, signature[, signatureEncoding])`
 
 <!-- YAML
 added: v0.1.92
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
-    description: object 也可以是 ArrayBuffer 和 CryptoKey。
+    description: The key can also be an ArrayBuffer and CryptoKey.
   - version:
      - v13.2.0
      - v12.16.0
@@ -2442,7 +2518,7 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `object` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
   * `dsaEncoding` {string}
   * `padding` {integer}
   * `saltLength` {integer}
@@ -2452,9 +2528,11 @@ changes:
 
 <!--lint enable maximum-line-length remark-lint-->
 
-使用给定的 `object` 和 `signature` 验证提供的数据。
+Verifies the provided data using the given `key` and `signature`。
 
-如果 `object` 不是 [`KeyObject`][]，此函数的行为如同 `object` 已被传递给 [`crypto.createPublicKey()`][]。如果它是一个对象，则可以传递以下额外属性：
+If `key` is not a [`KeyObject`][], this function behaves as if
+`key` had been passed to [`crypto.createPublicKey()`][]. If it is an
+object, the following additional properties can be passed:
 
 * `dsaEncoding` {string} 对于 DSA 和 ECDSA，此选项指定签名的格式。它可以是以下之一：
   * `'der'`（默认）：DER 编码的 ASN.1 签名结构编码 `(r, s)`。
@@ -2669,7 +2747,7 @@ added:
 
 此证书的 SHA-512 指纹。
 
-因为计算 SHA-256 指纹通常更快，且其大小仅为 SHA-512 指纹的一半，所以 [`x509.fingerprint256`][] 可能是更好的选择。虽然 SHA-512 通常提供更高级别的安全性，但 SHA-256 的安全性与常用于签署证书的大多数算法相匹配。
+因为计算 SHA-256 指纹通常更快，且其大小仅为 SHA-512 指纹的一半，所以 [`x509.fingerprint256`][] 可能是更好的选择。虽然 SHA-512 通常提供更高级别的安全性，但 SHA-256 的安全性与常用于签署证书的大多数算法匹配。
 
 ### `x509.infoAccess`
 
@@ -3562,22 +3640,33 @@ added:
  - v13.9.0
  - v12.17.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62527
+    description: Accept key data in addition to KeyObject instances.
   - version: v23.11.0
     pr-url: https://github.com/nodejs/node/pull/57274
     description: 添加了可选的 callback 参数。
 -->
 
 * `options` {Object}
-  * `privateKey` {KeyObject}
-  * `publicKey` {KeyObject}
+  * `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+  * `publicKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `callback` {Function}
   * `err` {Error}
   * `secret` {Buffer}
 * 返回：{Buffer} 如果未提供 `callback` 函数。
 
-基于 `privateKey` 和 `publicKey` 计算 Diffie-Hellman 共享秘密。两个密钥必须具有相同的 `asymmetricKeyType` 并且必须支持 DH 或 ECDH 操作。
+Computes the Diffie-Hellman shared secret based on a `privateKey` and a `publicKey`.
+Both keys must represent the same asymmetric key type and must support either the DH or
+ECDH operation.
 
-如果提供了 `callback` 函数，此函数使用 libuv 的线程池。
+If `options.privateKey` is not a [`KeyObject`][], this function behaves as if
+`options.privateKey` had been passed to [`crypto.createPrivateKey()`][].
+
+If `options.publicKey` is not a [`KeyObject`][], this function behaves as if
+`options.publicKey` had been passed to [`crypto.createPublicKey()`][].
+
+If the `callback` function is provided this function uses libuv's threadpool.
 
 ### `crypto.encapsulate(key[, callback])`
 
@@ -5275,7 +5364,7 @@ changes:
 
 此函数不会泄露允许攻击者猜测其中一个值的时间信息。这适用于
 比较 HMAC 摘要或秘密值，例如身份验证 cookie 或
-[能力 URL](https://www.w3.org/TR/capability-urls/)。
+[能力 URL](https://www.w3.org/capability-urls/)。
 
 `a` 和 `b` 必须都是 `Buffer`、`TypedArray` 或 `DataView`，并且它们
 必须具有相同的字节长度。如果 `a` 和 `b` 具有
@@ -6014,7 +6103,7 @@ default_properties = fips=yes
 [`stream.transform` options]: stream.md#new-streamtransformoptions
 [`util.promisify()`]: util.md#utilpromisifyoriginal
 [`verify.update()`]: #verifyupdatedata-inputencoding
-[`verify.verify()`]: #verifyverifyobject-signature-signatureencoding
+[`verify.verify()`]: #verifyverifykey-signature-signatureencoding
 [`x509.fingerprint256`]: #x509fingerprint256
 [`x509.verify(publicKey)`]: #x509verifypublickey
 [argon2]: https://www.rfc-editor.org/rfc/rfc9106.html

@@ -1968,11 +1968,14 @@ console.log(buf.fill('zz', 'hex'));
 // 抛出异常。
 ```
 
-### `buf.includes(value[, byteOffset][, encoding])`
+### `buf.includes(value[, start[, end]][, encoding])`
 
 <!-- YAML
 added: v5.3.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62390
+    description: Added the `end` parameter.
   - version:
      - v25.5.0
      - v24.13.1
@@ -1980,12 +1983,14 @@ changes:
     description: "支持 Uint8Array 作为 `this` 值。"
 -->
 
-* `value` {string|Buffer|Uint8Array|integer} 要搜索的内容。
-* `byteOffset` {integer} 在 `buf` 中开始搜索的位置。如果为负数，则
-  偏移量从 `buf` 的末尾计算。**默认值：** `0`。
-* `encoding` {string} 如果 `value` 是字符串，这是它的编码。
-  **默认值：** `'utf8'`。
-* 返回：{boolean} 如果在 `buf` 中找到 `value` 则为 `true`，否则为 `false`。
+* `value` {string|Buffer|Uint8Array|integer} What to search for.
+* `start` {integer} Where to begin searching in `buf`. If negative, then
+  offset is calculated from the end of `buf`. **Default:** `0`.
+* `end` {integer} Where to stop searching in `buf` (exclusive). **Default:**
+  `buf.length`.
+* `encoding` {string} If `value` is a string, this is its encoding.
+  **Default:** `'utf8'`.
+* Returns: {boolean} `true` if `value` was found in `buf`, `false` otherwise.
 
 等同于 [`buf.indexOf() !== -1`][`buf.indexOf()`]。
 
@@ -2031,11 +2036,14 @@ console.log(buf.includes('this', 4));
 // 输出：false
 ```
 
-### `buf.indexOf(value[, byteOffset][, encoding])`
+### `buf.indexOf(value[, start[, end]][, encoding])`
 
 <!-- YAML
 added: v1.5.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62390
+    description: Added the `end` parameter.
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10236
     description: "`value` 现在可以是 `Uint8Array`。"
@@ -2046,20 +2054,23 @@ changes:
     description: "当传递 `encoding` 时，`byteOffset` 参数不再必需。"
 -->
 
-* `value` {string|Buffer|Uint8Array|integer} 要搜索的内容。
-* `byteOffset` {integer} 在 `buf` 中开始搜索的位置。如果为负数，则
-  偏移量从 `buf` 的末尾计算。**默认值：** `0`。
-* `encoding` {string} 如果 `value` 是字符串，这是用于
-  确定将在 `buf` 中搜索的字符串的二进制表示的编码。**默认值：** `'utf8'`。
-* 返回：{integer} `buf` 中 `value` 第一次出现的索引，或者
-  如果 `buf` 不包含 `value` 则为 `-1`。
+* `value` {string|Buffer|Uint8Array|integer} What to search for.
+* `start` {integer} Where to begin searching in `buf`. If negative, then
+  offset is calculated from the end of `buf`. **Default:** `0`.
+* `end` {integer} Where to stop searching in `buf` (exclusive). **Default:**
+  `buf.length`.
+* `encoding` {string} If `value` is a string, this is the encoding used to
+  determine the binary representation of the string that will be searched for in
+  `buf`. **Default:** `'utf8'`.
+* Returns: {integer} The index of the first occurrence of `value` in `buf`, or
+  `-1` if `buf` does not contain `value`.
 
 如果 `value` 是：
 
 * 字符串，`value` 根据 `encoding` 中的字符编码进行解释。
 * `Buffer` 或 {Uint8Array}，`value` 将整体使用。
   要比较部分 `Buffer`，使用 [`buf.subarray`][]。
-* 数字，`value` 将被解释为 `0` 和 `255` 之间的无符号 8 位整数
+*数字，`value` 将被解释为 `0` 和 `255` 之间的无符号 8 位整数
   值。
 
 ```mjs
@@ -2204,20 +2215,30 @@ for (const key of buf.keys()) {
 //   5
 ```
 
-### `buf.lastIndexOf(value[, byteOffset][, encoding])`
+### `buf.lastIndexOf(value[, start[, end]][, encoding])`
 
 <!-- YAML
 added: v6.0.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62390
+    description: Added the `end` parameter.
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10236
     description: value 现在可以是 Uint8Array。
 -->
 
-* `value` {string|Buffer|Uint8Array|integer} 要搜索的内容。
-* `byteOffset` {integer} 在 `buf` 中开始搜索的位置。如果为负数，则偏移量从 `buf` 的末尾计算。**默认值：** `buf.length - 1`。
-* `encoding` {string} 如果 `value` 是字符串，这是用于确定将在 `buf` 中搜索的字符串的二进制表示的编码。**默认值：** `'utf8'`。
-* 返回值：{integer} `value` 在 `buf` 中最后一次出现的索引，如果 `buf` 不包含 `value` 则为 `-1`。
+* `value` {string|Buffer|Uint8Array|integer} What to search for.
+* `start` {integer} Where to begin searching in `buf`. If negative, then
+  offset is calculated from the end of `buf`. **Default:**
+  `buf.length - 1`.
+* `end` {integer} Where to stop searching in `buf` (exclusive). **Default:**
+  `buf.length`.
+* `encoding` {string} If `value` is a string, this is the encoding used to
+  determine the binary representation of the string that will be searched for in
+  `buf`. **Default:** `'utf8'`.
+* Returns: {integer} The index of the last occurrence of `value` in `buf`, or
+  `-1` if `buf` does not contain `value`.
 
 与 [`buf.indexOf()`][] 相同，只不过找到的是 `value` 的最后一次出现而不是第一次出现。
 
@@ -3763,7 +3784,7 @@ changes:
 
 * `string` {string} 要写入 `buf` 的字符串。
 * `offset` {integer} 开始写入 `string` 前要跳过的字节数。**默认值：** `0`。
-* `length` {integer} 要写入的最大字节数（写入的字节数不会超过 `buf.length - offset`）。**默认值：** `buf.length - offset`。
+* `length` {integer} 要写入的字节数。**默认值：** `buf.length - offset`。
 * `encoding` {string} `string` 的字符编码。**默认值：** `'utf8'`。
 * 返回值：{integer} 写入的字节数。
 
@@ -4071,7 +4092,6 @@ buf.writeFloatBE(0xcafebabe, 0);
 console.log(buf);
 // 打印：<Buffer 4f 4a fe bb>
 ```
-```
 
 ```cjs
 const { Buffer } = require('node:buffer');
@@ -4081,7 +4101,7 @@ const buf = Buffer.allocUnsafe(4);
 buf.writeFloatBE(0xcafebabe, 0);
 
 console.log(buf);
-// 输出：<Buffer 4f 4a fe bb>
+// 打印：<Buffer 4f 4a fe bb>
 ```
 
 ### `buf.writeFloatLE(value[, offset])`
@@ -4099,8 +4119,7 @@ changes:
   满足 `0 <= offset <= buf.length - 4`。**默认值：** `0`。
 * 返回：{integer} `offset` 加上已写入的字节数。
 
-将 `value` 以小端序写入 `buf` 中指定的 `offset` 处。当 `value` 不是
-JavaScript 数字时，行为未定义。
+将 `value` 以小端序写入 `buf` 中指定的 `offset` 处。当 `value` 不是 JavaScript 数字时，行为未定义。
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -4904,7 +4923,6 @@ changes:
 * `encoding` {string} `string` 的编码。**默认值：** `'utf8'`。
 
 参见 [`Buffer.from(string[, encoding])`][`Buffer.from(string)`]。
-```
 
 ## 类：`File`
 

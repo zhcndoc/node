@@ -193,6 +193,34 @@ added: v23.8.0
 
 如果已调用 `endpoint.destroy()`，则为 true。只读。
 
+### `endpoint.setSNIContexts(entries[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `entries` {object} An object mapping host names to TLS identity options.
+  Each entry must include `keys` and `certs`.
+* `options` {object}
+  * `replace` {boolean} If `true`, replaces the entire SNI map. If `false`
+    (the default), merges the entries into the existing map.
+
+Replaces or updates the SNI TLS contexts for this endpoint. This allows
+changing the TLS identity (key/certificate) used for specific host names
+without restarting the endpoint. Existing sessions are unaffected — only
+new sessions will use the updated contexts.
+
+```mjs
+endpoint.setSNIContexts({
+  'api.example.com': { keys: [newApiKey], certs: [newApiCert] },
+});
+
+// Replace the entire SNI map
+endpoint.setSNIContexts({
+  'api.example.com': { keys: [newApiKey], certs: [newApiCert] },
+}, { replace: true });
+```
+
 ### `endpoint.stats`
 
 <!-- YAML
@@ -1088,14 +1116,22 @@ added: v23.8.0
 #### `sessionOptions.alpn`
 
 <!-- YAML
-added: v23.8.0
+added: REPLACEME
 -->
 
-* 类型：{string}
+* 类型：{string} (客户端) | {string\[]} (服务器)
 
-ALPN 协议标识符。
+ALPN (应用层协议协商) 标识符。
 
-#### `sessionOptions.ca`
+对于 **客户端** 会话，这是指定客户端想要使用的协议的单个字符串（例如 `'h3'`）。
+
+对于 **服务器** 会话，这是服务器支持的协议名称列表，按首选项排序（例如 `['h3', 'h3-29']`）。在 TLS 握手期间，服务器会从其列表中选择客户端也支持的第一个协议。
+
+协商的 ALPN 决定了用于会话的应用实现。`'h3'` 和 `'h3-*'` 变体选择 HTTP/3 应用；所有其他值选择默认应用。
+
+默认值：`'h3'`
+
+#### `sessionOptions.ca` (仅限客户端)
 
 <!-- YAML
 added: v23.8.0
@@ -1103,7 +1139,7 @@ added: v23.8.0
 
 * 类型：{ArrayBuffer|ArrayBufferView|ArrayBuffer\[]|ArrayBufferView\[]}
 
-用于会话的 CA 证书。
+客户端会话使用的 CA 证书。对于服务器会话，CA 证书在 [`sessionOptions.sni`][] 地图中按身份指定。
 
 #### `sessionOptions.cc`
 
@@ -1117,7 +1153,7 @@ added: v23.8.0
 
 这是一个高级选项，用户通常无需指定。
 
-#### `sessionOptions.certs`
+#### `sessionOptions.certs` (仅限客户端)
 
 <!-- YAML
 added: v23.8.0
@@ -1125,7 +1161,7 @@ added: v23.8.0
 
 * 类型：{ArrayBuffer|ArrayBufferView|ArrayBuffer\[]|ArrayBufferView\[]}
 
-用于会话的 TLS 证书。
+客户端会话使用的 TLS 证书。对于服务器会话，证书在 [`sessionOptions.sni`][] 地图中按身份指定。
 
 #### `sessionOptions.ciphers`
 
@@ -1137,7 +1173,7 @@ added: v23.8.0
 
 支持的 TLS 1.3 加密算法列表。
 
-#### `sessionOptions.crl`
+#### `sessionOptions.crl` (仅限客户端)
 
 <!-- YAML
 added: v23.8.0
@@ -1145,7 +1181,7 @@ added: v23.8.0
 
 * 类型：{ArrayBuffer|ArrayBufferView|ArrayBuffer\[]|ArrayBufferView\[]}
 
-用于会话的 CRL。
+客户端会话使用的 CRL。对于服务器会话，CRL 在 [`sessionOptions.sni`][] 地图中按身份指定。
 
 #### `sessionOptions.groups`
 
@@ -1167,19 +1203,19 @@ added: v23.8.0
 
 为 true 以启用 TLS 密钥日志输出。
 
-#### `sessionOptions.keys`
+#### `sessionOptions.keys` (仅限客户端)
 
 <!-- YAML
 added: v23.8.0
 changes:
   - version: v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62335
-    description: CryptoKey is no longer accepted.
+    description: CryptoKey 不再被接受。
 -->
 
 * 类型：{KeyObject|KeyObject\[]}
 
-用于会话的 TLS 加密密钥。
+客户端会话使用的 TLS 加密密钥。对于服务器会话，密钥在 [`sessionOptions.sni`][] 地图中按身份指定。
 
 #### `sessionOptions.maxPayloadSize`
 
@@ -1259,7 +1295,7 @@ added: v23.8.0
 
 指定 TLS 握手在完成前允许花费的最大毫秒数，超过该时间将超时。
 
-#### `sessionOptions.sni`
+#### `sessionOptions.servername` (仅限客户端)
 
 <!-- YAML
 added: v23.8.0
@@ -1267,7 +1303,40 @@ added: v23.8.0
 
 * 类型：{string}
 
-要定位的对等服务器名称。
+目标对等服务器名称 (SNI)。默认为 `'localhost'`。
+
+#### `sessionOptions.sni` (仅限服务器)
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{Object}
+
+一个将主机名映射到 TLS 身份选项的对象，用于服务器名称指示 (SNI) 支持。服务器会话需要此选项。特殊键 `'*'` 指定在没有其他主机名匹配时使用的默认/回退身份。每个条目可以包含：
+
+* `keys` {KeyObject|KeyObject\[]} TLS 私钥。**必需。**
+* `certs` {ArrayBuffer|ArrayBufferView|ArrayBuffer\[]|ArrayBufferView\[]}
+  TLS 证书。**必需。**
+* `ca` {ArrayBuffer|ArrayBufferView|ArrayBuffer\[]|ArrayBufferView\[]}
+  可选的 CA 证书覆盖。
+* `crl` {ArrayBuffer|ArrayBufferView|ArrayBuffer\[]|ArrayBufferView\[]}
+  可选的证书吊销列表。
+* `verifyPrivateKey` {boolean} 验证私钥。默认值：`false`。
+
+```mjs
+const endpoint = await listen(callback, {
+  sni: {
+    '*': { keys: [defaultKey], certs: [defaultCert] },
+    'api.example.com': { keys: [apiKey], certs: [apiCert] },
+    'www.example.com': { keys: [wwwKey], certs: [wwwCert], ca: [customCA] },
+  },
+});
+```
+
+共享的 TLS 选项（例如 `ciphers`、`groups`、`keylog` 和 `verifyClient`）在会话选项的顶层指定，并适用于所有身份。每个 SNI 条目仅覆盖每个身份的证书字段。
+
+可以通过在运行时使用 `endpoint.setSNIContexts()` 来替换 SNI 映射，该方法会原子地交换映射以供新会话使用，而现有会话将继续使用其原始身份。
 
 #### `sessionOptions.tlsTrace`
 
@@ -1309,7 +1378,7 @@ added: v23.8.0
 
 为 true 以要求验证 TLS 客户端证书。
 
-#### `sessionOptions.verifyPrivateKey`
+#### `sessionOptions.verifyPrivateKey` (仅限客户端)
 
 <!-- YAML
 added: v23.8.0
@@ -1317,7 +1386,7 @@ added: v23.8.0
 
 * 类型：{boolean}
 
-为 true 以要求私钥验证。
+为 true 以要求客户端会话的私钥验证。对于服务器会话，此选项在 [`sessionOptions.sni`][] 地图中按身份指定。
 
 #### `sessionOptions.version`
 
@@ -1685,3 +1754,5 @@ added: v23.8.0
 <!-- YAML
 added: v23.8.0
 -->
+
+[`sessionOptions.sni`]: #sessionoptionssni-server-only

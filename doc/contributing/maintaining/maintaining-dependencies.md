@@ -1,12 +1,9 @@
-# Maintaining Dependencies
+# 维护依赖项
 
-Node.js depends on additional components beyond the Node.js code
-itself. These dependencies provide both native and JavaScript code
-and are built together with the code under the `src` and `lib`
-directories to create the Node.js binaries.
+Node.js 除了其自身代码外，还依赖于其他组件。这些依赖项提供了原生和 JavaScript 代码，并与 `src` 和 `lib` 目录下的代码一起构建，以创建 Node.js 二进制文件。
 
-All dependencies are located within the `deps` directory.
-This a list of all the dependencies:
+所有依赖项都位于 `deps` 目录下。
+这是所有依赖项的列表：
 
 * [acorn][]
 * [ada][]
@@ -28,6 +25,7 @@ This a list of all the dependencies:
 * [ngtcp2][]
 * [npm][]
 * [openssl][]
+* [perfetto][]
 * [postject][]
 * [simdjson][]
 * [sqlite][]
@@ -37,68 +35,33 @@ This a list of all the dependencies:
 * [zlib][]
 * [zstd][]
 
-Any code which meets one or more of these conditions should
-be managed as a dependency:
+任何满足以下一个或多个条件的代码都应作为依赖项进行管理：
 
-* originates in an upstream project and is maintained
-  in that upstream project.
-* is not built from the `preferred form of the work for
-  making modifications to it` (see
-  [GNU GPL v2, section 3.](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-  when `make node` is run. A good example is
-  WASM code generated from C (the preferred form).
-  Typically generation is only supported on a subset of platforms, needs
-  additional tools, and is pre-built outside of the `make node`
-  step and then committed as a WASM binary in the directory
-  for the dependency under the `deps` directory.
+* 源自上游项目，并在该上游项目中维护。
+* 在运行 `make node` 时，不是从“用于修改作品的首选形式”（请参阅 [GNU GPL v2，第 3 条](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)）构建的。一个很好的例子是 C 生成的 WASM 代码（首选形式）。通常，生成仅在部分平台上受支持，需要额外的工具，并在 `make node` 步骤之外预先构建，然后作为 WASM 二进制文件提交到 `deps` 目录下的依赖项目录中。
 
-By default all dependencies are bundled into the Node.js
-binary, however, `configure` options should be available to
-use an externalized version at runtime when:
+默认情况下，所有依赖项都捆绑到 Node.js 二进制文件中。但是，当满足以下条件时，应提供 `configure` 选项以在运行时使用外部化版本：
 
-* the dependency provides native code and is available as
-  a shared library in one or more of the common Node.js
-  distributions.
-* the dependency provides JavaScript and is not built
-  from the `preferred form of the work for making modifications
-  to it` when `make node` is run.
+* 依赖项提供原生代码，并且在一种或多种常见的 Node.js 发行版中可用作共享库。
+* 依赖项提供 JavaScript，并且在运行 `make node` 时不是从“用于修改作品的首选形式”构建的。
 
-Many distributions use externalized dependencies for one or
-more of these reasons:
+许多发行版出于以下一个或多个原因使用外部化依赖项：
 
-1. They have a requirement to build everything that they ship
-   from the `preferred form of the work for making
-   modifications to it`. This means that they need to
-   replace any pre-built components (for example WASM
-   binaries) with an equivalent that they have built.
-2. They manage the dependency separately as it is used by
-   more applications than just Node.js. Linking against
-   a shared library allows them to manage updates and
-   CVE fixes against the library instead of having to
-   patch all of the individual applications.
-3. They have a system wide configuration for the
-   dependency that all applications should respect.
+1.  它们有要求，需要从“用于修改作品的首选形式”构建它们所提供的所有内容。这意味着它们需要用自己构建的等效组件替换任何预构建的组件（例如 WASM 二进制文件）。
+2.  它们单独管理依赖项，因为该依赖项被 Node.js 以外的更多应用程序使用。链接到共享库允许它们管理对库的更新和 CVE 修复，而不必修补所有单独的应用程序。
+3.  它们有一个系统范围的依赖项配置，所有应用程序都应遵守。
 
-## Supporting externalized dependencies with native code
+## 支持具有原生代码的外部化依赖项
 
-Support for externalized dependencies with native code for which a
-shared library is available can added by:
+可以通过以下方式为提供共享库的具有原生代码的外部化依赖项添加支持：
 
-* adding options to `configure.py`. These are added to the
-  shared\_optgroup and include an options to:
-  * enable use of a shared library
-  * set the name of the shared library
-  * set the path to the directory with the includes for the
-    shared library
-  * set the path to where to find the shared library at
-    runtime
-* add a call to configure\_library() to `configure.py` for the
-  library at the end of list of existing configure\_library() calls.
-  If there are additional libraries that are required it is
-  possible to list more than one with the `pkgname` option.
-* in `node.gypi` guard the build for the dependency
-  with `node_shared_depname` so that it is only built if
-  the dependency is being bundled into Node.js itself. For example:
+* 向 `configure.py` 添加选项。这些选项会添加到 `shared_optgroup` 中，并包括用于：
+    * 启用共享库的使用
+    * 设置共享库的名称
+    * 设置共享库包含文件的目录路径
+    * 设置运行时查找共享库的路径
+* 在 `configure.py` 中，在现有的 `configure_library()` 调用列表的末尾为该库添加一个 `configure_library()` 调用。如果需要其他库，可以使用 `pkgname` 选项列出多个库。
+* 在 `node.gypi` 中，使用 `node_shared_depname` 来保护依赖项的构建，这样它只会在依赖项被捆绑到 Node.js 本身时才构建。例如：
 
 ```text
     [ 'node_shared_brotli=="false"', {
@@ -106,299 +69,227 @@ shared library is available can added by:
     }],
 ```
 
-## Supporting externalizable dependencies with JavaScript code
+## 支持具有 JavaScript 代码的可外部化依赖项
 
-Support for an externalizable dependency with JavaScript code
-can be added by:
+可以通过以下方式为具有 JavaScript 代码的可外部化依赖项添加支持：
 
-* adding an entry to the `shareable_builtins` map in
-  `configure.py`. The path should correspond to the file
-  within the deps directory that is normally bundled into
-  Node.js. For example `deps/cjs-module-lexer/lexer.js`.
-  This will add a new option for building with that dependency
-  externalized. After adding the entry you can see
-  the new option by running `./configure --help`.
+* 在 `configure.py` 的 `shareable_builtins` 映射中添加一个条目。路径应对应于通常捆绑到 Node.js 中的 `deps` 目录内的文件。例如 `deps/cjs-module-lexer/lexer.js`。这将为使用该依赖项进行外部化构建添加一个新选项。添加条目后，可以通过运行 `./configure --help` 来查看新选项。
 
-* adding a call to `AddExternalizedBuiltin` to the constructor
-  for BuiltinLoader in `src/node_builtins.cc` for the
-  dependency using the `NODE_SHARED_BUILTLIN` #define generated for
-  the dependency. After running `./configure` with the new
-  option you can find the #define in `config.gypi`. You can cut and
-  paste one of the existing entries and then update to match the
-  import name for the dependency and the #define generated.
+* 在 `src/node_builtins.cc` 中为 `BuiltinLoader` 的构造函数添加一个 `AddExternalizedBuiltin` 调用，使用为依赖项生成的 `NODE_SHARED_BUILTLIN` #define。运行带有新选项的 `./configure` 后，您可以在 `config.gypi` 中找到 #define。您可以剪切并粘贴现有的条目之一，然后更新以匹配依赖项的导入名称和生成的 #define。
 
-* if the version of the dependency is reported in `process.versions`,
-  update `src/node_metadata.h` and `src/node_metadata.cc` so that the
-  version is not reported when the dependency is externalized.
-  Not reporting the version is better than incorrectly reporting
-  the version of the dependency bundled with Node.js, instead of the
-  version for the externalized dependency. Use one of the existing
-  externalized dependencies, like Undici, as an example of how to
-  update these files correctly. Make sure to run the tests with the
-  dependency externalized, as the tests will also need to be updated
-  to handle this properly.
+* 如果依赖项的版本在 `process.versions` 中报告，请更新 `src/node_metadata.h` 和 `src/node_metadata.cc`，以便在依赖项被外部化时不再报告该版本。不报告版本比错误地报告捆绑到 Node.js 的依赖项版本而不是外部化依赖项的版本要好。使用现有的外部化依赖项（如 Undici）作为更新这些文件的正确示例。确保使用外部化依赖项运行测试，因为测试也需要更新以正确处理此问题。
 
-## Supporting non-externalized dependencies with JavaScript code
+## 支持不具有 JavaScript 代码的可外部化依赖项
 
-If the dependency consists of JavaScript in the
-`preferred form of the work for making modifications to it`, it
-can be added as a non-externalizable dependency. In this case
-simply add the path to the JavaScript file in the `deps_files`
-list in the `node.gyp` file.
+如果依赖项由“用于修改作品的首选形式”中的 JavaScript 组成，则可以将其添加为不可外部化的依赖项。在这种情况下，只需在 `node.gyp` 文件中的 `deps_files` 列表中添加 JavaScript 文件的路径即可。
 
-## Common approach for dependencies with WASM components
+## 具有 WASM 组件的依赖项的通用方法
 
-WASM components within dependencies are most often built
-outside of the regular Node.js `make build` step. They also
-require different tools.
+依赖项中的 WASM 组件通常在常规的 Node.js `make build` 步骤之外构建。它们还需要不同的工具。
 
-It is important that the tools and their versions used to build
-WASM components shipped within Node.js are well documented and
-be available if needed to rebuild/update older Node.js versions.
+重要的是，用于构建 Node.js 中包含的 WASM 组件的工具及其版本应有充分的文档记录，并在需要时可用于重新构建/更新旧的 Node.js 版本。
 
-In order to minimize the different number of tools and versions
-used to build WASM components and to document and ensure future
-availability, the project builds and maintains a common
-[wasm-builder](https://github.com/nodejs/wasm-builder) container
-that should be use to build WASM components in Node.js
-dependencies.
+为了最大限度地减少用于构建 WASM 组件的工具和版本的不同数量，并记录和确保未来的可用性，该项目构建并维护一个通用的 [wasm-builder](https://github.com/nodejs/wasm-builder) 容器，该容器应用于构建 Node.js 依赖项中的 WASM 组件。
 
-The container provides a durable copy of the versions of the tools
-used for a specific build which are under the control of the Node.js
-project. In addition, the tools and verions are documented through metadata
-within the container in the `/home/node/metadata directory`.
+该容器提供了特定构建所用工具版本的持久副本，这些工具版本由 Node.js 项目控制。此外，工具和版本通过容器内 `/home/node/metadata` 目录中的元数据进行记录。
 
-The available tools can be found by looking at the current version of the
-[Dockerfile](https://github.com/nodejs/wasm-builder/blob/main/container-build-info/Dockerfile)
-used to create the container.
+可以通过查看用于创建容器的 [Dockerfile](https://github.com/nodejs/wasm-builder/blob/main/container-build-info/Dockerfile) 的当前版本来找到可用的工具。
 
-If additional WASM tool are needed beyond those available in the
-container, additions should be PR'd into the wasm-builder container.
+如果需要容器中未提供的其他 WASM 工具，应将这些添加项通过 PR 合并到 wasm-builder 容器中。
 
-Examples of using the container include:
+使用容器的示例包括：
 
-* [build/wasm.js](https://github.com/nodejs/undici/blob/main/build/wasm.js) from undici
-* [tools/build-wasm.js](https://github.com/nodejs/amaro/blob/main/tools/build-wasm.js) from amaro
+* undici 的 [build/wasm.js](https://github.com/nodejs/undici/blob/main/build/wasm.js)
+* amaro 的 [tools/build-wasm.js](https://github.com/nodejs/amaro/blob/main/tools/build-wasm.js)
 
-In addition to using the container to build WASM components, the goal is also
-for the WASM components and final files that are shipped with Node.js to be
-built by the [dep-updaters](https://github.com/nodejs/node/tree/main/tools/dep_updaters)
-that are run on a regular basis and that they use only the files available in the Node.js
-repo for the dependency. For example, being able to rebuild the WASM and files that
-we ship in Node.js using only the files in
-[../deps/undici](https://github.com/nodejs/node/tree/main/deps/undici).
+除了使用容器构建 WASM 组件外，目标还包括使用定期运行的 [dep-updaters](https://github.com/nodejs/node/tree/main/tools/dep_updaters) 来构建与 Node.js 一起分发的 WASM 组件和最终文件，并且它们仅使用 Node.js 仓库中可用的文件来处理依赖项。例如，能够仅使用 [../deps/undici](https://github.com/nodejs/node/tree/main/deps/undici) 中的文件来重新构建我们在 Node.js 中分发的 WASM 和文件。
 
-## Updating dependencies
+## 更新依赖项
 
-Most dependencies are automatically updated by
-[dependency-update-action][] that runs weekly.
-However, it is possible to manually update a dependency by running
-the corresponding script in `tools/update-deps`.
-[OpenSSL](https://github.com/openssl/openssl) has its own update action:
-[update-openssl-action][].
+大多数依赖项由每周运行的 [dependency-update-action][] 自动更新。
+但是，可以通过运行 `tools/update-deps` 中的相应脚本手动更新依赖项。
+[OpenSSL](https://github.com/openssl/openssl) 有自己的更新操作：[update-openssl-action][]。
 [npm-cli-bot](https://github.com/npm/cli/blob/latest/.github/workflows/create-node-pr.yml)
-takes care of npm update, it is maintained by the npm team.
+负责 npm 更新，由 npm 团队维护。
 
-PRs for manual dependency updates should only be accepted if
-the update cannot be generated by the automated tooling,
-the reason is clearly documented and either the PR is
-reviewed in detail or it is from an existing collaborator.
+仅当更新无法由自动化工具生成时，才应接受手动依赖项更新的 PR，并且应清楚地记录原因，并且 PR 要么经过详细审查，要么来自现有协作者。
 
-In general updates to dependencies should only be accepted
-if they have already landed in the upstream. The TSC may
-grant an exception on a case-by-case basis. This avoids
-the project having to float patches for a long time and
-ensures that tooling can generate updates automatically.
+通常，只有当依赖项的更新已在上游合并后，才应接受对依赖项的更新。TSC 可以逐案授予例外。这避免了项目长时间维护补丁，并确保工具可以自动生成更新。
 
-## Dependency list
+## 依赖项列表
 
 ### acorn
 
-The [acorn](https://github.com/acornjs/acorn) dependency is a JavaScript parser.
-[acorn-walk](https://github.com/acornjs/acorn/tree/master/acorn-walk) is
-an abstract syntax tree walker for the ESTree format.
+[acorn](https://github.com/acornjs/acorn) 依赖项是一个 JavaScript 解析器。
+[acorn-walk](https://github.com/acornjs/acorn/tree/master/acorn-walk) 是
+一个用于 ESTree 格式的抽象语法树遍历器。
 
 ### ada
 
-The [ada](https://github.com/ada-url/ada) dependency is a
-fast and spec-compliant URL parser written in C++.
+[ada](https://github.com/ada-url/ada) 依赖项是一个
+用 C++ 编写的快速且符合规范的 URL 解析器。
 
 ### amaro
 
-The [amaro](https://www.npmjs.com/package/amaro) dependency is a wrapper around the
-WebAssembly version of the SWC JavaScript/TypeScript parser.
+[amaro](https://www.npmjs.com/package/amaro) 依赖项是 SWC JavaScript/TypeScript 解析器的 WebAssembly 版本的包装器。
 
 ### brotli
 
-The [brotli](https://github.com/google/brotli) dependency is
-used for the homonym generic-purpose lossless compression algorithm.
+[brotli](https://github.com/google/brotli) 依赖项用于
+同名的通用无损压缩算法。
 
 ### c-ares
 
-The [c-ares](https://github.com/c-ares/c-ares) is a C library
-for asynchronous DNS requests.
+[c-ares](https://github.com/c-ares/c-ares) 是一个 C 库，
+用于异步 DNS 请求。
 
 ### merve
 
-The [merve](https://github.com/nodejs/node/tree/HEAD/deps/merve)
-dependency is used within the Node.js ESM implementation to detect the
-named exports of a CommonJS module.
-See [maintaining-merve][] for more information.
+[merve](https://github.com/nodejs/node/tree/HEAD/deps/merve)
+依赖项在 Node.js ESM 实现中使用，用于检测 CommonJS 模块的命名导出。
+有关更多信息，请参阅 [maintaining-merve][]。
 
 ### corepack
 
-The [corepack](https://github.com/nodejs/corepack) dependency is a
-zero-runtime-dependency Node.js script that acts as a bridge between
-Node.js projects and the package managers they are intended to
-be used with during development.
-In practical terms, Corepack will let you use Yarn and pnpm without having to
-install them - just like what currently happens with npm, which is shipped
-by Node.js by default.
+[corepack](https://github.com/nodejs/corepack) 依赖项是一个
+零运行时依赖的 Node.js 脚本，充当 Node.js 项目和开发期间要使用的包管理器之间的桥梁。
+实际上，Corepack 允许您使用 Yarn 和 pnpm，而无需安装它们——就像目前使用 npm 一样，npm 默认随 Node.js 一起分发。
 
 ### googletest
 
-The [googletest](https://github.com/google/googletest) dependency is Google’s
-C++ testing and mocking framework.
+[googletest](https://github.com/google/googletest) 依赖项是 Google 的
+C++ 测试和模拟框架。
 
 ### histogram
 
-The [histogram](https://github.com/HdrHistogram/HdrHistogram_c) dependency is
-a C port of High Dynamic Range (HDR) Histogram.
+[histogram](https://github.com/HdrHistogram/HdrHistogram_c) 依赖项是
+高动态范围 (HDR) 直方图的 C 移植版。
 
-### ic
+### icu
 
-The [icu](http://site.icu-project.org) is widely used set of C/C++
-and Java libraries providing Unicode and Globalization
-support for software applications.
-See [maintaining-icu][] for more information.
+[icu](http://site.icu-project.org) 是广泛使用的 C/C++
+和 Java 库集，为软件应用程序提供 Unicode 和全球化支持。
+有关更多信息，请参阅 [maintaining-icu][]。
 
 ### inspector\_protocol
 
-The [inspector\_protocol](https://chromium.googlesource.com/deps/inspector_protocol/)
-is Chromium's of code generators and templates for the inspector protocol.
-See [this doc](../../../tools/inspector_protocol/README.md) for more information.
+[inspector\_protocol](https://chromium.googlesource.com/deps/inspector_protocol/)
+是 Chromium 的代码生成器和检查器协议模板。
+有关更多信息，请参阅 [this doc](../../../tools/inspector_protocol/README.md)。
 
 ### libuv
 
-The [libuv](https://github.com/libuv/libuv) dependency is a
-multi-platform support library with a focus on asynchronous I/O.
-It was primarily developed for use by Node.js.
+[libuv](https://github.com/libuv/libuv) 依赖项是一个
+多平台支持库，专注于异步 I/O。
+它主要为 Node.js 的使用而开发。
 
 ### llhttp
 
-The [llhttp](https://github.com/nodejs/llhttp) dependency is
-the http parser used by Node.js.
-See [maintaining-http][] for more information.
+[llhttp](https://github.com/nodejs/llhttp) 依赖项是
+Node.js 使用的 http 解析器。
+有关更多信息，请参阅 [maintaining-http][]。
 
 ### minimatch
 
-The [minimatch](https://github.com/isaacs/minimatch) dependency is a
-minimal matching utility.
+[minimatch](https://github.com/isaacs/minimatch) 依赖项是一个
+最小匹配实用程序。
 
 ### nghttp2
 
-The [nghttp2](https://github.com/nghttp2/nghttp2) dependency is a C library
-implementing HTTP/2 protocol.
-See [maintaining-http][] for more information.
+[nghttp2](https://github.com/nghttp2/nghttp2) 依赖项是实现
+HTTP/2 协议的 C 库。
+有关更多信息，请参阅 [maintaining-http][]。
 
 ### nghttp3
 
-The [nghttp3](https://github.com/ngtcp2/nghttp3) dependency is HTTP/3 library
-written in C. See ngtcp2 for more information.
+[nghttp3](https://github.com/ngtcp2/nghttp3) 依赖项是
+用 C 编写的 HTTP/3 库。有关更多信息，请参阅 ngtcp2。
 
 ### ngtcp2
 
-The ngtcp2 and nghttp3 dependencies provide the core functionality for
-QUIC and HTTP/3.
+ngtcp2 和 nghttp3 依赖项提供了 QUIC 和 HTTP/3 的核心功能。
 
-The sources are pulled from:
+源文件来自：
 
 * ngtcp2: <https://github.com/ngtcp2/ngtcp2>
 * nghttp3: <https://github.com/ngtcp2/nghttp3>
 
-In both the `ngtcp2` and `nghttp3` git repos, the active development occurs
-in the default branch (currently named `main` in each). Tagged versions do not
-always point to the default branch.
+在 `ngtcp2` 和 `nghttp3` 的 git 仓库中，活动开发都发生在默认分支（目前在每个仓库中都命名为 `main`）。标记版本并不总是指向默认分支。
 
-We only use a subset of the sources for each.
+我们只使用每个仓库的一部分源文件。
 
-The `nghttp3` library depends on `ngtcp2`. Both should always be updated
-together. From `ngtcp2` we only want the contents of the `lib` and `crypto`
-directories; from `nghttp3` we only want the contents of the `lib` directory.
+`nghttp3` 库依赖于 `ngtcp2`。两者应始终一起更新。对于 `ngtcp2`，我们只需要 `lib` 和 `crypto` 目录的内容；对于 `nghttp3`，我们只需要 `lib` 目录的内容。
 
 ### npm
 
-The [npm](https://github.com/npm/cli) dependency is
-the package manager for JavaScript.
+[npm](https://github.com/npm/cli) 依赖项是
+JavaScript 的包管理器。
 
-New pull requests should be opened when a "next" version of npm has
-been released. Once the "next" version has been promoted to "latest"
-the PR should be updated as necessary.
+当发布了 npm 的“next”版本时，应打开新的拉取请求。一旦“next”版本被提升为“latest”，则应根据需要更新 PR。
 
-The specific Node.js release streams the new version will be able to land into
-are at the discretion of the release and LTS teams.
+新的版本能够进入哪些特定的 Node.js 发布流，由发布和 LTS 团队酌情决定。
 
-This process only covers full updates to new versions of npm. Cherry-picked
-changes can be reviewed and landed via the normal consensus seeking process.
+此过程仅涵盖对 npm 新版本的完整更新。可以通过正常的共识寻求流程来审查和合并挑选的更改。
 
 ### openssl
 
-The [openssl](https://github.com/quictls/openssl) dependency is a
-fork of OpenSSL to enable QUIC.
-[OpenSSL](https://www.openssl.org/) is toolkit for general-purpose
-cryptography and secure communication.
+[openssl](https://github.com/quictls/openssl) 依赖项是
+OpenSSL 的一个分支，用于启用 QUIC。
+[OpenSSL](https://www.openssl.org/) 是一个用于通用加密和安全通信的工具包。
 
-Node.js currently uses the quictls/openssl fork, which closely tracks
-the main openssl/openssl releases with the addition of APIs to support
-the QUIC protocol.
-See [maintaining-openssl][] for more information.
+Node.js 目前使用 quictls/openssl 分支，该分支紧密跟踪主要的 openssl/openssl 版本，并添加了支持
+QUIC 协议的 API。
+有关更多信息，请参阅 [maintaining-openssl][]。
+
+### perfetto
+
+[perfetto](https://github.com/google/perfetto) 依赖项用于
+为 Node.js 和 V8 生成性能跟踪。
 
 ### postject
 
-The [postject](https://github.com/nodejs/postject) dependency is used for the
-[Single Executable strategic initiative](https://github.com/nodejs/single-executable).
+[postject](https://github.com/nodejs/postject) 依赖项用于
+[Single Executable 战略计划](https://github.com/nodejs/single-executable)。
 
 ### simdjson
 
-The [simdjson](https://github.com/simdjson/simdjson) dependency is
-a C++ library for fast JSON parsing.
+[simdjson](https://github.com/simdjson/simdjson) 依赖项是一个
+用于快速 JSON 解析的 C++ 库。
 
 ### sqlite
 
-The [sqlite](https://github.com/sqlite/sqlite) dependency is
-an embedded SQL database engine written in C.
+[sqlite](https://github.com/sqlite/sqlite) 依赖项是
+一个嵌入式 SQL 数据库引擎，用 C 编写。
 
 ### undici
 
-The [undici](https://github.com/nodejs/undici) dependency is an HTTP/1.1 client,
-written from scratch for Node.js..
-See [maintaining-http][] for more information.
+[undici](https://github.com/nodejs/undici) 依赖项是一个 HTTP/1.1 客户端，
+为 Node.js 从头开始编写。
+有关更多信息，请参阅 [maintaining-http][]。
 
 ### uvwasi
 
-The [uvwasi](https://github.com/nodejs/uvwasi) dependency implements
-the WASI system call API, so that WebAssembly runtimes can easily
-implement WASI calls.
-Under the hood, uvwasi leverages libuv where possible for maximum portability.
-See [maintaining-web-assembly][] for more information.
+[uvwasi](https://github.com/nodejs/uvwasi) 依赖项实现了
+WASI 系统调用 API，以便 WebAssembly 运行时可以轻松实现 WASI 调用。
+在底层，uvwasi 在可能的情况下利用 libuv 来实现最大的可移植性。
+有关更多信息，请参阅 [maintaining-web-assembly][]。
 
 ### V8
 
-[V8](https://chromium.googlesource.com/v8/v8.git/) is Google's open source
-high-performance JavaScript and WebAssembly engine, written in C++.
-See [maintaining-V8][] for more information.
+[V8](https://chromium.googlesource.com/v8/v8.git/) 是 Google 的开源
+高性能 JavaScript 和 WebAssembly 引擎，用 C++ 编写。
+有关更多信息，请参阅 [maintaining-V8][]。
 
 ### zlib
 
-The [zlib](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/zlib)
-dependency lossless data-compression library,
-it comes from the Chromium team's zlib fork which incorporated
-performance improvements not currently available in standard zlib.
+[zlib](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/third_party/zlib)
+依赖项是一个无损数据压缩库，
+它来自 Chromium 团队的 zlib 分支，该分支集成了标准 zlib 中尚不可用的性能改进。
 
 ### zstd
 
-The [zstd](https://github.com/facebook/zstd) dependency is used for compression
-according to [RFC 8878](https://datatracker.ietf.org/doc/html/rfc8878).
+[zstd](https://github.com/facebook/zstd) 依赖项用于根据
+[RFC 8878](https://datatracker.ietf.org/doc/html/rfc8878) 进行压缩。
 
 [acorn]: #acorn
 [ada]: #ada
@@ -427,6 +318,7 @@ according to [RFC 8878](https://datatracker.ietf.org/doc/html/rfc8878).
 [ngtcp2]: #ngtcp2
 [npm]: #npm
 [openssl]: #openssl
+[perfetto]: #perfetto
 [postject]: #postject
 [simdjson]: #simdjson
 [sqlite]: #sqlite

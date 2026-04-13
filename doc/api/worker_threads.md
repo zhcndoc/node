@@ -987,7 +987,7 @@ added: v15.4.0
 added: v10.5.0
 -->
 
-`worker.MessageChannel` 类的实例表示一个异步的双向通信通道。
+`worker.MessageChannel` 类的实例表示一个异步双向通信通道。
 `MessageChannel` 没有自己的方法。`new MessageChannel()` 生成一个带有 `port1` 和 `port2` 属性的对象，这些属性引用链接的 [`MessagePort`][] 实例。
 
 ```mjs
@@ -1652,8 +1652,8 @@ added:
 
 <!-- YAML
 added:
- - v13.9.0
- - v12.17.0
+  - v13.9.0
+  - v12.17.0
 changes:
   - version: v19.1.0
     pr-url: https://github.com/nodejs/node/pull/44989
@@ -1863,7 +1863,7 @@ w.on('online', async () => {
 });
 ```
 
-### `worker.startHeapProfile()`
+### `worker.startHeapProfile([options])`
 
 <!-- YAML
 added:
@@ -1871,7 +1871,18 @@ added:
   - v22.20.0
 -->
 
-* 返回：{Promise}
+* `options` {Object}
+  * `sampleInterval` {number} The average sampling interval in bytes.
+    **Default:** `524288` (512 KiB).
+  * `stackDepth` {integer} The maximum stack depth for samples.
+    **Default:** `16`.
+  * `forceGC` {boolean} Force garbage collection before taking the profile.
+    **Default:** `false`.
+  * `includeObjectsCollectedByMajorGC` {boolean} Include objects collected
+    by major GC. **Default:** `false`.
+  * `includeObjectsCollectedByMinorGC` {boolean} Include objects collected
+    by minor GC. **Default:** `false`.
+* Returns: {Promise}
 
 启动堆性能分析，然后返回一个 Promise，该 Promise 兑现为一个错误
 或一个 `HeapProfileHandle` 对象。此 API 支持 `await using` 语法。
@@ -1892,7 +1903,23 @@ worker.on('online', async () => {
 });
 ```
 
-`await using` 示例。
+```mjs
+import { Worker } from 'node:worker_threads';
+
+const worker = new Worker(`
+  const { parentPort } = require('node:worker_threads');
+  parentPort.on('message', () => {});
+  `, { eval: true });
+
+worker.on('online', async () => {
+  const handle = await worker.startHeapProfile();
+  const profile = await handle.stop();
+  console.log(profile);
+  worker.terminate();
+});
+```
+
+`await using` example.
 
 ```cjs
 const { Worker } = require('node:worker_threads');
@@ -1904,6 +1931,20 @@ const w = new Worker(`
 
 w.on('online', async () => {
   // 返回时自动停止性能分析，且性能分析将被丢弃
+  await using handle = await w.startHeapProfile();
+});
+```
+
+```mjs
+import { Worker } from 'node:worker_threads';
+
+const w = new Worker(`
+  const { parentPort } = require('node:worker_threads');
+  parentPort.on('message', () => {});
+  `, { eval: true });
+
+w.on('online', async () => {
+  // Stop profile automatically when return and profile will be discarded
   await using handle = await w.startHeapProfile();
 });
 ```
