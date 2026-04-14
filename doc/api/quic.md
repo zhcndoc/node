@@ -193,6 +193,12 @@ added: v23.8.0
 
 如果已调用 `endpoint.destroy()`，则为 true。只读。
 
+### `endpoint.listening`
+
+* Type: {boolean}
+
+True if the endpoint is actively listening for incoming connections. Read only.
+
 ### `endpoint.setSNIContexts(entries[, options])`
 
 <!-- YAML
@@ -427,7 +433,7 @@ added: v23.8.0
 
 * 类型：{quic.OnDatagramCallback}
 
-当从远程对等方收到新数据报时调用的回调。读/写。
+当从远程对等发收到新数据报时调用的回调。读/写。
 
 ### `session.ondatagramstatus`
 

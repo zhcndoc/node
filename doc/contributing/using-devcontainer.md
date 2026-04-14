@@ -1,65 +1,55 @@
-# Developing Node.js using Dev Containers
+# 使用 Dev Containers 开发 Node.js
 
-Node.js publishes a [nightly image on DockerHub](https://hub.docker.com/r/nodejs/devcontainer) for
-[Dev Containers](https://containers.dev/) that can be used to spin up a
-development container that comes with pre-installed build dependencies and pre-genreated build cache.
+Node.js 在 [DockerHub](https://hub.docker.com/r/nodejs/devcontainer) 上发布了一个
+[Dev Containers](https://containers.dev/) 的
+[夜间镜像](https://hub.docker.com/r/nodejs/devcontainer)，可用于快速启动一个开发容器，该容器预先安装了构建依赖项和预先生成的构建缓存。
 
-When you need to test a few changes in the main branch and do not need
-to change the V8 headers (which is rare), using the nightly image will allow you to compile your
-changes from a fresh checkout quickly without having to compile the entire codebase, especially V8,
-from scratch.
+当你需要测试主分支的一些更改，并且**不需要**更改 V8 头文件（这种情况很少见）时，使用夜间镜像可以让你从干净的安装快速编译你的更改，而无需从头开始编译整个代码库，特别是 V8。
 
-The Dev Container also allows you to test your changes in a different operating system, and to test
-third-party code from bug reports safely with your work-in-progress Node.js branches in an isolated environment.
+Dev Container 还允许你在不同的操作系统中测试你的更改，并可以安全地使用你正在进行中的 Node.js 分支来测试错误报告中的第三方代码，且这些代码与你的工作处于隔离环境。
 
-There are many command line tools, IDEs and services that [support Dev Containers](https://containers.dev/supporting).
-Among them, [Visual Studio Code (VS Code)](https://code.visualstudio.com/) is a very popuplar option.
-This guide will walk you through the steps to set up a Dev Container for Node.js development using VS Code.
-You should be able to use the same [`nodejs/devcontainer:nightly` image](https://hub.docker.com/r/nodejs/devcontainer)
-in other tools and services using generally similar steps.
+有许多命令行工具、IDE 和服务[支持 Dev Containers](https://containers.dev/supporting)。
+其中，[Visual Studio Code (VS Code)](https://code.visualstudio.com/) 是一个非常流行的选项。
+本指南将引导你完成使用 VS Code 设置 Node.js 开发 Dev Container 的步骤。
+你应该能够在使用通用类似步骤的其他工具和服务中使用相同的 [`nodejs/devcontainer:nightly` 镜像](https://hub.docker.com/r/nodejs/devcontainer)。
 
-## Prerequisites
+## 先决条件
 
-Before you begin, ensure you have the following installed on your machine:
+在开始之前，请确保你的机器上安装了以下内容：
 
 * [Docker](https://www.docker.com/get-started)
 * [Visual Studio Code](https://code.visualstudio.com/)
-* [Dev Containers extension for VS Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+* [VS Code 的 Dev Containers 扩展](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 
-## Setting Up the Dev Container
+## 设置 Dev Container
 
-### 1. Clone the Node.js Repository
+### 1. 克隆 Node.js 仓库
 
-If you haven't already, clone the Node.js repository to your local machine.
+如果你还没有克隆 Node.js 仓库，请将其克隆到本地机器。
 
 ```bash
 git clone https://github.com/nodejs/node.git
 ```
 
-Or follow [this guide](./pull-requests.md#setting-up-your-local-environment) if you are
-setting up the git repository to contribute changes as pull requests.
+或者，如果你正在设置 git 仓库以作为拉取请求提交更改，请参考[此指南](./pull-requests.md#setting-up-your-local-environment)。
 
-### 2. Open the Repository in VS Code
+### 2. 在 VS Code 中打开仓库
 
-Launch VS Code and open the cloned Node.js repository.
+启动 VS Code 并打开克隆的 Node.js 仓库。
 
-### 3. Start the Dev Container
+### 3. 启动 Dev Container
 
-* Press `Ctrl+Shift+P` or `Cmd+Shift+P` to open the command palette.
-* Type `Dev Containers: Reopen in Container` and select it.
-* Select the appropriate Dev Container configuration from the drop down. The base configuration in this
-  repository is `Node.js Dev Container` located in
-  [`.devcontainer/base/devcontainer.json`](../../.devcontainer/base/devcontainer.json), which should be
-  automatically detected by VS Code.
+* 按下 `Ctrl+Shift+P` 或 `Cmd+Shift+P` 打开命令面板。
+* 输入 `Dev Containers: Reopen in Container` 并选择它。
+* 从下拉菜单中选择适当的 Dev Container 配置。此仓库中的基础配置为 `Node.js Dev Container`，位于
+  [`.devcontainer/base/devcontainer.json`](../../.devcontainer/base/devcontainer.json)，VS Code 应会自动检测到它。
 
-### 4. Wait for the Container to Build
+### 4. 等待容器构建完成
 
-VS Code will build the Dev Container based on the configuration file. This may take some time depending
-on your internet connection and system performance.
+VS Code 会根据配置文件构建 Dev Container。这可能需要一些时间，具体取决于你的网络连接和系统性能。
 
-After the Dev Container is built, it will start automatically. By default it will run `git restore-mtime` to
-restore the modification times of the files in the working directory, in order to keep the build cache valid,
-and you will see something like this in the terminal.
+Dev Container 构建完成后，它将自动启动。默认情况下，它将运行 `git restore-mtime` 以还原工作目录中文件的修改时间，
+以保持构建缓存有效，你将在终端中看到类似以下内容：
 
 ```text
 Running the postCreateCommand from devcontainer.json...
@@ -67,65 +57,62 @@ Running the postCreateCommand from devcontainer.json...
 [10136 ms] Start: Run in container: /bin/sh -c git restore-mtime
 ```
 
-This may take a few seconds. Wait until it finishes before you open a new terminal.
+这可能需要几秒钟。请等待其完成后再打开新终端。
 
-### 5. Build your changes
+### 5. 构建你的更改
 
-Once the Dev Container is running, you can open a terminal in VS Code and run the build commands. By default,
-your local repository is mounted inside a checkout in the Dev Container, so any changes you make will be reflected
-in the container environment.
+Dev Container 启动后，你可以在 VS Code 中打开终端并运行构建命令。默认情况下，
+你的本地仓库已挂载到容器内的一个检出目录中，因此你所做的任何更改都会反映在容器环境中。
 
-In the Dev Container, the necessary dependencies are already installed and Node.js has already been
-compiled, so a usable cache will exist. For better developer experience, the
-build tool used in the Dev Container is `ninja`, instead of `make`. See
-[Building Node.js with Ninja](./building-node-with-ninja.md) for more details on using `ninja` to build Node.js.
+在 Dev Container 中，必要的依赖项已经安装，Node.js 已经编译完成，因此将存在可用的缓存。
+为了获得更好的开发者体验，Dev Container 中使用的构建工具是 `ninja`，而不是 `make`。
+有关使用 `ninja` 构建 Node.js 的更多详细信息，请参阅[使用 Ninja 构建 Node.js](./building-node-with-ninja.md)。
 
 ```bash
 ./configure --ninja
 ninja -C out/Release
 ```
 
-As long as your local checkout is not too different from the main branch in the nightly image, the build
-should be incremental and fast.
+只要你的本地检出与夜间镜像中的主分支没有太大差异，构建过程应该是增量的并且速度较快。
 
-### 6. Leaving the Container
+### 6. 离开容器
 
-When you're done working in the Dev Container, open the command palette again and select
-`Dev Containers: Reopen Folder locally` to go back to your local development environment.
+当你完成在 Dev Container 中的工作时，再次打开命令面板并选择
+`Dev Containers: Reopen Folder locally` 以返回到你的本地开发环境。
 
-## Customizing the Dev Container
+## 自定义 Dev Container
 
-The default configuration is located in
-[`.devcontainer/base/devcontainer.json`](../../.devcontainer/base/devcontainer.json) which pairs with the
-official [Node.js Nightly Dev Container image](https://github.com/nodejs/devcontainer).
-This is tracked in version control. You can create a personal configuration by creating a new
-directory in `.devcontainer/` and adding a `devcontainer.json` file there (for example,
-`.devcontainer/local/devcontainer.json`), and configure VS Code to use it.
+默认配置位于
+[`.devcontainer/base/devcontainer.json`](../../.devcontainer/base/devcontainer.json)，它与官方的
+[Node.js 夜间 Dev Container 镜像](https://github.com/nodejs/devcontainer) 配对。
+此配置受版本控制。你可以创建一个个人配置，方法是：在 `.devcontainer/` 目录中创建一个新目录，
+并在该目录中添加一个 `devcontainer.json` 文件（例如，`.devcontainer/local/devcontainer.json`），
+然后配置 VS Code 使用它。
 
-## Rebuilding the Dev Container
+## 重建 Dev Container
 
-Docker will cache the already downloaded Dev Container images. If you wish to pull a new nightly image, you can do
-so by running the following command in the terminal on your host machine:
+Docker 会缓存已下载的 Dev Container 镜像。如果你想拉取一个新的夜间镜像，
+可以在主机终端中运行以下命令：
 
 ```bash
 docker pull nodejs/devcontainer:nightly
 ```
 
-The default configuration creates a volume to cache the build outputs between Dev Container restarts. If you wish to
-clear the build cache, you can do so by deleting the volume named `node-devcontainer-cache`.
+默认配置会创建一个卷，以在 Dev Container 重启之间缓存构建输出。如果你想清除构建缓存，
+可以通过删除名为 `node-devcontainer-cache` 的卷来实现：
 
 ```bash
 docker volume rm node-devcontainer-cache
 ```
 
-To rebuild the Dev Container in VS Code, open the command palette and select
-`Dev Containers: Rebuild and Reopen in Container`.
+要在 VS Code 中重建 Dev Container，请打开命令面板并选择
+`Dev Containers: Rebuild and Reopen in Container`。
 
-## Further Reading
+## 进一步阅读
 
-* If you want to propose changes to the official Node.js Nightly Dev Container image, feedback is welcome at
-  [nodejs/devcontainer](https://github.com/nodejs/devcontainer). There, you can find the Dockerfile and
-  automated nightly workflows.
-* [Visual Studio Code Dev Containers Documentation](https://code.visualstudio.com/docs/remote/containers)
-* [GitHub's Introduction to Dev Containers](https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers)
-* [The Dev Containers Specification](https://containers.dev/implementors/spec/)
+* 如果你想提议更改官方 Node.js 夜间 Dev Container 镜像，欢迎在
+  [nodejs/devcontainer](https://github.com/nodejs/devcontainer) 提交反馈。
+  在那里，你可以找到 Dockerfile 和自动化夜间工作流程。
+* [Visual Studio Code Dev Containers 文档](https://code.visualstudio.com/docs/remote/containers)
+* [GitHub 对 Dev Containers 的介绍](https://docs.github.com/en/codespaces/setting-up你的项目用于 codespaces/添加 dev container 配置/介绍到 dev containers)
+* [Dev Containers 规范](https://containers.dev/implementors/spec/)

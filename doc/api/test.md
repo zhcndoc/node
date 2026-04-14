@@ -2089,7 +2089,7 @@ added:
 
 将 mock 函数的实现重置为其原始行为。调用此函数后仍可继续使用 mock。
 
-## Class: `MockModuleContext`
+## 类：`MockModuleContext`
 
 <!-- YAML
 added:
@@ -2111,7 +2111,7 @@ added:
 
 重置 mock 模块的实现。
 
-## Class: `MockPropertyContext`
+## 类：`MockPropertyContext`
 
 <!-- YAML
 added:
@@ -2399,7 +2399,7 @@ added:
 * `value` {any} 一个可选值，用作 `object[propertyName]` 的模拟值。
   **默认值：** 原始属性值。
 * 返回值：{Proxy} 被模拟对象的代理。被模拟对象包含一个
-  特殊的 `mock` 属性，它是 [`MockPropertyContext`][] 的实例，
+  特殊的 `mock` 属性，是 [`MockPropertyContext`][] 的实例，
   可用于检查和更改被模拟属性的行为。
 
 为对象上的属性值创建模拟。这允许你跟踪和控制对特定属性的访问，
@@ -3337,6 +3337,81 @@ describe('example suite', () => {
 
 当从钩子（before、beforeEach、after、afterEach）内部调用时，此函数返回与该钩子关联的测试或套件的上下文。
 
+## Test instrumentation and OpenTelemetry
+
+<!-- YAML
+added: REPLACEME
+-->
+
+测试运行器通过 Node.js
+[`diagnostics_channel`][] 模块发布测试执行事件，使集成与 OpenTelemetry 等可观察性工具成为可能，而无需对测试运行器本身进行更改。
+
+### 跟踪事件
+
+测试运行器发布事件到 `'node.test'` 跟踪通道。订阅者
+可以使用 [`TracingChannel`][] API 来绑定上下文或执行自定义跟踪。
+
+#### 通道：`'tracing:node.test:start'`
+
+* `data` {Object}
+  * `name` {string} 测试的名称。
+  * `nesting` {number} 测试的嵌套级别。
+  * `file` {string|undefined} 测试文件的路径，或在 REPL 中运行时为 `undefined`。
+  * `type` {string} 测试类型。`'test'` 或 `'suite'`。
+
+当测试或套件开始执行时发出。测试的范围包括其所有 before、beforeEach 和 afterEach 钩子以及测试主体。
+
+#### 通道：`'tracing:node.test:end'`
+
+* `data` {Object}
+  * `name` {string} 测试的名称。
+  * `nesting` {number} 测试的嵌套级别。
+  * `file` {string|undefined} 测试文件的路径，或在 REPL 中运行时为 `undefined`。
+  * `type` {string} 测试类型。`'test'` 或 `'suite'`。
+
+当测试或套件完成执行时发出。
+
+#### 通道：`'tracing:node.test:error'`
+
+* `data` {Object}
+  * `name` {string} 测试的名称。
+  * `nesting` {number} 测试的嵌套级别。
+  * `file` {string|undefined} 测试文件的路径，或在 REPL 中运行时为 `undefined`。
+  * `type` {string} 测试类型。`'test'` 或 `'suite'`。
+  * `error` {Error} 抛出的错误。
+
+当测试或套件抛出错误时发出。
+
+### 使用 `bindStore()` 进行上下文传播
+
+通过将 `AsyncLocalStorage` 实例绑定，测试跟踪通道可用于在测试执行期间传播上下文。这允许上下文在测试函数以及测试中的所有异步操作中自动可用。
+
+```mjs
+import dc from 'node:diagnostics_channel';
+import { AsyncLocalStorage } from 'node:async_hooks';
+
+const testStorage = new AsyncLocalStorage();
+const testChannel = dc.tracingChannel('node.test');
+
+// 将上下文绑定到测试执行 — 返回的值成为存储
+testChannel.start.bindStore(testStorage, (data) => {
+  return { testName: data.name, startTime: Date.now() };
+});
+
+// 可选地处理错误和清理
+testChannel.error.subscribe((data) => {
+  const store = testStorage.getStore();
+  console.log(`Test "${data.name}" failed after ${Date.now() - store.startTime}ms`);
+});
+
+testChannel.end.subscribe((data) => {
+  const store = testStorage.getStore();
+  console.log(`Test "${data.name}" completed in ${Date.now() - store.startTime}ms`);
+});
+```
+
+使用 `bindStore()` 时，将自动将提供的上下文传播到测试函数和测试中的所有异步操作，而无需在测试代码中进行任何其他检测。
+
 ## 类：`TestContext`
 
 <!-- YAML
@@ -3493,7 +3568,7 @@ test('snapshot test with default serialization', (t) => {
 #### `context.assert.snapshot(value[, options])`
 
 <!-- YAML
-added: v22.3.0
+added v22.3.0
 -->
 
 * `value` {any} 要序列化为字符串的值。如果 Node.js 是使用 [`--test-update-snapshots`][] 标志启动的，则序列化的值将写入快照文件。否则，序列化的值将与现有快照文件中的相应值进行比较。
@@ -3950,11 +4025,13 @@ test.describe('my suite', (suite) => {
 [`NODE_V8_COVERAGE`]: cli.md#node_v8_coveragedir
 [`SuiteContext`]: #class-suitecontext
 [`TestContext`]: #class-testcontext
+[`TracingChannel`]: diagnostics_channel.md#class-tracingchannel
 [`assert.throws`]: assert.md#assertthrowsfn-error-message
 [`context.diagnostic`]: #contextdiagnosticmessage
 [`context.skip`]: #contextskipmessage
 [`context.todo`]: #contexttodomessage
 [`describe()`]: #describename-options-fn
+[`diagnostics_channel`]: diagnostics_channel.md
 [`glob(7)`]: https://man7.org/linux/man-pages/man7/glob.7.html
 [`it()`]: #itname-options-fn
 [`run()`]: #runoptions
