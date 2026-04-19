@@ -30,19 +30,7 @@ import diagnostics_channel from 'node:diagnostics_channel';
 const diagnostics_channel = require('node:diagnostics_channel');
 ```
 
- intended that a module writer wanting to report diagnostics messages
-will create one or many top-level channels to report messages through.
-Channels may also be acquired at runtime but it is not encouraged
-due to the additional overhead of doing so. Channels may be exported for
-convenience, but as long as the name is known it can be acquired anywhere.
-
 希望报告诊断消息的模块作者应该创建一个或多个顶层通道来报告消息。通道也可以在运行时获取，但由于这样做的额外开销，不建议这样做。通道可以为了方便而导出，但只要知道名称，就可以在任何地方获取。
-
-If you intend for your module to produce diagnostics data for others to
-consume it is recommended that you include documentation of what named
-channels are used along with the shape of the message data. Channel names
-should generally include the module name to avoid collisions with data from
-other modules.
 
 如果你打算让你的模块生成供他人使用的诊断数据，建议你包含所使用的命名通道以及消息数据形状的文档。通道名称通常应包括模块名称，以避免与其他模块的数据冲突。
 
@@ -766,7 +754,7 @@ channels.subscribe({
     // 处理 asyncEnd 消息
   },
   error(message) {
-    // 处理 error 消息
+    //  处理 error 消息
   },
 });
 ```
@@ -1688,7 +1676,9 @@ added: v16.18.0
 > 稳定性：1 - 实验性
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v25.9.0
+ - v24.15.0
 -->
 
 每次调用 [`locks.request()`][] 时都会发出这些通道。有关 Web 锁的详细信息，请参阅 [`worker_threads.locks`][]。

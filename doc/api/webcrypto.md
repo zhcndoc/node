@@ -1226,7 +1226,9 @@ changes:
 <!-- YAML
 added: v15.0.0
 changes:
-  - version: v25.9.0
+  - version:
+     - v25.9.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/62218
     description: Importing ML-DSA and ML-KEM PKCS#8 keys
       without a seed is no longer supported.
@@ -1799,7 +1801,9 @@ changes:
 <!-- YAML
 added: v24.7.0
 changes:
-  - version: v25.9.0
+  - version:
+     - v25.9.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61875
     description: "Renamed `cShakeParams.length` to `cShakeParams.outputLength`."
 -->
@@ -1815,7 +1819,9 @@ added: v24.7.0
 #### `cShakeParams.outputLength`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v25.9.0
+ - v24.15.0
 -->
 
 * 类型：{number} 表示请求的输出长度（位）。
@@ -2332,7 +2338,9 @@ added: v24.8.0
 <!-- YAML
 added: v24.8.0
 changes:
-  - version: v25.9.0
+  - version:
+     - v25.9.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61875
     description: "Renamed `kmacParams.length` to `kmacParams.outputLength`."
 -->
@@ -2348,7 +2356,9 @@ added: v24.8.0
 #### `kmacParams.outputLength`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v25.9.0
+ - v24.15.0
 -->
 
 * 类型：{number}

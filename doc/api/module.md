@@ -159,7 +159,9 @@ isBuiltin('wss'); // false
 added:
   - v20.6.0
   - v18.19.0
-deprecated: v25.9.0
+deprecated:
+ - v25.9.0
+ - v24.15.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62401
@@ -361,7 +363,9 @@ changes:
 <!-- YAML
 added: v22.8.0
 changes:
-  - version: v25.4.0
+  - version:
+     - v25.4.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/60971
     description: 此功能不再是实验性的。
 -->
@@ -404,7 +408,9 @@ changes:
 <!-- YAML
 added: v22.8.0
 changes:
-  - version: v25.4.0
+  - version:
+     - v25.4.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/60971
     description: 此功能不再是实验性的。
   - version:
@@ -442,7 +448,9 @@ added:
  - v23.0.0
  - v22.10.0
 changes:
-  - version: v25.4.0
+  - version:
+     - v25.4.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/60971
     description: 此功能不再是实验性的。
 -->
@@ -454,7 +462,9 @@ changes:
 <!-- YAML
 added: v22.8.0
 changes:
-  - version: v25.4.0
+  - version:
+     - v25.4.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/60971
     description: 此功能不再是实验性的。
 -->
@@ -1512,9 +1522,9 @@ added:
 
 > 稳定性：1 - 实验性
 
-Node.js 支持 TC39 ECMA-426 [源代码映射][] 格式（它被称为源代码映射修订版 3 格式）。
+Node.js 支持 TC39 ECMA-426 [source map][] 格式（它被称为源代码映射修订版 3 格式）。
 
-本节中的 API 是与源代码映射缓存交互的辅助工具。当启用源代码映射解析并且在模块的脚注中找到 [源代码映射包含指令][] 时，将填充此缓存。
+本节中的 API 是与源代码映射缓存交互的辅助工具。当启用源代码映射解析并且在模块的脚注中找到 [source map directive][] 时，将填充此缓存。
 
 要启用源代码映射解析，必须使用标志 [`--enable-source-maps`][] 运行 Node.js，或者通过设置 [`NODE_V8_COVERAGE=dir`][] 启用代码覆盖率，或者通过 [`module.setSourceMapsSupport()`][] 以编程方式启用。
 
@@ -1539,11 +1549,11 @@ added:
 -->
 
 * 返回：{Object}
-  * `enabled` {boolean} 是否启用了源代码映射支持
+  * `enabled` {boolean} 是否启用了 source map 支持
   * `nodeModules` {boolean} 是否对 `node_modules` 中的文件启用了支持。
   * `generatedCode` {boolean} 是否对来自 `eval` 或 `new Function` 的生成代码启用了支持。
 
-此方法返回是否启用了用于堆栈跟踪的 [源代码映射 v3][源代码映射] 支持。
+此方法返回是否启用了用于堆栈跟踪的 [source map v3][source map] 支持。
 
 <!-- Anchors to make sure old links find a target -->
 
@@ -1558,9 +1568,9 @@ added:
 -->
 
 * `path` {string}
-* 返回：{module.SourceMap|undefined} 如果找到源代码映射则返回 `module.SourceMap`，否则返回 `undefined`。
+* 返回：{module.SourceMap|undefined} 如果找到 source map 则返回 `module.SourceMap`，否则返回 `undefined`。
 
-`path` 是应获取相应源代码映射的文件的路径。
+`path` 是应获取相应 source map 的文件的路径。
 
 ### `module.setSourceMapsSupport(enabled[, options])`
 
@@ -1570,16 +1580,16 @@ added:
   - v22.14.0
 -->
 
-* `enabled` {boolean} 启用源代码映射支持。
+* `enabled` {boolean} 启用 source map 支持。
 * `options` {Object} 可选
   * `nodeModules` {boolean} 是否启用对 `node_modules` 中文件的支持。**默认值：** `false`。
   * `generatedCode` {boolean} 是否启用对来自 `eval` 或 `new Function` 的生成代码的支持。**默认值：** `false`。
 
-此函数启用或禁用用于堆栈跟踪的 [源代码映射 v3][源代码映射] 支持。
+此函数启用或禁用用于堆栈跟踪的 [source map v3][source map] 支持。
 
 它提供与使用命令行选项 `--enable-source-maps` 启动 Node.js 进程相同的功能，并提供额外选项来更改对 `node_modules` 中文件或生成代码的支持。
 
-只有在启用源代码映射后加载的 JavaScript 文件中的源代码映射才会被解析和加载。最好使用命令行选项 `--enable-source-maps` 以避免丢失在此 API 调用之前加载的模块的源代码映射。
+只有在启用 source map 后加载的 JavaScript 文件中的 source map 才会被解析和加载。最好使用命令行选项 `--enable-source-maps` 以避免丢失在此 API 调用之前加载的模块的 source map。
 
 ### Class: `module.SourceMap`
 
@@ -1603,7 +1613,7 @@ changes:
 
 创建一个新的 `sourceMap` 实例。
 
-`payload` 是一个键与 [源代码映射格式][] 匹配的对象：
+`payload` 是一个键与 [source map format][] 匹配的对象：
 
 * `file` {string}
 * `version` {number}
@@ -1656,9 +1666,9 @@ added:
 
 给定生成源中调用站的从 1 开始的 `lineNumber` 和 `columnNumber`，查找原始源中相应的调用站位置。
 
-如果在任何源代码映射中未找到提供的 `lineNumber` 和 `columnNumber`，则返回空对象。否则，返回的对象包含以下键：
+如果在任何 source map 中未找到提供的 `lineNumber` 和 `columnNumber`，则返回空对象。否则，返回的对象包含以下键：
 
-* `name` {string|undefined} 源代码映射中范围的名称（如果提供）
+* `name` {string|undefined} source map 中范围的名称（如果提供）
 * `fileName` {string} 原始源的文件名，如 SourceMap 中报告
 * `lineNumber` {number} 原始源中相应调用站的从 1 开始的行号
 * `columnNumber` {number} 原始源中相应调用站的从 1 开始的列号
@@ -1668,8 +1678,8 @@ added:
 [自定义钩子]: #customization-hooks
 [ES 模块]: esm.md
 [权限模型]: permissions.md#permission-model
-[源代码映射]: https://tc39.es/ecma426/
-[源代码映射格式]: https://tc39.es/ecma426/#sec-source-map-format
+[source map]: https://tc39.es/ecma426/
+[source map format]: https://tc39.es/ecma426/#sec-source-map-format
 [V8 JavaScript 代码覆盖率]: https://v8project.blogspot.com/2017/12/javascript-code-coverage.html
 [V8 代码缓存]: https://v8.dev/blog/code-caching-for-devs
 [`"exports"`]: packages.md#exports
@@ -1679,7 +1689,7 @@ added:
 [`NODE_COMPILE_CACHE=dir`]: cli.md#node_compile_cachedir
 [`NODE_COMPILE_CACHE_PORTABLE=1`]: cli.md#node_compile_cache_portable1
 [`NODE_DISABLE_COMPILE_CACHE=1`]: cli.md#node_disable_compile_cache1
-[`NODE_V8_COVERAGE=dir`]: cli.md#node_v8_coveragedir
+[`NODE_V8_COVERAGE=dir`]: cli.md#node_v8_coverage_dir
 [`SourceMap`]: #class-modulesourcemap
 [`initialize`]: #initialize
 [`module.constants.compileCacheStatus`]: #moduleconstantscompilecachestatus
@@ -1704,7 +1714,7 @@ added:
 [模块包装器]: modules.md#the-module-wrapper
 [realm]: https://tc39.es/ecma262/#realm
 [resolve 钩子]: #synchronous-resolvespecifier-context-nextresolve
-[源代码映射包含指令]: https://tc39.es/ecma426/#sec-linking-generated-code
+[source map directive]: https://tc39.es/ecma426/#sec-linking-generated-code
 [同步钩子函数]: #hook-functions-accepted-by-moduleregisterhooks
 [`Worker` 的文档]: worker_threads.md#new-workerfilename-options
 [可传输对象]: worker_threads.md#portpostmessagevalue-transferlist

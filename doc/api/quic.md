@@ -205,23 +205,22 @@ True if the endpoint is actively listening for incoming connections. Read only.
 added: REPLACEME
 -->
 
-* `entries` {object} An object mapping host names to TLS identity options.
-  Each entry must include `keys` and `certs`.
+* `entries` {object} 一个将主机名映射到 TLS 身份选项的对象。
+  每个条目必须包含 `keys` 和 `certs`。
 * `options` {object}
-  * `replace` {boolean} If `true`, replaces the entire SNI map. If `false`
-    (the default), merges the entries into the existing map.
+  * `replace` {boolean} 如果为 `true`，则替换整个 SNI 映射。如果为 `false`
+    （默认值），则将条目标记合并到现有映射中。
 
-Replaces or updates the SNI TLS contexts for this endpoint. This allows
-changing the TLS identity (key/certificate) used for specific host names
-without restarting the endpoint. Existing sessions are unaffected — only
-new sessions will use the updated contexts.
+为此端点替换或更新 SNI TLS 上下文。这允许
+在不重启端点的情况下，改变用于特定主机名的 TLS 身份（密钥/证书）。
+现有会话不受影响——仅新的会话将使用更新后的上下文。
 
 ```mjs
 endpoint.setSNIContexts({
   'api.example.com': { keys: [newApiKey], certs: [newApiCert] },
 });
 
-// Replace the entire SNI map
+// 替换整个 SNI 映射
 endpoint.setSNIContexts({
   'api.example.com': { keys: [newApiKey], certs: [newApiCert] },
 }, { replace: true });
@@ -1214,7 +1213,9 @@ added: v23.8.0
 <!-- YAML
 added: v23.8.0
 changes:
-  - version: v25.9.0
+  - version:
+     - v25.9.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/62335
     description: CryptoKey 不再被接受。
 -->
@@ -1554,7 +1555,7 @@ added: v23.8.0
 
 * `this` {quic.QuicSession}
 * `id` {bigint}
-* `status` {string} 为 `'lost'` 或 `'acknowledged'` 之一。
+* `status` {string} 为 `'lost'` 或 `'acknowledged'` 其中之一。
 
 ### 回调：`OnPathValidationCallback`
 
@@ -1563,7 +1564,7 @@ added: v23.8.0
 -->
 
 * `this` {quic.QuicSession}
-* `result` {string} 为 `'success'`、`'failure'` 或 `'aborted'` 之一。
+* `result` {string} 为 `'success'`、`'failure'` 或 `'aborted'` 其中之一。
 * `newLocalAddress` {net.SocketAddress}
 * `newRemoteAddress` {net.SocketAddress}
 * `oldLocalAddress` {net.SocketAddress}
@@ -1761,4 +1762,4 @@ added: v23.8.0
 added: v23.8.0
 -->
 
-[`sessionOptions.sni`]: #sessionoptionssni-server-only
+[`sessionOptions.sni`]: #sessionoptionssni-仅服务器

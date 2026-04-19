@@ -17,6 +17,7 @@ Node.js 除了其自身代码外，还依赖于其他组件。这些依赖项提
 * [histogram][]
 * [icu-small][]
 * [inspector\_protocol][inspector_protocol]
+* [libffi][]
 * [libuv][]
 * [llhttp][]
 * [minimatch][]
@@ -177,6 +178,11 @@ C++ 测试和模拟框架。
 是 Chromium 的代码生成器和检查器协议模板。
 有关更多信息，请参阅 [this doc](../../../tools/inspector_protocol/README.md)。
 
+### libffi
+
+The [libffi](https://github.com/libffi/libffi) dependency is a portable foreign
+function interface library used by `node:ffi`.
+
 ### libuv
 
 [libuv](https://github.com/libuv/libuv) 依赖项是一个
@@ -303,6 +309,7 @@ WASI 系统调用 API，以便 WebAssembly 运行时可以轻松实现 WASI 调�
 [histogram]: #histogram
 [icu-small]: #icu-small
 [inspector_protocol]: #inspector_protocol
+[libffi]: #libffi
 [libuv]: #libuv
 [llhttp]: #llhttp
 [maintaining-V8]: ./maintaining-V8.md

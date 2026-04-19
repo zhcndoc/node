@@ -528,7 +528,7 @@ pipeline(
 
 `body` 包含以下额外扩展：
 
-- `dump({ limit: Integer })`，读取最多 `limit` 字节来转储响应而不杀死套接字（可选）- 默认值：262144。
+- `dump({ limit: Integer })`，通过读取最多 `limit` 字节来转储响应，而不会杀死连接（可选） - 默认值：131072。
 
 注意，即使为空，`body` 仍将是一个 `Readable`，但尝试使用 `json()` 反序列化它将导致异常。确保有要反序列化的体的推荐方法是检查状态码不是 204，且 `content-type` 标头以 `application/json` 开头。
 
@@ -593,7 +593,7 @@ try {
     signal: abortController.signal
   })
 } catch (error) {
-  console.error(error) // should print an RequestAbortedError
+  console.error(error) // 应打印 RequestAbortedError
   client.close()
   server.close()
 }
@@ -624,7 +624,7 @@ try {
     signal: ee
   })
 } catch (error) {
-  console.error(error) // should print an RequestAbortedError
+  console.error(error) // 应打印 RequestAbortedError
   client.close()
   server.close()
 }
@@ -654,7 +654,7 @@ try {
   })
   body.destroy()
 } catch (error) {
-  console.error(error) // should print an RequestAbortedError
+  console.error(error) // 应打印 RequestAbortedError
   client.close()
   server.close()
 }
@@ -924,7 +924,7 @@ const redirectInterceptor = dispatch => {
         opts,
         handler
       )
-      opts = { ...opts, maxRedirections: 0 } // Stop sub dispatcher from also redirecting.
+      opts = { ...opts, maxRedirections: 0 } // 停止子 dispatcher 也进行重定向。
       return dispatch(opts, redirectHandler)
     }
 }
@@ -1025,8 +1025,8 @@ const client = new Client("http://service.example").compose(
 
 `dump` 拦截器使您能够在给定限制下转储请求的响应体。
 
-**选项**
-- `maxSize` - 要转储的响应体的最大大小（以字节为单位）。如果请求体的大小超过此值，则连接将被关闭。默认值：`1048576`。
+**Options**
+- `maxSize` - 要转储的响应主体最大大小（以字节为单位）。如果响应主体大小超过此值，则会关闭连接。默认值：`1048576`。
 
 > `Dispatcher#options` 还扩展了选项 `dumpMaxSize`、`abortOnDumped` 和 `waitForTrailers`，可用于在每个请求的基础上配置拦截器。
 
@@ -1042,7 +1042,7 @@ const client = new Client("http://service.example").compose(
   })
 );
 
-// or
+// 或
 client.dispatch(
   {
     path: "/",
@@ -1067,7 +1067,7 @@ client.dispatch(
   - 如果出现连接失败，还将尝试类似 happy-eyeballs 的方法连接到可用的地址。
 - `affinity` - 是否使用 IPv4 或 IPv6 地址。默认值：`4`。
   - 可以是 `4` 或 `6`。
-  - 只有当 `dualStack` 为 `false` 时才会生效。
+  - 仅当 `dualStack` 为 `false` 时才会生效。
 - `lookup: (hostname: string, options: LookupOptions, callback: (err: NodeJS.ErrnoException | null, addresses: DNSInterceptorRecord[]) => void) => void` - 自定义查找函数。默认值：`dns.lookup`。
   - 有关更多信息，请参阅 [dns.lookup](https://nodejs.org/api/dns.html#dnslookuphostname-options-callback)。
 - `pick: (origin: URL, records: DNSInterceptorRecords, affinity: 4 | 6) => DNSInterceptorRecord` - 自定义选择函数。默认值：`RoundRobin`。
@@ -1081,21 +1081,21 @@ client.dispatch(
 
 **DNSInterceptorRecord**
 它表示一个 DNS 记录。
-- `family` - (`number`) 地址的 IP 族。可以是 `4` 或 `6`。
-- `address` - (`string`) IP 地址。
+- `family` -（`number`）地址的 IP 族。可以是 `4` 或 `6`。
+- `address` -（`string`）IP 地址。
 
 **DNSInterceptorOriginRecords**
 它表示单个源的 DNS IP 地址记录的映射。
-- `4.ips` - (`DNSInterceptorRecord[] | null`) IPv4 地址。
-- `6.ips` - (`DNSInterceptorRecord[] | null`) IPv6 地址。
+- `4.ips` -（`DNSInterceptorRecord[] | null`）IPv4 地址。
+- `6.ips` -（`DNSInterceptorRecord[] | null`）IPv6 地址。
 
 **DNSStorage**
 它表示已解析 DNS 记录的存储对象。
-- `size` - (`number`) 存储的当前大小。
-- `get` - (`(origin: string) => DNSInterceptorOriginRecords | null`) 获取给定源的记录的方法。
-- `set` - (`(origin: string, records: DNSInterceptorOriginRecords | null, options: { ttl: number }) => void`) 设置给定源的记录的方法。
-- `delete` - (`(origin: string) => void`) 删除给定源的记录的方法。
-- `full` - (`() => boolean`) 检查存储是否已满的方法，如果返回 `true`，此拦截器中将跳过 DNS 查找且不存储新记录。
+- `size` -（`number`）存储的当前大小。
+- `get` -（`(origin: string) => DNSInterceptorOriginRecords | null`）获取给定源的记录的方法。
+- `set` -（`(origin: string, records: DNSInterceptorOriginRecords | null, options: { ttl: number }) => void`）设置给定源的记录的方法。
+- `delete` -（`(origin: string) => void`）删除给定源的记录的方法。
+- `full` -（`() => boolean`）检查存储是否已满的方法，如果返回 `true`，此拦截器中将跳过 DNS 查找且不存储新记录。
 
 **示例 - 基本 DNS 拦截器**
 
@@ -1136,8 +1136,7 @@ const lruAdapter = {
     lru.delete(origin);
   },
   full() {
-    // For LRU cache, we can always store new records,
-    // old records will be evicted automatically
+    // 对于 LRU 缓存，我们总是可以存储新记录，旧记录会自动被逐出
     return false;
   }
 }
@@ -1166,7 +1165,7 @@ const client = new Client("http://service.example").compose(
   responseError()
 );
 
-// Will throw a ResponseError for status codes >= 400
+// 对于状态码 >= 400 将抛出 ResponseError
 await client.request({
   method: "GET",
   path: "/"
@@ -1177,7 +1176,7 @@ await client.request({
 
 ⚠️ `decompress` 拦截器是实验性的，可能会发生变化。
 
-`decompress` 拦截器自动解压缩使用 gzip、deflate、brotli 或 zstd 压缩的响应体。它从解压的响应中删除 `content-encoding` 和 `content-length` 标头，并支持符合 RFC-9110 的多个编码。
+`decompress` 拦截器会自动解压缩使用 gzip、deflate、brotli 或 zstd 压缩的响应体。它从解压后的响应中删除 `content-encoding` 和 `content-length` 标头，并支持符合 RFC-9110 的多个编码。
 
 **选项**
 
@@ -1194,7 +1193,7 @@ const client = new Client("http://service.example").compose(
   decompress()
 );
 
-// Automatically decompresses gzip/deflate/brotli/zstd responses
+// 自动解压 gzip/deflate/brotli/zstd 响应
 const response = await client.request({
   method: "GET",
   path: "/"
@@ -1209,8 +1208,8 @@ const { decompress } = interceptors;
 
 const client = new Client("http://service.example").compose(
   decompress({
-    skipErrorResponses: false, // Decompress 5xx responses
-    skipStatusCodes: [204, 304, 201] // Skip these status codes
+    skipErrorResponses: false, // 解压 5xx 响应
+    skipStatusCodes: [204, 304, 201] // 跳过这些状态码
   })
 );
 ```
@@ -1258,16 +1257,16 @@ const client = new Agent().compose(interceptors.cache({
 
 setGlobalDispatcher(client)
 
-// First request goes to the network and is cached when cache headers allow it.
+// 第一次请求将访问网络，并在允许缓存时缓存（取决于响应的缓存头）。
 const first = await fetch('https://example.com/data')
 
-// Second request can be served from cache according to RFC9111 rules.
+// 第二次请求可以根据 RFC9111 的规则从缓存中提供。
 const second = await fetch('https://example.com/data')
 ```
 
 ##### `Deduplicate Interceptor`
 
-`deduplicate` 拦截器去重并发相同的请求。当多个相同请求发出而其中一个已在进行中时，只有一个请求发送到源服务器，所有等待的处理程序都会收到相同的响应。这减少了服务器负载并提高了性能。
+`deduplicate` 拦截器用于去重并发相同的请求。当多个相同请求发出而其中一个已在进行中时，只有一个请求会发送到源服务器，所有等待的处理程序都会收到相同的响应。这减少了服务器负载并提高了性能。
 
 **选项**
 
@@ -1282,12 +1281,12 @@ const second = await fetch('https://example.com/data')
 const { Client, interceptors } = require("undici");
 const { deduplicate, cache } = interceptors;
 
-// Deduplicate only
+// 仅去重
 const client = new Client("http://service.example").compose(
   deduplicate()
 );
 
-// Deduplicate with caching
+// 去重并缓存
 const clientWithCache = new Client("http://service.example").compose(
   deduplicate(),
   cache()
@@ -1302,7 +1301,7 @@ const clientWithCache = new Client("http://service.example").compose(
 
 所有去重的请求都会收到完整的响应，包括状态码、标头和正文。
 
-为了可观察性，请求去重事件会发布到 `undici:request:pending-requests` [诊断通道](/docs/docs/api/DiagnosticsChannel.md#undicirequestpending-requests)。
+为便于观察，请求去重事件会发布到 `undici:request:pending-requests` [诊断通道](/docs/docs/api/DiagnosticsChannel.md#undicirequestpending-requests)。
 
 ## 实例事件
 

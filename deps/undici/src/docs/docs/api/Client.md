@@ -2,7 +2,7 @@
 
 继承自: `undici.Dispatcher`
 
-一个基本的 HTTP/1.1 客户端，基于单个 TCP/TLS 连接实现。默认禁用流水线传输。
+一个基于单个 TCP/TLS 连接实现的基本 HTTP/1.1 客户端。默认禁用流水线传输。
 
 请求不保证按调用顺序发送。
 
@@ -17,42 +17,44 @@
 
 ### 参数: `ClientOptions`
 
-* **bodyTimeout** `number | null` (可选) - 默认值: `300e3` - 请求在多少毫秒后超时，用于监控接收 body 数据的时间间隔。使用 `0` 可完全禁用此功能。默认为 300 秒。请注意，如果您每次向套接字写入数据时都会重置 `timeout`。
-* **headersTimeout** `number | null` (可选) - 默认值: `300e3` - 在发送请求前，解析器等待接收完整 HTTP headers 的时间（以毫秒为单位）。默认为 300 秒。
-* **keepAliveMaxTimeout** `number | null` (可选) - 默认值: `600e3` - 当服务器通过 *keep-alive* hints 覆盖时，允许的最大 `keepAliveTimeout`（以毫秒为单位）。默认为 10 分钟。
-* **keepAliveTimeout** `number | null` (可选) - 默认值: `4e3` - 在没有活跃请求的 socket 上，经过多少毫秒后将会超时。用于监控已连接 socket 上的活动时间间隔。此值可能会被服务器发出的 *keep-alive* hints 覆盖。有关更多详细信息，请参见 [MDN: HTTP - Headers - Keep-Alive directives](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive#directives)。默认为 4 秒。
-* **keepAliveTimeoutThreshold** `number | null` (可选) - 默认值: `2e3` - 从服务器 *keep-alive* hints 中减去的时间（以毫秒为单位），用于调整 `keepAliveTimeout`，以应对例如传输延迟等引起的时间精度问题。默认为 2 秒。
-* **maxHeaderSize** `number | null` (可选) - 默认值: `--max-http-header-size` 或 `16384` - 请求 headers 的最大长度（以字节为单位）。默认为 Node.js 的 `--max-http-header-size` 或 16KiB。
-* **maxResponseSize** `number | null` (可选) - 默认值: `-1` - 响应 body 的最大长度（以字节为单位）。设置为 `-1` 表示禁用。
-* **pipelining** `number | null` (可选) - 默认值: `1` - 根据 [RFC7230](https://tools.ietf.org/html/rfc7230#section-6.3.2)，在单个 TCP/TLS 连接上发送的并发请求数量。在启用并发请求之前，请仔细考虑您的工作负载和环境，因为如果错误地使用流水线传输可能会降低性能。流水线传输对网络堆栈设置以及例如长时间运行的请求引起的队头阻塞也很敏感。设置为 `0` 将禁用 keep-alive 连接。
-* **connect** `ConnectOptions | Function | null` (可选) - 默认值: `null`。
-* **strictContentLength** `Boolean` (可选) - 默认值: `true` - 是否将请求内容长度不匹配视为错误。如果为 true，则当请求 content-length header 与请求 body 的长度不匹配时，会抛出错误。**安全警告:** 禁用此选项可能会使您的应用程序暴露在 HTTP Request Smuggling 攻击之下，其中不匹配的 content-length headers 会导致服务器和代理以不同的方式解释请求边界。这可能导致缓存中毒、凭据劫持以及绕过安全控制。仅在您完全信任请求来源的受控环境中才应禁用此选项。
-* **autoSelectFamily**: `boolean` (可选) - 默认值: 取决于本地 Node 版本，在 Node 18.13.0 及以上版本中默认为 `false`。启用一个松散实现 [RFC 8305](https://tools.ietf.org/html/rfc8305#section-5) 第 5 节的 family 自动检测算法。有关更多详细信息，请参见 [此处](https://nodejs.org/api/net.html#socketconnectoptions-connectlistener)。如果当前 Node 版本不支持此选项，则该选项将被忽略。
-* **autoSelectFamilyAttemptTimeout**: `number` - 默认值: 取决于本地 Node 版本，在 Node 18.13.0 及以上版本中默认为 `250`。在使用 `autoSelectFamily` 选项时，尝试连接到下一个地址之前等待连接尝试完成的时间（以毫秒为单位）。有关更多详细信息，请参见 [此处](https://nodejs.org/api/net.html#socketconnectoptions-connectlistener)。
-* **allowH2**: `boolean` - 默认值: `true`。如果服务器通过 ALPN 协商为其分配了更高的优先级，则启用 H2 支持。
-* **useH2c**: `boolean` - 默认值: `false`。强制非 https 连接使用 h2c。
-* **maxConcurrentStreams**: `number` - 默认值: `100`。规定单个 H2 session 的最大并发流数。它可以被 SETTINGS remote frame 覆盖。
-* **initialWindowSize**: `number` (可选) - 默认值: `262144` (256KB)。设置 HTTP/2 stream-level flow-control window size (SETTINGS_INITIAL_WINDOW_SIZE)。必须是一个大于 0 的正整数。此默认值高于 Node.js core 的默认值 (65535 bytes)，以提高吞吐量，Node 的选择对于当前高带宽网络来说非常保守。有关更多详细信息，请参见 [RFC 7540 Section 6.9.2](https://datatracker.ietf.org/doc/html/rfc7540#section-6.9.2)。
-* **connectionWindowSize**: `number` (可选) - 默认值: `524288` (512KB)。使用 `ClientHttp2Session.setLocalWindowSize()` 设置 HTTP/2 connection-level flow-control window size。必须是一个大于 0 的正整数。这为整个连接提供了更好的跨多个流的流量控制。有关更多详细信息，请参见 [Node.js HTTP/2 documentation](https://nodejs.org/api/http2.html#clienthttp2sessionsetlocalwindowsize)。
-* **pingInterval**: `number` - 默认值: `60e3`。向服务器发送 PING frames 的时间间隔（以毫秒为单位）。设置为 `0` 将禁用 PING frames。这只适用于 HTTP/2 连接。这将在客户端上发出带有 ping 持续时间（以毫秒为单位）的 `ping` 事件。
+* **bodyTimeout** `number | null` (optional) - 默认值: `300e3` - 经过该时间后，请求将超时（以毫秒为单位）。监控在接收 body 数据期间的时间。将其设置为 `0` 可完全禁用。默认是 300 秒。请注意：如果你每次都继续向 socket 写入数据，那么 `timeout` 会被重置。
+* **headersTimeout** `number | null` (optional) - 默认值: `300e3` - 当不发送请求时，解析器等待接收完整 HTTP 头所允许的时间（以毫秒为单位）。默认是 300 秒。
+* **keepAliveMaxTimeout** `number | null` (optional) - 默认值: `600e3` - 允许的 `keepAliveTimeout` 最大值（以毫秒为单位），当服务器通过 *keep-alive* 提示覆盖时生效。默认是 10 分钟。
+* **keepAliveTimeout** `number | null` (optional) - 默认值: `4e3` - 当一个 socket 在没有进行活动请求后超时的时间（以毫秒为单位）。监控已连接 socket 上两次活动之间的时间。该值可能会被服务器的 *keep-alive* 提示覆盖。详情请参见 [MDN: HTTP - Headers - Keep-Alive directives](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive#directives)。默认是 4 秒。
+* **keepAliveTimeoutThreshold** `number | null` (optional) - 默认值: `2e3` - 在用服务器的 *keep-alive* 提示覆盖 `keepAliveTimeout` 时，会从中减去这么多毫秒，以考虑例如传输延迟导致的计时不准确。默认是 2 秒。
+* **maxHeaderSize** `number | null` (optional) - 默认值: `--max-http-header-size` 或 `16384` - 请求头的最大字节长度。默认使用 Node.js 的 --max-http-header-size 或 16KiB。
+* **maxResponseSize** `number | null` (optional) - 默认值: `-1` - 响应 body 的最大字节长度。设置为 `-1` 以禁用。
+* **webSocket** `WebSocketOptions` (optional) - WebSocket 专用配置选项。
+  * **maxPayloadSize** `number` (optional) - 默认值: `134217728` (128 MB) - WebSocket 消息允许的最大载荷大小（以字节为单位）。应用于未压缩消息、压缩帧载荷以及解压后的（permessage-deflate）消息。设置为 `0` 以禁用该限制。
+* **pipelining** `number | null` (optional) - 默认值: `1` - 根据 [RFC7230](https://tools.ietf.org/html/rfc7230#section-6.3.2)，在单个 TCP/TLS 连接上发送的并发请求数量。在启用并发请求前，请仔细考虑你的工作负载与环境，因为如果使用不当，流水线传输可能会降低性能。流水线对网络栈设置也很敏感，并且会因例如长时间运行的请求导致队头阻塞（head of line blocking）。设置为 `0` 可禁用保持连接（keep-alive）。
+* **connect** `ConnectOptions | Function | null` (optional) - 默认值: `null`。
+* **strictContentLength** `Boolean` (optional) - 默认值: `true` - 是否将请求内容长度不匹配视为错误。如果为 `true`，当请求的 content-length 头与请求 body 的长度不一致时，将抛出错误。**安全警告：** 禁用此选项可能会使你的应用暴露于 HTTP 请求走私（HTTP Request Smuggling）攻击：内容长度不匹配会导致服务器和代理对请求边界的解释不同。这可能导致缓存投毒（cache poisoning）、凭据劫持（credential hijacking）以及绕过安全控制。仅在受控环境中禁用此项，并且你完全信任请求来源。
+* **autoSelectFamily**: `boolean` (optional) - 默认值：取决于本地 Node 版本；在 Node 18.13.0 及以上为 `false`。启用一种族自动检测算法，松散地实现了 [RFC 8305](https://tools.ietf.org/html/rfc8305#section-5) 的第 5 节。详情见 [此处](https://nodejs.org/api/net.html#socketconnectoptions-connectlistener)。如果当前 Node 版本不支持，则会忽略该选项。
+* **autoSelectFamilyAttemptTimeout**: `number` - 默认值：取决于本地 Node 版本；在 Node 18.13.0 及以上为 `250`。在使用 `autoSelectFamily` 选项时，如果连接尝试尚未完成，等待该时间（以毫秒为单位）后再尝试下一个地址。详情见 [此处](https://nodejs.org/api/net.html#socketconnectoptions-connectlistener)。
+* **allowH2**: `boolean` - 默认值: `true`。如果服务器通过 ALPN 协商为 H2 分配了更高的优先级，则启用对 H2 的支持。
+* **useH2c**: `boolean` - 默认值: `false`。对非 https 连接强制使用 h2c。
+* **maxConcurrentStreams**: `number` - 默认值: `100`。决定单个 H2 会话的最大并发流数量。它可以被 SETTINGS 远程帧覆盖。
+* **initialWindowSize**: `number` (optional) - 默认值: `262144` (256KB)。设置 HTTP/2 流级别的流量控制窗口大小（SETTINGS_INITIAL_WINDOW_SIZE）。必须是大于 0 的正整数。此默认值高于 Node.js 核心默认值（65535 字节），以提升在当前高带宽网络中的吞吐量；Node 的选择非常保守。详情见 [RFC 7540 第 6.9.2 节](https://datatracker.ietf.org/doc/html/rfc7540#section-6.9.2)。
+* **connectionWindowSize**: `number` (optional) - 默认值: `524288` (512KB)。使用 `ClientHttp2Session.setLocalWindowSize()` 设置 HTTP/2 连接级别的流量控制窗口大小。必须是大于 0 的正整数。该设置可在多个流之间为整个连接提供更好的流量控制。详情见 [Node.js HTTP/2 文档](https://nodejs.org/api/http2.html#clienthttp2sessionsetlocalwindowsize)。
+* **pingInterval**: `number` - 默认值: `60e3`。向服务器发送 PING 帧的时间间隔（以毫秒为单位）。设置为 `0` 可禁用 PING 帧。仅适用于 HTTP/2 连接。客户端会在发送 PING 的持续时间（以毫秒为单位）作为参数触发 `ping` 事件。
 
 > **关于 HTTP/2 的注意事项**
 > - 它仅在 TLS 连接下工作。不支持 h2c。
-> - 服务器必须支持 HTTP/2 并在 ALPN 协商中选择它作为协议。
->   - 服务器不得比 HTTP/2 对 HTTP/1.1 有更高的优先级。
-> - pseudo headers 会自动附加到请求中。如果您尝试设置它们，它们将被覆盖。
->   - `:path` header 会自动设置为请求路径。
->   - `:method` header 会自动设置为请求方法。
->   - `:scheme` header 会自动设置为请求方案。
->   - `:authority` header 会自动设置为请求 `host[:port]`。
-> - `PUSH` frames 目前尚未支持。
+> - 服务器必须支持 HTTP/2 并在 ALPN 协商中将其选为协议。
+>   - 服务器不得比 HTTP/2 对 HTTP/1.1 给予更高的优先级。
+> - pseudo headers 会自动附加到请求中。如果你尝试设置它们，它们将被覆盖。
+>   - `:path` 头会自动设置为请求路径。
+>   - `:method` 头会自动设置为请求方法。
+>   - `:scheme` 头会自动设置为请求方案。
+>   - `:authority` 头会自动设置为请求的 `host[:port]`。
+> - 目前尚不支持 `PUSH` 帧。
 
 #### 参数: `ConnectOptions`
 
-每个 Tls option，请参见 [此处](https://nodejs.org/api/tls.html#tls_tls_connect_options_callback)。此外，还可以传递以下选项：
+每个 Tls 选项，请参见 [此处](https://nodejs.org/api/tls.html#tls_tls_connect_options_callback)。此外，还可以传递以下选项：
 
-* **socketPath** `string | null` (可选) - 默认值: `null` - IPC endpoint，可以是 Unix domain socket 或 Windows named pipe。
-* **maxCachedSessions** `number | null` (可选) - 默认值: `100` - TLS 缓存会话的最大数量。使用 0 可禁用 TLS session caching。默认值: 100。
+* **socketPath** `string | null` (可选) - 默认值: `null` - IPC 端点，可以是 Unix 域套接字或 Windows 命名管道。
+* **maxCachedSessions** `number | null` (可选) - 默认值: `100` - TLS 缓存会话的最大数量。使用 `0` 可禁用 TLS session 缓存。默认值: 100。
 * **timeout** `number | null` (可选) - 以毫秒为单位，默认值 `10e3`。
 * **servername** `string | null` (可选)
 * **keepAlive** `boolean | null` (可选) - 默认值: `true` - 启用 TCP keep-alive
@@ -71,7 +73,7 @@ const client = new Client('http://localhost:3000')
 
 ### 示例 - 自定义连接器
 
-这将允许您对下一个请求使用的 socket 执行一些额外的检查。
+这将允许你对下一个请求使用的 socket 执行一些额外的检查。
 
 ```js
 'use strict'
@@ -179,7 +181,7 @@ await once(server, 'listening')
 const client = new Client(`http://localhost:${server.address().port}`)
 
 client.on('connect', (origin) => {
-  console.log(`Connected to ${origin}`) // should print before the request body statement
+  console.log(`Connected to ${origin}`) // 应在请求 body 语句之前输出
 })
 
 try {

@@ -156,6 +156,36 @@ Error: Access to this API has been restricted
 
 此行为也适用于 `child_process.spawn()`，但在这种情况下，标志是通过 `NODE_OPTIONS` 环境变量传播的，而不是直接通过进程参数。
 
+### `--allow-ffi`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> Stability: 1.1 - Active development
+
+当使用 [Permission Model][] 时，进程默认将无法使用 FFI
+API。尝试使用 FFI API 将抛出一个 `ERR_ACCESS_DENIED`
+异常，除非用户在启动 Node.js 时显式传递 `--allow-ffi` 标志。
+[`node:ffi`][] 模块还需要
+`--experimental-ffi` 标志，并且仅在具备 FFI 支持的构建中可用。
+
+示例：
+
+```js
+const { DynamicLibrary } = require('node:ffi');
+const lib = new DynamicLibrary('mylib.so');
+```
+
+```console
+$ node --permission --experimental-ffi index.js
+Error: Access to this API has been restricted. Use --allow-ffi to manage permissions.
+    at node:internal/main/run_main_module:17:47 {
+  code: 'ERR_ACCESS_DENIED',
+  permission: 'FFI'
+}
+```
+
 ### `--allow-fs-read`
 
 <!-- YAML
@@ -195,9 +225,9 @@ $ node --permission -r custom-require.js -r custom-require-2.js index.js
 * `custom-require.js`、`custom-require-2.js` 和 `index.js` 默认将在允许的读取列表中。
 
 ```js
-process.has('fs.read', 'index.js'); // true
-process.has('fs.read', 'custom-require.js'); // true
-process.has('fs.read', 'custom-require-2.js'); // true
+process.permission.has('fs.read', 'index.js'); // true
+process.permission.has('fs.read', 'custom-require.js'); // true
+process.permission.has('fs.read', 'custom-require-2.js'); // true
 ```
 
 ### `--allow-fs-write`
@@ -867,7 +897,7 @@ added:
 
 启用 `.node` 插件的实验性导入支持。
 
-### `--experimental-config-file=config`
+### `--experimental-config-file=path`, `--experimental-config-file`
 
 <!-- YAML
 added:
@@ -877,7 +907,14 @@ added:
 
 > 稳定性：1.0 - 早期开发
 
-如果存在，Node.js 将在指定路径查找配置文件。Node.js 将读取配置文件并应用设置。配置文件应为具有以下结构的 JSON 文件。`$schema` 中的 `vX.Y.Z` 必须替换为您正在使用的 Node.js 版本。
+如果存在，Node.js 将在指定路径查找配置文件。
+如果未指定路径，Node.js 将在当前工作目录中查找 `node.config.json` 文件。
+要指定自定义路径，请使用 `--experimental-config-file=path` 形式。
+不支持使用空格分隔的 `--experimental-config-file path` 形式。
+别名 `--experimental-default-config-file` 等同于
+`--experimental-config-file`，不带参数。
+Node.js 将读取配置文件并应用设置。配置文件应为一个 JSON 文件，具有以下结构。`$schema` 中的 `vX.Y.Z`
+必须替换为你正在使用的 Node.js 版本。
 
 ```json
 {
@@ -969,7 +1006,11 @@ added:
 
 > 稳定性：1.0 - 早期开发
 
-如果存在 `--experimental-default-config-file` 标志，Node.js 将在当前工作目录中查找 `node.config.json` 文件并将其作为配置文件加载。
+此标志是 `--experimental-config-file` 不带参数的别名。
+如果存在，Node.js 将在
+当前工作目录中查找
+`node.config.json` 文件并将其作为
+配置文件加载。
 
 ### `--experimental-eventsource`
 
@@ -980,6 +1021,18 @@ added:
 -->
 
 在全局范围启用 [EventSource Web API][] 的暴露。
+
+### `--experimental-ffi`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> Stability: 1 - Experimental
+
+启用实验性的 [`node:ffi`][] 模块。
+
+此标志仅在具备 FFI 支持的构建中可用。
 
 ### `--experimental-import-meta-resolve`
 
@@ -1679,6 +1732,7 @@ added:
 changes:
   - version:
     - v25.4.0
+    - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/60959
     description: "该标志已从 `--no-experimental-require-module` 重命名为`--no-require-module`，前者标记为遗留。"
   - version:
@@ -1775,11 +1829,13 @@ added:
   - v20.17.0
 changes:
   - version:
-    - v25.4.0
+     - v25.4.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/60959
     description: 此标志不再是实验性的。
   - version:
-    - v25.4.0
+     - v25.4.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/60959
     description: "此标志已从 `--no-experimental-require-module`重命名为 `--no-require-module`。"
   - version:
@@ -1900,13 +1956,14 @@ changes:
 为当前进程启用权限模型。启用时，
 以下权限受到限制：
 
-* 文件系统 - 可通过
-  [`--allow-fs-read`][]、[`--allow-fs-write`][] 标志管理
-* 网络 - 可通过 [`--allow-net`][] 标志管理
-* 子进程 - 可通过 [`--allow-child-process`][] 标志管理
-* 工作线程 - 可通过 [`--allow-worker`][] 标志管理
-* WASI - 可通过 [`--allow-wasi`][] 标志管理
-* 插件 - 可通过 [`--allow-addons`][] 标志管理
+* File System - manageable through
+  [`--allow-fs-read`][], [`--allow-fs-write`][] flags
+* Network - manageable through [`--allow-net`][] flag
+* Child Process - manageable through [`--allow-child-process`][] flag
+* Worker Threads - manageable through [`--allow-worker`][] flag
+* WASI - manageable through [`--allow-wasi`][] flag
+* Addons - manageable through [`--allow-addons`][] flag
+* FFI - manageable through [`--allow-ffi`](#--allow-ffi) flag
 
 ### `--permission-audit`
 
@@ -2151,8 +2208,8 @@ changes:
     pr-url: https://github.com/nodejs/node/pull/44208
     description: 如果未捕获异常已处理，则不生成报告。
   - version:
-     - v13.12.0
-     - v12.17.0
+    - v13.12.0
+    - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/32242
     description: 此选项不再是实验性的。
   - version: v12.0.0
@@ -3171,7 +3228,9 @@ added: v6.0.0
 <!-- YAML
 added: v22.1.0
 changes:
-  - version: v25.4.0
+  - version:
+     - v25.4.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/60971
     description: This feature is no longer experimental.
 -->
@@ -3277,6 +3336,7 @@ node --require "./a.js" --require "./b.js"
 
 * `--allow-addons`
 * `--allow-child-process`
+* `--allow-ffi`
 * `--allow-fs-read`
 * `--allow-fs-write`
 * `--allow-inspector`
@@ -3302,6 +3362,7 @@ node --require "./a.js" --require "./b.js"
 * `--experimental-addon-modules`
 * `--experimental-detect-module`
 * `--experimental-eventsource`
+* `--experimental-ffi`
 * `--experimental-import-meta-resolve`
 * `--experimental-json-modules`
 * `--experimental-loader`
@@ -3773,7 +3834,7 @@ node --max-old-space-size=1536 index.js
 
 为了获得应用程序的最佳配置，您在运行应用程序基准测试时应尝试不同的 max-semi-space-size 值。
 
-例如，在 64 位系统上进行基准测试：
+例如在 64 位系统上进行基准测试：
 
 ```bash
 for MiB in 16 32 64 128; do
@@ -3868,6 +3929,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`import.meta.url`]: esm.md#importmetaurl
 [`import` 标识符]: esm.md#import-specifiers
 [`net.getDefaultAutoSelectFamilyAttemptTimeout()`]: net.md#netgetdefaultautoselectfamilyattempttimeout
+[`node:ffi`]: ffi.md
 [`node:sqlite`]: sqlite.md
 [`node:stream/iter`]: stream_iter.md
 [`process.setUncaughtExceptionCaptureCallback()`]: process.md#processsetuncaughtexceptioncapturecallbackfn

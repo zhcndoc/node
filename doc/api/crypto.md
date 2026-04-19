@@ -2196,11 +2196,14 @@ added:
 added: v11.6.0
 changes:
   - version: REPLACEME
-    pr-url: https://github.com/nodejs/node/pull/62240
-    description: "添加了对 `'raw-public'`、`'raw-private'` 和 `'raw-seed'` 格式的支持。"
-  - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62178
-    description: "ML-KEM 和 ML-DSA 私钥 `'pkcs8'` 导出现在在可用种子时默认仅使用种子格式。"
+    description: ML-KEM and ML-DSA private key `'pkcs8'` export now
+                 uses seed-only format by default when a seed is
+                 available.
+  - version: v24.15.0
+    pr-url: https://github.com/nodejs/node/pull/62240
+    description: Added support for `'raw-public'`, `'raw-private'`,
+                 and `'raw-seed'` formats.
   - version: v15.9.0
     pr-url: https://github.com/nodejs/node/pull/37081
     description: "添加了对 `'jwk'` 格式的支持。"
@@ -2528,11 +2531,11 @@ changes:
 
 <!--lint enable maximum-line-length remark-lint-->
 
-Verifies the provided data using the given `key` and `signature`。
+使用给定的 `key` 和 `signature` 来验证所提供的数据。
 
-If `key` is not a [`KeyObject`][], this function behaves as if
-`key` had been passed to [`crypto.createPublicKey()`][]. If it is an
-object, the following additional properties can be passed:
+如果 `key` 不是 [`KeyObject`][]，此函数的行为如同
+`key` 已被传递给 [`crypto.createPublicKey()`][ ]。如果它是一个
+对象，则可以传递以下额外属性：
 
 * `dsaEncoding` {string} 对于 DSA 和 ECDSA，此选项指定签名的格式。它可以是以下之一：
   * `'der'`（默认）：DER 编码的 ASN.1 签名结构编码 `(r, s)`。
@@ -3469,8 +3472,8 @@ added: v11.6.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: "传递 CryptoKey 作为 `key` 已弃用。"
-  - version: REPLACEME
+    description: Passing a CryptoKey as `key` is deprecated.
+  - version: v24.15.0
     pr-url: https://github.com/nodejs/node/pull/62240
     description: "添加了对 `'raw-private'` 和 `'raw-seed'` 格式的支持。"
   - version: v24.6.0
@@ -3510,8 +3513,8 @@ added: v11.6.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: "传递 CryptoKey 作为 `key` 已弃用。"
-  - version: REPLACEME
+    description: Passing a CryptoKey as `key` is deprecated.
+  - version: v24.15.0
     pr-url: https://github.com/nodejs/node/pull/62240
     description: "添加了对 `'raw-public'` 格式的支持。"
   - version: v24.6.0
@@ -3656,17 +3659,16 @@ changes:
   * `secret` {Buffer}
 * 返回：{Buffer} 如果未提供 `callback` 函数。
 
-Computes the Diffie-Hellman shared secret based on a `privateKey` and a `publicKey`.
-Both keys must represent the same asymmetric key type and must support either the DH or
-ECDH operation.
+基于 `privateKey` 和 `publicKey` 计算 Diffie-Hellman 共享秘密。
+两个密钥必须表示相同的非对称密钥类型，并且必须支持 DH 或 ECDH 操作。
 
-If `options.privateKey` is not a [`KeyObject`][], this function behaves as if
-`options.privateKey` had been passed to [`crypto.createPrivateKey()`][].
+如果 `options.privateKey` 不是 [`KeyObject`][]，此函数的行为就像
+`options.privateKey` had been passed to [`crypto.createPrivateKey()`][]。
 
-If `options.publicKey` is not a [`KeyObject`][], this function behaves as if
-`options.publicKey` had been passed to [`crypto.createPublicKey()`][].
+如果 `options.publicKey` 不是 [`KeyObject`][]，此函数的行为就像
+`options.publicKey` had been passed to [`crypto.createPublicKey()`][]。
 
-If the `callback` function is provided this function uses libuv's threadpool.
+如果提供了 `callback` 函数，此函数使用 libuv 的线程池。
 
 ### `crypto.encapsulate(key[, callback])`
 
@@ -4385,7 +4387,7 @@ changes:
 * `salt` {string|ArrayBuffer|Buffer|TypedArray|DataView} 盐值。必须提供但可以是零长度。
 * `info` {string|ArrayBuffer|Buffer|TypedArray|DataView} 附加信息值。必须提供但可以是零长度，且不能超过 1024 字节。
 * `keylen` {number} 要生成的密钥长度。必须大于 0。最大允许值是所选摘要函数产生的字节数的 `255` 倍（例如 `sha512` 生成 64 字节哈希，使最大 HKDF 输出为 16320 字节）。
-* Returns: {ArrayBuffer}
+* 返回：{ArrayBuffer}
 
 提供 RFC 5869 中定义的同步 HKDF 密钥派生函数。给定的 `ikm`、`salt` 和 `info` 与 `digest` 一起用于派生 `keylen` 字节的密钥。
 
@@ -4504,7 +4506,7 @@ changes:
 * `iterations` {number}
 * `keylen` {number}
 * `digest` {string}
-* Returns: {Buffer}
+* 返回：{Buffer}
 
 提供同步基于密码的密钥派生函数 2 (PBKDF2) 实现。应用由 `digest` 指定的选定 HMAC 摘要算法，从 `password`、`salt` 和 `iterations` 派生请求字节长度 (`keylen`) 的密钥。
 
@@ -4568,7 +4570,7 @@ changes:
   * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于 OAEP 填充的标签。如果未指定，则不使用标签。
   * `padding` {crypto.constants} `crypto.constants` 中定义的可选填充值，可以是：`crypto.constants.RSA_NO_PADDING`、`crypto.constants.RSA_PKCS1_PADDING` 或 `crypto.constants.RSA_PKCS1_OAEP_PADDING`。
 * `buffer` {string|ArrayBuffer|Buffer|TypedArray|DataView}
-* Returns: {Buffer} 包含解密内容的新 `Buffer`。
+* 返回：{Buffer} 包含解密内容的新 `Buffer`。
 
 <!--lint enable maximum-line-length remark-lint-->
 
@@ -4599,7 +4601,7 @@ changes:
   * `padding` {crypto.constants} `crypto.constants` 中定义的可选填充值，可以是：`crypto.constants.RSA_NO_PADDING` 或 `crypto.constants.RSA_PKCS1_PADDING`。
   * `encoding` {string} 当 `buffer`、`key` 或 `passphrase` 是字符串时使用的字符串编码。
 * `buffer` {string|ArrayBuffer|Buffer|TypedArray|DataView}
-* Returns: {Buffer} 包含加密内容的新 `Buffer`。
+* 返回：{Buffer} 包含加密内容的新 `Buffer`。
 
 <!--lint enable maximum-line-length remark-lint-->
 
@@ -5245,7 +5247,7 @@ changes:
 * `engine` {string}
 * `flags` {crypto.constants} **默认：** `crypto.constants.ENGINE_METHOD_ALL`
 
-加载并设置 `engine` 用于部分或全部 OpenSSL 函数（由标志选择）。OpenSSL 3 起弃用对 OpenSSL 中自定义引擎的支持。
+加载并设置 `engine` 用于部分或全部 OpenSSL 函数（由标志选择）。从 OpenSSL 3 开始，对 OpenSSL 中自定义引擎的支持已弃用。
 
 `engine` 可以是 id 或引擎共享库的路径。
 

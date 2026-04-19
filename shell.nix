@@ -16,6 +16,7 @@
   withLief ? true,
   withQuic ? false,
   withSQLite ? true,
+  withFFI ? true,
   withSSL ? true,
   withTemporal ? false,
   sharedLibDeps ? (
@@ -25,6 +26,7 @@
         withLief
         withQuic
         withSQLite
+        withFFI
         withSSL
         withTemporal
         ;
@@ -63,8 +65,8 @@ let
       else
         "--with-intl=${if useSharedICU then "system" else icu}-icu"
     )
+    "--v8-${if withTemporal then "enable" else "disable"}-temporal-support"
   ]
-  ++ pkgs.lib.optional withTemporal "--v8-enable-temporal-support"
   ++ pkgs.lib.optional (withTemporal && useSharedTemporal) "--shared-temporal_capi";
 in
 pkgs.mkShell {
@@ -105,6 +107,7 @@ pkgs.mkShell {
     ++ pkgs.lib.optional (!withLief) "--without-lief"
     ++ pkgs.lib.optional withQuic "--experimental-quic"
     ++ pkgs.lib.optional (!withSQLite) "--without-sqlite"
+    ++ pkgs.lib.optional (!withFFI) "--without-ffi"
     ++ pkgs.lib.optional (!withSSL) "--without-ssl"
     ++ pkgs.lib.optional loadJSBuiltinsDynamically "--node-builtin-modules-path=${builtins.toString ./.}"
     ++ pkgs.lib.optional (useSeparateDerivationForV8 != false) "--without-bundled-v8"

@@ -168,7 +168,7 @@ added: v1.4.1
 
 在同步代码中，当未处理异常列表增长时，会发出 `'uncaughtException'` 事件。
 
-在异步代码中，当未处理拒绝列表增长时，会发出 `'unhandledRejection'` 事件，而当未处理拒绝列表缩小时，会发出 `'rejectionHandled'` 事件。
+在异步代码中，当未处理拒绝列表增长时会发出 `'unhandledRejection'` 事件，而当未处理拒绝列表缩小时，会发出 `'rejectionHandled'` 事件。
 
 ```mjs
 import process from 'node:process';
@@ -272,7 +272,7 @@ console.log('This will not run.');
 
 #### 警告：正确使用 `'uncaughtException'`
 
-`'uncaughtException'` 是一种用于异常处理的粗略机制，仅应作为最后手段使用。该事件_不应_用作等同于 `On Error Resume Next`。未处理的异常本质上意味着应用程序处于未定义状态。尝试在不正确恢复异常的情况下恢复应用程序代码可能会导致额外的不可预见和不可预测的问题。
+`'uncaughtException'` 是一种用于异常处理的粗略机制，仅应作为最后手段使用。该事件_不_应_用作等同于 `On Error Resume Next`。未处理的异常本质上意味着应用程序处于未定义状态。尝试在不正确恢复异常的情况下恢复应用程序代码可能会导致额外的不可预见和不可预测的问题。
 
 从事件处理程序内部抛出的异常将不会被捕获。相反，进程将以非零退出代码退出，并将打印堆栈跟踪。这是为了避免无限递归。
 
@@ -1255,7 +1255,7 @@ function emitMyWarning() {
   }
 }
 emitMyWarning();
-// 发出：(node: 56339) Warning: Only warn once!
+// 发出：(node:56339) Warning: Only warn once!
 emitMyWarning();
 // 不发出任何内容
 ```
@@ -1270,7 +1270,7 @@ function emitMyWarning() {
   }
 }
 emitMyWarning();
-// 发出：(node: 56339) Warning: Only warn once!
+// 发出：(node:56339) Warning: Only warn once!
 emitMyWarning();
 // 不发出任何内容
 ```
@@ -2738,6 +2738,7 @@ added: v20.0.0
 * `fs.write` - 文件系统写入操作
 * `child` - 子进程生成操作
 * `worker` - Worker 线程生成操作
+* `ffi` - 外部函数接口操作
 
 ```js
 // 检查进程是否有权限读取 README 文件
@@ -2837,9 +2838,9 @@ added:
 
 > 稳定性：1 - 实验性
 
-* `maybeRefable` {any} 一个可能是"refable"的对象。
+* `maybeRefable` {any} 一个可能是“refable”的对象。
 
-如果一个对象实现了 Node.js "Refable 协议"，则它是"refable"的。具体来说，这意味着该对象实现了 `Symbol.for('nodejs.ref')` 和 `Symbol.for('nodejs.unref')` 方法。"Ref'd"对象将使 Node.js 事件循环保持活动状态，而"unref'd"对象则不会。历史上，这是通过直接在对象上使用 `ref()` 和 `unref()` 方法来实现的。然而，此模式正被弃用，转而支持"Refable 协议"，以便更好地支持 Web 平台 API 类型，这些类型的 API 无法被修改以添加 `ref()` 和 `unref()` 方法，但仍需要支持该行为。
+如果一个对象实现了 Node.js “Refable 协议”，则它是“refable”的。具体来说，这意味着该对象实现了 `Symbol.for('nodejs.ref')` 和 `Symbol.for('nodejs.unref')` 方法。“Ref'd”对象将使 Node.js 事件循环保持活动状态，而“unref'd”对象则不会。历史上，这是通过直接在对象上使用 `ref()` 和 `unref()` 方法来实现的。然而，此模式正被弃用，转而支持“Refable 协议”，以便更好地支持 Web 平台 API 类型，这些类型的 API 无法被修改以添加 `ref()` 和 `unref()` 方法，但仍需要支持该行为。
 
 ## `process.release`
 

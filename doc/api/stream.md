@@ -2928,7 +2928,9 @@ duplex.once('readable', () => console.log('readable', duplex.read()));
 <!-- YAML
 added: v17.0.0
 changes:
-  - version: v25.7.0
+  - version:
+     - v25.7.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61632
     description: "添加了 'readableType' 选项以指定 ReadableStream 类型。'type' 选项已弃用。"
   - version:

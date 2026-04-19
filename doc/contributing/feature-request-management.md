@@ -1,91 +1,32 @@
-# Feature request management
+# 功能请求管理
 
-Feature requests are not a valuable source of input for the project.
-It is usually more productive to first send the Pull Request implementing the
-feature, even imperfectly, and let the discussion happen during code review.
-That being said, the project still welcomes feature request issues, either for
-features you cannot and/or won't implement yourself, or if you need more input
-from the community before starting the work.
+功能请求并不是对项目有价值的输入来源。
+通常更高效的做法是，首先发送实现该功能的 Pull Request（即使并不完美），并让讨论在代码评审期间发生。
+话虽如此，该项目仍欢迎功能请求议题：无论是对于你无法和/或不打算自己实现的功能，还是当你需要在开始工作前从社区获得更多输入时。
 
-The project is volunteer run and does not have the ability to direct resources
-toward specific work. The features which are implemented are those for which
-volunteers are individually motivated to work on. The best way to ensure
-a feature gets implemented is to create a PR to add it.
-The project strives to support people who do that.
+该项目由志愿者运行，无法将资源定向投放到特定工作上。
+已实现的功能是那些让志愿者能够基于个人动机投入去完成的功能。
+确保某个功能被实现的最佳方式，是创建一个 PR 将其加入。
+该项目努力支持那些这么做的人。
 
-An open feature request does not provide any indication that work
-on that feature will take place and after some period of time
-may be detrimental as it may result in an expectation that will
-never be fulfilled.
+一个开放的功能请求并不能表明该功能的工作一定会发生；经过一段时间后，它甚至可能造成不利影响，因为它可能导致产生一种永远不会被满足的预期。
 
-This process tries to balance retaining the valuable input
-we get through feature requests and the overhead of
-maintaining open feature requests that will never get
-implemented.
+该流程试图在保留功能请求带来的宝贵输入的同时，平衡维护那些永远不会被实现的开放功能请求所带来的开销。
 
-## Creating feature requests
+## 创建功能请求
 
-A feature request can be created by adding the `feature request`
-label to an issue. This may be done automatically when the issue
-is opened or at a later point (often when investigation of a bug
-report results in it being considered a feature request as opposed
-to a bug).
+可以通过在一个议题上添加 `feature request` 标签来创建功能请求。
+当议题被打开时，可能会自动完成这一步，或者在之后的某个时间点完成（通常是在对 bug 报告进行调查后，发现它被认为更像是功能请求而不是 bug）。
 
-The current list of feature requests can be found through the
+当前的功能请求列表可通过以下查询找到：
 [is:issue is:open label:"feature request"](https://github.com/nodejs/node/issues?q=is%3Aissue+is%3Aopen+label%3A%22feature+request%22)
-query.
 
-## Triage of feature requests
+## 功能请求的分诊（Triage）
 
-There is no set process for triaging/handling feature requests.
-Individual collaborators review issues marked as `feature request`
-along with other issues and may or may not decide to
-work on an implementation or advocate on their behalf.
+没有固定的流程用于对功能请求进行分诊/处理。
+各个协作成员会在审查标记为 `feature request` 的议题时一并查看其他议题，并可能会也可能不会决定参与实现，或在该功能方面为其进行倡导。
 
-If a collaborator believes a feature request must be implemented
-they can add the `never-stale` label to the issue and it will
-be excluded from the automated feature request handling
-as outlined below.
+## 表达对功能请求的支持
 
-## Expressing support for a feature request
-
-If you come across a feature request and want to add your
-support for that feature please express your support
-with the thumbs up emoji as a reaction. At some point in the
-future we may use this as additional input in the automated
-handling of feature requests.
-
-## Automated feature request handling
-
-Our experience is that most feature requests that are
-likely to be addressed, will be addressed within the first
-6 months after they are submitted.
-
-Once there has been no activity on a feature request for
-5 months, the following comment will be added
-to the issue:
-
-```markdown
-There has been no activity on this feature request for
-5 months and it is unlikely to be implemented.
-It will be closed 6 months after the last non-automated comment.
-
-For more information on how the project manages
-feature requests, please consult the
-[feature request management document](https://github.com/nodejs/node/blob/HEAD/doc/contributing/feature-request-management.md).
-```
-
-If there is no additional activity/discussion on the
-feature request in the next month, the following
-comment is added to the issue and the issue will be
-closed:
-
-```markdown
-There has been no activity on this feature request
-and it is being closed. If you feel closing this issue is not the
-right thing to do, please leave a comment.
-
-For more information on how the project manages
-feature requests, please consult the
-[feature request management document](https://github.com/nodejs/node/blob/HEAD/doc/contributing/feature-request-management.md).
-```
+如果你遇到一个功能请求，并希望为该功能添加支持，请通过添加“👍”表情作为反应来表达支持。
+在未来的某个时间点，我们可能会将其作为额外输入，用于自动化处理功能请求。

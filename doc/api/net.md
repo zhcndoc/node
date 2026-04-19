@@ -486,7 +486,7 @@ Linux 上的 `tcp_max_syn_backlog` 和 `somaxconn`。此参数的默认值为 51
 ```js
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {
-    console.error('Address in use, retrying...');
+    console.error('地址正在使用中，正在重试...');
     setTimeout(() => {
       server.close();
       server.listen(PORT, HOST);
@@ -723,7 +723,9 @@ added: v0.3.4
 <!-- YAML
 added: v0.3.4
 changes:
-  - version: v25.6.0
+  - version:
+     - v25.6.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61503
     description: "添加了 `typeOfService` 选项。"
   - version: v15.14.0
@@ -947,7 +949,7 @@ deprecated:
 
 此属性显示缓冲用于写入的字符数。缓冲区可能包含编码后长度未知的字符串。因此这个数字只是缓冲区中字节数的近似值。
 
-`net.Socket` 具有 `socket.write()` 始终有效的属性。这是为了帮助用户快速上手。计算机无法总是跟上写入 Socket 的数据量。网络连接可能 просто 太慢。Node.js 将在内部队列化写入 Socket 的数据，并在可能时通过线路发送出去。
+`net.Socket` 具有 `socket.write()` 始终有效的属性。这是为了帮助用户快速上手。计算机无法总是跟上写入 Socket 的数据量。网络连接可能只是 太慢。Node.js 将在内部队列化写入 Socket 的数据，并在可能时通过线路发送出去。
 
 此内部缓冲的后果是内存可能会增长。遇到大型或不断增长的 `bufferSize` 的用户应尝试使用 [`socket.pause()`][] 和 [`socket.resume()`][] 在其程序中“限制”数据流。
 
@@ -1334,7 +1336,9 @@ socket.on('timeout', () => {
 ### `socket.getTypeOfService()`
 
 <!-- YAML
-added: v25.6.0
+added:
+ - v25.6.0
+ - v24.15.0
 -->
 
 * 返回：{integer} 当前的 TOS 值。
@@ -1349,7 +1353,9 @@ added: v25.6.0
 ### `socket.setTypeOfService(tos)`
 
 <!-- YAML
-added: v25.6.0
+added:
+ - v25.6.0
+ - v24.15.0
 -->
 
 * `tos` {integer} 要设置的 TOS 值 (0-255)。
@@ -1470,7 +1476,7 @@ added: v0.1.90
 
 ## `net.createConnection()`
 
-一个工厂函数，它创建一个新的 [`net.Socket`][]，
+这是一个工厂函数，它创建一个新的 [`net.Socket`][]，
 立即使用 [`socket.connect()`][] 发起连接，
 然后返回启动连接的 `net.Socket`。
 

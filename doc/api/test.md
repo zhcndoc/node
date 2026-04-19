@@ -3113,20 +3113,28 @@ changes:
 ### 事件：`'test:complete'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `details` {Object} 额外的执行元数据。
-    * `passed` {boolean} 测试是否通过。
-    * `duration_ms` {number} 测试持续时间（毫秒）。
-    * `error` {Error|undefined} 如果测试未通过，则是一个包装测试抛出错误的错误对象。
-      * `cause` {Error} 测试抛出的实际错误。
-    * `type` {string|undefined} 测试类型，用于表示这是否是一个套件。
-  * `file` {string|undefined} 测试文件的路径，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
-  * `testNumber` {number} 测试的序号。
-  * `todo` {string|boolean|undefined} 如果调用了 [`context.todo`][] 则存在
-  * `skip` {string|boolean|undefined} 如果调用了 [`context.skip`][] 则存在
+  * `column` {number|undefined} The column number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `details` {Object} Additional execution metadata.
+    * `passed` {boolean} Whether the test passed or not.
+    * `duration_ms` {number} The duration of the test in milliseconds.
+    * `error` {Error|undefined} An error wrapping the error thrown by the test
+      if it did not pass.
+      * `cause` {Error} The actual error thrown by the test.
+    * `type` {string|undefined} The type of the test, used to denote whether
+      this is a suite.
+  * `file` {string|undefined} The path of the test file,
+    `undefined` if test was run through the REPL.
+  * `line` {number|undefined} The line number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `name` {string} The test name.
+  * `nesting` {number} The nesting level of the test.
+  * `testId` {number} A numeric identifier for this test instance, unique
+    within the test file's process. Consistent across all events for the same
+    test instance, enabling reliable correlation in custom reporters.
+  * `testNumber` {number} The ordinal number of the test.
+  * `todo` {string|boolean|undefined} Present if [`context.todo`][] is called
+  * `skip` {string|boolean|undefined} Present if [`context.skip`][] is called
 
 当测试完成执行时发出。
 此事件的发出顺序与测试定义的顺序不一致。
@@ -3135,12 +3143,18 @@ changes:
 ### 事件：`'test:dequeue'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `file` {string|undefined} 测试文件的路径，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
-  * `type` {string} 测试类型。`'suite'` 或 `'test'`。
+  * `column` {number|undefined} The column number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `file` {string|undefined} The path of the test file,
+    `undefined` if test was run through the REPL.
+  * `line` {number|undefined} The line number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `name` {string} The test name.
+  * `nesting` {number} The nesting level of the test.
+  * `testId` {number} A numeric identifier for this test instance, unique
+    within the test file's process. Consistent across all events for the same
+    test instance, enabling reliable correlation in custom reporters.
+  * `type` {string} The test type. Either `'suite'` or `'test'`.
 
 当测试出队时发出，就在执行之前。
 此事件不保证按测试定义的顺序发出。对应的声明顺序事件是 `'test:start'`。
@@ -3165,32 +3179,46 @@ changes:
 ### 事件：`'test:enqueue'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `file` {string|undefined} 测试文件的路径，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
-  * `type` {string} 测试类型。`'suite'` 或 `'test'`。
+  * `column` {number|undefined} The column number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `file` {string|undefined} The path of the test file,
+    `undefined` if test was run through the REPL.
+  * `line` {number|undefined} The line number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `name` {string} The test name.
+  * `nesting` {number} The nesting level of the test.
+  * `testId` {number} A numeric identifier for this test instance, unique
+    within the test file's process. Consistent across all events for the same
+    test instance, enabling reliable correlation in custom reporters.
+  * `type` {string} The test type. Either `'suite'` or `'test'`.
 
 当测试入队等待执行时发出。
 
 ### 事件：`'test:fail'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `details` {Object} 额外的执行元数据。
-    * `duration_ms` {number} 测试持续时间（毫秒）。
-    * `error` {Error} 一个包装测试抛出错误的错误对象。
-      * `cause` {Error} 测试抛出的实际错误。
-    * `type` {string|undefined} 测试类型，用于表示这是否是一个套件。
-    * `attempt` {number|undefined} 测试运行的尝试次数，仅在使用 [`--test-rerun-failures`][] 标志时存在。
-  * `file` {string|undefined} 测试文件的路径，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
-  * `testNumber` {number} 测试的序号。
-  * `todo` {string|boolean|undefined} 如果调用了 [`context.todo`][] 则存在
-  * `skip` {string|boolean|undefined} 如果调用了 [`context.skip`][] 则存在
+  * `column` {number|undefined} The column number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `details` {Object} Additional execution metadata.
+    * `duration_ms` {number} The duration of the test in milliseconds.
+    * `error` {Error} An error wrapping the error thrown by the test.
+      * `cause` {Error} The actual error thrown by the test.
+    * `type` {string|undefined} The type of the test, used to denote whether
+      this is a suite.
+    * `attempt` {number|undefined} The attempt number of the test run,
+      present only when using the [`--test-rerun-failures`][] flag.
+  * `file` {string|undefined} The path of the test file,
+    `undefined` if test was run through the REPL.
+  * `line` {number|undefined} The line number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `name` {string} The test name.
+  * `nesting` {number} The nesting level of the test.
+  * `testId` {number} A numeric identifier for this test instance, unique
+    within the test file's process. Consistent across all events for the same
+    test instance, enabling reliable correlation in custom reporters.
+  * `testNumber` {number} The ordinal number of the test.
+  * `todo` {string|boolean|undefined} Present if [`context.todo`][] is called
+  * `skip` {string|boolean|undefined} Present if [`context.skip`][] is called
 
 当测试失败时发出。
 此事件保证按测试定义的顺序发出。
@@ -3199,7 +3227,9 @@ changes:
 ### 事件：`'test:interrupted'`
 
 <!-- YAML
-added: v25.7.0
+added:
+ - v25.7.0
+ - v24.15.0
 -->
 
 * `data` {Object}
@@ -3217,19 +3247,28 @@ added: v25.7.0
 ### 事件：`'test:pass'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `details` {Object} 额外的执行元数据。
-    * `duration_ms` {number} 测试持续时间（毫秒）。
-    * `type` {string|undefined} 测试类型，用于表示这是否是一个套件。
-    * `attempt` {number|undefined} 测试运行的尝试次数，仅在使用 [`--test-rerun-failures`][] 标志时存在。
-    * `passed_on_attempt` {number|undefined} 测试通过的尝试次数，仅在使用 [`--test-rerun-failures`][] 标志时存在。
-  * `file` {string|undefined} 测试文件的路径，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
-  * `testNumber` {number} 测试的序号。
-  * `todo` {string|boolean|undefined} 如果调用了 [`context.todo`][] 则存在
-  * `skip` {string|boolean|undefined} 如果调用了 [`context.skip`][] 则存在
+  * `column` {number|undefined} The column number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `details` {Object} Additional execution metadata.
+    * `duration_ms` {number} The duration of the test in milliseconds.
+    * `type` {string|undefined} The type of the test, used to denote whether
+      this is a suite.
+    * `attempt` {number|undefined} The attempt number of the test run,
+      present only when using the [`--test-rerun-failures`][] flag.
+    * `passed_on_attempt` {number|undefined} The attempt number the test passed on,
+      present only when using the [`--test-rerun-failures`][] flag.
+  * `file` {string|undefined} The path of the test file,
+    `undefined` if test was run through the REPL.
+  * `line` {number|undefined} The line number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `name` {string} The test name.
+  * `nesting` {number} The nesting level of the test.
+  * `testId` {number} A numeric identifier for this test instance, unique
+    within the test file's process. Consistent across all events for the same
+    test instance, enabling reliable correlation in custom reporters.
+  * `testNumber` {number} The ordinal number of the test.
+  * `todo` {string|boolean|undefined} Present if [`context.todo`][] is called
+  * `skip` {string|boolean|undefined} Present if [`context.skip`][] is called
 
 当测试通过时发出。
 此事件保证按测试定义的顺序发出。
@@ -3250,11 +3289,17 @@ added: v25.7.0
 ### 事件：`'test:start'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `file` {string|undefined} 测试文件的路径，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
+  * `column` {number|undefined} The column number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `file` {string|undefined} The path of the test file,
+    `undefined` if test was run through the REPL.
+  * `line` {number|undefined} The line number where the test is defined, or
+    `undefined` if the test was run through the REPL.
+  * `name` {string} The test name.
+  * `nesting` {number} The nesting level of the test.
+  * `testId` {number} A numeric identifier for this test instance, unique
+    within the test file's process. Consistent across all events for the same
+    test instance, enabling reliable correlation in custom reporters.
 
 当测试开始报告自身及其子测试的状态时发出。
 此事件保证按测试定义的顺序发出。
@@ -3674,7 +3719,9 @@ added: v25.0.0
 ### `context.workerId`
 
 <!-- YAML
-added: v25.8.0
+added:
+ - v25.8.0
+ - v24.15.0
 -->
 
 * 类型：{number|undefined}
@@ -4037,12 +4084,12 @@ test.describe('my suite', (suite) => {
 [`run()`]: #runoptions
 [`suite()`]: #suitename-options-fn
 [`test()`]: #testname-options-fn
-[代码覆盖率]: #collecting-code-coverage
-[配置文件]: cli.md#--experimental-config-fileconfig
-[describe 选项]: #describename-options-fn
-[it 选项]: #testname-options-fn
-[模块自定义钩子]: module.md#customization-hooks
-[从命令行运行测试]: #running-tests-from-the-command-line
+[code coverage]: #collecting-code-coverage
+[configuration files]: cli.md#--experimental-config-filepath---experimental-config-file
+[describe options]: #describename-options-fn
+[it options]: #testname-options-fn
+[module customization hooks]: module.md#customization-hooks
+[running tests from the command line]: #running-tests-from-the-command-line
 [stream.compose]: stream.md#streamcomposestreams
 [子测试]: #subtests
 [suite 选项]: #suitename-options-fn

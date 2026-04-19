@@ -2533,6 +2533,19 @@ changes:
 
 尝试 `require()` [ES 模块][]。此错误已弃用，因为 `require()` 现在支持加载同步 ES 模块。当 `require()` 遇到包含顶层 `await` 的 ES 模块时，将改为抛出 [`ERR_REQUIRE_ASYNC_MODULE`][]。
 
+<a id="ERR_REQUIRE_ESM_RACE_CONDITION"></a>
+
+### `ERR_REQUIRE_ESM_RACE_CONDITION`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> Stability: 1 - Experimental.
+
+An attempt was made to `require()` an [ES Module][] while another `import()` call
+was already in progress to load it asynchronously.
+
 <a id="ERR_SCRIPT_EXECUTION_INTERRUPTED"></a>
 
 ### `ERR_SCRIPT_EXECUTION_INTERRUPTED`

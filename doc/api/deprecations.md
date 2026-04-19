@@ -1959,9 +1959,9 @@ changes:
 * `v8/tools/splaytree`
 * `v8/tools/tickprocessor-driver`
 * `v8/tools/tickprocessor`
-* `node-inspect/lib/_inspect` (从 7.6.0 开始)
-* `node-inspect/lib/internal/inspect_client` (从 7.6.0 开始)
-* `node-inspect/lib/internal/inspect_repl` (从 7.6.0 开始)
+* `node-inspect/lib/_inspect`（从 7.6.0 开始）
+* `node-inspect/lib/internal/inspect_client`（从 7.6.0 开始）
+* `node-inspect/lib/internal/inspect_repl`（从 7.6.0 开始）
 
 `v8/*` 模块没有任何导出，如果不按特定顺序导入，实际上会抛出错误。因此，通过 `require()` 导入它们几乎没有合法的用例。
 
@@ -2377,7 +2377,7 @@ changes:
 将其值解释为引擎读取的字节数也有意义，但与 Node.js 中
 在这些名称下暴露值的其他流不一致。
 
-自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/zlib-bytesread-to-byteswritten)）：
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/zlib-bytesread-to-byteswritten)）。
 
 ```bash
 npx codemod@latest @nodejs/zlib-bytesread-to-byteswritten
@@ -2891,7 +2891,7 @@ changes:
 
 类型：仅文档
 
-[`response.finished`][] 指示是否已调用 [`response.end()`][]，
+[`response.finished`][] 指示是否已调用 [`response.end()`][],
 而不是是否已发出 `'finish'` 且底层数据
 已刷新。
 
@@ -3267,7 +3267,7 @@ changes:
 
 请使用 `'hashAlgorithm'` 而不是 `'hash'`，使用 `'mgf1HashAlgorithm'` 而不是 `'mgf1Hash'`。
 
-自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/crypto-rsa-pss-update)）：
+自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/crypto-rsa-pss-update)）。
 
 ```bash
 npx codemod@latest @nodejs/crypto-rsa-pss-update
@@ -3745,7 +3745,7 @@ changes:
 
 `dirent.path` 属性已被移除，因为其在发布版本之间缺乏一致性。请改用 [`dirent.parentPath`][]。
 
-提供自动迁移工具 ([源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/dirent-path-to-parent-path))：
+提供自动迁移工具 ([源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/dirent-path-to-parent-path)）：
 
 ```bash
 npx codemod@latest @nodejs/dirent-path-to-parent-path
@@ -3874,7 +3874,7 @@ changes:
 
 实例化 `node:repl` 模块导出的类时不使用 `new` 限定符已被弃用。必须改用 `new` 限定符。这适用于所有 REPL 类，包括 `REPLServer` 和 `Recoverable`。
 
-提供自动迁移工具 ([源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-classes-with-new))：
+提供自动迁移工具 ([源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-classes-with-new)）：
 
 ```bash
 npx codemod@latest @nodejs/repl-classes-with-new
@@ -4167,8 +4167,10 @@ import { opendir } from 'node:fs/promises';
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62173
-    description: 运行时弃用。
-  - version: v25.7.0
+    description: Runtime deprecation.
+  - version:
+     - v25.7.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61632
     description: 仅文档弃用。
 -->
@@ -4181,7 +4183,9 @@ changes:
 
 <!-- YAML
 changes:
-  - version: v25.7.0
+  - version:
+     - v25.7.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61713
     description: 仅文档弃用。
 -->
@@ -4216,8 +4220,10 @@ const server = http2.createSecureServer({
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: 运行时弃用。
-  - version: v25.9.0
+    description: Runtime deprecation.
+  - version:
+     - v25.9.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/62321
     description: 仅文档弃用。
 -->
@@ -4232,8 +4238,10 @@ changes:
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: 运行时弃用。
-  - version: v25.9.0
+    description: Runtime deprecation.
+  - version:
+     - v25.9.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/62321
     description: 仅文档弃用。
 -->
@@ -4248,8 +4256,10 @@ changes:
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62401
-    description: 运行时弃用。
-  - version: v25.9.0
+    description: Runtime deprecation.
+  - version:
+     - v25.9.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/62395
     description: 仅文档弃用。
 -->

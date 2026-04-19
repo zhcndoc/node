@@ -1523,10 +1523,10 @@ NAPI_EXTERN napi_status napi_add_async_cleanup_hook(
     napi_async_cleanup_hook_handle* remove_handle);
 ```
 
-* `[in] env`: API 被调用下的环境。
-* `[in] hook`: 在环境销毁时调用的函数指针。
-* `[in] arg`: 调用 `hook` 时传递的指针。
-* `[out] remove_handle`: 可选句柄，引用异步清理钩子。
+* `[in] env`：API 被调用下的环境。
+* `[in] hook`：在环境销毁时调用的函数指针。
+* `[in] arg`：调用 `hook` 时传递的指针。
+* `[out] remove_handle`：可选句柄，引用异步清理钩子。
 
 注册 `hook`（类型为 [`napi_async_cleanup_hook`][] 的函数），作为在当前 Node.js 环境退出时使用 `remove_handle` 和 `arg` 参数运行的函数。
 
@@ -2076,6 +2076,39 @@ API 添加了一个 `napi_finalize` 回调，当刚刚创建的 JavaScript
 
 JavaScript `ArrayBuffer` 在 ECMAScript 语言规范的
 [ArrayBuffer 对象部分][Section ArrayBuffer objects] 中描述。
+
+#### `node_api_create_external_sharedarraybuffer`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+```c
+napi_status
+node_api_create_external_sharedarraybuffer(napi_env env,
+                                           void* external_data,
+                                           size_t byte_length,
+                                           node_api_noenv_finalize finalize_cb,
+                                           void* finalize_hint,
+                                           napi_value* result)
+```
+
+* `[in] env`: 在该 API 调用所处的环境。
+* `[in] external_data`: 指向 `SharedArrayBuffer` 的
+  底层字节缓冲区的指针。
+* `[in] byte_length`: 底层缓冲区的字节长度。
+* `[in] finalize_cb`: 当 `SharedArrayBuffer` 正在被
+  收集时调用的可选回调。该回调在任意线程上调用。
+  因为 `SharedArrayBuffer` 可能比其创建时的环境存活更久，
+  所以该回调不会接收 `env` 的引用。
+* `[in] finalize_hint`: 在收集期间传递给 finalize 回调的可选提示。
+* `[out] result`: 表示 JavaScript `SharedArrayBuffer` 的 `napi_value`。
+
+如果 API 成功则返回 `napi_ok`。
+
+使用外部管理的内存创建一个 `SharedArrayBuffer`。
+
+有关运行时兼容性，请参阅 [`napi_create_external_arraybuffer`][] 的条目。
 
 #### `napi_create_external_buffer`
 
@@ -2790,7 +2823,8 @@ napi_status NAPI_CDECL node_api_create_property_key_utf8(napi_env env,
 
 * `[in] env`：调用 API 的环境。
 * `[in] str`：表示 UTF8 编码字符串的字符缓冲区。
-* `[in] length`：字符串的双字节代码单元长度，如果它是空终止的则为 `NAPI_AUTO_LENGTH`。
+* `[in] length`：字符串的双字节代码单元长度，如果它是空终止的则为
+  `NAPI_AUTO_LENGTH`。
 * `[out] result`：表示优化的 JavaScript `string` 的 `napi_value`，
   用作对象的属性键。
 
@@ -2881,8 +2915,7 @@ napi_status napi_get_buffer_info(napi_env env,
 
 * `[in] env`：调用 API 的环境。
 * `[in] value`：`napi_value` 表示正在查询的 `node::Buffer` 或 `Uint8Array`。
-* `[out] data`：`node::Buffer` 或
-  `Uint8Array` 的底层数据缓冲区。如果长度为 `0`，这可能是 `NULL` 或任何其他指针值。
+* `[out] data`：`node::Buffer` 或 `Uint8Array` 的底层数据缓冲区。如果长度为 `0`，这可能是 `NULL` 或任何其他指针值。
 * `[out] length`：底层数据缓冲区的字节长度。
 
 如果 API 成功则返回 `napi_ok`。
@@ -3310,7 +3343,7 @@ napi_status napi_get_boolean(napi_env env, bool value, napi_value* result)
 
 * `[in] env`: 调用 API 所处的环境。
 * `[in] value`: 要检索的布尔值。
-* `[out] result`: 代表要检索的 JavaScript `Boolean` 单例的 `napi_value`。
+* `[out] result`: 代表要检索的 JavaScript `Boolean` 单例对象的 `napi_value`。
 
 如果 API 成功则返回 `napi_ok`。
 
@@ -3369,6 +3402,7 @@ napi_status napi_get_undefined(napi_env env, napi_value* result)
 如果 API 成功则返回 `napi_ok`。
 
 此 API 返回 Undefined 对象。
+
 ```
 
 ## 使用 JavaScript 值和抽象操作

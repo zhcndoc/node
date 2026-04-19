@@ -7,7 +7,7 @@
 <!--name=module-->
 
 CommonJS 模块是 Node.js 打包 JavaScript 代码的原始方式。
-Node.js 也支持浏览器和其他 JavaScript 运行时使用的 [ECMAScript 模块][] 标准。
+Node.js 也支持 [ECMAScript 模块][] 标准，以便在浏览器和其他 JavaScript 运行时使用。
 
 在 Node.js 中，每个文件都被视为一个单独的模块。例如，考虑一个名为 `foo.js` 的文件：
 
@@ -126,7 +126,8 @@ added:
   - v20.17.0
 changes:
   - version:
-    - v25.4.0
+     - v25.4.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/60959
     description: 此功能不再是实验性的。
   - version:
@@ -428,6 +429,7 @@ Node.js 有几个编译到二进制文件中的模块。这些模块在本文档
 
 当被 `require()` 加载时，某些内置模块必须使用 `node:` 前缀请求。此要求存在是为了防止新引入的内置模块与已经占用该名称的用户土地包发生冲突。目前需要 `node:` 前缀的内置模块有：
 
+* [`node:ffi`][]
 * [`node:sea`][]
 * [`node:sqlite`][]
 * [`node:test`][]
@@ -1028,7 +1030,7 @@ added: v0.5.1
 * <a id="modules_module_createrequire_filename" href="module.html#modulecreaterequirefilename">`module.createRequire(filename)`</a>
 * <a id="modules_module_syncbuiltinesmexports" href="module.html#modulesyncbuiltinesmexports">`module.syncBuiltinESMExports()`</a>
 
-## Source map v3 支持
+## 源映射 v3 支持
 
 本节已移至
 [模块：`module` 核心模块](module.md#source-map-support)。
@@ -1041,7 +1043,7 @@ added: v0.5.1
   * <a id="modules_sourcemap_payload" href="module.html#sourcemappayload">`sourceMap.payload`</a>
   * <a id="modules_sourcemap_findentry_linenumber_columnnumber" href="module.html#sourcemapfindentrylineoffset-columnoffset">`sourceMap.findEntry(lineNumber, columnNumber)`</a>
 
-[Determining module system]: packages.md#determining-module-system
+[确定模块系统]: packages.md#determining-module-system
 [ECMAScript Modules]: esm.md
 [GLOBAL_FOLDERS]: #loading-from-the-global-folders
 [`"main"`]: packages.md#main
@@ -1056,8 +1058,9 @@ added: v0.5.1
 [`module.builtinModules`]: module.md#modulebuiltinmodules
 [`module.children`]: #modulechildren
 [`module.id`]: #moduleid
-[`module` core module]: module.md
-[`module` object]: #the-module-object
+[`module` 核心模块]: module.md
+[`module` 对象]: #the-module-object
+[`node:ffi`]: ffi.md
 [`node:sea`]: single-executable-applications.md#single-executable-application-api
 [`node:sqlite`]: sqlite.md
 [`node:test/reporters`]: test.md#test-reporters
@@ -1066,9 +1069,9 @@ added: v0.5.1
 [`path.dirname()`]: path.md#pathdirnamepath
 [`process.features.require_module`]: process.md#processfeaturesrequire_module
 [`require.main`]: #requiremain
-[exports shortcut]: #exports-shortcut
-[module namespace object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import#module_namespace_object
-[module resolution]: #all-together
-[native addons]: addons.md
-[subpath exports]: packages.md#subpath-exports
-[subpath imports]: packages.md#subpath-imports
+[exports 快捷方式]: #exports-shortcut
+[module 命名空间对象]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import#module_namespace_object
+[模块解析]: #all-together
+[原生扩展]: addons.md
+[子路径导出]: packages.md#subpath-exports
+[子路径导入]: packages.md#subpath-imports

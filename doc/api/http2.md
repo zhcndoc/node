@@ -508,7 +508,7 @@ added: v8.4.0
 #### `http2session.ping([payload, ]callback)`
 
 <!-- YAML
-added: v8.9.3
+added: v10.12.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
@@ -2457,10 +2457,14 @@ added:
 <!-- YAML
 added: v8.4.0
 changes:
-  - version: v25.7.0
+  - version:
+     - v25.7.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/59917
-    description: 添加了 strictSingleValueFields 选项。
-  - version: v25.7.0
+    description: Added the `strictSingleValueFields` option.
+  - version:
+     - v25.7.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61713
     description: "添加了 http1Options 选项。Http1IncomingMessage和 Http1ServerResponse 选项现已弃用。"
   - version:
@@ -2653,10 +2657,14 @@ server.listen(8000);
 <!-- YAML
 added: v8.4.0
 changes:
-  - version: v25.7.0
+  - version:
+     - v25.7.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/59917
-    description: 添加了 strictSingleValueFields 选项。
-  - version: v25.7.0
+    description: Added the `strictSingleValueFields` option.
+  - version:
+     - v25.7.0
+     - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61713
     description: 添加了 http1Options 选项。
   - version:
@@ -3526,7 +3534,7 @@ added: v8.4.0
 
 * 继承：{stream.Readable}
 
-`Http2ServerRequest` 对象由 [`http2.Server`][] 或 [`http2.SecureServer`][] 创建，并作为第一个参数传递给 [`'request'`][] 事件。它可用于访问请求状态、头和數據。
+`Http2ServerRequest` 对象由 [`http2.Server`][] 或 [`http2.SecureServer`][] 创建，并作为第一个参数传递给 [`'request'`][] 事件。它可用于访问请求状态、头和数据。
 
 #### 事件：`'aborted'`
 
@@ -4344,10 +4352,10 @@ obs.observe({ entryTypes: ['http2'] });
 * `framesReceived` {number} `Http2Session` 接收到的 HTTP/2 帧数。
 * `framesSent` {number} `Http2Session` 发送的 HTTP/2 帧数。
 * `maxConcurrentStreams` {number} `Http2Session` 生命周期内并发打开的最大流数。
-* `pingRTT` {number} 自发送 `PING` 帧到接收到其确认之间经过的毫秒数。仅当 `Http2Session` 上发送了 `PING` 帧时才存在。
+* `pingRTT` {number} 自发送 `PING` 帧到接收到其确认之间经过的毫秒数。仅当在 `Http2Session` 上发送了 `PING` 帧时才存在。
 * `streamAverageDuration` {number} 所有 `Http2Stream` 实例的平均持续时间（毫秒）。
 * `streamCount` {number} `Http2Session` 处理的 `Http2Stream` 实例数。
-* `type` {string}  `'server'` 或 `'client'`，用于标识 `Http2Session` 的类型。
+* `type` {string} `'server'` 或 `'client'`，用于标识 `Http2Session` 的类型。
 
 ## 关于 `:authority` 和 `host` 的说明
 
