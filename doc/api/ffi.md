@@ -146,13 +146,15 @@ const path = `libsqlite3.${suffix}`;
 added: REPLACEME
 -->
 
-* `path` {string}：动态库路径。
-* `definitions` {Object}：要立即解析的符号定义。
+* `path` {string|null} 动态库的路径，或使用 `null` 从当前进程映像中解析符号。
+* `definitions` {Object} 要立即解析的符号定义。
 * 返回：{Object}
 
 加载一个动态库并解析所请求的函数定义。
 
-当省略 `definitions` 时，在符号被显式解析之前，会将 `functions` 作为一个空对象返回。
+在 Windows 上不支持传入 `null`。
+
+当省略 `definitions` 时，在显式解析符号之前，`functions` 会作为空对象返回。
 
 返回的对象包含：
 
@@ -217,9 +219,11 @@ added: REPLACEME
 
 ### `new DynamicLibrary(path)`
 
-* `path` {string}：动态库路径。
+* `path` {string|null} 动态库的路径，或使用 `null` 从当前进程映像中解析符号。
 
 加载动态库，但不会急切解析任何函数。
+
+在 Windows 上不支持传入 `null`。
 
 ```cjs
 const { DynamicLibrary } = require('node:ffi');
@@ -545,7 +549,55 @@ added: REPLACEME
 
 `buffer` 必须是一个 Node.js `Buffer`。
 
-## 安全注意事项
+## `ffi.exportArrayBuffer(arrayBuffer, pointer, length)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `arrayBuffer` {ArrayBuffer}
+* `pointer` {bigint}
+* `length` {number}
+
+将字节从一个 `ArrayBuffer` 复制到原生内存。
+
+`length` 至少必须等于 `arrayBuffer.byteLength`。
+
+`pointer` 必须指向可写的原生内存，并且可用存储至少为 `length` 字节。
+此函数不会自行分配内存。
+
+## `ffi.exportArrayBufferView(arrayBufferView, pointer, length)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `arrayBufferView` {ArrayBufferView}
+* `pointer` {bigint}
+* `length` {number}
+
+将字节从一个 `ArrayBufferView` 复制到原生内存。
+
+`length` 至少必须等于 `arrayBufferView.byteLength`。
+
+`pointer` 必须指向可写的原生内存，并且可用存储至少为 `length` 字节。
+此函数不会自行分配内存。
+
+## `ffi.getRawPointer(source)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `source` {Buffer|ArrayBuffer|ArrayBufferView}
+* 返回：{bigint}
+
+返回由 JavaScript 管理的字节存储的原始内存地址。
+
+这不安全且危险。如果底层内存被分离、重新调整大小、传递到别处或以其他方式失效，返回的指针可能会变得无效。
+使用过期指针可能导致内存损坏或进程崩溃。
+
+## 安全说明
 
 `node:ffi` 模块不会跟踪指针有效性、内存所有权或原生对象的生命周期。
 

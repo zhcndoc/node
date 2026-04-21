@@ -1228,6 +1228,24 @@ added: v14.0.0
 当使用当前运行 Node.js 的平台不可用的
 功能时使用。
 
+<a id="ERR_FFI_CALL_FAILED"></a>
+
+### `ERR_FFI_CALL_FAILED`
+
+低级 FFI 调用失败。
+
+<a id="ERR_FFI_INVALID_POINTER"></a>
+
+### `ERR_FFI_INVALID_POINTER`
+
+向 FFI 操作传递了无效指针。
+
+<a id="ERR_FFI_LIBRARY_CLOSED"></a>
+
+### `ERR_FFI_LIBRARY_CLOSED`
+
+在 FFI 动态库关闭后，尝试对其执行操作。
+
 <a id="ERR_FS_CP_DIR_TO_NON_DIR"></a>
 
 ### `ERR_FS_CP_DIR_TO_NON_DIR`
@@ -1689,7 +1707,7 @@ added: v15.14.0
 
 ### `ERR_HTTP_SOCKET_ENCODING`
 
-根据 [RFC 7230 Section 3][] 不允许更改套接字编码。
+根据 [RFC 7230 第 3 节][] 不允许更改套接字编码。
 
 <a id="ERR_HTTP_TRAILER_INVALID"></a>
 
@@ -2219,7 +2237,7 @@ ECMAScript 模块加载器在尝试 `import` 操作或加载程序入口点时�
 
 回调被调用多次。
 
-回调几乎总是只 meant 被调用一次，因为查询
+回调几乎总是只应被调用一次，因为查询
 可以满足或拒绝，但不能同时两者。后者
 可以通过多次调用回调来实现。
 
@@ -2541,10 +2559,9 @@ changes:
 added: REPLACEME
 -->
 
-> Stability: 1 - Experimental.
+> 稳定性：1 - 实验性。
 
-An attempt was made to `require()` an [ES Module][] while another `import()` call
-was already in progress to load it asynchronously.
+当另一个 `import()` 调用已经在异步加载它时，尝试 `require()` 一个 [ES 模块][]。
 
 <a id="ERR_SCRIPT_EXECUTION_INTERRUPTED"></a>
 

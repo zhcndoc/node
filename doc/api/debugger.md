@@ -13,7 +13,7 @@ Node.js 包含一个命令行调试工具。Node.js 调试器客户端不是一�
 ```console
 $ node inspect myscript.js
 < Debugger listening on ws://127.0.0.1:9229/621111f9-ffcb-4e82-b718-48a145fa5db8
-< For help, see: https://nodejs.org/en/docs/inspector
+< For help, see: https://nodejs.org/learn/getting-started/debugging
 <
 connecting to 127.0.0.1:9229 ... ok
 < Debugger attached.
@@ -40,7 +40,7 @@ setTimeout(() => {
 console.log('hello');
 $ NODE_INSPECT_RESUME_ON_START=1 node inspect myscript.js
 < Debugger listening on ws://127.0.0.1:9229/f1ed133e-7876-495b-83ae-c32c6fc319c2
-< For help, see: https://nodejs.org/en/docs/inspector
+< For help, see: https://nodejs.org/learn/getting-started/debugging
 <
 connecting to 127.0.0.1:9229 ... ok
 < Debugger attached.
@@ -83,6 +83,133 @@ $
 
 在不输入命令的情况下按 `enter` 键将重复上一条调试器命令。
 
+## 探测模式
+
+<!-- YAML
+added:
+  - REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+`node inspect` 通过 `--probe` 标志支持一种用于检查应用程序运行时值的非交互式探测模式。探测模式会启动应用程序，设置一个或多个源代码断点，在命中匹配断点时计算一个表达式，并在会话结束时（无论是正常完成还是超时）打印一份最终报告。这使开发者无需修改应用程序代码并在之后清理，就能进行类似 `printf` 的调试，同时也支持供工具使用的结构化输出。
+
+```console
+$ node inspect [--json] [--preview] [--timeout=<ms>] [--port=<port>] \
+    --probe app.js:10 --expr 'x' \
+    [--probe app.js:20 --expr 'y' ...] \
+    [--] [<node-option> ...] <script.js> [args...]
+```
+
+* `--probe <file>:<line>[:<col>]`：要探测的源位置。行号和列号从 1 开始。
+* `--timeout=<ms>`：整个探测会话的全局墙钟时间截止期限。默认值为 `30000`。这可用于探测一个可由外部终止的长时间运行应用程序。
+* `--json`：如果使用，将打印结构化 JSON 报告，而不是默认的文本报告。
+* `--preview`：如果使用，非原始值将在输出中包含对象类 JSON 探测值的 CDP 属性预览。
+* `--port=<port>`：为 `--inspect-brk` 启动路径选择本地 inspector 端口。探测模式默认为 `0`，这会请求一个随机端口。
+* `--` 是可选的，除非子进程需要自己的 Node.js 标志。
+
+关于 `--probe` 和 `--expr` 参数还有以下附加规则：
+
+* `--probe <file>:<line>[:<col>]` 和 `--expr <expr>` 必须严格成对出现。每个 `--probe` 后面必须紧跟且仅能跟一个 `--expr`。
+* `--timeout`、`--json`、`--preview` 和 `--port` 是整个探测会话的全局探测选项。它们可以出现在每个探测对之前或之间，但不能出现在 `--probe` 与其匹配的 `--expr` 之间。
+
+如果单个探测需要计算多个值，
+请在 `--expr` 中计算一个结构化值，例如 `--expr "{ foo, bar }"`
+或 `--expr "[foo, bar]"`，并使用 `--preview` 为
+输出中的任何对象类值包含属性预览。
+
+探测模式只会将最终探测报告打印到 stdout，并且会静默子进程的 stdout/stderr。如果子进程在探测会话开始后以错误退出，最终报告会记录一个终止性的 `error` 事件，其中包含退出码和捕获到的子进程 stderr。无效参数以及致命的启动或连接失败仍可能向 stderr 打印诊断信息，而不会给出最终探测结果。
+
+考虑以下脚本：
+
+```js
+// cli.js
+let maxRSS = 0;
+for (let i = 0; i < 2; i++) {
+  const { rss } = process.memoryUsage();
+  maxRSS = Math.max(maxRSS, rss);
+}
+```
+
+如果未使用 `--json`，输出将以人类可读的文本格式打印：
+
+```console
+$ node inspect --probe cli.js:5 --expr 'rss' cli.js
+Hit 1 at cli.js:5
+  rss = 54935552
+Hit 2 at cli.js:5
+  rss = 55083008
+Completed
+```
+
+原始类型结果会直接打印，而对象和数组在可用时会使用 Chrome DevTools Protocol 的预览数据。其他非原始值则回退为 Chrome DevTools Protocol 的 `description` 字符串。表达式失败会记录为 `[error] ...` 行，但不会导致整个会话失败。如果需要更丰富的文本格式，可以将表达式包装在 `JSON.stringify(...)` 或 `util.inspect(...)` 中。
+
+使用 `--json` 时，输出结构如下：
+
+```console
+$ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
+{"v":1,"probes":[{"expr":"rss","target":["cli.js",5]}],"results":[{"probe":0,"event":"hit","hit":1,"result":{"type":"number","value":55443456,"description":"55443456"}},{"probe":0,"event":"hit","hit":2,"result":{"type":"number","value":55574528,"description":"55574528"}},{"event":"completed"}]}
+```
+
+```json
+{
+  "v": 1, // Probe JSON 结构版本。
+  "probes": [
+    {
+      "expr": "rss", // 与 --probe 配对的表达式。
+      "target": ["cli.js", 5] // [文件, 行] 或 [文件, 行, 列]。
+    }
+  ],
+  "results": [
+    {
+      "probe": 0, // probes[] 的索引。
+      "event": "hit", // 命中事件按观察顺序记录。
+      "hit": 1, // 该探测的 1-based 命中次数。
+      "result": {
+        "type": "number",
+        "value": 55443456,
+        "description": "55443456"
+      }
+      // 如果表达式抛出异常，则这里是 "error" 而不是 "result"。
+    },
+    {
+      "probe": 0,
+      "event": "hit",
+      "hit": 2,
+      "result": {
+        "type": "number",
+        "value": 55574528,
+        "description": "55574528"
+      }
+    },
+    {
+      "event": "completed"
+      // 最后一条记录始终是一个终止事件，例如：
+      // 1. { "event": "completed" }
+      // 2. { "event": "miss", "pending": [0, 1] }
+      // 3. {
+      //      "event": "timeout",
+      //      "pending": [0],
+      //      "error": {
+      //       "code": "probe_timeout",
+      //       "message": "Timed out after 30000ms waiting for probes: app.js:10"
+      //      }
+      //    }
+      // 4. {
+      //      "event": "error",
+      //      "pending": [0],
+      //      "error": {
+      //       "code": "probe_target_exit",
+      //       "exitCode": 1,
+      //       "stderr": "[Error: boom]",
+      //       "message": "Target exited with code 1 before probes: app.js:10"
+      //      }
+      //    }
+    }
+  ]
+}
+```
+
 ## 监视器
 
 在调试时可以监视表达式和变量值。在每个断点处，监视列表中的每个表达式将在当前上下文中评估，并立即显示在断点源代码列表之前。
@@ -113,7 +240,7 @@ $
 ```console
 $ node inspect main.js
 < Debugger listening on ws://127.0.0.1:9229/48a5b28a-550c-471b-b5e1-d13dd7165df9
-< For help, see: https://nodejs.org/en/docs/inspector
+< For help, see: https://nodejs.org/learn/getting-started/debugging
 <
 connecting to 127.0.0.1:9229 ... ok
 < Debugger attached.
@@ -139,7 +266,7 @@ debug>
 ```console
 $ node inspect main.js
 < Debugger listening on ws://127.0.0.1:9229/ce24daa8-3816-44d4-b8ab-8273c8a66d35
-< For help, see: https://nodejs.org/en/docs/inspector
+< For help, see: https://nodejs.org/learn/getting-started/debugging
 <
 connecting to 127.0.0.1:9229 ... ok
 < Debugger attached.
@@ -218,7 +345,7 @@ V8 Inspector 集成允许将 Chrome DevTools 附加到 Node.js 实例以进行�
 ```console
 $ node --inspect index.js
 Debugger listening on ws://127.0.0.1:9229/dc9010dd-f8b8-4ac5-a510-c1a114ec7d29
-For help, see: https://nodejs.org/en/docs/inspector
+For help, see: https://nodejs.org/learn/getting-started/debugging
 ```
 
 （在上面的示例中，URL 末尾的 UUID dc9010dd-f8b8-4ac5-a510-c1a114ec7d29 是动态生成的，它在不同的调试会话中会有所不同。）

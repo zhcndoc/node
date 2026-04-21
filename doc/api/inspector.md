@@ -28,7 +28,7 @@ import * as inspector from 'node:inspector';
 const inspector = require('node:inspector');
 ```
 
-## Promise API
+## Promise 接口
 
 <!-- YAML
 added: v19.0.0
@@ -194,7 +194,7 @@ session.disconnect();
 fs.closeSync(fd);
 ```
 
-## 回调 API
+## 回调接口
 
 ### 类：`inspector.Session`
 
@@ -414,12 +414,12 @@ changes:
 ```console
 $ node --inspect -p 'inspector.url()'
 Debugger listening on ws://127.0.0.1:9229/166e272e-7a30-4d09-97ce-f1c012b43c34
-For help, see: https://nodejs.org/en/docs/inspector
+For help, see: https://nodejs.org/learn/getting-started/debugging
 ws://127.0.0.1:9229/166e272e-7a30-4d09-97ce-f1c012b43c34
 
 $ node --inspect=localhost:3000 -p 'inspector.url()'
 Debugger listening on ws://localhost:3000/51cf8d0e-3c36-4c59-8efd-54519839e56a
-For help, see: https://nodejs.org/en/docs/inspector
+For help, see: https://nodejs.org/learn/getting-started/debugging
 ws://localhost:3000/51cf8d0e-3c36-4c59-8efd-54519839e56a
 
 $ node -p 'inspector.url()'

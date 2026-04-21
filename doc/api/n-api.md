@@ -256,9 +256,9 @@ CMake.js 对于已经使用 CMake 的项目或受 node-gyp 限制影响的开发
 
 \*\* Node.js 8.0.0 将 Node-API 作为实验性功能包含在内。它作为 Node-API 版本 1 发布，但一直演变到 Node.js 8.6.0。在 Node.js 8.6.0 之前的版本中，API 有所不同。我们推荐使用 Node-API 版本 3 或更高版本。
 
-每个为 Node-API 记录的 API 都将有一个名为 `added in:` 的标题，稳定的 API 将会有额外的标题 `Node-API version:`。
-当使用的 Node.js 版本支持 `Node-API version:` 中显示的 Node-API 版本或更高版本时，API 可直接使用。
-当使用的 Node.js 版本不支持列出的 `Node-API version:` 或者没有列出 `Node-API version:` 时，那么只有在包含 `node_api.h` 或 `js_native_api.h` 之前定义了 `#define NAPI_EXPERIMENTAL`，该 API 才可用。如果一个 API 在晚于 `added in:` 中显示的版本的 Node.js 版本上似乎不可用，那么这很可能是明显缺失的原因。
+每个为 Node-API 记录的 API 都将有一个名为 `添加于：` 的标题，稳定的 API 将会有额外的标题 `Node-API 版本：`。
+当使用的 Node.js 版本支持 `Node-API 版本：` 中显示的 Node-API 版本或更高版本时，API 可直接使用。
+当使用的 Node.js 版本不支持列出的 `Node-API 版本：` 或者没有列出 `Node-API 版本：` 时，那么只有在包含 `node_api.h` 或 `js_native_api.h` 之前定义了 `#define NAPI_EXPERIMENTAL`，该 API 才可用。如果一个 API 在晚于 `添加于：` 中显示的版本的 Node.js 版本上似乎不可用，那么这很可能是由于明显缺失的原因。
 
 与从原生代码访问 ECMAScript 功能严格相关的 Node-API 可以分别在 `js_native_api.h` 和 `js_native_api_types.h` 中找到。
 这些头文件中定义的 API 包含在 `node_api.h` 和 `node_api_types.h` 中。
@@ -470,7 +470,7 @@ typedef struct {
 
 ### `napi_env`
 
-`napi_env` 用于表示底层 Node-API 实现可用于持久化特定于 VM 的状态的上下文。此结构在调用原生函数时传递给他们，并且在发出 Node-API 调用时必须传回。具体来说，调用初始原生函数时传入的同一个 `napi_env` 必须传递给任何后续的嵌套 Node-API 调用。不允许为了通用重用而缓存 `napi_env`，也不允许在运行于不同 [`Worker`][] 线程的同一插件实例之间传递 `napi_env`。当原生插件实例卸载时，`napi_env` 变为无效。此事件的通知通过传递给 [`napi_add_env_cleanup_hook`][] 和 [`napi_set_instance_data`][] 的回调 delivered。
+`napi_env` 用于表示底层 Node-API 实现可用于持久化特定于 VM 的状态的上下文。此结构在调用原生函数时传递给它们，并且在发出 Node-API 调用时必须传回。具体来说，调用初始原生函数时传入的同一个 `napi_env` 必须传递给任何后续的嵌套 Node-API 调用。不允许为了通用重用而缓存 `napi_env`，也不允许在运行于不同 [`Worker`][] 线程的同一插件实例之间传递 `napi_env`。当原生插件实例卸载时，`napi_env` 变为无效。此事件通过传递给 [`napi_add_env_cleanup_hook`][] 和 [`napi_set_instance_data`][] 的回调进行通知。
 
 ### `node_api_basic_env`
 
@@ -851,7 +851,7 @@ napi_get_last_error_info(node_api_basic_env env,
 
 如果原生代码需要创建 `Error` 对象，还可以使用以下实用函数：[`napi_create_error`][]、[`napi_create_type_error`][]、[`napi_create_range_error`][] 和 [`node_api_create_syntax_error`][]，其中 result 是引用新创建的 JavaScript `Error` 对象的 `napi_value`。
 
-Node.js 项目正在为所有内部生成的错误添加错误代码。目标是让应用程序使用这些错误代码进行所有错误检查。相关的错误消息将保留，但仅用于日志记录和显示，预期消息可以在不适用 SemVer 的情况下更改。为了在 Node-API 中支持此模型，无论是在内部功能还是模块特定功能中（作为一种良好实践），`throw_` 和 `create_` 函数都接受一个可选的 code 参数，该参数是添加到错误对象的代码字符串。如果可选参数为 `NULL`，则不会与错误关联任何代码。如果提供了代码，与错误关联的名称也会更新为：
+Node.js 项目正在为所有内部生成的错误添加错误代码。目标是让应用程序使用这些错误代码进行所有错误检查。相关的错误消息将保留，但仅用于日志记录和显示，预期消息可以在不适用 SemVer 的情况下更改。为了在 Node-API 中支持此模型，无论是在内部功能还是模块特定功能中（作为一种良好实践），`throw_` 和 `create_` 函数都接受一个可选的 code 参数，该参数是添加到错误对象的代码字符串。如果可选参数为 `NULL`，则不会与错误关联任何代码。如果提供了代码，与错误关联的名称也将更新为：
 
 ```text
 originalName [code]
@@ -1717,7 +1717,7 @@ typedef enum {
 } napi_key_collection_mode;
 ```
 
-描述 `Keys/Properties` 过滤器枚举：
+描述 `键/属性` 过滤器枚举：
 
 `napi_key_collection_mode` 限制收集属性的范围。
 
@@ -1801,7 +1801,7 @@ changes:
      - v25.5.0
      - v24.13.1
     pr-url: https://github.com/nodejs/node/pull/58879
-    description: "Added `napi_float16_array` for Float16Array support."
+    description: "为 Float16Array 支持添加了 `napi_float16_array`。"
 -->
 
 ```c
@@ -2351,7 +2351,7 @@ changes:
      - v25.5.0
      - v24.13.1
     pr-url: https://github.com/nodejs/node/pull/60473
-    description: "Added support for `SharedArrayBuffer`."
+    description: "添加了对 `SharedArrayBuffer` 的支持。"
 -->
 
 ```c
@@ -3174,9 +3174,9 @@ napi_status napi_get_value_external(napi_env env,
                                     void** result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript 外部值的 `napi_value`。
-* `[out] result`: 指向 JavaScript 外部值所包装的数据的指针。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript 外部值的 `napi_value`。
+* `[out] result`：指向 JavaScript 外部值所包装的数据的指针。
 
 如果 API 成功则返回 `napi_ok`。如果传入非外部 `napi_value`，则返回 `napi_invalid_arg`。
 
@@ -3195,9 +3195,9 @@ napi_status napi_get_value_int32(napi_env env,
                                  int32_t* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript `number` 的 `napi_value`。
-* `[out] result`: 给定 JavaScript `number` 对应的 C `int32` 原始值。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript `number` 的 `napi_value`。
+* `[out] result`：给定 JavaScript `number` 对应的 C `int32` 原始值。
 
 如果 API 成功则返回 `napi_ok`。如果传入非数字 `napi_value`，则返回 `napi_number_expected`。
 
@@ -3274,13 +3274,13 @@ napi_status napi_get_value_string_utf8(napi_env env,
 
 * `[in] env`: 调用 API 所处的环境。
 * `[in] value`: 代表 JavaScript 字符串的 `napi_value`。
-* `[in] buf`: 用于写入 UTF8 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以字节为单位，不包括空终止符）将返回到 `result` 中。
+* `[in] buf`: 用于写入 UTF-8 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以字节为单位，不包括空终止符）将返回到 `result` 中。
 * `[in] bufsize`: 目标缓冲区的大小。当此值不足时，返回的字符串将被截断并以空字符终止。如果此值为零，则不返回字符串，也不对缓冲区进行任何更改。
 * `[out] result`: 复制到缓冲区中的字节数，不包括空终止符。
 
 如果 API 成功则返回 `napi_ok`。如果传入非 `string` `napi_value`，则返回 `napi_string_expected`。
 
-此 API 返回对应于传入值的 UTF8 编码字符串。
+此 API 返回对应于传入值的 UTF-8 编码字符串。
 
 #### `napi_get_value_string_utf16`
 
@@ -3299,13 +3299,13 @@ napi_status napi_get_value_string_utf16(napi_env env,
 
 * `[in] env`: 调用 API 所处的环境。
 * `[in] value`: 代表 JavaScript 字符串的 `napi_value`。
-* `[in] buf`: 用于写入 UTF16-LE 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以 2 字节代码单元为单位，不包括空终止符）将被返回。
+* `[in] buf`: 用于写入 UTF-16LE 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以 2 字节代码单元为单位，不包括空终止符）将被返回。
 * `[in] bufsize`: 目标缓冲区的大小。当此值不足时，返回的字符串将被截断并以空字符终止。如果此值为零，则不返回字符串，也不对缓冲区进行任何更改。
 * `[out] result`: 复制到缓冲区中的 2 字节代码单元的数量，不包括空终止符。
 
 如果 API 成功则返回 `napi_ok`。如果传入非 `string` `napi_value`，则返回 `napi_string_expected`。
 
-此 API 返回对应于传入值的 UTF16 编码字符串。
+此 API 返回对应于传入值的 UTF-16 编码字符串。
 
 #### `napi_get_value_uint32`
 
@@ -3401,7 +3401,7 @@ napi_status napi_get_undefined(napi_env env, napi_value* result)
 
 如果 API 成功则返回 `napi_ok`。
 
-此 API 返回 Undefined 对象。
+此 API 返回 Undefined 值。
 
 ```
 
@@ -3831,7 +3831,7 @@ napi_status node_api_create_sharedarraybuffer(napi_env env,
 
 此 API 返回对应于 JavaScript `SharedArrayBuffer` 的 Node-API 值。
 `SharedArrayBuffer` 用于表示可在多个
-worker 之间共享的固定长度二进制数据缓冲区。
+工作线程之间共享的固定长度二进制数据缓冲区。
 
 分配的 `SharedArrayBuffer` 将拥有一个底层字节缓冲区，其大小由
 传入的 `byte_length` 参数决定。
@@ -4798,7 +4798,7 @@ while (myAddon.queryHasRecords(queryHandle, dbHandle)) {
 
 为此，Node-API 提供了类型标记功能。
 
-类型标签是插件唯一的 128 位整数。Node-API 提供 `napi_type_tag` 结构用于存储类型标签。当将此值与存储在 `napi_value` 中的 JavaScript 对象或 [外部][] 一起传递给 `napi_type_tag_object()` 时，JavaScript 对象将被“标记”上类型标签。该“标记”在 JavaScript 端是不可见的。当 JavaScript 对象进入原生绑定时，可以使用 `napi_check_object_type_tag()`  along with 原始类型标签来确定 JavaScript 对象之前是否被“标记”了该类型标签。这创建了比 `napi_instanceof()` 提供的更高保真度的类型检查功能，因为此类类型标记在原型操作和插件卸载/重新加载后仍然存在。
+类型标签是插件唯一的 128 位整数。Node-API 提供 `napi_type_tag` 结构用于存储类型标签。当将此值与存储在 `napi_value` 中的 JavaScript 对象或 [外部][] 一起传递给 `napi_type_tag_object()` 时，JavaScript 对象将被“标记”上类型标签。该“标记”在 JavaScript 端是不可见的。当 JavaScript 对象进入原生绑定时，可以使用 `napi_check_object_type_tag()` 配合原始类型标签来确定 JavaScript 对象之前是否被“标记”了该类型标签。这创建了比 `napi_instanceof()` 提供的更高保真度的类型检查功能，因为此类类型标记在原型操作和插件卸载/重新加载后仍然存在。
 
 继续上面的示例，以下插件实现骨架说明了 `napi_type_tag_object()` 和 `napi_check_object_type_tag()` 的使用。
 
@@ -4887,7 +4887,7 @@ napi_status napi_define_class(napi_env env,
 ```
 
 * `[in] env`：调用 API 所处的环境。
-* `[in] utf8name`：JavaScript 构造函数函数的名称。为了清晰起见，建议在包装 C++ 类时使用 C++ 类名。
+* `[in] utf8name`：JavaScript 构造函数的名称。为了清晰起见，建议在包装 C++ 类时使用 C++ 类名。
 * `[in] length`：`utf8name` 的长度（以字节为单位），如果它是空终止的，则为 `NAPI_AUTO_LENGTH`。
 * `[in] constructor`：处理构造类实例的回调函数。当包装 C++ 类时，此方法必须是具有 [`napi_callback`][] 签名的静态成员。不能使用 C++ 类构造函数。[`napi_callback`][] 提供了更多详细信息。
 * `[in] data`：可选数据，作为回调信息的 `data` 属性传递给构造函数回调。
@@ -5106,15 +5106,15 @@ napi_status node_api_post_finalizer(node_api_basic_env env,
 
 ## 简单异步操作
 
-插件模块通常需要在实现中利用 libuv 的异步辅助函数。这允许它们调度工作异步执行，以便它们的方法可以在工作完成之前返回。这允许它们避免阻塞 Node.js 应用程序的整体执行。
+插件模块通常需要在实现中利用 libuv 的异步辅助函数。这使它们能够将工作调度为异步执行，从而使其方法可以在工作完成之前返回。这有助于它们避免阻塞 Node.js 应用程序的整体执行。
 
-Node-API 为这些支持函数提供了 ABI 稳定的接口，涵盖了最常见的异步用例。
+Node-API 为这些支持函数提供了 ABI 稳定的接口，涵盖最常见的异步用例。
 
 Node-API 定义了 `napi_async_work` 结构体，用于管理异步 worker。实例通过 [`napi_create_async_work`][] 和 [`napi_delete_async_work`][] 创建/删除。
 
-`execute` 和 `complete` 回调是函数，当执行器准备好执行以及当它完成任务时将分别调用它们。
+`execute` 和 `complete` 回调是函数，分别会在执行器准备好执行以及完成任务时被调用。
 
-`execute` 函数应避免进行任何可能导致执行 JavaScript 或与 JavaScript 对象交互的 Node-API 调用。大多数情况下，任何需要调用 Node-API 的代码都应该在 `complete` 回调中 instead。避免在 execute 回调中使用 `napi_env` 参数，因为它可能会执行 JavaScript。
+`execute` 函数应避免进行任何可能导致执行 JavaScript 或与 JavaScript 对象交互的 Node-API 调用。大多数情况下，任何需要调用 Node-API 的代码都应改为放在 `complete` 回调中。避免在 execute 回调中使用 `napi_env` 参数，因为它可能会执行 JavaScript。
 
 这些函数实现以下接口：
 
@@ -5126,7 +5126,7 @@ typedef void (*napi_async_complete_callback)(napi_env env,
                                              void* data);
 ```
 
-当调用这些方法时，传递的 `data` 参数将是传递给 `napi_create_async_work` 调用的插件提供的 `void*` 数据。
+当调用这些方法时，传入的 `data` 参数将是传递给 `napi_create_async_work` 调用的插件提供的 `void*` 数据。
 
 一旦创建，异步 worker 可以使用 [`napi_queue_async_work`][] 函数排队执行：
 
@@ -5137,7 +5137,7 @@ napi_status napi_queue_async_work(node_api_basic_env env,
 
 如果需要在工作开始执行之前取消工作，可以使用 [`napi_cancel_async_work`][]。
 
-调用 [`napi_cancel_async_work`][] 后，`complete` 回调将被调用，状态值为 `napi_cancelled`。即使在取消的情况下，也不应在 `complete` 回调调用之前删除工作。
+调用 [`napi_cancel_async_work`][] 后，`complete` 回调将被调用，状态值为 `napi_cancelled`。即使在取消的情况下，也不应在 `complete` 回调被调用之前删除工作。
 
 ### `napi_create_async_work`
 
@@ -5162,19 +5162,19 @@ napi_status napi_create_async_work(napi_env env,
 
 * `[in] env`：调用 API 所处的环境。
 * `[in] async_resource`：与异步工作关联的可选对象，将传递给可能的 `async_hooks` [`init` 钩子][]。
-* `[in] async_resource_name`：为 `async_hooks` API 公开的诊断信息提供的资源类型的标识符。
-* `[in] execute`：应调用以异步执行逻辑的原生函数。给定函数从线程池线程调用，可以与主事件循环线程并行执行。
+* `[in] async_resource_name`：为 `async_hooks` API 公开的诊断信息提供的资源类型标识符。
+* `[in] execute`：应被调用以异步执行逻辑的原生函数。给定函数从线程池线程调用，可与主事件循环线程并行执行。
 * `[in] complete`：当异步逻辑完成或被取消时将调用的原生函数。给定函数从主事件循环线程调用。[`napi_async_complete_callback`][] 提供了更多细节。
-* `[in] data`：用户提供的数据上下文。这将传回给 execute 和 complete 函数。
-* `[out] result`：`napi_async_work*`，是新创建的异步工作的句柄。
+* `[in] data`：用户提供的数据上下文。这将回传给 execute 和 complete 函数。
+* `[out] result`：`napi_async_work*`，即新创建的异步工作句柄。
 
 如果 API 成功，返回 `napi_ok`。
 
 此 API 分配一个用于异步执行逻辑的工作对象。一旦不再需要该工作，应使用 [`napi_delete_async_work`][] 释放它。
 
-`async_resource_name` 应该是一个以 null 结尾的 UTF-8 编码字符串。
+`async_resource_name` 应为一个以 null 结尾的 UTF-8 编码字符串。
 
-`async_resource_name` 标识符由用户提供，应代表正在执行的异步工作的类型。还建议对标识符应用命名空间，例如包括模块名。有关更多信息，请参阅 [`async_hooks` 文档][async_hooks `type`]。
+`async_resource_name` 标识符由用户提供，应表示正在执行的异步工作类型。还建议对该标识符应用命名空间，例如包含模块名。有关更多信息，请参阅 [`async_hooks` 文档][async_hooks `type`]。
 
 ### `napi_delete_async_work`
 
@@ -5214,7 +5214,7 @@ napi_status napi_queue_async_work(node_api_basic_env env,
 
 如果 API 成功，返回 `napi_ok`。
 
-此 API 请求将先前分配的工作调度执行。一旦成功返回，不得再次使用相同的 `napi_async_work` 项调用此 API，否则结果将未定义。
+此 API 请求将先前分配的工作调度执行。一旦成功返回，不得再次使用同一个 `napi_async_work` 项调用此 API，否则结果将未定义。
 
 ### `napi_cancel_async_work`
 
@@ -5261,14 +5261,14 @@ napi_status napi_async_init(napi_env env,
 
 * `[in] env`：调用 API 所处的环境。
 * `[in] async_resource`：与异步工作关联的对象，将传递给可能的 `async_hooks` [`init` 钩子][]，并且可以通过 [`async_hooks.executionAsyncResource()`][] 访问。
-* `[in] async_resource_name`：为 `async_hooks` API 公开的诊断信息提供的资源类型的标识符。
+* `[in] async_resource_name`：为 `async_hooks` API 公开的诊断信息提供的资源类型标识符。
 * `[out] result`：初始化的异步上下文。
 
 如果 API 成功，返回 `napi_ok`。
 
-为了保留与以前版本的 ABI 兼容性，为 `async_resource` 传递 `NULL` 不会导致错误。但是，不建议这样做，因为这会导致 `async_hooks` [`init` 钩子][] 和 `async_hooks.executionAsyncResource()` 出现不良行为，因为底层的 `async_hooks` 实现现在需要该资源来提供异步回调之间的链接。
+为了保留与旧版本的 ABI 兼容性，为 `async_resource` 传递 `NULL` 不会导致错误。但是，不建议这样做，因为这会导致 `async_hooks` [`init` 钩子][] 和 `async_hooks.executionAsyncResource()` 出现不良行为，因为底层的 `async_hooks` 实现现在需要该资源来提供异步回调之间的链接。
 
-此 API 的以前版本在 `napi_async_context` 对象存在期间并未维持对 `async_resource` 的强引用，而是期望调用者持有强引用。这一点已更改，因为无论如何都需要为每次调用 `napi_async_init()` 对应调用 [`napi_async_destroy`][] 以避免内存泄漏。
+此 API 的旧版本在 `napi_async_context` 对象存在期间并未维持对 `async_resource` 的强引用，而是期望调用者持有强引用。这一点已更改，因为无论如何都需要为每次调用 `napi_async_init()` 对应调用 [`napi_async_destroy`][]，以避免内存泄漏。
 
 ### `napi_async_destroy`
 
@@ -5311,7 +5311,7 @@ NAPI_EXTERN napi_status napi_make_callback(napi_env env,
 ```
 
 * `[in] env`：调用 API 所处的环境。
-* `[in] async_context`：调用回调的异步操作的上下文。这通常应该是先前从 [`napi_async_init`][] 获得的值。为了保留与以前版本的 ABI 兼容性，为 `async_context` 传递 `NULL` 不会导致错误。但是，这会导致异步钩子操作不正确。潜在问题包括在使用 `AsyncLocalStorage` API 时丢失异步上下文。
+* `[in] async_context`：调用回调的异步操作上下文。这通常应是先前从 [`napi_async_init`][] 获得的值。为了保留与旧版本的 ABI 兼容性，为 `async_context` 传递 `NULL` 不会导致错误。但是，这会导致异步钩子操作不正确。潜在问题包括在使用 `AsyncLocalStorage` API 时丢失异步上下文。
 * `[in] recv`：传递给被调用函数的 `this` 值。
 * `[in] func`：`napi_value`，表示要调用的 JavaScript 函数。
 * `[in] argc`：`argv` 数组中的元素计数。
@@ -5322,9 +5322,9 @@ NAPI_EXTERN napi_status napi_make_callback(napi_env env,
 
 此方法允许从原生插件调用 JavaScript 函数对象。此 API 类似于 `napi_call_function`。但是，它用于在从异步操作返回后（当栈上没有其他脚本时）从原生代码调用回 JavaScript。它是对 `node::MakeCallback` 的一个相当简单的封装。
 
-注意，在 `napi_async_complete_callback` 内部_不_需要使用 `napi_make_callback`；在这种情况下，回调的异步上下文已经设置好了，因此直接调用 `napi_call_function` 就足够了且合适。在实现不使用 `napi_create_async_work` 的自定义异步行为时，可能需要使用 `napi_make_callback` 函数。
+注意，在 `napi_async_complete_callback` 内部_不_需要使用 `napi_make_callback`；在这种情况下，回调的异步上下文已经设置好了，因此直接调用 `napi_call_function` 就足够且合适。在实现不使用 `napi_create_async_work` 的自定义异步行为时，可能需要使用 `napi_make_callback` 函数。
 
-回调期间由 JavaScript 调度在微任务队列上的任何 `process.nextTick` 或 Promise 都会在返回 C/C++ 之前运行。
+回调期间由 JavaScript 调度到微任务队列上的任何 `process.nextTick` 或 Promise 都会在返回 C/C++ 之前运行。
 
 ### `napi_open_callback_scope`
 
@@ -5342,10 +5342,10 @@ NAPI_EXTERN napi_status napi_open_callback_scope(napi_env env,
 
 * `[in] env`：调用 API 所处的环境。
 * `[in] resource_object`：与异步工作关联的对象，将传递给可能的 `async_hooks` [`init` 钩子][]。此参数已弃用，在运行时被忽略。请改用 [`napi_async_init`][] 中的 `async_resource` 参数。
-* `[in] context`：调用回调的异步操作的上下文。这应该是先前从 [`napi_async_init`][] 获得的值。
+* `[in] context`：调用回调的异步操作上下文。这应是先前从 [`napi_async_init`][] 获得的值。
 * `[out] result`：新创建的作用域。
 
-在某些情况下（例如，解析 promise），在进行某些 Node-API 调用时，必须拥有与回调关联的作用域的等效项。如果栈上没有其他脚本，可以使用 [`napi_open_callback_scope`][] 和 [`napi_close_callback_scope`][] 函数来打开/关闭所需的作用域。
+在某些情况下（例如解析 promise），在进行某些 Node-API 调用时，必须拥有与回调关联的作用域等效项。如果栈上没有其他脚本，可以使用 [`napi_open_callback_scope`][] 和 [`napi_close_callback_scope`][] 函数来打开/关闭所需的作用域。
 
 ### `napi_close_callback_scope`
 
@@ -5390,9 +5390,9 @@ napi_status napi_get_node_version(node_api_basic_env env,
 
 如果 API 成功，则返回 `napi_ok`。
 
-此函数用当前运行的 Node.js 的主版本、次版本和补丁版本填充 `version` 结构体，并用 [`process.release.name`][`process.release`] 的值填充 `release` 字段。
+此函数会用当前运行的 Node.js 的主版本、次版本和补丁版本填充 `version` 结构体，并用 [`process.release.name`][`process.release`] 的值填充 `release` 字段。
 
-返回的缓冲区是静态分配的，不需要释放。
+返回的缓冲区是静态分配的，无需释放。
 
 ### `napi_get_version`
 
@@ -5414,7 +5414,7 @@ napi_status napi_get_version(node_api_basic_env env,
 此 API 返回 Node.js 运行时支持的最高 Node-API 版本。Node-API 计划是累加式的，因此较新版本的 Node.js 可能支持额外的 API 函数。为了允许插件在支持该函数的 Node.js 版本上运行时使用较新的函数，同时在不支持该函数的 Node.js 版本上运行时提供回退行为：
 
 * 调用 `napi_get_version()` 以确定 API 是否可用。
-* 如果可用，使用 `uv_dlsym()` 动态加载函数的指针。
+* 如果可用，使用 `uv_dlsym()` 动态加载函数指针。
 * 使用动态加载的指针调用函数。
 * 如果函数不可用，提供不使用该函数的替代实现。
 
@@ -5434,20 +5434,20 @@ NAPI_EXTERN napi_status napi_adjust_external_memory(node_api_basic_env env,
 ```
 
 * `[in] env`：调用此 API 所处的环境。
-* `[in] change_in_bytes`：由 JavaScript 对象保持存活的外部分配内存的变化量。
+* `[in] change_in_bytes`：由 JavaScript 对象保持存活的外部分配内存变化量。
 * `[out] result`：调整后的值。该值应反映包含给定 `change_in_bytes` 在内的外部内存总量。不应依赖返回值的绝对值。例如，实现可能对所有插件使用单个计数器，或对每个插件使用一个计数器。
 
 如果 API 成功，则返回 `napi_ok`。
 
-此函数向运行时指示由 JavaScript 对象保持存活的外部分配内存量（即指向由原生插件分配为其自身的内存的 JavaScript 对象）。注册外部分配的内存可能会（但不保证）比未注册时更频繁地触发全局垃圾回收。
+此函数向运行时指示由 JavaScript 对象保持存活的外部分配内存量（即指向由原生插件分配并由其自身持有的内存的 JavaScript 对象）。注册外部分配的内存可能会（但不保证）比未注册时更频繁地触发全局垃圾回收。
 
 调用此函数时，应确保插件减少的外部内存不超过其增加的外部内存。
 
 ## Promise
 
-Node-API 提供了创建 `Promise` 对象的功能，如 ECMA 规范 [Promise 对象部分][] 所述。它将 promise 实现为一对对象。当通过 `napi_create_promise()` 创建 promise 时，会创建一个 "deferred" 对象并与 `Promise` 一起返回。deferred 对象绑定到创建的 `Promise`，是使用 `napi_resolve_deferred()` 或 `napi_reject_deferred()` 解决或拒绝 `Promise` 的唯一手段。由 `napi_create_promise()` 创建的 deferred 对象将由 `napi_resolve_deferred()` 或 `napi_reject_deferred()` 释放。`Promise` 对象可以返回给 JavaScript，在那里它可以像通常一样使用。
+Node-API 提供了创建 `Promise` 对象的功能，如 ECMA 规范 [Promise 对象部分][] 所述。它将 promise 实现为一对对象。当通过 `napi_create_promise()` 创建 promise 时，会创建一个 "deferred" 对象并与 `Promise` 一起返回。deferred 对象绑定到创建的 `Promise`，是使用 `napi_resolve_deferred()` 或 `napi_reject_deferred()` 解决或拒绝 `Promise` 的唯一方式。由 `napi_create_promise()` 创建的 deferred 对象将由 `napi_resolve_deferred()` 或 `napi_reject_deferred()` 释放。`Promise` 对象可以返回给 JavaScript，在那里它可以像通常一样使用。
 
-例如，创建一个 promise 并将其传递给异步工作器：
+例如，创建一个 promise 并将其传递给异步 worker：
 
 ```c
 napi_deferred deferred;
@@ -5544,7 +5544,7 @@ napi_status napi_reject_deferred(napi_env env,
 ```
 
 * `[in] env`：调用此 API 所处的环境。
-* `[in] deferred`：要解决其关联 promise 的 deferred 对象。
+* `[in] deferred`：要拒绝其关联 promise 的 deferred 对象。
 * `[in] rejection`：用于拒绝 promise 的值。
 
 此 API 通过与之关联的 deferred 对象拒绝 JavaScript promise。因此，它只能用于拒绝具有相应 deferred 对象的 JavaScript promise。这实际上意味着 promise 必须是使用 `napi_create_promise()` 创建的，并且必须保留该调用返回的 deferred 对象才能传递给此 API。
@@ -5616,7 +5616,13 @@ NAPI_EXTERN napi_status napi_get_uv_event_loop(node_api_basic_env env,
 * `[in] env`：调用此 API 所处的环境。
 * `[out] loop`：当前 libuv 循环实例。
 
-注意：虽然 libuv 随着时间的推移相对稳定，但它不提供 ABI 稳定性保证。应避免使用此函数。使用它可能会导致插件无法跨 Node.js 版本工作。[异步线程安全的函数调用](https://nodejs.org/docs/latest/api/n-api.html#asynchronous-thread-safe-function-calls) 是许多用例的替代方案。
+注意：尽管 libuv 只在主版本中[保证 ABI 稳定性](https://github.com/libuv/libuv?tab=readme-ov-file#versioning)，
+但使用它可能会导致一个无法跨
+Node.js 主版本工作的插件。
+
+[线程安全函数](#asynchronous-thread-safe-function-calls)
+对于许多用例来说，是一种 ABI 稳定的替代方案，可用于从另一个线程调用
+JavaScript 线程。
 
 ## 异步线程安全函数调用
 

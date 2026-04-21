@@ -223,11 +223,14 @@ changes:
   * `hints` {number} 一个或多个 [支持的 `getaddrinfo` 标志][]。可以通过按位 `OR` 它们的值来传递多个标志。
   * `all` {boolean} 当为 `true` 时，回调在一个数组中返回所有解析的地址。否则，返回单个地址。**默认值：** `false`。
   * `order` {string} 当为 `verbatim` 时，解析的地址返回时未排序。当为 `ipv4first` 时，解析的地址通过将 IPv4 地址放在 IPv6 地址之前进行排序。当为 `ipv6first` 时，解析的地址通过将 IPv6 地址放在 IPv4 地址之前进行排序。**默认值：** `verbatim`（地址未重新排序）。默认值可使用 [`dns.setDefaultResultOrder()`][] 或 [`--dns-result-order`][] 配置。
-  * `verbatim` {boolean} 当为 `true` 时，回调按 DNS 解析器返回的顺序接收 IPv4 和 IPv6 地址。当为 `false` 时，IPv4 地址放在 IPv6 地址之前。此选项将被弃用， favor `order`。当两者都指定时，`order` 具有更高优先级。新代码应仅使用 `order`。**默认值：** `true`（地址未重新排序）。默认值可使用 [`dns.setDefaultResultOrder()`][] 或 [`--dns-result-order`][] 配置。
+  * `verbatim` {boolean} 当为 `true` 时，回调按 DNS 解析器返回的顺序接收 IPv4 和 IPv6 地址。当为 `false` 时，IPv4 地址放在 IPv6 地址之前。此选项将被弃用，倾向于 `order`。当两者都指定时，`order` 具有更高优先级。新代码应仅使用 `order`。**默认值：** `true`（地址未重新排序）。默认值可使用 [`dns.setDefaultResultOrder()`][] 或 [`--dns-result-order`][] 配置。
 * `callback` {Function}
   * `err` {Error}
-  * `address` {string} IPv4 或 IPv6 地址的字符串表示。
-  * `family` {integer} `4` 或 `6`，表示 `address` 的家族，如果地址不是 IPv4 或 IPv6 地址则为 `0`。`0` 可能是操作系统使用的名称解析服务中存在错误的指示。
+  * `address` {string} IPv4 或 IPv6 地址的字符串表示。当 `options.all` 为 `true` 时不提供。
+  * `family` {integer} `4` 或 `6`，表示 `address` 的家族；如果该地址不是 IPv4 或 IPv6 地址，则为 `0`。`0` 很可能表示操作系统使用的名称解析服务存在 bug。当 `options.all` 为 `true` 时不提供。
+  * `addresses` {Object\[]} 当 `options.all` 为 `true` 时，地址对象数组。每个对象具有以下属性：
+    * `address` {string} IPv4 或 IPv6 地址的字符串表示。
+    * `family` {integer} `4` 或 `6`，表示 `address` 的家族。
 
 将主机名（例如 `'nodejs.org'`）解析为找到的第一个 A (IPv4) 或 AAAA (IPv6) 记录。所有 `option` 属性都是可选的。如果 `options` 是整数，则它必须是 `4` 或 `6` – 如果未提供 `options`，则如果找到，返回 IPv4 或 IPv6 地址，或两者。
 
@@ -839,7 +842,7 @@ DNS 查询进行时不得调用 `dns.setServers()` 方法。
 也就是说，如果尝试使用提供的第一个服务器解析导致
 `NOTFOUND` 错误，则 `resolve()` 方法将 _不_ 尝试使用提供的后续服务器进行解析。仅当较早的服务器超时或导致其他错误时，才会使用备用 DNS 服务器。
 
-## DNS promises API
+## DNS Promise API
 
 <!-- YAML
 added: v10.6.0
@@ -1019,14 +1022,14 @@ const options = {
 
 await dnsPromises.lookup('example.org', options).then((result) => {
   console.log('address: %j family: IPv%s', result.address, result.family);
-  // address: "2606:2800:21f:cb07:6820:80da:af6b:8b2c" family: IPv6
+  // 地址: "2606:2800:21f:cb07:6820:80da:af6b:8b2c" 族: IPv6
 });
 
 // 当 options.all 为 true 时，结果将是一个数组。
 options.all = true;
 await dnsPromises.lookup('example.org', options).then((result) => {
   console.log('addresses: %j', result);
-  // addresses: [{"address":"2606:2800:21f:cb07:6820:80da:af6b:8b2c","family":6}]
+  // 地址: [{"address":"2606:2800:21f:cb07:6820:80da:af6b:8b2c","family":6}]
 });
 ```
 
@@ -1040,14 +1043,14 @@ const options = {
 
 dnsPromises.lookup('example.org', options).then((result) => {
   console.log('address: %j family: IPv%s', result.address, result.family);
-  // address: "2606:2800:21f:cb07:6820:80da:af6b:8b2c" family: IPv6
+  // 地址: "2606:2800:21f:cb07:6820:80da:af6b:8b2c" 族: IPv6
 });
 
 // 当 options.all 为 true 时，结果将是一个数组。
 options.all = true;
 dnsPromises.lookup('example.org', options).then((result) => {
   console.log('addresses: %j', result);
-  // addresses: [{"address":"2606:2800:21f:cb07:6820:80da:af6b:8b2c","family":6}]
+  // 地址: [{"address":"2606:2800:21f:cb07:6820:80da:af6b:8b2c","family":6}]
 });
 ```
 
