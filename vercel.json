@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npx @node-core/doc-kit generate -t web -t orama-db -i 'doc/api/*.md' -o out --index doc/api/index.md",
+  "framework": null,
+  "installCommand": "npx --version",
+  "outputDirectory": "out"
+}

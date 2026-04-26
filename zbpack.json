@@ -1,0 +1,8 @@
+{
+  "app_dir": "/",
+  "build_command": "npx @node-core/doc-kit generate -t web -t orama-db -i 'doc/api/*.md' -o out --index doc/api/index.md",
+  "ignore_dockerfile": false,
+  "install_command": "npm install -g @node-core/doc-kit",
+  "output_dir": "out",
+  "start_command": ""
+}
