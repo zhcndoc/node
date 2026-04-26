@@ -1,15 +1,14 @@
-# Inspector
+# 检查器
 
 <!--introduced_in=v8.0.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/inspector.js -->
 
-The `node:inspector` module provides an API for interacting with the V8
-inspector.
+`node:inspector` 模块提供了一个与 V8 检查器交互的 API。
 
-It can be accessed using:
+可以通过以下方式访问：
 
 ```mjs
 import * as inspector from 'node:inspector/promises';
@@ -19,7 +18,7 @@ import * as inspector from 'node:inspector/promises';
 const inspector = require('node:inspector/promises');
 ```
 
-or
+或
 
 ```mjs
 import * as inspector from 'node:inspector';
@@ -29,20 +28,19 @@ import * as inspector from 'node:inspector';
 const inspector = require('node:inspector');
 ```
 
-## Promises API
+## Promise 接口
 
 <!-- YAML
 added: v19.0.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-### Class: `inspector.Session`
+### 类：`inspector.Session`
 
-* Extends: {EventEmitter}
+* 继承：{EventEmitter}
 
-The `inspector.Session` is used for dispatching messages to the V8 inspector
-back-end and receiving message responses and notifications.
+`inspector.Session` 用于向 V8 检查器后端发送消息并接收消息响应和通知。
 
 #### `new inspector.Session()`
 
@@ -50,23 +48,19 @@ back-end and receiving message responses and notifications.
 added: v8.0.0
 -->
 
-Create a new instance of the `inspector.Session` class. The inspector session
-needs to be connected through [`session.connect()`][] before the messages
-can be dispatched to the inspector backend.
+创建 `inspector.Session` 类的新实例。检查器会话需要通过 [`session.connect()`][] 连接后，才能将消息发送到检查器后端。
 
-When using `Session`, the object outputted by the console API will not be
-released, unless we performed manually `Runtime.DiscardConsoleEntries`
-command.
+使用 `Session` 时，除非我们手动执行了 `Runtime.DiscardConsoleEntries` 命令，否则 console API 输出的对象不会被释放。
 
-#### Event: `'inspectorNotification'`
+#### 事件：`'inspectorNotification'`
 
 <!-- YAML
 added: v8.0.0
 -->
 
-* Type: {Object} The notification message object
+* 类型：{Object} 通知消息对象
 
-Emitted when any notification from the V8 Inspector is received.
+当收到来自 V8 检查器的任何通知时触发。
 
 ```js
 session.on('inspectorNotification', (message) => console.log(message.method));
@@ -74,25 +68,21 @@ session.on('inspectorNotification', (message) => console.log(message.method));
 // Debugger.resumed
 ```
 
-> **Caveat** Breakpoints with same-thread session is not recommended, see
-> [support of breakpoints][].
+> **注意** 不建议在同线程会话中使用断点，请参阅 [断点支持][]。
 
-It is also possible to subscribe only to notifications with specific method:
+也可以只订阅具有特定方法的通知：
 
-#### Event: `<inspector-protocol-method>`
+#### 事件：`<inspector-protocol-method>`
 
 <!-- YAML
 added: v8.0.0
 -->
 
-* Type: {Object} The notification message object
+* 类型：{Object} 通知消息对象
 
-Emitted when an inspector notification is received that has its method field set
-to the `<inspector-protocol-method>` value.
+当收到方法字段设置为 `<inspector-protocol-method>` 值的检查器通知时触发。
 
-The following snippet installs a listener on the [`'Debugger.paused'`][]
-event, and prints the reason for program suspension whenever program
-execution is suspended (through breakpoints, for example):
+以下代码片段在 [`'Debugger.paused'`][] 事件上安装了一个监听器，并在程序执行暂停时（例如通过断点）打印程序暂停的原因：
 
 ```js
 session.on('Debugger.paused', ({ params }) => {
@@ -101,8 +91,7 @@ session.on('Debugger.paused', ({ params }) => {
 // [ '/the/file/that/has/the/breakpoint.js:11:0' ]
 ```
 
-> **Caveat** Breakpoints with same-thread session is not recommended, see
-> [support of breakpoints][].
+> **注意** 不建议在同线程会话中使用断点，请参阅 [断点支持][]。
 
 #### `session.connect()`
 
@@ -110,7 +99,7 @@ session.on('Debugger.paused', ({ params }) => {
 added: v8.0.0
 -->
 
-Connects a session to the inspector back-end.
+将会话连接到检查器后端。
 
 #### `session.connectToMainThread()`
 
@@ -118,8 +107,7 @@ Connects a session to the inspector back-end.
 added: v12.11.0
 -->
 
-Connects a session to the main thread inspector back-end. An exception will
-be thrown if this API was not called on a Worker thread.
+将会话连接到主线程检查器后端。如果未在工作线程上调用此 API，将抛出异常。
 
 #### `session.disconnect()`
 
@@ -127,10 +115,7 @@ be thrown if this API was not called on a Worker thread.
 added: v8.0.0
 -->
 
-Immediately close the session. All pending message callbacks will be called
-with an error. [`session.connect()`][] will need to be called to be able to send
-messages again. Reconnected session will lose all inspector state, such as
-enabled agents or configured breakpoints.
+立即关闭会话。所有待处理的消息回调都将带有错误被调用。需要再次调用 [`session.connect()`][] 才能发送消息。重新连接的会话将丢失所有检查器状态，例如启用的代理或配置的断点。
 
 #### `session.post(method[, params])`
 
@@ -140,9 +125,9 @@ added: v19.0.0
 
 * `method` {string}
 * `params` {Object}
-* Returns: {Promise}
+* 返回：{Promise}
 
-Posts a message to the inspector back-end.
+向检查器后端发送消息。
 
 ```mjs
 import { Session } from 'node:inspector/promises';
@@ -154,25 +139,20 @@ try {
 } catch (error) {
   console.error(error);
 }
-// Output: { result: { type: 'number', value: 4, description: '4' } }
+// 输出：{ result: { type: 'number', value: 4, description: '4' } }
 ```
 
-The latest version of the V8 inspector protocol is published on the
-[Chrome DevTools Protocol Viewer][].
+最新版本的 V8 检查器协议发布在 [Chrome DevTools 协议查看器][] 上。
 
-Node.js inspector supports all the Chrome DevTools Protocol domains declared
-by V8. Chrome DevTools Protocol domain provides an interface for interacting
-with one of the runtime agents used to inspect the application state and listen
-to the run-time events.
+Node.js 检查器支持 V8 声明的所有 Chrome DevTools 协议域。Chrome DevTools 协议域提供了一个接口，用于与用于检查应用程序状态和监听运行时事件的运行时代理之一进行交互。
 
-#### Example usage
+#### 示例用法
 
-Apart from the debugger, various V8 Profilers are available through the DevTools
-protocol.
+除了调试器之外，还可以通过 DevTools 协议使用各种 V8 性能分析器。
 
-##### CPU profiler
+##### CPU 性能分析器
 
-Here's an example showing how to use the [CPU Profiler][]:
+这是一个展示如何使用 [CPU 性能分析器][] 的示例：
 
 ```mjs
 import { Session } from 'node:inspector/promises';
@@ -182,18 +162,18 @@ session.connect();
 
 await session.post('Profiler.enable');
 await session.post('Profiler.start');
-// Invoke business logic under measurement here...
+// 在此处调用待测量的业务逻辑...
 
-// some time later...
+// 一段时间后...
 const { profile } = await session.post('Profiler.stop');
 
-// Write profile to disk, upload, etc.
+// 将性能分析文件写入磁盘、上传等。
 fs.writeFileSync('./profile.cpuprofile', JSON.stringify(profile));
 ```
 
-##### Heap profiler
+##### 堆性能分析器
 
-Here's an example showing how to use the [Heap Profiler][]:
+这是一个展示如何使用 [堆性能分析器][] 的示例：
 
 ```mjs
 import { Session } from 'node:inspector/promises';
@@ -214,14 +194,13 @@ session.disconnect();
 fs.closeSync(fd);
 ```
 
-## Callback API
+## 回调接口
 
-### Class: `inspector.Session`
+### 类：`inspector.Session`
 
-* Extends: {EventEmitter}
+* 继承：{EventEmitter}
 
-The `inspector.Session` is used for dispatching messages to the V8 inspector
-back-end and receiving message responses and notifications.
+`inspector.Session` 用于向 V8 检查器后端发送消息并接收消息响应和通知。
 
 #### `new inspector.Session()`
 
@@ -229,23 +208,19 @@ back-end and receiving message responses and notifications.
 added: v8.0.0
 -->
 
-Create a new instance of the `inspector.Session` class. The inspector session
-needs to be connected through [`session.connect()`][] before the messages
-can be dispatched to the inspector backend.
+创建 `inspector.Session` 类的新实例。检查器会话需要通过 [`session.connect()`][] 连接后，才能将消息发送到检查器后端。
 
-When using `Session`, the object outputted by the console API will not be
-released, unless we performed manually `Runtime.DiscardConsoleEntries`
-command.
+使用 `Session` 时，除非我们手动执行了 `Runtime.DiscardConsoleEntries` 命令，否则 console API 输出的对象不会被释放。
 
-#### Event: `'inspectorNotification'`
+#### 事件：`'inspectorNotification'`
 
 <!-- YAML
 added: v8.0.0
 -->
 
-* Type: {Object} The notification message object
+* 类型：{Object} 通知消息对象
 
-Emitted when any notification from the V8 Inspector is received.
+当收到来自 V8 检查器的任何通知时触发。
 
 ```js
 session.on('inspectorNotification', (message) => console.log(message.method));
@@ -253,25 +228,21 @@ session.on('inspectorNotification', (message) => console.log(message.method));
 // Debugger.resumed
 ```
 
-> **Caveat** Breakpoints with same-thread session is not recommended, see
-> [support of breakpoints][].
+> **注意** 不建议在同线程会话中使用断点，请参阅 [断点支持][]。
 
-It is also possible to subscribe only to notifications with specific method:
+也可以只订阅具有特定方法的通知：
 
-#### Event: `<inspector-protocol-method>`;
+#### 事件：`<inspector-protocol-method>`;
 
 <!-- YAML
 added: v8.0.0
 -->
 
-* Type: {Object} The notification message object
+* 类型：{Object} 通知消息对象
 
-Emitted when an inspector notification is received that has its method field set
-to the `<inspector-protocol-method>` value.
+当收到方法字段设置为 `<inspector-protocol-method>` 值的检查器通知时触发。
 
-The following snippet installs a listener on the [`'Debugger.paused'`][]
-event, and prints the reason for program suspension whenever program
-execution is suspended (through breakpoints, for example):
+以下代码片段在 [`'Debugger.paused'`][] 事件上安装了一个监听器，并在程序执行暂停时（例如通过断点）打印程序暂停的原因：
 
 ```js
 session.on('Debugger.paused', ({ params }) => {
@@ -280,8 +251,7 @@ session.on('Debugger.paused', ({ params }) => {
 // [ '/the/file/that/has/the/breakpoint.js:11:0' ]
 ```
 
-> **Caveat** Breakpoints with same-thread session is not recommended, see
-> [support of breakpoints][].
+> **注意** 不建议在同线程会话中使用断点，请参阅 [断点支持][]。
 
 #### `session.connect()`
 
@@ -289,7 +259,7 @@ session.on('Debugger.paused', ({ params }) => {
 added: v8.0.0
 -->
 
-Connects a session to the inspector back-end.
+将会话连接到检查器后端。
 
 #### `session.connectToMainThread()`
 
@@ -297,8 +267,7 @@ Connects a session to the inspector back-end.
 added: v12.11.0
 -->
 
-Connects a session to the main thread inspector back-end. An exception will
-be thrown if this API was not called on a Worker thread.
+将会话连接到主线程检查器后端。如果未在工作线程上调用此 API，将抛出异常。
 
 #### `session.disconnect()`
 
@@ -306,10 +275,7 @@ be thrown if this API was not called on a Worker thread.
 added: v8.0.0
 -->
 
-Immediately close the session. All pending message callbacks will be called
-with an error. [`session.connect()`][] will need to be called to be able to send
-messages again. Reconnected session will lose all inspector state, such as
-enabled agents or configured breakpoints.
+立即关闭会话。所有待处理的消息回调都将带有错误被调用。需要再次调用 [`session.connect()`][] 才能发送消息。重新连接的会话将丢失所有检查器状态，例如启用的代理或配置的断点。
 
 #### `session.post(method[, params][, callback])`
 
@@ -318,45 +284,34 @@ added: v8.0.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: Passing an invalid callback to the `callback` argument
-                 now throws `ERR_INVALID_ARG_TYPE` instead of
-                 `ERR_INVALID_CALLBACK`.
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `method` {string}
 * `params` {Object}
 * `callback` {Function}
 
-Posts a message to the inspector back-end. `callback` will be notified when
-a response is received. `callback` is a function that accepts two optional
-arguments: error and message-specific result.
+向检查器后端发送消息。收到响应时将通知 `callback`。`callback` 是一个接受两个可选参数的函数：错误和特定于消息的结果。
 
 ```js
 session.post('Runtime.evaluate', { expression: '2 + 2' },
              (error, { result }) => console.log(result));
-// Output: { type: 'number', value: 4, description: '4' }
+// 输出：{ type: 'number', value: 4, description: '4' }
 ```
 
-The latest version of the V8 inspector protocol is published on the
-[Chrome DevTools Protocol Viewer][].
+最新版本的 V8 检查器协议发布在 [Chrome DevTools 协议查看器][] 上。
 
-Node.js inspector supports all the Chrome DevTools Protocol domains declared
-by V8. Chrome DevTools Protocol domain provides an interface for interacting
-with one of the runtime agents used to inspect the application state and listen
-to the run-time events.
+Node.js 检查器支持 V8 声明的所有 Chrome DevTools 协议域。Chrome DevTools 协议域提供了一个接口，用于与用于检查应用程序状态和监听运行时事件的运行时代理之一进行交互。
 
-You can not set `reportProgress` to `true` when sending a
-`HeapProfiler.takeHeapSnapshot` or `HeapProfiler.stopTrackingHeapObjects`
-command to V8.
+向 V8 发送 `HeapProfiler.takeHeapSnapshot` 或 `HeapProfiler.stopTrackingHeapObjects` 命令时，不能将 `reportProgress` 设置为 `true`。
 
-#### Example usage
+#### 示例用法
 
-Apart from the debugger, various V8 Profilers are available through the DevTools
-protocol.
+除了调试器之外，还可以通过 DevTools 协议使用各种 V8 性能分析器。
 
-##### CPU profiler
+##### CPU 性能分析器
 
-Here's an example showing how to use the [CPU Profiler][]:
+这是一个展示如何使用 [CPU 性能分析器][] 的示例：
 
 ```js
 const inspector = require('node:inspector');
@@ -366,11 +321,11 @@ session.connect();
 
 session.post('Profiler.enable', () => {
   session.post('Profiler.start', () => {
-    // Invoke business logic under measurement here...
+    // 在此处调用待测量的业务逻辑...
 
-    // some time later...
+    // 一段时间后...
     session.post('Profiler.stop', (err, { profile }) => {
-      // Write profile to disk, upload, etc.
+      // 将性能分析文件写入磁盘、上传等。
       if (!err) {
         fs.writeFileSync('./profile.cpuprofile', JSON.stringify(profile));
       }
@@ -379,9 +334,9 @@ session.post('Profiler.enable', () => {
 });
 ```
 
-##### Heap profiler
+##### 堆性能分析器
 
-Here's an example showing how to use the [Heap Profiler][]:
+这是一个展示如何使用 [堆性能分析器][] 的示例：
 
 ```js
 const inspector = require('node:inspector');
@@ -403,7 +358,7 @@ session.post('HeapProfiler.takeHeapSnapshot', null, (err, r) => {
 });
 ```
 
-## Common Objects
+## 常用对象
 
 ### `inspector.close()`
 
@@ -412,22 +367,20 @@ added: v9.0.0
 changes:
   - version: v18.10.0
     pr-url: https://github.com/nodejs/node/pull/44489
-    description: The API is exposed in the worker threads.
+    description: 该 API 在工作线程中暴露。
 -->
 
-Attempts to close all remaining connections, blocking the event loop until all
-are closed. Once all connections are closed, deactivates the inspector.
+尝试关闭所有剩余的连接，阻塞事件循环直到所有连接关闭。一旦所有连接关闭，停用检查器。
 
 ### `inspector.console`
 
-* Type: {Object} An object to send messages to the remote inspector console.
+* 类型：{Object} 一个用于向远程检查器控制台发送消息的对象。
 
 ```js
 require('node:inspector').console.log('a message');
 ```
 
-The inspector console does not have API parity with Node.js
-console.
+检查器控制台与 Node.js console 没有 API 一致性。
 
 ### `inspector.open([port[, host[, wait]]])`
 
@@ -435,32 +388,28 @@ console.
 changes:
   - version: v20.6.0
     pr-url: https://github.com/nodejs/node/pull/48765
-    description: inspector.open() now returns a `Disposable` object.
+    description: "inspector.open() 现在返回一个 `Disposable` 对象。"
 -->
 
-* `port` {number} Port to listen on for inspector connections. Optional.
-  **Default:** what was specified on the CLI.
-* `host` {string} Host to listen on for inspector connections. Optional.
-  **Default:** what was specified on the CLI.
-* `wait` {boolean} Block until a client has connected. Optional.
-  **Default:** `false`.
-* Returns: {Disposable} A Disposable that calls [`inspector.close()`][].
+* `port` {number} 用于监听检查器连接的端口。可选。
+  **默认值：** 命令行中指定的值。
+* `host` {string} 用于监听检查器连接的主机。可选。
+  **默认值：** 命令行中指定的值。
+* `wait` {boolean} 阻塞直到客户端连接。可选。
+  **默认值：** `false`。
+* 返回：{Disposable} 一个调用 [`inspector.close()`][] 的 Disposable。
 
-Activate inspector on host and port. Equivalent to
-`node --inspect=[[host:]port]`, but can be done programmatically after node has
-started.
+在主机和端口上激活检查器。相当于 `node --inspect=[[host:]port]`，但可以在 Node 启动后以编程方式完成。
 
-If wait is `true`, will block until a client has connected to the inspect port
-and flow control has been passed to the debugger client.
+如果 wait 为 `true`，将阻塞直到客户端连接到检查端口并将控制权传递给调试器客户端。
 
-See the [security warning][] regarding the `host`
-parameter usage.
+请参阅关于 `host` 参数用法的 [安全警告][]。
 
 ### `inspector.url()`
 
-* Returns: {string|undefined}
+* 返回：{string|undefined}
 
-Return the URL of the active inspector, or `undefined` if there is none.
+返回活动检查器的 URL，如果没有则返回 `undefined`。
 
 ```console
 $ node --inspect -p 'inspector.url()'
@@ -483,23 +432,21 @@ undefined
 added: v12.7.0
 -->
 
-Blocks until a client (existing or connected later) has sent
-`Runtime.runIfWaitingForDebugger` command.
+阻塞直到客户端（现有或稍后连接的）发送了 `Runtime.runIfWaitingForDebugger` 命令。
 
-An exception will be thrown if there is no active inspector.
+如果没有活动的检查器，将抛出异常。
 
-## Integration with DevTools
+## 与 DevTools 集成
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
-The `node:inspector` module provides an API for integrating with devtools that support Chrome DevTools Protocol.
-DevTools frontends connected to a running Node.js instance can capture protocol events emitted from the instance
-and display them accordingly to facilitate debugging.
-The following methods broadcast a protocol event to all connected frontends.
-The `params` passed to the methods can be optional, depending on the protocol.
+`node:inspector` 模块提供了一个 API，用于与支持 Chrome DevTools 协议的开发者工具集成。
+连接到运行中 Node.js 实例的 DevTools 前端可以捕获实例发出的协议事件并相应地显示它们以促进调试。
+以下方法将协议事件广播到所有连接的前端。
+传递给方法的 `params` 可以是可选的，具体取决于协议。
 
 ```js
-// The `Network.requestWillBeSent` event will be fired.
+// 将触发 Network.requestWillBeSent 事件。
 inspector.Network.requestWillBeSent({
   requestId: 'request-id-1',
   timestamp: Date.now() / 1000,
@@ -521,12 +468,11 @@ added:
 
 * `params` {Object}
 
-This feature is only available with the `--experimental-network-inspection` flag enabled.
+此功能仅在启用 `--experimental-network-inspection` 标志时可用。
 
-Broadcasts the `Network.dataReceived` event to connected frontends, or buffers the data if
-`Network.streamResourceContent` command was not invoked for the given request yet.
+将 `Network.dataReceived` 事件广播到连接的前端，如果尚未针对给定请求调用 `Network.streamResourceContent` 命令，则缓冲数据。
 
-Also enables `Network.getResponseBody` command to retrieve the response data.
+同时启用 `Network.getResponseBody` 命令以检索响应数据。
 
 ### `inspector.Network.dataSent([params])`
 
@@ -538,9 +484,9 @@ added:
 
 * `params` {Object}
 
-This feature is only available with the `--experimental-network-inspection` flag enabled.
+此功能仅在启用 `--experimental-network-inspection` 标志时可用。
 
-Enables `Network.getRequestPostData` command to retrieve the request data.
+启用 `Network.getRequestPostData` 命令以检索请求数据。
 
 ### `inspector.Network.requestWillBeSent([params])`
 
@@ -552,10 +498,9 @@ added:
 
 * `params` {Object}
 
-This feature is only available with the `--experimental-network-inspection` flag enabled.
+此功能仅在启用 `--experimental-network-inspection` 标志时可用。
 
-Broadcasts the `Network.requestWillBeSent` event to connected frontends. This event indicates that
-the application is about to send an HTTP request.
+将 `Network.requestWillBeSent` 事件广播到连接的前端。此事件表明应用程序即将发送 HTTP 请求。
 
 ### `inspector.Network.responseReceived([params])`
 
@@ -567,10 +512,9 @@ added:
 
 * `params` {Object}
 
-This feature is only available with the `--experimental-network-inspection` flag enabled.
+此功能仅在启用 `--experimental-network-inspection` 标志时可用。
 
-Broadcasts the `Network.responseReceived` event to connected frontends. This event indicates that
-HTTP response is available.
+将 `Network.responseReceived` 事件广播到连接的前端。此事件表明 HTTP 响应可用。
 
 ### `inspector.Network.loadingFinished([params])`
 
@@ -582,10 +526,9 @@ added:
 
 * `params` {Object}
 
-This feature is only available with the `--experimental-network-inspection` flag enabled.
+此功能仅在启用 `--experimental-network-inspection` 标志时可用。
 
-Broadcasts the `Network.loadingFinished` event to connected frontends. This event indicates that
-HTTP request has finished loading.
+将 `Network.loadingFinished` 事件广播到连接的前端。此事件表明 HTTP 请求已完成加载。
 
 ### `inspector.Network.loadingFailed([params])`
 
@@ -597,10 +540,9 @@ added:
 
 * `params` {Object}
 
-This feature is only available with the `--experimental-network-inspection` flag enabled.
+此功能仅在启用 `--experimental-network-inspection` 标志时可用。
 
-Broadcasts the `Network.loadingFailed` event to connected frontends. This event indicates that
-HTTP request has failed to load.
+将 `Network.loadingFailed` 事件广播到连接的前端。此事件表明 HTTP 请求加载失败。
 
 ### `inspector.Network.webSocketCreated([params])`
 
@@ -611,10 +553,9 @@ added:
 
 * `params` {Object}
 
-This feature is only available with the `--experimental-network-inspection` flag enabled.
+此功能仅在启用 `--experimental-network-inspection` 标志时可用。
 
-Broadcasts the `Network.webSocketCreated` event to connected frontends. This event indicates that
-a WebSocket connection has been initiated.
+将 `Network.webSocketCreated` 事件广播到连接的前端。此事件表明 WebSocket 连接已发起。
 
 ### `inspector.Network.webSocketHandshakeResponseReceived([params])`
 
@@ -625,10 +566,10 @@ added:
 
 * `params` {Object}
 
-This feature is only available with the `--experimental-network-inspection` flag enabled.
+此功能仅在启用 `--experimental-network-inspection` 标志时可用。
 
-Broadcasts the `Network.webSocketHandshakeResponseReceived` event to connected frontends.
-This event indicates that the WebSocket handshake response has been received.
+将 `Network.webSocketHandshakeResponseReceived` 事件广播到连接的前端。
+此事件表明 WebSocket 握手响应已接收。
 
 ### `inspector.Network.webSocketClosed([params])`
 
@@ -639,10 +580,10 @@ added:
 
 * `params` {Object}
 
-This feature is only available with the `--experimental-network-inspection` flag enabled.
+此功能仅在启用 `--experimental-network-inspection` 标志时可用。
 
-Broadcasts the `Network.webSocketClosed` event to connected frontends.
-This event indicates that a WebSocket connection has been closed.
+将 `Network.webSocketClosed` 事件广播到连接的前端。
+此事件表明 WebSocket 连接已关闭。
 
 ### `inspector.NetworkResources.put`
 
@@ -652,21 +593,19 @@ added:
   - v22.19.0
 -->
 
-> Stability: 1.1 - Active Development
+> 稳定性：1.1 - 积极开发中
 
-This feature is only available with the `--experimental-inspector-network-resource` flag enabled.
+此功能仅在启用 `--experimental-inspector-network-resource` 标志时可用。
 
-The inspector.NetworkResources.put method is used to provide a response for a loadNetworkResource
-request issued via the Chrome DevTools Protocol (CDP).
-This is typically triggered when a source map is specified by URL, and a DevTools frontend—such as
-Chrome—requests the resource to retrieve the source map.
+inspector.NetworkResources.put 方法用于为通过 Chrome DevTools 协议 (CDP) 发出的 loadNetworkResource 请求提供响应。
+这通常在指定源映射的 URL 时触发，并且 DevTools 前端（如 Chrome）请求资源以检索源映射。
 
-This method allows developers to predefine the resource content to be served in response to such CDP requests.
+此方法允许开发者预定义资源内容以响应此类 CDP 请求。
 
 ```js
 const inspector = require('node:inspector');
-// By preemptively calling put to register the resource, a source map can be resolved when
-// a loadNetworkResource request is made from the frontend.
+// 通过预先调用 put 注册资源，当
+// 前端发出 loadNetworkResource 请求时可以解析源映射。
 async function setNetworkResources() {
   const mapUrl = 'http://localhost:3000/dist/app.js.map';
   const tsUrl = 'http://localhost:3000/src/app.ts';
@@ -680,7 +619,7 @@ setNetworkResources().then(() => {
 });
 ```
 
-For more details, see the official CDP documentation: [Network.loadNetworkResource](https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-loadNetworkResource)
+更多详情，请参阅官方 CDP 文档：[Network.loadNetworkResource](https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-loadNetworkResource)
 
 ### `inspector.DOMStorage.domStorageItemAdded`
 
@@ -697,11 +636,11 @@ added:
   * `key` {string}
   * `newValue` {string}
 
-This feature is only available with the
-`--experimental-storage-inspection` flag enabled.
+此功能仅在启用
+`--experimental-storage-inspection` 标志时可用。
 
-Broadcasts the `DOMStorage.domStorageItemAdded` event to connected frontends.
-This event indicates that a new item has been added to the storage.
+将 `DOMStorage.domStorageItemAdded` 事件广播到连接的前端。
+此事件表明一个新项已添加到存储中。
 
 ### `inspector.DOMStorage.domStorageItemRemoved`
 
@@ -717,11 +656,11 @@ added:
     * `isLocalStorage` {boolean}
   * `key` {string}
 
-This feature is only available with the
-`--experimental-storage-inspection` flag enabled.
+此功能仅在启用
+`--experimental-storage-inspection` 标志时可用。
 
-Broadcasts the `DOMStorage.domStorageItemRemoved` event to connected frontends.
-This event indicates that an item has been removed from the storage.
+将 `DOMStorage.domStorageItemRemoved` 事件广播到连接的前端。
+此事件表明一个项已从存储中移除。
 
 ### `inspector.DOMStorage.domStorageItemUpdated`
 
@@ -739,11 +678,11 @@ added:
   * `oldValue` {string}
   * `newValue` {string}
 
-This feature is only available with the
-`--experimental-storage-inspection` flag enabled.
+此功能仅在启用
+`--experimental-storage-inspection` 标志时可用。
 
-Broadcasts the `DOMStorage.domStorageItemUpdated` event to connected frontends.
-This event indicates that a storage item has been updated.
+将 `DOMStorage.domStorageItemUpdated` 事件广播到连接的前端。
+此事件表明一个存储项已更新。
 
 ### `inspector.DOMStorage.domStorageItemsCleared`
 
@@ -758,12 +697,11 @@ added:
     * `storageKey` {string}
     * `isLocalStorage` {boolean}
 
-This feature is only available with the
-`--experimental-storage-inspection` flag enabled.
+此功能仅在启用
+`--experimental-storage-inspection` 标志时可用。
 
-Broadcasts the `DOMStorage.domStorageItemsCleared` event to connected
-frontends. This event indicates that all items have been cleared from the
-storage.
+将 `DOMStorage.domStorageItemsCleared` 事件广播到连接
+的前端。此事件表明所有项已从存储中清除。
 
 ### `inspector.DOMStorage.registerStorage`
 
@@ -776,30 +714,25 @@ added:
   * `isLocalStorage` {boolean}
   * `storageMap` {Object}
 
-This feature is only available with the
-`--experimental-storage-inspection` flag enabled.
+此功能仅在启用
+`--experimental-storage-inspection` 标志时可用。
 
-## Support of breakpoints
+## 断点支持
 
-The Chrome DevTools Protocol [`Debugger` domain][] allows an
-`inspector.Session` to attach to a program and set breakpoints to step through
-the codes.
+Chrome DevTools Protocol 的 [`Debugger` 域][] 允许一个
+`inspector.Session` 附加到程序并设置断点以逐步执行
+代码。
 
-However, setting breakpoints with a same-thread `inspector.Session`, which is
-connected by [`session.connect()`][], should be avoided as the program being
-attached and paused is exactly the debugger itself. Instead, try connect to the
-main thread by [`session.connectToMainThread()`][] and set breakpoints in a
-worker thread, or connect with a [Debugger][] program over WebSocket
-connection.
+然而，应避免使用通过 [`session.connect()`][] 连接的同线程 `inspector.Session` 设置断点，因为被附加并暂停的程序正是调试器本身。相反，请尝试通过 [`session.connectToMainThread()`][] 连接到主线程，并在 worker 线程中设置断点，或者通过 WebSocket 连接与 [调试器][] 程序建立连接。
 
-[CPU Profiler]: https://chromedevtools.github.io/devtools-protocol/v8/Profiler
-[Chrome DevTools Protocol Viewer]: https://chromedevtools.github.io/devtools-protocol/v8/
-[Debugger]: debugger.md
-[Heap Profiler]: https://chromedevtools.github.io/devtools-protocol/v8/HeapProfiler
+[CPU 性能分析器]: https://chromedevtools.github.io/devtools-protocol/v8/Profiler
+[Chrome DevTools Protocol 查看器]: https://chromedevtools.github.io/devtools-protocol/v8/
+[调试器]: debugger.md
+[堆性能分析器]: https://chromedevtools.github.io/devtools-protocol/v8/HeapProfiler
 [`'Debugger.paused'`]: https://chromedevtools.github.io/devtools-protocol/v8/Debugger#event-paused
-[`Debugger` domain]: https://chromedevtools.github.io/devtools-protocol/v8/Debugger
+[`Debugger` 域]: https://chromedevtools.github.io/devtools-protocol/v8/Debugger
 [`inspector.close()`]: #inspectorclose
 [`session.connect()`]: #sessionconnect
 [`session.connectToMainThread()`]: #sessionconnecttomainthread
-[security warning]: cli.md#warning-binding-inspector-to-a-public-ipport-combination-is-insecure
-[support of breakpoints]: #support-of-breakpoints
+[安全警告]: cli.md#warning-binding-inspector-to-a-public-ipport-combination-is-insecure
+[断点支持]: #support-of-breakpoints

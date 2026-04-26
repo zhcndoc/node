@@ -4,87 +4,81 @@
 changes:
   - version: v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62183
-    description: TurboSHAKE and KangarooTwelve algorithms
-      are now supported.
+    description: 现已支持 TurboSHAKE 和 KangarooTwelve 算法。
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59647
-    description: KMAC algorithms are now supported.
+    description: 现已支持 KMAC 算法。
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59544
-    description: Argon2 algorithms are now supported.
+    description: 现已支持 Argon2 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59539
-    description: AES-OCB algorithm is now supported.
+    description: 现已支持 AES-OCB 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59569
-    description: ML-KEM algorithms are now supported.
+    description: 现已支持 ML-KEM 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ChaCha20-Poly1305 algorithm is now supported.
+    description: 现已支持 ChaCha20-Poly1305 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHA-3 algorithms are now supported.
+    description: 现已支持 SHA-3 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHAKE algorithms are now supported.
+    description: 现已支持 SHAKE 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ML-DSA algorithms are now supported.
+    description: 现已支持 ML-DSA 算法。
   - version:
     - v23.5.0
     - v22.13.0
     - v20.19.3
     pr-url: https://github.com/nodejs/node/pull/56142
-    description: Algorithms `Ed25519` and `X25519` are now stable.
+    description: "算法 `Ed25519` 和 `X25519` 现已稳定。"
   - version:
     - v20.0.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/46067
-    description: Arguments are now coerced and validated as per their WebIDL
-      definitions like in other Web Crypto API implementations.
+    description: 参数现在根据 WebIDL 定义进行强制转换和验证，
+      与其他 Web Crypto API 实现一样。
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44897
-    description: No longer experimental except for the `Ed25519`, `Ed448`,
-      `X25519`, and `X448` algorithms.
+    description: "不再处于实验阶段，但 `Ed25519`、`Ed448`、`X25519` 和 `X448` 算法除外。"
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43310
-    description: Removed proprietary `'node.keyObject'` import/export format.
+    description: "移除了专有的 `'node.keyObject'` 导入/导出格式。"
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43310
-    description: Removed proprietary `'NODE-DSA'`, `'NODE-DH'`,
-      and `'NODE-SCRYPT'` algorithms.
+    description: "移除了专有的 `'NODE-DSA'`、`'NODE-DH'`、和 `'NODE-SCRYPT'` 算法。"
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'Ed25519'`, `'Ed448'`, `'X25519'`, and `'X448'`
-      algorithms.
+    description: "添加了 `'Ed25519'`、`'Ed448'`、`'X25519'` 和 `'X448'`算法。"
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Removed proprietary `'NODE-ED25519'` and `'NODE-ED448'`
-      algorithms.
+    description: "移除了专有的 `'NODE-ED25519'` 和 `'NODE-ED448'`算法。"
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Removed proprietary `'NODE-X25519'` and `'NODE-X448'` named
-      curves from the `'ECDH'` algorithm.
+    description: "从 `'ECDH'` 算法中移除了专有的 `'NODE-X25519'` 和 `'NODE-X448'` 命名曲线。"
 -->
 
 <!-- introduced_in=v15.0.0 -->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
-Node.js provides an implementation of the [Web Crypto API][] standard.
+Node.js 提供了 [Web Crypto API][] 标准的实现。
 
-Use `globalThis.crypto` or `require('node:crypto').webcrypto` to access this
-module.
+使用 `globalThis.crypto` 或 `require('node:crypto').webcrypto` 来访问此
+模块。
 
 ```js
 const { subtle } = globalThis.crypto;
@@ -107,15 +101,15 @@ const { subtle } = globalThis.crypto;
 })();
 ```
 
-## Modern Algorithms in the Web Cryptography API
+## Web 加密 API 中的现代算法
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
-Node.js provides an implementation of the following features from the
-[Modern Algorithms in the Web Cryptography API](https://wicg.github.io/webcrypto-modern-algos/)
-WICG proposal:
+Node.js 提供了以下功能的实现，来自
+[Web 加密 API 中的现代算法](https://wicg.github.io/webcrypto-modern-algos/)
+WICG 提案：
 
-Algorithms:
+算法：
 
 * `'AES-OCB'`[^openssl30]
 * `'Argon2d'`[^openssl32]
@@ -140,13 +134,13 @@ Algorithms:
 * `'TurboSHAKE128'`
 * `'TurboSHAKE256'`
 
-Key Formats:
+密钥格式：
 
 * `'raw-public'`
 * `'raw-secret'`
 * `'raw-seed'`
 
-Methods:
+方法：
 
 * [`subtle.decapsulateBits()`][]
 * [`subtle.decapsulateKey()`][]
@@ -155,27 +149,27 @@ Methods:
 * [`subtle.getPublicKey()`][]
 * [`SubtleCrypto.supports()`][]
 
-## Secure Curves in the Web Cryptography API
+## Web 加密 API 中的安全曲线
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
-Node.js provides an implementation of the following features from the
-[Secure Curves in the Web Cryptography API](https://wicg.github.io/webcrypto-secure-curves/)
-WICG proposal:
+Node.js 提供了以下功能的实现，来自
+[Web 加密 API 中的安全曲线](https://wicg.github.io/webcrypto-secure-curves/)
+WICG 提案：
 
-Algorithms:
+算法：
 
 * `'Ed448'`
 * `'X448'`
 
-## Examples
+## 示例
 
-### Generating keys
+### 生成密钥
 
-The {SubtleCrypto} class can be used to generate symmetric (secret) keys
-or asymmetric key pairs (public key and private key).
+{SubtleCrypto} 类可用于生成对称（秘密）密钥
+或非对称密钥对（公钥和私钥）。
 
-#### AES keys
+#### AES 密钥
 
 ```js
 const { subtle } = globalThis.crypto;
@@ -190,7 +184,7 @@ async function generateAesKey(length = 256) {
 }
 ```
 
-#### ECDSA key pairs
+#### ECDSA 密钥对
 
 ```js
 const { subtle } = globalThis.crypto;
@@ -208,7 +202,7 @@ async function generateEcKey(namedCurve = 'P-521') {
 }
 ```
 
-#### Ed25519/X25519 key pairs
+#### Ed25519/X25519 密钥对
 
 ```js
 const { subtle } = globalThis.crypto;
@@ -226,7 +220,7 @@ async function generateX25519Key() {
 }
 ```
 
-#### HMAC keys
+#### HMAC 密钥
 
 ```js
 const { subtle } = globalThis.crypto;
@@ -241,7 +235,7 @@ async function generateHmacKey(hash = 'SHA-256') {
 }
 ```
 
-#### RSA key pairs
+#### RSA 密钥对
 
 ```js
 const { subtle } = globalThis.crypto;
@@ -262,7 +256,7 @@ async function generateRsaKey(modulusLength = 2048, hash = 'SHA-256') {
 }
 ```
 
-### Encryption and decryption
+### 加密和解密
 
 ```js
 const crypto = globalThis.crypto;
@@ -295,7 +289,7 @@ async function aesDecrypt(ciphertext, key, iv) {
 }
 ```
 
-### Exporting and importing keys
+### 导出和导入密钥
 
 ```js
 const { subtle } = globalThis.crypto;
@@ -319,7 +313,7 @@ async function importHmacKey(keyData, format = 'jwk', hash = 'SHA-512') {
 }
 ```
 
-### Wrapping and unwrapping keys
+### 包装和解包密钥
 
 ```js
 const { subtle } = globalThis.crypto;
@@ -362,7 +356,7 @@ async function unwrapHmacKey(
 }
 ```
 
-### Sign and verify
+### 签名和验证
 
 ```js
 const { subtle } = globalThis.crypto;
@@ -386,7 +380,7 @@ async function verify(key, signature, data) {
 }
 ```
 
-### Deriving bits and keys
+### 派生位和密钥
 
 ```js
 const { subtle } = globalThis.crypto;
@@ -429,7 +423,7 @@ async function pbkdf2Key(pass, salt, iterations = 1000, length = 256) {
 }
 ```
 
-### Digest
+### 摘要
 
 ```js
 const { subtle } = globalThis.crypto;
@@ -441,15 +435,14 @@ async function digest(data, algorithm = 'SHA-512') {
 }
 ```
 
-### Checking for runtime algorithm support
+### 检查运行时算法支持
 
-[`SubtleCrypto.supports()`][] allows feature detection in Web Crypto API,
-which can be used to detect whether a given algorithm identifier
-(including its parameters) is supported for the given operation.
+[`SubtleCrypto.supports()`][] 允许在 Web Crypto API 中进行功能检测，
+可用于检测给定的操作是否支持给定的算法标识符
+（包括其参数）。
 
-This example derives a key from a password using Argon2, if available,
-or PBKDF2, otherwise; and then encrypts and decrypts some text with it
-using AES-OCB, if available, and AES-GCM, otherwise.
+此示例使用 Argon2 从密码派生密钥（如果可用），
+否则使用 PBKDF2；然后使用 AES-OCB（如果可用）或 AES-GCM 用它加密和解密一些文本。
 
 ```mjs
 const { SubtleCrypto, crypto } = globalThis;
@@ -511,14 +504,14 @@ const decrypted = new TextDecoder().decode(await crypto.subtle.decrypt(
 ));
 ```
 
-## Algorithm matrix
+## 算法矩阵
 
-The following tables detail the algorithms supported by the Node.js Web
-Crypto API implementation and the APIs supported for each:
+下表详细列出了 Node.js Web
+Crypto API 实现所支持的算法，以及每种算法所支持的 API：
 
-### Key Management APIs
+### 密钥管理 API
 
-| Algorithm                            | [`subtle.generateKey()`][] | [`subtle.exportKey()`][] | [`subtle.importKey()`][] | [`subtle.getPublicKey()`][] |
+| 算法                            | [`subtle.generateKey()`][] | [`subtle.exportKey()`][] | [`subtle.importKey()`][] | [`subtle.getPublicKey()`][] |
 | ------------------------------------ | -------------------------- | ------------------------ | ------------------------ | --------------------------- |
 | `'AES-CBC'`                          | ✔                          | ✔                        | ✔                        |                             |
 | `'AES-CTR'`                          | ✔                          | ✔                        | ✔                        |                             |
@@ -550,19 +543,19 @@ Crypto API implementation and the APIs supported for each:
 | `'X25519'`                           | ✔                          | ✔                        | ✔                        | ✔                           |
 | `'X448'`[^secure-curves]             | ✔                          | ✔                        | ✔                        | ✔                           |
 
-### Crypto Operation APIs
+### 加密操作 API
 
-**Column Legend:**
+**列图例：**
 
-* **Encryption**: [`subtle.encrypt()`][] / [`subtle.decrypt()`][]
-* **Signatures and MAC**: [`subtle.sign()`][] / [`subtle.verify()`][]
-* **Key or Bits Derivation**: [`subtle.deriveBits()`][] / [`subtle.deriveKey()`][]
-* **Key Wrapping**: [`subtle.wrapKey()`][] / [`subtle.unwrapKey()`][]
-* **Key Encapsulation**: [`subtle.encapsulateBits()`][] / [`subtle.decapsulateBits()`][] /
+* **加密**: [`subtle.encrypt()`][] / [`subtle.decrypt()`][]
+* **签名和 MAC**: [`subtle.sign()`][] / [`subtle.verify()`][]
+* **密钥或位派生**: [`subtle.deriveBits()`][] / [`subtle.deriveKey()`][]
+* **密钥包装**: [`subtle.wrapKey()`][] / [`subtle.unwrapKey()`][]
+* **密钥封装**: [`subtle.encapsulateBits()`][] / [`subtle.decapsulateBits()`][]
   [`subtle.encapsulateKey()`][] / [`subtle.decapsulateKey()`][]
-* **Digest**: [`subtle.digest()`][]
+* **摘要**: [`subtle.digest()`][]
 
-| Algorithm                            | Encryption | Signatures and MAC | Key or Bits Derivation | Key Wrapping | Key Encapsulation | Digest |
+| 算法                            | 加密 | 签名和 MAC | 密钥或位派生 | 密钥包装 | 密钥封装 | 摘要 |
 | ------------------------------------ | ---------- | ------------------ | ---------------------- | ------------ | ----------------- | ------ |
 | `'AES-CBC'`                          | ✔          |                    |                        | ✔            |                   |        |
 | `'AES-CTR'`                          | ✔          |                    |                        | ✔            |                   |        |
@@ -580,7 +573,7 @@ Crypto API implementation and the APIs supported for each:
 | `'Ed25519'`                          |            | ✔                  |                        |              |                   |        |
 | `'Ed448'`[^secure-curves]            |            | ✔                  |                        |              |                   |        |
 | `'HKDF'`                             |            |                    | ✔                      |              |                   |        |
-| `'HMAC'`                             |            | ✔                  |                        |              |                   |        |
+| `'HMAC'`                            |            | ✔                  |                        |              |                   |        |
 | `'KMAC128'`[^modern-algos]           |            | ✔                  |                        |              |                   |        |
 | `'KMAC256'`[^modern-algos]           |            | ✔                  |                        |              |                   |        |
 | `'KT128'`[^modern-algos]             |            |                    |                        |              |                   | ✔      |
@@ -607,15 +600,13 @@ Crypto API implementation and the APIs supported for each:
 | `'X25519'`                           |            |                    | ✔                      |              |                   |        |
 | `'X448'`[^secure-curves]             |            |                    | ✔                      |              |                   |        |
 
-## Class: `Crypto`
+## 类：`Crypto`
 
 <!-- YAML
 added: v15.0.0
 -->
 
-`globalThis.crypto` is an instance of the `Crypto`
-class. `Crypto` is a singleton that provides access to the remainder of the
-crypto API.
+`globalThis.crypto` 是 `Crypto` 类的一个实例。`Crypto` 是一个单例，提供对其余 crypto API 的访问。
 
 ### `crypto.subtle`
 
@@ -623,9 +614,9 @@ crypto API.
 added: v15.0.0
 -->
 
-* Type: {SubtleCrypto}
+* 类型：{SubtleCrypto}
 
-Provides access to the `SubtleCrypto` API.
+提供对 `SubtleCrypto` API 的访问。
 
 ### `crypto.getRandomValues(typedArray)`
 
@@ -634,15 +625,13 @@ added: v15.0.0
 -->
 
 * `typedArray` {Buffer|TypedArray}
-* Returns: {Buffer|TypedArray}
+* 返回：{Buffer|TypedArray}
 
-Generates cryptographically strong random values. The given `typedArray` is
-filled with random values, and a reference to `typedArray` is returned.
+生成密码学安全的随机值。给定的 `typedArray` 将被填充随机值，并返回对 `typedArray` 的引用。
 
-The given `typedArray` must be an integer-based instance of {TypedArray},
-i.e. `Float32Array` and `Float64Array` are not accepted.
+给定的 `typedArray` 必须是基于整数的 {TypedArray} 实例，即不接受 `Float32Array` 和 `Float64Array`。
 
-An error will be thrown if the given `typedArray` is larger than 65,536 bytes.
+如果给定的 `typedArray` 大于 65,536 字节，将抛出错误。
 
 ### `crypto.randomUUID()`
 
@@ -650,12 +639,11 @@ An error will be thrown if the given `typedArray` is larger than 65,536 bytes.
 added: v16.7.0
 -->
 
-* Returns: {string}
+* 返回：{string}
 
-Generates a random [RFC 4122][] version 4 UUID. The UUID is generated using a
-cryptographic pseudorandom number generator.
+生成一个随机的 [RFC 4122][] 版本 4 UUID。UUID 是使用密码学伪随机数生成器生成的。
 
-## Class: `CryptoKey`
+## 类：`CryptoKey`
 
 <!-- YAML
 added: v15.0.0
@@ -669,14 +657,13 @@ added: v15.0.0
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* Type: {KeyAlgorithm|RsaHashedKeyAlgorithm|EcKeyAlgorithm|AesKeyAlgorithm|HmacKeyAlgorithm|KmacKeyAlgorithm}
+* 类型：{KeyAlgorithm|RsaHashedKeyAlgorithm|EcKeyAlgorithm|AesKeyAlgorithm|HmacKeyAlgorithm|KmacKeyAlgorithm}
 
 <!--lint enable maximum-line-length remark-lint-->
 
-An object detailing the algorithm for which the key can be used along with
-additional algorithm-specific parameters.
+一个对象，详细说明密钥可用于哪种算法以及额外的算法特定参数。
 
-Read-only.
+只读。
 
 ### `cryptoKey.extractable`
 
@@ -684,12 +671,11 @@ Read-only.
 added: v15.0.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-When `true`, the {CryptoKey} can be extracted using either
-[`subtle.exportKey()`][] or [`subtle.wrapKey()`][].
+当为 `true` 时，{CryptoKey} 可以使用 [`subtle.exportKey()`][] 或 [`subtle.wrapKey()`][] 导出。
 
-Read-only.
+只读。
 
 ### `cryptoKey.type`
 
@@ -697,10 +683,9 @@ Read-only.
 added: v15.0.0
 -->
 
-* Type: {string} One of `'secret'`, `'private'`, or `'public'`.
+* 类型：{string} `'secret'`、`'private'` 或 `'public'` 之一。
 
-A string identifying whether the key is a symmetric (`'secret'`) or
-asymmetric (`'private'` or `'public'`) key.
+一个字符串，标识密钥是对称（`'secret'`）还是非对称（`'private'` 或 `'public'`）密钥。
 
 ### `cryptoKey.usages`
 
@@ -708,39 +693,37 @@ asymmetric (`'private'` or `'public'`) key.
 added: v15.0.0
 -->
 
-* Type: {string\[]}
+* 类型：{string\[]}
 
-An array of strings identifying the operations for which the
-key may be used.
+一个字符串数组，标识密钥可用于哪些操作。
 
-The possible usages are:
+可能的用途包括：
 
-* `'encrypt'` - Enable using the key with [`subtle.encrypt()`][]
-* `'decrypt'` - Enable using the key with [`subtle.decrypt()`][]
-* `'sign'` - Enable using the key with [`subtle.sign()`][]
-* `'verify'` - Enable using the key with [`subtle.verify()`][]
-* `'deriveKey'` - Enable using the key with [`subtle.deriveKey()`][]
-* `'deriveBits'` - Enable using the key with [`subtle.deriveBits()`][]
-* `'encapsulateBits'` - Enable using the key with [`subtle.encapsulateBits()`][]
-* `'decapsulateBits'` - Enable using the key with [`subtle.decapsulateBits()`][]
-* `'encapsulateKey'` - Enable using the key with [`subtle.encapsulateKey()`][]
-* `'decapsulateKey'` - Enable using the key with [`subtle.decapsulateKey()`][]
-* `'wrapKey'` - Enable using the key with [`subtle.wrapKey()`][]
-* `'unwrapKey'` - Enable using the key with [`subtle.unwrapKey()`][]
+* `'encrypt'` - 启用密钥与 [`subtle.encrypt()`][] 一起使用
+* `'decrypt'` - 启用密钥与 [`subtle.decrypt()`][] 一起使用
+* `'sign'` - 启用密钥与 [`subtle.sign()`][] 一起使用
+* `'verify'` - 启用密钥与 [`subtle.verify()`][] 一起使用
+* `'deriveKey'` - 启用密钥与 [`subtle.deriveKey()`][] 一起使用
+* `'deriveBits'` - 启用密钥与 [`subtle.deriveBits()`][] 一起使用
+* `'encapsulateBits'` - 启用密钥与 [`subtle.encapsulateBits()`][] 一起使用
+* `'decapsulateBits'` - 启用密钥与 [`subtle.decapsulateBits()`][] 一起使用
+* `'encapsulateKey'` - 启用密钥与 [`subtle.encapsulateKey()`][] 一起使用
+* `'decapsulateKey'` - 启用密钥与 [`subtle.decapsulateKey()`][] 一起使用
+* `'wrapKey'` - 启用密钥与 [`subtle.wrapKey()`][] 一起使用
+* `'unwrapKey'` - 启用密钥与 [`subtle.unwrapKey()`][] 一起使用
 
-Valid key usages depend on the key algorithm (identified by
-`cryptokey.algorithm.name`).
+有效的密钥用途取决于密钥算法（由 `cryptokey.algorithm.name` 标识）。
 
-**Column Legend:**
+**图例：**
 
-* **Encryption**: [`subtle.encrypt()`][] / [`subtle.decrypt()`][]
-* **Signatures and MAC**: [`subtle.sign()`][] / [`subtle.verify()`][]
-* **Key or Bits Derivation**: [`subtle.deriveBits()`][] / [`subtle.deriveKey()`][]
-* **Key Wrapping**: [`subtle.wrapKey()`][] / [`subtle.unwrapKey()`][]
-* **Key Encapsulation**: [`subtle.encapsulateBits()`][] / [`subtle.decapsulateBits()`][] /
+* **加密**：[`subtle.encrypt()`][] / [`subtle.decrypt()`][]
+* **签名和 MAC**：[`subtle.sign()`][] / [`subtle.verify()`][]
+* **密钥或位派生**：[`subtle.deriveBits()`][] / [`subtle.deriveKey()`][]
+* **密钥包装**：[`subtle.wrapKey()`][] / [`subtle.unwrapKey()`][]
+* **密钥封装**：[`subtle.encapsulateBits()`][] / [`subtle.decapsulateBits()`][] /
   [`subtle.encapsulateKey()`][] / [`subtle.decapsulateKey()`][]
 
-| Supported Key Algorithm              | Encryption | Signatures and MAC | Key or Bits Derivation | Key Wrapping | Key Encapsulation |
+| 支持的密钥算法              | 加密 | 签名和 MAC | 密钥或位派生 | 密钥包装 | 密钥封装 |
 | ------------------------------------ | ---------- | ------------------ | ---------------------- | ------------ | ----------------- |
 | `'AES-CBC'`                          | ✔          |                    |                        | ✔            |                   |
 | `'AES-CTR'`                          | ✔          |                    |                        | ✔            |                   |
@@ -772,14 +755,13 @@ Valid key usages depend on the key algorithm (identified by
 | `'X25519'`                           |            |                    | ✔                      |              |                   |
 | `'X448'`[^secure-curves]             |            |                    | ✔                      |              |                   |
 
-## Class: `CryptoKeyPair`
+## 类：`CryptoKeyPair`
 
 <!-- YAML
 added: v15.0.0
 -->
 
-The `CryptoKeyPair` is a simple dictionary object with `publicKey` and
-`privateKey` properties, representing an asymmetric key pair.
+`CryptoKeyPair` 是一个简单的字典对象，具有 `publicKey` 和 `privateKey` 属性，表示非对称密钥对。
 
 ### `cryptoKeyPair.privateKey`
 
@@ -787,7 +769,7 @@ The `CryptoKeyPair` is a simple dictionary object with `publicKey` and
 added: v15.0.0
 -->
 
-* Type: {CryptoKey} A {CryptoKey} whose `type` will be `'private'`.
+* 类型：{CryptoKey} 一个 `type` 为 `'private'` 的 {CryptoKey}。
 
 ### `cryptoKeyPair.publicKey`
 
@@ -795,36 +777,36 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {CryptoKey} A {CryptoKey} whose `type` will be `'public'`.
+* 类型：{CryptoKey} 一个 `type` 为 `'public'` 的 {CryptoKey}。
 
-## Class: `SubtleCrypto`
+## 类：`SubtleCrypto`
 
 <!-- YAML
 added: v15.0.0
 -->
 
-### Static method: `SubtleCrypto.supports(operation, algorithm[, lengthOrAdditionalAlgorithm])`
+### 静态方法：`SubtleCrypto.supports(operation, algorithm[, lengthOrAdditionalAlgorithm])`
 
 <!-- YAML
 added: v24.7.0
 -->
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `operation` {string} "encrypt", "decrypt", "sign", "verify", "digest", "generateKey", "deriveKey", "deriveBits", "importKey", "exportKey", "getPublicKey", "wrapKey", "unwrapKey", "encapsulateBits", "encapsulateKey", "decapsulateBits", or "decapsulateKey"
+* `operation` {string} "encrypt", "decrypt", "sign", "verify", "digest", "generateKey", "deriveKey", "deriveBits", "importKey", "exportKey", "getPublicKey", "wrapKey", "unwrapKey", "encapsulateBits", "encapsulateKey", "decapsulateBits", 或 "decapsulateKey"
 * `algorithm` {string|Algorithm}
-* `lengthOrAdditionalAlgorithm` {null|number|string|Algorithm|undefined} Depending on the operation this is either ignored, the value of the length argument when operation is "deriveBits", the algorithm of key to be derived when operation is "deriveKey", the algorithm of key to be exported before wrapping when operation is "wrapKey", the algorithm of key to be imported after unwrapping when operation is "unwrapKey", or the algorithm of key to be imported after en/decapsulating a key when operation is "encapsulateKey" or "decapsulateKey". **Default:** `null` when operation is "deriveBits", `undefined` otherwise.
-* Returns: {boolean} Indicating whether the implementation supports the given operation
+* `lengthOrAdditionalAlgorithm` {null|number|string|Algorithm|undefined} 取决于操作，这要么被忽略，要么是操作为 "deriveBits" 时的 length 参数值，要么是操作为 "deriveKey" 时要派生的密钥的算法，要么是操作为 "wrapKey" 时在包装前要导出的密钥的算法，要么是操作为 "unwrapKey" 时在解包后要导入的密钥的算法，要么是操作为 "encapsulateKey" 或 "decapsulateKey" 时在封/解封装密钥后要导入的密钥的算法。**默认值：** 当操作为 "deriveBits" 时为 `null`，否则为 `undefined`。
+* 返回：{boolean} 指示实现是否支持给定的操作
 
 <!--lint enable maximum-line-length remark-lint-->
 
-Allows feature detection in Web Crypto API,
-which can be used to detect whether a given algorithm identifier
-(including its parameters) is supported for the given operation.
+允许在 Web Crypto API 中进行功能检测，
+可用于检测给定的算法标识符
+（包括其参数）是否支持给定的操作。
 
-See [Checking for runtime algorithm support][] for an example use of this method.
+参见 [检查运行时算法支持][] 以了解此方法的示例用法。
 
 ### `subtle.decapsulateBits(decapsulationAlgorithm, decapsulationKey, ciphertext)`
 
@@ -832,18 +814,16 @@ See [Checking for runtime algorithm support][] for an example use of this method
 added: v24.7.0
 -->
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
 * `decapsulationAlgorithm` {string|Algorithm}
 * `decapsulationKey` {CryptoKey}
 * `ciphertext` {ArrayBuffer|TypedArray|DataView|Buffer}
-* Returns: {Promise} Fulfills with {ArrayBuffer} upon success.
+* 返回：{Promise} 成功时兑现为 {ArrayBuffer}。
 
-A message recipient uses their asymmetric private key to decrypt an
-"encapsulated key" (ciphertext), thereby recovering a temporary symmetric
-key (represented as {ArrayBuffer}) which is then used to decrypt a message.
+消息接收者使用他们的非对称私钥解密“封装密钥”（密文），从而恢复一个临时对称密钥（表示为 {ArrayBuffer}），然后用于解密消息。
 
-The algorithms currently supported include:
+目前支持的算法包括：
 
 * `'ML-KEM-512'`[^modern-algos]
 * `'ML-KEM-768'`[^modern-algos]
@@ -855,21 +835,19 @@ The algorithms currently supported include:
 added: v24.7.0
 -->
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
 * `decapsulationAlgorithm` {string|Algorithm}
 * `decapsulationKey` {CryptoKey}
 * `ciphertext` {ArrayBuffer|TypedArray|DataView|Buffer}
 * `sharedKeyAlgorithm` {string|Algorithm|HmacImportParams|AesDerivedKeyParams|KmacImportParams}
 * `extractable` {boolean}
-* `usages` {string\[]} See [Key usages][].
-* Returns: {Promise} Fulfills with {CryptoKey} upon success.
+* `usages` {string\[]} 参见 [密钥用途][]。
+* 返回：{Promise} 成功时兑现为 {CryptoKey}。
 
-A message recipient uses their asymmetric private key to decrypt an
-"encapsulated key" (ciphertext), thereby recovering a temporary symmetric
-key (represented as {CryptoKey}) which is then used to decrypt a message.
+消息接收者使用他们的非对称私钥解密“封装密钥”（密文），从而恢复一个临时对称密钥（表示为 {CryptoKey}），然后用于解密消息。
 
-The algorithms currently supported include:
+目前支持的算法包括：
 
 * `'ML-KEM-512'`[^modern-algos]
 * `'ML-KEM-768'`[^modern-algos]
@@ -891,14 +869,11 @@ changes:
 * `algorithm` {RsaOaepParams|AesCtrParams|AesCbcParams|AeadParams}
 * `key` {CryptoKey}
 * `data` {ArrayBuffer|TypedArray|DataView|Buffer}
-* Returns: {Promise} Fulfills with an {ArrayBuffer} upon success.
+* 返回：{Promise} 成功时兑现为 {ArrayBuffer}。
 
-Using the method and parameters specified in `algorithm` and the keying
-material provided by `key`, this method attempts to decipher the
-provided `data`. If successful, the returned promise will be resolved with
-an {ArrayBuffer} containing the plaintext result.
+使用 `algorithm` 中指定的方法和参数以及 `key` 提供的密钥材料，此方法尝试解密提供的 `data`。如果成功，返回的 Promise 将解决为一个包含明文结果的 {ArrayBuffer}。
 
-The algorithms currently supported include:
+目前支持的算法包括：
 
 * `'AES-CBC'`
 * `'AES-CTR'`
@@ -920,36 +895,30 @@ changes:
     - v20.17.0
     - v18.20.5
     pr-url: https://github.com/nodejs/node/pull/53601
-    description: The length parameter is now optional for `'ECDH'`, `'X25519'`,
-                 and `'X448'`.
+    description: "The length parameter is now optional for `'ECDH'`, `'X25519'`,and `'X448'`."
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'X25519'`, and `'X448'` algorithms.
+    description: "Added `'X25519'`, and `'X448'` algorithms."
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
 
 * `algorithm` {EcdhKeyDeriveParams|HkdfParams|Pbkdf2Params|Argon2Params}
 * `baseKey` {CryptoKey}
-* `length` {number|null} **Default:** `null`
-* Returns: {Promise} Fulfills with an {ArrayBuffer} upon success.
+* `length` {number|null} **默认值：** `null`
+* 返回：{Promise} 成功时兑现为 {ArrayBuffer}。
 
 <!--lint enable maximum-line-length remark-lint-->
 
-Using the method and parameters specified in `algorithm` and the keying
-material provided by `baseKey`, this method attempts to generate
-`length` bits.
+使用 `algorithm` 中指定的方法和参数以及 `baseKey` 提供的密钥材料，此方法尝试生成 `length` 位。
 
-When `length` is not provided or `null` the maximum number of bits for a given
-algorithm is generated. This is allowed for the `'ECDH'`, `'X25519'`, and `'X448'`[^secure-curves]
-algorithms, for other algorithms `length` is required to be a number.
+当未提供 `length` 或为 `null` 时，将生成给定算法的最大位数。这对于 `'ECDH'`、`'X25519'` 和 `'X448'`[^secure-curves] 算法是允许的，对于其他算法，`length` 必须是一个数字。
 
-If successful, the returned promise will be resolved with an {ArrayBuffer}
-containing the generated data.
+如果成功，返回的 Promise 将解决为一个包含生成数据的 {ArrayBuffer}。
 
-The algorithms currently supported include:
+目前支持的算法包括：
 
 * `'Argon2d'`[^modern-algos]
 * `'Argon2i'`[^modern-algos]
@@ -972,7 +941,7 @@ changes:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'X25519'`, and `'X448'` algorithms.
+    description: "Added `'X25519'`, and `'X448'` algorithms."
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -981,21 +950,16 @@ changes:
 * `baseKey` {CryptoKey}
 * `derivedKeyAlgorithm` {string|Algorithm|HmacImportParams|AesDerivedKeyParams|KmacImportParams}
 * `extractable` {boolean}
-* `keyUsages` {string\[]} See [Key usages][].
-* Returns: {Promise} Fulfills with a {CryptoKey} upon success.
+* `keyUsages` {string\[]} 参见 [密钥用途][]。
+* 返回：{Promise} 成功时兑现为 {CryptoKey}。
 
 <!--lint enable maximum-line-length remark-lint-->
 
-Using the method and parameters specified in `algorithm`, and the keying
-material provided by `baseKey`, this method attempts to generate
-a new {CryptoKey} based on the method and parameters in `derivedKeyAlgorithm`.
+使用 `algorithm` 中指定的方法和参数以及 `baseKey` 提供的密钥材料，此方法尝试基于 `derivedKeyAlgorithm` 中的方法和参数生成一个新的 {CryptoKey}。
 
-Calling this method is equivalent to calling [`subtle.deriveBits()`][] to
-generate raw keying material, then passing the result into the
-[`subtle.importKey()`][] method using the `derivedKeyAlgorithm`, `extractable`, and
-`keyUsages` parameters as input.
+调用此方法等同于调用 [`subtle.deriveBits()`][] 生成原始密钥材料，然后使用 `derivedKeyAlgorithm`、`extractable` 和 `keyUsages` 参数作为输入，将结果传递给 [`subtle.importKey()`][] 方法。
 
-The algorithms currently supported include:
+目前支持的算法包括：
 
 * `'Argon2d'`[^modern-algos]
 * `'Argon2i'`[^modern-algos]
@@ -1025,13 +989,11 @@ changes:
 
 * `algorithm` {string|Algorithm|CShakeParams|TurboShakeParams|KangarooTwelveParams}
 * `data` {ArrayBuffer|TypedArray|DataView|Buffer}
-* Returns: {Promise} Fulfills with an {ArrayBuffer} upon success.
+* 返回：{Promise} 成功时兑现为 {ArrayBuffer}。
 
-Using the method identified by `algorithm`, this method attempts to
-generate a digest of `data`. If successful, the returned promise is resolved
-with an {ArrayBuffer} containing the computed digest.
+使用 `algorithm` 标识的方法，此方法尝试生成 `data` 的摘要。如果成功，返回的 Promise 将解决为一个包含计算摘要的 {ArrayBuffer}。
 
-If `algorithm` is provided as a {string}, it must be one of:
+如果 `algorithm` 作为 {string} 提供，它必须是以下之一：
 
 * `'cSHAKE128'`[^modern-algos]
 * `'cSHAKE256'`[^modern-algos]
@@ -1047,8 +1009,7 @@ If `algorithm` is provided as a {string}, it must be one of:
 * `'TurboSHAKE128'`[^modern-algos]
 * `'TurboSHAKE256'`[^modern-algos]
 
-If `algorithm` is provided as an {Object}, it must have a `name` property
-whose value is one of the above.
+如果 `algorithm` 作为 {Object} 提供，它必须具有一个 `name` 属性，其值为上述之一。
 
 ### `subtle.encapsulateBits(encapsulationAlgorithm, encapsulationKey)`
 
@@ -1056,16 +1017,15 @@ whose value is one of the above.
 added: v24.7.0
 -->
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
 * `encapsulationAlgorithm` {string|Algorithm}
 * `encapsulationKey` {CryptoKey}
-* Returns: {Promise} Fulfills with {EncapsulatedBits} upon success.
+* 返回：{Promise} 成功时兑现为 {EncapsulatedBits}。
 
-Uses a message recipient's asymmetric public key to encrypt a temporary symmetric key.
-This encrypted key is the "encapsulated key" represented as {EncapsulatedBits}.
+使用消息接收者的非对称公钥加密临时对称密钥。此加密密钥是表示为 {EncapsulatedBits} 的“封装密钥”。
 
-The algorithms currently supported include:
+目前支持的算法包括：
 
 * `'ML-KEM-512'`[^modern-algos]
 * `'ML-KEM-768'`[^modern-algos]
@@ -1077,19 +1037,18 @@ The algorithms currently supported include:
 added: v24.7.0
 -->
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
 * `encapsulationAlgorithm` {string|Algorithm}
 * `encapsulationKey` {CryptoKey}
 * `sharedKeyAlgorithm` {string|Algorithm|HmacImportParams|AesDerivedKeyParams|KmacImportParams}
 * `extractable` {boolean}
-* `usages` {string\[]} See [Key usages][].
-* Returns: {Promise} Fulfills with {EncapsulatedKey} upon success.
+* `usages` {string\[]} 参见 [密钥用途][]。
+* 返回：{Promise} 成功时兑现为 {EncapsulatedKey}。
 
-Uses a message recipient's asymmetric public key to encrypt a temporary symmetric key.
-This encrypted key is the "encapsulated key" represented as {EncapsulatedKey}.
+使用消息接收者的非对称公钥加密临时对称密钥。此加密密钥是表示为 {EncapsulatedKey} 的“封装密钥”。
 
-The algorithms currently supported include:
+目前支持的算法包括：
 
 * `'ML-KEM-512'`[^modern-algos]
 * `'ML-KEM-768'`[^modern-algos]
@@ -1111,14 +1070,11 @@ changes:
 * `algorithm` {RsaOaepParams|AesCtrParams|AesCbcParams|AeadParams}
 * `key` {CryptoKey}
 * `data` {ArrayBuffer|TypedArray|DataView|Buffer}
-* Returns: {Promise} Fulfills with an {ArrayBuffer} upon success.
+* 返回：{Promise} 成功时兑现为 {ArrayBuffer}。
 
-Using the method and parameters specified by `algorithm` and the keying
-material provided by `key`, this method attempts to encipher `data`.
-If successful, the returned promise is resolved with an {ArrayBuffer}
-containing the encrypted result.
+使用 `algorithm` 指定的方法和参数以及 `key` 提供的密钥材料，此方法尝试加密 `data`。如果成功，返回的 Promise 将解决为一个包含加密结果的 {ArrayBuffer}。
 
-The algorithms currently supported include:
+目前支持的算法包括：
 
 * `'AES-CBC'`
 * `'AES-CTR'`
@@ -1151,31 +1107,25 @@ changes:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'Ed25519'`, `'Ed448'`, `'X25519'`, and `'X448'`
-      algorithms.
+    description: "Added `'Ed25519'`, `'Ed448'`, `'X25519'`, and `'X448'`algorithms."
   - version: v15.9.0
     pr-url: https://github.com/nodejs/node/pull/37203
-    description: Removed `'NODE-DSA'` JWK export.
+    description: "Removed `'NODE-DSA'` JWK export."
 -->
 
-* `format` {string} Must be one of `'raw'`, `'pkcs8'`, `'spki'`, `'jwk'`, `'raw-secret'`[^modern-algos],
-  `'raw-public'`[^modern-algos], or `'raw-seed'`[^modern-algos].
+* `format` {string} 必须是 `'raw'`、`'pkcs8'`、`'spki'`、`'jwk'`、`'raw-secret'`[^modern-algos]、`'raw-public'`[^modern-algos] 或 `'raw-seed'`[^modern-algos] 之一。
 * `key` {CryptoKey}
-* Returns: {Promise} Fulfills with an {ArrayBuffer|Object} upon success.
+* 返回：{Promise} 成功时兑现为 {ArrayBuffer|Object}。
 
-Exports the given key into the specified format, if supported.
+将给定的密钥导出为指定的格式（如果支持）。
 
-If the {CryptoKey} is not extractable, the returned promise will reject.
+如果 {CryptoKey} 不可导出，返回的 Promise 将被拒绝。
 
-When `format` is either `'pkcs8'` or `'spki'` and the export is successful,
-the returned promise will be resolved with an {ArrayBuffer} containing the
-exported key data.
+当 `format` 为 `'pkcs8'` 或 `'spki'` 且导出成功时，返回的 Promise 将解决为一个包含导出密钥数据的 {ArrayBuffer}。
 
-When `format` is `'jwk'` and the export is successful, the returned promise
-will be resolved with a JavaScript object conforming to the [JSON Web Key][]
-specification.
+当 `format` 为 `'jwk'` 且导出成功时，返回的 Promise 将解决为一个符合 [JSON Web Key][] 规范的 JavaScript 对象。
 
-| Supported Key Algorithm              | `'spki'` | `'pkcs8'` | `'jwk'` | `'raw'` | `'raw-secret'` | `'raw-public'` | `'raw-seed'` |
+| 支持的密钥算法              | `'spki'` | `'pkcs8'` | `'jwk'` | `'raw'` | `'raw-secret'` | `'raw-public'` | `'raw-seed'` |
 | ------------------------------------ | -------- | --------- | ------- | ------- | -------------- | -------------- | ------------ |
 | `'AES-CBC'`                          |          |           | ✔       | ✔       | ✔              |                |              |
 | `'AES-CTR'`                          |          |           | ✔       | ✔       | ✔              |                |              |
@@ -1206,13 +1156,13 @@ specification.
 added: v24.7.0
 -->
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
-* `key` {CryptoKey} A private key from which to derive the corresponding public key.
-* `keyUsages` {string\[]} See [Key usages][].
-* Returns: {Promise} Fulfills with a {CryptoKey} upon success.
+* `key` {CryptoKey} 一个用于派生相应公钥的私钥。
+* `keyUsages` {string\[]} 参见 [密钥用途][]。
+* 返回：{Promise} 成功时兑现为 {CryptoKey}。
 
-Derives the public key from a given private key.
+从给定的私钥派生公钥。
 
 ### `subtle.generateKey(algorithm, extractable, keyUsages)`
 
@@ -1221,16 +1171,16 @@ added: v15.0.0
 changes:
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59647
-    description: KMAC algorithms are now supported.
+    description: KMAC 算法现已支持。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59569
-    description: ML-KEM algorithms are now supported.
+    description: 现已支持 ML-KEM 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ChaCha20-Poly1305 algorithm is now supported.
+    description: 现已支持 ChaCha20-Poly1305 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ML-DSA algorithms are now supported.
+    description: 现已支持 ML-DSA 算法。
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -1240,15 +1190,12 @@ changes:
 <!--lint enable maximum-line-length remark-lint-->
 
 * `extractable` {boolean}
-* `keyUsages` {string\[]} See [Key usages][].
-* Returns: {Promise} Fulfills with a {CryptoKey|CryptoKeyPair} upon success.
+* `keyUsages` {string\[]} 参见 [密钥用途][]。
+* 返回：{Promise} 成功时兑现为 {CryptoKey|CryptoKeyPair}。
 
-Using the parameters provided in `algorithm`, this method
-attempts to generate new keying material. Depending on the algorithm used
-either a single {CryptoKey} or a {CryptoKeyPair} is generated.
+使用 `algorithm` 中提供的参数，此方法尝试生成新的密钥材料。根据使用的算法，生成单个 {CryptoKey} 或 {CryptoKeyPair}。
 
-The {CryptoKeyPair} (public and private key) generating algorithms supported
-include:
+支持的 {CryptoKeyPair}（公钥和私钥）生成算法包括：
 
 * `'ECDH'`
 * `'ECDSA'`
@@ -1266,7 +1213,7 @@ include:
 * `'X25519'`
 * `'X448'`[^secure-curves]
 
-The {CryptoKey} (secret key) generating algorithms supported include:
+支持的 {CryptoKey}（密钥）生成算法包括：
 
 * `'AES-CBC'`
 * `'AES-CTR'`
@@ -1285,38 +1232,35 @@ added: v15.0.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62706
-    description: Added JWK format support for ML-KEM key types.
+    description: 为 ML-KEM 密钥类型添加了 JWK 格式支持。
   - version:
      - v25.9.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/62218
-    description: Importing ML-DSA and ML-KEM PKCS#8 keys
-      without a seed is no longer supported.
+    description: 不再支持导入没有 seed 的 ML-DSA 和 ML-KEM PKCS#8 密钥。
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59647
-    description: KMAC algorithms are now supported.
+    description: KMAC 算法现已支持。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59569
-    description: ML-KEM algorithms are now supported.
+    description: 现已支持 ML-KEM 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ChaCha20-Poly1305 algorithm is now supported.
+    description: 现已支持 ChaCha20-Poly1305 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ML-DSA algorithms are now supported.
+    description: 现已支持 ML-DSA 算法。
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'Ed25519'`, `'Ed448'`, `'X25519'`, and `'X448'`
-      algorithms.
+    description: "添加了 `'Ed25519'`、`'Ed448'`、`'X25519'` 和 `'X448'` 算法。"
   - version: v15.9.0
     pr-url: https://github.com/nodejs/node/pull/37203
-    description: Removed `'NODE-DSA'` JWK import.
+    description: "移除了 `'NODE-DSA'` JWK 导入。"
 -->
 
-* `format` {string} Must be one of `'raw'`, `'pkcs8'`, `'spki'`, `'jwk'`, `'raw-secret'`[^modern-algos],
-  `'raw-public'`[^modern-algos], or `'raw-seed'`[^modern-algos].
+* `format` {string} 必须是 `'raw'`、`'pkcs8'`、`'spki'`、`'jwk'`、`'raw-secret'`[^modern-algos]、`'raw-public'`[^modern-algos] 或 `'raw-seed'`[^modern-algos] 之一。
 * `keyData` {ArrayBuffer|TypedArray|DataView|Buffer|Object}
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -1326,20 +1270,16 @@ changes:
 <!--lint enable maximum-line-length remark-lint-->
 
 * `extractable` {boolean}
-* `keyUsages` {string\[]} See [Key usages][].
-* Returns: {Promise} Fulfills with a {CryptoKey} upon success.
+* `keyUsages` {string\[]} 参见 [密钥用途][]。
+* 返回：{Promise} 成功时兑现为 {CryptoKey}。
 
-This method attempts to interpret the provided `keyData`
-as the given `format` to create a {CryptoKey} instance using the provided
-`algorithm`, `extractable`, and `keyUsages` arguments. If the import is
-successful, the returned promise will be resolved with a {CryptoKey}
-representation of the key material.
+此方法尝试将提供的 `keyData` 解释为给定的 `format`，以使用提供的 `algorithm`、`extractable` 和 `keyUsages` 参数创建 {CryptoKey} 实例。如果导入成功，返回的 Promise 将解决为密钥材料的 {CryptoKey} 表示。
 
-If importing KDF algorithm keys, `extractable` must be `false`.
+如果导入 KDF 算法密钥，`extractable` 必须为 `false`。
 
-The algorithms currently supported include:
+目前支持的算法包括：
 
-| Supported Key Algorithm              | `'spki'` | `'pkcs8'` | `'jwk'` | `'raw'` | `'raw-secret'` | `'raw-public'` | `'raw-seed'` |
+| 支持的密钥算法              | `'spki'` | `'pkcs8'` | `'jwk'` | `'raw'` | `'raw-secret'` | `'raw-public'` | `'raw-seed'` |
 | ------------------------------------ | -------- | --------- | ------- | ------- | -------------- | -------------- | ------------ |
 | `'AES-CBC'`                          |          |           | ✔       | ✔       | ✔              |                |              |
 | `'AES-CTR'`                          |          |           | ✔       | ✔       | ✔              |                |              |
@@ -1378,15 +1318,15 @@ added: v15.0.0
 changes:
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59647
-    description: KMAC algorithms are now supported.
+    description: KMAC 算法现已支持。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ML-DSA algorithms are now supported.
+    description: 现已支持 ML-DSA 算法。
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'Ed25519'`, and `'Ed448'` algorithms.
+    description: "添加了 `'Ed25519'` 和 `'Ed448'` 算法。"
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -1394,16 +1334,13 @@ changes:
 * `algorithm` {string|Algorithm|RsaPssParams|EcdsaParams|ContextParams|KmacParams}
 * `key` {CryptoKey}
 * `data` {ArrayBuffer|TypedArray|DataView|Buffer}
-* Returns: {Promise} Fulfills with an {ArrayBuffer} upon success.
+* 返回：{Promise} 成功时兑现为 {ArrayBuffer}。
 
 <!--lint enable maximum-line-length remark-lint-->
 
-Using the method and parameters given by `algorithm` and the keying material
-provided by `key`, this method attempts to generate a cryptographic
-signature of `data`. If successful, the returned promise is resolved with
-an {ArrayBuffer} containing the generated signature.
+使用 `algorithm` 给出的方法和参数以及 `key` 提供的密钥材料，此方法尝试生成 `data` 的密码学签名。如果成功，返回的 Promise 将解决为一个包含生成签名的 {ArrayBuffer}。
 
-The algorithms currently supported include:
+目前支持的算法包括：
 
 * `'ECDSA'`
 * `'Ed25519'`
@@ -1424,14 +1361,13 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59539
-    description: AES-OCB algorithm is now supported.
+    description: 现已支持 AES-OCB 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ChaCha20-Poly1305 algorithm is now supported.
+    description: 现已支持 ChaCha20-Poly1305 算法。
 -->
 
-* `format` {string} Must be one of `'raw'`, `'pkcs8'`, `'spki'`, `'jwk'`, `'raw-secret'`[^modern-algos],
-  `'raw-public'`[^modern-algos], or `'raw-seed'`[^modern-algos].
+* `format` {string} 必须是 `'raw'`、`'pkcs8'`、`'spki'`、`'jwk'`、`'raw-secret'`[^modern-algos]、`'raw-public'`[^modern-algos] 或 `'raw-seed'`[^modern-algos] 之一。
 * `wrappedKey` {ArrayBuffer|TypedArray|DataView|Buffer}
 * `unwrappingKey` {CryptoKey}
 
@@ -1443,19 +1379,12 @@ changes:
 <!--lint enable maximum-line-length remark-lint-->
 
 * `extractable` {boolean}
-* `keyUsages` {string\[]} See [Key usages][].
-* Returns: {Promise} Fulfills with a {CryptoKey} upon success.
+* `keyUsages` {string\[]} 参见 [密钥用途][]。
+* 返回：{Promise} 成功时兑现为 {CryptoKey}。
 
-In cryptography, "wrapping a key" refers to exporting and then encrypting the
-keying material. This method attempts to decrypt a wrapped
-key and create a {CryptoKey} instance. It is equivalent to calling
-[`subtle.decrypt()`][] first on the encrypted key data (using the `wrappedKey`,
-`unwrapAlgo`, and `unwrappingKey` arguments as input) then passing the results
-to the [`subtle.importKey()`][] method using the `unwrappedKeyAlgo`,
-`extractable`, and `keyUsages` arguments as inputs. If successful, the returned
-promise is resolved with a {CryptoKey} object.
+在密码学中，“包装密钥”指的是导出然后加密密钥材料。此方法尝试解密包装的密钥并创建 {CryptoKey} 实例。它等效于先对加密的密钥数据调用 [`subtle.decrypt()`][]（使用 `wrappedKey`、`unwrapAlgo` 和 `unwrappingKey` 参数作为输入），然后将结果传递给 [`subtle.importKey()`][] 方法，使用 `unwrappedKeyAlgo`、`extractable` 和 `keyUsages` 参数作为输入。如果成功，返回的 Promise 将解决为 {CryptoKey} 对象。
 
-The wrapping algorithms currently supported include:
+目前支持的包装算法包括：
 
 * `'AES-CBC'`
 * `'AES-CTR'`
@@ -1465,7 +1394,7 @@ The wrapping algorithms currently supported include:
 * `'ChaCha20-Poly1305'`[^modern-algos]
 * `'RSA-OAEP'`
 
-The unwrapped key algorithms supported include:
+支持的解包密钥算法包括：
 
 * `'AES-CBC'`
 * `'AES-CTR'`
@@ -1499,15 +1428,15 @@ added: v15.0.0
 changes:
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59647
-    description: KMAC algorithms are now supported.
+    description: KMAC 算法现已支持。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ML-DSA algorithms are now supported.
+    description: 现已支持 ML-DSA 算法。
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: Added `'Ed25519'`, and `'Ed448'` algorithms.
+    description: "添加了 `'Ed25519'` 和 `'Ed448'` 算法。"
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -1516,16 +1445,13 @@ changes:
 * `key` {CryptoKey}
 * `signature` {ArrayBuffer|TypedArray|DataView|Buffer}
 * `data` {ArrayBuffer|TypedArray|DataView|Buffer}
-* Returns: {Promise} Fulfills with a {boolean} upon success.
+* 返回：{Promise} 成功时兑现为 {boolean}。
 
 <!--lint enable maximum-line-length remark-lint-->
 
-Using the method and parameters given in `algorithm` and the keying material
-provided by `key`, this method attempts to verify that `signature` is
-a valid cryptographic signature of `data`. The returned promise is resolved
-with either `true` or `false`.
+使用 `algorithm` 中给出的方法和参数以及 `key` 提供的密钥材料，此方法尝试验证 `signature` 是否是 `data` 的有效密码学签名。返回的 Promise 将解决为 `true` 或 `false`。
 
-The algorithms currently supported include:
+目前支持的算法包括：
 
 * `'ECDSA'`
 * `'Ed25519'`
@@ -1546,34 +1472,25 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59539
-    description: AES-OCB algorithm is now supported.
+    description: 现已支持 AES-OCB 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ChaCha20-Poly1305 algorithm is now supported.
+    description: 现已支持 ChaCha20-Poly1305 算法。
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `format` {string} Must be one of `'raw'`, `'pkcs8'`, `'spki'`, `'jwk'`, `'raw-secret'`[^modern-algos],
-  `'raw-public'`[^modern-algos], or `'raw-seed'`[^modern-algos].
+* `format` {string} 必须是 `'raw'`、`'pkcs8'`、`'spki'`、`'jwk'`、`'raw-secret'`[^modern-algos]、`'raw-public'`[^modern-algos] 或 `'raw-seed'`[^modern-algos] 之一。
 * `key` {CryptoKey}
 * `wrappingKey` {CryptoKey}
 * `wrapAlgo` {string|Algorithm|RsaOaepParams|AesCtrParams|AesCbcParams|AeadParams}
-* Returns: {Promise} Fulfills with an {ArrayBuffer} upon success.
+* 返回：{Promise} 成功时兑现为 {ArrayBuffer}。
 
 <!--lint enable maximum-line-length remark-lint-->
 
-In cryptography, "wrapping a key" refers to exporting and then encrypting the
-keying material. This method exports the keying material into
-the format identified by `format`, then encrypts it using the method and
-parameters specified by `wrapAlgo` and the keying material provided by
-`wrappingKey`. It is the equivalent to calling [`subtle.exportKey()`][] using
-`format` and `key` as the arguments, then passing the result to the
-[`subtle.encrypt()`][] method using `wrappingKey` and `wrapAlgo` as inputs. If
-successful, the returned promise will be resolved with an {ArrayBuffer}
-containing the encrypted key data.
+在密码学中，“包装密钥”指的是导出然后加密密钥材料。此方法将密钥材料导出为 `format` 标识的格式，然后使用 `wrapAlgo` 指定的方法和参数以及 `wrappingKey` 提供的密钥材料对其进行加密。它等效于使用 `format` 和 `key` 作为参数调用 [`subtle.exportKey()`][]，然后将结果传递给 [`subtle.encrypt()`][] 方法，使用 `wrappingKey` 和 `wrapAlgo` 作为输入。如果成功，返回的 Promise 将解决为一个包含加密密钥数据的 {ArrayBuffer}。
 
-The wrapping algorithms currently supported include:
+目前支持的包装算法包括：
 
 * `'AES-CBC'`
 * `'AES-CTR'`
@@ -1583,13 +1500,11 @@ The wrapping algorithms currently supported include:
 * `'ChaCha20-Poly1305'`[^modern-algos]
 * `'RSA-OAEP'`
 
-## Algorithm parameters
+## 算法参数
 
-The algorithm parameter objects define the methods and parameters used by
-the various {SubtleCrypto} methods. While described here as "classes", they
-are simple JavaScript dictionary objects.
+算法参数对象定义了各种 {SubtleCrypto} 方法所使用的方法和参数。虽然此处描述为“类”，但它们是简单的 JavaScript 字典对象。
 
-### Class: `Algorithm`
+### 类：`Algorithm`
 
 <!-- YAML
 added: v15.0.0
@@ -1601,9 +1516,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
-### Class: `AeadParams`
+### 类：`AeadParams`
 
 <!-- YAML
 added: v15.0.0
@@ -1615,10 +1530,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer|undefined}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
 
-Extra input that is not encrypted but is included in the authentication
-of the data. The use of `additionalData` is optional.
+额外的输入，不被加密但包含在数据的认证中。`additionalData` 的使用是可选的。
 
 #### `aeadParams.iv`
 
@@ -1626,10 +1540,9 @@ of the data. The use of `additionalData` is optional.
 added: v15.0.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
 
-The initialization vector must be unique for every encryption operation using a
-given key.
+对于使用给定密钥的每次加密操作，初始化向量必须是唯一的。
 
 #### `aeadParams.name`
 
@@ -1637,7 +1550,7 @@ given key.
 added: v15.0.0
 -->
 
-* Type: {string} Must be `'AES-GCM'`, `'AES-OCB'`, or `'ChaCha20-Poly1305'`.
+* 类型：{string} 必须是 `'AES-GCM'`、`'AES-OCB'` 或 `'ChaCha20-Poly1305'`。
 
 #### `aeadParams.tagLength`
 
@@ -1645,9 +1558,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {number} The size in bits of the generated authentication tag.
+* 类型：{number} 生成的认证标签的位数大小。
 
-### Class: `AesDerivedKeyParams`
+### 类：`AesDerivedKeyParams`
 
 <!-- YAML
 added: v15.0.0
@@ -1659,7 +1572,7 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string} Must be one of `'AES-CBC'`, `'AES-CTR'`, `'AES-GCM'`, `'AES-OCB'`, or `'AES-KW'`
+* 类型：{string} 必须是 `'AES-CBC'`、`'AES-CTR'`、`'AES-GCM'`、`'AES-OCB'` 或 `'AES-KW'` 之一
 
 #### `aesDerivedKeyParams.length`
 
@@ -1667,12 +1580,11 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The length of the AES key to be derived. This must be either `128`, `192`,
-or `256`.
+要派生的 AES 密钥的长度。必须是 `128`、`192` 或 `256`。
 
-### Class: `AesCbcParams`
+### 类：`AesCbcParams`
 
 <!-- YAML
 added: v15.0.0
@@ -1684,10 +1596,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
 
-Provides the initialization vector. It must be exactly 16-bytes in length
-and should be unpredictable and cryptographically random.
+提供初始化向量。其长度必须恰好为 16 字节，并且应该是不可预测且密码学随机的。
 
 #### `aesCbcParams.name`
 
@@ -1695,9 +1606,9 @@ and should be unpredictable and cryptographically random.
 added: v15.0.0
 -->
 
-* Type: {string} Must be `'AES-CBC'`.
+* 类型：{string} 必须是 `'AES-CBC'`。
 
-### Class: `AesCtrParams`
+### 类：`AesCtrParams`
 
 <!-- YAML
 added: v15.0.0
@@ -1709,12 +1620,11 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
 
-The initial value of the counter block. This must be exactly 16 bytes long.
+计数器块的初始值。其长度必须恰好为 16 字节。
 
-The `AES-CTR` method uses the rightmost `length` bits of the block as the
-counter and the remaining bits as the nonce.
+`AES-CTR` 方法使用块的最右边 `length` 位作为计数器，其余位作为 nonce。
 
 #### `aesCtrParams.length`
 
@@ -1722,8 +1632,7 @@ counter and the remaining bits as the nonce.
 added: v15.0.0
 -->
 
-* Type: {number} The number of bits in the `aesCtrParams.counter` that are
-  to be used as the counter.
+* 类型：{number} `aesCtrParams.counter` 中用作计数器的位数。
 
 #### `aesCtrParams.name`
 
@@ -1731,9 +1640,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string} Must be `'AES-CTR'`.
+* 类型：{string} 必须是 `'AES-CTR'`。
 
-### Class: `AesKeyAlgorithm`
+### 类：`AesKeyAlgorithm`
 
 <!-- YAML
 added: v15.0.0
@@ -1745,9 +1654,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The length of the AES key in bits.
+AES 密钥的长度（位）。
 
 #### `aesKeyAlgorithm.name`
 
@@ -1755,9 +1664,9 @@ The length of the AES key in bits.
 added: v15.0.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
-### Class: `AesKeyGenParams`
+### 类：`AesKeyGenParams`
 
 <!-- YAML
 added: v15.0.0
@@ -1769,10 +1678,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The length of the AES key to be generated. This must be either `128`, `192`,
-or `256`.
+要生成的 AES 密钥的长度。必须是 `128`、`192` 或 `256`。
 
 #### `aesKeyGenParams.name`
 
@@ -1780,10 +1688,9 @@ or `256`.
 added: v15.0.0
 -->
 
-* Type: {string} Must be one of `'AES-CBC'`, `'AES-CTR'`, `'AES-GCM'`, or
-  `'AES-KW'`
+* 类型：{string} 必须是 `'AES-CBC'`、`'AES-CTR'`、`'AES-GCM'` 或 `'AES-KW'` 之一
 
-### Class: `Argon2Params`
+### 类：`Argon2Params`
 
 <!-- YAML
 added: v24.8.0
@@ -1795,9 +1702,9 @@ added: v24.8.0
 added: v24.8.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
 
-Represents the optional associated data.
+表示可选的关联数据。
 
 #### `argon2Params.memory`
 
@@ -1805,9 +1712,9 @@ Represents the optional associated data.
 added: v24.8.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-Represents the memory size in kibibytes. It must be at least 8 times the degree of parallelism.
+表示内存大小（kibibytes）。必须至少是并行度的 8 倍。
 
 #### `argon2Params.name`
 
@@ -1815,7 +1722,7 @@ Represents the memory size in kibibytes. It must be at least 8 times the degree 
 added: v24.8.0
 -->
 
-* Type: {string} Must be one of `'Argon2d'`, `'Argon2i'`, or `'Argon2id'`.
+* 类型：{string} 必须是 `'Argon2d'`、`'Argon2i'` 或 `'Argon2id'` 之一。
 
 #### `argon2Params.nonce`
 
@@ -1823,9 +1730,9 @@ added: v24.8.0
 added: v24.8.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
 
-Represents the nonce, which is a salt for password hashing applications.
+表示 nonce，在密码哈希应用中作为盐。
 
 #### `argon2Params.parallelism`
 
@@ -1833,9 +1740,9 @@ Represents the nonce, which is a salt for password hashing applications.
 added: v24.8.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-Represents the degree of parallelism.
+表示并行度。
 
 #### `argon2Params.passes`
 
@@ -1843,9 +1750,9 @@ Represents the degree of parallelism.
 added: v24.8.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-Represents the number of passes.
+表示遍数。
 
 #### `argon2Params.secretValue`
 
@@ -1853,9 +1760,9 @@ Represents the number of passes.
 added: v24.8.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
 
-Represents the optional secret value.
+表示可选的秘密值。
 
 #### `argon2Params.version`
 
@@ -1863,11 +1770,11 @@ Represents the optional secret value.
 added: v24.8.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-Represents the Argon2 version number. The default and currently only defined version is `19` (`0x13`).
+表示 Argon2 版本号。默认且当前唯一定义的版本是 `19` (`0x13`)。
 
-### Class: `ContextParams`
+### 类：`ContextParams`
 
 <!-- YAML
 added: v24.7.0
@@ -1879,8 +1786,8 @@ added: v24.7.0
 added: v24.7.0
 -->
 
-* Type: {string} Must be `'Ed448'`[^secure-curves], `'ML-DSA-44'`[^modern-algos],
-  `'ML-DSA-65'`[^modern-algos], or `'ML-DSA-87'`[^modern-algos].
+* 类型：{string} 必须是 `'Ed448'`[^secure-curves]、`'ML-DSA-44'`[^modern-algos]、
+  `'ML-DSA-65'`[^modern-algos]、或 `'ML-DSA-87'`[^modern-algos]。
 
 #### `contextParams.context`
 
@@ -1889,15 +1796,14 @@ added: v24.7.0
 changes:
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59570
-    description: Non-empty context is now supported.
+    description: 现在支持非空上下文。
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer|undefined}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
 
-The `context` member represents the optional context data to associate with
-the message.
+`context` 成员表示要与消息关联的可选上下文数据。
 
-### Class: `CShakeParams`
+### 类：`CShakeParams`
 
 <!-- YAML
 added: v24.7.0
@@ -1906,7 +1812,7 @@ changes:
      - v25.9.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61875
-    description: Renamed `cShakeParams.length` to `cShakeParams.outputLength`.
+    description: "将 `cShakeParams.length` 重命名为 `cShakeParams.outputLength`。"
 -->
 
 #### `cShakeParams.name`
@@ -1915,7 +1821,7 @@ changes:
 added: v24.7.0
 -->
 
-* Type: {string} Must be `'cSHAKE128'`[^modern-algos] or `'cSHAKE256'`[^modern-algos].
+* 类型：{string} 必须是 `'cSHAKE128'`[^modern-algos] 或 `'cSHAKE256'`[^modern-algos]。
 
 #### `cShakeParams.outputLength`
 
@@ -1925,7 +1831,7 @@ added:
  - v24.15.0
 -->
 
-* Type: {number} represents the requested output length in bits.
+* 类型：{number} 表示请求的输出长度（位）。
 
 #### `cShakeParams.functionName`
 
@@ -1933,12 +1839,10 @@ added:
 added: v24.7.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer|undefined}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
 
-The `functionName` member represents the function name, used by NIST to define
-functions based on cSHAKE.
-The Node.js Web Crypto API implementation only supports zero-length functionName
-which is equivalent to not providing functionName at all.
+`functionName` 成员表示函数名，NIST 使用它来定义基于 cSHAKE 的函数。
+Node.js Web Crypto API 实现仅支持零长度的 functionName，这等价于根本不提供 functionName。
 
 #### `cShakeParams.customization`
 
@@ -1946,13 +1850,12 @@ which is equivalent to not providing functionName at all.
 added: v24.7.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer|undefined}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
 
-The `customization` member represents the customization string.
-The Node.js Web Crypto API implementation only supports zero-length customization
-which is equivalent to not providing customization at all.
+`customization` 成员表示自定义字符串。
+Node.js Web Crypto API 实现仅支持零长度的 customization，这等价于根本不提供 customization。
 
-### Class: `EcdhKeyDeriveParams`
+### 类：`EcdhKeyDeriveParams`
 
 <!-- YAML
 added: v15.0.0
@@ -1964,7 +1867,7 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string} Must be `'ECDH'`, `'X25519'`, or `'X448'`[^secure-curves].
+* 类型：{string} 必须是 `'ECDH'`、`'X25519'` 或 `'X448'`[^secure-curves]。
 
 #### `ecdhKeyDeriveParams.public`
 
@@ -1972,14 +1875,12 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {CryptoKey}
+* 类型：{CryptoKey}
 
-ECDH key derivation operates by taking as input one party's private key and
-another party's public key -- using both to generate a common shared secret.
-The `ecdhKeyDeriveParams.public` property is set to the other party's public
-key.
+ECDH 密钥派生通过将一方的私钥和另一方的公钥作为输入进行运作——使用二者生成一个共同的共享密钥。
+`ecdhKeyDeriveParams.public` 属性设置为另一方的公钥。
 
-### Class: `EcdsaParams`
+### 类：`EcdsaParams`
 
 <!-- YAML
 added: v15.0.0
@@ -1992,12 +1893,12 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHA-3 algorithms are now supported.
+    description: 现在支持 SHA-3 算法。
 -->
 
-* Type: {string|Algorithm}
+* 类型：{string|Algorithm}
 
-If represented as a {string}, the value must be one of:
+如果表示为 {string}，值必须是以下之一：
 
 * `'SHA-1'`
 * `'SHA-256'`
@@ -2007,8 +1908,7 @@ If represented as a {string}, the value must be one of:
 * `'SHA3-384'`[^modern-algos]
 * `'SHA3-512'`[^modern-algos]
 
-If represented as an {Algorithm}, the object's `name` property
-must be one of the above listed values.
+如果表示为 {Algorithm}，对象的 `name` 属性必须是上述列出的值之一。
 
 #### `ecdsaParams.name`
 
@@ -2016,9 +1916,9 @@ must be one of the above listed values.
 added: v15.0.0
 -->
 
-* Type: {string} Must be `'ECDSA'`.
+* 类型：{string} 必须是 `'ECDSA'`。
 
-### Class: `EcKeyAlgorithm`
+### 类：`EcKeyAlgorithm`
 
 <!-- YAML
 added: v15.0.0
@@ -2030,7 +1930,7 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
 #### `ecKeyAlgorithm.namedCurve`
 
@@ -2038,9 +1938,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
-### Class: `EcKeyGenParams`
+### 类：`EcKeyGenParams`
 
 <!-- YAML
 added: v15.0.0
@@ -2052,7 +1952,7 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string} Must be one of `'ECDSA'` or `'ECDH'`.
+* 类型：{string} 必须是 `'ECDSA'` 或 `'ECDH'` 之一。
 
 #### `ecKeyGenParams.namedCurve`
 
@@ -2060,9 +1960,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string} Must be one of `'P-256'`, `'P-384'`, `'P-521'`.
+* 类型：{string} 必须是 `'P-256'`、`'P-384'`、`'P-521'` 之一。
 
-### Class: `EcKeyImportParams`
+### 类：`EcKeyImportParams`
 
 <!-- YAML
 added: v15.0.0
@@ -2074,7 +1974,7 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string} Must be one of `'ECDSA'` or `'ECDH'`.
+* 类型：{string} 必须是 `'ECDSA'` 或 `'ECDH'` 之一。
 
 #### `ecKeyImportParams.namedCurve`
 
@@ -2082,18 +1982,15 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string} Must be one of `'P-256'`, `'P-384'`, `'P-521'`.
+* 类型：{string} 必须是 `'P-256'`、`'P-384'`、`'P-521'` 之一。
 
-### Class: `EncapsulatedBits`
+### 类：`EncapsulatedBits`
 
 <!-- YAML
 added: v24.7.0
 -->
 
-A temporary symmetric secret key (represented as {ArrayBuffer}) for message encryption
-and the ciphertext (that can be transmitted to the message recipient along with the
-message) encrypted by this shared key. The recipient uses their private key to determine
-what the shared key is which then allows them to decrypt the message.
+用于消息加密的临时对称密钥（表示为 {ArrayBuffer}）以及由此共享密钥加密的密文（可以随消息一起传输给消息接收者）。接收者使用其私钥来确定共享密钥是什么，从而允许他们解密消息。
 
 #### `encapsulatedBits.ciphertext`
 
@@ -2101,7 +1998,7 @@ what the shared key is which then allows them to decrypt the message.
 added: v24.7.0
 -->
 
-* Type: {ArrayBuffer}
+* 类型：{ArrayBuffer}
 
 #### `encapsulatedBits.sharedKey`
 
@@ -2109,18 +2006,15 @@ added: v24.7.0
 added: v24.7.0
 -->
 
-* Type: {ArrayBuffer}
+* 类型：{ArrayBuffer}
 
-### Class: `EncapsulatedKey`
+### 类：`EncapsulatedKey`
 
 <!-- YAML
 added: v24.7.0
 -->
 
-A temporary symmetric secret key (represented as {CryptoKey}) for message encryption
-and the ciphertext (that can be transmitted to the message recipient along with the
-message) encrypted by this shared key. The recipient uses their private key to determine
-what the shared key is which then allows them to decrypt the message.
+用于消息加密的临时对称密钥（表示为 {CryptoKey}）以及由此共享密钥加密的密文（可以随消息一起传输给消息接收者）。接收者使用其私钥来确定共享密钥是什么，从而允许他们解密消息。
 
 #### `encapsulatedKey.ciphertext`
 
@@ -2128,7 +2022,7 @@ what the shared key is which then allows them to decrypt the message.
 added: v24.7.0
 -->
 
-* Type: {ArrayBuffer}
+* 类型：{ArrayBuffer}
 
 #### `encapsulatedKey.sharedKey`
 
@@ -2136,9 +2030,9 @@ added: v24.7.0
 added: v24.7.0
 -->
 
-* Type: {CryptoKey}
+* 类型：{CryptoKey}
 
-### Class: `HkdfParams`
+### 类：`HkdfParams`
 
 <!-- YAML
 added: v15.0.0
@@ -2151,12 +2045,12 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHA-3 algorithms are now supported.
+    description: 现在支持 SHA-3 算法。
 -->
 
-* Type: {string|Algorithm}
+* 类型：{string|Algorithm}
 
-If represented as a {string}, the value must be one of:
+如果表示为 {string}，值必须是以下之一：
 
 * `'SHA-1'`
 * `'SHA-256'`
@@ -2166,8 +2060,7 @@ If represented as a {string}, the value must be one of:
 * `'SHA3-384'`[^modern-algos]
 * `'SHA3-512'`[^modern-algos]
 
-If represented as an {Algorithm}, the object's `name` property
-must be one of the above listed values.
+如果表示为 {Algorithm}，对象的 `name` 属性必须是上述列出的值之一。
 
 #### `hkdfParams.info`
 
@@ -2175,10 +2068,10 @@ must be one of the above listed values.
 added: v15.0.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
 
-Provides application-specific contextual input to the HKDF algorithm.
-This can be zero-length but must be provided.
+为 HKDF 算法提供特定于应用程序的上下文输入。
+这可以是零长度，但必须提供。
 
 #### `hkdfParams.name`
 
@@ -2186,7 +2079,7 @@ This can be zero-length but must be provided.
 added: v15.0.0
 -->
 
-* Type: {string} Must be `'HKDF'`.
+* 类型：{string} 必须是 `'HKDF'`。
 
 #### `hkdfParams.salt`
 
@@ -2194,14 +2087,12 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
 
-The salt value significantly improves the strength of the HKDF algorithm.
-It should be random or pseudorandom and should be the same length as the
-output of the digest function (for instance, if using `'SHA-256'` as the
-digest, the salt should be 256-bits of random data).
+盐值显著提高了 HKDF 算法的强度。
+它应该是随机或伪随机的，并且长度应与摘要函数的输出相同（例如，如果使用 `'SHA-256'` 作为摘要，盐应该是 256 位的随机数据）。
 
-### Class: `HmacImportParams`
+### 类：`HmacImportParams`
 
 <!-- YAML
 added: v15.0.0
@@ -2214,12 +2105,12 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHA-3 algorithms are now supported.
+    description: 现在支持 SHA-3 算法。
 -->
 
-* Type: {string|Algorithm}
+* 类型：{string|Algorithm}
 
-If represented as a {string}, the value must be one of:
+如果表示为 {string}，值必须是以下之一：
 
 * `'SHA-1'`
 * `'SHA-256'`
@@ -2229,8 +2120,7 @@ If represented as a {string}, the value must be one of:
 * `'SHA3-384'`[^modern-algos]
 * `'SHA3-512'`[^modern-algos]
 
-If represented as an {Algorithm}, the object's `name` property
-must be one of the above listed values.
+如果表示为 {Algorithm}，对象的 `name` 属性必须是上述列出的值之一。
 
 #### `hmacImportParams.length`
 
@@ -2238,10 +2128,9 @@ must be one of the above listed values.
 added: v15.0.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The optional number of bits in the HMAC key. This is optional and should
-be omitted for most cases.
+HMAC 密钥的可选位数。这是可选的，在大多数情况下应省略。
 
 #### `hmacImportParams.name`
 
@@ -2249,9 +2138,9 @@ be omitted for most cases.
 added: v15.0.0
 -->
 
-* Type: {string} Must be `'HMAC'`.
+* 类型：{string} 必须是 `'HMAC'`。
 
-### Class: `HmacKeyAlgorithm`
+### 类：`HmacKeyAlgorithm`
 
 <!-- YAML
 added: v15.0.0
@@ -2263,7 +2152,7 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {Algorithm}
+* 类型：{Algorithm}
 
 #### `hmacKeyAlgorithm.length`
 
@@ -2271,9 +2160,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The length of the HMAC key in bits.
+HMAC 密钥的长度（位）。
 
 #### `hmacKeyAlgorithm.name`
 
@@ -2281,9 +2170,9 @@ The length of the HMAC key in bits.
 added: v15.0.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
-### Class: `HmacKeyGenParams`
+### 类：`HmacKeyGenParams`
 
 <!-- YAML
 added: v15.0.0
@@ -2296,12 +2185,12 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHA-3 algorithms are now supported.
+    description: 现在支持 SHA-3 算法。
 -->
 
-* Type: {string|Algorithm}
+* 类型：{string|Algorithm}
 
-If represented as a {string}, the value must be one of:
+如果表示为 {string}，值必须是以下之一：
 
 * `'SHA-1'`
 * `'SHA-256'`
@@ -2311,8 +2200,7 @@ If represented as a {string}, the value must be one of:
 * `'SHA3-384'`[^modern-algos]
 * `'SHA3-512'`[^modern-algos]
 
-If represented as an {Algorithm}, the object's `name` property
-must be one of the above listed values.
+如果表示为 {Algorithm}，对象的 `name` 属性必须是上述列出的值之一。
 
 #### `hmacKeyGenParams.length`
 
@@ -2320,11 +2208,10 @@ must be one of the above listed values.
 added: v15.0.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The number of bits to generate for the HMAC key. If omitted,
-the length will be determined by the hash algorithm used.
-This is optional and should be omitted for most cases.
+要为 HMAC 密钥生成的位数。如果省略，长度将由使用的哈希算法确定。
+这是可选的，在大多数情况下应省略。
 
 #### `hmacKeyGenParams.name`
 
@@ -2332,9 +2219,9 @@ This is optional and should be omitted for most cases.
 added: v15.0.0
 -->
 
-* Type: {string} Must be `'HMAC'`.
+* 类型：{string} 必须是 `'HMAC'`。
 
-### Class: `KeyAlgorithm`
+### 类：`KeyAlgorithm`
 
 <!-- YAML
 added: v15.0.0
@@ -2346,9 +2233,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
-### Class: `KangarooTwelveParams`
+### 类：`KangarooTwelveParams`
 
 <!-- YAML
 added: v25.9.0
@@ -2360,9 +2247,9 @@ added: v25.9.0
 added: v25.9.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer|undefined}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
 
-The optional customization string for KangarooTwelve.
+KangarooTwelve 的可选自定义字符串。
 
 #### `kangarooTwelveParams.name`
 
@@ -2370,7 +2257,7 @@ The optional customization string for KangarooTwelve.
 added: v25.9.0
 -->
 
-* Type: {string} Must be `'KT128'`[^modern-algos] or `'KT256'`[^modern-algos].
+* 类型：{string} 必须是 `'KT128'`[^modern-algos] 或 `'KT256'`[^modern-algos]。
 
 #### `kangarooTwelveParams.outputLength`
 
@@ -2378,9 +2265,9 @@ added: v25.9.0
 added: v25.9.0
 -->
 
-* Type: {number} represents the requested output length in bits.
+* 类型：{number} 表示请求的输出长度（位）。
 
-### Class: `KmacImportParams`
+### 类：`KmacImportParams`
 
 <!-- YAML
 added: v24.8.0
@@ -2392,10 +2279,9 @@ added: v24.8.0
 added: v24.8.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The optional number of bits in the KMAC key. This is optional and should
-be omitted for most cases.
+KMAC 密钥的可选位数。这是可选的，在大多数情况下应省略。
 
 #### `kmacImportParams.name`
 
@@ -2403,9 +2289,9 @@ be omitted for most cases.
 added: v24.8.0
 -->
 
-* Type: {string} Must be `'KMAC128'` or `'KMAC256'`.
+* 类型：{string} 必须是 `'KMAC128'` 或 `'KMAC256'`。
 
-### Class: `KmacKeyAlgorithm`
+### 类：`KmacKeyAlgorithm`
 
 <!-- YAML
 added: v24.8.0
@@ -2417,9 +2303,9 @@ added: v24.8.0
 added: v24.8.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The length of the KMAC key in bits.
+KMAC 密钥的长度（位）。
 
 #### `kmacKeyAlgorithm.name`
 
@@ -2427,9 +2313,9 @@ The length of the KMAC key in bits.
 added: v24.8.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
-### Class: `KmacKeyGenParams`
+### 类：`KmacKeyGenParams`
 
 <!-- YAML
 added: v24.8.0
@@ -2441,11 +2327,10 @@ added: v24.8.0
 added: v24.8.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The number of bits to generate for the KMAC key. If omitted,
-the length will be determined by the KMAC algorithm used.
-This is optional and should be omitted for most cases.
+要为 KMAC 密钥生成的位数。如果省略，长度将由使用的 KMAC 算法确定。
+这是可选的，在大多数情况下应省略。
 
 #### `kmacKeyGenParams.name`
 
@@ -2453,9 +2338,9 @@ This is optional and should be omitted for most cases.
 added: v24.8.0
 -->
 
-* Type: {string} Must be `'KMAC128'` or `'KMAC256'`.
+* 类型：{string} 必须是 `'KMAC128'` 或 `'KMAC256'`。
 
-### Class: `KmacParams`
+### 类：`KmacParams`
 
 <!-- YAML
 added: v24.8.0
@@ -2464,7 +2349,7 @@ changes:
      - v25.9.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61875
-    description: Renamed `kmacParams.length` to `kmacParams.outputLength`.
+    description: "将 `kmacParams.length` 重命名为 `kmacParams.outputLength`。"
 -->
 
 #### `kmacParams.algorithm`
@@ -2473,7 +2358,7 @@ changes:
 added: v24.8.0
 -->
 
-* Type: {string} Must be `'KMAC128'` or `'KMAC256'`.
+* 类型：{string} 必须是 `'KMAC128'` 或 `'KMAC256'`。
 
 #### `kmacParams.outputLength`
 
@@ -2483,9 +2368,9 @@ added:
  - v24.15.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The length of the output in bytes. This must be a positive integer.
+输出的长度（字节）。这必须是正整数。
 
 #### `kmacParams.customization`
 
@@ -2493,11 +2378,11 @@ The length of the output in bytes. This must be a positive integer.
 added: v24.8.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer|undefined}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
 
-The `customization` member represents the optional customization string.
+`customization` 成员表示可选的自定义字符串。
 
-### Class: `Pbkdf2Params`
+### 类：`Pbkdf2Params`
 
 <!-- YAML
 added: v15.0.0
@@ -2510,12 +2395,12 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHA-3 algorithms are now supported.
+    description: 现在支持 SHA-3 算法。
 -->
 
-* Type: {string|Algorithm}
+* 类型：{string|Algorithm}
 
-If represented as a {string}, the value must be one of:
+如果表示为 {string}，值必须是以下之一：
 
 * `'SHA-1'`
 * `'SHA-256'`
@@ -2525,8 +2410,7 @@ If represented as a {string}, the value must be one of:
 * `'SHA3-384'`[^modern-algos]
 * `'SHA3-512'`[^modern-algos]
 
-If represented as an {Algorithm}, the object's `name` property
-must be one of the above listed values.
+如果表示为 {Algorithm}，对象的 `name` 属性必须是上述列出的值之一。
 
 #### `pbkdf2Params.iterations`
 
@@ -2534,9 +2418,9 @@ must be one of the above listed values.
 added: v15.0.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The number of iterations the PBKDF2 algorithm should make when deriving bits.
+PBKDF2 算法在派生位时应进行的迭代次数。
 
 #### `pbkdf2Params.name`
 
@@ -2544,7 +2428,7 @@ The number of iterations the PBKDF2 algorithm should make when deriving bits.
 added: v15.0.0
 -->
 
-* Type: {string} Must be `'PBKDF2'`.
+* 类型：{string} 必须是 `'PBKDF2'`。
 
 #### `pbkdf2Params.salt`
 
@@ -2552,11 +2436,11 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
 
-Should be at least 16 random or pseudorandom bytes.
+应至少为 16 个随机或伪随机字节。
 
-### Class: `RsaHashedImportParams`
+### 类：`RsaHashedImportParams`
 
 <!-- YAML
 added: v15.0.0
@@ -2569,12 +2453,12 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHA-3 algorithms are now supported.
+    description: 现在支持 SHA-3 算法。
 -->
 
-* Type: {string|Algorithm}
+* 类型：{string|Algorithm}
 
-If represented as a {string}, the value must be one of:
+如果表示为 {string}，值必须是以下之一：
 
 * `'SHA-1'`
 * `'SHA-256'`
@@ -2584,8 +2468,7 @@ If represented as a {string}, the value must be one of:
 * `'SHA3-384'`[^modern-algos]
 * `'SHA3-512'`[^modern-algos]
 
-If represented as an {Algorithm}, the object's `name` property
-must be one of the above listed values.
+如果表示为 {Algorithm}，对象的 `name` 属性必须是上述列出的值之一。
 
 #### `rsaHashedImportParams.name`
 
@@ -2593,10 +2476,9 @@ must be one of the above listed values.
 added: v15.0.0
 -->
 
-* Type: {string} Must be one of `'RSASSA-PKCS1-v1_5'`, `'RSA-PSS'`, or
-  `'RSA-OAEP'`.
+* 类型：{string} 必须是 `'RSASSA-PKCS1-v1_5'`、`'RSA-PSS'` 或 `'RSA-OAEP'` 之一。
 
-### Class: `RsaHashedKeyAlgorithm`
+### 类：`RsaHashedKeyAlgorithm`
 
 <!-- YAML
 added: v15.0.0
@@ -2608,7 +2490,7 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {Algorithm}
+* 类型：{Algorithm}
 
 #### `rsaHashedKeyAlgorithm.modulusLength`
 
@@ -2616,9 +2498,9 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The length in bits of the RSA modulus.
+RSA 模数的长度（位）。
 
 #### `rsaHashedKeyAlgorithm.name`
 
@@ -2626,7 +2508,7 @@ The length in bits of the RSA modulus.
 added: v15.0.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
 #### `rsaHashedKeyAlgorithm.publicExponent`
 
@@ -2634,11 +2516,11 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {Uint8Array}
+* 类型：{Uint8Array}
 
-The RSA public exponent.
+RSA 公钥指数。
 
-### Class: `RsaHashedKeyGenParams`
+### 类：`RsaHashedKeyGenParams`
 
 <!-- YAML
 added: v15.0.0
@@ -2651,12 +2533,12 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHA-3 algorithms are now supported.
+    description: 现在支持 SHA-3 算法。
 -->
 
-* Type: {string|Algorithm}
+* 类型：{string|Algorithm}
 
-If represented as a {string}, the value must be one of:
+如果表示为 {string}，值必须是以下之一：
 
 * `'SHA-1'`
 * `'SHA-256'`
@@ -2666,8 +2548,7 @@ If represented as a {string}, the value must be one of:
 * `'SHA3-384'`[^modern-algos]
 * `'SHA3-512'`[^modern-algos]
 
-If represented as an {Algorithm}, the object's `name` property
-must be one of the above listed values.
+如果表示为 {Algorithm}，对象的 `name` 属性必须是上述列出的值之一。
 
 #### `rsaHashedKeyGenParams.modulusLength`
 
@@ -2675,10 +2556,9 @@ must be one of the above listed values.
 added: v15.0.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The length in bits of the RSA modulus. As a best practice, this should be
-at least `2048`.
+RSA 模数的长度（位）。作为最佳实践，这应至少为 `2048`。
 
 #### `rsaHashedKeyGenParams.name`
 
@@ -2686,8 +2566,7 @@ at least `2048`.
 added: v15.0.0
 -->
 
-* Type: {string} Must be one of `'RSASSA-PKCS1-v1_5'`, `'RSA-PSS'`, or
-  `'RSA-OAEP'`.
+* 类型：{string} 必须是 `'RSASSA-PKCS1-v1_5'`、`'RSA-PSS'` 或 `'RSA-OAEP'` 之一。
 
 #### `rsaHashedKeyGenParams.publicExponent`
 
@@ -2695,15 +2574,11 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {Uint8Array}
+* 类型：{Uint8Array}
 
-The RSA public exponent. This must be a {Uint8Array} containing a big-endian,
-unsigned integer that must fit within 32-bits. The {Uint8Array} may contain an
-arbitrary number of leading zero-bits. The value must be a prime number. Unless
-there is reason to use a different value, use `new Uint8Array([1, 0, 1])`
-(65537) as the public exponent.
+RSA 公钥指数。这必须是一个 {Uint8Array}，包含一个大端无符号整数，该整数必须适合 32 位。{Uint8Array} 可能包含任意数量的前导零位。该值必须是质数。除非有理由使用不同的值，否则使用 `new Uint8Array([1, 0, 1])` (65537) 作为公钥指数。
 
-### Class: `RsaOaepParams`
+### 类：`RsaOaepParams`
 
 <!-- YAML
 added: v15.0.0
@@ -2715,12 +2590,11 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {ArrayBuffer|TypedArray|DataView|Buffer}
+* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
 
-An additional collection of bytes that will not be encrypted, but will be bound
-to the generated ciphertext.
+额外的字节集合，不会被加密，但将绑定到生成的密文。
 
-The `rsaOaepParams.label` parameter is optional.
+`rsaOaepParams.label` 参数是可选的。
 
 #### `rsaOaepParams.name`
 
@@ -2728,9 +2602,9 @@ The `rsaOaepParams.label` parameter is optional.
 added: v15.0.0
 -->
 
-* Type: {string} must be `'RSA-OAEP'`.
+* 类型：{string} 必须是 `'RSA-OAEP'`。
 
-### Class: `RsaPssParams`
+### 类：`RsaPssParams`
 
 <!-- YAML
 added: v15.0.0
@@ -2742,7 +2616,7 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {string} Must be `'RSA-PSS'`.
+* 类型：{string} 必须是 `'RSA-PSS'`。
 
 #### `rsaPssParams.saltLength`
 
@@ -2750,11 +2624,11 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The length (in bytes) of the random salt to use.
+要使用的随机盐的长度（字节）。
 
-### Class: `TurboShakeParams`
+### 类：`TurboShakeParams`
 
 <!-- YAML
 added: v25.9.0
@@ -2766,9 +2640,9 @@ added: v25.9.0
 added: v25.9.0
 -->
 
-* Type: {number|undefined}
+* 类型：{number|undefined}
 
-The optional domain separation byte (0x01-0x7f). Defaults to `0x1f`.
+可选的域分离字节 (0x01-0x7f)。默认为 `0x1f`。
 
 #### `turboShakeParams.name`
 
@@ -2776,7 +2650,7 @@ The optional domain separation byte (0x01-0x7f). Defaults to `0x1f`.
 added: v25.9.0
 -->
 
-* Type: {string} Must be `'TurboSHAKE128'`[^modern-algos] or `'TurboSHAKE256'`[^modern-algos].
+* 类型：{string} 必须是 `'TurboSHAKE128'`[^modern-algos] 或 `'TurboSHAKE256'`[^modern-algos]。
 
 #### `turboShakeParams.outputLength`
 
@@ -2784,24 +2658,24 @@ added: v25.9.0
 added: v25.9.0
 -->
 
-* Type: {number} represents the requested output length in bits.
+* 类型：{number} 表示请求的输出长度（位）。
 
-[^secure-curves]: See [Secure Curves in the Web Cryptography API][]
+[^secure-curves]: 参见 [Web Cryptography API 中的安全曲线][]
 
-[^modern-algos]: See [Modern Algorithms in the Web Cryptography API][]
+[^modern-algos]: 参见 [Web Cryptography API 中的现代算法][]
 
-[^openssl30]: Requires OpenSSL >= 3.0
+[^openssl30]: 需要 OpenSSL >= 3.0
 
-[^openssl32]: Requires OpenSSL >= 3.2
+[^openssl32]: 需要 OpenSSL >= 3.2
 
-[^openssl35]: Requires OpenSSL >= 3.5
+[^openssl35]: 需要 OpenSSL >= 3.5
 
-[Checking for runtime algorithm support]: #checking-for-runtime-algorithm-support
+[检查运行时算法支持]: #checking-for-runtime-algorithm-support
 [JSON Web Key]: https://tools.ietf.org/html/rfc7517
-[Key usages]: #cryptokeyusages
-[Modern Algorithms in the Web Cryptography API]: #modern-algorithms-in-the-web-cryptography-api
+[密钥用法]: #cryptokeyusages
+[Web Cryptography API 中的现代算法]: #modern-algorithms-in-the-web-cryptography-api
 [RFC 4122]: https://www.rfc-editor.org/rfc/rfc4122.txt
-[Secure Curves in the Web Cryptography API]: #secure-curves-in-the-web-cryptography-api
+[Web Cryptography API 中的安全曲线]: #secure-curves-in-the-web-cryptography-api
 [Web Crypto API]: https://www.w3.org/TR/WebCryptoAPI/
 [`SubtleCrypto.supports()`]: #static-method-subtlecryptosupportsoperation-algorithm-lengthoradditionalalgorithm
 [`subtle.decapsulateBits()`]: #subtledecapsulatebitsdecapsulationalgorithm-decapsulationkey-ciphertext

@@ -1,4 +1,4 @@
-# Diagnostic report
+# 诊断报告
 
 <!--introduced_in=v11.8.0-->
 
@@ -12,27 +12,21 @@ changes:
     - v23.3.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/55697
-    description: Added `--report-exclude-env` option for excluding environment variables from report generation.
+    description: "Added `--report-exclude-env` option for excluding environment variables from report generation."
   - version:
     - v22.0.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/51645
-    description: Added `--report-exclude-network` option for excluding networking operations that can slow down report generation in some cases.
+    description: "Added `--report-exclude-network` option for excluding networking operations that can slow down report generation in some cases."
 -->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
-Delivers a JSON-formatted diagnostic summary, written to a file.
+提供 JSON 格式的诊断摘要，写入文件。
 
-The report is intended for development, test, and production use, to capture
-and preserve information for problem determination. It includes JavaScript
-and native stack traces, heap statistics, platform information, resource
-usage etc. With the report option enabled, diagnostic reports can be triggered
-on unhandled exceptions, fatal errors and user signals, in addition to
-triggering programmatically through API calls.
+该报告旨在用于开发、测试和生产环境，以捕获和保存信息用于问题诊断。它包括 JavaScript 和原生堆栈跟踪、堆统计信息、平台信息、资源使用情况等。启用报告选项后，除了通过 API 调用以编程方式触发外，还可以在未处理的异常、致命错误和用户信号上触发诊断报告。
 
-A complete example report that was generated on an uncaught exception
-is provided below for reference.
+下面提供了一个在未捕获异常上生成的完整示例报告以供参考。
 
 ```json
 {
@@ -444,76 +438,73 @@ is provided below for reference.
 }
 ```
 
-## Usage
+## 用法
 
 ```bash
 node --report-uncaught-exception --report-on-signal \
 --report-on-fatalerror app.js
 ```
 
-* `--report-uncaught-exception` Enables report to be generated on
-  un-caught exceptions. Useful when inspecting JavaScript stack in conjunction
-  with native stack and other runtime environment data.
+* `--report-uncaught-exception` 启用在未捕获异常时生成报告。当结合
+  native 堆栈和其他运行时环境数据检查 JavaScript 堆栈时很有用。
 
-* `--report-on-signal` Enables report to be generated upon receiving
-  the specified (or predefined) signal to the running Node.js process. (See
-  below on how to modify the signal that triggers the report.) Default signal is
-  `SIGUSR2`. Useful when a report needs to be triggered from another program.
-  Application monitors may leverage this feature to collect report at regular
-  intervals and plot rich set of internal runtime data to their views.
+* `--report-on-signal` 启用在接收到
+  指定（或预定义）信号时生成报告到正在运行的 Node.js 进程。（参见
+  下方关于如何修改触发报告的信号。）默认信号是
+  `SIGUSR2`。当需要从另一个程序触发报告时很有用。
+  应用程序监控可以利用此功能定期收集报告，并将丰富的内部运行时数据绘制到它们的视图中。
 
-Signal based report generation is not supported in Windows.
+基于信号的报告生成在 Windows 中不受支持。
 
-Under normal circumstances, there is no need to modify the report triggering
-signal. However, if `SIGUSR2` is already used for other purposes, then this
-flag helps to change the signal for report generation and preserve the original
-meaning of `SIGUSR2` for the said purposes.
+在正常情况下，无需修改报告触发
+信号。但是，如果 `SIGUSR2` 已用于其他目的，则此
+标志有助于更改报告生成的信号，并保留 `SIGUSR2` 的原始
+含义用于所述目的。
 
-* `--report-on-fatalerror` Enables the report to be triggered on fatal errors
-  (internal errors within the Node.js runtime, such as out of memory)
-  that leads to termination of the application. Useful to inspect various
-  diagnostic data elements such as heap, stack, event loop state, resource
-  consumption etc. to reason about the fatal error.
+* `--report-on-fatalerror` 启用在致命错误
+  （Node.js 运行时内的内部错误，例如内存不足）
+  导致应用程序终止时触发报告。有助于检查各种
+  诊断数据元素，如堆、堆栈、事件循环状态、资源
+  消耗等，以推断致命错误的原因。
 
-* `--report-compact` Write reports in a compact format, single-line JSON, more
-  easily consumable by log processing systems than the default multi-line format
-  designed for human consumption.
+* `--report-compact` 以紧凑格式写入报告，单行 JSON，比默认的多行格式
+  更易于日志处理系统消费，默认格式设计用于
+  人类消费。
 
-* `--report-directory` Location at which the report will be
-  generated.
+* `--report-directory` 报告生成的
+  位置。
 
-* `--report-filename` Name of the file to which the report will be
-  written.
+* `--report-filename` 报告写入的
+  文件名称。
 
-* `--report-signal` Sets or resets the signal for report generation
-  (not supported on Windows). Default signal is `SIGUSR2`.
+* `--report-signal` 设置或重置报告生成的信号
+  （在 Windows 上不受支持）。默认信号是 `SIGUSR2`。
 
-* `--report-exclude-network` Exclude `header.networkInterfaces` and disable the reverse DNS queries
-  in `libuv.*.(remote|local)Endpoint.host` from the diagnostic report.
-  By default this is not set and the network interfaces are included.
+* `--report-exclude-network` 从诊断报告中排除 `header.networkInterfaces` 并禁用
+  `libuv.*.(remote|local)Endpoint.host` 中的反向 DNS 查询。
+  默认情况下未设置此项，且包含网络接口。
 
-* `--report-exclude-env` Exclude `environmentVariables` from the
-  diagnostic report. By default this is not set and the environment
-  variables are included.
+* `--report-exclude-env` 从
+  诊断报告中排除 `environmentVariables`。默认情况下未设置此项，且包含环境
+  变量。
 
-A report can also be triggered via an API call from a JavaScript application:
+报告也可以通过 JavaScript 应用程序中的 API 调用触发：
 
 ```js
 process.report.writeReport();
 ```
 
-This function takes an optional additional argument `filename`, which is
-the name of a file into which the report is written.
+此函数接受一个可选的额外参数 `filename`，它是
+报告写入的文件名。
 
 ```js
 process.report.writeReport('./foo.json');
 ```
 
-This function takes an optional additional argument `err` which is an `Error`
-object that will be used as the context for the JavaScript stack printed in the
-report. When using report to handle errors in a callback or an exception
-handler, this allows the report to include the location of the original error as
-well as where it was handled.
+此函数接受一个可选的额外参数 `err`，它是一个 `Error`
+对象，将用作报告中打印的 JavaScript 堆栈的上下文。当使用报告处理回调或异常
+处理程序中的错误时，这允许报告包含原始错误的位置以及
+处理它的位置。
 
 ```js
 try {
@@ -521,11 +512,11 @@ try {
 } catch (err) {
   process.report.writeReport(err);
 }
-// Any other code
+// 任何其他代码
 ```
 
-If both filename and error object are passed to `writeReport()` the
-error object must be the second parameter.
+如果文件名和错误对象都传递给 `writeReport()`，则
+错误对象必须是第二个参数。
 
 ```js
 try {
@@ -533,39 +524,36 @@ try {
 } catch (err) {
   process.report.writeReport(filename, err);
 }
-// Any other code
+// 任何其他代码
 ```
 
-The content of the diagnostic report can be returned as a JavaScript Object
-via an API call from a JavaScript application:
+诊断报告的内容可以通过 JavaScript 应用程序中的 API 调用作为 JavaScript 对象
+返回：
 
 ```js
 const report = process.report.getReport();
 console.log(typeof report === 'object'); // true
 
-// Similar to process.report.writeReport() output
+// 类似于 process.report.writeReport() 输出
 console.log(JSON.stringify(report, null, 2));
 ```
 
-This function takes an optional additional argument `err`, which is an `Error`
-object that will be used as the context for the JavaScript stack printed in the
-report.
+此函数接受一个可选的额外参数 `err`，它是一个 `Error`
+对象，将用作报告中打印的 JavaScript 堆栈的上下文。
 
 ```js
 const report = process.report.getReport(new Error('custom error'));
 console.log(typeof report === 'object'); // true
 ```
 
-The API versions are useful when inspecting the runtime state from within
-the application, in expectation of self-adjusting the resource consumption,
-load balancing, monitoring etc.
+API 版本在应用程序内检查运行时状态时很有用，预期用于自我调整资源消耗、
+负载均衡、监控等。
 
-The content of the report consists of a header section containing the event
-type, date, time, PID, and Node.js version, sections containing JavaScript and
-native stack traces, a section containing V8 heap information, a section
-containing `libuv` handle information, and an OS platform information section
-showing CPU and memory usage and system limits. An example report can be
-triggered using the Node.js REPL:
+报告内容包括一个头部部分，包含事件
+类型、日期、时间、PID 和 Node.js 版本，包含 JavaScript 和
+native 堆栈跟踪的部分，包含 V8 堆信息的部分，包含
+`libuv` 句柄信息的部分，以及显示 CPU 和内存使用情况及系统限制的
+操作系统平台信息部分。可以使用 Node.js REPL 触发示例报告：
 
 ```console
 $ node
@@ -575,22 +563,20 @@ Node.js report completed
 >
 ```
 
-When a report is written, start and end messages are issued to stderr
-and the filename of the report is returned to the caller. The default filename
-includes the date, time, PID, and a sequence number. The sequence number helps
-in associating the report dump with the runtime state if generated multiple
-times for the same Node.js process.
+写入报告时，会向 stderr 发出开始和结束消息，并且报告的文件名
+返回给调用者。默认文件名
+包括日期、时间、PID 和序列号。如果为同一个 Node.js 进程生成多次，序列号有助于
+将报告转储与运行时状态关联起来。
 
-## Report Version
+## 报告版本
 
-Diagnostic report has an associated single-digit version number (`report.header.reportVersion`),
-uniquely representing the report format. The version number is bumped
-when new key is added or removed, or the data type of a value is changed.
-Report version definitions are consistent across LTS releases.
+诊断报告有一个关联的单位数版本号（`report.header.reportVersion`），
+唯一表示报告格式。当添加或删除新键，或值的数据类型更改时，版本号会递增。
+报告版本定义在 LTS 版本之间保持一致。
 
-### Version history
+### 版本历史
 
-#### Version 5
+#### 版本 5
 
 <!-- YAML
 changes:
@@ -601,25 +587,25 @@ changes:
     description: Fix typos in the memory limit units.
 -->
 
-Replace the keys `data_seg_size_kbytes`, `max_memory_size_kbytes`, and `virtual_memory_kbytes`
-with `data_seg_size_bytes`, `max_memory_size_bytes`, and `virtual_memory_bytes`
-respectively in the `userLimits` section, as these values are given in bytes.
+替换 `userLimits` 部分中的键 `data_seg_size_kbytes`、`max_memory_size_kbytes` 和 `virtual_memory_kbytes`
+为 `data_seg_size_bytes`、`max_memory_size_bytes` 和 `virtual_memory_bytes`
+，因为这些值以字节为单位给出。
 
 ```json
 {
   "userLimits": {
-    // Skip some keys ...
-    "data_seg_size_bytes": { // replacing data_seg_size_kbytes
+    // 跳过一些键 ...
+    "data_seg_size_bytes": { // 替换 data_seg_size_kbytes
       "soft": "unlimited",
       "hard": "unlimited"
     },
     // ...
-    "max_memory_size_bytes": { // replacing max_memory_size_kbytes
+    "max_memory_size_bytes": { // 替换 max_memory_size_kbytes
       "soft": "unlimited",
       "hard": "unlimited"
     },
     // ...
-    "virtual_memory_bytes": { // replacing virtual_memory_kbytes
+    "virtual_memory_bytes": { // 替换 virtual_memory_kbytes
       "soft": "unlimited",
       "hard": "unlimited"
     }
@@ -627,7 +613,7 @@ respectively in the `userLimits` section, as these values are given in bytes.
 }
 ```
 
-#### Version 4
+#### 版本 4
 
 <!-- YAML
 changes:
@@ -635,10 +621,10 @@ changes:
     - v23.3.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/55697
-    description: Added `--report-exclude-env` option for excluding environment variables from report generation.
+    description: "Added `--report-exclude-env` option for excluding environment variables from report generation."
 -->
 
-New fields `ipv4` and `ipv6` are added to `tcp` and `udp` libuv handles endpoints. Examples:
+新字段 `ipv4` 和 `ipv6` 添加到 `tcp` 和 `udp` libuv 句柄端点。示例：
 
 ```json
 {
@@ -650,12 +636,12 @@ New fields `ipv4` and `ipv6` are added to `tcp` and `udp` libuv handles endpoint
       "address": "0x000055e70fcb85d8",
       "localEndpoint": {
         "host": "localhost",
-        "ip4": "127.0.0.1", // new key
+        "ip4": "127.0.0.1", // 新键
         "port": 48986
       },
       "remoteEndpoint": {
         "host": "localhost",
-        "ip4": "127.0.0.1", // new key
+        "ip4": "127.0.0.1", // 新键
         "port": 38573
       },
       "sendBufferSize": 2626560,
@@ -672,12 +658,12 @@ New fields `ipv4` and `ipv6` are added to `tcp` and `udp` libuv handles endpoint
       "address": "0x000055e70fcd68c8",
       "localEndpoint": {
         "host": "ip6-localhost",
-        "ip6": "::1", // new key
+        "ip6": "::1", // 新键
         "port": 52266
       },
       "remoteEndpoint": {
         "host": "ip6-localhost",
-        "ip6": "::1", // new key
+        "ip6": "::1", // 新键
         "port": 38573
       },
       "sendBufferSize": 2626560,
@@ -691,7 +677,7 @@ New fields `ipv4` and `ipv6` are added to `tcp` and `udp` libuv handles endpoint
 }
 ```
 
-#### Version 3
+#### 版本 3
 
 <!-- YAML
 changes:
@@ -702,7 +688,7 @@ changes:
     description: Add more memory info.
 -->
 
-The following memory usage keys are added to the `resourceUsage` section.
+以下内存使用键添加到 `resourceUsage` 部分。
 
 ```json
 {
@@ -716,7 +702,7 @@ The following memory usage keys are added to the `resourceUsage` section.
 }
 ```
 
-#### Version 2
+#### 版本 2
 
 <!-- YAML
 changes:
@@ -727,66 +713,66 @@ changes:
     description: Workers are now included in the report.
 -->
 
-Added [`Worker`][] support. Refer to [Interaction with workers](#interaction-with-workers) section for more details.
+添加了 [`Worker`][] 支持。有关更多详细信息，请参阅 [与 worker 交互](#interaction-with-workers) 部分。
 
-#### Version 1
+#### 版本 1
 
-This is the first version of the diagnostic report.
+这是诊断报告的第一个版本。
 
-## Configuration
+## 配置
 
-Additional runtime configuration of report generation is available via
-the following properties of `process.report`:
+报告生成的额外运行时配置可通过
+`process.report` 的以下属性获得：
 
-`reportOnFatalError` triggers diagnostic reporting on fatal errors when `true`.
-Defaults to `false`.
+当 `true` 时，`reportOnFatalError` 触发致命错误的诊断报告。
+默认为 `false`。
 
-`reportOnSignal` triggers diagnostic reporting on signal when `true`. This is
-not supported on Windows. Defaults to `false`.
+当 `true` 时，`reportOnSignal` 触发信号的诊断报告。这
+在 Windows 上不受支持。默认为 `false`。
 
-`reportOnUncaughtException` triggers diagnostic reporting on uncaught exception
-when `true`. Defaults to `false`.
+当 `true` 时，`reportOnUncaughtException` 触发未捕获异常的诊断报告。
+默认为 `false`。
 
-`signal` specifies the POSIX signal identifier that will be used
-to intercept external triggers for report generation. Defaults to
-`'SIGUSR2'`.
+`signal` 指定将用于
+拦截报告生成外部触发器的 POSIX 信号标识符。默认为
+`'SIGUSR2'`。
 
-`filename` specifies the name of the output file in the file system.
-Special meaning is attached to `stdout` and `stderr`. Usage of these
-will result in report being written to the associated standard streams.
-In cases where standard streams are used, the value in `directory` is ignored.
-URLs are not supported. Defaults to a composite filename that contains
-timestamp, PID, and sequence number.
+`filename` 指定文件系统中输出文件的名称。
+`stdout` 和 `stderr` 附有特殊含义。使用这些
+将导致报告写入关联的标准流。
+在使用标准流的情况下，`directory` 中的值被忽略。
+不支持 URL。默认为包含
+时间戳、PID 和序列号的复合文件名。
 
-`directory` specifies the file system directory where the report will be
-written. URLs are not supported. Defaults to the current working directory of
-the Node.js process.
+`directory` 指定报告将写入的文件系统目录。
+不支持 URL。默认为
+Node.js 进程的当前工作目录。
 
-`excludeNetwork` excludes `header.networkInterfaces` from the diagnostic report.
+`excludeNetwork` 从诊断报告中排除 `header.networkInterfaces`。
 
 ```js
-// Trigger report only on uncaught exceptions.
+// 仅在未捕获异常时触发报告。
 process.report.reportOnFatalError = false;
 process.report.reportOnSignal = false;
 process.report.reportOnUncaughtException = true;
 
-// Trigger report for both internal errors as well as external signal.
+// 为内部错误以及外部信号触发报告。
 process.report.reportOnFatalError = true;
 process.report.reportOnSignal = true;
 process.report.reportOnUncaughtException = false;
 
-// Change the default signal to 'SIGQUIT' and enable it.
+// 将默认信号更改为 'SIGQUIT' 并启用它。
 process.report.reportOnFatalError = false;
 process.report.reportOnUncaughtException = false;
 process.report.reportOnSignal = true;
 process.report.signal = 'SIGQUIT';
 
-// Disable network interfaces reporting
+// 禁用网络接口报告
 process.report.excludeNetwork = true;
 ```
 
-Configuration on module initialization is also available via
-environment variables:
+模块初始化时的配置也可通过
+环境变量获得：
 
 ```bash
 NODE_OPTIONS="--report-uncaught-exception \
@@ -795,10 +781,10 @@ NODE_OPTIONS="--report-uncaught-exception \
   --report-directory=/home/nodeuser"
 ```
 
-Specific API documentation can be found under
-[`process API documentation`][] section.
+特定 API 文档可在
+[`process API 文档`][] 部分找到。
 
-## Interaction with workers
+## 与 worker 的交互
 
 <!-- YAML
 changes:
@@ -809,16 +795,11 @@ changes:
     description: Workers are now included in the report.
 -->
 
-[`Worker`][] threads can create reports in the same way that the main thread
-does.
+[`Worker`][] 线程可以以与主线程相同的方式创建报告。
 
-Reports will include information on any Workers that are children of the current
-thread as part of the `workers` section, with each Worker generating a report
-in the standard report format.
+报告将包含当前线程的任何子 Worker 的信息，作为 `workers` 部分的一部分，每个 Worker 都会以标准报告格式生成报告。
 
-The thread which is generating the report will wait for the reports from Worker
-threads to finish. However, the latency for this will usually be low, as both
-running JavaScript and the event loop are interrupted to generate the report.
+生成报告的线程将等待来自 Worker 线程的报告完成。但是，此操作的延迟通常很低，因为运行 JavaScript 和事件循环都会被中断以生成报告。
 
 [`Worker`]: worker_threads.md
 [`process API documentation`]: process.md

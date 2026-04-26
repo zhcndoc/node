@@ -1,31 +1,28 @@
-# Iterable Streams
+# 可迭代流
 
 <!--introduced_in=v25.9.0-->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 <!-- source_link=lib/stream/iter.js -->
 
-The `node:stream/iter` module provides a streaming API built on iterables
-rather than the event-driven `Readable`/`Writable`/`Transform` class hierarchy,
-or the Web Streams `ReadableStream`/`WritableStream`/`TransformStream` interfaces.
+`node:stream/iter` 模块提供了一个基于可迭代对象（iterables）构建的流式 API，
+而不是基于事件驱动的 `Readable`/`Writable`/`Transform` 类层次结构，
+或 Web Streams 的 `ReadableStream`/`WritableStream`/`TransformStream` 接口。
 
-This module is available only when the `--experimental-stream-iter` CLI flag
-is enabled.
+此模块仅在启用 `--experimental-stream-iter` CLI 标志时可用。
 
-Streams are represented as `AsyncIterable<Uint8Array[]>` (async) or
-`Iterable<Uint8Array[]>` (sync). There are no base classes to extend -- any
-object implementing the iterable protocol can participate. Transforms are plain
-functions or objects with a `transform` method.
+流表示为 `AsyncIterable<Uint8Array[]>`（异步）或
+`Iterable<Uint8Array[]>`（同步）。没有要扩展的基类 -- 任何
+实现可迭代协议的对象都可以参与。转换器是普通函数或具有 `transform` 方法的对象。
 
-Data flows in **batches** (`Uint8Array[]` per iteration) to amortize the cost
-of async operations.
+数据以**批次**（每次迭代 `Uint8Array[]`）流动，以分摊异步操作的成本。
 
 ```mjs
 import { from, pull, text } from 'node:stream/iter';
 import { compressGzip, decompressGzip } from 'node:zlib/iter';
 
-// Compress and decompress a string
+// 压缩和解压缩字符串
 const compressed = pull(from('Hello, world!'), compressGzip());
 const result = await text(pull(compressed, decompressGzip()));
 console.log(result); // 'Hello, world!'
@@ -36,7 +33,7 @@ const { from, pull, text } = require('node:stream/iter');
 const { compressGzip, decompressGzip } = require('node:zlib/iter');
 
 async function run() {
-  // Compress and decompress a string
+  // 压缩和解压缩字符串
   const compressed = pull(from('Hello, world!'), compressGzip());
   const result = await text(pull(compressed, decompressGzip()));
   console.log(result); // 'Hello, world!'
@@ -50,13 +47,13 @@ import { open } from 'node:fs/promises';
 import { text, pipeTo } from 'node:stream/iter';
 import { compressGzip, decompressGzip } from 'node:zlib/iter';
 
-// Read a file, compress, write to another file
+// 读取文件，压缩，写入另一个文件
 const src = await open('input.txt', 'r');
 const dst = await open('output.gz', 'w');
 await pipeTo(src.pull(), compressGzip(), dst.writer({ autoClose: true }));
 await src.close();
 
-// Read it back
+// 读回
 const gz = await open('output.gz', 'r');
 console.log(await text(gz.pull(decompressGzip(), { autoClose: true })));
 ```
@@ -67,13 +64,13 @@ const { text, pipeTo } = require('node:stream/iter');
 const { compressGzip, decompressGzip } = require('node:zlib/iter');
 
 async function run() {
-  // Read a file, compress, write to another file
+  // 读取文件，压缩，写入另一个文件
   const src = await open('input.txt', 'r');
   const dst = await open('output.gz', 'w');
   await pipeTo(src.pull(), compressGzip(), dst.writer({ autoClose: true }));
   await src.close();
 
-  // Read it back
+  // 读回
   const gz = await open('output.gz', 'r');
   console.log(await text(gz.pull(decompressGzip(), { autoClose: true })));
 }
@@ -81,21 +78,18 @@ async function run() {
 run().catch(console.error);
 ```
 
-## Concepts
+## 概念
 
-### Byte streams
+### 字节流
 
-All data in this API is represented as `Uint8Array` bytes. Strings
-are automatically UTF-8 encoded when passed to `from()`, `push()`, or
-`pipeTo()`. This removes ambiguity around encodings and enables zero-copy
-transfers between streams and native code.
+此 API 中的所有数据都表示为 `Uint8Array` 字节。字符串
+在传递给 `from()`、`push()` 或 `pipeTo()` 时会自动进行 UTF-8 编码。这消除了编码方面的歧义，并实现了流与原生代码之间的零拷贝传输。
 
-### Batching
+### 批处理
 
-Each iteration yields a **batch** -- an array of `Uint8Array` chunks
-(`Uint8Array[]`). Batching amortizes the cost of `await` and Promise creation
-across multiple chunks. A consumer that processes one chunk at a time can
-simply iterate the inner array:
+每次迭代产生一个**批次** -- 一个 `Uint8Array` 块数组
+（`Uint8Array[]`）。批处理分摊了跨多个块的 `await` 和 Promise 创建成本。一次处理一个块的消费者可以
+简单地迭代内部数组：
 
 ```mjs
 for await (const batch of source) {
@@ -115,40 +109,30 @@ async function run() {
 }
 ```
 
-### Transforms
+### 转换器
 
-Transforms come in two forms:
+转换器有两种形式：
 
-* **Stateless** -- a function `(chunks, options) => result` called once per
-  batch. Receives `Uint8Array[]` (or `null` as the flush signal) and an
-  `options` object. Returns `Uint8Array[]`, `null`, or an iterable of chunks.
+* **无状态** -- 一个函数 `(chunks, options) => result`，每批次调用一次。接收 `Uint8Array[]`（或 `null` 作为刷新信号）和一个 `options` 对象。返回 `Uint8Array[]`、`null` 或块的可迭代对象。
 
-* **Stateful** -- an object `{ transform(source, options) }` where `transform`
-  is a generator (sync or async) that receives the entire upstream iterable
-  and an `options` object, and yields output. This form is used for
-  compression, encryption, and any transform that needs to buffer across
-  batches.
+* **有状态** -- 一个对象 `{ transform(source, options) }`，其中 `transform` 是一个生成器（同步或异步），接收整个上游可迭代对象和一个 `options` 对象，并产生输出。此形式用于压缩、加密和任何需要跨批次缓冲的转换。
 
-Both forms receive an `options` parameter with the following property:
+两种形式都接收一个带有以下属性的 `options` 参数：
 
-* `options.signal` {AbortSignal} An AbortSignal that fires when the pipeline
-  is cancelled, encounters an error, or the consumer stops reading. Transforms
-  can check `signal.aborted` or listen for the `'abort'` event to perform
-  early cleanup.
+* `options.signal` {AbortSignal} 当管道被取消、遇到错误或消费者停止读取时触发的 AbortSignal。转换器可以检查 `signal.aborted` 或监听 `'abort'` 事件以执行早期清理。
 
-The flush signal (`null`) is sent after the source ends, giving transforms
-a chance to emit trailing data (e.g., compression footers).
+刷新信号（`null`）在源结束后发送，使转换器有机会发出尾部数据（例如，压缩尾部数据）。
 
 ```js
-// Stateless: uppercase transform
+// 无状态：大写转换
 const upper = (chunks) => {
-  if (chunks === null) return null; // flush
+  if (chunks === null) return null; // 刷新
   return chunks.map((c) => new TextEncoder().encode(
     new TextDecoder().decode(c).toUpperCase(),
   ));
 };
 
-// Stateful: line splitter
+// 有状态：行分割器
 const lines = {
   transform: async function*(source) {
     let partial = '';
@@ -170,30 +154,21 @@ const lines = {
 };
 ```
 
-### Pull vs. push
+### 拉取 vs 推送
 
-The API supports two models:
+API 支持两种模型：
 
-* **Pull** -- data flows on demand. `pull()` and `pullSync()` create lazy
-  pipelines that only read from the source when the consumer iterates.
+* **拉取** -- 数据按需流动。`pull()` 和 `pullSync()` 创建惰性管道，仅当消费者迭代时才从源读取。
 
-* **Push** -- data is written explicitly. `push()` creates a writer/readable
-  pair with backpressure. The writer pushes data in; the readable is consumed
-  as an async iterable.
+* **推送** -- 数据被显式写入。`push()` 创建一个具有背压的 writer/readable 对。writer 将数据推入；readable 作为异步可迭代对象被消费。
 
-### Backpressure
+### 背压
 
-Pull streams have natural backpressure -- the consumer drives the pace, so
-the source is never read faster than the consumer can process. Push streams
-need explicit backpressure because the producer and consumer run
-independently. The `highWaterMark` and `backpressure` options on `push()`,
-`broadcast()`, and `share()` control how this works.
+拉取流具有自然背压 -- 消费者驱动节奏，因此源的读取速度永远不会快于消费者的处理速度。推送流需要显式背压，因为生产者和消费者独立运行。`push()`、`broadcast()` 和 `share()` 上的 `highWaterMark` 和 `backpressure` 选项控制其工作方式。
 
-#### The two-buffer model
+#### 双缓冲模型
 
-Push streams use a two-part buffering system. Think of it like a bucket
-(slots) being filled through a hose (pending writes), with a float valve
-that closes when the bucket is full:
+推送流使用两部分缓冲系统。可以将其想象为一个桶（槽位）通过软管（待处理写入）填充，并有一个浮阀在桶满时关闭：
 
 ```text
                           highWaterMark (e.g., 3)
@@ -214,46 +189,34 @@ that closes when the bucket is full:
           'strict' mode limits this too!
 ```
 
-* **Slots (the bucket)** -- data ready for the consumer, capped at
-  `highWaterMark`. When the consumer pulls, it drains all slots at once
-  into a single batch.
+* **槽位（桶）** -- 准备好供消费者使用的数据，上限为 `highWaterMark`。当消费者拉取时，它会将所有槽位一次性排空到一个批次中。
 
-* **Pending writes (the hose)** -- writes waiting for slot space. After
-  the consumer drains, pending writes are promoted into the now-empty
-  slots and their promises resolve.
+* **待处理写入（软管）** -- 等待槽位空间的写入。在消费者排空后，待处理写入被提升到现在空的槽位中，它们的 promise 被解析。
 
-How each policy uses these buffers:
+每种策略如何使用这些缓冲区：
 
-| Policy          | Slots limit     | Pending writes limit |
+| 策略 | 槽位限制 | 待处理写入限制 |
 | --------------- | --------------- | -------------------- |
-| `'strict'`      | `highWaterMark` | `highWaterMark`      |
-| `'block'`       | `highWaterMark` | Unbounded            |
-| `'drop-oldest'` | `highWaterMark` | N/A (never waits)    |
-| `'drop-newest'` | `highWaterMark` | N/A (never waits)    |
+| `'strict'` | `highWaterMark` | `highWaterMark` |
+| `'block'` | `highWaterMark` | 无界 |
+| `'drop-oldest'` | `highWaterMark` | N/A（从不等待） |
+| `'drop-newest'` | `highWaterMark` | N/A（从不等待） |
 
-#### Strict (default)
+#### 严格模式（默认）
 
-Strict mode catches "fire-and-forget" patterns where the producer calls
-`write()` without awaiting, which would cause unbounded memory growth.
-It limits both the slots buffer and the pending writes queue to
-`highWaterMark`.
+严格模式捕获“即发即弃”模式，其中生产者调用 `write()` 而不等待，这将导致无限内存增长。它将槽位缓冲区和待处理写入队列都限制为 `highWaterMark`。
 
-If you properly await each write, you can only ever have one pending
-write at a time (yours), so you never hit the pending writes limit.
-Unawaited writes accumulate in the pending queue and throw once it
-overflows:
+如果你正确地等待每个写入，你一次只能有一个待处理写入（你自己的），所以你永远不会达到待处理写入限制。未等待的写入会在待处理队列中积累，一旦溢出就会抛出错误：
 
 ```mjs
 import { push, text } from 'node:stream/iter';
 
 const { writer, readable } = push({ highWaterMark: 16 });
 
-// Consumer must run concurrently -- without it, the first write
-// that fills the buffer blocks the producer forever.
+// 消费者必须并发运行 -- 如果没有它，第一个填满缓冲区的写入将永远阻塞生产者。
 const consuming = text(readable);
 
-// GOOD: awaited writes. The producer waits for the consumer to
-// make room when the buffer is full.
+// 良好：等待写入。当缓冲区满时，生产者等待消费者腾出空间。
 for (const item of dataset) {
   await writer.write(item);
 }
@@ -267,12 +230,10 @@ const { push, text } = require('node:stream/iter');
 async function run() {
   const { writer, readable } = push({ highWaterMark: 16 });
 
-  // Consumer must run concurrently -- without it, the first write
-  // that fills the buffer blocks the producer forever.
+  // 消费者必须并发运行 -- 如果没有它，第一个填满缓冲区的写入将永远阻塞生产者。
   const consuming = text(readable);
 
-  // GOOD: awaited writes. The producer waits for the consumer to
-  // make room when the buffer is full.
+  // 良好：等待写入。当缓冲区满时，生产者等待消费者腾出空间。
   for (const item of dataset) {
     await writer.write(item);
   }
@@ -283,27 +244,21 @@ async function run() {
 run().catch(console.error);
 ```
 
-Forgetting to `await` will eventually throw:
+忘记 `await` 最终会抛出错误：
 
 ```js
-// BAD: fire-and-forget. Strict mode throws once both buffers fill.
+// 不良：即发即弃。一旦两个缓冲区都填满，严格模式将抛出错误。
 for (const item of dataset) {
-  writer.write(item); // Not awaited -- queues without bound
+  writer.write(item); // 未等待 -- 无限排队
 }
-// --> throws "Backpressure violation: too many pending writes"
+// --> 抛出 "Backpressure violation: too many pending writes"
 ```
 
-#### Block
+#### 阻塞模式
 
-Block mode caps slots at `highWaterMark` but places no limit on the
-pending writes queue. Awaited writes block until the consumer makes room,
-just like strict mode. The difference is that unawaited writes silently
-queue forever instead of throwing -- a potential memory leak if the
-producer forgets to `await`.
+阻塞模式将槽位限制为 `highWaterMark`，但对待处理写入队列没有限制。等待的写入会阻塞，直到消费者腾出空间，就像严格模式一样。区别在于，未等待的写入会静默地永远排队，而不是抛出错误 -- 如果生产者忘记 `await`，这可能导致内存泄漏。
 
-This is the mode that existing Node.js classic streams and Web Streams
-default to. Use it when you control the producer and know it awaits
-properly, or when migrating code from those APIs.
+这是现有 Node.js 经典流和 Web Streams 默认的模式。当你控制生产者并知道它正确等待时，或者从这些 API 迁移代码时使用它。
 
 ```mjs
 import { push, text } from 'node:stream/iter';
@@ -315,7 +270,7 @@ const { writer, readable } = push({
 
 const consuming = text(readable);
 
-// Safe -- awaited writes block until the consumer reads.
+// 安全 -- 等待写入会阻塞，直到消费者读取。
 for (const item of dataset) {
   await writer.write(item);
 }
@@ -334,7 +289,7 @@ async function run() {
 
   const consuming = text(readable);
 
-  // Safe -- awaited writes block until the consumer reads.
+  // 安全 -- 等待写入会阻塞，直到消费者读取。
   for (const item of dataset) {
     await writer.write(item);
   }
@@ -345,17 +300,14 @@ async function run() {
 run().catch(console.error);
 ```
 
-#### Drop-oldest
+#### 丢弃最旧
 
-Writes never wait. When the slots buffer is full, the oldest buffered
-chunk is evicted to make room for the incoming write. The consumer
-always sees the most recent data. Useful for live feeds, telemetry, or
-any scenario where stale data is less valuable than current data.
+写入从不等待。当槽位缓冲区满时，最旧的缓冲块被驱逐，为传入的写入腾出空间。消费者总是看到最新的数据。适用于实时馈送、遥测或任何陈旧数据不如当前数据有价值的场景。
 
 ```mjs
 import { push } from 'node:stream/iter';
 
-// Keep only the 5 most recent readings
+// 仅保留最近的 5 次读数
 const { writer, readable } = push({
   highWaterMark: 5,
   backpressure: 'drop-oldest',
@@ -365,24 +317,21 @@ const { writer, readable } = push({
 ```cjs
 const { push } = require('node:stream/iter');
 
-// Keep only the 5 most recent readings
+// 仅保留最近的 5 次读数
 const { writer, readable } = push({
   highWaterMark: 5,
   backpressure: 'drop-oldest',
 });
 ```
 
-#### Drop-newest
+#### 丢弃最新
 
-Writes never wait. When the slots buffer is full, the incoming write is
-silently discarded. The consumer processes what is already buffered
-without being overwhelmed by new data. Useful for rate-limiting or
-shedding load under pressure.
+写入从不等待。当槽位缓冲区满时，传入的写入被静默丢弃。消费者处理已缓冲的内容，而不会被新数据淹没。适用于速率限制或在压力下卸载负载。
 
 ```mjs
 import { push } from 'node:stream/iter';
 
-// Accept up to 10 buffered items; discard anything beyond that
+// 接受最多 10 个缓冲项；丢弃超出该范围的任何内容
 const { writer, readable } = push({
   highWaterMark: 10,
   backpressure: 'drop-newest',
@@ -392,54 +341,47 @@ const { writer, readable } = push({
 ```cjs
 const { push } = require('node:stream/iter');
 
-// Accept up to 10 buffered items; discard anything beyond that
+// 接受最多 10 个缓冲项；丢弃超出该范围的任何内容
 const { writer, readable } = push({
   highWaterMark: 10,
   backpressure: 'drop-newest',
 });
 ```
 
-### Writer interface
+### Writer 接口
 
-A writer is any object conforming to the Writer interface. Only `write()` is
-required; all other methods are optional.
+writer 是任何符合 Writer 接口的对象。只需要 `write()`；所有其他方法都是可选的。
 
-Each async method has a synchronous `*Sync` counterpart designed for a
-try-fallback pattern: attempt the fast synchronous path first, and fall back
-to the async version only when the synchronous call indicates it could not
-complete:
+每个异步方法都有一个同步的 `*Sync` 对应方法，设计用于尝试 - 回退模式：首先尝试快速同步路径，仅当同步调用指示无法完成时才回退到异步版本：
 
 ```mjs
 if (!writer.writeSync(chunk)) await writer.write(chunk);
 if (!writer.writevSync(chunks)) await writer.writev(chunks);
 if (writer.endSync() < 0) await writer.end();
-writer.fail(err);  // Always synchronous, no fallback needed
+writer.fail(err);  // 始终同步，不需要回退
 ```
 
 ### `writer.desiredSize`
 
 * {number|null}
 
-The number of buffer slots available before the high water mark is reached.
-Returns `null` if the writer is closed or the consumer has disconnected.
+达到高水位线之前可用的缓冲槽位数量。如果 writer 已关闭或消费者已断开连接，则返回 `null`。
 
-The value is always non-negative.
+该值始终为非负数。
 
 ### `writer.end([options])`
 
 * `options` {Object}
-  * `signal` {AbortSignal} Cancel just this operation. The signal cancels only
-    the pending `end()` call; it does not fail the writer itself.
-* Returns: {Promise\<number>} Total bytes written.
+  * `signal` {AbortSignal} 仅取消此操作。该信号仅取消待处理的 `end()` 调用；它不会使 writer 本身失败。
+* 返回：{Promise\<number>} 写入的总字节数。
 
-Signal that no more data will be written.
+信号表明不再写入更多数据。
 
 ### `writer.endSync()`
 
-* Returns: {number} Total bytes written, or `-1` if the writer is not open.
+* 返回：{number} 写入的总字节数，如果 writer 未打开则为 `-1`。
 
-Synchronous variant of `writer.end()`. Returns `-1` if the writer is already
-closed or errored. Can be used as a try-fallback pattern:
+`writer.end()` 的同步变体。如果 writer 已关闭或出错，则返回 `-1`。可用作尝试 - 回退模式：
 
 ```cjs
 const result = writer.endSync();
@@ -452,71 +394,63 @@ if (result < 0) {
 
 * `reason` {any}
 
-Put the writer into a terminal error state. If the writer is already closed
-or errored, this is a no-op. Unlike `write()` and `end()`, `fail()` is
-unconditionally synchronous because failing a writer is a pure state
-transition with no async work to perform.
+将 writer 置于终止错误状态。如果 writer 已关闭或出错，这是无操作。与 `write()` 和 `end()` 不同，`fail()` 无条件同步，因为使 writer 失败是纯状态转换，无需执行异步工作。
 
 ### `writer.write(chunk[, options])`
 
 * `chunk` {Uint8Array|string}
 * `options` {Object}
-  * `signal` {AbortSignal} Cancel just this write operation. The signal cancels
-    only the pending `write()` call; it does not fail the writer itself.
-* Returns: {Promise\<void>}
+  * `signal` {AbortSignal} 仅取消此写入操作。该信号仅取消待处理的 `write()` 调用；它不会使 writer 本身失败。
+* 返回：{Promise\<void>}
 
-Write a chunk. The promise resolves when buffer space is available.
+写入一个块。当缓冲空间可用时，promise 解析。
 
 ### `writer.writeSync(chunk)`
 
 * `chunk` {Uint8Array|string}
-* Returns: {boolean} `true` if the write was accepted, `false` if the
-  buffer is full.
+* 返回：{boolean} 如果写入被接受则为 `true`，如果缓冲区已满则为 `false`。
 
-Synchronous write. Does not block; returns `false` if backpressure is active.
+同步写入。不阻塞；如果背压处于活动状态则返回 `false`。
 
 ### `writer.writev(chunks[, options])`
 
 * `chunks` {Uint8Array\[]|string\[]}
 * `options` {Object}
-  * `signal` {AbortSignal} Cancel just this write operation. The signal cancels
-    only the pending `writev()` call; it does not fail the writer itself.
-* Returns: {Promise\<void>}
+  * `signal` {AbortSignal} 仅取消此写入操作。该信号仅取消待处理的 `writev()` 调用；它不会使 writer 本身失败。
+* 返回：{Promise\<void>}
 
-Write multiple chunks as a single batch.
+将多个块作为单个批次写入。
 
 ### `writer.writevSync(chunks)`
 
 * `chunks` {Uint8Array\[]|string\[]}
-* Returns: {boolean} `true` if the write was accepted, `false` if the
-  buffer is full.
+* 返回：{boolean} 如果写入被接受则为 `true`，如果缓冲区已满则为 `false`。
 
-Synchronous batch write.
+同步批次写入。
 
-## The `stream/iter` module
+## `stream/iter` 模块
 
-All functions are available both as named exports and as properties of the
-`Stream` namespace object:
+所有函数既可作为命名导出使用，也可作为 `Stream` 命名空间对象的属性使用：
 
 ```mjs
-// Named exports
+// 命名导出
 import { from, pull, bytes, Stream } from 'node:stream/iter';
 
-// Namespace access
+// 命名空间访问
 Stream.from('hello');
 ```
 
 ```cjs
-// Named exports
+// 命名导出
 const { from, pull, bytes, Stream } = require('node:stream/iter');
 
-// Namespace access
+// 命名空间访问
 Stream.from('hello');
 ```
 
-Including the `node:` prefix on the module specifier is optional.
+模块说明符中包含 `node:` 前缀是可选的。
 
-## Sources
+## 源
 
 ### `from(input)`
 
@@ -525,18 +459,17 @@ added: v25.9.0
 -->
 
 * `input` {string|ArrayBuffer|ArrayBufferView|Iterable|AsyncIterable|Object}
-  Must not be `null` or `undefined`.
-* Returns: {AsyncIterable\<Uint8Array\[]>}
+  不能为 `null` 或 `undefined`。
+* 返回：{AsyncIterable\<Uint8Array\[]>}
 
-Create an async byte stream from the given input. Strings are UTF-8 encoded.
-`ArrayBuffer` and `ArrayBufferView` values are wrapped as `Uint8Array`. Arrays
-and iterables are recursively flattened and normalized.
+从给定输入创建异步字节流。字符串采用 UTF-8 编码。
+`ArrayBuffer` 和 `ArrayBufferView` 值被包装为 `Uint8Array`。数组
+和可迭代对象会被递归展平并标准化。
 
-Objects implementing `Symbol.for('Stream.toAsyncStreamable')` or
-`Symbol.for('Stream.toStreamable')` are converted via those protocols. The
-`toAsyncStreamable` protocol takes precedence over `toStreamable`, which takes
-precedence over the iteration protocols (`Symbol.asyncIterator`,
-`Symbol.iterator`).
+实现 `Symbol.for('Stream.toAsyncStreamable')` 或
+`Symbol.for('Stream.toStreamable')` 的对象会通过这些协议进行转换。
+`toAsyncStreamable` 协议优先于 `toStreamable`，而 `toStreamable` 优先于迭代协议（`Symbol.asyncIterator`、
+`Symbol.iterator`）。
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -565,14 +498,12 @@ added: v25.9.0
 -->
 
 * `input` {string|ArrayBuffer|ArrayBufferView|Iterable|Object}
-  Must not be `null` or `undefined`.
-* Returns: {Iterable\<Uint8Array\[]>}
+  不能为 `null` 或 `undefined`。
+* 返回：{Iterable\<Uint8Array\[]>}
 
-Synchronous version of [`from()`][]. Returns a sync iterable. Cannot accept
-async iterables or promises. Objects implementing
-`Symbol.for('Stream.toStreamable')` are converted via that protocol (takes
-precedence over `Symbol.iterator`). The `toAsyncStreamable` protocol is
-ignored entirely.
+[`from()`][] 的同步版本。返回同步可迭代对象。不能接受
+异步可迭代对象或 Promise。实现
+`Symbol.for('Stream.toStreamable')` 的对象会通过该协议进行转换（优先于 `Symbol.iterator`）。`toAsyncStreamable` 协议会被完全忽略。
 
 ```mjs
 import { fromSync, textSync } from 'node:stream/iter';
@@ -586,7 +517,7 @@ const { fromSync, textSync } = require('node:stream/iter');
 console.log(textSync(fromSync('hello'))); // 'hello'
 ```
 
-## Pipelines
+## 管道
 
 ### `pipeTo(source[, ...transforms], writer[, options])`
 
@@ -594,26 +525,23 @@ console.log(textSync(fromSync('hello'))); // 'hello'
 added: v25.9.0
 -->
 
-* `source` {AsyncIterable|Iterable} The data source.
-* `...transforms` {Function|Object} Zero or more transforms to apply.
-* `writer` {Object} Destination with `write(chunk)` method.
+* `source` {AsyncIterable|Iterable} 数据源。
+* `...transforms` {Function|Object} 零个或多个要应用的转换。
+* `writer` {Object} 具有 `write(chunk)` 方法的目标。
 * `options` {Object}
-  * `signal` {AbortSignal} Abort the pipeline.
-  * `preventClose` {boolean} If `true`, do not call `writer.end()` when
-    the source ends. **Default:** `false`.
-  * `preventFail` {boolean} If `true`, do not call `writer.fail()` on
-    error. **Default:** `false`.
-* Returns: {Promise\<number>} Total bytes written.
+  * `signal` {AbortSignal} 中止管道。
+  * `preventClose` {boolean} 如果为 `true`，则在源结束时不调用 `writer.end()`。**默认：** `false`。
+  * `preventFail` {boolean} 如果为 `true`，则在出错时不调用 `writer.fail()`。**默认：** `false`。
+* 返回：{Promise\<number>} 写入的总字节数。
 
-Pipe a source through transforms into a writer. If the writer has a
-`writev(chunks)` method, entire batches are passed in a single call (enabling
-scatter/gather I/O).
+将源通过转换管道输送到写入器。如果写入器具有
+`writev(chunks)` 方法，则整个批次会在单次调用中传递（启用
+分散/聚集 I/O）。
 
-If the writer implements the optional `*Sync` methods (`writeSync`, `writevSync`,
-`endSync`), `pipeTo()` will attempt to use the synchronous methods
-first as a fast path, and fall back to the async versions only when the sync
-methods indicate they cannot complete (e.g., backpressure or waiting for the
-next tick). `fail()` is always called synchronously.
+如果写入器实现了可选的 `*Sync` 方法（`writeSync`、`writevSync`、
+`endSync`），`pipeTo()` 将尝试首先使用同步方法
+作为快速路径，仅当同步方法表明它们无法完成时（例如，背压或等待
+下一个事件循环刻度）才回退到异步版本。`fail()` 总是同步调用。
 
 ```mjs
 import { from, pipeTo } from 'node:stream/iter';
@@ -651,19 +579,19 @@ run().catch(console.error);
 added: v25.9.0
 -->
 
-* `source` {Iterable} The sync data source.
-* `...transforms` {Function|Object} Zero or more sync transforms.
-* `writer` {Object} Destination with `write(chunk)` method.
+* `source` {Iterable} 同步数据源。
+* `...transforms` {Function|Object} 零个或多个同步转换。
+* `writer` {Object} 具有 `write(chunk)` 方法的目标。
 * `options` {Object}
-  * `preventClose` {boolean} **Default:** `false`.
-  * `preventFail` {boolean} **Default:** `false`.
-* Returns: {number} Total bytes written.
+  * `preventClose` {boolean} **默认：** `false`。
+  * `preventFail` {boolean} **默认：** `false`。
+* 返回：{number} 写入的总字节数。
 
-Synchronous version of [`pipeTo()`][]. The `source`, all transforms, and the
-`writer` must be synchronous. Cannot accept async iterables or promises.
+[`pipeTo()`][] 的同步版本。`source`、所有转换和
+`writer` 必须是同步的。不能接受异步可迭代对象或 Promise。
 
-The `writer` must have the `*Sync` methods (`writeSync`, `writevSync`,
-`endSync`) and `fail()` for this to work.
+`writer` 必须具有 `*Sync` 方法（`writeSync`、`writevSync`、
+`endSync`）和 `fail()` 才能正常工作。
 
 ### `pull(source[, ...transforms][, options])`
 
@@ -671,14 +599,13 @@ The `writer` must have the `*Sync` methods (`writeSync`, `writevSync`,
 added: v25.9.0
 -->
 
-* `source` {AsyncIterable|Iterable} The data source.
-* `...transforms` {Function|Object} Zero or more transforms to apply.
+* `source` {AsyncIterable|Iterable} 数据源。
+* `...transforms` {Function|Object} 零个或多个要应用的转换。
 * `options` {Object}
-  * `signal` {AbortSignal} Abort the pipeline.
-* Returns: {AsyncIterable\<Uint8Array\[]>}
+  * `signal` {AbortSignal} 中止管道。
+* 返回：{AsyncIterable\<Uint8Array\[]>}
 
-Create a lazy async pipeline. Data is not read from `source` until the
-returned iterable is consumed. Transforms are applied in order.
+创建惰性异步管道。直到返回的可迭代对象被消费之前，不会从 `source` 读取数据。转换按顺序应用。
 
 ```mjs
 import { from, pull, text } from 'node:stream/iter';
@@ -718,14 +645,14 @@ async function run() {
 run().catch(console.error);
 ```
 
-Using an `AbortSignal`:
+使用 `AbortSignal`：
 
 ```mjs
 import { pull } from 'node:stream/iter';
 
 const ac = new AbortController();
 const result = pull(source, transform, { signal: ac.signal });
-ac.abort(); // Pipeline throws AbortError on next iteration
+ac.abort(); // 管道在下一次迭代时抛出 AbortError
 ```
 
 ```cjs
@@ -733,7 +660,7 @@ const { pull } = require('node:stream/iter');
 
 const ac = new AbortController();
 const result = pull(source, transform, { signal: ac.signal });
-ac.abort(); // Pipeline throws AbortError on next iteration
+ac.abort(); // 管道在下一次迭代时抛出 AbortError
 ```
 
 ### `pullSync(source[, ...transforms])`
@@ -742,13 +669,13 @@ ac.abort(); // Pipeline throws AbortError on next iteration
 added: v25.9.0
 -->
 
-* `source` {Iterable} The sync data source.
-* `...transforms` {Function|Object} Zero or more sync transforms.
-* Returns: {Iterable\<Uint8Array\[]>}
+* `source` {Iterable} 同步数据源。
+* `...transforms` {Function|Object} 零个或多个同步转换。
+* 返回：{Iterable\<Uint8Array\[]>}
 
-Synchronous version of [`pull()`][]. All transforms must be synchronous.
+[`pull()`][] 的同步版本。所有转换必须是同步的。
 
-## Push streams
+## 推送流
 
 ### `push([...transforms][, options])`
 
@@ -756,29 +683,27 @@ Synchronous version of [`pull()`][]. All transforms must be synchronous.
 added: v25.9.0
 -->
 
-* `...transforms` {Function|Object} Optional transforms applied to the
-  readable side.
+* `...transforms` {Function|Object} 应用于可读侧的可选转换。
 * `options` {Object}
-  * `highWaterMark` {number} Maximum number of buffered slots before
-    backpressure is applied. Must be >= 1; values below 1 are clamped to 1.
-    **Default:** `4`.
-  * `backpressure` {string} Backpressure policy: `'strict'`, `'block'`,
-    `'drop-oldest'`, or `'drop-newest'`. **Default:** `'strict'`.
-  * `signal` {AbortSignal} Abort the stream.
-* Returns: {Object}
-  * `writer` {PushWriter} The writer side.
-  * `readable` {AsyncIterable\<Uint8Array\[]>} The readable side.
+  * `highWaterMark` {number} 应用背压前的最大缓冲槽数。必须 >= 1；低于 1 的值会被钳制为 1。
+    **默认：** `4`。
+  * `backpressure` {string} 背压策略：`'strict'`、`'block'`、
+    `'drop-oldest'` 或 `'drop-newest'`。**默认：** `'strict'`。
+  * `signal` {AbortSignal} 中止流。
+* 返回：{Object}
+  * `writer` {PushWriter} 写入器侧。
+  * `readable` {AsyncIterable\<Uint8Array\[]>} 可读侧。
 
-Create a push stream with backpressure. The writer pushes data in; the
-readable side is consumed as an async iterable.
+创建具有背压的推送流。写入器推入数据；
+可读侧作为异步可迭代对象被消费。
 
 ```mjs
 import { push, text } from 'node:stream/iter';
 
 const { writer, readable } = push();
 
-// Producer and consumer must run concurrently. With strict backpressure
-// (the default), awaited writes block until the consumer reads.
+// 生产者和消费者必须并发运行。使用严格背压
+// （默认）时，待处理的写入会阻塞直到消费者读取。
 const producing = (async () => {
   await writer.write('hello');
   await writer.write(' world');
@@ -795,8 +720,8 @@ const { push, text } = require('node:stream/iter');
 async function run() {
   const { writer, readable } = push();
 
-  // Producer and consumer must run concurrently. With strict backpressure
-  // (the default), awaited writes block until the consumer reads.
+  // 生产者和消费者必须并发运行。使用严格背压
+  // （默认）时，待处理的写入会阻塞直到消费者读取。
   const producing = (async () => {
     await writer.write('hello');
     await writer.write(' world');
@@ -810,9 +735,9 @@ async function run() {
 run().catch(console.error);
 ```
 
-The writer returned by `push()` conforms to the \[Writer interface]\[].
+`push()` 返回的写入器符合 \[Writer 接口]\[]。
 
-## Duplex channels
+## 双工通道
 
 ### `duplex([options])`
 
@@ -821,39 +746,38 @@ added: v25.9.0
 -->
 
 * `options` {Object}
-  * `highWaterMark` {number} Buffer size for both directions.
-    **Default:** `4`.
-  * `backpressure` {string} Policy for both directions.
-    **Default:** `'strict'`.
-  * `signal` {AbortSignal} Cancellation signal for both channels.
-  * `a` {Object} Options specific to the A-to-B direction. Overrides
-    shared options.
+  * `highWaterMark` {number} 两个方向的缓冲区大小。
+    **默认：** `4`。
+  * `backpressure` {string} 两个方向的策略。
+    **默认：** `'strict'`。
+  * `signal` {AbortSignal} 两个通道的取消信号。
+  * `a` {Object} 特定于 A 到 B 方向的选项。覆盖
+    共享选项。
     * `highWaterMark` {number}
     * `backpressure` {string}
-  * `b` {Object} Options specific to the B-to-A direction. Overrides
-    shared options.
+  * `b` {Object} 特定于 B 到 A 方向的选项。覆盖
+    共享选项。
     * `highWaterMark` {number}
     * `backpressure` {string}
-* Returns: {Array} A pair `[channelA, channelB]` of duplex channels.
+* 返回：{Array} 一对双工通道 `[channelA, channelB]`。
 
-Create a pair of connected duplex channels for bidirectional communication,
-similar to `socketpair()`. Data written to one channel's writer appears in
-the other channel's readable.
+创建一对连接的双工通道用于双向通信，
+类似于 `socketpair()`。写入一个通道写入器的数据会出现在
+另一个通道的可读侧。
 
-Each channel has:
+每个通道具有：
 
-* `writer` — a \[Writer interface]\[] object for sending data to the peer.
-* `readable` — an `AsyncIterable<Uint8Array[]>` for reading data from
-  the peer.
-* `close()` — close this end of the channel (idempotent).
-* `[Symbol.asyncDispose]()` — async dispose support for `await using`.
+* `writer` — 一个 \[Writer 接口]\[] 对象，用于向对端发送数据。
+* `readable` — 一个 `AsyncIterable<Uint8Array[]>`，用于从对端读取数据。
+* `close()` — 关闭此通道端（幂等）。
+* `[Symbol.asyncDispose]()` — 用于 `await using` 的异步处置支持。
 
 ```mjs
 import { duplex, text } from 'node:stream/iter';
 
 const [client, server] = duplex();
 
-// Server echoes back
+// 服务器回显
 const serving = (async () => {
   for await (const chunks of server.readable) {
     await server.writer.writev(chunks);
@@ -863,7 +787,7 @@ const serving = (async () => {
 await client.writer.write('hello');
 await client.writer.end();
 
-console.log(await text(server.readable)); // handled by echo
+console.log(await text(server.readable)); // 由回显处理
 await serving;
 ```
 
@@ -873,7 +797,7 @@ const { duplex, text } = require('node:stream/iter');
 async function run() {
   const [client, server] = duplex();
 
-  // Server echoes back
+  // 服务器回显
   const serving = (async () => {
     for await (const chunks of server.readable) {
       await server.writer.writev(chunks);
@@ -883,14 +807,14 @@ async function run() {
   await client.writer.write('hello');
   await client.writer.end();
 
-  console.log(await text(server.readable)); // handled by echo
+  console.log(await text(server.readable)); // 由回显处理
   await serving;
 }
 
 run().catch(console.error);
 ```
 
-## Consumers
+## 消费者
 
 ### `array(source[, options])`
 
@@ -901,11 +825,10 @@ added: v25.9.0
 * `source` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>}
 * `options` {Object}
   * `signal` {AbortSignal}
-  * `limit` {number} Maximum number of bytes to consume. If the total bytes
-    collected exceeds limit, an `ERR_OUT_OF_RANGE` error is thrown
-* Returns: {Promise\<Uint8Array\[]>}
+  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+* 返回：{Promise\<Uint8Array\[]>}
 
-Collect all chunks as an array of `Uint8Array` values (without concatenating).
+将所有块收集为 `Uint8Array` 值的数组（不进行连接）。
 
 ### `arrayBuffer(source[, options])`
 
@@ -916,11 +839,10 @@ added: v25.9.0
 * `source` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>}
 * `options` {Object}
   * `signal` {AbortSignal}
-  * `limit` {number} Maximum number of bytes to consume. If the total bytes
-    collected exceeds limit, an `ERR_OUT_OF_RANGE` error is thrown
-* Returns: {Promise\<ArrayBuffer>}
+  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+* 返回：{Promise\<ArrayBuffer>}
 
-Collect all bytes into an `ArrayBuffer`.
+将所有字节收集到一个 `ArrayBuffer` 中。
 
 ### `arrayBufferSync(source[, options])`
 
@@ -930,11 +852,10 @@ added: v25.9.0
 
 * `source` {Iterable\<Uint8Array\[]>}
 * `options` {Object}
-  * `limit` {number} Maximum number of bytes to consume. If the total bytes
-    collected exceeds limit, an `ERR_OUT_OF_RANGE` error is thrown
-* Returns: {ArrayBuffer}
+  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+* 返回：{ArrayBuffer}
 
-Synchronous version of [`arrayBuffer()`][].
+[`arrayBuffer()`][] 的同步版本。
 
 ### `arraySync(source[, options])`
 
@@ -944,11 +865,10 @@ added: v25.9.0
 
 * `source` {Iterable\<Uint8Array\[]>}
 * `options` {Object}
-  * `limit` {number} Maximum number of bytes to consume. If the total bytes
-    collected exceeds limit, an `ERR_OUT_OF_RANGE` error is thrown
-* Returns: {Uint8Array\[]}
+  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+* 返回：{Uint8Array\[]}
 
-Synchronous version of [`array()`][].
+[`array()`][] 的同步版本。
 
 ### `bytes(source[, options])`
 
@@ -959,11 +879,10 @@ added: v25.9.0
 * `source` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>}
 * `options` {Object}
   * `signal` {AbortSignal}
-  * `limit` {number} Maximum number of bytes to consume. If the total bytes
-    collected exceeds limit, an `ERR_OUT_OF_RANGE` error is thrown
-* Returns: {Promise\<Uint8Array>}
+  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+* 返回：{Promise\<Uint8Array>}
 
-Collect all bytes from a stream into a single `Uint8Array`.
+将流中的所有字节收集到单个 `Uint8Array` 中。
 
 ```mjs
 import { from, bytes } from 'node:stream/iter';
@@ -991,11 +910,10 @@ added: v25.9.0
 
 * `source` {Iterable\<Uint8Array\[]>}
 * `options` {Object}
-  * `limit` {number} Maximum number of bytes to consume. If the total bytes
-    collected exceeds limit, an `ERR_OUT_OF_RANGE` error is thrown
-* Returns: {Uint8Array}
+  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+* 返回：{Uint8Array}
 
-Synchronous version of [`bytes()`][].
+[`bytes()`][] 的同步版本。
 
 ### `text(source[, options])`
 
@@ -1005,13 +923,12 @@ added: v25.9.0
 
 * `source` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>}
 * `options` {Object}
-  * `encoding` {string} Text encoding. **Default:** `'utf-8'`.
+  * `encoding` {string} 文本编码。**默认：** `'utf-8'`。
   * `signal` {AbortSignal}
-  * `limit` {number} Maximum number of bytes to consume. If the total bytes
-    collected exceeds limit, an `ERR_OUT_OF_RANGE` error is thrown
-* Returns: {Promise\<string>}
+  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+* 返回：{Promise\<string>}
 
-Collect all bytes and decode as text.
+收集所有字节并解码为文本。
 
 ```mjs
 import { from, text } from 'node:stream/iter';
@@ -1037,14 +954,13 @@ added: v25.9.0
 
 * `source` {Iterable\<Uint8Array\[]>}
 * `options` {Object}
-  * `encoding` {string} **Default:** `'utf-8'`.
-  * `limit` {number} Maximum number of bytes to consume. If the total bytes
-    collected exceeds limit, an `ERR_OUT_OF_RANGE` error is thrown
-* Returns: {string}
+  * `encoding` {string} **默认：** `'utf-8'`。
+  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+* 返回：{string}
 
-Synchronous version of [`text()`][].
+[`text()`][] 的同步版本。
 
-## Utilities
+## 工具
 
 ### `ondrain(drainable)`
 
@@ -1052,12 +968,10 @@ Synchronous version of [`text()`][].
 added: v25.9.0
 -->
 
-* `drainable` {Object} An object implementing the drainable protocol.
-* Returns: {Promise\<boolean>|null}
+* `drainable` {Object} 实现可排空协议的对象。
+* 返回：{Promise\<boolean>|null}
 
-Wait for a drainable writer's backpressure to clear. Returns a promise that
-resolves to `true` when the writer can accept more data, or `null` if the
-object does not implement the drainable protocol.
+等待可排空写入器的背压清除。当写入器可以接受更多数据时，返回一个解析为 `true` 的 Promise，如果对象未实现可排空协议，则返回 `null`。
 
 ```mjs
 import { push, ondrain, text } from 'node:stream/iter';
@@ -1066,10 +980,10 @@ const { writer, readable } = push({ highWaterMark: 2 });
 writer.writeSync('a');
 writer.writeSync('b');
 
-// Start consuming so the buffer can actually drain
+// 开始消费以便缓冲区实际上可以排空
 const consuming = text(readable);
 
-// Buffer is full -- wait for drain
+// 缓冲区已满 -- 等待排空
 const canWrite = await ondrain(writer);
 if (canWrite) {
   await writer.write('c');
@@ -1086,10 +1000,10 @@ async function run() {
   writer.writeSync('a');
   writer.writeSync('b');
 
-  // Start consuming so the buffer can actually drain
+  // 开始消费以便缓冲区实际上可以排空
   const consuming = text(readable);
 
-  // Buffer is full -- wait for drain
+  // 缓冲区已满 -- 等待排空
   const canWrite = await ondrain(writer);
   if (canWrite) {
     await writer.write('c');
@@ -1107,20 +1021,18 @@ run().catch(console.error);
 added: v25.9.0
 -->
 
-* `...sources` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>} Two or more iterables.
+* `...sources` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>} 两个或更多可迭代对象。
 * `options` {Object}
   * `signal` {AbortSignal}
-* Returns: {AsyncIterable\<Uint8Array\[]>}
+* 返回：{AsyncIterable\<Uint8Array\[]>}
 
-Merge multiple async iterables by yielding batches in temporal order
-(whichever source produces data first). All sources are consumed
-concurrently.
+通过按时间顺序产生批次来合并多个异步可迭代对象（无论哪个源先产生数据）。所有源都被并发消费。
 
 ```mjs
 import { from, merge, text } from 'node:stream/iter';
 
 const merged = merge(from('hello '), from('world'));
-console.log(await text(merged)); // Order depends on timing
+console.log(await text(merged)); // 顺序取决于时机
 ```
 
 ```cjs
@@ -1128,7 +1040,7 @@ const { from, merge, text } = require('node:stream/iter');
 
 async function run() {
   const merged = merge(from('hello '), from('world'));
-  console.log(await text(merged)); // Order depends on timing
+  console.log(await text(merged)); // 顺序取决于时机
 }
 
 run().catch(console.error);
@@ -1140,18 +1052,17 @@ run().catch(console.error);
 added: v25.9.0
 -->
 
-* `callback` {Function} `(chunks) => void` Called with each batch.
-* Returns: {Function} A stateless transform.
+* `callback` {Function} `(chunks) => void` 使用每个批次调用。
+* 返回：{Function} 一个无状态转换。
 
-Create a pass-through transform that observes batches without modifying them.
-Useful for logging, metrics, or debugging.
+创建一个直通转换，用于观察批次而不修改它们。适用于日志记录、指标或调试。
 
 ```mjs
 import { from, pull, text, tap } from 'node:stream/iter';
 
 const result = pull(
   from('hello'),
-  tap((chunks) => console.log('Batch size:', chunks.length)),
+  tap((chunks) => console.log('批次大小：', chunks.length)),
 );
 console.log(await text(result));
 ```
@@ -1162,7 +1073,7 @@ const { from, pull, text, tap } = require('node:stream/iter');
 async function run() {
   const result = pull(
     from('hello'),
-    tap((chunks) => console.log('Batch size:', chunks.length)),
+    tap((chunks) => console.log('批次大小：', chunks.length)),
   );
   console.log(await text(result));
 }
@@ -1170,8 +1081,7 @@ async function run() {
 run().catch(console.error);
 ```
 
-`tap()` intentionally does not prevent in-place modification of the
-chunks by the tapping callback; but return values are ignored.
+`tap()` 故意不阻止 tapping 回调对块的就地修改；但返回值会被忽略。
 
 ### `tapSync(callback)`
 
@@ -1180,11 +1090,11 @@ added: v25.9.0
 -->
 
 * `callback` {Function}
-* Returns: {Function}
+* 返回：{Function}
 
-Synchronous version of [`tap()`][].
+[`tap()`][] 的同步版本。
 
-## Multi-consumer
+## 多消费者
 
 ### `broadcast([options])`
 
@@ -1193,30 +1103,25 @@ added: v25.9.0
 -->
 
 * `options` {Object}
-  * `highWaterMark` {number} Buffer size in slots. Must be >= 1; values
-    below 1 are clamped to 1. **Default:** `16`.
-  * `backpressure` {string} `'strict'`, `'block'`, `'drop-oldest'`, or
-    `'drop-newest'`. **Default:** `'strict'`.
+  * `highWaterMark` {number} 缓冲区大小（以槽位计）。必须 >= 1；低于 1 的值会被钳制为 1。**默认：** `16`。
+  * `backpressure` {string} `'strict'`、`'block'`、`'drop-oldest'` 或 `'drop-newest'`。**默认：** `'strict'`。
   * `signal` {AbortSignal}
-* Returns: {Object}
+* 返回：{Object}
   * `writer` {BroadcastWriter}
   * `broadcast` {Broadcast}
 
-Create a push-model multi-consumer broadcast channel. A single writer pushes
-data to multiple consumers. Each consumer has an independent cursor into a
-shared buffer.
+创建一个推模型多消费者广播通道。单个写入器将数据推送到多个消费者。每个消费者都有一个指向共享缓冲区的独立游标。
 
 ```mjs
 import { broadcast, text } from 'node:stream/iter';
 
 const { writer, broadcast: bc } = broadcast();
 
-// Create consumers before writing
-const c1 = bc.push();  // Consumer 1
-const c2 = bc.push();  // Consumer 2
+// 在写入前创建消费者
+const c1 = bc.push();  // 消费者 1
+const c2 = bc.push();  // 消费者 2
 
-// Producer and consumers must run concurrently. Awaited writes
-// block when the buffer fills until consumers read.
+// 生产者和消费者必须并发运行。当缓冲区填满时，待处理的写入会阻塞，直到消费者读取。
 const producing = (async () => {
   await writer.write('hello');
   await writer.end();
@@ -1234,12 +1139,11 @@ const { broadcast, text } = require('node:stream/iter');
 async function run() {
   const { writer, broadcast: bc } = broadcast();
 
-  // Create consumers before writing
-  const c1 = bc.push();  // Consumer 1
-  const c2 = bc.push();  // Consumer 2
+  // 在写入前创建消费者
+  const c1 = bc.push();  // 消费者 1
+  const c2 = bc.push();  // 消费者 2
 
-  // Producer and consumers must run concurrently. Awaited writes
-  // block when the buffer fills until consumers read.
+  // 生产者和消费者必须并发运行。当缓冲区填满时，待处理的写入会阻塞，直到消费者读取。
   const producing = (async () => {
     await writer.write('hello');
     await writer.end();
@@ -1258,34 +1162,32 @@ run().catch(console.error);
 
 * {number}
 
-The number of chunks currently buffered.
+当前缓冲的块数。
 
 #### `broadcast.cancel([reason])`
 
 * `reason` {Error}
 
-Cancel the broadcast. All consumers receive an error.
+取消广播。所有消费者都会收到一个错误。
 
 #### `broadcast.consumerCount`
 
 * {number}
 
-The number of active consumers.
+活动消费者的数量。
 
 #### `broadcast.push([...transforms][, options])`
 
 * `...transforms` {Function|Object}
 * `options` {Object}
   * `signal` {AbortSignal}
-* Returns: {AsyncIterable\<Uint8Array\[]>}
+* 返回：{AsyncIterable\<Uint8Array\[]>}
 
-Create a new consumer. Each consumer receives all data written to the
-broadcast from the point of subscription onward. Optional transforms are
-applied to this consumer's view of the data.
+创建一个新的消费者。每个消费者都会接收从订阅点开始写入广播的所有数据。可选的转换会应用于此消费者的数据视图。
 
 #### `broadcast[Symbol.dispose]()`
 
-Alias for `broadcast.cancel()`.
+`broadcast.cancel()` 的别名。
 
 ### `Broadcast.from(input[, options])`
 
@@ -1294,11 +1196,10 @@ added: v25.9.0
 -->
 
 * `input` {AsyncIterable|Iterable|Broadcastable}
-* `options` {Object} Same as `broadcast()`.
-* Returns: {Object} `{ writer, broadcast }`
+* `options` {Object} 与 `broadcast()` 相同。
+* 返回：{Object} `{ writer, broadcast }`
 
-Create a {Broadcast} from an existing source. The source is consumed
-automatically and pushed to all subscribers.
+从现有源创建 {Broadcast}。源会被自动消费并推送到所有订阅者。
 
 ### `share(source[, options])`
 
@@ -1306,17 +1207,13 @@ automatically and pushed to all subscribers.
 added: v25.9.0
 -->
 
-* `source` {AsyncIterable} The source to share.
+* `source` {AsyncIterable} 要共享的源。
 * `options` {Object}
-  * `highWaterMark` {number} Buffer size. Must be >= 1; values below 1
-    are clamped to 1. **Default:** `16`.
-  * `backpressure` {string} `'strict'`, `'block'`, `'drop-oldest'`, or
-    `'drop-newest'`. **Default:** `'strict'`.
-* Returns: {Share}
+  * `highWaterMark` {number} 缓冲区大小。必须 >= 1；低于 1 的值会被钳制为 1。**默认：** `16`。
+  * `backpressure` {string} `'strict'`、`'block'`、`'drop-oldest'` 或 `'drop-newest'`。**默认：** `'strict'`。
+* 返回：{Share}
 
-Create a pull-model multi-consumer shared stream. Unlike `broadcast()`, the
-source is only read when a consumer pulls. Multiple consumers share a single
-buffer.
+创建一个拉模型多消费者共享流。与 `broadcast()` 不同，源仅在有消费者拉取时才会被读取。多个消费者共享单个缓冲区。
 
 ```mjs
 import { from, share, text } from 'node:stream/iter';
@@ -1326,7 +1223,7 @@ const shared = share(from('hello'));
 const c1 = shared.pull();
 const c2 = shared.pull();
 
-// Consume concurrently to avoid deadlock with small buffers.
+// 并发消费以避免小缓冲区死锁。
 const [r1, r2] = await Promise.all([text(c1), text(c2)]);
 console.log(r1); // 'hello'
 console.log(r2); // 'hello'
@@ -1341,7 +1238,7 @@ async function run() {
   const c1 = shared.pull();
   const c2 = shared.pull();
 
-  // Consume concurrently to avoid deadlock with small buffers.
+  // 并发消费以避免小缓冲区死锁。
   const [r1, r2] = await Promise.all([text(c1), text(c2)]);
   console.log(r1); // 'hello'
   console.log(r2); // 'hello'
@@ -1354,32 +1251,32 @@ run().catch(console.error);
 
 * {number}
 
-The number of chunks currently buffered.
+当前缓冲的块数。
 
 #### `share.cancel([reason])`
 
 * `reason` {Error}
 
-Cancel the share. All consumers receive an error.
+取消共享。所有消费者都会收到一个错误。
 
 #### `share.consumerCount`
 
 * {number}
 
-The number of active consumers.
+活动消费者的数量。
 
 #### `share.pull([...transforms][, options])`
 
 * `...transforms` {Function|Object}
 * `options` {Object}
   * `signal` {AbortSignal}
-* Returns: {AsyncIterable\<Uint8Array\[]>}
+* 返回：{AsyncIterable\<Uint8Array\[]>}
 
-Create a new consumer of the shared source.
+创建共享源的新消费者。
 
 #### `share[Symbol.dispose]()`
 
-Alias for `share.cancel()`.
+`share.cancel()` 的别名。
 
 ### `Share.from(input[, options])`
 
@@ -1388,10 +1285,10 @@ added: v25.9.0
 -->
 
 * `input` {AsyncIterable|Shareable}
-* `options` {Object} Same as `share()`.
-* Returns: {Share}
+* `options` {Object} 与 `share()` 相同。
+* 返回：{Share}
 
-Create a {Share} from an existing source.
+从现有源创建 {Share}。
 
 ### `shareSync(source[, options])`
 
@@ -1399,14 +1296,13 @@ Create a {Share} from an existing source.
 added: v25.9.0
 -->
 
-* `source` {Iterable} The sync source to share.
+* `source` {Iterable} 要共享的同步源。
 * `options` {Object}
-  * `highWaterMark` {number} Must be >= 1; values below 1 are clamped
-    to 1. **Default:** `16`.
-  * `backpressure` {string} **Default:** `'strict'`.
-* Returns: {SyncShare}
+  * `highWaterMark` {number} 必须 >= 1；低于 1 的值会被钳制为 1。**默认：** `16`。
+  * `backpressure` {string} **默认：** `'strict'`。
+* 返回：{SyncShare}
 
-Synchronous version of [`share()`][].
+[`share()`][] 的同步版本。
 
 ### `SyncShare.fromSync(input[, options])`
 
@@ -1416,23 +1312,21 @@ added: v25.9.0
 
 * `input` {Iterable|SyncShareable}
 * `options` {Object}
-* Returns: {SyncShare}
+* 返回：{SyncShare}
 
-## Compression and decompression transforms
+## 压缩和解压缩转换
 
-Compression and decompression transforms for use with `pull()`, `pullSync()`,
-`pipeTo()`, and `pipeToSync()` are available via the [`node:zlib/iter`][]
-module. See the [`node:zlib/iter` documentation][] for details.
+用于 `pull()`、`pullSync()`、`pipeTo()` 和 `pipeToSync()` 的压缩和解压缩转换可通过 [`node:zlib/iter`][] 模块获得。详见 [`node:zlib/iter` 文档][]。
 
-## Classic stream interop
+## 经典流互操作
 
-These utility functions bridge between classic
-[`stream.Readable`][]/[`stream.Writable`][] streams and the `stream/iter`
-API.
+这些工具函数在经典
+[`stream.Readable`][]/[`stream.Writable`][] 流和 `stream/iter`
+API 之间架起了桥梁。
 
-Both `fromReadable()` and `fromWritable()` accept duck-typed objects -- they
-do not require the input to extend `stream.Readable` or `stream.Writable`
-directly. The minimum contract is described below for each function.
+`fromReadable()` 和 `fromWritable()` 都接受 duck-typed 对象 -- 它们
+不要求输入直接扩展 `stream.Readable` 或 `stream.Writable`。
+每个函数的最低契约如下所述。
 
 ### `fromReadable(readable)`
 
@@ -1440,26 +1334,26 @@ directly. The minimum contract is described below for each function.
 added: REPLACEME
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-* `readable` {stream.Readable|Object} A classic Readable stream or any object
-  with `read()` and `on()` methods.
-* Returns: {AsyncIterable\<Uint8Array\[]>} A stream/iter async iterable source.
+* `readable` {stream.Readable|Object} 经典 Readable 流或任何具有
+  `read()` 和 `on()` 方法的对象。
+* 返回：{AsyncIterable\<Uint8Array\[]>} 一个 stream/iter 异步可迭代源。
 
-Converts a classic Readable stream (or duck-typed equivalent) into a
-stream/iter async iterable source that can be passed to [`from()`][],
-[`pull()`][], [`text()`][], etc.
+将经典 Readable 流（或 duck-typed 等效对象）转换为
+stream/iter 异步可迭代源，可以传递给 [`from()`][]、
+[`pull()`][]、[`text()`][] 等。
 
-If the object implements the [`toAsyncStreamable`][] protocol (as
-`stream.Readable` does), that protocol is used. Otherwise, the function
-duck-types on `read()` and `on()` (EventEmitter) and wraps the stream with
-a batched async iterator.
+如果对象实现了 [`toAsyncStreamable`][] 协议（如
+`stream.Readable` 所做的那样），则使用该协议。否则，函数
+对 `read()` 和 `on()` (EventEmitter) 进行 duck-type 检查，并用
+批处理异步迭代器包装流。
 
-The result is cached per instance -- calling `fromReadable()` twice with the
-same stream returns the same iterable.
+结果按实例缓存 -- 使用同一流调用 `fromReadable()` 两次
+返回相同的可迭代对象。
 
-For object-mode or encoded Readable streams, chunks are automatically
-normalized to `Uint8Array`.
+对于 object-mode 或编码的 Readable 流，块会自动
+标准化为 `Uint8Array`。
 
 ```mjs
 import { Readable } from 'node:stream';
@@ -1494,36 +1388,36 @@ run();
 added: REPLACEME
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-* `writable` {stream.Writable|Object} A classic Writable stream or any object
-  with `write()` and `on()` methods.
+* `writable` {stream.Writable|Object} 经典 Writable 流或任何对象
+  具有 `write()` 和 `on()` 方法。
 * `options` {Object}
-  * `backpressure` {string} Backpressure policy. **Default:** `'strict'`.
-    * `'strict'` -- writes are rejected when the buffer is full. Catches
-      callers that ignore backpressure.
-    * `'block'` -- writes wait for drain when the buffer is full. Recommended
-      for use with [`pipeTo()`][].
-    * `'drop-newest'` -- writes are silently discarded when the buffer is full.
-    * `'drop-oldest'` -- **not supported**. Throws `ERR_INVALID_ARG_VALUE`.
-* Returns: {Object} A stream/iter Writer adapter.
+  * `backpressure` {string} 背压策略。**默认：** `'strict'`。
+    * `'strict'` -- 当缓冲区满时写入被拒绝。捕获
+      忽略背压的调用者。
+    * `'block'` -- 当缓冲区满时写入等待排空。推荐
+      与 [`pipeTo()`][] 一起使用。
+    * `'drop-newest'` -- 当缓冲区满时写入被静默丢弃。
+    * `'drop-oldest'` -- **不支持**。抛出 `ERR_INVALID_ARG_VALUE`。
+* 返回：{Object} 一个 stream/iter Writer 适配器。
 
-Creates a stream/iter Writer adapter from a classic Writable stream (or
-duck-typed equivalent). The adapter can be passed to [`pipeTo()`][] as a
-destination.
+从经典 Writable 流（或
+duck-typed 等效对象）创建 stream/iter Writer 适配器。该适配器可以作为
+目的地传递给 [`pipeTo()`][]。
 
-Since all writes on a classic Writable are fundamentally asynchronous,
-the synchronous Writer methods (`writeSync`, `writevSync`, `endSync`) always
-return `false` or `-1`, deferring to the async path. The per-write
-`options.signal` parameter from the Writer interface is also ignored.
+由于经典 Writable 上的所有写入本质上是异步的，
+同步 Writer 方法（`writeSync`、`writevSync`、`endSync`）始终
+返回 `false` 或 `-1`，defer 到异步路径。每次写入
+来自 Writer 接口的 `options.signal` 参数也会被忽略。
 
-The result is cached per instance -- calling `fromWritable()` twice with the
-same stream returns the same Writer.
+结果按实例缓存 -- 使用同一流调用 `fromWritable()` 两次
+返回相同的 Writer。
 
-For duck-typed streams that do not expose `writableHighWaterMark`,
-`writableLength`, or similar properties, sensible defaults are used.
-Object-mode writables (if detectable) are rejected since the Writer
-interface is bytes-only.
+对于不暴露 `writableHighWaterMark`、
+`writableLength` 或类似属性的 duck-typed 流，
+会使用合理的默认值。Object-mode writable（如果可检测）会被拒绝，因为 Writer
+接口仅支持字节。
 
 ```mjs
 import { Writable } from 'node:stream';
@@ -1558,19 +1452,17 @@ run();
 added: REPLACEME
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-* `source` {AsyncIterable} An `AsyncIterable<Uint8Array[]>` source, such as
-  the return value of [`pull()`][] or [`from()`][].
+* `source` {AsyncIterable} 一个 `AsyncIterable<Uint8Array[]>` 源，例如
+  [`pull()`][] 或 [`from()`][] 的返回值。
 * `options` {Object}
-  * `highWaterMark` {number} The internal buffer size in bytes before
-    backpressure is applied. **Default:** `65536` (64 KB).
-  * `signal` {AbortSignal} An optional signal to abort the readable.
-* Returns: {stream.Readable}
+  * `highWaterMark` {number} 应用背压前的内部缓冲区大小（以字节为单位）。**默认：** `65536` (64 KB)。
+  * `signal` {AbortSignal} 用于中止 readable 的可选 signal。
+* 返回：{stream.Readable}
 
-Creates a byte-mode [`stream.Readable`][] from an `AsyncIterable<Uint8Array[]>`
-(the native batch format used by the stream/iter API). Each `Uint8Array` in a
-yielded batch is pushed as a separate chunk into the Readable.
+从 `AsyncIterable<Uint8Array[]>`
+（stream/iter API 使用的原生批处理格式）创建字节模式 [`stream.Readable`][]。yielded 批次中的每个 `Uint8Array` 作为单独的块推送到 Readable 中。
 
 ```mjs
 import { createWriteStream } from 'node:fs';
@@ -1600,18 +1492,16 @@ readable.pipe(createWriteStream('output.gz'));
 added: REPLACEME
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-* `source` {Iterable} An `Iterable<Uint8Array[]>` source, such as the
-  return value of [`pullSync()`][] or [`fromSync()`][].
+* `source` {Iterable} 一个 `Iterable<Uint8Array[]>` 源，例如
+  [`pullSync()`][] 或 [`fromSync()`][] 的返回值。
 * `options` {Object}
-  * `highWaterMark` {number} The internal buffer size in bytes before
-    backpressure is applied. **Default:** `65536` (64 KB).
-* Returns: {stream.Readable}
+  * `highWaterMark` {number} 应用背压前的内部缓冲区大小（以字节为单位）。**默认：** `65536` (64 KB)。
+* 返回：{stream.Readable}
 
-Creates a byte-mode [`stream.Readable`][] from a synchronous
-`Iterable<Uint8Array[]>`. The `_read()` method pulls from the iterator
-synchronously, so data is available immediately via `readable.read()`.
+从同步
+`Iterable<Uint8Array[]>` 创建字节模式 [`stream.Readable`][]。`_read()` 方法同步地从迭代器拉取，因此数据可以通过 `readable.read()` 立即可用。
 
 ```mjs
 import { fromSync, toReadableSync } from 'node:stream/iter';
@@ -1637,24 +1527,20 @@ console.log(readable.read().toString()); // 'hello world'
 added: REPLACEME
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-* `writer` {Object} A stream/iter Writer. Only the `write()` method is
-  required; `end()`, `fail()`, `writeSync()`, `writevSync()`, `endSync()`,
-  and `writev()` are optional.
-* Returns: {stream.Writable}
+* `writer` {Object} 一个 stream/iter Writer。仅需要 `write()` 方法；`end()`、`fail()`、`writeSync()`、`writevSync()`、`endSync()`、
+  和 `writev()` 是可选的。
+* 返回：{stream.Writable}
 
-Creates a classic [`stream.Writable`][] backed by a stream/iter Writer.
+创建由 stream/iter Writer 支持的经典 [`stream.Writable`][]。
 
-Each `_write()` / `_writev()` call attempts the Writer's synchronous method
-first (`writeSync` / `writevSync`), falling back to the async method if the
-sync path returns `false` or throws. Similarly, `_final()` tries `endSync()`
-before `end()`. When the sync path succeeds, the callback is deferred via
-`queueMicrotask` to preserve the async resolution contract.
+每次 `_write()` / `_writev()` 调用首先尝试 Writer 的同步方法
+（`writeSync` / `writevSync`），如果同步路径返回 `false` 或抛出异常，则回退到异步方法。同样，`_final()` 在 `end()` 之前尝试 `endSync()`。当同步路径成功时，回调通过 `queueMicrotask` 延迟，以保持异步解析契约。
 
-The Writable's `highWaterMark` is set to `Number.MAX_SAFE_INTEGER` to
-effectively disable its internal buffering, allowing the underlying Writer
-to manage backpressure directly.
+Writable 的 `highWaterMark` 设置为 `Number.MAX_SAFE_INTEGER` 以
+有效禁用其内部缓冲，允许底层 Writer
+直接管理背压。
 
 ```mjs
 import { push, toWritable } from 'node:stream/iter';
@@ -1676,25 +1562,21 @@ writable.write('hello');
 writable.end();
 ```
 
-## Protocol symbols
+## 协议符号
 
-These well-known symbols allow third-party objects to participate in the
-streaming protocol without importing from `node:stream/iter` directly.
+这些众所周知的符号允许第三方对象参与流协议，而无需直接从 `node:stream/iter` 导入。
 
 ### `Stream.broadcastProtocol`
 
-* Value: `Symbol.for('Stream.broadcastProtocol')`
+* 值：`Symbol.for('Stream.broadcastProtocol')`
 
-The value must be a function. When called by `Broadcast.from()`, it receives
-the options passed to `Broadcast.from()` and must return an object conforming
-to the {Broadcast} interface. The implementation is fully custom -- it can
-manage consumers, buffering, and backpressure however it wants.
+该值必须是一个函数。当被 `Broadcast.from()` 调用时，它接收传递给 `Broadcast.from()` 的选项，并且必须返回一个符合 {Broadcast} 接口的对象。实现完全是自定义的——它可以随意管理消费者、缓冲和背压。
 
 ```mjs
 import { Broadcast, text } from 'node:stream/iter';
 
-// This example defers to the built-in Broadcast, but a custom
-// implementation could use any mechanism.
+// 此示例委托给内置的 Broadcast，但自定义
+// 实现可以使用任何机制。
 class MessageBus {
   #broadcast;
   #writer;
@@ -1729,8 +1611,8 @@ console.log(await text(consumer)); // 'hello'
 ```cjs
 const { Broadcast, text } = require('node:stream/iter');
 
-// This example defers to the built-in Broadcast, but a custom
-// implementation could use any mechanism.
+// 此示例委托给内置的 Broadcast，但自定义
+// 实现可以使用任何机制。
 class MessageBus {
   #broadcast;
   #writer;
@@ -1764,11 +1646,9 @@ text(consumer).then(console.log); // 'hello'
 
 ### `Stream.drainableProtocol`
 
-* Value: `Symbol.for('Stream.drainableProtocol')`
+* 值：`Symbol.for('Stream.drainableProtocol')`
 
-Implement to make a writer compatible with `ondrain()`. The method should
-return a promise that resolves when backpressure clears, or `null` if no
-backpressure.
+实现此方法以使写入器与 `ondrain()` 兼容。该方法应返回一个在背压清除时解析的 promise，如果没有背压则返回 `null`。
 
 ```mjs
 import { ondrain } from 'node:stream/iter';
@@ -1797,7 +1677,7 @@ class CustomWriter {
 }
 const writer = new CustomWriter();
 const ready = ondrain(writer);
-console.log(ready); // Promise { true } -- no backpressure
+console.log(ready); // Promise { true } -- 无背压
 ```
 
 ```cjs
@@ -1832,23 +1712,20 @@ class CustomWriter {
 
 const writer = new CustomWriter();
 const ready = ondrain(writer);
-console.log(ready); // Promise { true } -- no backpressure
+console.log(ready); // Promise { true } -- 无背压
 ```
 
 ### `Stream.shareProtocol`
 
-* Value: `Symbol.for('Stream.shareProtocol')`
+* 值：`Symbol.for('Stream.shareProtocol')`
 
-The value must be a function. When called by `Share.from()`, it receives the
-options passed to `Share.from()` and must return an object conforming to the
-{Share} interface. The implementation is fully custom -- it can manage the shared
-source, consumers, buffering, and backpressure however it wants.
+该值必须是一个函数。当被 `Share.from()` 调用时，它接收传递给 `Share.from()` 的选项，并且必须返回一个符合 {Share} 接口的对象。实现完全是自定义的——它可以随意管理共享源、消费者、缓冲和背压。
 
 ```mjs
 import { share, Share, text } from 'node:stream/iter';
 
-// This example defers to the built-in share(), but a custom
-// implementation could use any mechanism.
+// 此示例委托给内置的 share()，但自定义
+// 实现可以使用任何机制。
 class DataPool {
   #share;
 
@@ -1875,8 +1752,8 @@ console.log(await text(consumer)); // 'hello'
 ```cjs
 const { share, Share, text } = require('node:stream/iter');
 
-// This example defers to the built-in share(), but a custom
-// implementation could use any mechanism.
+// 此示例委托给内置的 share()，但自定义
+// 实现可以使用任何机制。
 class DataPool {
   #share;
 
@@ -1902,18 +1779,15 @@ text(consumer).then(console.log); // 'hello'
 
 ### `Stream.shareSyncProtocol`
 
-* Value: `Symbol.for('Stream.shareSyncProtocol')`
+* 值：`Symbol.for('Stream.shareSyncProtocol')`
 
-The value must be a function. When called by `SyncShare.fromSync()`, it receives
-the options passed to `SyncShare.fromSync()` and must return an object conforming
-to the {SyncShare} interface. The implementation is fully custom -- it can manage
-the shared source, consumers, and buffering however it wants.
+该值必须是一个函数。当被 `SyncShare.fromSync()` 调用时，它接收传递给 `SyncShare.fromSync()` 的选项，并且必须返回一个符合 {SyncShare} 接口的对象。实现完全是自定义的——它可以随意管理共享源、消费者和缓冲。
 
 ```mjs
 import { shareSync, SyncShare, textSync } from 'node:stream/iter';
 
-// This example defers to the built-in shareSync(), but a custom
-// implementation could use any mechanism.
+// 此示例委托给内置的 shareSync()，但自定义
+// 实现可以使用任何机制。
 class SyncDataPool {
   #share;
 
@@ -1941,8 +1815,8 @@ console.log(textSync(consumer)); // 'hello'
 ```cjs
 const { shareSync, SyncShare, textSync } = require('node:stream/iter');
 
-// This example defers to the built-in shareSync(), but a custom
-// implementation could use any mechanism.
+// 此示例委托给内置的 shareSync()，但自定义
+// 实现可以使用任何机制。
 class SyncDataPool {
   #share;
 
@@ -1969,14 +1843,9 @@ console.log(textSync(consumer)); // 'hello'
 
 ### `Stream.toAsyncStreamable`
 
-* Value: `Symbol.for('Stream.toAsyncStreamable')`
+* 值：`Symbol.for('Stream.toAsyncStreamable')`
 
-The value must be a function that converts the object into a streamable value.
-When the object is encountered anywhere in the streaming pipeline (as a source
-passed to `from()`, or as a value returned from a transform), this method is
-called to produce the actual data. It may return (or resolve to) any streamable
-value: a string, `Uint8Array`, `AsyncIterable`, `Iterable`, or another streamable
-object.
+该值必须是一个将对象转换为可流式传输值的函数。当该对象在流式管道的任何地方被遇到时（作为传递给 `from()` 的源，或作为从转换返回的值），此方法被调用来产生实际数据。它可以返回（或解析为）任何可流式传输的值：字符串、`Uint8Array`、`AsyncIterable`、`Iterable` 或另一个可流式传输对象。
 
 ```mjs
 import { from, text } from 'node:stream/iter';
@@ -2018,13 +1887,9 @@ text(stream).then(console.log); // 'hello world'
 
 ### `Stream.toStreamable`
 
-* Value: `Symbol.for('Stream.toStreamable')`
+* 值：`Symbol.for('Stream.toStreamable')`
 
-The value must be a function that synchronously converts the object into a
-streamable value. When the object is encountered anywhere in the streaming
-pipeline (as a source passed to `fromSync()`, or as a value returned from a
-sync transform), this method is called to produce the actual data. It must
-synchronously return a streamable value: a string, `Uint8Array`, or `Iterable`.
+该值必须是一个同步将对象转换为可流式传输值的函数。当该对象在流式管道的任何地方被遇到时（作为传递给 `fromSync()` 的源，或作为从同步转换返回的值），此方法被调用来产生实际数据。它必须同步返回一个可流式传输的值：字符串、`Uint8Array` 或 `Iterable`。
 
 ```mjs
 import { fromSync, textSync } from 'node:stream/iter';
@@ -2070,7 +1935,7 @@ console.log(textSync(stream)); // 'hello world'
 [`from()`]: #frominput
 [`fromSync()`]: #fromsyncinput
 [`node:zlib/iter`]: zlib_iter.md
-[`node:zlib/iter` documentation]: zlib_iter.md
+[`node:zlib/iter` 文档]: zlib_iter.md
 [`pipeTo()`]: #pipetosource-transforms-writer-options
 [`pull()`]: #pullsource-transforms-options
 [`pullSync()`]: #pullsyncsource-transforms-options

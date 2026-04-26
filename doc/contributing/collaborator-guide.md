@@ -1,242 +1,176 @@
-# Node.js collaborator guide
+# Node.js 协作指南
 
-## Contents
+## 目录
 
-* [Issues and pull requests](#issues-and-pull-requests)
-  * [Welcoming first-time contributors](#welcoming-first-time-contributors)
-  * [Closing issues and pull requests](#closing-issues-and-pull-requests)
-  * [Author ready pull requests](#author-ready-pull-requests)
-  * [Handling own pull requests](#handling-own-pull-requests)
-  * [Security issues](#managing-security-issues)
-* [Accepting modifications](#accepting-modifications)
-  * [Code reviews](#code-reviews)
-  * [Consensus seeking](#consensus-seeking)
-  * [Waiting for approvals](#waiting-for-approvals)
-  * [Testing and CI](#testing-and-ci)
-    * [Useful Jenkins CI jobs](#useful-jenkins-ci-jobs)
-    * [Starting a Jenkins CI job](#starting-a-jenkins-ci-job)
-  * [Internal vs. public API](#internal-vs-public-api)
-  * [Breaking changes](#breaking-changes)
-    * [Breaking changes and deprecations](#breaking-changes-and-deprecations)
-    * [Breaking changes to internal elements](#breaking-changes-to-internal-elements)
-    * [Unintended breaking changes](#unintended-breaking-changes)
-      * [Reverting commits](#reverting-commits)
-  * [Introducing new modules](#introducing-new-modules)
-  * [Additions to Node-API](#additions-to-node-api)
-  * [Deprecations](#deprecations)
-  * [Involving the TSC](#involving-the-tsc)
-* [Landing pull requests](#landing-pull-requests)
-  * [Using the commit queue GitHub labels](#using-the-commit-queue-github-labels)
-  * [Using `git-node`](#using-git-node)
-  * [Technical HOWTO](#technical-howto)
-  * [Troubleshooting](#troubleshooting)
-  * [I made a mistake](#i-made-a-mistake)
-  * [Long Term Support](#long-term-support)
-    * [What is LTS?](#what-is-lts)
-    * [How are LTS branches managed?](#how-are-lts-branches-managed)
-    * [How can I help?](#how-can-i-help)
-* [Who to CC in the issue tracker](#who-to-cc-in-the-issue-tracker)
+* [问题与拉取请求](#issues-and-pull-requests)
+  * [欢迎首次贡献者](#welcoming-first-time-contributors)
+  * [关闭问题与拉取请求](#closing-issues-and-pull-requests)
+  * [作者就绪的拉取请求](#author-ready-pull-requests)
+  * [处理自己的拉取请求](#handling-own-pull-requests)
+  * [安全问题](#managing-security-issues)
+* [接受修改](#accepting-modifications)
+  * [代码审查](#code-reviews)
+  * [寻求共识](#consensus-seeking)
+  * [等待批准](#waiting-for-approvals)
+  * [测试与 CI](#testing-and-ci)
+    * [有用的 Jenkins CI 任务](#useful-jenkins-ci-jobs)
+    * [启动一个 Jenkins CI 任务](#starting-a-jenkins-ci-job)
+  * [内部 API 与公开 API](#internal-vs-public-api)
+  * [破坏性变更](#breaking-changes)
+    * [破坏性变更与弃用](#breaking-changes-and-deprecations)
+    * [对内部元素的破坏性变更](#breaking-changes-to-internal-elements)
+    * [非预期的破坏性变更](#unintended-breaking-changes)
+      * [回滚提交](#reverting-commits)
+  * [引入新模块](#introducing-new-modules)
+  * [对 Node-API 的新增](#additions-to-node-api)
+  * [弃用](#deprecations)
+  * [牵涉 TSC](#involving-the-tsc)
+* [合并拉取请求](#landing-pull-requests)
+  * [使用 GitHub 的提交队列标签](#using-the-commit-queue-github-labels)
+  * [使用 `git-node`](#using-git-node)
+  * [技术 HOWTO](#technical-howto)
+  * [故障排查](#troubleshooting)
+  * [我犯了错](#i-made-a-mistake)
+  * [长期支持](#long-term-support)
+    * [LTS 是什么？](#what-is-lts)
+    * [LTS 分支如何管理？](#how-are-lts-branches-managed)
+    * [我能如何帮助？](#how-can-i-help)
+* [在问题跟踪器中需要抄送谁](#who-to-cc-in-the-issue-tracker)
 
-This document explains how collaborators manage the Node.js project.
-Collaborators should understand the
-[guidelines for new contributors](../../CONTRIBUTING.md) and the
-[project governance model](../../GOVERNANCE.md).
+本文件解释协作者如何管理 Node.js 项目。协作者应理解
+[新贡献者指南](../../CONTRIBUTING.md) 以及
+[项目治理模型](../../GOVERNANCE.md)。
 
-## Issues and pull requests
+## 问题与拉取请求
 
-Mind these guidelines, the opinions of other collaborators, and guidance of the
-[TSC][]. Notify other qualified parties for more input on an issue or a pull
-request. See [Who to CC in the issue tracker](#who-to-cc-in-the-issue-tracker).
+请留意这些准则、其他协作者的看法，以及
+[TSC][ ] 的指导。如有需要，请通知其他合格方以便就某个问题或拉取
+请求提供更多意见。参见 [在问题跟踪器中需要抄送谁](#who-to-cc-in-the-issue-tracker)。
 
-### Welcoming first-time contributors
+### 欢迎首次贡献者
 
-Always show courtesy to individuals submitting issues and pull requests. Be
-welcoming to first-time contributors, identified by the GitHub **First-time contributor** badge.
+始终对提交问题和拉取请求的个人保持礼貌。对于首次贡献者（由 GitHub **First-time contributor** 徽章标识），要格外欢迎。
 
-For first-time contributors, check if the commit author is the same as the pull
-request author. This way, once their pull request lands, GitHub will show them
-as a _Contributor_. Ask if they have configured their git
-[username][git-username] and [email][git-email] to their liking.
+对于首次贡献者，请检查提交作者是否与拉取请求作者相同。这样一来，当他们的拉取请求合并后，GitHub 会将他们标注为 _Contributor_。询问他们是否已按自己的偏好配置其 git
+[用户名][git-username] 和 [邮箱][git-email]。
 
-### Closing issues and pull requests
+### 关闭问题与拉取请求
 
-Collaborators can close any issue or pull request that is not relevant to the
-future of the Node.js project. Where this is unclear, leave the issue or pull
-request open for several days to allow for discussion. Where this does not yield
-evidence that the issue or pull request has relevance, close it. Remember that
-issues and pull requests can always be re-opened if necessary.
+协作者可以关闭任何与 Node.js 项目未来无关的
+问题或拉取请求。如果不清楚这一点，请保留问题或拉取请求数天以便讨论。如果在不久的讨论后仍没有证据表明该问题或拉取请求与未来相关，则将其关闭。请记住：如有必要，问题与拉取请求始终可以重新打开。
 
-### Author ready pull requests
+### 作者就绪的拉取请求
 
-A pull request is _author ready_ when:
+当满足以下条件时，一个拉取请求处于 _作者就绪_ 状态：
 
-* There is a CI run in progress or completed.
-* There is at least one collaborator approval.
-* There are no outstanding review comments.
+* CI 正在运行或已完成。
+* 至少有一位协作者已批准。
+* 没有未处理的审查评论。
 
-Please always add the `author ready` label to the pull request in that case.
-Please always remove it again as soon as the conditions are not met anymore.
+在这种情况下，请务必为拉取请求添加 `author ready` 标签。
+一旦条件不再满足，请务必立刻移除此标签。
 
-### Handling own pull requests
+### 处理自己的拉取请求
 
-When you open a pull request, [start a CI](#testing-and-ci) right away. Later,
-after new code changes or rebasing, start a new CI.
+当你打开一个拉取请求时，请立即 [启动 CI](#testing-and-ci)。随后在新的代码变更或执行 rebase 之后，再启动一次新的 CI。
 
-As soon as the pull request is ready to land, please do so. This allows other
-collaborators to focus on other pull requests. If your pull request is not ready
-to land but is [author ready](#author-ready-pull-requests), add the
-`author ready` label. If you wish to land the pull request yourself, use the
-"assign yourself" link to self-assign it.
+只要该拉取请求准备好合并，请尽快合并。这能让其他协作者将注意力
+放到其他拉取请求上。如果你的拉取请求尚未准备好合并，但已是 [作者就绪](#author-ready-pull-requests)，请添加
+`author ready` 标签。如果你希望由自己来合并该拉取请求，请使用“assign yourself”链接进行自我指派。
 
-### Managing security issues
+### 安全问题的管理
 
-Use the process outlined in [SECURITY.md][] to report security
-issues. If a user opens a security issue in the public repository:
+使用 [SECURITY.md][] 中概述的流程来报告安全问题。如果用户在公开仓库中打开了安全问题：
 
-* Ask the user to submit a report through HackerOne as outlined in
-  [SECURITY.md][].
-* Move the issue to the private repository called
-  [premature-disclosures](https://github.com/nodejs/premature-disclosures).
-* For any related pull requests, create an associated issue in the
-  `premature-disclosures` repository.  Add a copy of the patch for the
-  pull request to the issue. Add screenshots of discussion from the pull request
-  to the issue.
-* [Open a ticket with GitHub](https://support.github.com/contact) to delete the
-  pull request using Node.js (team) as the account organization.
-* Open a new issue in the public repository with the title `FYI - pull request
-  deleted #YYYY`. Include an explanation for the user:
-  > FYI @xxxx we asked GitHub to delete your pull request while we work on
-  > releases in private.
-* Email `tsc@iojs.org` with links to the issues in the
-  `premature-disclosures` repository.
+* 按 [SECURITY.md][] 的说明，要求用户通过 HackerOne 提交报告。
+* 将问题移动到名为 [premature-disclosures](https://github.com/nodejs/premature-disclosures) 的私有仓库中。
+* 对于任何相关的拉取请求，在 `premature-disclosures` 仓库中创建关联问题。
+  将该拉取请求的补丁副本添加到问题中。并把来自该拉取请求的讨论截图附在问题中。
+* [通过 GitHub 创建工单](https://support.github.com/contact)，在以 Node.js (team) 作为账户组织的情况下删除该拉取请求。
+* 在公开仓库中以标题 `FYI - pull request
+  deleted #YYYY` 打开一个新问题，并向用户包含如下说明：
+  > FYI @xxxx 我们已请求 GitHub 在我们私下进行发布工作期间删除你的拉取请求。
+* 给 `tsc@iojs.org` 发邮件，并附上 `premature-disclosures` 仓库中对应问题的链接。
 
-## Accepting modifications
+## 接受修改
 
-Contributors propose modifications to Node.js using GitHub pull requests. This
-includes modifications proposed by TSC members and other collaborators. A pull
-request must pass code review and CI before landing into the codebase.
+贡献者通过 GitHub 拉取请求来提出对 Node.js 的修改。该范围包括
+TSC 成员以及其他协作者提出的修改。在合并到代码库之前，拉取请求必须通过代码审查并完成 CI。
 
-### Code reviews
+### 代码审查
 
-At least two collaborators must approve a pull request before the pull request
-lands. One collaborator approval is enough if the pull request has been open
-for more than seven days.
+在拉取请求合并之前，至少需要两位协作者批准该拉取请求。如果该拉取请求已开放超过七天，那么只需一位协作者批准即可。
 
-Approving a pull request indicates that the collaborator accepts responsibility
-for the change.
+批准表示该协作者接受对该变更的责任。
 
-Approval must be from collaborators who are not authors of the change.
+批准必须来自非变更作者的协作者。
 
-Ideally pull requests for dependencies should be generated by automation.
-Pay special attention to pull requests for dependencies which have not
-been automatically generated and follow the guidance in
-[Maintaining Dependencies](https://github.com/nodejs/node/blob/main/doc/contributing/maintaining/maintaining-dependencies.md#updating-dependencies).
+理想情况下，依赖项的拉取请求应由自动化生成。特别注意那些尚未自动生成的依赖项拉取请求，并遵循
+[维护依赖](https://github.com/nodejs/node/blob/main/doc/contributing/maintaining/maintaining-dependencies.md#updating-dependencies) 中的指导。
 
-In some cases, it might be necessary to summon a GitHub team to a pull request
-for review by @-mention.
-See [Who to CC in the issue tracker](#who-to-cc-in-the-issue-tracker).
+在某些情况下，可能需要通过 @-mention 将某个 GitHub 团队召集到拉取请求中进行审查。
+参见 [在问题跟踪器中需要抄送谁](#who-to-cc-in-the-issue-tracker)。
 
-If you are the first collaborator to approve a pull request that has no CI yet,
-please [start one](#testing-and-ci). Please also start a new CI if the
-pull request creator pushed new code since the last CI run.
+如果你是第一个批准一个尚无 CI 的拉取请求的协作者，请 [先启动一个](#testing-and-ci)。如果在上一次 CI 运行之后，拉取请求创建者推送了新代码，也请启动新的 CI。
 
-### Consensus seeking
+### 寻求共识
 
-A pull request can land if it has the needed [approvals](#code-reviews),
-[CI](#testing-and-ci), [wait time](#waiting-for-approvals) and no
-[outstanding objections](#objections). [Breaking changes](#breaking-changes)
-must receive [TSC review](#involving-the-tsc) in addition to other
-requirements. If a pull request meets all requirements except the
-[wait time](#waiting-for-approvals), please add the
-[`author ready`](#author-ready-pull-requests) label.
+当拉取请求满足所需的 [批准](#code-reviews)、[CI](#testing-and-ci)、[等待时间](#waiting-for-approvals) 且不存在
+[outstanding objections](#objections) 时，该拉取请求可以合并。[破坏性变更](#breaking-changes)
+除了满足其他要求外，还必须接受 [TSC 审查](#involving-the-tsc)。如果一个拉取请求满足所有要求，但未满足
+[等待时间](#waiting-for-approvals)，请添加
+[`author ready`](#author-ready-pull-requests) 标签。
 
-#### Objections
+#### 异议
 
-Collaborators can object to a pull request by using the "Request
-Changes" GitHub feature. Dissent comments alone don't constitute an
-objection, nor do dissenting comments made in any associated issue.
-A blocking objection to a change must be made in the pull request that
-specifically proposes that change. Any pull request objection must include
-a clear reason for that objection, and the objector must remain responsive
-for further discussion towards consensus about the direction of the pull
-request. Where possible, provide a set of actionable steps alongside the
-objection.
+协作者可以通过使用 GitHub 的“Request
+Changes”功能对拉取请求提出异议。仅凭不同意评论本身不构成异议；在任何相关问题中提出的不同意评论也不构成异议。对某项变更进行拦截式异议必须在拉取请求中明确提出，该变更需要在拉取请求里被具体提议。任何拉取请求异议都必须包含对该异议的明确理由，并且提出异议的协作者必须在后续讨论中保持回应，以便就拉取请求的方向达成共识。如有可能，请在异议之外提供一组可执行的步骤。
 
-If the objection is not clear to others, another collaborator can ask an
-objecting collaborator to explain their objection or to provide actionable
-steps to resolve the objection. If the objector is unresponsive for seven
-days after a collaborator asks for clarification, a collaborator may
-dismiss the objection.
+如果其他人认为该异议不清楚，另一位协作者可以要求提出异议的协作者解释其异议，或提供可执行的步骤来解决该异议。如果在协作者请求澄清后，提出异议的协作者在七天内仍无回应，协作者可以驳回该异议。
 
-Pull requests with outstanding objections must remain open until all
-objections are satisfied. If reaching consensus is not possible, a
-collaborator can escalate the issue to the TSC by pinging `@nodejs/tsc` and
-adding the `tsc-agenda` label to the issue. The change cannot proceed without
-either reaching consensus or a TSC decision to dismiss the objection(s). If the
-TSC does choose to dismiss any objections, a clear explanation of the reasoning
-or a link to the public vote must be given in the pull request before it lands.
+在存在未解决异议的情况下，拉取请求必须保持打开状态，直到所有异议都得到满足。如果无法达成共识，协作者可以通过 ping `@nodejs/tsc` 并向问题添加 `tsc-agenda` 标签，将问题升级给 TSC。若未达成共识，或 TSC 决定驳回（或不支持）这些异议，则该变更无法继续。如果 TSC 选择驳回任何异议，那么在拉取请求合并前，必须在拉取请求中给出清晰的推理解释，或提供指向公开投票的链接。
 
-All Collaborator objections are considered equal. There is no greater weight given to
-objections from TSC members than from any other Collaborator.
+所有协作者的异议都被视为同等重要。TSC 成员的异议不会比其他任何协作者的异议获得更高权重。
 
-Mistakes do happen. If a pull request is merged with an unresolved objection,
-submit a fix. Simple issues may be fixed with a follow-up PR that addresses
-the concern. More difficult issues may require a full revert. Most corrections
-can be fast-tracked. If deemed necessary take a slower route to ensure stability
-and consensus.
+会犯错。如果拉取请求在存在未解决异议的情况下被合并，请提交修复。简单的问题可以通过一个后续拉取请求来修复，该拉取请求应解决该关注点。更困难的问题可能需要完全回滚。大多数修复都可以快速处理。如果有必要，应选择更稳妥的路径，以确保稳定性并达成共识。
 
-Collaborators objecting to a pull request can best ensure their objections
-are addressed by remaining engaged and responsive in the discussion.
+对拉取请求提出异议的协作者，最佳做法是保持参与并在讨论中保持回应，以确保他们的异议能得到妥善处理。
 
-#### Helpful resources
+#### 有用资源
 
-* [How to Do Code Reviews Like a Human (Part One)](https://mtlynch.io/human-code-reviews-1/)
-* [How to Do Code Reviews Like a Human (Part Two)](https://mtlynch.io/human-code-reviews-2/)
-* [Code Review Etiquette](https://css-tricks.com/code-review-etiquette/)
+* [如何像人类一样进行代码审查（第一部分）](https://mtlynch.io/human-code-reviews-1/)
+* [如何像人类一样进行代码审查（第二部分）](https://mtlynch.io/human-code-reviews-2/)
+* [代码审查礼仪](https://css-tricks.com/code-review-etiquette/)
 
-### Waiting for approvals
+### 等待批准
 
-Before landing pull requests, allow 48 hours for input from other collaborators.
-Certain types of pull requests can be fast-tracked and can land after a shorter
-delay. For example:
+在合并拉取请求之前，需给其他协作者留出 48 小时以提供意见。某些类型的拉取请求可以走快速通道，并在更短延迟后合并。例如：
 
-* Focused changes that affect only documentation and/or the test suite:
-  * `code-and-learn` tasks often fall into this category.
-  * `good-first-issue` pull requests might also be suitable.
-* Changes that fix regressions:
-  * Regressions that break the workflow (red CI or broken compilation).
-  * Regressions that happen right before a release, or reported soon after.
+* 仅影响文档和/或测试套件的聚焦变更：
+  * `code-and-learn` 任务往往属于此类。
+  * `good-first-issue` 拉取请求也可能适合。
+* 修复回归（regressions）的变更：
+  * 破坏工作流的回归（红色 CI 或编译失败）。
+  * 在发布前后出现的回归，或在发布后不久报告的回归。
 
-To propose fast-tracking a pull request, apply the `fast-track` label. Then a
-GitHub Actions workflow will add a comment that collaborators can upvote.
+要提议对拉取请求进行快速通道，请应用 `fast-track` 标签。随后 GitHub Actions 工作流会发表评论，协作者可以对该评论进行赞成投票（upvote）。
 
-If someone disagrees with the fast-tracking request, remove the label. Do not
-fast-track the pull request in that case.
+如果有人不同意快速通道请求，请移除该标签。在这种情况下，不要将拉取请求走快速通道。
 
-The pull request can be fast-tracked if two collaborators approve the
-fast-tracking request. To land, the pull request itself still needs two
-collaborator approvals and a passing CI.
+当有两位协作者批准该快速通道请求时，该拉取请求就可以走快速通道。要合并，该拉取请求本身仍需两位协作者批准，并且 CI 必须通过。
 
-Collaborators can request fast-tracking of pull requests they did not author.
-In that case only, the request itself is also one fast-track approval. Upvote
-the comment anyway to avoid any doubt.
+协作者可以请求对他们未创建的拉取请求进行快速通道。在这种情况下，只有请求本身也同样算作一次快速通道批准。无论如何，请对该评论进行 upvote，以避免任何疑虑。
 
-### Testing and CI
+### 测试与 CI
 
-All fixes must have a test case which demonstrates the defect. The test should
-fail before the change, and pass after the change.
+所有修复都必须包含一个展示缺陷的测试用例。该测试在变更之前应当失败，在变更之后应当通过。
 
-Do not land any pull requests without the necessary passing CI runs.
-A passing (green) GitHub Actions CI result is required. A passing (green or
-yellow) [Jenkins CI](https://ci.nodejs.org/) is also required if the pull
-request contains changes that will affect the `node` binary. This is because
-GitHub Actions CI does not cover all the environments supported by Node.js.
+在必要的通过型 CI 运行完成之前，不要合并任何拉取请求。必须要求 GitHub Actions CI 的通过结果（绿色）。如果该拉取请求包含会影响 `node` 二进制的变更，还必须要求通过的（绿色或黄色）[Jenkins CI](https://ci.nodejs.org/)。这是因为 GitHub Actions CI 不覆盖 Node.js 支持的全部运行环境。
 
 <details>
-<summary>Changes that affect the `node` binary</summary>
+<summary>影响 `node` 二进制的变更</summary>
 
-Changes in the following folders (except comment-only changes) are guaranteed to
-affect the `node` binary:
+以下文件夹中的变更（除“仅含注释”的变更外）将保证影响 `node` 二进制：
 
 * `deps/`
 * `lib/`
@@ -250,8 +184,7 @@ affect the `node` binary:
 * `tools/snapshot/`
 * `tools/v8_gypfiles/`
 
-There are some other files that touch the build chain. Changes in the following
-files also qualify as affecting the `node` binary:
+还有一些其他文件会接触到构建链。对以下文件的变更也同样符合“影响 `node` 二进制”的条件：
 
 * `tools/*.py`
 * `*.gyp`
@@ -263,442 +196,316 @@ files also qualify as affecting the `node` binary:
 
 </details>
 
-If there are GitHub Actions CI failures unrelated to the change in the pull
-request, try the "🔄 Re-run all jobs" button, on the right-hand side of the
-"Checks" tab.
+如果 GitHub Actions CI 失败与该拉取请求中的变更无关，请尝试在“Checks”选项卡右侧的“🔄 Re-run all jobs”按钮。
 
-If there are Jenkins CI failures unrelated to the change in the pull
-request, try "Resume Build".  It is in the left navigation of the relevant
-`node-test-pull-request` job. (Do not be tempted to do this on the lower
-level `node-test-commit` job as it will not report the updated result back
-to the PR.)  It will preserve all the green results from the current job but
-re-run everything else.  Start a fresh CI by pressing "Retry" if more than
-seven days have elapsed since the original failing CI as the compiled
-binaries for the Windows and ARM platforms are only kept for seven days.
+如果 Jenkins CI 失败与该拉取请求中的变更无关，请尝试“Resume Build”。它位于相关 `node-test-pull-request` 任务的左侧导航中。（不要被诱惑去在更低层级的 `node-test-commit` 任务上执行，因为它不会把更新后的结果回报给 PR。）它会保留当前任务中所有绿色结果，但会重新运行其余所有内容。如果自最初失败的 CI 已超过七天，请按“Retry”开始一次全新的 CI，因为 Windows 和 ARM 平台的已编译二进制只会保留七天。
 
-If new commits are pushed to the pull request branch after the latest Jenkins
-CI run, a fresh CI run is required. It can be started by adding the `request-ci`
-label to the pull request.
+如果在最新一次 Jenkins CI 运行之后，新的提交被推送到拉取请求分支，则需要再次进行一次新的 CI 运行。可以通过向拉取请求添加 `request-ci` 标签来开始新的运行。
 
-#### Useful Jenkins CI jobs
+#### 有用的 Jenkins CI 任务
 
 * [`node-test-pull-request`](https://ci.nodejs.org/job/node-test-pull-request/)
-  is the CI job to test pull requests. It runs the `build-ci` and `test-ci`
-  targets on all supported platforms.
+  是用于测试拉取请求的 CI 任务。它会在所有支持的平台上运行 `build-ci` 和 `test-ci` 目标。
 
 * [`citgm-smoker`](https://ci.nodejs.org/job/citgm-smoker/)
-  uses [`CitGM`](https://github.com/nodejs/citgm) to allow you to run
-  `npm install && npm test` on a large selection of common modules. This is
-  useful to check whether a change will cause breakage in the ecosystem.
+  使用 [`CitGM`](https://github.com/nodejs/citgm) 让你能够在大量常见模块上运行
+  `npm install && npm test`。这对于检查某项变更是否会导致生态系统出现破坏非常有用。
 
 * [`node-stress-single-test`](https://ci.nodejs.org/job/node-stress-single-test/)
-  can run a group of tests over and over on a specific platform. Use it to check
-  that the tests are reliable.
+  可以在特定平台上反复运行一组测试。用它来检查测试是否可靠。
 
 * [`node-test-commit-v8-linux`](https://ci.nodejs.org/job/node-test-commit-v8-linux/)
-  runs the standard V8 tests. Run it when updating V8 in Node.js or floating new
-  patches on V8.
+  运行标准 V8 测试。当在 Node.js 中更新 V8 或在 V8 上应用新的补丁时，请运行它。
 
 * [`node-test-commit-custom-suites-freestyle`](https://ci.nodejs.org/job/node-test-commit-custom-suites-freestyle/)
-  enables customization of test suites and parameters. It can execute test
-  suites not used in other CI test runs (such as tests in the `internet` or
-  `pummel` directories). It can also make sure tests pass when provided with a
-  flag not used in other CI test runs (such as `--worker`).
+  支持对测试套件和参数进行自定义。它可以执行其他 CI 测试运行中未使用的测试套件（例如 `internet` 或 `pummel` 目录下的测试）。当提供了其他 CI 测试运行中未使用的标志时，它也可以确保测试能通过（例如 `--worker`）。
 
-#### Starting a Jenkins CI job
+#### 启动一个 Jenkins CI 任务
 
-From the CI Job page, click "Build with Parameters" on the left side.
+在 CI Job 页面中，点击左侧的“Build with Parameters”。
 
-You generally need to enter only one or both of the following options
-in the form:
+你通常只需要在表单中输入以下一个或两个选项：
 
-* `GIT_REMOTE_REF`: Change to the remote portion of git refspec.
-  To specify the branch this way, `refs/heads/BRANCH` is used
-  (e.g. for `main` -> `refs/heads/main`).
-  For pull requests, it will look like `refs/pull/PR_NUMBER/head`
-  (e.g. for pull request #42 -> `refs/pull/42/head`).
-* `REBASE_ONTO`: Change that to `origin/main` so the pull request gets rebased
-  onto `main`. This can especially be important for pull requests that have been
-  open a while.
+* `GIT_REMOTE_REF`: 更改 git refspec 的远程部分。
+  通过这种方式指定分支时，使用 `refs/heads/BRANCH`（例如 `main` -> `refs/heads/main`）。
+  对于拉取请求，它会类似 `refs/pull/PR_NUMBER/head`（例如拉取请求 #42 -> `refs/pull/42/head`）。
+* `REBASE_ONTO`: 将其更改为 `origin/main`，以便将该拉取请求 rebase 到 `main` 上。对于那些已经打开一段时间的拉取请求，这尤其重要。
 
-Look at the list of jobs on the left hand side under "Build History" and copy
-the link to the one you started (which will be the one on top, but click
-through to make sure it says something like "Started 5 seconds ago"
-(top right) and "Started by user ...".
+查看左侧“Build History”下的任务列表，并复制你刚刚启动的那一个任务的链接（它会在最上方；但仍要点进去确认页面上写的是诸如“Started 5 seconds ago”（右上角）以及“Started by user ...”。
 
-Copy/paste the URL for the job into a comment in the pull request.
+把该任务的 URL 复制/粘贴到拉取请求的评论中。
 [`node-test-pull-request`](https://ci.nodejs.org/job/node-test-pull-request/)
-is an exception where the GitHub bot will automatically post for you.
+是个例外：GitHub bot 会自动替你发布。
 
-The [`node-test-pull-request`](https://ci.nodejs.org/job/node-test-pull-request/)
-CI job can be started by adding the `request-ci` label into the pull request.
-Once this label is added, `github-actions bot` will start
-the `node-test-pull-request` automatically. If the `github-actions bot`
-is unable to start the job, it will update the label with `request-ci-failed`.
+可以通过向拉取请求添加 `request-ci` 标签来启动
+[`node-test-pull-request`](https://ci.nodejs.org/job/node-test-pull-request/)
+CI 任务。一旦添加该标签，`github-actions bot` 会自动启动
+`node-test-pull-request`。如果 `github-actions bot` 无法启动该任务，它会把该标签更新为 `request-ci-failed`。
 
-### Internal vs. public API
+### 内部 API 与公开 API
 
-All functionality in the official Node.js documentation is part of the public
-API. Any undocumented object, property, method, argument, behavior, or event is
-internal. There are exceptions to this rule. Node.js users have come to rely on
-some undocumented behaviors. Collaborators treat many of those undocumented
-behaviors as public.
+官方 Node.js 文档中的所有功能都属于公共
+API。任何未被文档化的对象、属性、方法、参数、行为或事件都属于内部内容。对这条规则有例外。Node.js 用户已经依赖于一些未被文档化的行为。协作者会将其中许多未文档化行为当作公开行为来对待。
 
-All undocumented functionality exposed via  `process.binding(...)` is internal.
+通过 `process.binding(...)` 暴露的任何未文档化功能都属于内部内容。
 
-All undocumented functionality in `lib/internal/**/*.js` is internal. It is
-public, though, if it is re-exported by code in `lib/*.js`.
+`lib/internal/**/*.js` 中的所有未文档化功能都属于内部内容。尽管如此，如果这些内容被 `lib/*.js` 中的代码重新导出，那么它们对外是公开的。
 
-Non-exported `Symbol` properties and methods are internal.
+未导出的 `Symbol` 属性和方法属于内部内容。
 
-Any undocumented object property or method that begins with `_` is internal.
+任何以 `_` 开头的未文档化对象属性或方法都属于内部内容。
 
-Any native C/C++ APIs/ABIs requiring the `NODE_WANT_INTERNALS` flag are
-internal.
+任何需要 `NODE_WANT_INTERNALS` 标志的原生 C/C++ API/ABI 都属于内部内容。
 
-Sometimes, there is disagreement about whether functionality is internal or
-public. In those cases, the TSC makes a determination.
+有时会对某些功能是内部还是公开存在分歧。在这种情况下，TSC 会作出决定。
 
-For undocumented APIs that are public, open a pull request documenting the API.
+对于被认定为公开的未文档化 API，请打开一个拉取请求来对该 API 进行文档化。
 
-### Breaking changes
+### 破坏性变更
 
-At least two TSC voting members must approve backward-incompatible changes to
-the `main` branch.
+至少需要两位 TSC 投票成员批准对
+`main` 分支的向后不兼容变更。
 
-Examples of breaking changes include:
+破坏性变更的例子包括：
 
-* Removal or redefinition of existing API arguments.
-* Changing return values.
-* Removing or modifying existing properties on an options argument.
-* Adding or removing errors.
-* Altering expected timing of an event.
-* Changing the side effects of using a particular API.
+* 移除或重新定义现有 API 的参数。
+* 改变返回值。
+* 在 options 参数上移除或修改已有属性。
+* 添加或移除错误。
+* 改变事件的预期触发时序。
+* 改变使用特定 API 的副作用。
 
-#### Breaking changes and deprecations
+#### 破坏性变更与弃用
 
-Existing stable public APIs that change in a backward-incompatible way must
-undergo deprecation. The exceptions to this rule are:
+已有稳定的公开 API 若以向后不兼容的方式发生变化，必须进行弃用（deprecation）。本规则的例外包括：
 
-* Adding or removing errors thrown or reported by a public API.
-* Emitting a runtime warning.
-* Changing error messages for errors without error code.
-* Altering the timing and non-internal side effects of the public API.
-* Changes to errors thrown by dependencies of Node.js, such as V8.
-* One-time exceptions granted by the TSC.
+* 添加或移除公共 API 抛出或报告的错误。
+* 发出运行时警告。
+* 对未包含错误代码的错误更改错误信息。
+* 改变公共 API 的时序以及非内部副作用。
+* 来自 Node.js 依赖项（例如 V8）的错误变更。
+* TSC 授予的一次性例外。
 
-Experimental and undocumented APIs are not considered stable, therefore are
-typically removed without a deprecation cycle. However, if such API has gotten
-some non-trivial adoption in the ecosystem, it (or a subset of it) can undergo
-deprecation – at which point, changes to that API (or at least, its deprecated
-subset) should follow [semantic versioning][] rules.
+实验性与未文档化的 API 不被认为是稳定的，因此通常会在不经过弃用周期的情况下直接移除。然而，如果这种 API 已在生态系统中获得了某种非平凡的采用，那么它（或其子集）可以经历弃用流程——在这种情况下，对该 API（或至少其已弃用子集）的变更应遵循 [语义化版本](semantic versioning) [] 规则。
 
-For more information, see [Deprecations](#deprecations).
+更多信息参见 [弃用](#deprecations)。
 
-#### Breaking changes to internal elements
+#### 对内部元素的破坏性变更
 
-Breaking changes to internal elements can occur in semver-patch or semver-minor
-commits. Take significant care when making and reviewing such changes. Make
-an effort to determine the potential impact of the change in the ecosystem. Use
-[Canary in the Goldmine](https://github.com/nodejs/citgm) to test such changes.
-If a change will cause ecosystem breakage, then it is semver-major. Consider
-providing a Public API in such cases.
+对内部元素的破坏性变更可能发生在 semver-patch 或 semver-minor 的提交中。在进行此类变更以及审查时务必格外小心。请努力评估该变更对生态系统可能造成的影响。可使用
+[Canary in the Goldmine](https://github.com/nodejs/citgm) 来测试这类变更。
+如果某项变更会导致生态系统破坏，那么它应当是 semver-major。考虑在这种情况下提供公共 API。
 
-#### Unintended breaking changes
+#### 非预期的破坏性变更
 
-Sometimes, a change intended to be non-breaking turns out to be a breaking
-change. If such a change lands on the `main` branch, a collaborator can revert
-it. As an alternative to reverting, the TSC can apply the semver-major label
-after-the-fact.
+有时，一项意在不破坏的变更最终却变成了破坏性变更。如果这种变更合并到了
+`main` 分支，协作者可以对其回滚。作为回滚的替代方案，TSC 可以事后应用 semver-major 标签。
 
-If the change has already been backported to release lines open
-an issue in the TSC repository to discuss how best to proceed. In the past
-we have often reverted in the release lines and kept the change on main. The
-decision to revert or not most often is based on limiting the impact
-to the ecosystem and how quickly the breaking change is discovered.
+如果该变更已经被反向移植到发布分支行中，请在 TSC 仓库中开立一个问题，讨论接下来如何最好地处理。过去我们经常在发布分支行中回滚变更，并保留该变更在 main 上。是否回滚的决定通常基于：限制对生态系统的影响，以及尽早发现该破坏性变更的速度。
 
-If the change is reverted make sure to:
+如果进行了回滚，请确保：
 
-* consider if additional tests can be added to avoid a similar breaking change
-  being missed in the future.
-* consider if adding packages to CITGM would have helped catch
-  the breaking change.
-* ensure the changelog with the revert clearly explains the situation and
-  it's impact on those who may have already used the updated API.
+* 考虑是否可以添加额外测试，以避免类似的破坏性变更在未来被遗漏。
+* 考虑把包添加到 CITGM 是否有助于捕获该破坏性变更。
+* 确保在 changelog 中对回滚的情况以及对那些可能已经使用了更新后 API 的用户的影响进行清晰说明。
 
-In either case make sure that the documentation and changelog for the
-original breaking change are updated to reflect the breaking behavior.
+无论哪种情况，都要确保对最初那项破坏性变更的文档和 changelog 已更新，以反映实际的破坏行为。
 
-##### Reverting commits
+##### 回滚提交
 
-Revert commits with `git revert <HASH>` or `git revert <FROM>..<TO>`. The
-generated commit message will not have a subsystem and might violate line length
-rules. That is OK. Append the reason for the revert and any `Refs` or `Fixes`
-metadata. Raise a pull request like any other change.
+使用 `git revert <HASH>` 或 `git revert <FROM>..<TO>` 回滚提交。生成的提交信息不会包含 subsystem，并且可能违反单行长度规则。这没问题。请在追加回滚原因之后附上任何 `Refs` 或 `Fixes` 元数据。像其他任何变更一样，创建一个拉取请求。
 
-### Introducing new modules
+### 引入新模块
 
-Treat commits that introduce new core modules with extra care.
+对引入新核心模块的提交要格外小心处理。
 
-New modules must only be added with the `node:` prefix.
+新增模块只能使用 `node:` 前缀来添加。
 
-When adding promises to an existing API, add `/promises`
-(`inspector/promises`, etc.). Apply the `semver-major` label to the addition.
+在为现有 API 添加 Promise 时，请添加 `/promises`（例如 `inspector/promises` 等）。在新增上应用 `semver-major` 标签。
 
-If the new module name is free in npm, register
-a placeholder in the module registry as soon as possible. Link to the pull
-request that introduces the new core module in the placeholder's `README`.
+如果新的模块名称在 npm 中可用，尽快在模块注册表中注册一个占位符（placeholder）。在该占位符的 `README` 中链接指向引入该新核心模块的拉取请求。
 
-If the module name is not free and the module is
-not widely used, contact the owner to see if they would be willing to transfer
-it to the project.
+如果模块名称不可用，且该模块并未被广泛使用，请联系所有者，看看他们是否愿意把该模块转让给该项目。
 
-We register a placeholder without the `node:` prefix whenever
-possible to avoid confusion and typosquatting attacks.
+在可能的情况下，我们会在不加 `node:` 前缀的情况下注册占位符，以避免混淆与“域名/包名截取”（typosquatting）攻击。
 
-For pull requests introducing new core modules:
+对于引入新核心模块的拉取请求：
 
-* Allow at least one week for review.
-* Land only after sign-off from at least two TSC voting members.
-* Land with a [Stability Index][] of Experimental. The module must remain
-  Experimental until a semver-major release.
-* Introducing an Experimental feature means taking ownership of the experiment
-  and committing to a clear outcome: either promoting it to stable or removing
-  it in a timely manner. Because experimental features can be vulnerable to
-  security issues, the author is also expected to help assess and patch
-  vulnerabilities. If an experimental feature has reached mainstream adoption such
-  that breaking changes are not realistically possible without ecosystem breakage,
-  it should be considered stable and either be promoted or be removed after a
-  deprecation cycle.
+* 至少预留一周用于审查。
+* 只有在至少两位 TSC 投票成员完成签字（sign-off）之后才允许合并。
+* 合并时带有 [稳定性指数（Stability Index）][] 为 Experimental（实验性）的标注。该模块必须在 semver-major 发布前保持 Experimental 状态。
+* 引入一个 Experimental 功能意味着对该实验负责，并承诺明确的结果：要么将其提升为稳定版，要么在合理及时的期限内将其移除。由于实验性功能可能存在安全问题，作者也应预期帮助评估并修补漏洞。如果该实验性功能已达到主流采用程度，使得在不破坏生态的情况下几乎不可能进行破坏性变更，那么它应当被视为稳定，并在一次弃用周期之后进行提升或移除。
 
-### Introducing new APIs on the global scope
+### 在全局作用域引入新 API
 
-Exposing new APIs to the global scope that are available without
-an `import` or `require` call, including introducing new interfaces on
-`globalThis` like `globalThis.navigator`, and adding new properties on
-interfaces on `globalThis` like well known symbols, could break feature
-detection and Node.js environment detection.
+将新 API 暴露到全局作用域（无需 `import` 或 `require` 调用即可使用），包括在 `globalThis` 上引入新接口如 `globalThis.navigator`，以及在 `globalThis` 的接口上添加新的属性（如已知符号 well known symbols），都可能破坏特性检测和 Node.js 环境检测。
 
-Exposing new APIs to the global scope unconditionally without any CLI
-flags must always be labeled as `semver-major`. The `semver-major` label may
-be waived through the regular TSC consensus process.
+无条件地将新 API 暴露到全局作用域，并且不提供任何 CLI 标志时，必须始终标注为 `semver-major`。`semver-major` 标签可以通过常规的 TSC 共识流程免除。
 
-It is recommended to start with exposing APIs to the global scope with an
-experimental CLI flag `--experimental-<feature-name>`, without being labeled as
-`semver-major`. When the new APIs are feature complete, turn the flag on by
-default with a CLI flag `--no-experimental-<feature-name>` to opt-out.
+建议先使用实验性 CLI 标志 `--experimental-<feature-name>` 来暴露全局作用域 API，而不要标注为 `semver-major`。当新的 API 功能完整后，通过默认启用该功能，并使用 CLI 标志 `--no-experimental-<feature-name>` 提供退出选项。
 
-### Additions to Node-API
+### 对 Node-API 的新增
 
-Node-API provides an ABI-stable API guaranteed for future Node.js versions.
-Node-API additions call for unusual care and scrutiny. If a change adds to
-`node_api.h`, `js_native_api.h`, `node_api_types.h`, or `js_native_api_types.h`,
-consult [the relevant guide](https://github.com/nodejs/node/blob/HEAD/doc/contributing/adding-new-napi-api.md).
+Node-API 提供一个 ABI 稳定的 API，保证未来 Node.js 版本仍可用。
+对 Node-API 的新增需要特别谨慎与审查。如果某项变更会向
+`node_api.h`、`js_native_api.h`、`node_api_types.h` 或 `js_native_api_types.h` 中新增内容，请查阅
+[相关指南](https://github.com/nodejs/node/blob/HEAD/doc/contributing/adding-new-napi-api.md)。
 
-### Deprecations
+### 弃用
 
-Node.js uses three [Deprecation][] levels. For all deprecated APIs, the API
-documentation must state the deprecation status.
+Node.js 使用三种 [弃用（Deprecation）][] 级别。对于所有被弃用的 API，API 文档必须明确说明弃用状态。
 
-* Documentation-Only Deprecation
-  * A deprecation notice appears in the API documentation.
-  * There are no functional changes.
-  * By default, there will be no warnings emitted for such deprecations at
-    runtime.
-  * Might cause a runtime warning with the [`--pending-deprecation`][] flag or
-    `NODE_PENDING_DEPRECATION` environment variable.
+* 仅文档弃用（Documentation-Only Deprecation）
+  * 在 API 文档中会出现弃用通知。
+  * 不会有任何功能性变更。
+  * 默认情况下，在运行时不会为这种弃用发出警告。
+  * 可能会在运行时因为 [`--pending-deprecation`][] 标志或
+    `NODE_PENDING_DEPRECATION` 环境变量而产生运行时警告。
 
-* Runtime Deprecation
-  * Emits a warning at runtime on first use of the deprecated API.
-  * If used with the [`--throw-deprecation`][] flag, will throw a runtime error.
+* 运行时弃用（Runtime Deprecation）
+  * 在第一次使用被弃用的 API 时于运行时发出警告。
+  * 如果与 [`--throw-deprecation`][] 标志一起使用，将抛出运行时错误。
 
-* End-of-Life
-  * The API is no longer subject to the semantic versioning rules.
-  * Backward-incompatible changes including complete removal of such APIs can
-    occur at any time.
+* 终止生命周期（End-of-Life）
+  * 该 API 不再遵循语义化版本规则。
+  * 包括完全移除这类 API 在内的向后不兼容变更，随时都可能发生。
 
-Apply the `notable-change` label to all pull requests that introduce
-Documentation-Only Deprecations. Such deprecations have no impact on code
-execution. Thus, they are not breaking changes (`semver-major`).
+对所有引入仅文档弃用的拉取请求，应用 `notable-change` 标签。此类弃用不会影响代码执行。因此，它们不属于破坏性变更（`semver-major`）。
 
-Runtime Deprecations and End-of-Life APIs (internal or public) are breaking
-changes (`semver-major`). The TSC can make exceptions, deciding that one of
-these deprecations is not a breaking change.
+运行时弃用与终止生命周期 API（内部或公开）都属于破坏性变更（`semver-major`）。TSC 可以做出例外决定，判断其中某项弃用并非破坏性变更。
 
-Avoid Runtime Deprecations when an alias or a stub/no-op will suffice. An alias
-or stub will have lower maintenance costs for end users and Node.js core.
+当仅需要一个别名（alias）或存根/空操作（stub/no-op）即可满足需求时，尽量避免使用运行时弃用。别名或存根将为终端用户和 Node.js 核心带来更低的维护成本。
 
-All deprecations receive a unique and immutable identifier. Documentation,
-warnings, and errors use the identifier when referring to the deprecation. The
-documentation for the deprecation identifier must always remain in the API
-documentation. This is true even if the deprecation is no longer in use (for
-example, due to removal of an End-of-Life deprecated API).
+所有弃用都会被分配一个唯一且不可变的标识符（identifier）。文档、警告和错误在提及弃用时都要使用该标识符。用于该弃用标识符的文档必须始终保留在 API 文档中。这一点即使该弃用不再被使用也成立（例如由于终止生命周期的弃用 API 被移除）。
 
 <a id="deprecation-cycle"></a>
-A _deprecation cycle_ is a major release during which an API has been in one of
-the three Deprecation levels. Documentation-Only Deprecations can land in a
-minor release. They can not change to a Runtime Deprecation until the next major
-release.
+所谓 _弃用周期（deprecation cycle）_ 是一个主要版本（major release），在该版本期间，某个 API 处于上述三种弃用级别之一。仅文档弃用可以合并到 minor 版本中。它们直到下一个 major 版本才可以升级为运行时弃用。
 
-No deprecated APIs can change to End-of-Life without going through a Runtime
-Deprecation cycle. There is no rule that deprecated code must progress to End-of-Life.
-Documentation-Only and Runtime Deprecations can remain in place for an unlimited
-duration.
+任何被弃用的 API 在不经过运行时弃用周期之前，都不能升级到终止生命周期（End-of-Life）。并不存在“被弃用的代码必须最终走向 End-of-Life”的硬性规则。仅文档弃用与运行时弃用都可以无限期保留。
 
-Communicate pending deprecations and associated mitigations with the ecosystem
-as soon as possible. If possible, do it before the pull request adding the
-deprecation lands on the `main` branch.
+请尽快与生态系统沟通即将发生的弃用及相关缓解措施。若可能，请在添加弃用的拉取请求合并到 `main` 之前完成沟通。
 
-Use the `notable-change` label on pull requests that add or change the
-deprecation level of an API.
+对添加或修改 API 的弃用级别的拉取请求，使用 `notable-change` 标签。
 
-### Involving the TSC
+### 牵涉 TSC
 
-Collaborators can opt to elevate pull requests or issues to the [TSC][].
-Do this if a pull request or issue:
+协作者可以选择将拉取请求或问题升级至 [TSC][]。如果拉取请求或问题满足以下情况，请执行此操作：
 
-* Has a significant impact on the codebase, or
-* Is controversial, or
-* Is at an impasse among collaborators who are participating in the discussion.
+* 对代码库有显著影响，或
+* 存在争议，或
+* 在参与讨论的协作者之间陷入僵局。
 
-@-mention the `@nodejs/tsc` GitHub team if you want to elevate an issue to the
-[TSC][]. Do not use the GitHub UI on the right-hand side to assign to
-`@nodejs/tsc` or request a review from `@nodejs/tsc`.
+如果你希望将一个问题升级至
+[TSC][ ]，请用 @-mention 提及 `@nodejs/tsc` 这个 GitHub 团队。
+不要使用 GitHub 右侧界面将其分配给 `@nodejs/tsc` 或请求 `@nodejs/tsc` 进行审查。
 
-If a pull request is labeled `semver-major`, you can request a review from the
-`@nodejs/tsc` GitHub team.
+如果一个拉取请求被标注为 `semver-major`，你可以请求
+`@nodejs/tsc` GitHub 团队进行审查。
 
-The TSC serves as the final arbiter where required.
+当需要时，TSC 将作为最终仲裁者。
 
-## Landing pull requests
+## 合并到主分支的拉取请求（Landing pull requests）
 
-1. Avoid landing pull requests that have someone else as an assignee. Authors
-   who wish to land their own pull requests will self-assign them. Sometimes, an
-   author will delegate to someone else. If in doubt, ask the assignee whether
-   it is okay to land.
-2. Never use GitHub's green ["Merge pull request"][] button. Reasons for not
-   using the web interface button:
-   * The "Create a merge commit" method will add an unnecessary merge commit.
-   * The "Squash and merge" method will add metadata (the pull request #) to the
-     commit title. If more than one author contributes to the pull request,
-     squashing only keeps one author.
-   * The "Rebase and merge" method has no way of adding metadata to the commit.
-3. Make sure CI is complete and green. If the CI is not green, check for
-   unreliable tests and infrastructure failures. If there are no corresponding
-   issues in the [node][unreliable tests] or
-   [build](https://github.com/nodejs/build/issues) repositories, open new
-   issues. Run a new CI any time someone pushes new code to the pull request.
-4. Check that the commit message adheres to [commit message guidelines][].
-5. Add all necessary [metadata][git-node-metadata] to commit messages before
-   landing. If you are unsure exactly how to format the commit messages, use
-   the commit log as a reference. See [this commit][commit-example] as an
-   example.
+1. 避免将由他人作为负责人（assignee）的拉取请求合并到主分支。希望合并自己拉取请求的作者会自行指定为负责人。有时，作者会把任务委托给他人。如有疑问，请询问负责人是否可以合并。
+2. 永远不要使用 GitHub 的绿色按钮 ["Merge pull request"][]。不使用网页界面按钮的原因：
+   * “Create a merge commit（创建合并提交）”方法会添加一个不必要的合并提交。
+   * “Squash and merge（压缩并合并）”方法会把元数据（拉取请求 #）加入到提交标题中。如果不止一位作者为该拉取请求做出了贡献，压缩只会保留一位作者。
+   * “Rebase and merge（变基并合并）”方法无法向提交添加元数据。
+3. 确保 CI 已完成且为绿色。如果 CI 不是绿色，请检查是否存在不可靠的测试和基础设施故障。如果在 [node][unreliable tests] 或
+   [build](https://github.com/nodejs/build/issues) 仓库中没有对应的问题，请打开新问题。任何人向该拉取请求推送新代码时，都要运行新的 CI。
+4. 检查提交信息是否符合 [commit message guidelines][]。
+5. 在合并到主分支之前，将所有必要的 [metadata][git-node-metadata] 添加到提交信息中。如果你不确定如何正确格式化提交信息，请以提交日志作为参考。参见 [此提交][commit-example] 作为示例。
 
-For pull requests from first-time contributors, be
-[welcoming](#welcoming-first-time-contributors). Also, verify that their git
-settings are to their liking.
+对于来自首次贡献者的拉取请求，要
+[welcoming](#welcoming-first-time-contributors)。另外，也要确认他们的 git 设置符合他们的偏好。
 
-If a pull request contains more than one commit, it can be landed either by
-squashing into one commit or by rebasing all the commits, or a mix of the two.
-Generally, a collaborator should land a pull request by squashing. If a pull
-request has more than one self-contained subsystem commits, a collaborator
-may land it as several commits.
+如果一个拉取请求包含超过一个提交，它可以通过压缩成一个提交来合并，或者通过将所有提交进行变基（rebase）来合并，或两者混合来完成。一般来说，协作者应通过压缩来合并拉取请求。如果一个拉取请求包含不止一个相互独立的子系统提交，协作者可以将其作为多个提交来合并。
 
-All commits should be self-contained, meaning every commit should pass all
-tests. This makes it much easier when bisecting to find a breaking change.
+所有提交都应当是自包含的（self-contained），也就是说每个提交都必须通过所有测试。这在排查引入了破坏性变更（breaking change）时进行二分定位（bisect）会容易得多。
 
-### Using the commit queue GitHub labels
+### 使用 commit queue 的 GitHub 标签
 
-See the [commit queue guide][commit-queue.md].
+参见 [commit queue 指南][commit-queue.md]。
 
-### Using `git-node`
+### 使用 `git-node`
 
-In most cases, using [the `git-node` command][git-node] of
-[`@node-core/utils`][] is enough to land a pull request. If you discover a
-problem when using this tool, please file an issue
-[to the issue tracker][node-core-utils-issues].
+在大多数情况下，使用来自 [`@node-core/utils`][] 的 [`git-node` 命令][git-node] 就足以合并一个拉取请求。如果你在使用此工具时发现问题，请提交一个 issue
+到 [issue 跟踪器][node-core-utils-issues]。
 
-Quick example:
+快速示例：
 
 ```bash
 npm install -g @node-core/utils
 git node land $PRID
 ```
 
-To use `@node-core/utils`, you will need a GitHub access token. If you do not
-have one, `@node-core/utils` will create one for you the first time you use it.
-To do this, it will ask for your GitHub password and two-factor authentication
-code. If you wish to create the token yourself in advance, see
-[the `@node-core/utils` guide][node-core-utils-credentials].
+要使用 `@node-core/utils`，你需要一个 GitHub 访问令牌（access token）。如果你没有，`@node-core/utils` 会在你第一次使用时为你创建一个。为此，它会要求你输入 GitHub 密码以及双重认证（two-factor authentication）验证码。如果你希望提前自己创建该令牌，请参见
+[`@node-core/utils` 指南][node-core-utils-credentials]。
 
-### Technical HOWTO
+### 技术 HOWTO
 
-Infrequently, it is necessary to manually perform the steps required to land a
-pull request rather than rely on `git-node`.
+在不常见的情况下，需要手动执行与合并拉取请求相关的步骤，而不是依赖 `git-node`。
 
 <details>
-<Summary>Manual Landing Steps</Summary>
+<Summary>手动合并步骤</Summary>
 
-Clear any `am`/`rebase` that might already be underway:
+清除任何可能已经在进行中的 `am`/`rebase`：
 
 ```bash
 git am --abort
 git rebase --abort
 ```
 
-Checkout proper target branch:
+切换到正确的目标分支：
 
 ```bash
 git checkout main
 ```
 
-Update the tree (assumes your repository is set up as detailed in
-[CONTRIBUTING.md](./pull-requests.md#step-1-fork)):
+更新代码树（假设你的仓库已按
+[CONTRIBUTING.md](./pull-requests.md#step-1-fork) 中的说明配置）：
 
 ```bash
 git fetch upstream
 git merge --ff-only upstream/main
 ```
 
-Apply external patches:
+应用外部补丁：
 
 ```bash
 curl -L https://github.com/nodejs/node/pull/xxx.patch | git am --whitespace=fix
 ```
 
-If the merge fails even though recent CI runs were successful, try a 3-way
-merge:
+如果即使最近的 CI 运行都成功了，合并仍然失败，请尝试三方合并（3-way merge）：
 
 ```bash
 git am --abort
 curl -L https://github.com/nodejs/node/pull/xxx.patch | git am -3 --whitespace=fix
 ```
 
-If the 3-way merge succeeds, check the results against the original pull
-request. Build and test on at least one platform before landing.
+如果三方合并成功，请将结果与原始拉取请求进行对比。在合并之前，在至少一个平台上构建并测试。
 
-If the 3-way merge fails, then it is most likely that a conflicting pull request
-has landed since the CI run. You will have to ask the author to rebase.
+如果三方合并失败，那么很可能是在 CI 运行成功之后，有一个冲突的拉取请求已经被合并了。你需要让作者进行变基（rebase）。
 
-Check and re-review the changes:
+检查并重新评审改动：
 
 ```bash
 git diff upstream/main
 ```
 
-Check the number of commits and commit messages:
+检查提交数量和提交信息：
 
 ```bash
 git log upstream/main...main
 ```
 
-Squash commits and add metadata:
+压缩提交并添加元数据：
 
 ```bash
 git rebase -i upstream/main
 ```
 
-This will open a screen like this (in the default shell editor):
+这会在默认的 shell 编辑器中打开类似这样的界面：
 
 ```text
 pick 6928fc1 crypto: add feature A
@@ -725,8 +532,7 @@ pick 7d6f433 test for feature B
 # Note that empty commits are commented out
 ```
 
-Replace a couple of `pick`s with `fixup` to squash them into a
-previous commit:
+把几个 `pick` 替换为 `fixup`，以便把它们压缩到之前的提交中：
 
 ```text
 pick 6928fc1 crypto: add feature A
@@ -735,7 +541,7 @@ pick 51759dc crypto: feature B
 fixup 7d6f433 test for feature B
 ```
 
-Replace `pick` with `reword` to change the commit message:
+把 `pick` 替换为 `reword` 来修改提交信息：
 
 ```text
 reword 6928fc1 crypto: add feature A
@@ -744,64 +550,44 @@ reword 51759dc crypto: feature B
 fixup 7d6f433 test for feature B
 ```
 
-Save the file and close the editor. When prompted, enter a new commit message
-for that commit. This is an opportunity to fix commit messages.
+保存文件并关闭编辑器。系统提示你为该提交输入新的提交信息时，这是一个修复提交信息的机会。
 
-* The commit message text must conform to the [commit message guidelines][].
-* <a name="metadata"></a>Change the original commit message to include metadata. (The
-  [`git node metadata`][git-node-metadata] command can generate the metadata
-  for you).
+* 提交信息文本必须符合 [commit message guidelines][]。
+* <a name="metadata"></a>修改原始提交信息以包含元数据。（[`git node metadata`][git-node-metadata] 命令可以为你生成所需的元数据）。
 
-  * Required: A `PR-URL:` line that references the full GitHub URL of the pull
-    request. This makes it easy to trace a commit back to the conversation that
-    led up to that change.
-  * Optional: A `Fixes: X` line, where _X_ is the full GitHub URL for an
-    issue. A commit message can include more than one `Fixes:` lines.
-  * Optional: One or more `Refs:` lines referencing a URL for any relevant
-    background.
-  * Required: A `Reviewed-By: Name <email>` line for each collaborator who
-    reviewed the change.
-    * Useful for @mentions / contact list if something goes wrong in the
-      pull request.
-    * Protects against the assumption that GitHub will be around forever.
+  * 必填：`PR-URL:` 一行，引用该拉取请求的完整 GitHub URL。这使得可以很容易地追溯某次提交回到导致该改动的讨论。
+  * 可选：`Fixes: X` 行，其中 _X_ 是某个 issue 的完整 GitHub URL。提交信息可以包含不止一行 `Fixes:`。
+  * 可选：一行或多行 `Refs:`，引用任何相关背景的 URL。
+  * 必填：对每一个审阅了该改动的协作者，都要有一行 `Reviewed-By: Name <email>`。
+    * 如果出现问题，这对 @mentions/联系列表很有用。
+    * 防止人们错误地假设 GitHub 会永远存在。
 
-Other changes might have landed on `main` since the successful CI run. As a
-precaution, run tests (`make -j4 test` or `vcbuild test`).
+自从 CI 成功运行之后，可能已经有其他改动合并到了 `main`。作为预防措施，请重新运行测试（`make -j4 test` 或 `vcbuild test`）。
 
-Confirm that the commit message format is correct using
-[core-validate-commit](https://github.com/nodejs/core-validate-commit).
+使用 [core-validate-commit](https://github.com/nodejs/core-validate-commit) 来确认提交信息格式正确。
 
 ```bash
 git rev-list upstream/main...HEAD | xargs core-validate-commit
 ```
 
-Optional: For your own commits, force push the amended commit to the pull
-request branch. If your branch name is `bugfix`, then:
-`git push --force-with-lease origin main:bugfix`. Don't close the pull
-request. It will close after you push it upstream. It will have the purple
-merged status rather than the red closed status. If you close the pull request
-before GitHub adjusts its status, it will show up as a 0 commit pull
-request with no changed files. The order of operations is important.
-If you push upstream before you push to your branch, GitHub will close
-the issue with the red closed status.
+可选：对于你自己的提交，如果需要，强制推送（force push）你已修订（amended）的提交到拉取请求分支。如果你的分支名是 `bugfix`，那么：
+`git push --force-with-lease origin main:bugfix`。不要关闭拉取请求。它会在你向上游推送之后自动关闭。它将显示紫色的“已合并（merged）”状态，而不是红色的“已关闭（closed）”状态。如果你在 GitHub 更新其状态之前就关闭拉取请求，它将显示为一个 0 个提交的拉取请求，并且没有改动文件。操作顺序很重要。
+如果你先向上游推送，再推送到你的分支，GitHub 会以红色的“已关闭”状态关闭该 issue。
 
-Time to push it:
+现在开始推送：
 
 ```bash
 git push upstream main
 ```
 
-Close the pull request with a "Landed in `<commit hash>`" comment. Even if
-your pull request shows the purple merged status,
-add the "Landed in \<commit hash>..\<commit hash>" comment if you added
-more than one commit.
+使用一条 “Landed in `<commit hash>`” 注释来关闭拉取请求。即使你的拉取请求显示为紫色的“已合并”状态，
+如果你添加了不止一个提交，也要添加 “Landed in \<commit hash>..\<commit hash>” 这条注释。
 
 </details>
 
-### Troubleshooting
+### 故障排查（Troubleshooting）
 
-Sometimes, when running `git push upstream main`, you might get an error
-message like this:
+有时，当你运行 `git push upstream main` 时，可能会看到类似下面的错误信息：
 
 ```console
 To https://github.com/nodejs/node
@@ -813,9 +599,7 @@ hint: 'git pull ...') before pushing again.
 hint: See the 'Note about fast-forwards' in 'git push --help' for details.
 ```
 
-That means a commit has landed since your last rebase against `upstream/main`.
-To fix this, pull with rebase from upstream, run the tests again, and (if the
-tests pass) push again:
+这意味着在你上一次针对 `upstream/main` 进行变基（rebase）之后，有一个提交已经被合并进去了。要修复这个问题，请从上游拉取并进行变基（pull with rebase），再次运行测试；（如果测试通过）然后再推送：
 
 ```bash
 git pull upstream main --rebase
@@ -823,195 +607,154 @@ make -j4 test
 git push upstream main
 ```
 
-### I made a mistake
+### 我犯了错误
 
-* Ping a TSC voting member.
-* With `git`, there's a way to override remote trees by force pushing
-  (`git push -f`). This is generally forbidden as it creates conflicts in other
-  people's forks. It is permissible for simpler slip-ups such as typos in commit
-  messages. You are only allowed to force push to any Node.js branch within 10
-  minutes from your original push. If someone else pushes to the branch or the
-  10-minute period passes, consider the commit final.
-  * Use `--force-with-lease` to reduce the chance of overwriting someone else's
-    change.
+* 通知一位 TSC 投票成员。
+* 使用 `git` 时，可以通过强制推送远程代码树来覆盖（`git push -f`）。一般来说这是被禁止的，因为它会造成其他人分叉（fork）中的冲突。对于更简单的疏忽，比如提交信息中的拼写错误，这是可以接受的。你只能在最初推送后的 10 分钟内，强制推送到任意 Node.js 分支。如果其他人也推送到了该分支，或超过了 10 分钟的时间，那么请将该提交视为最终状态。
+  * 使用 `--force-with-lease` 来降低覆盖他人改动的风险。
 
-### Long Term Support
+### 长期支持（Long Term Support）
 
-#### What is LTS?
+#### 什么是 LTS？
 
-Long Term Support (LTS) guarantees 30-month support cycles for specific Node.js
-versions. You can find more information
-[in the full release plan](https://github.com/nodejs/Release#release-plan). Once
-a branch enters LTS, the release plan limits the types of changes permitted in
-the branch.
+长期支持（Long Term Support，LTS）保证对特定版本的 Node.js 提供 30 个月的支持周期。你可以在
+[完整发布计划（full release plan）](https://github.com/nodejs/Release#release-plan) 中找到更多信息。分支进入 LTS 后，发布计划会限制允许在该分支中进行的变更类型。
 
-#### How are LTS branches managed?
+#### LTS 分支如何被管理？
 
-Each LTS release has a corresponding branch (v10.x, v8.x, etc.). Each also has a
-corresponding staging branch (v10.x-staging, v8.x-staging, etc.).
+每个 LTS 发布都有一个对应的分支（v10.x、v8.x 等）。同时也有一个对应的暂存分支（v10.x-staging、v8.x-staging 等）。
 
-Commits that land on `main` are cherry-picked to each staging branch as
-appropriate. If a change applies only to the LTS branch, open the pull request
-against the _staging_ branch. Commits from the staging branch land on the LTS
-branch only when a release is being prepared. They might land on the LTS branch
-in a different order than they do in staging.
+合并到 `main` 的提交会在适当时机被 cherry-pick 到每个暂存分支。如果某个变更只适用于 LTS 分支，请针对 _staging_ 分支打开拉取请求。来自 staging 分支的提交只有在准备发布时才会合并到 LTS 分支。它们被合并到 LTS 分支的顺序可能与在暂存分支中的顺序不同。
 
-Only members of @nodejs/backporters should land commits onto LTS staging
-branches.
+只有 @nodejs/backporters 的成员应当将提交合并到 LTS 暂存分支上。
 
-#### How can I help?
+#### 我该如何帮助？
 
-When you send your pull request, please state if your change is breaking. Also
-state if you think your patch is a good candidate for backporting. For more
-information on backporting, please see the [backporting guide][].
+当你提交拉取请求时，请说明你的改动是否具有破坏性（breaking）。另外也请说明你认为你的补丁是否适合作为 backporting（回填）候选。有关 backporting 的更多信息，请参见 [backporting guide][]。
 
-There are several LTS-related labels:
+与 LTS 相关的标签有几种：
 
-* `lts-watch-` labels are for pull requests to consider for landing in staging
-  branches. For example, `lts-watch-v10.x` would be for a change
-  to consider for the `v10.x-staging` branch.
+* `lts-watch-` 标签用于考虑将拉取请求合并到暂存分支。例如，`lts-watch-v10.x` 就会用于考虑该改动是否应合并到 `v10.x-staging` 分支。
 
-* `land-on-` are for pull requests that should land in a future v\*.x
-  release. For example, `land-on-v10.x` would be for a change to land in Node.js
-  10.x.
+* `land-on-` 标签用于那些应当合并到未来某个 v\*.x 发布版本的拉取请求。例如，`land-on-v10.x` 表示该改动应当合并到 Node.js 10.x。
 
-Any collaborator can attach these labels to any pull request/issue. As commits
-land on the staging branches, the backporter removes the `lts-watch-` label.
-Likewise, as commits land in an LTS release, the releaser removes the `land-on-`
-label.
+任何协作者都可以把这些标签附加到任意拉取请求/issue 上。当提交被合并到暂存分支时，backporter 会移除 `lts-watch-` 标签。同理，当提交进入某个 LTS 发布版本时，releaser 会移除 `land-on-` 标签。
 
-Attach the appropriate `lts-watch-` label to any pull request that
-might impact an LTS release.
+把合适的 `lts-watch-` 标签附加到任何可能影响 LTS 发布的拉取请求上。
 
-## Who to CC in the issue tracker
+## 在问题跟踪器中应该抄送（CC）谁
 
-| Subsystem                             | Maintainers                                                                                                               |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `benchmark/*`                         | [@nodejs/benchmarking][]                                                                                                  |
-| `doc/*`, `*.md`                       | [@nodejs/documentation][]                                                                                                 |
-| `lib/assert`                          | [@nodejs/assert][]                                                                                                        |
-| `lib/async_hooks`                     | [@nodejs/async\_hooks][@nodejs/async_hooks] for bugs/reviews (+ [@nodejs/diagnostics][] for API)                          |
-| `lib/buffer`                          | [@nodejs/buffer][]                                                                                                        |
-| `lib/child_process`                   | [@nodejs/child\_process][@nodejs/child_process]                                                                           |
-| `lib/cluster`                         | [@nodejs/cluster][]                                                                                                       |
-| `lib/{crypto,tls,https}`              | [@nodejs/crypto][]                                                                                                        |
-| `lib/dgram`                           | [@nodejs/dgram][]                                                                                                         |
-| `lib/domains`                         | [@nodejs/domains][]                                                                                                       |
-| `lib/fs`, `src/{fs,file}`             | [@nodejs/fs][]                                                                                                            |
-| `lib/{_}http{*}`                      | [@nodejs/http][]                                                                                                          |
-| `lib/inspector.js`, `src/inspector_*` | [@nodejs/v8-inspector][]                                                                                                  |
-| `lib/internal/bootstrap/*`            | [@nodejs/process][]                                                                                                       |
-| `lib/internal/url`, `src/node_url`    | [@nodejs/url][]                                                                                                           |
-| `lib/net`                             | [@nodejs/streams][]                                                                                                       |
-| `lib/repl`                            | [@nodejs/repl][]                                                                                                          |
-| `lib/{_}stream{*}`                    | [@nodejs/streams][]                                                                                                       |
-| `lib/internal/test_runner`            | [@nodejs/test\_runner][@nodejs/test_runner]                                                                               |
-| `lib/timers`                          | [@nodejs/timers][]                                                                                                        |
-| `lib/zlib`                            | [@nodejs/zlib][]                                                                                                          |
-| `src/async_wrap.*`                    | [@nodejs/async\_hooks][@nodejs/async_hooks]                                                                               |
-| `src/node_api.*`                      | [@nodejs/node-api][]                                                                                                      |
-| `src/node_crypto.*`, `src/crypto`     | [@nodejs/crypto][]                                                                                                        |
-| `src/node_sqlite.*`                   | [@nodejs/sqlite][]                                                                                                        |
-| `test/*`                              | [@nodejs/testing][]                                                                                                       |
-| `tools/eslint`, `eslint.config.mjs`   | [@nodejs/linting][]                                                                                                       |
-| build                                 | [@nodejs/build][]                                                                                                         |
-| GYP                                   | [@nodejs/gyp][]                                                                                                           |
-| performance                           | [@nodejs/performance][]                                                                                                   |
-| platform specific                     | @nodejs/platform-{[aix][], [arm][], [freebsd][], [macos][], [ppc][], [smartos][], [s390][], [windows][], [windows-arm][]} |
-| python code                           | [@nodejs/python][]                                                                                                        |
-| upgrading http-parser                 | [@nodejs/http][], [@nodejs/http2][]                                                                                       |
-| upgrading libuv                       | [@nodejs/libuv][]                                                                                                         |
-| upgrading npm                         | [@nodejs/npm][]                                                                                                           |
-| upgrading V8                          | [@nodejs/V8][], [@nodejs/post-mortem][]                                                                                   |
-| Embedded use or delivery of Node.js   | [@nodejs/delivery-channels][]                                                                                             |
+| 子系统                                   | 维护者                                                                                                               |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `benchmark/*`                           | [@nodejs/benchmarking][]                                                                                              |
+| `doc/*`, `*.md`                         | [@nodejs/documentation][]                                                                                             |
+| `lib/assert`                            | [@nodejs/assert][]                                                                                                    |
+| `lib/async_hooks`                       | [@nodejs/async\_hooks][@nodejs/async_hooks] 用于 bug/评审（+ [@nodejs/diagnostics][] 用于 API）                  |
+| `lib/buffer`                            | [@nodejs/buffer][]                                                                                                    |
+| `lib/child_process`                    | [@nodejs/child\_process][@nodejs/child_process]                                                                     |
+| `lib/cluster`                          | [@nodejs/cluster][]                                                                                                   |
+| `lib/{crypto,tls,https}`                | [@nodejs/crypto][]                                                                                                    |
+| `lib/dgram`                             | [@nodejs/dgram][]                                                                                                     |
+| `lib/domains`                           | [@nodejs/domains][]                                                                                                   |
+| `lib/fs`, `src/{fs,file}`               | [@nodejs/fs][]                                                                                                        |
+| `lib/{_}http{*}`                        | [@nodejs/http][]                                                                                                      |
+| `lib/inspector.js`, `src/inspector_*` | [@nodejs/v8-inspector][]                                                                                                |
+| `lib/internal/bootstrap/*`            | [@nodejs/process][]                                                                                                   |
+| `lib/internal/url`, `src/node_url`    | [@nodejs/url][]                                                                                                       |
+| `lib/net`                               | [@nodejs/streams][]                                                                                                   |
+| `lib/repl`                              | [@nodejs/repl][]                                                                                                      |
+| `lib/{_}stream{*}`                    | [@nodejs/streams][]                                                                                                   |
+| `lib/internal/test_runner`            | [@nodejs/test\_runner][@nodejs/test_runner]                                                                           |
+| `lib/timers`                            | [@nodejs/timers][]                                                                                                    |
+| `lib/zlib`                              | [@nodejs/zlib][]                                                                                                      |
+| `src/async_wrap.*`                    | [@nodejs/async\_hooks][@nodejs/async_hooks]                                                                         |
+| `src/node_api.*`                      | [@nodejs/node-api][]                                                                                                  |
+| `src/node_crypto.*`, `src/crypto`     | [@nodejs/crypto][]                                                                                                    |
+| `src/node_sqlite.*`                   | [@nodejs/sqlite][]                                                                                                    |
+| `test/*`                                | [@nodejs/testing][]                                                                                                   |
+| `tools/eslint`, `eslint.config.mjs`   | [@nodejs/linting][]                                                                                                   |
+| build                                   | [@nodejs/build][]                                                                                                     |
+| GYP                                     | [@nodejs/gyp][]                                                                                                       |
+| performance                             | [@nodejs/performance][]                                                                                               |
+| 平台特定                                 | @nodejs/platform-{[aix][], [arm][], [freebsd][], [macos][], [ppc][], [smartos][], [s390][], [windows][], [windows-arm][]} |
+| python 代码                             | [@nodejs/python][]                                                                                                    |
+| 升级 http-parser                        | [@nodejs/http][], [@nodejs/http2][]                                                                                  |
+| 升级 libuv                               | [@nodejs/libuv][]                                                                                                     |
+| 升级 npm                                 | [@nodejs/npm][]                                                                                                       |
+| 升级 V8                                  | [@nodejs/V8][], [@nodejs/post-mortem][]                                                                               |
+| 在 Node.js 中的嵌入使用或交付            | [@nodejs/delivery-channels][]                                                                                         |
 
-When things need extra attention, are controversial, or `semver-major`:
+当某些事项需要额外关注、存在争议，或属于 `semver-major` 时：
 [@nodejs/tsc][]
 
-If you cannot find who to cc for a file, `git shortlog -n -s <file>` can help.
+如果你无法为某个文件找到应该抄送（CC）的人，`git shortlog -n -s <file>` 可能会有所帮助。
 
-## Labels
+## 标签
 
-### General labels
+### 通用标签
 
-* `confirmed-bug`: Bugs you have verified
-* `discuss`: Things that need larger discussion
-* `fast-track`: PRs that need to land faster - see
+* `confirmed-bug`：你已验证的 bug
+* `discuss`：需要更大范围讨论的事项
+* `fast-track`：需要更快落地的 PR —— 见
   [Waiting for approvals](#waiting-for-approvals)
-* `feature request`: Any issue that requests a new feature
-* `good first issue`: Issues suitable for newcomers to fix
-* `meta`: Governance, policies, procedures, etc.
-* `request-ci`: When this label is added to a PR, CI will be started
-  automatically. See [Starting a Jenkins CI job](#starting-a-jenkins-ci-job)
-* `tsc-agenda`: Open issues and pull requests with this label will be added to
-  the Technical Steering Committee meeting agenda
+* `feature request`：任何请求新功能的 issue
+* `good first issue`：适合新手修复的 issue
+* `meta`：治理、政策、流程等
+* `request-ci`：当此标签被添加到 PR 时，CI 将会自动启动。参见 [Starting a Jenkins CI job](#starting-a-jenkins-ci-job)
+* `tsc-agenda`：带有此标签的开放 issue 和 pull request 将被加入技术指导委员会（TSC）会议议程
 
 ***
 
-* `author-ready` - A pull request is _author ready_ when:
-  * There is a CI run in progress or completed.
-  * There is at least one collaborator approval (or two TSC approvals for
-    semver-major pull requests).
-  * There are no outstanding review comments.
+* `author-ready`：当以下条件满足时，PR 处于 _作者已就绪_ 状态：
+  * 当前或已完成有一个 CI 运行
+  * 至少有一项合作者批准（对于 `semver-major` PR 则需要两项 TSC 批准）
+  * 没有未解决的评审评论
 
-Please always add the `author ready` label to pull requests that qualify.
-Please always remove it again as soon as the conditions are not met anymore,
-such as if the CI run fails or a new outstanding review comment is posted.
+请始终为符合条件的 PR 添加 `author ready` 标签。
+请在条件不再满足时（例如 CI 运行失败或发布了新的未解决评审评论）务必将其移除。
 
 ***
 
 * `semver-{minor,major}`
-  * be conservative – that is, if a change has the remote _chance_ of breaking
-    something, go for semver-major
-  * when adding a semver label, add a comment explaining why you're adding it
-  * minor vs. patch: roughly: "does it add a new method / does it add a new
-    section to the docs"
-  * major vs. everything else: run last versions tests against this version, if
-    they pass, **probably** minor or patch
+  * 保守一些——也就是说，如果某个变更存在远程（_chance_）会破坏某些东西的可能，请选择 semver-major
+  * 添加 semver 标签时，添加一条注释解释你为什么要添加它
+  * minor vs. patch：大致是“是否新增了一个方法 / 是否向文档新增了一个章节”
+  * major vs. 其他所有：在该版本上运行最后版本的测试，如果通过，**可能**就是 minor 或 patch
 
-### LTS/version labels
+### LTS/版本标签
 
-We use labels to keep track of which branches a commit should land on:
+我们使用标签来标记一个提交（commit）应该落到哪些分支：
 
 * `dont-land-on-v?.x`
-  * For changes that do not apply to a certain release line
-  * Also used when the work of backporting a change outweighs the benefits
+  * 不适用于特定发布线（release line）的变更
+  * 当回溯（backport）某个变更的工作量超过其带来的收益时也会使用
 * `land-on-v?.x`
-  * Used by releasers to mark a pull request as scheduled for inclusion in an
-    LTS release
-  * Applied to the original pull request for clean cherry-picks, to the backport
-    pull request otherwise
+  * 由发布负责人（releasers）用于标记 PR 已安排纳入某个 LTS 版本
+  * 对于干净的 cherry-pick：应用到原始 pull request；否则应用到回溯 pull request
 * `backport-requested-v?.x`
-  * Used to indicate that a pull request needs a manual backport to a branch in
-    order to land the changes on that branch
-  * Typically applied by a releaser when the pull request does not apply cleanly
-    or it breaks the tests after applying
-  * Will be replaced by either `dont-land-on-v?.x` or `backported-to-v?.x`
+  * 用于表示某个 pull request 需要对某个分支进行手动回溯（backport），以便将变更落到该分支
+  * 通常由发布负责人（releaser）在以下情况下应用：PR 无法干净地应用，或在应用后会导致测试失败
+  * 将被以下之一替换：`dont-land-on-v?.x` 或 `backported-to-v?.x`
 * `backported-to-v?.x`
-  * Applied to pull requests for which a backport pull request has been merged
+  * 应用于已经合并了回溯 pull request 的 pull requests
 * `lts-watch-v?.x`
-  * Applied to pull requests which the Release working group should consider
-    including in an LTS release
-  * Does not indicate that any specific action will be taken, but can be
-    effective as messaging to non-collaborators
+  * 应用于 release 工作组应考虑在某个 LTS 版本中纳入的 pull requests
+  * 不表示会采取任何特定行动，但作为对非合作者的消息传递可能会很有效
 * `release-agenda`
-  * For things that need discussion by the Release working group
-  * (for example semver-minor changes that need or should go into an LTS
-    release)
+  * 需要由 release 工作组讨论的事项
+  * （例如 semver-minor 变更需要或应该进入某个 LTS 版本）
 * `v?.x`
-  * Automatically applied to changes that do not target `main` but rather the
-    `v?.x-staging` branch
+  * 自动应用到不以 `main` 为目标、而是以 `v?.x-staging` 分支为目标的变更
 
-Once a release line enters maintenance mode, the corresponding labels do not
-need to be attached anymore, as only important bugfixes will be included.
+一旦某条发布线进入维护模式，相应的标签就不再需要继续附加，因为只会包含重要的 bugfix。
 
-### Other labels
+### 其他标签
 
-* Operating system labels
-  * `macos`, `windows`, `smartos`, `aix`, `linux`, etc.
-* Architecture labels
-  * `arm`, `mips`, `s390`, `ppc`, etc.
-  * No `x86{_64}` label because it is the implied default
+* 操作系统标签
+  * `macos`, `windows`, `smartos`, `aix`, `linux` 等
+* 架构标签
+  * `arm`, `mips`, `s390`, `ppc` 等
+  * 没有 `x86{_64}` 标签，因为它是隐含的默认值
 
 ["Merge pull request"]: https://help.github.com/articles/merging-a-pull-request/#merging-a-pull-request-on-github
 [@nodejs/V8]: https://github.com/orgs/nodejs/teams/V8

@@ -6,18 +6,15 @@
 added: REPLACEME
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 <!-- source_link=lib/ffi.js -->
 
-The `node:ffi` module provides an experimental foreign function interface for
-loading dynamic libraries and calling native symbols from JavaScript.
+`node:ffi` 模块为从 JavaScript 加载动态库并调用原生符号提供了一种实验性的外部函数接口（FFI）。
 
-This API is unsafe. Passing invalid pointers, using an incorrect symbol
-signature, or accessing memory after it has been freed can crash the process
-or corrupt memory.
+此 API 不安全。传入无效指针、使用错误的符号签名，或在内存被释放后访问其内容，可能导致进程崩溃或破坏内存。
 
-To access it:
+要使用它：
 
 ```mjs
 import ffi from 'node:ffi';
@@ -27,37 +24,31 @@ import ffi from 'node:ffi';
 const ffi = require('node:ffi');
 ```
 
-This module is only available under the `node:` scheme in builds with FFI
-support and is gated by the `--experimental-ffi` flag.
+在启用 FFI 支持的构建中，该模块仅在 `node:` 方案下可用，并且需要通过 `--experimental-ffi` 标志进行启用。
 
-Bundled libffi support currently targets:
+当前打包的 libffi 支持目标包括：
 
-* macOS on `arm64` and `x64`
-* Windows on `arm64` and `x64`
-* FreeBSD on `arm`, `arm64`, and `x64`
-* Linux on `arm`, `arm64`, and `x64`
+* macOS：`arm64` 和 `x64`
+* Windows：`arm64` 和 `x64`
+* FreeBSD：`arm`、`arm64` 和 `x64`
+* Linux：`arm`、`arm64` 和 `x64`
 
-Other targets require building Node.js against a shared libffi with
-`--shared-ffi`. The unofficial GN build does not support `node:ffi`.
+其他目标需要使用 `--shared-ffi` 构建 Node.js，使其与共享版 libffi 链接。非官方的 GN 构建不支持 `node:ffi`。
 
-When using the [Permission Model][], FFI APIs are
-restricted unless the [`--allow-ffi`][] flag is provided.
+在使用[权限模型][]时，除非提供 [`--allow-ffi`][] 标志，否则将限制 FFI API。
 
-## Overview
+## 概览
 
-The `node:ffi` module exposes two groups of APIs:
+`node:ffi` 模块提供两组 API：
 
-* Dynamic library APIs for loading libraries, resolving symbols, and creating
-  callable JavaScript wrappers.
-* Raw memory helpers for reading and writing primitive values through pointers,
-  converting pointers to JavaScript strings, `Buffer` instances, and
-  `ArrayBuffer` instances, and for copying data back into native memory.
+* 动态库 API：用于加载库、解析符号以及创建可调用的 JavaScript 包装器。
+* 原始内存辅助工具：通过指针读取和写入基本值，将指针转换为 JavaScript 字符串、`Buffer` 实例和 `ArrayBuffer` 实例，并将数据复制回原生内存。
 
-## Type names
+## 类型名称
 
-FFI signatures use string type names.
+FFI 签名使用字符串类型名称。
 
-Supported type names:
+支持的类型名称：
 
 * `void`
 * `i8`, `int8`
@@ -76,7 +67,7 @@ Supported type names:
 * `arraybuffer`
 * `function`
 
-These type names are also exposed as constants on `ffi.types`:
+这些类型名称也作为常量暴露在 `ffi.types` 上：
 
 * `ffi.types.VOID` = `'void'`
 * `ffi.types.POINTER` = `'pointer'`
@@ -99,36 +90,26 @@ These type names are also exposed as constants on `ffi.types`:
 * `ffi.types.FLOAT_32` = `'float32'`
 * `ffi.types.FLOAT_64` = `'float64'`
 
-Pointer-like types (`pointer`, `string`, `buffer`, `arraybuffer`, and
-`function`) are all passed through the native layer as pointers.
+类似指针的类型（`pointer`、`string`、`buffer`、`arraybuffer` 和 `function`）都会作为指针传递给原生层。
 
-When `Buffer`, `ArrayBuffer`, or typed array values are passed as pointer-like
-arguments, Node.js borrows a raw pointer to their backing memory for the
-duration of the native call. The caller must ensure that backing store remains
-valid and stable for the entire call.
+当 `Buffer`、`ArrayBuffer` 或类型化数组值作为类似指针的参数传入时，Node.js 会在原生调用期间借用它们底层内存的一个原始指针。调用方必须确保底层存储在整个调用过程中保持有效且稳定。
 
-It is unsupported and dangerous to resize, transfer, detach, or otherwise
-invalidate that backing store while the native call is active, including
-through reentrant JavaScript such as FFI callbacks. Doing so may crash the
-process, produce incorrect output, or corrupt memory.
+在原生调用处于活动状态时（包括通过 FFI 回调等可重入 JavaScript 进行的操作），调整、转移、分离或以其他方式使该底层存储失效都不受支持且是危险的。这样做可能导致进程崩溃、产生不正确的输出，或破坏内存。
 
-The `char` type follows the platform C ABI. On platforms where plain C `char`
-is signed it behaves like `i8`; otherwise it behaves like `u8`.
+`char` 类型遵循平台 C ABI。在普通 C `char` 为有符号的那些平台上，它表现得如同 `i8`；否则表现得如同 `u8`。
 
-The `bool` type is marshaled as an 8-bit unsigned integer. Pass numeric values
-such as `0` and `1`; JavaScript `true` and `false` are not accepted.
+`bool` 类型会以 8 位无符号整数的形式进行封送（marshaled）。传入诸如 `0` 和 `1` 这类数值；不接受 JavaScript 的 `true` 和 `false`。
 
-## Signature objects
+## 签名对象
 
-Functions and callbacks are described with signature objects.
+函数和回调用签名对象来描述。
 
-Supported fields:
+支持的字段：
 
-* `result`, `return`, or `returns` for the return type.
-* `parameters` or `arguments` for the parameter type list.
+* `result`、`return` 或 `returns`：用于返回类型。
+* `parameters` 或 `arguments`：用于参数类型列表。
 
-Only one return-type field and one parameter-list field may be present in a
-single signature object.
+在单个签名对象中，只允许存在一个返回类型字段以及一个参数列表字段。
 
 ```cjs
 const signature = {
@@ -145,13 +126,13 @@ added: REPLACEME
 
 * {string}
 
-The native shared library suffix for the current platform:
+当前平台的原生共享库后缀：
 
-* `'dylib'` on macOS
-* `'so'` on Unix-like platforms
-* `'dll'` on Windows
+* macOS：`'dylib'`
+* 类 Unix 平台：`'so'`
+* Windows：`'dll'`
 
-This can be used to build portable library paths:
+这可用于构建可移植的库路径：
 
 ```cjs
 const { suffix } = require('node:ffi');
@@ -165,22 +146,20 @@ const path = `libsqlite3.${suffix}`;
 added: REPLACEME
 -->
 
-* `path` {string|null} Path to a dynamic library, or `null` to resolve symbols
-  from the current process image.
-* `definitions` {Object} Symbol definitions to resolve immediately.
-* Returns: {Object}
+* `path` {string|null} 动态库的路径，或使用 `null` 从当前进程映像中解析符号。
+* `definitions` {Object} 要立即解析的符号定义。
+* 返回：{Object}
 
-Loads a dynamic library and resolves the requested function definitions.
+加载一个动态库并解析所请求的函数定义。
 
-On Windows passing `null` is not supported.
+在 Windows 上不支持传入 `null`。
 
-When `definitions` is omitted, `functions` is returned as an empty object until
-symbols are resolved explicitly.
+当省略 `definitions` 时，在显式解析符号之前，`functions` 会作为空对象返回。
 
-The returned object contains:
+返回的对象包含：
 
-* `lib` {DynamicLibrary} The loaded library handle.
-* `functions` {Object} Callable wrappers for the requested symbols.
+* `lib` {DynamicLibrary}：已加载的库句柄。
+* `functions` {Object}：所请求符号的可调用包装器。
 
 ```mjs
 import { dlopen } from 'node:ffi';
@@ -212,9 +191,9 @@ added: REPLACEME
 
 * `handle` {DynamicLibrary}
 
-Closes a dynamic library.
+关闭一个动态库。
 
-This is equivalent to calling `handle.close()`.
+这等价于调用 `handle.close()`。
 
 ## `ffi.dlsym(handle, symbol)`
 
@@ -224,28 +203,27 @@ added: REPLACEME
 
 * `handle` {DynamicLibrary}
 * `symbol` {string}
-* Returns: {bigint}
+* 返回：{bigint}
 
-Resolves a symbol address from a loaded library.
+从已加载的库中解析符号地址。
 
-This is equivalent to calling `handle.getSymbol(symbol)`.
+这等价于调用 `handle.getSymbol(symbol)`。
 
-## Class: `DynamicLibrary`
+## 类：`DynamicLibrary`
 
 <!-- YAML
 added: REPLACEME
 -->
 
-Represents a loaded dynamic library.
+表示一个已加载的动态库。
 
 ### `new DynamicLibrary(path)`
 
-* `path` {string|null} Path to a dynamic library, or `null` to resolve symbols
-  from the current process image.
+* `path` {string|null} 动态库的路径，或使用 `null` 从当前进程映像中解析符号。
 
-Loads the dynamic library without resolving any functions eagerly.
+加载动态库，但不会急切解析任何函数。
 
-On Windows passing `null` is not supported.
+在 Windows 上不支持传入 `null`。
 
 ```cjs
 const { DynamicLibrary } = require('node:ffi');
@@ -257,57 +235,47 @@ const lib = new DynamicLibrary('./mylib.so');
 
 * {string}
 
-The path used to load the library.
+用于加载该库的路径。
 
 ### `library.functions`
 
 * {Object}
 
-An object containing previously resolved function wrappers.
+包含先前已解析函数包装器的对象。
 
 ### `library.symbols`
 
 * {Object}
 
-An object containing previously resolved symbol addresses as `bigint` values.
+包含先前已解析的符号地址（作为 `bigint` 值）的对象。
 
 ### `library.close()`
 
-Closes the library handle.
+关闭库句柄。
 
-After a library has been closed:
+在库关闭之后：
 
-* Resolved function wrappers become invalid.
-* Further symbol and function resolution throws.
-* Registered callbacks are invalidated.
+* 已解析的函数包装器会变为无效。
+* 进一步的符号与函数解析将抛出异常。
+* 已注册的回调将被失效。
 
-Closing a library does not make previously exported callback pointers safe to
-reuse. Node.js does not track or revoke callback pointers that have already
-been handed to native code.
+关闭库不会使之前导出的回调指针变得安全可复用。Node.js 不会跟踪或撤销已经交给原生代码的回调指针。
 
-If native code still holds a callback pointer after `library.close()` or after
-`library.unregisterCallback(pointer)`, invoking that pointer has undefined
-behavior, is not allowed, and is dangerous: it can crash the process, produce
-incorrect output, or corrupt memory. Native code must stop using callback
-addresses before the library is closed or before the callback is unregistered.
+如果原生代码在 `library.close()` 之后或在 `library.unregisterCallback(pointer)` 之后仍持有回调指针，那么调用该指针将产生未定义行为，不被允许且很危险：它可能导致进程崩溃、产生不正确的输出，或破坏内存。原生代码必须在库关闭之前，或在回调被取消注册之前停止使用回调地址。
 
-Calling `library.close()` from one of the library's active callbacks is
-unsupported and dangerous. The callback must return before the library is
-closed.
+从库的某个活动回调内部调用 `library.close()` 不受支持且危险。回调必须在库被关闭之前返回。
 
 ### `library.getFunction(name, signature)`
 
 * `name` {string}
 * `signature` {Object}
-* Returns: {Function}
+* 返回：{Function}
 
-Resolves a symbol and returns a callable JavaScript wrapper.
+解析一个符号并返回一个可调用的 JavaScript 包装器。
 
-The returned function has a `.pointer` property containing the native function
-address as a `bigint`.
+返回的函数具有一个 `.pointer` 属性，其中包含原生函数地址（作为 `bigint`）。
 
-If the same symbol has already been resolved, requesting it again with a
-different signature throws.
+如果同一个符号已经被解析过，随后使用不同的签名再次请求它将抛出异常。
 
 ```cjs
 const { DynamicLibrary } = require('node:ffi');
@@ -325,39 +293,36 @@ console.log(add.pointer);
 ### `library.getFunctions([definitions])`
 
 * `definitions` {Object}
-* Returns: {Object}
+* 返回：{Object}
 
-When `definitions` is provided, resolves each named symbol and returns an
-object containing callable wrappers.
+当提供 `definitions` 时，会解析每个具名符号并返回一个包含可调用包装器的对象。
 
-When `definitions` is omitted, returns wrappers for all functions that have
-already been resolved on the library.
+当省略 `definitions` 时，会为该库中已经解析过的所有函数返回包装器。
 
 ### `library.getSymbol(name)`
 
 * `name` {string}
-* Returns: {bigint}
+* 返回：{bigint}
 
-Resolves a symbol and returns its native address as a `bigint`.
+解析一个符号，并将其原生地址作为 `bigint` 返回。
 
 ### `library.getSymbols()`
 
-* Returns: {Object}
+* 返回：{Object}
 
-Returns an object containing all previously resolved symbol addresses.
+返回一个包含所有先前已解析符号地址的对象。
 
 ### `library.registerCallback([signature,] callback)`
 
 * `signature` {Object}
 * `callback` {Function}
-* Returns: {bigint}
+* 返回：{bigint}
 
-Creates a native callback pointer backed by a JavaScript function.
+创建一个由 JavaScript 函数支撑的原生回调指针。
 
-When `signature` is omitted, the callback uses a default `void ()` signature.
+当省略 `signature` 时，回调使用默认的 `void ()` 签名。
 
-The return value is the callback pointer address as a `bigint`. It can be
-passed to native functions expecting a callback pointer.
+返回值是回调指针地址（作为 `bigint`）。它可以传递给期望回调指针的原生函数。
 
 ```cjs
 const { DynamicLibrary } = require('node:ffi');
@@ -370,75 +335,63 @@ const callback = lib.registerCallback(
 );
 ```
 
-Callbacks are subject to the following restrictions:
+回调受以下限制：
 
-* They must be invoked on the same system thread where they were created.
-* They must not throw exceptions.
-* They must not return promises.
-* They must return a value compatible with the declared result type.
-* They must not call `library.close()` on their owning library while running.
-* They must not unregister themselves while running.
+* 必须在创建它们的同一系统线程上被调用。
+* 必须不能抛出异常。
+* 必须不能返回 Promise。
+* 必须返回一个与声明的结果类型兼容的值。
+* 在运行时不得对其所属库调用 `library.close()`。
+* 在运行时不得取消自身的注册。
 
-Closing the owning library or unregistering the currently executing callback
-from inside the callback is unsupported and dangerous. Doing so may crash the
-process, produce incorrect output, or corrupt memory.
+在回调内部关闭其所属库，或在回调执行时从内部对当前执行的回调进行注销，不受支持且危险。这样做可能导致进程崩溃、产生不正确的输出，或破坏内存。
 
 ### `library.unregisterCallback(pointer)`
 
 * `pointer` {bigint}
 
-Releases a callback previously created with `library.registerCallback()`.
+释放一个先前由 `library.registerCallback()` 创建的回调。
 
-Calling `library.unregisterCallback(pointer)` for a callback that is currently
-executing is unsupported and dangerous. The callback must return before it is
-unregistered.
+对当前正在执行的回调调用 `library.unregisterCallback(pointer)` 不受支持且危险。回调必须在被注销前返回。
 
-After `library.unregisterCallback(pointer)` returns, invoking that callback
-pointer from native code has undefined behavior, is not allowed, and is
-dangerous: it can crash the process, produce incorrect output, or corrupt
-memory.
+在 `library.unregisterCallback(pointer)` 返回之后，从原生代码调用该回调指针将产生未定义行为，不被允许且很危险：它可能导致进程崩溃、产生不正确的输出，或破坏内存。
 
 ### `library.refCallback(pointer)`
 
 * `pointer` {bigint}
 
-Keeps the callback strongly referenced by JavaScript.
+强引用由 JavaScript 持有的回调。
 
 ### `library.unrefCallback(pointer)`
 
 * `pointer` {bigint}
 
-Allows the callback to become weakly referenced by JavaScript.
+允许该回调被 JavaScript 以弱引用的方式持有。
 
-If the callback function is later garbage collected, subsequent native
-invocations become a no-op. Non-void return values are zero-initialized before
-returning to native code.
+如果该回调函数随后被垃圾回收，那么后续的原生调用将变成空操作（no-op）。在返回给原生代码之前，非 `void` 的返回值会被初始化为零。
 
-## Calling native functions
+## 调用原生函数
 
-Argument conversion depends on the declared FFI type.
+参数转换取决于声明的 FFI 类型。
 
-For 8-, 16-, and 32-bit integer types and for floating-point types, pass
-JavaScript `number` values that match the declared type.
+对于 8 位、16 位和 32 位整数类型以及浮点类型，请传入与声明类型匹配的
+JavaScript `number` 值。
 
-For 64-bit integer types (`i64` and `u64`), pass JavaScript `bigint` values.
+对于 64 位整数类型（`i64` 和 `u64`），请传入 JavaScript `bigint` 值。
 
-For pointer-like parameters:
+对于类似指针的参数：
 
-* `null` and `undefined` are passed as null pointers.
-* `string` values are copied to temporary NUL-terminated UTF-8 strings for the
-  duration of the call.
-* `Buffer`, typed arrays, and `DataView` instances pass a pointer to their
-  backing memory.
-* `ArrayBuffer` passes a pointer to its backing memory.
-* `bigint` values are passed as raw pointer addresses.
+* `null` 和 `undefined` 会作为空指针传入。
+* `string` 值会被复制为临时的 NUL 终止 UTF-8 字符串，持续时间仅为该调用期间。
+* `Buffer`、类型化数组（typed arrays）以及 `DataView` 实例会传入指向其底层内存的指针。
+* `ArrayBuffer` 会传入指向其底层内存的指针。
+* `bigint` 值会以原始指针地址的形式传入。
 
-Pointer return values are exposed as `bigint` addresses.
+指针返回值将以 `bigint` 地址形式暴露。
 
-## Primitive memory access helpers
+## 原语内存访问辅助函数
 
-The following helpers read and write primitive values at a native pointer,
-optionally with a byte offset:
+以下辅助函数在原生指针处读取和写入原语值，且可以选择带字节偏移：
 
 * `ffi.getInt8(pointer[, offset])`
 * `ffi.getUint8(pointer[, offset])`
@@ -461,18 +414,16 @@ optionally with a byte offset:
 * `ffi.setFloat32(pointer, offset, value)`
 * `ffi.setFloat64(pointer, offset, value)`
 
-These helpers perform direct memory reads and writes. `pointer` must be a
-`bigint` referring to valid readable or writable native memory. `offset`, when
-provided, is interpreted as a byte offset from `pointer`.
+这些辅助函数执行直接的内存读取和写入。`pointer` 必须是一个
+`bigint`，指向有效的可读或可写的原生内存。若提供 `offset`，则将其解释为相对于 `pointer` 的字节偏移。
 
-The getter helpers return JavaScript `number` values for 8-, 16-, and 32-bit
-integer types and for floating-point types. They return `bigint` values for
-64-bit integer types.
+用于读取的辅助函数会对 8 位、16 位和 32 位整数类型以及浮点类型返回 JavaScript 的
+`number` 值。对于 64 位整数类型，它们返回 `bigint` 值。
 
-The setter helpers require an explicit byte offset and validate the supplied
-JavaScript value against the target native type before writing it into memory.
-For `setInt64()` and `setUint64()`, `bigint` values are accepted directly;
-numeric inputs must be integers within JavaScript's safe integer range.
+用于写入的辅助函数需要显式的字节偏移，并在写入内存之前将提供的 JavaScript 值
+与目标原生类型进行校验。
+对于 `setInt64()` 和 `setUint64()`，直接接受 `bigint` 值；
+数值输入必须是 JavaScript 安全整数范围内的整数。
 
 ```cjs
 const {
@@ -484,10 +435,9 @@ setInt32(ptr, 0, 42);
 console.log(getInt32(ptr, 0));
 ```
 
-Like the other raw memory helpers in this module, these APIs do not track
-ownership, bounds, or lifetime. Passing an invalid pointer, using the wrong
-offset, or writing through a stale pointer can corrupt memory or crash the
-process.
+与本模块中的其他“原始内存”辅助函数一样，这些 API 不会跟踪
+所有权、边界或生命周期。传入无效指针、使用错误的偏移，或通过已经过期的指针写入，
+都可能破坏内存或导致进程崩溃。
 
 ## `ffi.toString(pointer)`
 
@@ -496,17 +446,15 @@ added: REPLACEME
 -->
 
 * `pointer` {bigint}
-* Returns: {string|null}
+* 返回: {string|null}
 
-Reads a NUL-terminated UTF-8 string from native memory.
+从原生内存读取一个 NUL-终止的 UTF-8 字符串。
 
-If `pointer` is `0n`, `null` is returned.
+如果 `pointer` 为 `0n`，则返回 `null`。
 
-This function does not validate that `pointer` refers to readable memory or
-that the pointed-to data is terminated with `\0`. Passing an invalid pointer,
-a pointer to freed memory, or a pointer to bytes without a terminating NUL can
-read unrelated memory, crash the process, or produce truncated or garbled
-output.
+此函数不会验证 `pointer` 是否指向可读取的内存，也不会验证其指向的数据是否以 `\0` 终止。
+传入无效指针、指向已释放内存的指针，或指向不包含终止 NUL 字节的字节序列，
+可能读取到无关的内存、导致进程崩溃，或产生截断/乱码的输出。
 
 ```cjs
 const { toString } = require('node:ffi');
@@ -522,28 +470,24 @@ added: REPLACEME
 
 * `pointer` {bigint}
 * `length` {number}
-* `copy` {boolean} When `false`, creates a zero-copy view. **Default:** `true`.
-* Returns: {Buffer}
+* `copy` {boolean} 当 `false` 时，创建零拷贝视图。**默认：** `true`。
+* 返回: {Buffer}
 
-Creates a `Buffer` from native memory.
+从原生内存创建一个 `Buffer`。
 
-When `copy` is `true`, the returned `Buffer` owns its own copied memory.
-When `copy` is `false`, the returned `Buffer` references the original native
-memory directly.
+当 `copy` 为 `true` 时，返回的 `Buffer` 拥有其自身拷贝的内存。
+当 `copy` 为 `false` 时，返回的 `Buffer` 将直接引用原始的原生内存。
 
-Using `copy: false` is a zero-copy escape hatch. The returned `Buffer` is a
-writable view onto foreign memory, so writes in JavaScript update the original
-native memory directly. The caller must guarantee that:
+使用 `copy: false` 是一个零拷贝“逃生通道”。返回的 `Buffer` 是对外部内存的可写视图，
+因此在 JavaScript 中的写入会直接更新原始的原生内存。
+调用者必须保证：
 
-* `pointer` remains valid for the entire lifetime of the returned `Buffer`.
-* `length` stays within the allocated native region.
-* no native code frees or repurposes that memory while JavaScript still uses
-  the `Buffer`.
-* Memory protection is observed. For example, read-only memory pages must not
-  be written to.
+* `pointer` 在返回的 `Buffer` 的整个生命周期内保持有效。
+* `length` 始终位于已分配的原生区域范围内。
+* 当 JavaScript 仍在使用 `Buffer` 时，不会有原生代码释放或重新分配该内存用途。
+* 必须遵守内存保护。例如，只读内存页不得写入。
 
-If these guarantees are not met, reading or writing the `Buffer` can corrupt
-memory or crash the process.
+如果无法满足这些保证，读取或写入 `Buffer` 可能会破坏内存或导致进程崩溃。
 
 ## `ffi.toArrayBuffer(pointer, length[, copy])`
 
@@ -553,21 +497,18 @@ added: REPLACEME
 
 * `pointer` {bigint}
 * `length` {number}
-* `copy` {boolean} When `false`, creates a zero-copy view. **Default:** `true`.
-* Returns: {ArrayBuffer}
+* `copy` {boolean} 当 `false` 时，创建零拷贝视图。**默认：** `true`。
+* 返回: {ArrayBuffer}
 
-Creates an `ArrayBuffer` from native memory.
+从原生内存创建一个 `ArrayBuffer`。
 
-When `copy` is `true`, the returned `ArrayBuffer` contains copied bytes.
-When `copy` is `false`, the returned `ArrayBuffer` references the original
-native memory directly.
+当 `copy` 为 `true` 时，返回的 `ArrayBuffer` 包含已拷贝的字节。
+当 `copy` 为 `false` 时，返回的 `ArrayBuffer` 直接引用原始的原生内存。
 
-The same lifetime and bounds requirements described for
-[`ffi.toBuffer(pointer, length, copy)`][] apply
-here. With `copy: false`, the
-returned `ArrayBuffer` is a zero-copy view of foreign memory and is only safe
-while that memory remains allocated, unchanged in layout, and valid for the
-entire exposed range.
+此处同样适用为
+[`ffi.toBuffer(pointer, length, copy)`][] 描述的生命周期和边界要求。
+当 `copy: false` 时，返回的 `ArrayBuffer` 是对外部内存的零拷贝视图，
+且仅在该内存保持已分配、布局不变且对整个暴露范围都有效时才是安全的。
 
 ## `ffi.exportString(string, pointer, length[, encoding])`
 
@@ -578,19 +519,17 @@ added: REPLACEME
 * `string` {string}
 * `pointer` {bigint}
 * `length` {number}
-* `encoding` {string} **Default:** `'utf8'`.
+* `encoding` {string} **默认：** `'utf8'`。
 
-Copies a JavaScript string into native memory and appends a trailing NUL
-terminator.
+将一个 JavaScript 字符串复制到原生内存，并追加一个结尾 NUL 终止符。
 
-`length` must be large enough to hold the full encoded string plus the trailing
-NUL terminator. For UTF-16 and UCS-2 encodings, the trailing terminator uses
-two zero bytes.
+`length` 必须足以容纳完整的已编码字符串以及后续的 NUL 终止符。
+对于 UTF-16 和 UCS-2 编码，结尾终止符使用两个零字节。
 
-`pointer` must refer to writable native memory with at least `length` bytes of
-available storage. This function does not allocate memory on its own.
+`pointer` 必须指向可写的原生内存，并且可用存储至少为 `length` 字节。
+此函数不会自行分配内存。
 
-`string` must be a JavaScript string. `encoding` must be a string.
+`string` 必须是一个 JavaScript 字符串。`encoding` 必须是一个字符串。
 
 ## `ffi.exportBuffer(buffer, pointer, length)`
 
@@ -602,14 +541,14 @@ added: REPLACEME
 * `pointer` {bigint}
 * `length` {number}
 
-Copies bytes from a `Buffer` into native memory.
+将字节从一个 `Buffer` 复制到原生内存。
 
-`length` must be at least `buffer.length`.
+`length` 至少必须等于 `buffer.length`。
 
-`pointer` must refer to writable native memory with at least `length` bytes of
-available storage. This function does not allocate memory on its own.
+`pointer` 必须指向可写的原生内存，并且可用存储至少为 `length` 字节。
+此函数不会自行分配内存。
 
-`buffer` must be a Node.js `Buffer`.
+`buffer` 必须是一个 Node.js `Buffer`。
 
 ## `ffi.exportArrayBuffer(arrayBuffer, pointer, length)`
 
@@ -621,12 +560,12 @@ added: REPLACEME
 * `pointer` {bigint}
 * `length` {number}
 
-Copies bytes from an `ArrayBuffer` into native memory.
+将字节从一个 `ArrayBuffer` 复制到原生内存。
 
-`length` must be at least `arrayBuffer.byteLength`.
+`length` 至少必须等于 `arrayBuffer.byteLength`。
 
-`pointer` must refer to writable native memory with at least `length` bytes of
-available storage. This function does not allocate memory on its own.
+`pointer` 必须指向可写的原生内存，并且可用存储至少为 `length` 字节。
+此函数不会自行分配内存。
 
 ## `ffi.exportArrayBufferView(arrayBufferView, pointer, length)`
 
@@ -638,12 +577,12 @@ added: REPLACEME
 * `pointer` {bigint}
 * `length` {number}
 
-Copies bytes from an `ArrayBufferView` into native memory.
+将字节从一个 `ArrayBufferView` 复制到原生内存。
 
-`length` must be at least `arrayBufferView.byteLength`.
+`length` 至少必须等于 `arrayBufferView.byteLength`。
 
-`pointer` must refer to writable native memory with at least `length` bytes of
-available storage. This function does not allocate memory on its own.
+`pointer` 必须指向可写的原生内存，并且可用存储至少为 `length` 字节。
+此函数不会自行分配内存。
 
 ## `ffi.getRawPointer(source)`
 
@@ -652,34 +591,28 @@ added: REPLACEME
 -->
 
 * `source` {Buffer|ArrayBuffer|ArrayBufferView}
-* Returns: {bigint}
+* 返回：{bigint}
 
-Returns the raw memory address of JavaScript-managed byte storage.
+返回由 JavaScript 管理的字节存储的原始内存地址。
 
-This is unsafe and dangerous. The returned pointer can become invalid if the
-underlying memory is detached, resized, transferred, or otherwise invalidated.
-Using stale pointers can cause memory corruption or process crashes.
+这不安全且危险。如果底层内存被分离、重新调整大小、传递到别处或以其他方式失效，返回的指针可能会变得无效。
+使用过期指针可能导致内存损坏或进程崩溃。
 
-## Safety notes
+## 安全说明
 
-The `node:ffi` module does not track pointer validity, memory ownership, or
-native object lifetimes.
+`node:ffi` 模块不会跟踪指针有效性、内存所有权或原生对象的生命周期。
 
-In particular:
+特别是：
 
-* Do not read from or write to freed memory.
-* Do not use zero-copy views after the native memory has been released.
-* Do not declare incorrect signatures for native symbols.
-* Do not unregister callbacks while native code may still call them.
-* Do not call callback pointers after `library.close()` or
-  `library.unregisterCallback(pointer)`.
-* Assume undefined callback behavior can crash the process, produce incorrect
-  output, or corrupt memory.
-* Do not assume pointer return values imply ownership; whether the caller must
-  free the returned address depends entirely on the native API.
+* 不要从已释放的内存中读取或写入。
+* 原生内存释放后，不要在零拷贝视图上继续使用。
+* 不要为原生符号声明不正确的签名。
+* 当原生代码可能仍会调用回调时，不要取消注册回调。
+* 不要在调用 `library.close()` 后，或在调用 `library.unregisterCallback(pointer)` 后再调用回调指针。
+* 不要假设未定义的回调行为不会崩溃进程、产生错误输出或破坏内存。
+* 不要假设指针返回值意味着所有权；调用者是否必须释放该返回地址完全取决于原生 API。
 
-As a general rule, prefer copied values unless zero-copy access is required,
-and keep callback and pointer lifetimes explicit on the native side.
+作为一般规则，除非必须要零拷贝访问，否则请优先使用拷贝值，并在原生侧保持回调和指针生命周期的显式管理。
 
 [Permission Model]: permissions.md#permission-model
 [`--allow-ffi`]: cli.md#--allow-ffi

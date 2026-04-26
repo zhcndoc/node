@@ -1,17 +1,14 @@
-# Debugger
+# 调试器
 
 <!--introduced_in=v0.9.12-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- type=misc -->
 
-Node.js includes a command-line debugging utility. The Node.js debugger client
-is not a full-featured debugger, but simple stepping and inspection are
-possible.
+Node.js 包含一个命令行调试工具。Node.js 调试器客户端不是一个功能齐全的调试器，但可以进行简单的单步执行和检查。
 
-To use it, start Node.js with the `inspect` argument followed by the path to the
-script to debug.
+要使用它，请使用 `inspect` 参数启动 Node.js，后跟要调试的脚本路径。
 
 ```console
 $ node inspect myscript.js
@@ -30,9 +27,7 @@ Break on start in myscript.js:2
 debug>
 ```
 
-The debugger automatically breaks on the first executable line. To instead
-run until the first breakpoint (specified by a [`debugger`][] statement), set
-the `NODE_INSPECT_RESUME_ON_START` environment variable to `1`.
+调试器会自动在第一行可执行代码处中断。若要运行直到第一个断点（由 [`debugger`][] 语句指定），请将 `NODE_INSPECT_RESUME_ON_START` 环境变量设置为 `1`。
 
 ```console
 $ cat myscript.js
@@ -84,28 +79,20 @@ debug> .exit
 $
 ```
 
-The `repl` command allows code to be evaluated remotely. The `next` command
-steps to the next line. Type `help` to see what other commands are available.
+`repl` 命令允许远程评估代码。`next` 命令单步执行到下一行。输入 `help` 查看其他可用命令。
 
-Pressing `enter` without typing a command will repeat the previous debugger
-command.
+在不输入命令的情况下按 `enter` 键将重复上一条调试器命令。
 
-## Probe mode
+## 探测模式
 
 <!-- YAML
 added:
   - REPLACEME
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-`node inspect` supports a non-interactive probe mode for inspecting runtime values
-in an application via the flag `--probe`. Probe mode launches the application,
-sets one or more source breakpoints, evaluates one expression whenever a
-matching breakpoint is hit, and prints one final report when the session ends
-(either on normal completion or timeout). This allows developers to perform
-printf-style debugging without having to modify the application code and
-clean up afterwards, and it supports structured output for tool use.
+`node inspect` 通过 `--probe` 标志支持一种用于检查应用程序运行时值的非交互式探测模式。探测模式会启动应用程序，设置一个或多个源代码断点，在命中匹配断点时计算一个表达式，并在会话结束时（无论是正常完成还是超时）打印一份最终报告。这使开发者无需修改应用程序代码并在之后清理，就能进行类似 `printf` 的调试，同时也支持供工具使用的结构化输出。
 
 ```console
 $ node inspect [--json] [--preview] [--timeout=<ms>] [--port=<port>] \
@@ -114,39 +101,26 @@ $ node inspect [--json] [--preview] [--timeout=<ms>] [--port=<port>] \
     [--] [<node-option> ...] <script.js> [args...]
 ```
 
-* `--probe <file>:<line>[:<col>]`: Source location to probe. Line and column number
-  are 1-based.
-* `--timeout=<ms>`: A global wall-clock deadline for the entire probe session.
-  The default is `30000`. This can be used to probe a long-running application
-  that can be terminated externally.
-* `--json`: If used, prints a structured JSON report instead of the default text report.
-* `--preview`: If used, non-primitive values will include CDP property previews for
-  object-like JSON probe values.
-* `--port=<port>`: Selects the local inspector port used for the `--inspect-brk`
-  launch path. Probe mode defaults to `0`, which requests a random port.
-* `--` is optional unless the child needs its own Node.js flags.
+* `--probe <file>:<line>[:<col>]`：要探测的源位置。行号和列号从 1 开始。
+* `--timeout=<ms>`：整个探测会话的全局墙钟时间截止期限。默认值为 `30000`。这可用于探测一个可由外部终止的长时间运行应用程序。
+* `--json`：如果使用，将打印结构化 JSON 报告，而不是默认的文本报告。
+* `--preview`：如果使用，非原始值将在输出中包含对象类 JSON 探测值的 CDP 属性预览。
+* `--port=<port>`：为 `--inspect-brk` 启动路径选择本地 inspector 端口。探测模式默认为 `0`，这会请求一个随机端口。
+* `--` 是可选的，除非子进程需要自己的 Node.js 标志。
 
-Additional rules about the `--probe` and `--expr` arguments:
+关于 `--probe` 和 `--expr` 参数还有以下附加规则：
 
-* `--probe <file>:<line>[:<col>]` and `--expr <expr>` are strict pairs. Each
-  `--probe` must be followed immediately by exactly one `--expr`.
-* `--timeout`, `--json`, `--preview`, and `--port` are global probe options
-  for the whole probe session. They may appear before or between probe pairs,
-  but not between a `--probe` and its matching `--expr`.
+* `--probe <file>:<line>[:<col>]` 和 `--expr <expr>` 必须严格成对出现。每个 `--probe` 后面必须紧跟且仅能跟一个 `--expr`。
+* `--timeout`、`--json`、`--preview` 和 `--port` 是整个探测会话的全局探测选项。它们可以出现在每个探测对之前或之间，但不能出现在 `--probe` 与其匹配的 `--expr` 之间。
 
-If a single probe needs to evaluate more than one value,
-evaluate a structured value in `--expr`, for example `--expr "{ foo, bar }"`
-or `--expr "[foo, bar]"`, and use `--preview` to include property previews for
-any object-like values in the output.
+如果单个探测需要计算多个值，
+请在 `--expr` 中计算一个结构化值，例如 `--expr "{ foo, bar }"`
+或 `--expr "[foo, bar]"`，并使用 `--preview` 为
+输出中的任何对象类值包含属性预览。
 
-Probe mode only prints the final probe report to stdout, and otherwise silences
-stdout/stderr from the child process. If the child exits with an error after the
-probe session starts, the final report records a terminal `error` event with the
-exit code and captured child stderr. Invalid arguments and fatal launch or
-connect failures may still print diagnostics to stderr without a final probe
-result.
+探测模式只会将最终探测报告打印到 stdout，并且会静默子进程的 stdout/stderr。如果子进程在探测会话开始后以错误退出，最终报告会记录一个终止性的 `error` 事件，其中包含退出码和捕获到的子进程 stderr。无效参数以及致命的启动或连接失败仍可能向 stderr 打印诊断信息，而不会给出最终探测结果。
 
-Consider this script:
+考虑以下脚本：
 
 ```js
 // cli.js
@@ -157,7 +131,7 @@ for (let i = 0; i < 2; i++) {
 }
 ```
 
-If `--json` is not used, the output is printed in a human-readable text format:
+如果未使用 `--json`，输出将以人类可读的文本格式打印：
 
 ```console
 $ node inspect --probe cli.js:5 --expr 'rss' cli.js
@@ -168,14 +142,9 @@ Hit 2 at cli.js:5
 Completed
 ```
 
-Primitive results are printed directly, while objects and arrays use Chrome
-DevTools Protocol preview data when available. Other non-primitive values
-fall back to the Chrome DevTools Protocol `description` string.
-Expression failures are recorded as `[error] ...` lines and do not fail
-the overall session. If richer text formatting is needed, wrap the expression
-in `JSON.stringify(...)` or `util.inspect(...)`.
+原始类型结果会直接打印，而对象和数组在可用时会使用 Chrome DevTools Protocol 的预览数据。其他非原始值则回退为 Chrome DevTools Protocol 的 `description` 字符串。表达式失败会记录为 `[error] ...` 行，但不会导致整个会话失败。如果需要更丰富的文本格式，可以将表达式包装在 `JSON.stringify(...)` 或 `util.inspect(...)` 中。
 
-When `--json` is used, the output shape looks like this:
+使用 `--json` 时，输出结构如下：
 
 ```console
 $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
@@ -184,24 +153,24 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
 
 ```json
 {
-  "v": 1, // Probe JSON schema version.
+  "v": 1, // Probe JSON 结构版本。
   "probes": [
     {
-      "expr": "rss", // The expression paired with --probe.
-      "target": ["cli.js", 5] // [file, line] or [file, line, col].
+      "expr": "rss", // 与 --probe 配对的表达式。
+      "target": ["cli.js", 5] // [文件, 行] 或 [文件, 行, 列]。
     }
   ],
   "results": [
     {
-      "probe": 0, // Index into probes[].
-      "event": "hit", // Hit events are recorded in observation order.
-      "hit": 1, // 1-based hit count for this probe.
+      "probe": 0, // probes[] 的索引。
+      "event": "hit", // 命中事件按观察顺序记录。
+      "hit": 1, // 该探测的 1-based 命中次数。
       "result": {
         "type": "number",
         "value": 55443456,
         "description": "55443456"
       }
-      // If the expression throws, "error" is present instead of "result".
+      // 如果表达式抛出异常，则这里是 "error" 而不是 "result"。
     },
     {
       "probe": 0,
@@ -215,7 +184,7 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
     },
     {
       "event": "completed"
-      // The final entry is always a terminal event, for example:
+      // 最后一条记录始终是一个终止事件，例如：
       // 1. { "event": "completed" }
       // 2. { "event": "miss", "pending": [0, 1] }
       // 3. {
@@ -241,43 +210,32 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
 }
 ```
 
-## Watchers
+## 监视器
 
-It is possible to watch expression and variable values while debugging. On
-every breakpoint, each expression from the watchers list will be evaluated
-in the current context and displayed immediately before the breakpoint's
-source code listing.
+在调试时可以监视表达式和变量值。在每个断点处，监视列表中的每个表达式将在当前上下文中评估，并立即显示在断点源代码列表之前。
 
-To begin watching an expression, type `watch('my_expression')`. The command
-`watchers` will print the active watchers. To remove a watcher, type
-`unwatch('my_expression')`.
+要开始监视表达式，输入 `watch('my_expression')`。命令 `watchers` 将打印活动的监视器。要移除监视器，输入 `unwatch('my_expression')`。
 
-## Command reference
+## 命令参考
 
-### Stepping
+### 单步执行
 
-* `cont`, `c`: Continue execution
-* `next`, `n`: Step next
-* `step`, `s`: Step in
-* `out`, `o`: Step out
-* `pause`: Pause running code (like pause button in Developer Tools)
+* `cont`, `c`: 继续执行
+* `next`, `n`: 单步跳过
+* `step`, `s`: 单步进入
+* `out`, `o`: 单步退出
+* `pause`: 暂停运行代码（类似于开发者工具中的暂停按钮）
 
-### Breakpoints
+### 断点
 
-* `setBreakpoint()`, `sb()`: Set breakpoint on current line
-* `setBreakpoint(line)`, `sb(line)`: Set breakpoint on specific line
-* `setBreakpoint('fn()')`, `sb(...)`: Set breakpoint on a first statement in
-  function's body
-* `setBreakpoint('script.js', 1)`, `sb(...)`: Set breakpoint on first line of
-  `script.js`
-* `setBreakpoint('script.js', 1, 'num < 4')`, `sb(...)`: Set conditional
-  breakpoint on first line of `script.js` that only breaks when `num < 4`
-  evaluates to `true`
-* `clearBreakpoint('script.js', 1)`, `cb(...)`: Clear breakpoint in `script.js`
-  on line 1
+* `setBreakpoint()`, `sb()`: 在当前行设置断点
+* `setBreakpoint(line)`, `sb(line)`: 在指定行设置断点
+* `setBreakpoint('fn()')`, `sb(...)`: 在函数体的第一条语句上设置断点
+* `setBreakpoint('script.js', 1)`, `sb(...)`: 在 `script.js` 的第一行设置断点
+* `setBreakpoint('script.js', 1, 'num < 4')`, `sb(...)`: 在 `script.js` 的第一行设置条件断点，仅当 `num < 4` 评估为 `true` 时中断
+* `clearBreakpoint('script.js', 1)`, `cb(...)`: 清除 `script.js` 第 1 行的断点
 
-It is also possible to set a breakpoint in a file (module) that
-is not loaded yet:
+也可以在尚未加载的文件（模块）中设置断点：
 
 ```console
 $ node inspect main.js
@@ -295,7 +253,7 @@ debug> setBreakpoint('mod.js', 22)
 Warning: script 'mod.js' was not loaded yet.
 debug> c
 break in mod.js:22
- 20 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+ 20 // 软件中的其他交易或使用。
  21
 >22 exports.hello = function() {
  23   return 'hello from module';
@@ -303,8 +261,7 @@ break in mod.js:22
 debug>
 ```
 
-It is also possible to set a conditional breakpoint that only breaks when a
-given expression evaluates to `true`:
+也可以设置一个条件断点，仅当给定表达式评估为 `true` 时才中断：
 
 ```console
 $ node inspect main.js
@@ -341,65 +298,49 @@ debug> exec('num')
 debug>
 ```
 
-### Information
+### 信息
 
-* `backtrace`, `bt`: Print backtrace of current execution frame
-* `list(5)`: List scripts source code with 5 line context (5 lines before and
-  after)
-* `watch(expr)`: Add expression to watch list
-* `unwatch(expr)`: Remove expression from watch list
-* `unwatch(index)`: Remove expression at specific index from watch list
-* `watchers`: List all watchers and their values (automatically listed on each
-  breakpoint)
-* `repl`: Open debugger's repl for evaluation in debugging script's context
-* `exec expr`, `p expr`: Execute an expression in debugging script's context and
-  print its value
-* `profile`: Start CPU profiling session
-* `profileEnd`: Stop current CPU profiling session
-* `profiles`: List all completed CPU profiling sessions
-* `profiles[n].save(filepath = 'node.cpuprofile')`: Save CPU profiling session
-  to disk as JSON
-* `takeHeapSnapshot(filepath = 'node.heapsnapshot')`: Take a heap snapshot
-  and save to disk as JSON
+* `backtrace`, `bt`: 打印当前执行帧的回溯
+* `list(5)`: 列出脚本源代码，带有 5 行上下文（前后各 5 行）
+* `watch(expr)`: 将表达式添加到监视列表
+* `unwatch(expr)`: 从监视列表中移除表达式
+* `unwatch(index)`: 从监视列表中移除特定索引处的表达式
+* `watchers`: 列出所有监视器及其值（每个断点处自动列出）
+* `repl`: 打开调试器的 repl 以在调试脚本的上下文中进行评估
+* `exec expr`, `p expr`: 在调试脚本的上下文中执行表达式并打印其值
+* `profile`: 启动 CPU 性能分析会话
+* `profileEnd`: 停止当前 CPU 性能分析会话
+* `profiles`: 列出所有已完成的 CPU 性能分析会话
+* `profiles[n].save(filepath = 'node.cpuprofile')`: 将 CPU 性能分析会话保存为 JSON 到磁盘
+* `takeHeapSnapshot(filepath = 'node.heapsnapshot')`: 获取堆快照并保存为 JSON 到磁盘
 
-### Execution control
+### 执行控制
 
-* `run`: Run script (automatically runs on debugger's start)
-* `restart`: Restart script
-* `kill`: Kill script
+* `run`: 运行脚本（调试器启动时自动运行）
+* `restart`: 重启脚本
+* `kill`: 终止脚本
 
-### Various
+### 其他
 
-* `scripts`: List all loaded scripts
-* `version`: Display V8's version
+* `scripts`: 列出所有已加载的脚本
+* `version`: 显示 V8 的版本
 
-## Advanced usage
+## 高级用法
 
-### V8 inspector integration for Node.js
+### Node.js 的 V8 inspector 集成
 
-V8 Inspector integration allows attaching Chrome DevTools to Node.js
-instances for debugging and profiling. It uses the
-[Chrome DevTools Protocol][].
+V8 Inspector 集成允许将 Chrome DevTools 附加到 Node.js 实例以进行调试和性能分析。它使用 [Chrome DevTools 协议][]。
 
-V8 Inspector can be enabled by passing the `--inspect` flag when starting a
-Node.js application. It is also possible to supply a custom port with that flag,
-e.g. `--inspect=9222` will accept DevTools connections on port 9222.
+启动 Node.js 应用程序时传递 `--inspect` 标志可以启用 V8 Inspector。也可以使用该标志提供自定义端口，例如 `--inspect=9222` 将在端口 9222 上接受 DevTools 连接。
 
-Using the `--inspect` flag will execute the code immediately before debugger is connected.
-This means that the code will start running before you can start debugging, which might
-not be ideal if you want to debug from the very beginning.
+使用 `--inspect` 标志将在调试器连接之前立即执行代码。这意味着代码将在你开始调试之前开始运行，如果你想从一开始就调试，这可能不理想。
 
-In such cases, you have two alternatives:
+在这种情况下，你有两个选择：
 
-1. `--inspect-wait` flag: This flag will wait for debugger to be attached before executing the code.
-   This allows you to start debugging right from the beginning of the execution.
-2. `--inspect-brk` flag: Unlike `--inspect`, this flag will break on the first line of the code
-   as soon as debugger is attached. This is useful when you want to debug the code step by step
-   from the very beginning, without any code execution prior to debugging.
+1. `--inspect-wait` 标志：此标志将等待调试器附加后再执行代码。这允许你从执行一开始就开始调试。
+2. `--inspect-brk` 标志：与 `--inspect` 不同，此标志将在调试器附加后立即在第一行代码处中断。当你想从一开始就逐步调试代码，而在调试之前不执行任何代码时，这很有用。
 
-So, when deciding between `--inspect`, `--inspect-wait`, and `--inspect-brk`, consider whether you want
-the code to start executing immediately, wait for debugger to be attached before execution,
-or break on the first line for step-by-step debugging.
+因此，在决定使用 `--inspect`、`--inspect-wait` 和 `--inspect-brk` 时，请考虑你是希望代码立即开始执行，等待调试器附加后再执行，还是在第一行中断以进行逐步调试。
 
 ```console
 $ node --inspect index.js
@@ -407,9 +348,7 @@ Debugger listening on ws://127.0.0.1:9229/dc9010dd-f8b8-4ac5-a510-c1a114ec7d29
 For help, see: https://nodejs.org/learn/getting-started/debugging
 ```
 
-(In the example above, the UUID dc9010dd-f8b8-4ac5-a510-c1a114ec7d29
-at the end of the URL is generated on the fly, it varies in different
-debugging sessions.)
+（在上面的示例中，URL 末尾的 UUID dc9010dd-f8b8-4ac5-a510-c1a114ec7d29 是动态生成的，它在不同的调试会话中会有所不同。）
 
-[Chrome DevTools Protocol]: https://chromedevtools.github.io/devtools-protocol/
+[Chrome DevTools 协议]: https://chromedevtools.github.io/devtools-protocol/
 [`debugger`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger

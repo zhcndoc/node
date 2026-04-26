@@ -4,15 +4,15 @@
 
 <!--lint disable maximum-line-length-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/net.js -->
 
-The `node:net` module provides an asynchronous network API for creating stream-based
-TCP or [IPC][] servers ([`net.createServer()`][]) and clients
-([`net.createConnection()`][]).
+`node:net` 模块提供了一个异步网络 API，用于创建基于流的
+TCP 或 [IPC][] 服务器（[`net.createServer()`][]）和客户端
+（[`net.createConnection()`][]）。
 
-It can be accessed using:
+可以使用以下方式访问它：
 
 ```mjs
 import net from 'node:net';
@@ -22,49 +22,43 @@ import net from 'node:net';
 const net = require('node:net');
 ```
 
-## IPC support
+## IPC 支持
 
 <!-- YAML
 changes:
   - version: v20.8.0
     pr-url: https://github.com/nodejs/node/pull/49667
-    description: Support binding to abstract Unix domain socket path like `\0abstract`.
-                 We can bind '\0' for Node.js `< v20.4.0`.
+    description: "支持绑定到抽象 Unix 域套接字路径，如 `\0abstract`。对于 Node.js `< v20.4.0`，我们可以绑定 '\0'。"
 -->
 
-The `node:net` module supports IPC with named pipes on Windows, and Unix domain
-sockets on other operating systems.
+`node:net` 模块在 Windows 上支持使用命名管道进行 IPC，在其他
+操作系统上支持 Unix 域套接字。
 
-### Identifying paths for IPC connections
+### 识别 IPC 连接的路径
 
-[`net.connect()`][], [`net.createConnection()`][], [`server.listen()`][], and
-[`socket.connect()`][] take a `path` parameter to identify IPC endpoints.
+[`net.connect()`][]、[`net.createConnection()`][]、[`server.listen()`][] 和
+[`socket.connect()`][] 接受一个 `path` 参数来识别 IPC 端点。
 
-On Unix, the local domain is also known as the Unix domain. The path is a
-file system pathname. It will throw an error when the length of pathname is
-greater than the length of `sizeof(sockaddr_un.sun_path)`. Typical values are
-107 bytes on Linux and 103 bytes on macOS. If a Node.js API abstraction creates
-the Unix domain socket, it will unlink the Unix domain socket as well. For
-example, [`net.createServer()`][] may create a Unix domain socket and
-[`server.close()`][] will unlink it. But if a user creates the Unix domain
-socket outside of these abstractions, the user will need to remove it. The same
-applies when a Node.js API creates a Unix domain socket but the program then
-crashes. In short, a Unix domain socket will be visible in the file system and
-will persist until unlinked. On Linux, You can use Unix abstract socket by adding
-`\0` to the beginning of the path, such as `\0abstract`. The path to the Unix
-abstract socket is not visible in the file system and it will disappear automatically
-when all open references to the socket are closed.
+在 Unix 上，本地域也称为 Unix 域。路径是一个
+文件系统路径名。当路径名的长度
+大于 `sizeof(sockaddr_un.sun_path)` 的长度时，它将抛出错误。典型值在
+Linux 上为 107 字节，在 macOS 上为 103 字节。如果 Node.js API 抽象创建
+了 Unix 域套接字，它也会取消链接该 Unix 域套接字。例如，[`net.createServer()`][] 可能创建一个 Unix 域套接字，而
+[`server.close()`][] 将取消链接它。但是如果用户在这些抽象之外创建 Unix 域
+套接字，用户将需要手动移除它。当 Node.js API 创建 Unix 域套接字但程序随后
+崩溃时，同样适用。简而言之，Unix 域套接字将在文件系统中可见，并且
+将持续存在直到被取消链接。在 Linux 上，你可以通过在路径开头添加
+`\0` 来使用 Unix 抽象套接字，例如 `\0abstract`。Unix 抽象套接字的路径
+在文件系统中不可见，并且当所有对套接字的开放引用关闭时它将自动消失。
 
-On Windows, the local domain is implemented using a named pipe. The path _must_
-refer to an entry in `\\?\pipe\` or `\\.\pipe\`. Any characters are permitted,
-but the latter may do some processing of pipe names, such as resolving `..`
-sequences. Despite how it might look, the pipe namespace is flat. Pipes will
-_not persist_. They are removed when the last reference to them is closed.
-Unlike Unix domain sockets, Windows will close and remove the pipe when the
-owning process exits.
+在 Windows 上，本地域是使用命名管道实现的。路径 _必须_
+引用 `\\?\pipe\` 或 `\\.\pipe\` 中的条目。允许使用任何字符，
+但后者可能会对管道名称进行一些处理，例如解析 `..`
+序列。尽管它看起来可能如何，管道命名空间是扁平的。管道将
+_不会持久存在_。当对它们的最后一个引用关闭时，它们会被移除。
+与 Unix 域套接字不同，当拥有进程退出时，Windows 将关闭并移除管道。
 
-JavaScript string escaping requires paths to be specified with extra backslash
-escaping such as:
+JavaScript 字符串转义要求路径使用额外的反斜杠转义来指定，例如：
 
 ```js
 net.createServer().listen(
@@ -79,9 +73,9 @@ added:
   - v14.18.0
 -->
 
-The `BlockList` object can be used with some network APIs to specify rules for
-disabling inbound or outbound access to specific IP addresses, IP ranges, or
-IP subnets.
+`BlockList` 对象可与某些网络 API 一起使用，以指定规则
+禁用对特定 IP 地址、IP 范围或
+IP 子网的入站或出站访问。
 
 ### `blockList.addAddress(address[, type])`
 
@@ -91,10 +85,10 @@ added:
   - v14.18.0
 -->
 
-* `address` {string|net.SocketAddress} An IPv4 or IPv6 address.
-* `type` {string} Either `'ipv4'` or `'ipv6'`. **Default:** `'ipv4'`.
+* `address` {string|net.SocketAddress} 一个 IPv4 或 IPv6 地址。
+* `type` {string} `'ipv4'` 或 `'ipv6'`。**默认：** `'ipv4'`。
 
-Adds a rule to block the given IP address.
+添加一条规则以阻止给定的 IP 地址。
 
 ### `blockList.addRange(start, end[, type])`
 
@@ -104,13 +98,12 @@ added:
   - v14.18.0
 -->
 
-* `start` {string|net.SocketAddress} The starting IPv4 or IPv6 address in the
-  range.
-* `end` {string|net.SocketAddress} The ending IPv4 or IPv6 address in the range.
-* `type` {string} Either `'ipv4'` or `'ipv6'`. **Default:** `'ipv4'`.
+* `start` {string|net.SocketAddress} 范围中的起始 IPv4 或 IPv6 地址。
+* `end` {string|net.SocketAddress} 范围中的结束 IPv4 或 IPv6 地址。
+* `type` {string} `'ipv4'` 或 `'ipv6'`。**默认：** `'ipv4'`。
 
-Adds a rule to block a range of IP addresses from `start` (inclusive) to
-`end` (inclusive).
+添加一条规则以阻止从 `start`（包含）到
+`end`（包含）的 IP 地址范围。
 
 ### `blockList.addSubnet(net, prefix[, type])`
 
@@ -120,13 +113,13 @@ added:
   - v14.18.0
 -->
 
-* `net` {string|net.SocketAddress} The network IPv4 or IPv6 address.
-* `prefix` {number} The number of CIDR prefix bits. For IPv4, this
-  must be a value between `0` and `32`. For IPv6, this must be between
-  `0` and `128`.
-* `type` {string} Either `'ipv4'` or `'ipv6'`. **Default:** `'ipv4'`.
+* `net` {string|net.SocketAddress} 网络 IPv4 或 IPv6 地址。
+* `prefix` {number} CIDR 前缀位数。对于 IPv4，此
+  值必须在 `0` 和 `32` 之间。对于 IPv6，此值必须在
+  `0` 和 `128` 之间。
+* `type` {string} `'ipv4'` 或 `'ipv6'`。**默认：** `'ipv4'`。
 
-Adds a rule to block a range of IP addresses specified as a subnet mask.
+添加一条规则以阻止指定为子网掩码的 IP 地址范围。
 
 ### `blockList.check(address[, type])`
 
@@ -136,12 +129,12 @@ added:
   - v14.18.0
 -->
 
-* `address` {string|net.SocketAddress} The IP address to check
-* `type` {string} Either `'ipv4'` or `'ipv6'`. **Default:** `'ipv4'`.
-* Returns: {boolean}
+* `address` {string|net.SocketAddress} 要检查的 IP 地址
+* `type` {string} `'ipv4'` 或 `'ipv6'`。**默认：** `'ipv4'`。
+* 返回：{boolean}
 
-Returns `true` if the given IP address matches any of the rules added to the
-`BlockList`.
+如果给定的 IP 地址匹配添加到
+`BlockList` 的任何规则，则返回 `true`。
 
 ```js
 const blockList = new net.BlockList();
@@ -149,13 +142,13 @@ blockList.addAddress('123.123.123.123');
 blockList.addRange('10.0.0.1', '10.0.0.10');
 blockList.addSubnet('8592:757c:efae:4e45::', 64, 'ipv6');
 
-console.log(blockList.check('123.123.123.123'));  // Prints: true
-console.log(blockList.check('10.0.0.3'));  // Prints: true
-console.log(blockList.check('222.111.111.222'));  // Prints: false
+console.log(blockList.check('123.123.123.123'));  // 输出：true
+console.log(blockList.check('10.0.0.3'));  // 输出：true
+console.log(blockList.check('222.111.111.222'));  // 输出：false
 
-// IPv6 notation for IPv4 addresses works:
-console.log(blockList.check('::ffff:7b7b:7b7b', 'ipv6')); // Prints: true
-console.log(blockList.check('::ffff:123.123.123.123', 'ipv6')); // Prints: true
+// IPv4 地址的 IPv6 表示法有效：
+console.log(blockList.check('::ffff:7b7b:7b7b', 'ipv6')); // 输出：true
+console.log(blockList.check('::ffff:123.123.123.123', 'ipv6')); // 输出：true
 ```
 
 ### `blockList.rules`
@@ -166,9 +159,9 @@ added:
   - v14.18.0
 -->
 
-* Type: {string\[]}
+* 类型：{string\[]}
 
-The list of rules added to the blocklist.
+添加到阻止列表的规则列表。
 
 ### `BlockList.isBlockList(value)`
 
@@ -178,12 +171,12 @@ added:
   - v22.13.0
 -->
 
-* `value` {any} Any JS value
-* Returns `true` if the `value` is a `net.BlockList`.
+* `value` {any} 任何 JS 值
+* 如果 `value` 是 `net.BlockList`，则返回 `true`。
 
 ### `blockList.fromJSON(value)`
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
  <!-- YAML
 added:
@@ -207,7 +200,7 @@ blockList.fromJSON(JSON.stringify(data));
 
 ### `blockList.toJSON()`
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
  <!-- YAML
 added:
@@ -215,7 +208,7 @@ added:
  - v22.19.0
 -->
 
-* Returns Blocklist.rules
+* 返回 Blocklist.rules
 
 ## Class: `net.SocketAddress`
 
@@ -234,13 +227,13 @@ added:
 -->
 
 * `options` {Object}
-  * `address` {string} The network address as either an IPv4 or IPv6 string.
-    **Default**: `'127.0.0.1'` if `family` is `'ipv4'`; `'::'` if `family` is
-    `'ipv6'`.
-  * `family` {string} One of either `'ipv4'` or `'ipv6'`.
-    **Default**: `'ipv4'`.
-  * `flowlabel` {number} An IPv6 flow-label used only if `family` is `'ipv6'`.
-  * `port` {number} An IP port.
+  * `address` {string} 网络地址，可以是 IPv4 或 IPv6 字符串。
+    **默认**：如果 `family` 是 `'ipv4'` 则为 `'127.0.0.1'`；如果 `family` 是
+    `'ipv6'` 则为 `'::'`。
+  * `family` {string} `'ipv4'` 或 `'ipv6'` 之一。
+    **默认**：`'ipv4'`。
+  * `flowlabel` {number} IPv6 流标签，仅当 `family` 是 `'ipv6'` 时使用。
+  * `port` {number} IP 端口。
 
 ### `socketaddress.address`
 
@@ -250,7 +243,7 @@ added:
   - v14.18.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
 ### `socketaddress.family`
 
@@ -260,7 +253,7 @@ added:
   - v14.18.0
 -->
 
-* Type: {string} Either `'ipv4'` or `'ipv6'`.
+* 类型：{string} `'ipv4'` 或 `'ipv6'`。
 
 ### `socketaddress.flowlabel`
 
@@ -270,7 +263,7 @@ added:
   - v14.18.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
 ### `socketaddress.port`
 
@@ -280,7 +273,7 @@ added:
   - v14.18.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
 ### `SocketAddress.parse(input)`
 
@@ -290,10 +283,10 @@ added:
   - v22.13.0
 -->
 
-* `input` {string} An input string containing an IP address and optional port,
-  e.g. `123.1.2.3:1234` or `[1::1]:1234`.
-* Returns: {net.SocketAddress} Returns a `SocketAddress` if parsing was successful.
-  Otherwise returns `undefined`.
+* `input` {string} 包含 IP 地址和可选端口的输入字符串，
+  例如 `123.1.2.3:1234` 或 `[1::1]:1234`。
+* 返回：{net.SocketAddress} 如果解析成功则返回 `SocketAddress`。
+  否则返回 `undefined`。
 
 ## Class: `net.Server`
 
@@ -301,19 +294,19 @@ added:
 added: v0.1.90
 -->
 
-* Extends: {EventEmitter}
+* 继承自：{EventEmitter}
 
-This class is used to create a TCP or [IPC][] server.
+此类用于创建 TCP 或 [IPC][] 服务器。
 
 ### `new net.Server([options][, connectionListener])`
 
-* `options` {Object} See
-  [`net.createServer([options][, connectionListener])`][`net.createServer()`].
-* `connectionListener` {Function} Automatically set as a listener for the
-  [`'connection'`][] event.
-* Returns: {net.Server}
+* `options` {Object} 参见
+  [`net.createServer([options][, connectionListener])`][`net.createServer()`]。
+* `connectionListener` {Function} 自动设置为
+  [`'connection'`][] 事件的监听器。
+* 返回：{net.Server}
 
-`net.Server` is an [`EventEmitter`][] with the following events:
+`net.Server` 是一个 [`EventEmitter`][]，具有以下事件：
 
 ### Event: `'close'`
 
@@ -321,8 +314,8 @@ This class is used to create a TCP or [IPC][] server.
 added: v0.5.0
 -->
 
-Emitted when the server closes. If connections exist, this
-event is not emitted until all connections are ended.
+当服务器关闭时发出。如果存在连接，则此
+事件直到所有连接结束后才会发出。
 
 ### Event: `'connection'`
 
@@ -330,10 +323,10 @@ event is not emitted until all connections are ended.
 added: v0.1.90
 -->
 
-* Type: {net.Socket} The connection object
+* 类型：{net.Socket} 连接对象
 
-Emitted when a new connection is made. `socket` is an instance of
-`net.Socket`.
+当建立新连接时发出。`socket` 是
+`net.Socket` 的实例。
 
 ### Event: `'error'`
 
@@ -341,12 +334,11 @@ Emitted when a new connection is made. `socket` is an instance of
 added: v0.1.90
 -->
 
-* Type: {Error}
+* 类型：{Error}
 
-Emitted when an error occurs. Unlike [`net.Socket`][], the [`'close'`][]
-event will **not** be emitted directly following this event unless
-[`server.close()`][] is manually called. See the example in discussion of
-[`server.listen()`][].
+当发生错误时发出。与 [`net.Socket`][] 不同，[`'close'`][]
+事件**不会**在此事件之后直接发出，除非
+手动调用 [`server.close()`][]。参见 [`server.listen()`][] 讨论中的示例。
 
 ### Event: `'listening'`
 
@@ -354,7 +346,7 @@ event will **not** be emitted directly following this event unless
 added: v0.1.90
 -->
 
-Emitted when the server has been bound after calling [`server.listen()`][].
+当调用 [`server.listen()`][] 后服务器已绑定时发出。
 
 ### Event: `'drop'`
 
@@ -364,17 +356,17 @@ added:
   - v16.17.0
 -->
 
-When the number of connections reaches the threshold of `server.maxConnections`,
-the server will drop new connections and emit `'drop'` event instead. If it is a
-TCP server, the argument is as follows, otherwise the argument is `undefined`.
+当连接数达到 `server.maxConnections` 的阈值时，
+服务器将丢弃新连接并发出 `'drop'` 事件。如果是
+TCP 服务器，则参数如下，否则参数为 `undefined`。
 
-* `data` {Object} The argument passed to event listener.
-  * `localAddress` {string}  Local address.
-  * `localPort` {number} Local port.
-  * `localFamily` {string} Local family.
-  * `remoteAddress` {string} Remote address.
-  * `remotePort` {number} Remote port.
-  * `remoteFamily` {string} Remote IP family. `'IPv4'` or `'IPv6'`.
+* `data` {Object} 传递给事件监听器的参数。
+  * `localAddress` {string} 本地地址。
+  * `localPort` {number} 本地端口。
+  * `localFamily` {string} 本地族。
+  * `remoteAddress` {string} 远程地址。
+  * `remotePort` {number} 远程端口。
+  * `remoteFamily` {string} 远程 IP 族。`'IPv4'` 或 `'IPv6'`。
 
 ### `server.address()`
 
@@ -383,38 +375,37 @@ added: v0.1.90
 changes:
   - version: v18.4.0
     pr-url: https://github.com/nodejs/node/pull/43054
-    description: The `family` property now returns a string instead of a number.
+    description: "`family` 属性现在返回字符串而不是数字。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41431
-    description: The `family` property now returns a number instead of a string.
+    description: "`family` 属性现在返回数字而不是字符串。"
 -->
 
-* Returns: {Object|string|null}
+* 返回：{Object|string|null}
 
-Returns the bound `address`, the address `family` name, and `port` of the server
-as reported by the operating system if listening on an IP socket
-(useful to find which port was assigned when getting an OS-assigned address):
-`{ port: 12346, family: 'IPv4', address: '127.0.0.1' }`.
+如果在监听 IP 套接字，则返回操作系统报告的服务器绑定的 `address`、地址 `family` 名称和 `port`
+（当获取操作系统分配的地址时，用于查找分配了哪个端口很有用）：
+`{ port: 12346, family: 'IPv4', address: '127.0.0.1' }`。
 
-For a server listening on a pipe or Unix domain socket, the name is returned
-as a string.
+对于监听管道或 Unix 域套接字的服务器，名称作为
+字符串返回。
 
 ```js
 const server = net.createServer((socket) => {
   socket.end('goodbye\n');
 }).on('error', (err) => {
-  // Handle errors here.
+  // 在此处处理错误。
   throw err;
 });
 
-// Grab an arbitrary unused port.
+// 获取一个任意未使用的端口。
 server.listen(() => {
   console.log('opened server on', server.address());
 });
 ```
 
-`server.address()` returns `null` before the `'listening'` event has been
-emitted or after calling `server.close()`.
+在 `'listening'` 事件发出之前或调用 `server.close()` 之后，
+`server.address()` 返回 `null`。
 
 ### `server.close([callback])`
 
@@ -422,15 +413,13 @@ emitted or after calling `server.close()`.
 added: v0.1.90
 -->
 
-* `callback` {Function} Called when the server is closed.
-* Returns: {net.Server}
+* `callback` {Function} 当服务器关闭时调用。
+* 返回：{net.Server}
 
-Stops the server from accepting new connections and keeps existing
-connections. This function is asynchronous, the server is finally closed
-when all connections are ended and the server emits a [`'close'`][] event.
-The optional `callback` will be called once the `'close'` event occurs. Unlike
-that event, it will be called with an `Error` as its only argument if the server
-was not open when it was closed.
+停止服务器接受新连接并保持现有
+连接。此函数是异步的，当所有连接结束且服务器发出 [`'close'`][] 事件时，服务器最终关闭。
+可选的 `callback` 将在 `'close'` 事件发生时调用一次。与该事件不同，如果服务器
+在关闭时未开启，它将仅带有一个 `Error` 作为其参数被调用。
 
 ### `server[Symbol.asyncDispose]()`
 
@@ -441,11 +430,11 @@ added:
 changes:
  - version: v24.2.0
    pr-url: https://github.com/nodejs/node/pull/58467
-   description: No longer experimental.
+   description: 不再是实验性的。
 -->
 
-Calls [`server.close()`][] and returns a promise that fulfills when the
-server has closed.
+调用 [`server.close()`][] 并返回一个 promise，当服务器
+关闭时该 promise 会被兑现。
 
 ### `server.getConnections(callback)`
 
@@ -454,52 +443,50 @@ added: v0.9.7
 -->
 
 * `callback` {Function}
-* Returns: {net.Server}
+* 返回：{net.Server}
 
-Asynchronously get the number of concurrent connections on the server. Works
-when sockets were sent to forks.
+异步获取服务器上的并发连接数。当套接字被发送到
+叉进程时有效。
 
-Callback should take two arguments `err` and `count`.
+回调应接受两个参数 `err` 和 `count`。
 
 ### `server.listen()`
 
-Start a server listening for connections. A `net.Server` can be a TCP or
-an [IPC][] server depending on what it listens to.
+启动服务器监听连接。`net.Server` 可以是 TCP 或
+[IPC][] 服务器，具体取决于它监听的内容。
 
-Possible signatures:
+可能的签名：
 
 * [`server.listen(handle[, backlog][, callback])`][`server.listen(handle)`]
 * [`server.listen(options[, callback])`][`server.listen(options)`]
 * [`server.listen(path[, backlog][, callback])`][`server.listen(path)`]
-  for [IPC][] servers
+  用于 [IPC][] 服务器
 * [`server.listen([port[, host[, backlog]]][, callback])`][`server.listen(port)`]
-  for TCP servers
+  用于 TCP 服务器
 
-This function is asynchronous. When the server starts listening, the
-[`'listening'`][] event will be emitted. The last parameter `callback`
-will be added as a listener for the [`'listening'`][] event.
+此函数是异步的。当服务器开始监听时，
+[`'listening'`][] 事件将被发出。最后一个参数 `callback`
+将作为 [`'listening'`][] 事件的监听器添加。
 
-All `listen()` methods can take a `backlog` parameter to specify the maximum
-length of the queue of pending connections. The actual length will be determined
-by the OS through sysctl settings such as `tcp_max_syn_backlog` and `somaxconn`
-on Linux. The default value of this parameter is 511 (not 512).
+所有 `listen()` 方法都可以接受一个 `backlog` 参数来指定待处理连接队列的最大
+长度。实际长度将由操作系统通过 sysctl 设置确定，例如
+Linux 上的 `tcp_max_syn_backlog` 和 `somaxconn`。此参数的默认值为 511（不是 512）。
 
-All [`net.Socket`][] are set to `SO_REUSEADDR` (see [`socket(7)`][] for
-details).
+所有 [`net.Socket`][] 都设置为 `SO_REUSEADDR`（详见 [`socket(7)`][]）。
 
-The `server.listen()` method can be called again if and only if there was an
-error during the first `server.listen()` call or `server.close()` has been
-called. Otherwise, an `ERR_SERVER_ALREADY_LISTEN` error will be thrown.
+当且仅当第一次 `server.listen()` 调用期间发生错误或已调用
+`server.close()` 时，才可以再次调用 `server.listen()` 方法。否则，将抛出
+`ERR_SERVER_ALREADY_LISTEN` 错误。
 
-One of the most common errors raised when listening is `EADDRINUSE`.
-This happens when another server is already listening on the requested
-`port`/`path`/`handle`. One way to handle this would be to retry
-after a certain amount of time:
+监听时引发的最常见错误之一是 `EADDRINUSE`。
+当另一个服务器已经在监听从请求的
+`port`/`path`/`handle` 时，会发生这种情况。处理此问题的一种方法是在
+一定时间后重试：
 
 ```js
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {
-    console.error('Address in use, retrying...');
+    console.error('地址正在使用中，正在重试...');
     setTimeout(() => {
       server.close();
       server.listen(PORT, HOST);
@@ -515,18 +502,17 @@ added: v0.5.10
 -->
 
 * `handle` {Object}
-* `backlog` {number} Common parameter of [`server.listen()`][] functions
+* `backlog` {number} [`server.listen()`][] 函数的通用参数
 * `callback` {Function}
-* Returns: {net.Server}
+* 返回：{net.Server}
 
-Start a server listening for connections on a given `handle` that has
-already been bound to a port, a Unix domain socket, or a Windows named pipe.
+在已经绑定到端口、Unix 域套接字或 Windows 命名管道的给定 `handle` 上
+启动服务器监听连接。
 
-The `handle` object can be either a server, a socket (anything with an
-underlying `_handle` member), or an object with an `fd` member that is a
-valid file descriptor.
+`handle` 对象可以是服务器、套接字（任何具有底层 `_handle` 成员的对象），或具有
+有效文件描述符的 `fd` 成员的对象。
 
-Listening on a file descriptor is not supported on Windows.
+Windows 上不支持监听文件描述符。
 
 #### `server.listen(options[, callback])`
 
@@ -537,53 +523,51 @@ changes:
     - v23.1.0
     - v22.12.0
     pr-url: https://github.com/nodejs/node/pull/55408
-    description: The `reusePort` option is supported.
+    description: "支持 `reusePort` 选项。"
   - version: v15.6.0
     pr-url: https://github.com/nodejs/node/pull/36623
-    description: AbortSignal support was added.
+    description: 添加了 AbortSignal 支持。
   - version: v11.4.0
     pr-url: https://github.com/nodejs/node/pull/23798
-    description: The `ipv6Only` option is supported.
+    description: "支持 `ipv6Only` 选项。"
 -->
 
-* `options` {Object} Required. Supports the following properties:
-  * `backlog` {number} Common parameter of [`server.listen()`][]
-    functions.
-  * `exclusive` {boolean} **Default:** `false`
+* `options` {Object} 必需。支持以下属性：
+  * `backlog` {number} [`server.listen()`][] 函数的通用参数。
+  * `exclusive` {boolean} **默认：** `false`
   * `host` {string}
-  * `ipv6Only` {boolean} For TCP servers, setting `ipv6Only` to `true` will
-    disable dual-stack support, i.e., binding to host `::` won't make
-    `0.0.0.0` be bound. **Default:** `false`.
-  * `reusePort` {boolean} For TCP servers, setting `reusePort` to `true` allows
-    multiple sockets on the same host to bind to the same port. Incoming connections
-    are distributed by the operating system to listening sockets. This option is
-    available only on some platforms, such as Linux 3.9+, DragonFlyBSD 3.6+, FreeBSD 12.0+,
-    Solaris 11.4, and AIX 7.2.5+. On unsupported platforms, this option raises
-    an error. **Default:** `false`.
-  * `path` {string} Will be ignored if `port` is specified. See
-    [Identifying paths for IPC connections][].
+  * `ipv6Only` {boolean} 对于 TCP 服务器，将 `ipv6Only` 设置为 `true` 将
+    禁用双栈支持，即，绑定到主机 `::` 不会使
+    `0.0.0.0` 被绑定。**默认：** `false`。
+  * `reusePort` {boolean} 对于 TCP 服务器，将 `reusePort` 设置为 `true` 允许
+    同一主机上的多个套接字绑定到同一端口。传入连接
+    由操作系统分发到监听套接字。此选项
+    仅在某些平台上可用，例如 Linux 3.9+、DragonFlyBSD 3.6+、FreeBSD 12.0+、
+    Solaris 11.4 和 AIX 7.2.5+。在不支持的平台上，此选项会抛出
+    错误。**默认：** `false`。
+  * `path` {string} 如果指定了 `port` 将被忽略。参见
+    [识别 IPC 连接的路径][]。
   * `port` {number}
-  * `readableAll` {boolean} For IPC servers makes the pipe readable
-    for all users. **Default:** `false`.
-  * `signal` {AbortSignal} An AbortSignal that may be used to close a listening
-    server.
-  * `writableAll` {boolean} For IPC servers makes the pipe writable
-    for all users. **Default:** `false`.
+  * `readableAll` {boolean} 对于 IPC 服务器，使管道对所有用户
+    可读。**默认：** `false`。
+  * `signal` {AbortSignal} 一个可用于关闭监听
+    服务器的 AbortSignal。
+  * `writableAll` {boolean} 对于 IPC 服务器，使管道对所有用户
+    可写。**默认：** `false`。
 * `callback` {Function}
-  functions.
-* Returns: {net.Server}
+  函数。
+* 返回：{net.Server}
 
-If `port` is specified, it behaves the same as
-[`server.listen([port[, host[, backlog]]][, callback])`][`server.listen(port)`].
-Otherwise, if `path` is specified, it behaves the same as
-[`server.listen(path[, backlog][, callback])`][`server.listen(path)`].
-If none of them is specified, an error will be thrown.
+如果指定了 `port`，其行为与
+[`server.listen([port[, host[, backlog]]][, callback])`][`server.listen(port)`] 相同。
+否则，如果指定了 `path`，其行为与
+[`server.listen(path[, backlog][, callback])`][`server.listen(path)`] 相同。
+如果未指定任何一项，将抛出错误。
 
-If `exclusive` is `false` (default), then cluster workers will use the same
-underlying handle, allowing connection handling duties to be shared. When
-`exclusive` is `true`, the handle is not shared, and attempted port sharing
-results in an error. An example which listens on an exclusive port is
-shown below.
+如果 `exclusive` 为 `false`（默认），则集群工作进程将使用相同的
+底层句柄，允许共享连接处理职责。当
+`exclusive` 为 `true` 时，句柄不共享，尝试共享端口
+会导致错误。下面展示了一个监听独占端口的示例。
 
 ```js
 server.listen({
@@ -593,16 +577,16 @@ server.listen({
 });
 ```
 
-When `exclusive` is `true` and the underlying handle is shared, it is
-possible that several workers query a handle with different backlogs.
-In this case, the first `backlog` passed to the master process will be used.
+当 `exclusive` 为 `true` 且底层句柄被共享时，
+几个工作进程可能会使用不同的 backlog 查询句柄。
+在这种情况下，将使用传递给主进程的第一个 `backlog`。
 
-Starting an IPC server as root may cause the server path to be inaccessible for
-unprivileged users. Using `readableAll` and `writableAll` will make the server
-accessible for all users.
+以 root 身份启动 IPC 服务器可能会导致服务器路径对
+非特权用户不可访问。使用 `readableAll` 和 `writableAll` 将使服务器
+对所有用户可访问。
 
-If the `signal` option is enabled, calling `.abort()` on the corresponding
-`AbortController` is similar to calling `.close()` on the server:
+如果启用了 `signal` 选项，在相应的
+`AbortController` 上调用 `.abort()` 类似于在服务器上调用 `.close()`：
 
 ```js
 const controller = new AbortController();
@@ -611,7 +595,7 @@ server.listen({
   port: 80,
   signal: controller.signal,
 });
-// Later, when you want to close the server.
+// 稍后，当你想要关闭服务器时。
 controller.abort();
 ```
 
@@ -621,13 +605,13 @@ controller.abort();
 added: v0.1.90
 -->
 
-* `path` {string} Path the server should listen to. See
-  [Identifying paths for IPC connections][].
-* `backlog` {number} Common parameter of [`server.listen()`][] functions.
-* `callback` {Function}.
-* Returns: {net.Server}
+* `path` {string} 服务器应监听的路径。参见
+  [识别 IPC 连接的路径][]。
+* `backlog` {number} [`server.listen()`][] 函数的通用参数。
+* `callback` {Function}。
+* 返回：{net.Server}
 
-Start an [IPC][] server listening for connections on the given `path`.
+启动 [IPC][] 服务器监听给定 `path` 上的连接。
 
 #### `server.listen([port[, host[, backlog]]][, callback])`
 
@@ -637,23 +621,23 @@ added: v0.1.90
 
 * `port` {number}
 * `host` {string}
-* `backlog` {number} Common parameter of [`server.listen()`][] functions.
-* `callback` {Function}.
-* Returns: {net.Server}
+* `backlog` {number} [`server.listen()`][] 函数的通用参数。
+* `callback` {Function}。
+* 返回：{net.Server}
 
-Start a TCP server listening for connections on the given `port` and `host`.
+启动 TCP 服务器监听给定 `port` 和 `host` 上的连接。
 
-If `port` is omitted or is 0, the operating system will assign an arbitrary
-unused port, which can be retrieved by using `server.address().port`
-after the [`'listening'`][] event has been emitted.
+如果省略 `port` 或为 0，操作系统将分配一个任意
+未使用的端口，可以在 [`'listening'`][] 事件发出后
+通过使用 `server.address().port` 检索该端口。
 
-If `host` is omitted, the server will accept connections on the
-[unspecified IPv6 address][] (`::`) when IPv6 is available, or the
-[unspecified IPv4 address][] (`0.0.0.0`) otherwise.
+如果省略 `host`，当 IPv6 可用时，服务器将接受
+[未指定的 IPv6 地址][] (`::`) 上的连接，否则接受
+[未指定的 IPv4 地址][] (`0.0.0.0`) 上的连接。
 
-In most operating systems, listening to the [unspecified IPv6 address][] (`::`)
-may cause the `net.Server` to also listen on the [unspecified IPv4 address][]
-(`0.0.0.0`).
+在大多数操作系统中，监听 [未指定的 IPv6 地址][] (`::`)
+可能会导致 `net.Server` 也监听 [未指定的 IPv4 地址][]
+(`0.0.0.0`)。
 
 ### `server.listening`
 
@@ -661,7 +645,7 @@ may cause the `net.Server` to also listen on the [unspecified IPv4 address][]
 added: v5.7.0
 -->
 
-* Type: {boolean} Indicates whether or not the server is listening for connections.
+* 类型：{boolean} 指示服务器是否正在监听连接。
 
 ### `server.maxConnections`
 
@@ -670,20 +654,19 @@ added: v0.2.0
 changes:
   - version: v21.0.0
     pr-url: https://github.com/nodejs/node/pull/48276
-    description: Setting `maxConnections` to `0` drops all the incoming
-                 connections. Previously, it was interpreted as `Infinity`.
+    description: "将 `maxConnections` 设置为 `0` 会丢弃所有传入连接。此前，它被解释为 `Infinity`。"
 -->
 
-* Type: {integer}
+* 类型：{integer}
 
-When the number of connections reaches the `server.maxConnections` threshold:
+当连接数达到 `server.maxConnections` 阈值时：
 
-1. If the process is not running in cluster mode, Node.js will close the connection.
+1. 如果进程未在集群模式下运行，Node.js 将关闭连接。
 
-2. If the process is running in cluster mode, Node.js will, by default, route the connection to another worker process. To close the connection instead, set [`server.dropMaxConnection`][] to `true`.
+2. 如果进程在集群模式下运行，默认情况下，Node.js 会将连接路由到另一个工作进程。要改为关闭连接，请将 [`server.dropMaxConnection`][] 设置为 `true`。
 
-It is not recommended to use this option once a socket has been sent to a child
-with [`child_process.fork()`][].
+一旦套接字已通过 [`child_process.fork()`][] 发送到子进程，
+不建议使用此选项。
 
 ### `server.dropMaxConnection`
 
@@ -693,9 +676,9 @@ added:
   - v22.12.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Set this property to `true` to begin closing connections once the number of connections reaches the [`server.maxConnections`][] threshold. This setting is only effective in cluster mode.
+将此属性设置为 `true` 以在连接数达到 [`server.maxConnections`][] 阈值时开始关闭连接。此设置仅在集群模式下有效。
 
 ### `server.ref()`
 
@@ -703,11 +686,11 @@ Set this property to `true` to begin closing connections once the number of conn
 added: v0.9.1
 -->
 
-* Returns: {net.Server}
+* 返回：{net.Server}
 
-Opposite of `unref()`, calling `ref()` on a previously `unref`ed server will
-_not_ let the program exit if it's the only server left (the default behavior).
-If the server is `ref`ed calling `ref()` again will have no effect.
+`unref()` 的反操作，对之前 `unref` 的服务器调用 `ref()` 将
+_不会_ 让程序退出，如果它是唯一剩下的服务器（默认行为）。
+如果服务器已 `ref`，再次调用 `ref()` 将无效。
 
 ### `server.unref()`
 
@@ -715,32 +698,25 @@ If the server is `ref`ed calling `ref()` again will have no effect.
 added: v0.9.1
 -->
 
-* Returns: {net.Server}
+* 返回：{net.Server}
 
-Calling `unref()` on a server will allow the program to exit if this is the only
-active server in the event system. If the server is already `unref`ed calling
-`unref()` again will have no effect.
+在服务器上调用 `unref()` 将允许程序退出，如果这是
+事件系统中唯一的活跃服务器。如果服务器已经 `unref`，再次调用
+`unref()` 将无效。
 
-## Class: `net.Socket`
+## 类：`net.Socket`
 
 <!-- YAML
 added: v0.3.4
 -->
 
-* Extends: {stream.Duplex}
+* 继承自：{stream.Duplex}
 
-This class is an abstraction of a TCP socket or a streaming [IPC][] endpoint
-(uses named pipes on Windows, and Unix domain sockets otherwise). It is also
-an [`EventEmitter`][].
+此类是 TCP Socket 或流式 [IPC][] 端点（在 Windows 上使用命名管道，在其他系统上使用 Unix 域套接字）的抽象。它也是一个 [`EventEmitter`][]。
 
-A `net.Socket` can be created by the user and used directly to interact with
-a server. For example, it is returned by [`net.createConnection()`][],
-so the user can use it to talk to the server.
+`net.Socket` 可以由用户创建并直接用于与服务器交互。例如，它由 [`net.createConnection()`][] 返回，因此用户可以使用它与服务器通信。
 
-It can also be created by Node.js and passed to the user when a connection
-is received. For example, it is passed to the listeners of a
-[`'connection'`][] event emitted on a [`net.Server`][], so the user can use
-it to interact with the client.
+它也可以由 Node.js 创建并在收到连接时传递给用户。例如，它被传递给 [`net.Server`][] 上发出的 [`'connection'`][] 事件的监听器，因此用户可以使用它与客户端交互。
 
 ### `new net.Socket([options])`
 
@@ -751,79 +727,59 @@ changes:
      - v25.6.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61503
-    description: Added `typeOfService` option.
+    description: "添加了 `typeOfService` 选项。"
   - version: v15.14.0
     pr-url: https://github.com/nodejs/node/pull/37735
-    description: AbortSignal support was added.
+    description: 添加了 AbortSignal 支持。
   - version: v12.10.0
     pr-url: https://github.com/nodejs/node/pull/25436
-    description: Added `onread` option.
+    description: "添加了 `onread` 选项。"
 -->
 
-* `options` {Object} Available options are:
-  * `allowHalfOpen` {boolean} If set to `false`, then the socket will
-    automatically end the writable side when the readable side ends. See
-    [`net.createServer()`][] and the [`'end'`][] event for details. **Default:**
-    `false`.
-  * `blockList` {net.BlockList} `blockList` can be used for disabling outbound
-    access to specific IP addresses, IP ranges, or IP subnets.
-  * `fd` {number} If specified, wrap around an existing socket with
-    the given file descriptor, otherwise a new socket will be created.
-  * `keepAlive` {boolean} If set to `true`, it enables keep-alive functionality on
-    the socket immediately after the connection is established, similarly on what
-    is done in [`socket.setKeepAlive()`][]. **Default:** `false`.
-  * `keepAliveInitialDelay` {number} If set to a positive number, it sets the
-    initial delay before the first keepalive probe is sent on an idle socket. **Default:** `0`.
-  * `noDelay` {boolean} If set to `true`, it disables the use of Nagle's algorithm
-    immediately after the socket is established. **Default:** `false`.
-  * `onread` {Object} If specified, incoming data is stored in a single `buffer`
-    and passed to the supplied `callback` when data arrives on the socket.
-    This will cause the streaming functionality to not provide any data.
-    The socket will emit events like `'error'`, `'end'`, and `'close'`
-    as usual. Methods like `pause()` and `resume()` will also behave as
-    expected.
-    * `buffer` {Buffer|Uint8Array|Function} Either a reusable chunk of memory to
-      use for storing incoming data or a function that returns such.
-    * `callback` {Function} This function is called for every chunk of incoming
-      data. Two arguments are passed to it: the number of bytes written to
-      `buffer` and a reference to `buffer`. Return `false` from this function to
-      implicitly `pause()` the socket. This function will be executed in the
-      global context.
-  * `readable` {boolean} Allow reads on the socket when an `fd` is passed,
-    otherwise ignored. **Default:** `false`.
-  * `signal` {AbortSignal} An Abort signal that may be used to destroy the
-    socket.
-  * `typeOfService` {number} The initial Type of Service (TOS) value.
-  * `writable` {boolean} Allow writes on the socket when an `fd` is passed,
-    otherwise ignored. **Default:** `false`.
-* Returns: {net.Socket}
+* `options` {Object} 可用选项包括：
+  * `allowHalfOpen` {boolean} 如果设置为 `false`，则当可读端结束时，Socket 将自动结束可写端。详见 [`net.createServer()`][] 和 [`'end'`][] 事件。**默认值：**
+    `false`。
+  * `blockList` {net.BlockList} `blockList` 可用于禁用对特定 IP 地址、IP 范围或 IP 子网的出站访问。
+  * `fd` {number} 如果指定，则围绕具有给定文件描述符的现有 Socket 进行包装，否则将创建一个新的 Socket。
+  * `keepAlive` {boolean} 如果设置为 `true`，则在连接建立后立即在 Socket 上启用保活功能，类似于 [`socket.setKeepAlive()`][] 中的操作。**默认值：** `false`。
+  * `keepAliveInitialDelay` {number} 如果设置为正数，则设置在空闲 Socket 上发送第一个保活探测之前的初始延迟。**默认值：** `0`。
+  * `noDelay` {boolean} 如果设置为 `true`，则在 Socket 建立后立即禁用 Nagle 算法的使用。**默认值：** `false`。
+  * `onread` {Object} 如果指定，传入的数据将存储在单个 `buffer` 中，并在数据到达 Socket 时传递给提供的 `callback`。
+    这将导致流功能不提供任何数据。
+    Socket 将照常发出 `'error'`、`'end'` 和 `'close'` 等事件。`pause()` 和 `resume()` 等方法也将按
+    预期行为。
+    * `buffer` {Buffer|Uint8Array|Function} 要么是可重用的内存块用于存储传入数据，要么是返回此类内容的函数。
+    * `callback` {Function} 每到达一块传入数据都会调用此函数。传递给它两个参数：写入 `buffer` 的字节数和对 `buffer` 的引用。从此函数返回 `false` 以隐式 `pause()` Socket。此函数将在全局上下文中执行。
+  * `readable` {boolean} 当传递 `fd` 时允许在 Socket 上读取，否则忽略。**默认值：** `false`。
+  * `signal` {AbortSignal} 一个可用于销毁 Socket 的 Abort 信号。
+  * `typeOfService` {number} 初始服务类型 (TOS) 值。
+  * `writable` {boolean} 当传递 `fd` 时允许在 Socket 上写入，否则忽略。**默认值：** `false`。
+* 返回：{net.Socket}
 
-Creates a new socket object.
+创建一个新的 Socket 对象。
 
-The newly created socket can be either a TCP socket or a streaming [IPC][]
-endpoint, depending on what it [`connect()`][`socket.connect()`] to.
+新创建的 Socket 可以是 TCP Socket 或流式 [IPC][] 端点，具体取决于它 [`connect()`][`socket.connect()`] 到什么。
 
-### Event: `'close'`
+### 事件：`'close'`
 
 <!-- YAML
 added: v0.1.90
 -->
 
-* `hadError` {boolean} `true` if the socket had a transmission error.
+* `hadError` {boolean} 如果 Socket 发生传输错误则为 `true`。
 
-Emitted once the socket is fully closed. The argument `hadError` is a boolean
-which says if the socket was closed due to a transmission error.
+在 Socket 完全关闭后发出。参数 `hadError` 是一个布尔值，表示 Socket 是否因传输错误而关闭。
 
-### Event: `'connect'`
+### 事件：`'connect'`
 
 <!-- YAML
 added: v0.1.90
 -->
 
-Emitted when a socket connection is successfully established.
-See [`net.createConnection()`][].
+在 Socket 连接成功建立时发出。
+详见 [`net.createConnection()`][]。
 
-### Event: `'connectionAttempt'`
+### 事件：`'connectionAttempt'`
 
 <!-- YAML
 added:
@@ -831,30 +787,13 @@ added:
   - v20.12.0
 -->
 
-* `ip` {string} The IP which the socket is attempting to connect to.
-* `port` {number} The port which the socket is attempting to connect to.
-* `family` {number} The family of the IP. It can be `6` for IPv6 or `4` for IPv4.
+* `ip` {string} Socket 尝试连接的 IP。
+* `port` {number} Socket 尝试连接的端口。
+* `family` {number} IP 的族。对于 IPv6 可以是 `6`，对于 IPv4 可以是 `4`。
 
-Emitted when a new connection attempt is started. This may be emitted multiple times
-if the family autoselection algorithm is enabled in [`socket.connect(options)`][].
+在新的连接尝试启动时发出。如果在 [`socket.connect(options)`][] 中启用了族自动选择算法，则可能会多次发出此事件。
 
-### Event: `'connectionAttemptFailed'`
-
-<!-- YAML
-added:
-  - v21.6.0
-  - v20.12.0
--->
-
-* `ip` {string} The IP which the socket attempted to connect to.
-* `port` {number} The port which the socket attempted to connect to.
-* `family` {number} The family of the IP. It can be `6` for IPv6 or `4` for IPv4.
-* `error` {Error} The error associated with the failure.
-
-Emitted when a connection attempt failed. This may be emitted multiple times
-if the family autoselection algorithm is enabled in [`socket.connect(options)`][].
-
-### Event: `'connectionAttemptTimeout'`
+### 事件：`'connectionAttemptFailed'`
 
 <!-- YAML
 added:
@@ -862,104 +801,107 @@ added:
   - v20.12.0
 -->
 
-* `ip` {string} The IP which the socket attempted to connect to.
-* `port` {number} The port which the socket attempted to connect to.
-* `family` {number} The family of the IP. It can be `6` for IPv6 or `4` for IPv4.
+* `ip` {string} Socket 尝试连接的 IP。
+* `port` {number} Socket 尝试连接的端口。
+* `family` {number} IP 的族。对于 IPv6 可以是 `6`，对于 IPv4 可以是 `4`。
+* `error` {Error} 与失败相关的错误。
 
-Emitted when a connection attempt timed out. This is only emitted (and may be
-emitted multiple times) if the family autoselection algorithm is enabled
-in [`socket.connect(options)`][].
+在连接尝试失败时发出。如果在 [`socket.connect(options)`][] 中启用了族自动选择算法，则可能会多次发出此事件。
 
-### Event: `'data'`
+### 事件：`'connectionAttemptTimeout'`
+
+<!-- YAML
+added:
+  - v21.6.0
+  - v20.12.0
+-->
+
+* `ip` {string} Socket 尝试连接的 IP。
+* `port` {number} Socket 尝试连接的端口。
+* `family` {number} IP 的族。对于 IPv6 可以是 `6`，对于 IPv4 可以是 `4`。
+
+在连接尝试超时时发出。仅当在 [`socket.connect(options)`][] 中启用了族自动选择算法时才会发出此事件（并且可能会多次发出）。
+
+### 事件：`'data'`
 
 <!-- YAML
 added: v0.1.90
 -->
 
-* Type: {Buffer|string}
+* 类型：{Buffer|string}
 
-Emitted when data is received. The argument `data` will be a `Buffer` or
-`String`. Encoding of data is set by [`socket.setEncoding()`][].
+在收到数据时发出。参数 `data` 将是 `Buffer` 或
+`String`。数据的编码由 [`socket.setEncoding()`][] 设置。
 
-The data will be lost if there is no listener when a `Socket`
-emits a `'data'` event.
+如果 `Socket` 发出 `'data'` 事件时没有监听器，数据将会丢失。
 
-### Event: `'drain'`
-
-<!-- YAML
-added: v0.1.90
--->
-
-Emitted when the write buffer becomes empty. Can be used to throttle uploads.
-
-See also: the return values of `socket.write()`.
-
-### Event: `'end'`
+### 事件：`'drain'`
 
 <!-- YAML
 added: v0.1.90
 -->
 
-Emitted when the other end of the socket signals the end of transmission, thus
-ending the readable side of the socket.
+在写入缓冲区变为空时发出。可用于限制上传。
 
-By default (`allowHalfOpen` is `false`) the socket will send an end of
-transmission packet back and destroy its file descriptor once it has written out
-its pending write queue. However, if `allowHalfOpen` is set to `true`, the
-socket will not automatically [`end()`][`socket.end()`] its writable side,
-allowing the user to write arbitrary amounts of data. The user must call
-[`end()`][`socket.end()`] explicitly to close the connection (i.e. sending a
-FIN packet back).
+另见：`socket.write()` 的返回值。
 
-### Event: `'error'`
+### 事件：`'end'`
 
 <!-- YAML
 added: v0.1.90
 -->
 
-* Type: {Error}
+当 Socket 的另一端信号传输结束时发出，从而结束 Socket 的可读端。
 
-Emitted when an error occurs. The `'close'` event will be called directly
-following this event.
+默认情况下（`allowHalfOpen` 为 `false`），Socket 将发送一个传输结束包，并在写出其待处理的写入队列后销毁其文件描述符。但是，如果 `allowHalfOpen` 设置为 `true`，则 Socket 不会自动 [`end()`][`socket.end()`] 其可写端，允许用户写入任意数量的数据。用户必须显式调用 [`end()`][`socket.end()`] 来关闭连接（即发送一个 FIN 包回来）。
 
-### Event: `'lookup'`
+### 事件：`'error'`
+
+<!-- YAML
+added: v0.1.90
+-->
+
+* 类型：{Error}
+
+在发生错误时发出。`'close'` 事件将在此事件之后直接调用。
+
+### 事件：`'lookup'`
 
 <!-- YAML
 added: v0.11.3
 changes:
   - version: v5.10.0
     pr-url: https://github.com/nodejs/node/pull/5598
-    description: The `host` parameter is supported now.
+    description: "现在支持 `host` 参数。"
 -->
 
-Emitted after resolving the host name but before connecting.
-Not applicable to Unix sockets.
+在解析主机名之后但在连接之前发出。
+不适用于 Unix 套接字。
 
-* `err` {Error|null} The error object. See [`dns.lookup()`][].
-* `address` {string} The IP address.
-* `family` {number|null} The address type. See [`dns.lookup()`][].
-* `host` {string} The host name.
+* `err` {Error|null} 错误对象。详见 [`dns.lookup()`][]。
+* `address` {string} IP 地址。
+* `family` {number|null} 地址类型。详见 [`dns.lookup()`][]。
+* `host` {string} 主机名。
 
-### Event: `'ready'`
+### 事件：`'ready'`
 
 <!-- YAML
 added: v9.11.0
 -->
 
-Emitted when a socket is ready to be used.
+在 Socket 准备好使用时发出。
 
-Triggered immediately after `'connect'`.
+在 `'connect'` 之后立即触发。
 
-### Event: `'timeout'`
+### 事件：`'timeout'`
 
 <!-- YAML
 added: v0.1.90
 -->
 
-Emitted if the socket times out from inactivity. This is only to notify that
-the socket has been idle. The user must manually close the connection.
+如果 Socket 因不活动而超时时发出。这仅用于通知 Socket 处于空闲状态。用户必须手动关闭连接。
 
-See also: [`socket.setTimeout()`][].
+另见：[`socket.setTimeout()`][]。
 
 ### `socket.address()`
 
@@ -968,16 +910,15 @@ added: v0.1.90
 changes:
   - version: v18.4.0
     pr-url: https://github.com/nodejs/node/pull/43054
-    description: The `family` property now returns a string instead of a number.
+    description: "`family` 属性现在返回字符串而不是数字。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41431
-    description: The `family` property now returns a number instead of a string.
+    description: "`family` 属性现在返回数字而不是字符串。"
 -->
 
-* Returns: {Object}
+* 返回：{Object}
 
-Returns the bound `address`, the address `family` name and `port` of the
-socket as reported by the operating system:
+返回操作系统报告的 Socket 绑定的 `address`、地址 `family` 名称和 `port`：
 `{ port: 12346, family: 'IPv4', address: '127.0.0.1' }`
 
 ### `socket.autoSelectFamilyAttemptedAddresses`
@@ -988,13 +929,11 @@ added:
  - v18.18.0
 -->
 
-* Type: {string\[]}
+* 类型：{string\[]}
 
-This property is only present if the family autoselection algorithm is enabled in
-[`socket.connect(options)`][] and it is an array of the addresses that have been attempted.
+仅当在 [`socket.connect(options)`][] 中启用了族自动选择算法时，此属性才存在，它是已尝试地址的数组。
 
-Each address is a string in the form of `$IP:$PORT`. If the connection was successful,
-then the last address is the one that the socket is currently connected to.
+每个地址都是 `$IP:$PORT` 形式的字符串。如果连接成功，则最后一个地址是 Socket 当前连接的地址。
 
 ### `socket.bufferSize`
 
@@ -1004,24 +943,15 @@ deprecated:
   - v14.6.0
 -->
 
-> Stability: 0 - Deprecated: Use [`writable.writableLength`][] instead.
+> 稳定性：0 - 已废弃：改用 [`writable.writableLength`][]。
 
-* Type: {integer}
+* 类型：{integer}
 
-This property shows the number of characters buffered for writing. The buffer
-may contain strings whose length after encoding is not yet known. So this number
-is only an approximation of the number of bytes in the buffer.
+此属性显示缓冲用于写入的字符数。缓冲区可能包含编码后长度未知的字符串。因此这个数字只是缓冲区中字节数的近似值。
 
-`net.Socket` has the property that `socket.write()` always works. This is to
-help users get up and running quickly. The computer cannot always keep up
-with the amount of data that is written to a socket. The network connection
-simply might be too slow. Node.js will internally queue up the data written to a
-socket and send it out over the wire when it is possible.
+`net.Socket` 具有 `socket.write()` 始终有效的属性。这是为了帮助用户快速上手。计算机无法总是跟上写入 Socket 的数据量。网络连接可能只是 太慢。Node.js 将在内部队列化写入 Socket 的数据，并在可能时通过线路发送出去。
 
-The consequence of this internal buffering is that memory may grow.
-Users who experience large or growing `bufferSize` should attempt to
-"throttle" the data flows in their program with
-[`socket.pause()`][] and [`socket.resume()`][].
+此内部缓冲的后果是内存可能会增长。遇到大型或不断增长的 `bufferSize` 的用户应尝试使用 [`socket.pause()`][] 和 [`socket.resume()`][] 在其程序中“限制”数据流。
 
 ### `socket.bytesRead`
 
@@ -1029,9 +959,9 @@ Users who experience large or growing `bufferSize` should attempt to
 added: v0.5.3
 -->
 
-* Type: {integer}
+* 类型：{integer}
 
-The amount of received bytes.
+接收的字节数。
 
 ### `socket.bytesWritten`
 
@@ -1039,33 +969,27 @@ The amount of received bytes.
 added: v0.5.3
 -->
 
-* Type: {integer}
+* 类型：{integer}
 
-The amount of bytes sent.
+发送的字节数。
 
 ### `socket.connect()`
 
-Initiate a connection on a given socket.
+在给定的 Socket 上发起连接。
 
-Possible signatures:
+可能的签名：
 
 * [`socket.connect(options[, connectListener])`][`socket.connect(options)`]
 * [`socket.connect(path[, connectListener])`][`socket.connect(path)`]
-  for [IPC][] connections.
+  用于 [IPC][] 连接。
 * [`socket.connect(port[, host][, connectListener])`][`socket.connect(port)`]
-  for TCP connections.
-* Returns: {net.Socket} The socket itself.
+  用于 TCP 连接。
+* 返回：{net.Socket} Socket 本身。
 
-This function is asynchronous. When the connection is established, the
-[`'connect'`][] event will be emitted. If there is a problem connecting,
-instead of a [`'connect'`][] event, an [`'error'`][] event will be emitted with
-the error passed to the [`'error'`][] listener.
-The last parameter `connectListener`, if supplied, will be added as a listener
-for the [`'connect'`][] event **once**.
+此函数是异步的。当连接建立时，将发出 [`'connect'`][] 事件。如果连接有问题，将发出 [`'error'`][] 事件而不是 [`'connect'`][] 事件，错误将传递给 [`'error'`][] 监听器。
+最后一个参数 `connectListener`，如果提供，将作为 [`'connect'`][] 事件的监听器添加**一次**。
 
-This function should only be used for reconnecting a socket after
-`'close'` has been emitted or otherwise it may lead to undefined
-behavior.
+此函数仅应用于在发出 `'close'` 后重新连接 Socket，否则可能导致未定义的行为。
 
 #### `socket.connect(options[, connectListener])`
 
@@ -1076,93 +1000,65 @@ changes:
       - v20.0.0
       - v18.18.0
     pr-url: https://github.com/nodejs/node/pull/46790
-    description: The default value for the autoSelectFamily option is now true.
-                 The `--enable-network-family-autoselection` CLI flag has been renamed
-                 to `--network-family-autoselection`. The old name is now an
-                 alias but it is discouraged.
+    description: "autoSelectFamily 选项的默认值现在为 true。`--enable-network-family-autoselection` CLI 标志已重命名为`--network-family-autoselection`。旧名称现在是别名，但不推荐使用。"
   - version: v19.4.0
     pr-url: https://github.com/nodejs/node/pull/45777
-    description: The default value for autoSelectFamily option can be changed
-                 at runtime using `setDefaultAutoSelectFamily` or via the
-                 command line option `--enable-network-family-autoselection`.
+    description: "autoSelectFamily 选项的默认值可以在运行时使用 `setDefaultAutoSelectFamily` 更改或通过命令行选项 `--enable-network-family-autoselection` 更改。"
   - version:
       - v19.3.0
       - v18.13.0
     pr-url: https://github.com/nodejs/node/pull/44731
-    description: Added the `autoSelectFamily` option.
+    description: "添加了 `autoSelectFamily` 选项。"
   - version:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41310
-    description: The `noDelay`, `keepAlive`, and `keepAliveInitialDelay`
-                 options are supported now.
+    description: "现在支持 `noDelay`、`keepAlive` 和 `keepAliveInitialDelay`选项。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/6021
-    description: The `hints` option defaults to `0` in all cases now.
-                 Previously, in the absence of the `family` option it would
-                 default to `dns.ADDRCONFIG | dns.V4MAPPED`.
+    description: "现在所有情况下 `hints` 选项的默认值均为 `0`。以前，在没有 `family` 选项的情况下，它默认为 `dns.ADDRCONFIG | dns.V4MAPPED`。"
   - version: v5.11.0
     pr-url: https://github.com/nodejs/node/pull/6000
-    description: The `hints` option is supported now.
+    description: "现在支持 `hints` 选项。"
 -->
 
 * `options` {Object}
-* `connectListener` {Function} Common parameter of [`socket.connect()`][]
-  methods. Will be added as a listener for the [`'connect'`][] event once.
-* Returns: {net.Socket} The socket itself.
+* `connectListener` {Function} [`socket.connect()`][] 方法的通用参数。将作为 [`'connect'`][] 事件的监听器添加一次。
+* 返回：{net.Socket} Socket 本身。
 
-Initiate a connection on a given socket. Normally this method is not needed,
-the socket should be created and opened with [`net.createConnection()`][]. Use
-this only when implementing a custom Socket.
+在给定的 Socket 上发起连接。通常不需要此方法，Socket 应使用 [`net.createConnection()`][] 创建和打开。仅在实现自定义 Socket 时使用此方法。
 
-For TCP connections, available `options` are:
+对于 TCP 连接，可用的 `options` 包括：
 
-* `autoSelectFamily` {boolean}: If set to `true`, it enables a family
-  autodetection algorithm that loosely implements section 5 of [RFC 8305][]. The
-  `all` option passed to lookup is set to `true` and the sockets attempts to
-  connect to all obtained IPv6 and IPv4 addresses, in sequence, until a
-  connection is established. The first returned AAAA address is tried first,
-  then the first returned A address, then the second returned AAAA address and
-  so on. Each connection attempt (but the last one) is given the amount of time
-  specified by the `autoSelectFamilyAttemptTimeout` option before timing out and
-  trying the next address. Ignored if the `family` option is not `0` or if
-  `localAddress` is set. Connection errors are not emitted if at least one
-  connection succeeds. If all connections attempts fails, a single
-  `AggregateError` with all failed attempts is emitted. **Default:**
-  [`net.getDefaultAutoSelectFamily()`][].
-* `autoSelectFamilyAttemptTimeout` {number}: The amount of time in milliseconds
-  to wait for a connection attempt to finish before trying the next address when
-  using the `autoSelectFamily` option. If set to a positive integer less than
-  `10`, then the value `10` will be used instead. **Default:**
-  [`net.getDefaultAutoSelectFamilyAttemptTimeout()`][].
-* `family` {number}: Version of IP stack. Must be `4`, `6`, or `0`. The value
-  `0` indicates that both IPv4 and IPv6 addresses are allowed. **Default:** `0`.
-* `hints` {number} Optional [`dns.lookup()` hints][].
-* `host` {string} Host the socket should connect to. **Default:** `'localhost'`.
-* `localAddress` {string} Local address the socket should connect from.
-* `localPort` {number} Local port the socket should connect from.
-* `lookup` {Function} Custom lookup function. **Default:** [`dns.lookup()`][].
-* `port` {number} Required. Port the socket should connect to.
+* `autoSelectFamily` {boolean}：如果设置为 `true`，则启用一个族自动检测算法，该算法大致实现了 [RFC 8305][] 的第 5 节。传递给查找的 `all` 选项设置为 `true`，Socket 尝试按顺序连接所有获取的 IPv6 和 IPv4 地址，直到建立连接。首先尝试返回的第一个 AAAA 地址，然后返回的第一个 A 地址，然后返回的第二个 AAAA 地址，依此类推。每个连接尝试（最后一个除外）在超时并尝试下一个地址之前，将获得 `autoSelectFamilyAttemptTimeout` 选项指定的时间量。如果 `family` 选项不是 `0` 或设置了 `localAddress`，则忽略。如果至少有一个连接成功，则不会发出连接错误。如果所有连接尝试都失败，则发出一个包含所有失败尝试的单个 `AggregateError`。**默认值：**
+  [`net.getDefaultAutoSelectFamily()`][]。
+* `autoSelectFamilyAttemptTimeout` {number}：在使用 `autoSelectFamily` 选项时，在尝试下一个地址之前等待连接尝试完成的毫秒数。如果设置为小于 `10` 的正整数，则将使用值 `10`。**默认值：**
+  [`net.getDefaultAutoSelectFamilyAttemptTimeout()`][]。
+* `family` {number}：IP 栈版本。必须是 `4`、`6` 或 `0`。值 `0` 表示允许 IPv4 和 IPv6 地址。**默认值：** `0`。
+* `hints` {number} 可选的 [`dns.lookup()` 提示][]。
+* `host` {string} Socket 应连接的主机。**默认值：** `'localhost'`。
+* `localAddress` {string} Socket 应连接的本地地址。
+* `localPort` {number} Socket 应连接的本地端口。
+* `lookup` {Function} 自定义查找函数。**默认值：** [`dns.lookup()`][]。
+* `port` {number} 必需。Socket 应连接的端口。
 
-For [IPC][] connections, available `options` are:
+对于 [IPC][] 连接，可用的 `options` 包括：
 
-* `path` {string} Required. Path the client should connect to.
-  See [Identifying paths for IPC connections][]. If provided, the TCP-specific
-  options above are ignored.
+* `path` {string} 必需。客户端应连接的路径。
+  详见 [识别 IPC 连接的路径][]。如果提供，则忽略上述 TCP 特定选项。
 
 #### `socket.connect(path[, connectListener])`
 
-* `path` {string} Path the client should connect to. See
-  [Identifying paths for IPC connections][].
-* `connectListener` {Function} Common parameter of [`socket.connect()`][]
-  methods. Will be added as a listener for the [`'connect'`][] event once.
-* Returns: {net.Socket} The socket itself.
+* `path` {string} 客户端应连接的路径。详见
+  [识别 IPC 连接的路径][]。
+* `connectListener` {Function} [`socket.connect()`][] 方法的通用参数。将作为 [`'connect'`][] 事件的监听器添加一次。
+* 返回：{net.Socket} Socket 本身。
 
-Initiate an [IPC][] connection on the given socket.
+在给定的 Socket 上发起 [IPC][] 连接。
 
-Alias to
+别名于
 [`socket.connect(options[, connectListener])`][`socket.connect(options)`]
-called with `{ path: path }` as `options`.
+调用时 `{ path: path }` 作为 `options`。
 
 #### `socket.connect(port[, host][, connectListener])`
 
@@ -1170,17 +1066,16 @@ called with `{ path: path }` as `options`.
 added: v0.1.90
 -->
 
-* `port` {number} Port the client should connect to.
-* `host` {string} Host the client should connect to.
-* `connectListener` {Function} Common parameter of [`socket.connect()`][]
-  methods. Will be added as a listener for the [`'connect'`][] event once.
-* Returns: {net.Socket} The socket itself.
+* `port` {number} 客户端应连接的端口。
+* `host` {string} 客户端应连接的主机。
+* `connectListener` {Function} [`socket.connect()`][] 方法的通用参数。将作为 [`'connect'`][] 事件的监听器添加一次。
+* 返回：{net.Socket} Socket 本身。
 
-Initiate a TCP connection on the given socket.
+在给定的 Socket 上发起 TCP 连接。
 
-Alias to
+别名于
 [`socket.connect(options[, connectListener])`][`socket.connect(options)`]
-called with `{port: port, host: host}` as `options`.
+调用时 `{port: port, host: host}` 作为 `options`。
 
 ### `socket.connecting`
 
@@ -1188,15 +1083,13 @@ called with `{port: port, host: host}` as `options`.
 added: v6.1.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-If `true`,
-[`socket.connect(options[, connectListener])`][`socket.connect(options)`] was
-called and has not yet finished. It will stay `true` until the socket becomes
-connected, then it is set to `false` and the `'connect'` event is emitted. Note
-that the
+如果为 `true`，
+[`socket.connect(options[, connectListener])`][`socket.connect(options)`] 已
+调用但尚未完成。它将保持 `true` 直到 Socket 连接，然后设置为 `false` 并发出 `'connect'` 事件。注意
 [`socket.connect(options[, connectListener])`][`socket.connect(options)`]
-callback is a listener for the `'connect'` event.
+回调是 `'connect'` 事件的监听器。
 
 ### `socket.destroy([error])`
 
@@ -1205,19 +1098,18 @@ added: v0.1.90
 -->
 
 * `error` {Object}
-* Returns: {net.Socket}
+* 返回：{net.Socket}
 
-Ensures that no more I/O activity happens on this socket.
-Destroys the stream and closes the connection.
+确保此 Socket 上不再发生 I/O 活动。
+销毁流并关闭连接。
 
-See [`writable.destroy()`][] for further details.
+详见 [`writable.destroy()`][] 以获取更多详情。
 
 ### `socket.destroyed`
 
-* Type: {boolean} Indicates if the connection is destroyed or not. Once a
-  connection is destroyed no further data can be transferred using it.
+* 类型：{boolean} 指示连接是否已销毁。一旦连接被销毁，不能再使用它传输任何数据。
 
-See [`writable.destroyed`][] for further details.
+详见 [`writable.destroyed`][] 以获取更多详情。
 
 ### `socket.destroySoon()`
 
@@ -1225,9 +1117,7 @@ See [`writable.destroyed`][] for further details.
 added: v0.3.4
 -->
 
-Destroys the socket after all data is written. If the `'finish'` event was
-already emitted the socket is destroyed immediately. If the socket is still
-writable it implicitly calls `socket.end()`.
+在所有数据写入后销毁 Socket。如果 `'finish'` 事件已经发出，则立即销毁 Socket。如果 Socket 仍可写，则隐式调用 `socket.end()`。
 
 ### `socket.end([data[, encoding]][, callback])`
 
@@ -1236,14 +1126,13 @@ added: v0.1.90
 -->
 
 * `data` {string|Buffer|Uint8Array}
-* `encoding` {string} Only used when data is `string`. **Default:** `'utf8'`.
-* `callback` {Function} Optional callback for when the socket is finished.
-* Returns: {net.Socket} The socket itself.
+* `encoding` {string} 仅当数据为 `string` 时使用。**默认值：** `'utf8'`。
+* `callback` {Function} Socket 完成时的可选回调。
+* 返回：{net.Socket} Socket 本身。
 
-Half-closes the socket. i.e., it sends a FIN packet. It is possible the
-server will still send some data.
+半关闭 Socket。即，它发送一个 FIN 包。服务器可能仍会发送一些数据。
 
-See [`writable.end()`][] for further details.
+详见 [`writable.end()`][] 以获取更多详情。
 
 ### `socket.localAddress`
 
@@ -1251,12 +1140,9 @@ See [`writable.end()`][] for further details.
 added: v0.9.6
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The string representation of the local IP address the remote client is
-connecting on. For example, in a server listening on `'0.0.0.0'`, if a client
-connects on `'192.168.1.1'`, the value of `socket.localAddress` would be
-`'192.168.1.1'`.
+远程客户端连接的本地 IP 地址的字符串表示。例如，在监听 `'0.0.0.0'` 的服务器中，如果客户端在 `'192.168.1.1'` 上连接，则 `socket.localAddress` 的值将是 `'192.168.1.1'`。
 
 ### `socket.localPort`
 
@@ -1264,9 +1150,9 @@ connects on `'192.168.1.1'`, the value of `socket.localAddress` would be
 added: v0.9.6
 -->
 
-* Type: {integer}
+* 类型：{integer}
 
-The numeric representation of the local port. For example, `80` or `21`.
+本地端口的数字表示。例如，`80` 或 `21`。
 
 ### `socket.localFamily`
 
@@ -1276,16 +1162,16 @@ added:
   - v16.18.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The string representation of the local IP family. `'IPv4'` or `'IPv6'`.
+本地 IP 族的字符串表示。`'IPv4'` 或 `'IPv6'`。
 
 ### `socket.pause()`
 
-* Returns: {net.Socket} The socket itself.
+* 返回：{net.Socket} Socket 本身。
 
-Pauses the reading of data. That is, [`'data'`][] events will not be emitted.
-Useful to throttle back an upload.
+暂停数据读取。即，[`'data'`][] 事件将不会发出。
+可用于限制上传。
 
 ### `socket.pending`
 
@@ -1295,11 +1181,9 @@ added:
  - v10.16.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-This is `true` if the socket is not connected yet, either because `.connect()`
-has not yet been called or because it is still in the process of connecting
-(see [`socket.connecting`][]).
+如果 Socket 尚未连接，则为 `true`，要么是因为 `.connect()` 尚未调用，要么是因为它仍在连接过程中（详见 [`socket.connecting`][]）。
 
 ### `socket.ref()`
 
@@ -1307,11 +1191,9 @@ has not yet been called or because it is still in the process of connecting
 added: v0.9.1
 -->
 
-* Returns: {net.Socket} The socket itself.
+* 返回：{net.Socket} Socket 本身。
 
-Opposite of `unref()`, calling `ref()` on a previously `unref`ed socket will
-_not_ let the program exit if it's the only socket left (the default behavior).
-If the socket is `ref`ed calling `ref` again will have no effect.
+`unref()` 的反义词，在先前 `unref` 的 Socket 上调用 `ref()` 将 _不_ 允许程序退出，如果它是唯一剩下的 Socket（默认行为）。如果 Socket 已 `ref`，再次调用 `ref` 将无效。
 
 ### `socket.remoteAddress`
 
@@ -1319,11 +1201,10 @@ If the socket is `ref`ed calling `ref` again will have no effect.
 added: v0.5.10
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The string representation of the remote IP address. For example,
-`'74.125.127.100'` or `'2001:4860:a005::68'`. Value may be `undefined` if
-the socket is destroyed (for example, if the client disconnected).
+远程 IP 地址的字符串表示。例如，
+`'74.125.127.100'` 或 `'2001:4860:a005::68'`。如果 Socket 已销毁（例如，如果客户端断开连接），值可能为 `undefined`。
 
 ### `socket.remoteFamily`
 
@@ -1331,10 +1212,9 @@ the socket is destroyed (for example, if the client disconnected).
 added: v0.11.14
 -->
 
-* Type: {string}
+* 类型：{string}
 
-The string representation of the remote IP family. `'IPv4'` or `'IPv6'`. Value may be `undefined` if
-the socket is destroyed (for example, if the client disconnected).
+远程 IP 族的字符串表示。`'IPv4'` 或 `'IPv6'`。如果 Socket 已销毁（例如，如果客户端断开连接），值可能为 `undefined`。
 
 ### `socket.remotePort`
 
@@ -1342,10 +1222,9 @@ the socket is destroyed (for example, if the client disconnected).
 added: v0.5.10
 -->
 
-* Type: {integer}
+* 类型：{integer}
 
-The numeric representation of the remote port. For example, `80` or `21`. Value may be `undefined` if
-the socket is destroyed (for example, if the client disconnected).
+远程端口的数字表示。例如，`80` 或 `21`。如果 Socket 已销毁（例如，如果客户端断开连接），值可能为 `undefined`。
 
 ### `socket.resetAndDestroy()`
 
@@ -1355,18 +1234,18 @@ added:
   - v16.17.0
 -->
 
-* Returns: {net.Socket}
+* 返回：{net.Socket}
 
-Close the TCP connection by sending an RST packet and destroy the stream.
-If this TCP socket is in connecting status, it will send an RST packet and destroy this TCP socket once it is connected.
-Otherwise, it will call `socket.destroy` with an `ERR_SOCKET_CLOSED` Error.
-If this is not a TCP socket (for example, a pipe), calling this method will immediately throw an `ERR_INVALID_HANDLE_TYPE` Error.
+通过发送 RST 包关闭 TCP 连接并销毁流。
+如果此 TCP Socket 处于连接状态，它将在连接后发送 RST 包并销毁此 TCP Socket。
+否则，它将使用 `ERR_SOCKET_CLOSED` 错误调用 `socket.destroy`。
+如果这不是 TCP Socket（例如，管道），调用此方法将立即抛出 `ERR_INVALID_HANDLE_TYPE` 错误。
 
 ### `socket.resume()`
 
-* Returns: {net.Socket} The socket itself.
+* 返回：{net.Socket} Socket 本身。
 
-Resumes reading after a call to [`socket.pause()`][].
+在调用 [`socket.pause()`][] 后恢复读取。
 
 ### `socket.setEncoding([encoding])`
 
@@ -1375,10 +1254,10 @@ added: v0.1.90
 -->
 
 * `encoding` {string}
-* Returns: {net.Socket} The socket itself.
+* 返回：{net.Socket} Socket 本身。
 
-Set the encoding for the socket as a [Readable Stream][]. See
-[`readable.setEncoding()`][] for more information.
+将 Socket 的编码设置为 [可读流][]。详见
+[`readable.setEncoding()`][] 以获取更多信息。
 
 ### `socket.setKeepAlive([enable][, initialDelay])`
 
@@ -1389,22 +1268,18 @@ changes:
     - v13.12.0
     - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/32204
-    description: New defaults for `TCP_KEEPCNT` and `TCP_KEEPINTVL` socket options were added.
+    description: "添加了 `TCP_KEEPCNT` 和 `TCP_KEEPINTVL` Socket 选项的新默认值。"
 -->
 
-* `enable` {boolean} **Default:** `false`
-* `initialDelay` {number} **Default:** `0`
-* Returns: {net.Socket} The socket itself.
+* `enable` {boolean} **默认值：** `false`
+* `initialDelay` {number} **默认值：** `0`
+* 返回：{net.Socket} Socket 本身。
 
-Enable/disable keep-alive functionality, and optionally set the initial
-delay before the first keepalive probe is sent on an idle socket.
+启用/禁用保活功能，并可选设置在空闲 Socket 上发送第一个保活探测之前的初始延迟。
 
-Set `initialDelay` (in milliseconds) to set the delay between the last
-data packet received and the first keepalive probe. Setting `0` for
-`initialDelay` will leave the value unchanged from the default
-(or previous) setting.
+设置 `initialDelay`（以毫秒为单位）以设置最后一个数据包接收和第一个保活探测之间的延迟。将 `0` 设置为 `initialDelay` 将使值保持与默认值（或之前的设置）不变。
 
-Enabling the keep-alive functionality will set the following socket options:
+启用保活功能将设置以下 Socket 选项：
 
 * `SO_KEEPALIVE=1`
 * `TCP_KEEPIDLE=initialDelay`
@@ -1417,19 +1292,16 @@ Enabling the keep-alive functionality will set the following socket options:
 added: v0.1.90
 -->
 
-* `noDelay` {boolean} **Default:** `true`
-* Returns: {net.Socket} The socket itself.
+* `noDelay` {boolean} **默认值：** `true`
+* 返回：{net.Socket} Socket 本身。
 
-Enable/disable the use of Nagle's algorithm.
+启用/禁用 Nagle 算法的使用。
 
-When a TCP connection is created, it will have Nagle's algorithm enabled.
+创建 TCP 连接时，将启用 Nagle 算法。
 
-Nagle's algorithm delays data before it is sent via the network. It attempts
-to optimize throughput at the expense of latency.
+Nagle 算法在网络发送之前延迟数据。它试图以延迟为代价优化吞吐量。
 
-Passing `true` for `noDelay` or not passing an argument will disable Nagle's
-algorithm for the socket. Passing `false` for `noDelay` will enable Nagle's
-algorithm.
+为 `noDelay` 传递 `true` 或不传递参数将禁用 Socket 的 Nagle 算法。为 `noDelay` 传递 `false` 将启用 Nagle 算法。
 
 ### `socket.setTimeout(timeout[, callback])`
 
@@ -1438,21 +1310,16 @@ added: v0.1.90
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: Passing an invalid callback to the `callback` argument
-                 now throws `ERR_INVALID_ARG_TYPE` instead of
-                 `ERR_INVALID_CALLBACK`.
+    description: "现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
 -->
 
 * `timeout` {number}
 * `callback` {Function}
-* Returns: {net.Socket} The socket itself.
+* 返回：{net.Socket} Socket 本身。
 
-Sets the socket to timeout after `timeout` milliseconds of inactivity on
-the socket. By default `net.Socket` do not have a timeout.
+设置 Socket 在 Socket 上不活动 `timeout` 毫秒后超时。默认情况下 `net.Socket` 没有超时。
 
-When an idle timeout is triggered the socket will receive a [`'timeout'`][]
-event but the connection will not be severed. The user must manually call
-[`socket.end()`][] or [`socket.destroy()`][] to end the connection.
+当触发空闲超时时，Socket 将收到 [`'timeout'`][] 事件，但连接不会被切断。用户必须手动调用 [`socket.end()`][] 或 [`socket.destroy()`][] 来结束连接。
 
 ```js
 socket.setTimeout(3000);
@@ -1462,10 +1329,9 @@ socket.on('timeout', () => {
 });
 ```
 
-If `timeout` is 0, then the existing idle timeout is disabled.
+如果 `timeout` 为 0，则禁用现有的空闲超时。
 
-The optional `callback` parameter will be added as a one-time listener for the
-[`'timeout'`][] event.
+可选的 `callback` 参数将作为 [`'timeout'`][] 事件的一次性监听器添加。
 
 ### `socket.getTypeOfService()`
 
@@ -1475,18 +1341,14 @@ added:
  - v24.15.0
 -->
 
-* Returns: {integer} The current TOS value.
+* 返回：{integer} 当前的 TOS 值。
 
-Returns the current Type of Service (TOS) field for IPv4 packets or Traffic
-Class for IPv6 packets for this socket.
+返回此 Socket 的 IPv4 数据包的当前服务类型 (TOS) 字段或 IPv6 数据包的流量类别。
 
-`setTypeOfService()` may be called before the socket is connected; the value
-will be cached and applied when the socket establishes a connection.
-`getTypeOfService()` will return the currently set value even before connection.
+`setTypeOfService()` 可以在 Socket 连接之前调用；值将被缓存并在 Socket 建立连接时应用。
+`getTypeOfService()` 甚至在连接之前也会返回当前设置的值。
 
-On some platforms (e.g., Linux), certain TOS/ECN bits may be masked or ignored,
-and behavior can differ between IPv4 and IPv6 or dual-stack sockets. Callers
-should verify platform-specific semantics.
+在某些平台（例如，Linux）上，某些 TOS/ECN 位可能被屏蔽或忽略，并且行为在 IPv4 和 IPv6 或双栈 Socket 之间可能不同。调用者应验证特定于平台的语义。
 
 ### `socket.setTypeOfService(tos)`
 
@@ -1496,19 +1358,15 @@ added:
  - v24.15.0
 -->
 
-* `tos` {integer} The TOS value to set (0-255).
-* Returns: {net.Socket} The socket itself.
+* `tos` {integer} 要设置的 TOS 值 (0-255)。
+* 返回：{net.Socket} Socket 本身。
 
-Sets the Type of Service (TOS) field for IPv4 packets or Traffic Class for IPv6
-Packets sent from this socket. This can be used to prioritize network traffic.
+设置从此 Socket 发送的 IPv4 数据包的服務類型 (TOS) 字段或 IPv6 数据包的流量类别。这可用于优先处理网络流量。
 
-`setTypeOfService()` may be called before the socket is connected; the value
-will be cached and applied when the socket establishes a connection.
-`getTypeOfService()` will return the currently set value even before connection.
+`setTypeOfService()` 可以在 Socket 连接之前调用；值将被缓存并在 Socket 建立连接时应用。
+`getTypeOfService()` 甚至在连接之前也会返回当前设置的值。
 
-On some platforms (e.g., Linux), certain TOS/ECN bits may be masked or ignored,
-and behavior can differ between IPv4 and IPv6 or dual-stack sockets. Callers
-should verify platform-specific semantics.
+在某些平台（例如，Linux）上，某些 TOS/ECN 位可能被屏蔽或忽略，并且行为在 IPv4 和 IPv6 或双栈 Socket 之间可能不同。调用者应验证特定于平台的语义。
 
 ### `socket.timeout`
 
@@ -1516,10 +1374,10 @@ should verify platform-specific semantics.
 added: v10.7.0
 -->
 
-* Type: {number|undefined}
+* 类型：{number|undefined}
 
-The socket timeout in milliseconds as set by [`socket.setTimeout()`][].
-It is `undefined` if a timeout has not been set.
+由 [`socket.setTimeout()`][] 设置的 Socket 超时（毫秒）。
+如果未设置超时，则为 `undefined`。
 
 ### `socket.unref()`
 
@@ -1527,11 +1385,9 @@ It is `undefined` if a timeout has not been set.
 added: v0.9.1
 -->
 
-* Returns: {net.Socket} The socket itself.
+* 返回：{net.Socket} Socket 本身。
 
-Calling `unref()` on a socket will allow the program to exit if this is the only
-active socket in the event system. If the socket is already `unref`ed calling
-`unref()` again will have no effect.
+在 Socket 上调用 `unref()` 将允许程序退出，如果这是事件系统中唯一活动的 Socket。如果 Socket 已经 `unref`，再次调用 `unref()` 将无效。
 
 ### `socket.write(data[, encoding][, callback])`
 
@@ -1540,22 +1396,17 @@ added: v0.1.90
 -->
 
 * `data` {string|Buffer|Uint8Array}
-* `encoding` {string} Only used when data is `string`. **Default:** `utf8`.
+* `encoding` {string} 仅当数据为 `string` 时使用。**默认值：** `utf8`。
 * `callback` {Function}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Sends data on the socket. The second parameter specifies the encoding in the
-case of a string. It defaults to UTF8 encoding.
+在 Socket 上发送数据。第二个参数指定字符串情况下的编码。默认为 UTF8 编码。
 
-Returns `true` if the entire data was flushed successfully to the kernel
-buffer. Returns `false` if all or part of the data was queued in user memory.
-[`'drain'`][] will be emitted when the buffer is again free.
+如果整个数据成功刷新到内核缓冲区，则返回 `true`。如果全部或部分数据排队在用户内存中，则返回 `false`。当缓冲区再次空闲时，将发出 [`'drain'`][]。
 
-The optional `callback` parameter will be executed when the data is finally
-written out, which may not be immediately.
+可选的 `callback` 参数将在数据最终写出时执行，这可能不是立即的。
 
-See `Writable` stream [`write()`][stream_writable_write] method for more
-information.
+详见 `Writable` 流 [`write()`][stream_writable_write] 方法以获取更多信息。
 
 ### `socket.readyState`
 
@@ -1563,27 +1414,25 @@ information.
 added: v0.5.0
 -->
 
-* Type: {string}
+* 类型：{string}
 
-This property represents the state of the connection as a string.
+此属性表示连接的状态（字符串）。
 
-* If the stream is connecting `socket.readyState` is `opening`.
-* If the stream is readable and writable, it is `open`.
-* If the stream is readable and not writable, it is `readOnly`.
-* If the stream is not readable and writable, it is `writeOnly`.
+* 如果流正在连接，`socket.readyState` 为 `opening`。
+* 如果流可读且可写，则为 `open`。
+* 如果流可读但不可写，则为 `readOnly`。
+* 如果流不可读但可写，则为 `writeOnly`。
 
 ## `net.connect()`
 
-Aliases to
-[`net.createConnection()`][`net.createConnection()`].
+别名于
+[`net.createConnection()`][`net.createConnection()`]。
 
-Possible signatures:
+可能的签名：
 
 * [`net.connect(options[, connectListener])`][`net.connect(options)`]
-* [`net.connect(path[, connectListener])`][`net.connect(path)`] for [IPC][]
-  connections.
-* [`net.connect(port[, host][, connectListener])`][`net.connect(port, host)`]
-  for TCP connections.
+* [`net.connect(path[, connectListener])`][`net.connect(path)`] 用于 [IPC][] 连接。
+* [`net.connect(port[, host][, connectListener])`][`net.connect(port, host)`] 用于 TCP 连接。
 
 ### `net.connect(options[, connectListener])`
 
@@ -1593,10 +1442,10 @@ added: v0.7.0
 
 * `options` {Object}
 * `connectListener` {Function}
-* Returns: {net.Socket}
+* 返回：{net.Socket}
 
-Alias to
-[`net.createConnection(options[, connectListener])`][`net.createConnection(options)`].
+别名于
+[`net.createConnection(options[, connectListener])`][`net.createConnection(options)`]。
 
 ### `net.connect(path[, connectListener])`
 
@@ -1606,10 +1455,10 @@ added: v0.1.90
 
 * `path` {string}
 * `connectListener` {Function}
-* Returns: {net.Socket}
+* 返回：{net.Socket}
 
-Alias to
-[`net.createConnection(path[, connectListener])`][`net.createConnection(path)`].
+别名于
+[`net.createConnection(path[, connectListener])`][`net.createConnection(path)`]。
 
 ### `net.connect(port[, host][, connectListener])`
 
@@ -1620,30 +1469,29 @@ added: v0.1.90
 * `port` {number}
 * `host` {string}
 * `connectListener` {Function}
-* Returns: {net.Socket}
+* 返回：{net.Socket}
 
-Alias to
-[`net.createConnection(port[, host][, connectListener])`][`net.createConnection(port, host)`].
+别名于
+[`net.createConnection(port[, host][, connectListener])`][`net.createConnection(port, host)`]。
 
 ## `net.createConnection()`
 
-A factory function, which creates a new [`net.Socket`][],
-immediately initiates connection with [`socket.connect()`][],
-then returns the `net.Socket` that starts the connection.
+这是一个工厂函数，它创建一个新的 [`net.Socket`][]，
+立即使用 [`socket.connect()`][] 发起连接，
+然后返回启动连接的 `net.Socket`。
 
-When the connection is established, a [`'connect'`][] event will be emitted
-on the returned socket. The last parameter `connectListener`, if supplied,
-will be added as a listener for the [`'connect'`][] event **once**.
+当连接建立时，将在返回的套接字上发出 [`'connect'`][] 事件。
+最后一个参数 `connectListener`，如果提供，将作为 [`'connect'`][] 事件的监听器被添加 **一次**。
 
-Possible signatures:
+可能的签名：
 
 * [`net.createConnection(options[, connectListener])`][`net.createConnection(options)`]
 * [`net.createConnection(path[, connectListener])`][`net.createConnection(path)`]
-  for [IPC][] connections.
+  用于 [IPC][] 连接。
 * [`net.createConnection(port[, host][, connectListener])`][`net.createConnection(port, host)`]
-  for TCP connections.
+  用于 TCP 连接。
 
-The [`net.connect()`][] function is an alias to this function.
+[`net.connect()`][] 函数是此函数的别名。
 
 ### `net.createConnection(options[, connectListener])`
 
@@ -1651,32 +1499,29 @@ The [`net.connect()`][] function is an alias to this function.
 added: v0.1.90
 -->
 
-* `options` {Object} Required. Will be passed to both the
-  [`new net.Socket([options])`][`new net.Socket(options)`] call and the
+* `options` {Object} 必需。将被传递给
+  [`new net.Socket([options])`][`new net.Socket(options)`] 调用和
   [`socket.connect(options[, connectListener])`][`socket.connect(options)`]
-  method.
-* `connectListener` {Function} Common parameter of the
-  [`net.createConnection()`][] functions. If supplied, will be added as
-  a listener for the [`'connect'`][] event on the returned socket once.
-* Returns: {net.Socket} The newly created socket used to start the connection.
+  方法。
+* `connectListener` {Function} [`net.createConnection()`][] 函数的通用参数。如果提供，将作为
+  返回的套接字上的 [`'connect'`][] 事件的监听器被添加一次。
+* 返回：{net.Socket} 用于启动连接的新创建的套接字。
 
-For available options, see
+可用选项参见
 [`new net.Socket([options])`][`new net.Socket(options)`]
-and [`socket.connect(options[, connectListener])`][`socket.connect(options)`].
+和 [`socket.connect(options[, connectListener])`][`socket.connect(options)`]。
 
-Additional options:
+其他选项：
 
-* `timeout` {number} If set, will be used to call
-  [`socket.setTimeout(timeout)`][] after the socket is created, but before
-  it starts the connection.
+* `timeout` {number} 如果设置，将用于在套接字创建之后，但在
+  开始连接之前调用 [`socket.setTimeout(timeout)`][]。
 
-Following is an example of a client of the echo server described
-in the [`net.createServer()`][] section:
+以下是 [`net.createServer()`][] 部分描述的回显服务器的客户端示例：
 
 ```mjs
 import net from 'node:net';
 const client = net.createConnection({ port: 8124 }, () => {
-  // 'connect' listener.
+  // 'connect' 监听器。
   console.log('connected to server!');
   client.write('world!\r\n');
 });
@@ -1692,7 +1537,7 @@ client.on('end', () => {
 ```cjs
 const net = require('node:net');
 const client = net.createConnection({ port: 8124 }, () => {
-  // 'connect' listener.
+  // 'connect' 监听器。
   console.log('connected to server!');
   client.write('world!\r\n');
 });
@@ -1705,16 +1550,16 @@ client.on('end', () => {
 });
 ```
 
-To connect on the socket `/tmp/echo.sock`:
+要连接到套接字 `/tmp/echo.sock`：
 
 ```js
 const client = net.createConnection({ path: '/tmp/echo.sock' });
 ```
 
-Following is an example of a client using the `port` and `onread`
-option. In this case, the `onread` option will be only used to call
-`new net.Socket([options])` and the `port` option will be used to
-call `socket.connect(options[, connectListener])`.
+以下是使用 `port` 和 `onread` 选项的客户端示例。
+在这种情况下，`onread` 选项将仅用于调用
+`new net.Socket([options])`，而 `port` 选项将用于
+调用 `socket.connect(options[, connectListener])`。
 
 ```mjs
 import net from 'node:net';
@@ -1722,10 +1567,10 @@ import { Buffer } from 'node:buffer';
 net.createConnection({
   port: 8124,
   onread: {
-    // Reuses a 4KiB Buffer for every read from the socket.
+    // 为每次从套接字读取重用 4KiB Buffer。
     buffer: Buffer.alloc(4 * 1024),
     callback: function(nread, buf) {
-      // Received data is available in `buf` from 0 to `nread`.
+      // 接收到的数据在 `buf` 中从 0 到 `nread` 可用。
       console.log(buf.toString('utf8', 0, nread));
     },
   },
@@ -1737,10 +1582,10 @@ const net = require('node:net');
 net.createConnection({
   port: 8124,
   onread: {
-    // Reuses a 4KiB Buffer for every read from the socket.
+    // 为每次从套接字读取重用 4KiB Buffer。
     buffer: Buffer.alloc(4 * 1024),
     callback: function(nread, buf) {
-      // Received data is available in `buf` from 0 to `nread`.
+      // 接收到的数据在 `buf` 中从 0 到 `nread` 可用。
       console.log(buf.toString('utf8', 0, nread));
     },
   },
@@ -1753,21 +1598,20 @@ net.createConnection({
 added: v0.1.90
 -->
 
-* `path` {string} Path the socket should connect to. Will be passed to
-  [`socket.connect(path[, connectListener])`][`socket.connect(path)`].
-  See [Identifying paths for IPC connections][].
-* `connectListener` {Function} Common parameter of the
-  [`net.createConnection()`][] functions, an "once" listener for the
-  `'connect'` event on the initiating socket. Will be passed to
-  [`socket.connect(path[, connectListener])`][`socket.connect(path)`].
-* Returns: {net.Socket} The newly created socket used to start the connection.
+* `path` {string} 套接字应连接到的路径。将被传递给
+  [`socket.connect(path[, connectListener])`][`socket.connect(path)`]。
+  参见 [识别 IPC 连接的路径][]。
+* `connectListener` {Function} [`net.createConnection()`][] 函数的通用参数，
+  发起套接字上的 `'connect'` 事件的“一次性”监听器。将被传递给
+  [`socket.connect(path[, connectListener])`][`socket.connect(path)`]。
+* 返回：{net.Socket} 用于启动连接的新创建的套接字。
 
-Initiates an [IPC][] connection.
+发起一个 [IPC][] 连接。
 
-This function creates a new [`net.Socket`][] with all options set to default,
-immediately initiates connection with
-[`socket.connect(path[, connectListener])`][`socket.connect(path)`],
-then returns the `net.Socket` that starts the connection.
+此函数创建一个所有选项设置为默认值的新 [`net.Socket`][]，
+立即使用
+[`socket.connect(path[, connectListener])`][`socket.connect(path)`] 发起连接，
+然后返回启动连接的 `net.Socket`。
 
 ### `net.createConnection(port[, host][, connectListener])`
 
@@ -1775,23 +1619,22 @@ then returns the `net.Socket` that starts the connection.
 added: v0.1.90
 -->
 
-* `port` {number} Port the socket should connect to. Will be passed to
-  [`socket.connect(port[, host][, connectListener])`][`socket.connect(port)`].
-* `host` {string} Host the socket should connect to. Will be passed to
-  [`socket.connect(port[, host][, connectListener])`][`socket.connect(port)`].
-  **Default:** `'localhost'`.
-* `connectListener` {Function} Common parameter of the
-  [`net.createConnection()`][] functions, an "once" listener for the
-  `'connect'` event on the initiating socket. Will be passed to
-  [`socket.connect(port[, host][, connectListener])`][`socket.connect(port)`].
-* Returns: {net.Socket} The newly created socket used to start the connection.
+* `port` {number} 套接字应连接到的端口。将被传递给
+  [`socket.connect(port[, host][, connectListener])`][`socket.connect(port)`]。
+* `host` {string} 套接字应连接到的主机。将被传递给
+  [`socket.connect(port[, host][, connectListener])`][`socket.connect(port)`]。
+  **默认值：** `'localhost'`。
+* `connectListener` {Function} [`net.createConnection()`][] 函数的通用参数，
+  发起套接字上的 `'connect'` 事件的“一次性”监听器。将被传递给
+  [`socket.connect(port[, host][, connectListener])`][`socket.connect(port)`]。
+* 返回：{net.Socket} 用于启动连接的新创建的套接字。
 
-Initiates a TCP connection.
+发起一个 TCP 连接。
 
-This function creates a new [`net.Socket`][] with all options set to default,
-immediately initiates connection with
-[`socket.connect(port[, host][, connectListener])`][`socket.connect(port)`],
-then returns the `net.Socket` that starts the connection.
+此函数创建一个所有选项设置为默认值的新 [`net.Socket`][]，
+立即使用
+[`socket.connect(port[, host][, connectListener])`][`socket.connect(port)`] 发起连接，
+然后返回启动连接的 `net.Socket`。
 
 ## `net.createServer([options][, connectionListener])`
 
@@ -1802,71 +1645,57 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47405
-    description: The `highWaterMark` option is supported now.
+    description: "The `highWaterMark` option is supported now."
   - version:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41310
-    description: The `noDelay`, `keepAlive`, and `keepAliveInitialDelay`
-                 options are supported now.
+    description: "The `noDelay`, `keepAlive`, and `keepAliveInitialDelay`options are supported now."
 -->
 
 * `options` {Object}
-  * `allowHalfOpen` {boolean} If set to `false`, then the socket will
-    automatically end the writable side when the readable side ends.
-    **Default:** `false`.
-  * `highWaterMark` {number} Optionally overrides all [`net.Socket`][]s'
-    `readableHighWaterMark` and `writableHighWaterMark`.
-    **Default:** See [`stream.getDefaultHighWaterMark()`][].
-  * `keepAlive` {boolean} If set to `true`, it enables keep-alive functionality
-    on the socket immediately after a new incoming connection is received,
-    similarly on what is done in [`socket.setKeepAlive()`][]. **Default:**
-    `false`.
-  * `keepAliveInitialDelay` {number} If set to a positive number, it sets the
-    initial delay before the first keepalive probe is sent on an idle socket.
-    **Default:** `0`.
-  * `noDelay` {boolean} If set to `true`, it disables the use of Nagle's
-    algorithm immediately after a new incoming connection is received.
-    **Default:** `false`.
-  * `pauseOnConnect` {boolean} Indicates whether the socket should be
-    paused on incoming connections. **Default:** `false`.
-  * `blockList` {net.BlockList} `blockList` can be used for disabling inbound
-    access to specific IP addresses, IP ranges, or IP subnets. This does not
-    work if the server is behind a reverse proxy, NAT, etc. because the address
-    checked against the block list is the address of the proxy, or the one
-    specified by the NAT.
+  * `allowHalfOpen` {boolean} 如果设置为 `false`，则当可读端结束时，套接字将
+    自动结束可写端。**默认值：** `false`。
+  * `highWaterMark` {number} 可选地覆盖所有 [`net.Socket`][] 的
+    `readableHighWaterMark` 和 `writableHighWaterMark`。
+    **默认值：** 参见 [`stream.getDefaultHighWaterMark()`][]。
+  * `keepAlive` {boolean} 如果设置为 `true`，则在收到新的传入连接后立即
+    在套接字上启用保持活跃功能，类似于 [`socket.setKeepAlive()`][] 中所做的。**默认值：**
+    `false`。
+  * `keepAliveInitialDelay` {number} 如果设置为正数，则设置在空闲套接字上
+    发送第一个保持活跃探测之前的初始延迟。**默认值：** `0`。
+  * `noDelay` {boolean} 如果设置为 `true`，则在收到新的传入连接后立即
+    禁用 Nagle 算法的使用。**默认值：** `false`。
+  * `pauseOnConnect` {boolean} 指示是否应在传入连接上暂停套接字。**默认值：** `false`。
+  * `blockList` {net.BlockList} `blockList` 可用于禁用对特定 IP 地址、IP 范围或 IP 子网的入站访问。
+    如果服务器位于反向代理、NAT 等后面，则此功能不起作用，因为针对阻止列表检查的地址是代理的地址，
+    或由 NAT 指定的地址。
 
-* `connectionListener` {Function} Automatically set as a listener for the
-  [`'connection'`][] event.
+* `connectionListener` {Function} 自动设置为 [`'connection'`][] 事件的监听器。
 
-* Returns: {net.Server}
+* 返回：{net.Server}
 
-Creates a new TCP or [IPC][] server.
+创建一个新的 TCP 或 [IPC][] 服务器。
 
-If `allowHalfOpen` is set to `true`, when the other end of the socket
-signals the end of transmission, the server will only send back the end of
-transmission when [`socket.end()`][] is explicitly called. For example, in the
-context of TCP, when a FIN packed is received, a FIN packed is sent
-back only when [`socket.end()`][] is explicitly called. Until then the
-connection is half-closed (non-readable but still writable). See [`'end'`][]
-event and [RFC 1122][half-closed] (section 4.2.2.13) for more information.
+如果 `allowHalfOpen` 设置为 `true`，当套接字的另一端信号传输结束时，
+服务器将仅在显式调用 [`socket.end()`][] 时才发回传输结束信号。
+例如，在 TCP 上下文中，当收到 FIN 包时，仅在显式调用 [`socket.end()`][] 时才发回 FIN 包。
+在此之前，连接是半关闭的（不可读但仍可写）。
+参见 [`'end'`][] 事件和 [RFC 1122][half-closed]（第 4.2.2.13 节）以获取更多信息。
 
-If `pauseOnConnect` is set to `true`, then the socket associated with each
-incoming connection will be paused, and no data will be read from its handle.
-This allows connections to be passed between processes without any data being
-read by the original process. To begin reading data from a paused socket, call
-[`socket.resume()`][].
+如果 `pauseOnConnect` 设置为 `true`，则与每个传入连接关联的套接字将被暂停，
+并且不会从其句柄读取数据。
+这允许在进程之间传递连接，而原始进程不读取任何数据。
+要开始从暂停的套接字读取数据，调用 [`socket.resume()`][]。
 
-The server can be a TCP server or an [IPC][] server, depending on what it
-[`listen()`][`server.listen()`] to.
+服务器可以是 TCP 服务器或 [IPC][] 服务器，取决于它 [`listen()`][`server.listen()`] 什么。
 
-Here is an example of a TCP echo server which listens for connections
-on port 8124:
+这是一个监听端口 8124 连接的 TCP 回显服务器示例：
 
 ```mjs
 import net from 'node:net';
 const server = net.createServer((c) => {
-  // 'connection' listener.
+  // 'connection' 监听器。
   console.log('client connected');
   c.on('end', () => {
     console.log('client disconnected');
@@ -1885,7 +1714,7 @@ server.listen(8124, () => {
 ```cjs
 const net = require('node:net');
 const server = net.createServer((c) => {
-  // 'connection' listener.
+  // 'connection' 监听器。
   console.log('client connected');
   c.on('end', () => {
     console.log('client disconnected');
@@ -1901,13 +1730,13 @@ server.listen(8124, () => {
 });
 ```
 
-Test this by using `telnet`:
+使用 `telnet` 测试：
 
 ```bash
 telnet localhost 8124
 ```
 
-To listen on the socket `/tmp/echo.sock`:
+要监听套接字 `/tmp/echo.sock`：
 
 ```js
 server.listen('/tmp/echo.sock', () => {
@@ -1915,7 +1744,7 @@ server.listen('/tmp/echo.sock', () => {
 });
 ```
 
-Use `nc` to connect to a Unix domain socket server:
+使用 `nc` 连接到 Unix 域套接字服务器：
 
 ```bash
 nc -U /tmp/echo.sock
@@ -1927,11 +1756,10 @@ nc -U /tmp/echo.sock
 added: v19.4.0
 -->
 
-Gets the current default value of the `autoSelectFamily` option of [`socket.connect(options)`][].
-The initial default value is `true`, unless the command line option
-`--no-network-family-autoselection` is provided.
+获取 [`socket.connect(options)`][] 的 `autoSelectFamily` 选项的当前默认值。
+初始默认值为 `true`，除非提供了命令行选项 `--no-network-family-autoselection`。
 
-* Returns: {boolean} The current default value of the `autoSelectFamily` option.
+* 返回：{boolean} `autoSelectFamily` 选项的当前默认值。
 
 ## `net.setDefaultAutoSelectFamily(value)`
 
@@ -1939,11 +1767,10 @@ The initial default value is `true`, unless the command line option
 added: v19.4.0
 -->
 
-Sets the default value of the `autoSelectFamily` option of [`socket.connect(options)`][].
+设置 [`socket.connect(options)`][] 的 `autoSelectFamily` 选项的默认值。
 
-* `value` {boolean} The new default value.
-  The initial default value is `true`, unless the command line option
-  `--no-network-family-autoselection` is provided.
+* `value` {boolean} 新的默认值。
+  初始默认值为 `true`，除非提供了命令行选项 `--no-network-family-autoselection`。
 
 ## `net.getDefaultAutoSelectFamilyAttemptTimeout()`
 
@@ -1953,11 +1780,10 @@ added:
  - v18.18.0
 -->
 
-Gets the current default value of the `autoSelectFamilyAttemptTimeout` option of [`socket.connect(options)`][].
-The initial default value is `500` or the value specified via the command line
-option `--network-family-autoselection-attempt-timeout`.
+获取 [`socket.connect(options)`][] 的 `autoSelectFamilyAttemptTimeout` 选项的当前默认值。
+初始默认值为 `500` 或通过命令行选项 `--network-family-autoselection-attempt-timeout` 指定的值。
 
-* Returns: {number} The current default value of the `autoSelectFamilyAttemptTimeout` option.
+* 返回：{number} `autoSelectFamilyAttemptTimeout` 选项的当前默认值。
 
 ## `net.setDefaultAutoSelectFamilyAttemptTimeout(value)`
 
@@ -1967,11 +1793,9 @@ added:
  - v18.18.0
 -->
 
-Sets the default value of the `autoSelectFamilyAttemptTimeout` option of [`socket.connect(options)`][].
+设置 [`socket.connect(options)`][] 的 `autoSelectFamilyAttemptTimeout` 选项的默认值。
 
-* `value` {number} The new default value, which must be a positive number. If the number is less than `10`,
-  the value `10` is used instead. The initial default value is `250` or the value specified via the command line
-  option `--network-family-autoselection-attempt-timeout`.
+* `value` {number} 新的默认值，必须是正数。如果数字小于 `10`，则使用值 `10` 代替。初始默认值为 `250` 或通过命令行选项 `--network-family-autoselection-attempt-timeout` 指定的值。
 
 ## `net.isIP(input)`
 
@@ -1980,18 +1804,16 @@ added: v0.3.0
 -->
 
 * `input` {string}
-* Returns: {integer}
+* 返回：{integer}
 
-Returns `6` if `input` is an IPv6 address. Returns `4` if `input` is an IPv4
-address in [dot-decimal notation][] with no leading zeroes. Otherwise, returns
-`0`.
+如果 `input` 是 IPv6 地址，则返回 `6`。如果 `input` 是 [点分十进制表示法][] 且没有前导零的 IPv4 地址，则返回 `4`。否则，返回 `0`。
 
 ```js
-net.isIP('::1'); // returns 6
-net.isIP('127.0.0.1'); // returns 4
-net.isIP('127.000.000.001'); // returns 0
-net.isIP('127.0.0.1/24'); // returns 0
-net.isIP('fhqwhgads'); // returns 0
+net.isIP('::1'); // 返回 6
+net.isIP('127.0.0.1'); // 返回 4
+net.isIP('127.000.000.001'); // 返回 0
+net.isIP('127.0.0.1/24'); // 返回 0
+net.isIP('fhqwhgads'); // 返回 0
 ```
 
 ## `net.isIPv4(input)`
@@ -2001,16 +1823,15 @@ added: v0.3.0
 -->
 
 * `input` {string}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if `input` is an IPv4 address in [dot-decimal notation][] with no
-leading zeroes. Otherwise, returns `false`.
+如果 `input` 是 [点分十进制表示法][] 且没有前导零的 IPv4 地址，则返回 `true`。否则，返回 `false`。
 
 ```js
-net.isIPv4('127.0.0.1'); // returns true
-net.isIPv4('127.000.000.001'); // returns false
-net.isIPv4('127.0.0.1/24'); // returns false
-net.isIPv4('fhqwhgads'); // returns false
+net.isIPv4('127.0.0.1'); // 返回 true
+net.isIPv4('127.000.000.001'); // 返回 false
+net.isIPv4('127.0.0.1/24'); // 返回 false
+net.isIPv4('fhqwhgads'); // 返回 false
 ```
 
 ## `net.isIPv6(input)`
@@ -2020,19 +1841,19 @@ added: v0.3.0
 -->
 
 * `input` {string}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if `input` is an IPv6 address. Otherwise, returns `false`.
+如果 `input` 是 IPv6 地址，则返回 `true`。否则，返回 `false`。
 
 ```js
-net.isIPv6('::1'); // returns true
-net.isIPv6('fhqwhgads'); // returns false
+net.isIPv6('::1'); // 返回 true
+net.isIPv6('fhqwhgads'); // 返回 false
 ```
 
 [IPC]: #ipc-support
-[Identifying paths for IPC connections]: #identifying-paths-for-ipc-connections
+[识别 IPC 连接的路径]: #identifying-paths-for-ipc-connections
 [RFC 8305]: https://www.rfc-editor.org/rfc/rfc8305.txt
-[Readable Stream]: stream.md#class-streamreadable
+[可读流]: stream.md#class-streamreadable
 [`'close'`]: #event-close
 [`'connect'`]: #event-connect
 [`'connection'`]: #event-connection
@@ -2088,8 +1909,8 @@ net.isIPv6('fhqwhgads'); // returns false
 [`writable.destroyed`]: stream.md#writabledestroyed
 [`writable.end()`]: stream.md#writableendchunk-encoding-callback
 [`writable.writableLength`]: stream.md#writablewritablelength
-[dot-decimal notation]: https://en.wikipedia.org/wiki/Dot-decimal_notation
-[half-closed]: https://tools.ietf.org/html/rfc1122
+[点分十进制表示法]: https://en.wikipedia.org/wiki/Dot-decimal_notation
+[半关闭]: https://tools.ietf.org/html/rfc1122
 [stream_writable_write]: stream.md#writablewritechunk-encoding-callback
-[unspecified IPv4 address]: https://en.wikipedia.org/wiki/0.0.0.0
-[unspecified IPv6 address]: https://en.wikipedia.org/wiki/IPv6_address#Unspecified_address
+[未指定的 IPv4 地址]: https://en.wikipedia.org/wiki/0.0.0.0
+[未指定的 IPv6 地址]: https://en.wikipedia.org/wiki/IPv6_address#Unspecified_address

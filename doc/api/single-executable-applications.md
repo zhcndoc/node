@@ -1,4 +1,4 @@
-# Single executable applications
+# 单可执行应用程序
 
 <!--introduced_in=v19.7.0-->
 
@@ -9,140 +9,123 @@ added:
 changes:
   - version: v25.5.0
     pr-url: https://github.com/nodejs/node/pull/61167
-    description: Added built-in single executable application generation via the CLI flag `--build-sea`.
+    description: "通过 CLI 标志 `--build-sea` 添加了内置的单可执行应用程序生成功能。"
   - version: v20.6.0
     pr-url: https://github.com/nodejs/node/pull/46824
-    description: Added support for "useSnapshot".
+    description: 添加了对 "useSnapshot" 的支持。
   - version: v20.6.0
     pr-url: https://github.com/nodejs/node/pull/48191
-    description: Added support for "useCodeCache".
+    description: 添加了对 "useCodeCache" 的支持。
 -->
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
 <!-- source_link=src/node_sea.cc -->
 
-This feature allows the distribution of a Node.js application conveniently to a
-system that does not have Node.js installed.
+此功能允许将 Node.js 应用程序方便地分发到未安装 Node.js 的系统。
 
-Node.js supports the creation of [single executable applications][] by allowing
-the injection of a blob prepared by Node.js, which can contain a bundled script,
-into the `node` binary. During start up, the program checks if anything has been
-injected. If the blob is found, it executes the script in the blob. Otherwise
-Node.js operates as it normally does.
+Node.js 支持创建 [单可执行应用程序][]，方法是允许注入一个由 Node.js 准备的数据块（blob），该数据块可以包含一个捆绑的脚本，进入 `node` 二进制文件。在启动期间，程序检查是否注入了任何内容。如果找到该数据块，它将执行数据块中的脚本。否则，Node.js 照常运行。
 
-The single executable application feature supports running a
-single embedded script using the [CommonJS][] or the [ECMAScript Modules][] module system.
+单可执行应用程序功能支持使用 [CommonJS][] 或 [ECMAScript 模块][] 模块系统运行单个嵌入脚本。
 
-Users can create a single executable application from their bundled script
-with the `node` binary itself and any tool which can inject resources into the
-binary.
+用户可以使用 `node` 二进制文件本身以及任何可以将资源注入二进制文件的工具，从他们的捆绑脚本创建单可执行应用程序。
 
-1. Create a JavaScript file:
+1. 创建一个 JavaScript 文件：
    ```bash
    echo 'console.log(`Hello, ${process.argv[2]}!`);' > hello.js
    ```
 
-2. Create a configuration file building a blob that can be injected into the
-   single executable application (see
-   [Generating single executable preparation blobs][] for details):
+2. 创建一个配置文件，构建一个可以注入到单可执行应用程序中的数据块（详见
+   [生成单可执行准备数据块][]）：
 
-   * On systems other than Windows:
+   * 在 Windows 以外的系统上：
 
    ```bash
    echo '{ "main": "hello.js", "output": "sea" }' > sea-config.json
    ```
 
-   * On Windows:
+   * 在 Windows 上：
 
    ```bash
    echo '{ "main": "hello.js", "output": "sea.exe" }' > sea-config.json
    ```
 
-   The `.exe` extension is necessary.
+   `.exe` 扩展名是必需的。
 
-3. Generate the target executable:
+3. 生成目标可执行文件：
    ```bash
    node --build-sea sea-config.json
    ```
 
-4. Sign the binary (macOS and Windows only):
+4. 签名二进制文件（仅限 macOS 和 Windows）：
 
-   * On macOS:
+   * 在 macOS 上：
 
    ```bash
    codesign --sign - hello
    ```
 
-   * On Windows (optional):
+   * 在 Windows 上（可选）：
 
-   A certificate needs to be present for this to work. However, the unsigned
-   binary would still be runnable.
+   需要存在证书才能正常工作。但是，未签名的
+   二进制文件仍然可以运行。
 
    ```powershell
    signtool sign /fd SHA256 hello.exe
    ```
 
-5. Run the binary:
+5. 运行二进制文件：
 
-   * On systems other than Windows
+   * 在 Windows 以外的系统上
 
    ```console
    $ ./hello world
    Hello, world!
    ```
 
-   * On Windows
+   * 在 Windows 上
 
    ```console
    $ .\hello.exe world
    Hello, world!
    ```
 
-## Generating single executable applications with `--build-sea`
+## 使用 `--build-sea` 生成单可执行应用程序
 
-To generate a single executable application directly, the `--build-sea` flag can be
-used. It takes a path to a configuration file in JSON format. If the path passed to it
-isn't absolute, Node.js will use the path relative to the current working directory.
+要直接生成单可执行应用程序，可以使用 `--build-sea` 标志。它接受一个 JSON 格式的配置文件路径。如果传递给它的路径不是绝对路径，Node.js 将使用相对于当前工作目录的路径。
 
-The configuration currently reads the following top-level fields:
+配置文件目前读取以下顶层字段：
 
 ```json
 {
   "main": "/path/to/bundled/script.js",
-  "mainFormat": "commonjs", // Default: "commonjs", options: "commonjs", "module"
-  "executable": "/path/to/node/binary", // Optional, if not specified, uses the current Node.js binary
+  "mainFormat": "commonjs", // 默认值："commonjs"，选项："commonjs", "module"
+  "executable": "/path/to/node/binary", // 可选，如果未指定，则使用当前的 Node.js 二进制文件
   "output": "/path/to/write/the/generated/executable",
-  "disableExperimentalSEAWarning": true, // Default: false
-  "useSnapshot": false,  // Default: false
-  "useCodeCache": true, // Default: false
-  "execArgv": ["--no-warnings", "--max-old-space-size=4096"], // Optional
-  "execArgvExtension": "env", // Default: "env", options: "none", "env", "cli"
-  "assets": {  // Optional
+  "disableExperimentalSEAWarning": true, // 默认值：false
+  "useSnapshot": false,  // 默认值：false
+  "useCodeCache": true, // 默认值：false
+  "execArgv": ["--no-warnings", "--max-old-space-size=4096"], // 可选
+  "execArgvExtension": "env", // 默认值："env"，选项："none", "env", "cli"
+  "assets": {  // 可选
     "a.dat": "/path/to/a.dat",
     "b.txt": "/path/to/b.txt"
   }
 }
 ```
 
-If the paths are not absolute, Node.js will use the path relative to the
-current working directory. The version of the Node.js binary used to produce
-the blob must be the same as the one to which the blob will be injected.
+如果路径不是绝对路径，Node.js 将使用相对于当前工作目录的路径。用于生成数据块的 Node.js 二进制文件的版本必须与将要注入数据块的二进制文件的版本相同。
 
-Note: When generating cross-platform SEAs (e.g., generating a SEA
-for `linux-x64` on `darwin-arm64`), `useCodeCache` and `useSnapshot`
-must be set to false to avoid generating incompatible executables.
-Since code cache and snapshots can only be loaded on the same platform
-where they are compiled, the generated executable might crash on startup when
-trying to load code cache or snapshots built on a different platform.
+注意：在生成跨平台 SEA（例如，在 `darwin-arm64` 上为 `linux-x64` 生成 SEA）时，`useCodeCache` 和 `useSnapshot`
+必须设置为 false，以避免生成不兼容的可执行文件。
+由于代码缓存和快照只能在编译它们的同一平台上加载，因此生成的可执行文件在尝试加载在不同平台上构建的代码缓存或快照时可能会在启动时崩溃。
 
-### Assets
+### 资源
 
-Users can include assets by adding a key-path dictionary to the configuration
-as the `assets` field. At build time, Node.js would read the assets from the
-specified paths and bundle them into the preparation blob. In the generated
-executable, users can retrieve the assets using the [`sea.getAsset()`][] and
-[`sea.getAssetAsBlob()`][] APIs.
+用户可以通过在配置中添加键 - 路径字典作为 `assets` 字段来包含资源。在构建时，Node.js 将从
+指定路径读取资源并将它们捆绑到准备数据块中。在生成的
+可执行文件中，用户可以使用 [`sea.getAsset()`][] 和
+[`sea.getAssetAsBlob()`][] API 检索资源。
 
 ```json
 {
@@ -155,78 +138,76 @@ executable, users can retrieve the assets using the [`sea.getAsset()`][] and
 }
 ```
 
-The single-executable application can access the assets as follows:
+单可执行应用程序可以如下访问资源：
 
 ```cjs
 const { getAsset, getAssetAsBlob, getRawAsset, getAssetKeys } = require('node:sea');
-// Get all asset keys.
+// 获取所有资源键。
 const keys = getAssetKeys();
 console.log(keys); // ['a.jpg', 'b.txt']
-// Returns a copy of the data in an ArrayBuffer.
+// 返回 ArrayBuffer 中的数据副本。
 const image = getAsset('a.jpg');
-// Returns a string decoded from the asset as UTF8.
+// 返回从资源解码为 UTF8 的字符串。
 const text = getAsset('b.txt', 'utf8');
-// Returns a Blob containing the asset.
+// 返回包含资源的 Blob。
 const blob = getAssetAsBlob('a.jpg');
-// Returns an ArrayBuffer containing the raw asset without copying.
+// 返回包含原始资源且不复制的 ArrayBuffer。
 const raw = getRawAsset('a.jpg');
 ```
 
-See documentation of the [`sea.getAsset()`][], [`sea.getAssetAsBlob()`][],
-[`sea.getRawAsset()`][] and [`sea.getAssetKeys()`][] APIs for more information.
+有关更多信息，请参阅 [`sea.getAsset()`][]、[`sea.getAssetAsBlob()`][]、
+[`sea.getRawAsset()`][] 和 [`sea.getAssetKeys()`][] API 的文档。
 
-### Startup snapshot support
+### 启动快照支持
 
-The `useSnapshot` field can be used to enable startup snapshot support. In this
-case, the `main` script would not be executed when the final executable is launched.
-Instead, it would be run when the single executable application preparation
-blob is generated on the building machine. The generated preparation blob would
-then include a snapshot capturing the states initialized by the `main` script.
-The final executable, with the preparation blob injected, would deserialize
-the snapshot at run time.
+`useSnapshot` 字段可用于启用启动快照支持。在这种情况下，`main`
+脚本将在最终可执行文件启动时不执行。
+相反，它将在构建机器上生成单可执行应用程序准备
+数据块时运行。生成的准备数据块将
+包括一个快照，捕获由 `main` 脚本初始化的状态。
+注入了准备数据块的最终可执行文件将在运行时反序列化
+该快照。
 
-When `useSnapshot` is true, the main script must invoke the
-[`v8.startupSnapshot.setDeserializeMainFunction()`][] API to configure code
-that needs to be run when the final executable is launched by the users.
+当 `useSnapshot` 为 true 时，主脚本必须调用
+[`v8.startupSnapshot.setDeserializeMainFunction()`][] API 来配置
+最终可执行文件由用户启动时需要运行的代码。
 
-The typical pattern for an application to use snapshot in a single executable
-application is:
+应用程序在单可执行
+应用程序中使用快照的典型模式是：
 
-1. At build time, on the building machine, the main script is run to
-   initialize the heap to a state that's ready to take user input. The script
-   should also configure a main function with
-   [`v8.startupSnapshot.setDeserializeMainFunction()`][]. This function will be
-   compiled and serialized into the snapshot, but not invoked at build time.
-2. At run time, the main function will be run on top of the deserialized heap
-   on the user machine to process user input and generate output.
+1. 在构建时，在构建机器上，运行主脚本以
+   将堆初始化到准备好接受用户输入的状态。脚本
+   还应使用
+   [`v8.startupSnapshot.setDeserializeMainFunction()`][] 配置主函数。此函数将
+   被编译并序列化到快照中，但在构建时不会调用。
+2. 在运行时，主函数将在用户机器上的反序列化堆
+   上运行，以处理用户输入并生成输出。
 
-The general constraints of the startup snapshot scripts also apply to the main
-script when it's used to build snapshot for the single executable application,
-and the main script can use the [`v8.startupSnapshot` API][] to adapt to
-these constraints. See
-[documentation about startup snapshot support in Node.js][].
+启动快照脚本的一般约束也适用于用于为单可执行应用程序构建快照的主
+脚本，并且主脚本可以使用 [`v8.startupSnapshot` API][] 来适应
+这些约束。请参阅
+[Node.js 中关于启动快照支持的文档][]。
 
-### V8 code cache support
+### V8 代码缓存支持
 
-When `useCodeCache` is set to `true` in the configuration, during the generation
-of the single executable preparation blob, Node.js will compile the `main`
-script to generate the V8 code cache. The generated code cache would be part of
-the preparation blob and get injected into the final executable. When the single
-executable application is launched, instead of compiling the `main` script from
-scratch, Node.js would use the code cache to speed up the compilation, then
-execute the script, which would improve the startup performance.
+当配置中的 `useCodeCache` 设置为 `true` 时，在生成
+单可执行准备数据块期间，Node.js 将编译 `main`
+脚本以生成 V8 代码缓存。生成的代码缓存将成为
+准备数据块的一部分并注入到最终可执行文件中。当单
+可执行应用程序启动时，Node.js 将使用代码缓存来加速编译，而不是从头编译 `main` 脚本，然后
+执行脚本，这将提高启动性能。
 
-**Note:** `import()` does not work when `useCodeCache` is `true`.
+**注意：** 当 `useCodeCache` 为 `true` 时，`import()` 不起作用。
 
-### Execution arguments
+### 执行参数
 
-The `execArgv` field can be used to specify Node.js-specific
-arguments that will be automatically applied when the single
-executable application starts. This allows application developers
-to configure Node.js runtime options without requiring end users
-to be aware of these flags.
+`execArgv` 字段可用于指定特定于 Node.js 的
+参数，这些参数将在单
+可执行应用程序启动时自动应用。这允许应用程序开发人员
+配置 Node.js 运行时选项，而无需最终用户
+了解这些标志。
 
-For example, the following configuration:
+例如，以下配置：
 
 ```json
 {
@@ -236,39 +217,38 @@ For example, the following configuration:
 }
 ```
 
-will instruct the SEA to be launched with the `--no-warnings` and
-`--max-old-space-size=2048` flags. In the scripts embedded in the executable, these flags
-can be accessed using the `process.execArgv` property:
+将指示 SEA 使用 `--no-warnings` 和
+`--max-old-space-size=2048` 标志启动。在嵌入可执行文件的脚本中，这些标志
+可以使用 `process.execArgv` 属性访问：
 
 ```js
-// If the executable is launched with `sea user-arg1 user-arg2`
+// 如果可执行文件启动时带有 `sea user-arg1 user-arg2`
 console.log(process.execArgv);
-// Prints: ['--no-warnings', '--max-old-space-size=2048']
+// 输出：['--no-warnings', '--max-old-space-size=2048']
 console.log(process.argv);
-// Prints ['/path/to/sea', 'path/to/sea', 'user-arg1', 'user-arg2']
+// 输出：['/path/to/sea', 'path/to/sea', 'user-arg1', 'user-arg2']
 ```
 
-The user-provided arguments are in the `process.argv` array starting from index 2,
-similar to what would happen if the application is started with:
+用户提供的参数位于 `process.argv` 数组中，从索引 2 开始，
+类似于应用程序使用以下命令启动时的情况：
 
 ```console
 node --no-warnings --max-old-space-size=2048 /path/to/bundled/script.js user-arg1 user-arg2
 ```
 
-### Execution argument extension
+### 执行参数扩展
 
-The `execArgvExtension` field controls how additional execution arguments can be
-provided beyond those specified in the `execArgv` field. It accepts one of three string values:
+`execArgvExtension` 字段控制如何提供超出 `execArgv` 字段中指定的额外执行参数。它接受三个字符串值之一：
 
-* `"none"`: No extension is allowed. Only the arguments specified in `execArgv` will be used,
-  and the `NODE_OPTIONS` environment variable will be ignored.
-* `"env"`: _(Default)_ The `NODE_OPTIONS` environment variable can extend the execution arguments.
-  This is the default behavior to maintain backward compatibility.
-* `"cli"`: The executable can be launched with `--node-options="--flag1 --flag2"`, and those flags
-  will be parsed as execution arguments for Node.js instead of being passed to the user script.
-  This allows using arguments that are not supported by the `NODE_OPTIONS` environment variable.
+* `"none"`：不允许扩展。仅使用 `execArgv` 中指定的参数，
+  并且 `NODE_OPTIONS` 环境变量将被忽略。
+* `"env"`：_(默认)_ `NODE_OPTIONS` 环境变量可以扩展执行参数。
+  这是保持向后兼容性的默认行为。
+* `"cli"`：可执行文件可以使用 `--node-options="--flag1 --flag2"` 启动，这些标志
+  将被解析为 Node.js 的执行参数，而不是传递给用户脚本。
+  这允许使用 `NODE_OPTIONS` 环境变量不支持的参数。
 
-For example, with `"execArgvExtension": "cli"`:
+例如，使用 `"execArgvExtension": "cli"`：
 
 ```json
 {
@@ -279,22 +259,21 @@ For example, with `"execArgvExtension": "cli"`:
 }
 ```
 
-The executable can be launched as:
+可执行文件可以这样启动：
 
 ```console
 ./my-sea --node-options="--trace-exit" user-arg1 user-arg2
 ```
 
-This would be equivalent to running:
+这将等同于运行：
 
 ```console
 node --no-warnings --trace-exit /path/to/bundled/script.js user-arg1 user-arg2
 ```
 
-## Single-executable application API
+## 单可执行应用程序 API
 
-The `node:sea` builtin allows interaction with the single-executable application
-from the JavaScript main script embedded into the executable.
+`node:sea` 内置模块允许从嵌入到可执行文件中的 JavaScript 主脚本与单可执行应用程序进行交互。
 
 ### `sea.isSea()`
 
@@ -304,8 +283,7 @@ added:
   - v20.12.0
 -->
 
-* Returns: {boolean} Whether this script is running inside a single-executable
-  application.
+* 返回：{boolean} 此脚本是否运行在单可执行应用程序内。
 
 ### `sea.getAsset(key[, encoding])`
 
@@ -315,17 +293,13 @@ added:
   - v20.12.0
 -->
 
-This method can be used to retrieve the assets configured to be bundled into the
-single-executable application at build time.
-An error is thrown when no matching asset can be found.
+此方法可用于检索配置为在构建时捆绑到单可执行应用程序中的资源。
+当找不到匹配的资源时会抛出错误。
 
-* `key`  {string} the key for the asset in the dictionary specified by the
-  `assets` field in the single-executable application configuration.
-* `encoding` {string} If specified, the asset will be decoded as
-  a string. Any encoding supported by the `TextDecoder` is accepted.
-  If unspecified, an `ArrayBuffer` containing a copy of the asset would be
-  returned instead.
-* Returns: {string|ArrayBuffer}
+* `key` {string} 单可执行应用程序配置中 `assets` 字段指定的字典中资源的键。
+* `encoding` {string} 如果指定，资源将被解码为字符串。接受 `TextDecoder` 支持的任何编码。
+  如果未指定，则将返回包含资源副本的 `ArrayBuffer`。
+* 返回：{string|ArrayBuffer}
 
 ### `sea.getAssetAsBlob(key[, options])`
 
@@ -335,14 +309,13 @@ added:
   - v20.12.0
 -->
 
-Similar to [`sea.getAsset()`][], but returns the result in a {Blob}.
-An error is thrown when no matching asset can be found.
+类似于 [`sea.getAsset()`][]，但返回 {Blob} 形式的结果。
+当找不到匹配的资源时会抛出错误。
 
-* `key`  {string} the key for the asset in the dictionary specified by the
-  `assets` field in the single-executable application configuration.
+* `key` {string} 单可执行应用程序配置中 `assets` 字段指定的字典中资源的键。
 * `options` {Object}
-  * `type` {string} An optional mime type for the blob.
-* Returns: {Blob}
+  * `type` {string} blob 的可选 mime 类型。
+* 返回：{Blob}
 
 ### `sea.getRawAsset(key)`
 
@@ -352,20 +325,16 @@ added:
   - v20.12.0
 -->
 
-This method can be used to retrieve the assets configured to be bundled into the
-single-executable application at build time.
-An error is thrown when no matching asset can be found.
+此方法可用于检索配置为在构建时捆绑到单可执行应用程序中的资源。
+当找不到匹配的资源时会抛出错误。
 
-Unlike `sea.getAsset()` or `sea.getAssetAsBlob()`, this method does not
-return a copy. Instead, it returns the raw asset bundled inside the executable.
+与 `sea.getAsset()` 或 `sea.getAssetAsBlob()` 不同，此方法不返回副本。相反，它返回捆绑在可执行文件内的原始资源。
 
-For now, users should avoid writing to the returned array buffer. If the
-injected section is not marked as writable or not aligned properly,
-writes to the returned array buffer is likely to result in a crash.
+目前，用户应避免写入返回的 array buffer。如果注入的部分未标记为可写入或未正确对齐，
+写入返回的 array buffer 可能会导致崩溃。
 
-* `key`  {string} the key for the asset in the dictionary specified by the
-  `assets` field in the single-executable application configuration.
-* Returns: {ArrayBuffer}
+* `key` {string} 单可执行应用程序配置中 `assets` 字段指定的字典中资源的键。
+* 返回：{ArrayBuffer}
 
 ### `sea.getAssetKeys()`
 
@@ -375,41 +344,33 @@ added:
   - v22.20.0
 -->
 
-* Returns {string\[]} An array containing all the keys of the assets
-  embedded in the executable. If no assets are embedded, returns an empty array.
+* 返回 {string\[]} 包含嵌入在可执行文件中所有资源键的数组。如果没有嵌入资源，则返回一个空数组。
 
-This method can be used to retrieve an array of all the keys of assets
-embedded into the single-executable application.
-An error is thrown when not running inside a single-executable application.
+此方法可用于检索嵌入到单可执行应用程序中的所有资源键的数组。
+当不在单可执行应用程序内运行时将抛出错误。
 
-## In the injected main script
+## 在注入的主脚本中
 
-### Module format of the injected main script
+### 注入的主脚本的模块格式
 
-To specify how Node.js should interpret the injected main script, use the
-`mainFormat` field in the single-executable application configuration.
-The accepted values are:
+要指定 Node.js 应如何解释注入的主脚本，请使用单可执行应用程序配置中的 `mainFormat` 字段。
+接受的值为：
 
-* `"commonjs"`: The injected main script is treated as a CommonJS module.
-* `"module"`: The injected main script is treated as an ECMAScript module.
+* `"commonjs"`：注入的主脚本被视为 CommonJS 模块。
+* `"module"`：注入的主脚本被视为 ECMAScript 模块。
 
-If the `mainFormat` field is not specified, it defaults to `"commonjs"`.
+如果未指定 `mainFormat` 字段，则默认为 `"commonjs"`。
 
-Currently, `"mainFormat": "module"` cannot be used together with `"useSnapshot"`.
+目前，`"mainFormat": "module"` 不能与 `"useSnapshot"` 一起使用。
 
-### Module loading in the injected main script
+### 注入的主脚本中的模块加载
 
-In the injected main script, module loading does not read from the file system.
-By default, both `require()` and `import` statements would only be able to load
-the built-in modules. Attempting to load a module that can only be found in the
-file system will throw an error.
+在注入的主脚本中，模块加载不从文件系统读取。
+默认情况下，`require()` 和 `import` 语句都只能加载内置模块。尝试加载只能在文件系统中找到的模块将抛出错误。
 
-Users can bundle their application into a standalone JavaScript file to inject
-into the executable. This also ensures a more deterministic dependency graph.
+用户可以将他们的应用程序捆绑成一个独立的 JavaScript 文件以注入到可执行文件中。这也确保了更确定的依赖图。
 
-To load modules from the file system in the injected main script, users can
-create a `require` function that can load from the file system using
-`module.createRequire()`. For example, in a CommonJS entry point:
+要在注入的主脚本中从文件系统加载模块，用户可以创建一个 `require` 函数，使用 `module.createRequire()` 从文件系统加载。例如，在 CommonJS 入口点中：
 
 <!-- eslint-disable no-global-assign -->
 
@@ -418,50 +379,40 @@ const { createRequire } = require('node:module');
 require = createRequire(__filename);
 ```
 
-### `require()` in the injected main script
+### 注入的主脚本中的 `require()`
 
-`require()` in the injected main script is not the same as the [`require()`][]
-available to modules that are not injected.
-Currently, it does not have any of the properties that non-injected
-[`require()`][] has except [`require.main`][].
+注入的主脚本中的 `require()` 与可用于非注入模块的 [`require()`][] 不同。
+目前，除了 [`require.main`][] 之外，它没有任何非注入 [`require()`][] 具有的属性。
 
-### `__filename` and `module.filename` in the injected main script
+### 注入的主脚本中的 `__filename` 和 `module.filename`
 
-The values of `__filename` and `module.filename` in the injected main script
-are equal to [`process.execPath`][].
+注入的主脚本中 `__filename` 和 `module.filename` 的值等于 [`process.execPath`][]。
 
-### `__dirname` in the injected main script
+### 注入的主脚本中的 `__dirname`
 
-The value of `__dirname` in the injected main script is equal to the directory
-name of [`process.execPath`][].
+注入的主脚本中 `__dirname` 的值等于 [`process.execPath`][] 的目录名。
 
-### `import.meta` in the injected main script
+### 注入的主脚本中的 `import.meta`
 
-When using `"mainFormat": "module"`, `import.meta` is available in the
-injected main script with the following properties:
+当使用 `"mainFormat": "module"` 时，`import.meta` 在注入的主脚本中可用，具有以下属性：
 
-* `import.meta.url`: A `file:` URL corresponding to [`process.execPath`][].
-* `import.meta.filename`: Equal to [`process.execPath`][].
-* `import.meta.dirname`: The directory name of [`process.execPath`][].
-* `import.meta.main`: `true`.
+* `import.meta.url`：对应于 [`process.execPath`][] 的 `file:` URL。
+* `import.meta.filename`：等于 [`process.execPath`][]。
+* `import.meta.dirname`：[`process.execPath`][] 的目录名。
+* `import.meta.main`：`true`。
 
-`import.meta.resolve` is currently not supported.
+`import.meta.resolve` 目前不受支持。
 
-### `import()` in the injected main script
+### 注入的主脚本中的 `import()`
 
-<!-- TODO(joyeecheung): support and document module.registerHooks -->
+<!-- TODO(joyeecheung): 支持并记录 module.registerHooks -->
 
-When using `"mainFormat": "module"`, `import()` can be used to dynamically
-load built-in modules. Attempting to use `import()` to load modules from
-the file system will throw an error.
+当使用 `"mainFormat": "module"` 时，`import()` 可用于动态加载内置模块。尝试使用 `import()` 从文件系统加载模块将抛出错误。
 
-### Using native addons in the injected main script
+### 在注入的主脚本中使用原生插件
 
-Native addons can be bundled as assets into the single-executable application
-by specifying them in the `assets` field of the configuration file used to
-generate the single-executable application preparation blob.
-The addon can then be loaded in the injected main script by writing the asset
-to a temporary file and loading it with `process.dlopen()`.
+原生插件可以作为资源捆绑到单可执行应用程序中，方法是在用于生成单可执行应用程序准备 blob 的配置文件的 `assets` 字段中指定它们。
+然后可以通过将资源写入临时文件并使用 `process.dlopen()` 加载它，在注入的主脚本中加载插件。
 
 ```json
 {
@@ -487,164 +438,141 @@ console.log(myaddon.exports);
 fs.rmSync(addonPath);
 ```
 
-Known caveat: if the single-executable application is produced by postject running on a Linux arm64 docker container,
-[the produced ELF binary does not have the correct hash table to load the addons][postject-linux-arm64-issue] and
-will crash on `process.dlopen()`. Build the single-executable application on other platforms, or at least on
-a non-container Linux arm64 environment to work around this issue.
+已知注意事项：如果单可执行应用程序是由运行在 Linux arm64 docker 容器上的 postject 生成的，
+[生成的 ELF 二进制文件没有正确的哈希表来加载插件][postject-linux-arm64-issue] 并且
+会在 `process.dlopen()` 上崩溃。在其他平台上构建单可执行应用程序，或者至少在
+非容器的 Linux arm64 环境中构建以解决此问题。
 
-## Notes
+## 注意事项
 
-### Single executable application creation process
+### 单可执行应用程序创建流程
 
-The process documented here is subject to change.
+此处记录的流程可能会发生变化。
 
-#### 1. Generating single executable preparation blobs
+#### 1. 生成单可执行准备 blob
 
-To build a single executable application, Node.js would first generate a blob
-that contains all the necessary information to run the bundled script.
-When using `--build-sea`, this step is done internally along with the injection.
+要构建单可执行应用程序，Node.js 将首先生成一个包含运行捆绑脚本所需所有信息的 blob。
+当使用 `--build-sea` 时，此步骤与注入一起在内部完成。
 
-##### Dumping the preparation blob to disk
+##### 将准备 blob 转储到磁盘
 
-Before `--build-sea` was introduced, an older workflow was introduced to write the
-preparation blob to disk for injection by external tools. This can still
-be used for verification purposes.
+在引入 `--build-sea` 之前，引入了一个较旧的工作流，将准备 blob 写入磁盘以供外部工具注入。这仍可用于验证目的。
 
-To dump the preparation blob to disk for verification, use `--experimental-sea-config`.
-This writes a file that can be injected into a Node.js binary using tools like [postject][].
+要将准备 blob 转储到磁盘以进行验证，请使用 `--experimental-sea-config`。
+这会写入一个文件，该文件可以使用 [postject][] 等工具注入到 Node.js 二进制文件中。
 
-The configuration is similar to that of `--build-sea`, except that the
-`output` field specifies the path to write the generated blob file instead of
-the final executable.
+配置与 `--build-sea` 类似，不同之处在于
+`output` 字段指定写入生成的 blob 文件的路径，而不是最终的可执行文件。
 
 ```json
 {
   "main": "/path/to/bundled/script.js",
-  // Instead of the final executable, this is the path to write the blob.
+  // 不是最终的可执行文件，这是写入 blob 的路径。
   "output": "/path/to/write/the/generated/blob.blob"
 }
 ```
 
-#### 2. Injecting the preparation blob into the `node` binary
+#### 2. 将准备 blob 注入到 `node` 二进制文件中
 
-To complete the creation of a single executable application, the generated blob
-needs to be injected into a copy of the `node` binary, as documented below.
+要完成单可执行应用程序的创建，需要将生成的 blob 注入到 `node` 二进制文件的副本中，如下所述。
 
-When using `--build-sea`, this step is done internally along with the blob generation.
+当使用 `--build-sea` 时，此步骤与 blob 生成一起在内部完成。
 
-* If the `node` binary is a [PE][] file, the blob should be injected as a resource
-  named `NODE_SEA_BLOB`.
-* If the `node` binary is a [Mach-O][] file, the blob should be injected as a section
-  named `NODE_SEA_BLOB` in the `NODE_SEA` segment.
-* If the `node` binary is an [ELF][] file, the blob should be injected as a note
-  named `NODE_SEA_BLOB`.
+* 如果 `node` 二进制文件是 [PE][] 文件，则 blob 应作为名为 `NODE_SEA_BLOB` 的资源注入。
+* 如果 `node` 二进制文件是 [Mach-O][] 文件，则 blob 应作为 `NODE_SEA` 段中名为 `NODE_SEA_BLOB` 的部分注入。
+* 如果 `node` 二进制文件是 [ELF][] 文件，则 blob 应作为名为 `NODE_SEA_BLOB` 的注记注入。
 
-Then, the SEA building process searches the binary for the
-`NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2:0` [fuse][] string and flip the
-last character to `1` to indicate that a resource has been injected.
+然后，SEA 构建过程在二进制文件中搜索 `NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2:0` [fuse][] 字符串，并将最后一个字符翻转为 `1` 以指示已注入资源。
 
-##### Injecting the preparation blob manually
+##### 手动注入准备 blob
 
-Before `--build-sea` was introduced, an older workflow was introduced to allow
-external tools to inject the generated blob into a copy of the `node` binary.
+在引入 `--build-sea` 之前，引入了一个较旧的工作流，允许外部工具将生成的 blob 注入到 `node` 二进制文件的副本中。
 
-For example, with [postject][]:
+例如，使用 [postject][]：
 
-1. Create a copy of the `node` executable and name it according to your needs:
+1. 创建 `node` 可执行文件的副本，并根据需要命名：
 
-   * On systems other than Windows:
+   * 在 Windows 以外的系统上：
 
    ```bash
    cp $(command -v node) hello
    ```
 
-   * On Windows:
+   * 在 Windows 上：
 
    ```text
    node -e "require('fs').copyFileSync(process.execPath, 'hello.exe')"
    ```
 
-   The `.exe` extension is necessary.
+   `.exe` 扩展名是必需的。
 
-2. Remove the signature of the binary (macOS and Windows only):
+2. 移除二进制文件的签名（仅限 macOS 和 Windows）：
 
-   * On macOS:
+   * 在 macOS 上：
 
    ```bash
    codesign --remove-signature hello
    ```
 
-   * On Windows (optional):
+   * 在 Windows 上（可选）：
 
-   [signtool][] can be used from the installed [Windows SDK][]. If this step is
-   skipped, ignore any signature-related warning from postject.
+   [signtool][] 可以从安装的 [Windows SDK][] 使用。如果跳过此步骤，请忽略来自 postject 的任何与签名相关的警告。
 
    ```powershell
    signtool remove /s hello.exe
    ```
 
-3. Inject the blob into the copied binary by running `postject` with
-   the following options:
+3. 通过运行带有以下选项的 `postject` 将 blob 注入到复制的二进制文件中：
 
-   * `hello` / `hello.exe` - The name of the copy of the `node` executable
-     created in step 4.
-   * `NODE_SEA_BLOB` - The name of the resource / note / section in the binary
-     where the contents of the blob will be stored.
-   * `sea-prep.blob` - The name of the blob created in step 1.
-   * `--sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2` - The
-     [fuse][] used by the Node.js project to detect if a file has been injected.
-   * `--macho-segment-name NODE_SEA` (only needed on macOS) - The name of the
-     segment in the binary where the contents of the blob will be
-     stored.
+   * `hello` / `hello.exe` - 步骤 1 中创建的 `node` 可执行文件副本的名称。
+   * `NODE_SEA_BLOB` - 二进制文件中存储 blob 内容的资源/注记/部分的名称。
+   * `sea-prep.blob` - 步骤 1 中创建的 blob 的名称。
+   * `--sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2` - Node.js 项目用于检测文件是否已被注入的 [fuse][]。
+   * `--macho-segment-name NODE_SEA`（仅在 macOS 上需要）- 二进制文件中存储 blob 内容的段的名称。
 
-   To summarize, here is the required command for each platform:
+   综上所述，以下是每个平台所需的命令：
 
-   * On Linux:
+   * 在 Linux 上：
      ```bash
      npx postject hello NODE_SEA_BLOB sea-prep.blob \
          --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
      ```
 
-   * On Windows - PowerShell:
+   * 在 Windows - PowerShell 上：
      ```powershell
      npx postject hello.exe NODE_SEA_BLOB sea-prep.blob `
          --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
      ```
 
-   * On Windows - Command Prompt:
+   * 在 Windows - 命令提示符上：
      ```text
      npx postject hello.exe NODE_SEA_BLOB sea-prep.blob ^
          --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
      ```
 
-   * On macOS:
+   * 在 macOS 上：
      ```bash
      npx postject hello NODE_SEA_BLOB sea-prep.blob \
          --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2 \
          --macho-segment-name NODE_SEA
      ```
 
-### Platform support
+### 平台支持
 
-Single-executable support is tested regularly on CI only on the following
-platforms:
+单可执行支持仅在以下平台的 CI 上定期测试：
 
 * Windows
 * macOS
-* Linux (all distributions [supported by Node.js][] except Alpine and all
-  architectures [supported by Node.js][] except s390x)
+* Linux（Node.js 支持的所有发行版，Alpine 除外；以及 Node.js 支持的所有架构，s390x 除外）
 
-This is due to a lack of better tools to generate single-executables that can be
-used to test this feature on other platforms.
+这是由于缺乏更好的工具来生成单可执行文件，以便在其他平台上测试此功能。
 
-Suggestions for other resource injection tools/workflows are welcomed. Please
-start a discussion at <https://github.com/nodejs/single-executable/discussions>
-to help us document them.
+欢迎提出其他资源注入工具/工作流的建议。请在 <https://github.com/nodejs/single-executable/discussions> 发起讨论以帮助我们记录它们。
 
 [CommonJS]: modules.md#modules-commonjs-modules
 [ECMAScript Modules]: esm.md#modules-ecmascript-modules
 [ELF]: https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
-[Generating single executable preparation blobs]: #1-generating-single-executable-preparation-blobs
+[生成单可执行准备 blob]: #1-generating-single-executable-preparation-blobs
 [Mach-O]: https://en.wikipedia.org/wiki/Mach-O
 [PE]: https://en.wikipedia.org/wiki/Portable_Executable
 [Windows SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/
@@ -657,10 +585,10 @@ to help us document them.
 [`sea.getRawAsset()`]: #seagetrawassetkey
 [`v8.startupSnapshot.setDeserializeMainFunction()`]: v8.md#v8startupsnapshotsetdeserializemainfunctioncallback-data
 [`v8.startupSnapshot` API]: v8.md#startup-snapshot-api
-[documentation about startup snapshot support in Node.js]: cli.md#--build-snapshot
+[有关 Node.js 中启动快照支持的文档]: cli.md#--build-snapshot
 [fuse]: https://www.electronjs.org/docs/latest/tutorial/fuses
 [postject]: https://github.com/nodejs/postject
 [postject-linux-arm64-issue]: https://github.com/nodejs/postject/issues/105
 [signtool]: https://learn.microsoft.com/en-us/windows/win32/seccrypto/signtool
-[single executable applications]: https://github.com/nodejs/single-executable
-[supported by Node.js]: https://github.com/nodejs/node/blob/main/BUILDING.md#platform-list
+[单可执行应用程序]: https://github.com/nodejs/single-executable
+[Node.js 支持]: https://github.com/nodejs/node/blob/main/BUILDING.md#platform-list

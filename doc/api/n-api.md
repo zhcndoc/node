@@ -4,56 +4,31 @@
 
 <!-- type=misc -->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
-Node-API (formerly N-API) is an API for building native Addons. It is
-independent from the underlying JavaScript runtime (for example, V8) and is
-maintained as part of Node.js itself. This API will be Application Binary
-Interface (ABI) stable across versions of Node.js. It is intended to insulate
-addons from changes in the underlying JavaScript engine and allow modules
-compiled for one major version to run on later major versions of Node.js without
-recompilation. The [ABI Stability][] guide provides a more in-depth explanation.
+Node-API（以前称为 N-API）是用于构建原生插件的 API。它独立于底层 JavaScript 运行时（例如 V8），并作为 Node.js 本身的一部分进行维护。此 API 将在 Node.js 的各个版本之间保持应用二进制接口（ABI）稳定。它旨在使插件免受底层 JavaScript 引擎变更的影响，并允许为一个主版本编译的模块在后续主版本的 Node.js 上运行而无需重新编译。[ABI 稳定性][] 指南提供了更深入的说明。
 
-Addons are built/packaged with the same approach/tools outlined in the section
-titled [C++ Addons][]. The only difference is the set of APIs that are used by
-the native code. Instead of using the V8 or [Native Abstractions for Node.js][]
-APIs, the functions available in Node-API are used.
+插件的构建/打包方式使用与 [C++ 插件][] 部分中概述的方法/工具相同。唯一的区别是原生代码所使用的 API 集。不使用 V8 或 [Node.js 原生抽象][] API，而是使用 Node-API 中可用的函数。
 
-APIs exposed by Node-API are generally used to create and manipulate
-JavaScript values. Concepts and operations generally map to ideas specified
-in the ECMA-262 Language Specification. The APIs have the following
-properties:
+Node-API 暴露的 API 通常用于创建和操作 JavaScript 值。概念和操作通常对应于 ECMA-262 语言规范中指定的概念。API 具有以下属性：
 
-* All Node-API calls return a status code of type `napi_status`. This
-  status indicates whether the API call succeeded or failed.
-* The API's return value is passed via an out parameter.
-* All JavaScript values are abstracted behind an opaque type named
-  `napi_value`.
-* In case of an error status code, additional information can be obtained
-  using `napi_get_last_error_info`. More information can be found in the error
-  handling section [Error handling][].
+* 所有 Node-API 调用返回类型为 `napi_status` 的状态码。此状态指示 API 调用成功还是失败。
+* API 的返回值通过输出参数传递。
+* 所有 JavaScript 值都抽象在名为 `napi_value` 的不透明类型背后。
+* 如果出现错误状态码，可以使用 `napi_get_last_error_info` 获取更多信息。更多信息可以在错误处理部分 [错误处理][] 中找到。
 
-## Writing addons in various programming languages
+## 使用各种编程语言编写插件
 
-Node-API is a C API that ensures ABI stability across Node.js versions
-and different compiler levels. With this stability guarantee, it is possible
-to write addons in other programming languages on top of Node-API. Refer
-to [language and engine bindings][] for more programming languages and engines
-support details.
+Node-API 是一个 C API，可确保跨 Node.js 版本和不同编译器级别的 ABI 稳定性。有了这个稳定性保证，可以在 Node-API 之上用其他编程语言编写插件。有关更多编程语言和引擎支持详情，请参阅 [语言和引擎绑定][]。
 
-[`node-addon-api`][] is the official C++ binding that provides a more efficient way to
-write C++ code that calls Node-API. This wrapper is a header-only library that offers an inlinable C++ API.
-Binaries built with `node-addon-api` will depend on the symbols of the Node-API
-C-based functions exported by Node.js. The following code snippet is an example
-of `node-addon-api`:
+[`node-addon-api`][] 是官方 C++ 绑定，提供了一种更高效的方式来编写调用 Node-API 的 C++ 代码。此包装器是一个仅头文件的库，提供可内联的 C++ API。使用 `node-addon-api` 构建的二进制文件将依赖于 Node.js 导出的基于 Node-API C 函数的符号。以下代码片段是 `node-addon-api` 的示例：
 
 ```cpp
 Object obj = Object::New(env);
 obj["foo"] = String::New(env, "bar");
 ```
 
-The above `node-addon-api` C++ code is equivalent to the following C-based
-Node-API code:
+上述 `node-addon-api` C++ 代码等同于以下基于 C 的 Node-API 代码：
 
 ```cpp
 napi_status status;
@@ -77,26 +52,17 @@ if (status != napi_ok) {
 }
 ```
 
-The end result is that the addon only uses the exported C APIs. Even though
-the addon is written in C++, it still gets the benefits of the ABI stability
-provided by the C Node-API.
+最终结果是插件只使用导出的 C API。即使插件是用 C++ 编写的，它仍然可以获得 C Node-API 提供的 ABI 稳定性的好处。
 
-When using `node-addon-api` instead of the C APIs, start with the API [docs][]
-for `node-addon-api`.
+当使用 `node-addon-api` 而不是 C API 时，请从 `node-addon-api` 的 API [文档][] 开始。
 
-The [Node-API Resource](https://nodejs.github.io/node-addon-examples/) offers
-an excellent orientation and tips for developers just getting started with
-Node-API and `node-addon-api`. Additional media resources can be found on the
-[Node-API Media][] page.
+[Node-API 资源](https://nodejs.github.io/node-addon-examples/) 为刚刚开始使用 Node-API 和 `node-addon-api` 的开发者提供了极好的指导和建议。额外的媒体资源可以在 [Node-API 媒体][] 页面上找到。
 
-## Implications of ABI stability
+## ABI 稳定性的影响
 
-Although Node-API provides an ABI stability guarantee, other parts of Node.js do
-not, and any external libraries used from the addon may not. In particular,
-none of the following APIs provide an ABI stability guarantee across major
-versions:
+虽然 Node-API 提供了 ABI 稳定性保证，但 Node.js 的其他部分没有，插件使用的任何外部库也可能没有。特别是，以下任何 API 都不提供跨主版本的 ABI 稳定性保证：
 
-* the Node.js C++ APIs available via any of
+* 通过以下任一方式可用的 Node.js C++ API
 
   ```cpp
   #include <node.h>
@@ -105,173 +71,117 @@ versions:
   #include <node_object_wrap.h>
   ```
 
-* the libuv APIs which are also included with Node.js and available via
+* 随 Node.js 包含并通过以下方式可用的 libuv API
 
   ```cpp
   #include <uv.h>
   ```
 
-* the V8 API available via
+* 通过以下方式可用的 V8 API
 
   ```cpp
   #include <v8.h>
   ```
 
-Thus, for an addon to remain ABI-compatible across Node.js major versions, it
-must use Node-API exclusively by restricting itself to using
+因此，为了使插件在 Node.js 主版本之间保持 ABI 兼容，它必须仅使用 Node-API，限制自己使用
 
 ```c
 #include <node_api.h>
 ```
 
-and by checking, for all external libraries that it uses, that the external
-library makes ABI stability guarantees similar to Node-API.
+并通过检查其使用的所有外部库，确保外部库做出类似于 Node-API 的 ABI 稳定性保证。
 
-### Enum values in ABI stability
+### ABI 稳定性中的枚举值
 
-All enum data types defined in Node-API should be considered as a fixed size
-`int32_t` value. Bit flag enum types should be explicitly documented, and they
-work with bit operators like bit-OR (`|`) as a bit value. Unless otherwise
-documented, an enum type should be considered to be extensible.
+Node-API 中定义的所有枚举数据类型都应视为固定大小的 `int32_t` 值。位标志枚举类型应有明确文档说明，它们作为位值与位运算符（如位或 (`|`)）配合使用。除非另有说明，否则枚举类型应被视为可扩展的。
 
-A new enum value will be added at the end of the enum definition. An enum value
-will not be removed or renamed.
+新的枚举值将添加到枚举定义的末尾。枚举值不会被移除或重命名。
 
-For an enum type returned from a Node-API function, or provided as an out
-parameter of a Node-API function, the value is an integer value and an addon
-should handle unknown values. New values are allowed to be introduced without
-a version guard. For example, when checking `napi_status` in switch statements,
-an addon should include a default branch, as new status codes may be introduced
-in newer Node.js versions.
+对于从 Node-API 函数返回的枚举类型，或作为 Node-API 函数的输出参数提供的枚举类型，该值是一个整数值，插件应处理未知值。允许引入新值而无需版本保护。例如，在 switch 语句中检查 `napi_status` 时，插件应包含一个 default 分支，因为新的状态码可能会在较新版本的 Node.js 中引入。
 
-For an enum type used in an in-parameter, the result of passing an unknown
-integer value to Node-API functions is undefined unless otherwise documented.
-A new value is added with a version guard to indicate the Node-API version in
-which it was introduced. For example, `napi_get_all_property_names` can be
-extended with new enum value of `napi_key_filter`.
+对于用于输入参数的枚举类型，除非另有说明，否则将未知整数值传递给 Node-API 函数的结果是未定义的。新值的添加带有版本保护，以指示引入它的 Node-API 版本。例如，`napi_get_all_property_names` 可以使用新的 `napi_key_filter` 枚举值进行扩展。
 
-For an enum type used in both in-parameters and out-parameters, new values are
-allowed to be introduced without a version guard.
+对于同时用于输入参数和输出参数的枚举类型，允许引入新值而无需版本保护。
 
-## Building
+## 构建
 
-Unlike modules written in JavaScript, developing and deploying Node.js
-native addons using Node-API requires an additional set of tools. Besides the
-basic tools required to develop for Node.js, the native addon developer
-requires a toolchain that can compile C and C++ code into a binary. In
-addition, depending upon how the native addon is deployed, the _user_ of
-the native addon will also need to have a C/C++ toolchain installed.
+与用 JavaScript 编写的模块不同，使用 Node-API 开发和部署 Node.js 原生插件需要额外的一组工具。除了开发 Node.js 所需的基本工具外，原生插件开发者还需要一个可以将 C 和 C++ 代码编译为二进制文件的工具链。此外，根据原生插件的部署方式，原生插件的_用户_也需要安装 C/C++ 工具链。
 
-For Linux developers, the necessary C/C++ toolchain packages are readily
-available. [GCC][] is widely used in the Node.js community to build and
-test across a variety of platforms. For many developers, the [LLVM][]
-compiler infrastructure is also a good choice.
+对于 Linux 开发者，必要的 C/C++ 工具链包现成可用。[GCC][] 在 Node.js 社区中广泛用于在各种平台上构建和测试。对于许多开发者来说，[LLVM][] 编译器基础设施也是一个不错的选择。
 
-For Mac developers, [Xcode][] offers all the required compiler tools.
-However, it is not necessary to install the entire Xcode IDE. The following
-command installs the necessary toolchain:
+对于 Mac 开发者，[Xcode][] 提供了所有所需的编译器工具。但是，没有必要安装整个 Xcode IDE。以下命令安装必要的工具链：
 
 ```bash
 xcode-select --install
 ```
 
-For Windows developers, [Visual Studio][] offers all the required compiler
-tools. However, it is not necessary to install the entire Visual Studio
-IDE. The following command installs the necessary toolchain:
+对于 Windows 开发者，[Visual Studio][] 提供了所有所需的编译器工具。但是，没有必要安装整个 Visual Studio IDE。以下命令安装必要的工具链：
 
 ```bash
 npm install --global windows-build-tools
 ```
 
-The sections below describe the additional tools available for developing
-and deploying Node.js native addons.
+以下部分描述了可用于开发和部署 Node.js 原生插件的额外工具。
 
-### Build tools
+### 构建工具
 
-Both the tools listed here require that _users_ of the native
-addon have a C/C++ toolchain installed in order to successfully install
-the native addon.
+此处列出的两个工具都要求原生插件的_用户_安装 C/C++ 工具链才能成功安装原生插件。
 
 #### node-gyp
 
-[node-gyp][] is a build system based on the [gyp-next][] fork of
-Google's [GYP][] tool and comes bundled with npm. GYP, and therefore node-gyp,
-requires that Python be installed.
+[node-gyp][] 是一个基于 Google 的 [GYP][] 工具的 [gyp-next][] 分支的构建系统，并与 npm 捆绑在一起。GYP，因此 node-gyp，需要安装 Python。
 
-Historically, node-gyp has been the tool of choice for building native
-addons. It has widespread adoption and documentation. However, some
-developers have run into limitations in node-gyp.
+历史上，node-gyp 一直是构建原生插件的首选工具。它具有广泛的采用率和文档。但是，一些开发者在 node-gyp 中遇到了限制。
 
 #### CMake.js
 
-[CMake.js][] is an alternative build system based on [CMake][].
+[CMake.js][] 是一个基于 [CMake][] 的替代构建系统。
 
-CMake.js is a good choice for projects that already use CMake or for
-developers affected by limitations in node-gyp. [`build_with_cmake`][] is an
-example of a CMake-based native addon project.
+CMake.js 对于已经使用 CMake 的项目或受 node-gyp 限制影响的开发者来说是一个不错的选择。[`build_with_cmake`][] 是一个基于 CMake 的原生插件项目的示例。
 
-### Uploading precompiled binaries
+### 上传预编译二进制文件
 
-The three tools listed here permit native addon developers and maintainers
-to create and upload binaries to public or private servers. These tools are
-typically integrated with CI/CD build systems like [Travis CI][] and
-[AppVeyor][] to build and upload binaries for a variety of platforms and
-architectures. These binaries are then available for download by users who
-do not need to have a C/C++ toolchain installed.
+此处列出的三个工具允许原生插件开发者和维护者创建并将二进制文件上传到公共或私有服务器。这些工具通常与 [Travis CI][] 和 [AppVeyor][] 等 CI/CD 构建系统集成，以构建和上传各种平台和架构的二进制文件。然后，这些二进制文件可供不需要安装 C/C++ 工具链的用户下载。
 
 #### node-pre-gyp
 
-[node-pre-gyp][] is a tool based on node-gyp that adds the ability to
-upload binaries to a server of the developer's choice. node-pre-gyp has
-particularly good support for uploading binaries to Amazon S3.
+[node-pre-gyp][] 是一个基于 node-gyp 的工具，增加了将二进制文件上传到开发者选择的服务器的能力。node-pre-gyp 对上传二进制文件到 Amazon S3 有特别好的支持。
 
 #### prebuild
 
-[prebuild][] is a tool that supports builds using either node-gyp or
-CMake.js. Unlike node-pre-gyp which supports a variety of servers, prebuild
-uploads binaries only to [GitHub releases][]. prebuild is a good choice for
-GitHub projects using CMake.js.
+[prebuild][] 是一个支持使用 node-gyp 或 CMake.js 进行构建的工具。与支持各种服务器的 node-pre-gyp 不同，prebuild 仅将二进制文件上传到 [GitHub 发布][]。prebuild 是使用 CMake.js 的 GitHub 项目的不错的选择。
 
 #### prebuildify
 
-[prebuildify][] is a tool based on node-gyp. The advantage of prebuildify is
-that the built binaries are bundled with the native addon when it's
-uploaded to npm. The binaries are downloaded from npm and are immediately
-available to the module user when the native addon is installed.
+[prebuildify][] 是一个基于 node-gyp 的工具。prebuildify 的优势在于，构建的二进制文件在上传到 npm 时与原生插件捆绑在一起。二进制文件从 npm 下载，并在安装原生插件时立即可供模块用户使用。
 
-## Usage
+## 用法
 
-In order to use the Node-API functions, include the file [`node_api.h`][] which
-is located in the src directory in the node development tree:
+为了使用 Node-API 函数，包含位于 node 开发树 src 目录中的 [`node_api.h`][] 文件：
 
 ```c
 #include <node_api.h>
 ```
 
-This will opt into the default `NAPI_VERSION` for the given release of Node.js.
-In order to ensure compatibility with specific versions of Node-API, the version
-can be specified explicitly when including the header:
+这将选用给定 Node.js 版本的默认 `NAPI_VERSION`。为了确保与特定版本 Node-API 的兼容性，可以在包含头文件时显式指定版本：
 
 ```c
 #define NAPI_VERSION 3
 #include <node_api.h>
 ```
 
-This restricts the Node-API surface to just the functionality that was available
-in the specified (and earlier) versions.
+这将 Node-API 接口表面限制为仅在指定（及更早）版本中可用的功能。
 
-Some of the Node-API surface is experimental and requires explicit opt-in:
+部分 Node-API 接口表面是实验性的，需要显式选择加入：
 
 ```c
 #define NAPI_EXPERIMENTAL
 #include <node_api.h>
 ```
 
-In this case the entire API surface, including any experimental APIs, will be
-available to the module code.
+在这种情况下，整个 API 表面，包括任何实验性 API，都将对模块代码可用。
 
-Occasionally, experimental features are introduced that affect already-released
-and stable APIs. These features can be disabled by an opt-out:
+偶尔，会引入影响已发布和稳定 API 的实验性功能。这些功能可以通过选择退出来禁用：
 
 ```c
 #define NAPI_EXPERIMENTAL
@@ -279,129 +189,85 @@ and stable APIs. These features can be disabled by an opt-out:
 #include <node_api.h>
 ```
 
-where `<FEATURE_NAME>` is the name of an experimental feature that affects both
-experimental and stable APIs.
+其中 `<FEATURE_NAME>` 是影响实验性和稳定 API 的实验性功能的名称。
 
-## Node-API version matrix
+## Node-API 版本矩阵
 
-Up until version 9, Node-API versions were additive and versioned
-independently from Node.js. This meant that any version was
-an extension to the previous version in that it had all of
-the APIs from the previous version with some additions. Each
-Node.js version only supported a single Node-API version.
-For example v18.15.0 supports only Node-API version 8. ABI stability was
-achieved because 8 was a strict superset of all previous versions.
+直到版本 9，Node-API 版本都是累加的，并且独立于 Node.js 进行版本控制。这意味着任何版本都是前一个版本的扩展，因为它具有前一个版本的所有 API 并添加了一些内容。每个 Node.js 版本仅支持单个 Node-API 版本。例如 v18.15.0 仅支持 Node-API 版本 8。实现 ABI 稳定性是因为 8 是所有先前版本的严格超集。
 
-As of version 9, while Node-API versions continue to be versioned
-independently, an add-on that ran with Node-API version 9 may need
-code updates to run with Node-API version 10. ABI stability
-is maintained, however, because Node.js versions that support
-Node-API versions higher than 8 will support all versions
-between 8 and the highest version they support and will default
-to providing the version 8 APIs unless an add-on opts into a
-higher Node-API version. This approach provides the flexibility
-of better optimizing existing Node-API functions while
-maintaining ABI stability. Existing add-ons can continue to run without
-recompilation using an earlier version of Node-API. If an add-on
-needs functionality from a newer Node-API version, changes to existing
-code and recompilation will be needed to use those new functions anyway.
+从版本 9 开始，虽然 Node-API 版本继续独立进行版本控制，但使用 Node-API 版本 9 运行的插件可能需要代码更新才能与 Node-API 版本 10 一起运行。然而，ABI 稳定性得以保持，因为支持高于 8 的 Node-API 版本的 Node.js 版本将支持 8 到它们支持的最高版本之间的所有版本，并且将默认提供版本 8 的 API，除非插件选择加入更高的 Node-API 版本。这种方法提供了更好地优化现有 Node-API 函数的灵活性，同时保持 ABI 稳定性。现有插件可以继续使用较早版本的 Node-API 运行而无需重新编译。如果插件需要来自较新 Node-API 版本的功能，无论如何都需要更改现有代码并重新编译才能使用这些新功能。
 
-In versions of Node.js that support Node-API version 9 and later, defining
-`NAPI_VERSION=X` and using the existing add-on initialization macros
-will bake in the requested Node-API version that will be used at runtime
-into the add-on. If `NAPI_VERSION` is not set it will default to 8.
+在支持 Node-API 版本 9 及更高版本的 Node.js 版本中，定义 `NAPI_VERSION=X` 并使用现有的插件初始化宏会将请求的 Node-API 版本固化到插件中，该版本将在运行时使用。如果未设置 `NAPI_VERSION`，它将默认为 8。
 
-This table may not be up to date in older streams, the most up to date
-information is in the latest API documentation in:
-[Node-API version matrix](https://nodejs.org/docs/latest/api/n-api.html#node-api-version-matrix)
+此表在较旧的版本流中可能不是最新的，最新的信息位于最新的 API 文档中：
+[Node-API 版本矩阵](https://nodejs.org/docs/latest/api/n-api.html#node-api-version-matrix)
 
-<!-- For accessibility purposes, this table needs row headers. That means we
-     can't do it in markdown. Hence, the raw HTML. -->
+<!-- 为了无障碍目的，此表需要行标题。这意味着我们无法在 markdown 中完成。因此，使用原始 HTML。 -->
 
 <table>
   <tr>
-    <th>Node-API version</th>
-    <th scope="col">Supported In</th>
+    <th>Node-API 版本</th>
+    <th scope="col">支持于</th>
   </tr>
   <tr>
     <th scope="row">10</th>
-    <td>v22.14.0+, 23.6.0+ and all later versions</td>
+    <td>v22.14.0+、23.6.0+ 及所有后续版本</td>
   </tr>
   <tr>
     <th scope="row">9</th>
-    <td>v18.17.0+, 20.3.0+, 21.0.0 and all later versions</td>
+    <td>v18.17.0+、20.3.0+、21.0.0 及所有后续版本</td>
   </tr>
   <tr>
     <th scope="row">8</th>
-    <td>v12.22.0+, v14.17.0+, v15.12.0+, 16.0.0 and all later versions</td>
+    <td>v12.22.0+、v14.17.0+、v15.12.0+、16.0.0 及所有后续版本</td>
   </tr>
   <tr>
     <th scope="row">7</th>
-    <td>v10.23.0+, v12.19.0+, v14.12.0+, 15.0.0 and all later versions</td>
+    <td>v10.23.0+、v12.19.0+、v14.12.0+、15.0.0 及所有后续版本</td>
   </tr>
   <tr>
     <th scope="row">6</th>
-    <td>v10.20.0+, v12.17.0+, 14.0.0 and all later versions</td>
+    <td>v10.20.0+、v12.17.0+、14.0.0 及所有后续版本</td>
   </tr>
   <tr>
     <th scope="row">5</th>
-    <td>v10.17.0+, v12.11.0+, 13.0.0 and all later versions</td>
+    <td>v10.17.0+、v12.11.0+、13.0.0 及所有后续版本</td>
   </tr>
   <tr>
     <th scope="row">4</th>
-    <td>v10.16.0+, v11.8.0+, 12.0.0 and all later versions</td>
+    <td>v10.16.0+、v11.8.0+、12.0.0 及所有后续版本</td>
   </tr>
   </tr>
     <tr>
     <th scope="row">3</th>
-    <td>v6.14.2*, 8.11.2+, v9.11.0+*, 10.0.0 and all later versions</td>
+    <td>v6.14.2*、8.11.2+、v9.11.0+*、10.0.0 及所有后续版本</td>
   </tr>
   <tr>
     <th scope="row">2</th>
-    <td>v8.10.0+*, v9.3.0+*, 10.0.0 and all later versions</td>
+    <td>v8.10.0+*、v9.3.0+*、10.0.0 及所有后续版本</td>
   </tr>
   <tr>
     <th scope="row">1</th>
-    <td>v8.6.0+**, v9.0.0+*, 10.0.0 and all later versions</td>
+    <td>v8.6.0+**、v9.0.0+*、10.0.0 及所有后续版本</td>
   </tr>
 </table>
 
-\* Node-API was experimental.
+\* Node-API 处于实验阶段。
 
-\*\* Node.js 8.0.0 included Node-API as experimental. It was released as
-Node-API version 1 but continued to evolve until Node.js 8.6.0. The API is
-different in versions prior to Node.js 8.6.0. We recommend Node-API version 3 or
-later.
+\*\* Node.js 8.0.0 将 Node-API 作为实验性功能包含在内。它作为 Node-API 版本 1 发布，但一直演变到 Node.js 8.6.0。在 Node.js 8.6.0 之前的版本中，API 有所不同。我们推荐使用 Node-API 版本 3 或更高版本。
 
-Each API documented for Node-API will have a header named `added in:`, and APIs
-which are stable will have the additional header `Node-API version:`.
-APIs are directly usable when using a Node.js version which supports
-the Node-API version shown in `Node-API version:` or higher.
-When using a Node.js version that does not support the
-`Node-API version:` listed or if there is no `Node-API version:` listed,
-then the API will only be available if
-`#define NAPI_EXPERIMENTAL` precedes the inclusion of `node_api.h`
-or `js_native_api.h`. If an API appears not to be available on
-a version of Node.js which is later than the one shown in `added in:` then
-this is most likely the reason for the apparent absence.
+每个为 Node-API 记录的 API 都将有一个名为 `添加于：` 的标题，稳定的 API 将会有额外的标题 `Node-API 版本：`。
+当使用的 Node.js 版本支持 `Node-API 版本：` 中显示的 Node-API 版本或更高版本时，API 可直接使用。
+当使用的 Node.js 版本不支持列出的 `Node-API 版本：` 或者没有列出 `Node-API 版本：` 时，那么只有在包含 `node_api.h` 或 `js_native_api.h` 之前定义了 `#define NAPI_EXPERIMENTAL`，该 API 才可用。如果一个 API 在晚于 `添加于：` 中显示的版本的 Node.js 版本上似乎不可用，那么这很可能是由于明显缺失的原因。
 
-The Node-APIs associated strictly with accessing ECMAScript features from native
-code can be found separately in `js_native_api.h` and `js_native_api_types.h`.
-The APIs defined in these headers are included in `node_api.h` and
-`node_api_types.h`. The headers are structured in this way in order to allow
-implementations of Node-API outside of Node.js. For those implementations the
-Node.js specific APIs may not be applicable.
+与从原生代码访问 ECMAScript 功能严格相关的 Node-API 可以分别在 `js_native_api.h` 和 `js_native_api_types.h` 中找到。
+这些头文件中定义的 API 包含在 `node_api.h` 和 `node_api_types.h` 中。
+头文件这样结构化是为了允许在 Node.js 之外实现 Node-API。
+对于那些实现，特定于 Node.js 的 API 可能不适用。
 
-The Node.js-specific parts of an addon can be separated from the code that
-exposes the actual functionality to the JavaScript environment so that the
-latter may be used with multiple implementations of Node-API. In the example
-below, `addon.c` and `addon.h` refer only to `js_native_api.h`. This ensures
-that `addon.c` can be reused to compile against either the Node.js
-implementation of Node-API or any implementation of Node-API outside of Node.js.
+插件的特定于 Node.js 的部分可以与向 JavaScript 环境暴露实际功能的代码分离，以便后者可以与多个 Node-API 实现一起使用。在下面的示例中，`addon.c` 和 `addon.h` 仅引用 `js_native_api.h`。这确保了 `addon.c` 可以重用于针对 Node.js 的 Node-API 实现或 Node.js 之外的任何 Node-API 实现进行编译。
 
-`addon_node.c` is a separate file that contains the Node.js specific entry point
-to the addon and which instantiates the addon by calling into `addon.c` when the
-addon is loaded into a Node.js environment.
+`addon_node.c` 是一个单独的文件，包含插件的特定于 Node.js 的入口点，当插件加载到 Node.js 环境时，它通过调用 `addon.c` 来实例化插件。
 
 ```c
 // addon.h
@@ -425,7 +291,7 @@ napi_value create_addon(napi_env env);
       const char* err_message = error_info->error_message;        \
       bool is_pending;                                            \
       napi_is_exception_pending((env), &is_pending);              \
-      /* If an exception is already pending, don't rethrow it */  \
+      /* 如果异常已经挂起，不要重新抛出它 */  \
       if (!is_pending) {                                          \
         const char* message = (err_message == NULL)               \
             ? "empty error message"                               \
@@ -438,7 +304,7 @@ napi_value create_addon(napi_env env);
 
 static napi_value
 DoSomethingUseful(napi_env env, napi_callback_info info) {
-  // Do something useful.
+  // 做一些有用的事情。
   return NULL;
 }
 
@@ -469,39 +335,25 @@ napi_value create_addon(napi_env env) {
 #include "addon.h"
 
 NAPI_MODULE_INIT(/* napi_env env, napi_value exports */) {
-  // This function body is expected to return a `napi_value`.
-  // The variables `napi_env env` and `napi_value exports` may be used within
-  // the body, as they are provided by the definition of `NAPI_MODULE_INIT()`.
+  // 此函数体预期返回一个 `napi_value`。
+  // 变量 `napi_env env` 和 `napi_value exports` 可以在内部使用
+  // 在函数体内，因为它们由 `NAPI_MODULE_INIT()` 的定义提供。
   return create_addon(env);
 }
 ```
 
-## Environment life cycle APIs
+## 环境生命周期 API
 
-[Section Agents][] of the [ECMAScript Language Specification][] defines the concept
-of an "Agent" as a self-contained environment in which JavaScript code runs.
-Multiple such Agents may be started and terminated either concurrently or in
-sequence by the process.
+[ECMAScript 语言规范][] 的 [Agent 章节][] 将 "Agent" 的概念定义为运行 JavaScript 代码的独立环境。
+进程可以并发或按顺序启动和终止多个这样的 Agent。
 
-A Node.js environment corresponds to an ECMAScript Agent. In the main process,
-an environment is created at startup, and additional environments can be created
-on separate threads to serve as [worker threads][]. When Node.js is embedded in
-another application, the main thread of the application may also construct and
-destroy a Node.js environment multiple times during the life cycle of the
-application process such that each Node.js environment created by the
-application may, in turn, during its life cycle create and destroy additional
-environments as worker threads.
+Node.js 环境对应于一个 ECMAScript Agent。在主进程中，环境在启动时创建，并且可以在单独的线程上创建附加环境以作为 [工作线程][]。当 Node.js 嵌入到另一个应用程序中时，应用程序的主线程也可以在应用程序进程的生命周期内多次构建和销毁 Node.js 环境，以便应用程序创建的每个 Node.js 环境在其生命周期内又可以创建和销毁附加环境作为工作线程。
 
-From the perspective of a native addon this means that the bindings it provides
-may be called multiple times, from multiple contexts, and even concurrently from
-multiple threads.
+从原生插件的角度来看，这意味着它提供的绑定可能会被多次调用，来自多个上下文，甚至来自多个线程并发调用。
 
-Native addons may need to allocate global state which they use during
-their life cycle of an Node.js environment such that the state can be
-unique to each instance of the addon.
+原生插件可能需要分配全局状态，以便在 Node.js 环境的生命周期内使用，从而使状态对于插件的每个实例都是唯一的。
 
-To this end, Node-API provides a way to associate data such that its life cycle
-is tied to the life cycle of a Node.js environment.
+为此，Node-API 提供了一种关联数据的方法，使其生命周期与 Node.js 环境的生命周期绑定。
 
 ### `napi_set_instance_data`
 
@@ -519,21 +371,14 @@ napi_status napi_set_instance_data(node_api_basic_env env,
                                    void* finalize_hint);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] data`: The data item to make available to bindings of this instance.
-* `[in] finalize_cb`: The function to call when the environment is being torn
-  down. The function receives `data` so that it might free it.
-  [`napi_finalize`][] provides more details.
-* `[in] finalize_hint`: Optional hint to pass to the finalize callback during
-  collection.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] data`：可供此实例绑定使用的数据项。
+* `[in] finalize_cb`：当环境被销毁时要调用的函数。该函数接收 `data` 以便释放它。[`napi_finalize`][] 提供了更多细节。
+* `[in] finalize_hint`：在收集期间传递给清理回调的可选提示。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API associates `data` with the currently running Node.js environment. `data`
-can later be retrieved using `napi_get_instance_data()`. Any existing data
-associated with the currently running Node.js environment which was set by means
-of a previous call to `napi_set_instance_data()` will be overwritten. If a
-`finalize_cb` was provided by the previous call, it will not be called.
+此 API 将 `data` 与当前运行的 Node.js 环境关联。`data` 稍后可以使用 `napi_get_instance_data()` 检索。任何与当前运行的 Node.js 环境关联的现有数据（通过之前调用 `napi_set_instance_data()` 设置）将被覆盖。如果之前的调用提供了 `finalize_cb`，它将不会被调用。
 
 ### `napi_get_instance_data`
 
@@ -549,21 +394,16 @@ napi_status napi_get_instance_data(node_api_basic_env env,
                                    void** data);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[out] data`: The data item that was previously associated with the currently
-  running Node.js environment by a call to `napi_set_instance_data()`.
+* `[in] env`：调用 Node-API 的环境。
+* `[out] data`：之前通过调用 `napi_set_instance_data()` 与当前运行的 Node.js 环境关联的数据项。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API retrieves data that was previously associated with the currently
-running Node.js environment via `napi_set_instance_data()`. If no data is set,
-the call will succeed and `data` will be set to `NULL`.
+此 API 检索之前通过 `napi_set_instance_data()` 与当前运行的 Node.js 环境关联的数据。如果没有设置数据，调用将成功并且 `data` 将设置为 `NULL`。
 
-## Basic Node-API data types
+## 基本 Node-API 数据类型
 
-Node-API exposes the following fundamental data types as abstractions that are
-consumed by the various APIs. These APIs should be treated as opaque,
-introspectable only with other Node-API calls.
+Node-API 将以下基本数据类型公开为抽象，供各种 API 使用。这些 API 应被视为不透明的，只能通过其他 Node-API 调用进行内省。
 
 ### `napi_status`
 
@@ -572,8 +412,7 @@ added: v8.0.0
 napiVersion: 1
 -->
 
-Integral status code indicating the success or failure of a Node-API call.
-Currently, the following status codes are supported.
+表示 Node-API 调用成功或失败的整数状态码。目前支持以下状态码。
 
 ```c
 typedef enum {
@@ -598,14 +437,13 @@ typedef enum {
   napi_date_expected,
   napi_arraybuffer_expected,
   napi_detachable_arraybuffer_expected,
-  napi_would_deadlock,  /* unused */
+  napi_would_deadlock,  /* 未使用 */
   napi_no_external_buffers_allowed,
   napi_cannot_run_js
 } napi_status;
 ```
 
-If additional information is required upon an API returning a failed status,
-it can be obtained by calling `napi_get_last_error_info`.
+如果 API 返回失败状态时需要更多信息，可以通过调用 `napi_get_last_error_info` 获取。
 
 ### `napi_extended_error_info`
 
@@ -623,49 +461,26 @@ typedef struct {
 } napi_extended_error_info;
 ```
 
-* `error_message`: UTF8-encoded string containing a VM-neutral description of
-  the error.
-* `engine_reserved`: Reserved for VM-specific error details. This is currently
-  not implemented for any VM.
-* `engine_error_code`: VM-specific error code. This is currently
-  not implemented for any VM.
-* `error_code`: The Node-API status code that originated with the last error.
+* `error_message`：包含与 VM 无关的错误描述的 UTF8 编码字符串。
+* `engine_reserved`：保留用于特定于 VM 的错误详细信息。目前尚未为任何 VM 实现。
+* `engine_error_code`：特定于 VM 的错误代码。目前尚未为任何 VM 实现。
+* `error_code`：源自最后一个错误的 Node-API 状态码。
 
-See the [Error handling][] section for additional information.
+有关更多信息，请参阅 [错误处理][] 部分。
 
 ### `napi_env`
 
-`napi_env` is used to represent a context that the underlying Node-API
-implementation can use to persist VM-specific state. This structure is passed
-to native functions when they're invoked, and it must be passed back when
-making Node-API calls. Specifically, the same `napi_env` that was passed in when
-the initial native function was called must be passed to any subsequent
-nested Node-API calls. Caching the `napi_env` for the purpose of general reuse,
-and passing the `napi_env` between instances of the same addon running on
-different [`Worker`][] threads is not allowed. The `napi_env` becomes invalid
-when an instance of a native addon is unloaded. Notification of this event is
-delivered through the callbacks given to [`napi_add_env_cleanup_hook`][] and
-[`napi_set_instance_data`][].
+`napi_env` 用于表示底层 Node-API 实现可用于持久化特定于 VM 的状态的上下文。此结构在调用原生函数时传递给它们，并且在发出 Node-API 调用时必须传回。具体来说，调用初始原生函数时传入的同一个 `napi_env` 必须传递给任何后续的嵌套 Node-API 调用。不允许为了通用重用而缓存 `napi_env`，也不允许在运行于不同 [`Worker`][] 线程的同一插件实例之间传递 `napi_env`。当原生插件实例卸载时，`napi_env` 变为无效。此事件通过传递给 [`napi_add_env_cleanup_hook`][] 和 [`napi_set_instance_data`][] 的回调进行通知。
 
 ### `node_api_basic_env`
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-This variant of `napi_env` is passed to synchronous finalizers
-([`node_api_basic_finalize`][]). There is a subset of Node-APIs which accept
-a parameter of type `node_api_basic_env` as their first argument. These APIs do
-not access the state of the JavaScript engine and are thus safe to call from
-synchronous finalizers. Passing a parameter of type `napi_env` to these APIs is
-allowed, however, passing a parameter of type `node_api_basic_env` to APIs that
-access the JavaScript engine state is not allowed. Attempting to do so without
-a cast will produce a compiler warning or an error when add-ons are compiled
-with flags which cause them to emit warnings and/or errors when incorrect
-pointer types are passed into a function. Calling such APIs from a synchronous
-finalizer will ultimately result in the termination of the application.
+`napi_env` 的此变体传递给同步终结器（[`node_api_basic_finalize`][]）。有一部分 Node-API 接受类型为 `node_api_basic_env` 的参数作为它们的第一个参数。这些 API 不访问 JavaScript 引擎的状态，因此可以安全地从同步终结器调用。允许将类型为 `napi_env` 的参数传递给这些 API，但是，不允许将类型为 `node_api_basic_env` 的参数传递给访问 JavaScript 引擎状态的 API。尝试在不进行转换的情况下这样做，在使用导致传递不正确指针类型时发出警告和/或错误的标志编译插件时，将产生编译器警告或错误。从同步终结器调用此类 API 最终将导致应用程序终止。
 
 ### `napi_value`
 
-This is an opaque pointer that is used to represent a JavaScript value.
+这是一个用于表示 JavaScript 值的不透明指针。
 
 ### `napi_threadsafe_function`
 
@@ -674,9 +489,7 @@ added: v10.6.0
 napiVersion: 4
 -->
 
-This is an opaque pointer that represents a JavaScript function which can be
-called asynchronously from multiple threads via
-`napi_call_threadsafe_function()`.
+这是一个不透明指针，表示一个 JavaScript 函数，可以通过 `napi_call_threadsafe_function()` 从多个线程异步调用。
 
 ### `napi_threadsafe_function_release_mode`
 
@@ -685,10 +498,7 @@ added: v10.6.0
 napiVersion: 4
 -->
 
-A value to be given to `napi_release_threadsafe_function()` to indicate whether
-the thread-safe function is to be closed immediately (`napi_tsfn_abort`) or
-merely released (`napi_tsfn_release`) and thus available for subsequent use via
-`napi_acquire_threadsafe_function()` and `napi_call_threadsafe_function()`.
+传递给 `napi_release_threadsafe_function()` 的值，用于指示线程安全函数是立即关闭（`napi_tsfn_abort`）还是仅释放（`napi_tsfn_release`），从而可通过 `napi_acquire_threadsafe_function()` 和 `napi_call_threadsafe_function()` 供后续使用。
 
 ```c
 typedef enum {
@@ -704,9 +514,7 @@ added: v10.6.0
 napiVersion: 4
 -->
 
-A value to be given to `napi_call_threadsafe_function()` to indicate whether
-the call should block whenever the queue associated with the thread-safe
-function is full.
+传递给 `napi_call_threadsafe_function()` 的值，用于指示当与线程安全函数关联的队列已满时，调用是否应该阻塞。
 
 ```c
 typedef enum {
@@ -715,26 +523,15 @@ typedef enum {
 } napi_threadsafe_function_call_mode;
 ```
 
-### Node-API memory management types
+### Node-API 内存管理类型
 
 #### `napi_handle_scope`
 
-This is an abstraction used to control and modify the lifetime of objects
-created within a particular scope. In general, Node-API values are created
-within the context of a handle scope. When a native method is called from
-JavaScript, a default handle scope will exist. If the user does not explicitly
-create a new handle scope, Node-API values will be created in the default handle
-scope. For any invocations of code outside the execution of a native method
-(for instance, during a libuv callback invocation), the module is required to
-create a scope before invoking any functions that can result in the creation
-of JavaScript values.
+这是一种抽象，用于控制和修改在特定作用域内创建的对象的生存期。通常，Node-API 值是在句柄作用域的上下文中创建的。当从 JavaScript 调用原生方法时，将存在一个默认句柄作用域。如果用户没有显式创建新的句柄作用域，Node-API 值将在默认句柄作用域中创建。对于原生方法执行之外的任何代码调用（例如，在 libuv 回调调用期间），模块必须在调用任何可能导致创建 JavaScript 值的函数之前创建作用域。
 
-Handle scopes are created using [`napi_open_handle_scope`][] and are destroyed
-using [`napi_close_handle_scope`][]. Closing the scope can indicate to the GC
-that all `napi_value`s created during the lifetime of the handle scope are no
-longer referenced from the current stack frame.
+句柄作用域使用 [`napi_open_handle_scope`][] 创建，并使用 [`napi_close_handle_scope`][] 销毁。关闭作用域可以向 GC 指示，在句柄作用域生存期内创建的所有 `napi_value` 不再从当前堆栈帧引用。
 
-For more details, review the [Object lifetime management][].
+有关更多详细信息，请查阅 [对象生命周期管理][]。
 
 #### `napi_escapable_handle_scope`
 
@@ -743,8 +540,7 @@ added: v8.0.0
 napiVersion: 1
 -->
 
-Escapable handle scopes are a special type of handle scope to return values
-created within a particular handle scope to a parent scope.
+可逃逸句柄作用域是一种特殊类型的句柄作用域，用于将在特定句柄作用域内创建的值返回给父作用域。
 
 #### `napi_ref`
 
@@ -753,11 +549,9 @@ added: v8.0.0
 napiVersion: 1
 -->
 
-This is the abstraction to use to reference a `napi_value`. This allows for
-users to manage the lifetimes of JavaScript values, including defining their
-minimum lifetimes explicitly.
+这是用于引用 `napi_value` 的抽象。这允许用户管理 JavaScript 值的生存期，包括显式定义它们的最小生存期。
 
-For more details, review the [Object lifetime management][].
+有关更多详细信息，请查阅 [对象生命周期管理][]。
 
 #### `napi_type_tag`
 
@@ -768,14 +562,7 @@ added:
 napiVersion: 8
 -->
 
-A 128-bit value stored as two unsigned 64-bit integers. It serves as a UUID
-with which JavaScript objects or [externals][] can be "tagged" in order to
-ensure that they are of a certain type. This is a stronger check than
-[`napi_instanceof`][], because the latter can report a false positive if the
-object's prototype has been manipulated. Type-tagging is most useful in
-conjunction with [`napi_wrap`][] because it ensures that the pointer retrieved
-from a wrapped object can be safely cast to the native type corresponding to the
-type tag that had been previously applied to the JavaScript object.
+一个存储为两个无符号 64 位整数的 128 位值。它用作 UUID，JavaScript 对象或 [外部对象][] 可以被打上此标签，以确保它们属于某种类型。这比 [`napi_instanceof`][] 更严格，因为如果对象的原型被操纵，后者可能会报告误报。类型标记与 [`napi_wrap`][] 结合使用最有用，因为它确保从包装对象检索的指针可以安全地转换为与之前应用于 JavaScript 对象的类型标记对应的原生类型。
 
 ```c
 typedef struct {
@@ -792,11 +579,9 @@ added:
   - v12.19.0
 -->
 
-An opaque value returned by [`napi_add_async_cleanup_hook`][]. It must be passed
-to [`napi_remove_async_cleanup_hook`][] when the chain of asynchronous cleanup
-events completes.
+由 [`napi_add_async_cleanup_hook`][] 返回的不透明值。当异步清理事件链完成时，必须将其传递给 [`napi_remove_async_cleanup_hook`][]。
 
-### Node-API callback types
+### Node-API 回调类型
 
 #### `napi_callback_info`
 
@@ -805,9 +590,7 @@ added: v8.0.0
 napiVersion: 1
 -->
 
-Opaque datatype that is passed to a callback function. It can be used for
-getting additional information about the context in which the callback was
-invoked.
+传递给回调函数的不透明数据类型。它可用于获取有关调用回调的上下文的更多信息。
 
 #### `napi_callback`
 
@@ -816,16 +599,13 @@ added: v8.0.0
 napiVersion: 1
 -->
 
-Function pointer type for user-provided native functions which are to be
-exposed to JavaScript via Node-API. Callback functions should satisfy the
-following signature:
+用于用户提供的原生函数的函数指针类型，这些函数将通过 Node-API 暴露给 JavaScript。回调函数应满足以下签名：
 
 ```c
 typedef napi_value (*napi_callback)(napi_env, napi_callback_info);
 ```
 
-Unless for reasons discussed in [Object Lifetime Management][], creating a
-handle and/or callback scope inside a `napi_callback` is not necessary.
+除非出于 [对象生命周期管理][] 中讨论的原因，否则在 `napi_callback` 内部创建句柄和/或回调作用域是不必要的。
 
 #### `node_api_basic_finalize`
 
@@ -836,14 +616,9 @@ added:
   - v18.20.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-Function pointer type for add-on provided functions that allow the user to be
-notified when externally-owned data is ready to be cleaned up because the
-object it was associated with has been garbage-collected. The user must provide
-a function satisfying the following signature which would get called upon the
-object's collection. Currently, `node_api_basic_finalize` can be used for
-finding out when objects that have external data are collected.
+用于插件提供的函数的函数指针类型，允许用户在外部拥有的数据准备好清理时收到通知，因为与其关联的对象已被垃圾回收。用户必须提供一个满足以下签名的函数，该函数将在对象回收时被调用。目前，`node_api_basic_finalize` 可用于查明具有外部数据的对象何时被回收。
 
 ```c
 typedef void (*node_api_basic_finalize)(node_api_basic_env env,
@@ -851,29 +626,17 @@ typedef void (*node_api_basic_finalize)(node_api_basic_env env,
                                       void* finalize_hint);
 ```
 
-Unless for reasons discussed in [Object Lifetime Management][], creating a
-handle and/or callback scope inside the function body is not necessary.
+除非出于 [对象生命周期管理][] 中讨论的原因，否则在函数体内创建句柄和/或回调作用域是不必要的。
 
-Since these functions may be called while the JavaScript engine is in a state
-where it cannot execute JavaScript code, only Node-APIs which accept a
-`node_api_basic_env` as their first parameter may be called.
-[`node_api_post_finalizer`][] can be used to schedule Node-API calls that
-require access to the JavaScript engine's state to run after the current
-garbage collection cycle has completed.
+由于这些函数可能在 JavaScript 引擎处于无法执行 JavaScript 代码的状态时被调用，因此只能调用接受 `node_api_basic_env` 作为第一个参数的 Node-API。[`node_api_post_finalizer`][] 可用于调度需要访问 JavaScript 引擎状态的 Node-API 调用，以便在当前垃圾回收周期完成后运行。
 
-In the case of [`node_api_create_external_string_latin1`][] and
-[`node_api_create_external_string_utf16`][] the `env` parameter may be null,
-because external strings can be collected during the latter part of environment
-shutdown.
+在 [`node_api_create_external_string_latin1`][] 和 [`node_api_create_external_string_utf16`][] 的情况下，`env` 参数可能为 null，因为外部字符串可以在环境关闭的后期被回收。
 
-Change History:
+变更历史：
 
-* experimental (`NAPI_EXPERIMENTAL`):
+* 实验性 (`NAPI_EXPERIMENTAL`)：
 
-  Only Node-API calls that accept a `node_api_basic_env` as their first
-  parameter may be called, otherwise the application will be terminated with an
-  appropriate error message. This feature can be turned off by defining
-  `NODE_API_EXPERIMENTAL_BASIC_ENV_OPT_OUT`.
+  只能调用接受 `node_api_basic_env` 作为第一个参数的 Node-API 调用，否则应用程序将终止并显示适当的错误消息。通过定义 `NODE_API_EXPERIMENTAL_BASIC_ENV_OPT_OUT` 可以关闭此功能。
 
 #### `napi_finalize`
 
@@ -882,10 +645,7 @@ added: v8.0.0
 napiVersion: 1
 -->
 
-Function pointer type for add-on provided function that allow the user to
-schedule a group of calls to Node-APIs in response to a garbage collection
-event, after the garbage collection cycle has completed. These function
-pointers can be used with [`node_api_post_finalizer`][].
+用于插件提供的函数的函数指针类型，允许用户响应垃圾回收事件调度一组对 Node-API 的调用，在垃圾回收周期完成后。这些函数指针可以与 [`node_api_post_finalizer`][] 一起使用。
 
 ```c
 typedef void (*napi_finalize)(napi_env env,
@@ -893,14 +653,11 @@ typedef void (*napi_finalize)(napi_env env,
                               void* finalize_hint);
 ```
 
-Change History:
+变更历史：
 
-* experimental (`NAPI_EXPERIMENTAL` is defined):
+* 实验性（定义了 `NAPI_EXPERIMENTAL`）：
 
-  A function of this type may no longer be used as a finalizer, except with
-  [`node_api_post_finalizer`][]. [`node_api_basic_finalize`][] must be used
-  instead. This feature can be turned off by defining
-  `NODE_API_EXPERIMENTAL_BASIC_ENV_OPT_OUT`.
+  此类型的函数不再可用作终结器，除非与 [`node_api_post_finalizer`][] 一起使用。必须改用 [`node_api_basic_finalize`][]。通过定义 `NODE_API_EXPERIMENTAL_BASIC_ENV_OPT_OUT` 可以关闭此功能。
 
 #### `napi_async_execute_callback`
 
@@ -909,17 +666,13 @@ added: v8.0.0
 napiVersion: 1
 -->
 
-Function pointer used with functions that support asynchronous
-operations. Callback functions must satisfy the following signature:
+与支持异步操作的函数一起使用的函数指针。回调函数必须满足以下签名：
 
 ```c
 typedef void (*napi_async_execute_callback)(napi_env env, void* data);
 ```
 
-Implementations of this function must avoid making Node-API calls that execute
-JavaScript or interact with JavaScript objects. Node-API calls should be in the
-`napi_async_complete_callback` instead. Do not use the `napi_env` parameter as
-it will likely result in execution of JavaScript.
+此函数的实现必须避免进行执行 JavaScript 或与 JavaScript 对象交互的 Node-API 调用。Node-API 调用应在 `napi_async_complete_callback` 中。不要使用 `napi_env` 参数，因为它很可能导致执行 JavaScript。
 
 #### `napi_async_complete_callback`
 
@@ -928,8 +681,7 @@ added: v8.0.0
 napiVersion: 1
 -->
 
-Function pointer used with functions that support asynchronous
-operations. Callback functions must satisfy the following signature:
+与支持异步操作的函数一起使用的函数指针。回调函数必须满足以下签名：
 
 ```c
 typedef void (*napi_async_complete_callback)(napi_env env,
@@ -937,8 +689,7 @@ typedef void (*napi_async_complete_callback)(napi_env env,
                                              void* data);
 ```
 
-Unless for reasons discussed in [Object Lifetime Management][], creating a
-handle and/or callback scope inside the function body is not necessary.
+除非出于 [对象生命周期管理][] 中讨论的原因，否则在函数体内创建句柄和/或回调作用域是不必要的。
 
 #### `napi_threadsafe_function_call_js`
 
@@ -947,21 +698,13 @@ added: v10.6.0
 napiVersion: 4
 -->
 
-Function pointer used with asynchronous thread-safe function calls. The callback
-will be called on the main thread. Its purpose is to use a data item arriving
-via the queue from one of the secondary threads to construct the parameters
-necessary for a call into JavaScript, usually via `napi_call_function`, and then
-make the call into JavaScript.
+与异步线程安全函数调用一起使用的函数指针。回调将在主线程上调用。其目的是使用通过队列从其中一个辅助线程到达的数据项来构建调用 JavaScript 所需的参数，通常通过 `napi_call_function`，然后进行 JavaScript 调用。
 
-The data arriving from the secondary thread via the queue is given in the `data`
-parameter and the JavaScript function to call is given in the `js_callback`
-parameter.
+通过队列从辅助线程到达的数据在 `data` 参数中给出，要调用的 JavaScript 函数在 `js_callback` 参数中给出。
 
-Node-API sets up the environment prior to calling this callback, so it is
-sufficient to call the JavaScript function via `napi_call_function` rather than
-via `napi_make_callback`.
+Node-API 在调用此回调之前设置环境，因此足以通过 `napi_call_function` 而不是 `napi_make_callback` 调用 JavaScript 函数。
 
-Callback functions must satisfy the following signature:
+回调函数必须满足以下签名：
 
 ```c
 typedef void (*napi_threadsafe_function_call_js)(napi_env env,
@@ -970,22 +713,12 @@ typedef void (*napi_threadsafe_function_call_js)(napi_env env,
                                                  void* data);
 ```
 
-* `[in] env`: The environment to use for API calls, or `NULL` if the thread-safe
-  function is being torn down and `data` may need to be freed.
-* `[in] js_callback`: The JavaScript function to call, or `NULL` if the
-  thread-safe function is being torn down and `data` may need to be freed. It
-  may also be `NULL` if the thread-safe function was created without
-  `js_callback`.
-* `[in] context`: The optional data with which the thread-safe function was
-  created.
-* `[in] data`: Data created by the secondary thread. It is the responsibility of
-  the callback to convert this native data to JavaScript values (with Node-API
-  functions) that can be passed as parameters when `js_callback` is invoked.
-  This pointer is managed entirely by the threads and this callback. Thus this
-  callback should free the data.
+* `[输入] env`：用于 API 调用的环境，如果线程安全函数正在被销毁且可能需要释放 `data`，则为 `NULL`。
+* `[输入] js_callback`：要调用的 JavaScript 函数，如果线程安全函数正在被销毁且可能需要释放 `data`，则为 `NULL`。如果创建线程安全函数时没有 `js_callback`，它也可能为 `NULL`。
+* `[输入] context`：创建线程安全函数时的可选数据。
+* `[输入] data`：由辅助线程创建的数据。回调有责任将此原生数据转换为 JavaScript 值（使用 Node-API 函数），以便在调用 `js_callback` 时作为参数传递。此指针完全由线程和此回调管理。因此，此回调应释放数据。
 
-Unless for reasons discussed in [Object Lifetime Management][], creating a
-handle and/or callback scope inside the function body is not necessary.
+除非出于 [对象生命周期管理][] 中讨论的原因，否则在函数体内创建句柄和/或回调作用域是不必要的。
 
 #### `napi_cleanup_hook`
 
@@ -996,16 +729,15 @@ added:
 napiVersion: 3
 -->
 
-Function pointer used with [`napi_add_env_cleanup_hook`][]. It will be called
-when the environment is being torn down.
+与 [`napi_add_env_cleanup_hook`][] 一起使用的函数指针。当环境正在被销毁时将调用它。
 
-Callback functions must satisfy the following signature:
+回调函数必须满足以下签名：
 
 ```c
 typedef void (*napi_cleanup_hook)(void* data);
 ```
 
-* `[in] data`: The data that was passed to [`napi_add_env_cleanup_hook`][].
+* `[输入] data`：传递给 [`napi_add_env_cleanup_hook`][] 的数据。
 
 #### `napi_async_cleanup_hook`
 
@@ -1015,57 +747,41 @@ added:
   - v12.19.0
 -->
 
-Function pointer used with [`napi_add_async_cleanup_hook`][]. It will be called
-when the environment is being torn down.
+与 [`napi_add_async_cleanup_hook`][] 一起使用的函数指针。当环境正在被销毁时将调用它。
 
-Callback functions must satisfy the following signature:
+回调函数必须满足以下签名：
 
 ```c
 typedef void (*napi_async_cleanup_hook)(napi_async_cleanup_hook_handle handle,
                                         void* data);
 ```
 
-* `[in] handle`: The handle that must be passed to
-  [`napi_remove_async_cleanup_hook`][] after completion of the asynchronous
-  cleanup.
-* `[in] data`: The data that was passed to [`napi_add_async_cleanup_hook`][].
+* `[输入] handle`：异步清理完成后必须传递给 [`napi_remove_async_cleanup_hook`][] 的句柄。
+* `[输入] data`：传递给 [`napi_add_async_cleanup_hook`][] 的数据。
 
-The body of the function should initiate the asynchronous cleanup actions at the
-end of which `handle` must be passed in a call to
-[`napi_remove_async_cleanup_hook`][].
+函数体应启动异步清理操作，在此操作结束时，必须在调用 [`napi_remove_async_cleanup_hook`][] 时传入 `handle`。
 
-## Error handling
+## 错误处理
 
-Node-API uses both return values and JavaScript exceptions for error handling.
-The following sections explain the approach for each case.
+Node-API 使用返回值和 JavaScript 异常来进行错误处理。
+以下部分解释每种情况的方法。
 
-### Return values
+### 返回值
 
-All of the Node-API functions share the same error handling pattern. The
-return type of all API functions is `napi_status`.
+所有 Node-API 函数共享相同的错误处理模式。
+所有 API 函数的返回类型都是 `napi_status`。
 
-The return value will be `napi_ok` if the request was successful and
-no uncaught JavaScript exception was thrown. If an error occurred AND
-an exception was thrown, the `napi_status` value for the error
-will be returned. If an exception was thrown, and no error occurred,
-`napi_pending_exception` will be returned.
+如果请求成功且未抛出未捕获的 JavaScript 异常，返回值将为 `napi_ok`。如果发生错误并且抛出了异常，将返回该错误的 `napi_status` 值。如果抛出了异常且未发生错误，将返回 `napi_pending_exception`。
 
-In cases where a return value other than `napi_ok` or
-`napi_pending_exception` is returned, [`napi_is_exception_pending`][]
-must be called to check if an exception is pending.
-See the section on exceptions for more details.
+如果返回值不是 `napi_ok` 或 `napi_pending_exception`，则必须调用 [`napi_is_exception_pending`][] 来检查是否有待处理异常。
+有关更多详细信息，请参阅异常部分。
 
-The full set of possible `napi_status` values is defined
-in `napi_api_types.h`.
+所有可能的 `napi_status` 值全集定义在 `napi_api_types.h` 中。
 
-The `napi_status` return value provides a VM-independent representation of
-the error which occurred. In some cases it is useful to be able to get
-more detailed information, including a string representing the error as well as
-VM (engine)-specific information.
+`napi_status` 返回值提供了所发生错误的与虚拟机无关的表示。在某些情况下，能够获取更详细的信息是有用的，包括表示错误的字符串以及虚拟机（引擎）特定的信息。
 
-In order to retrieve this information [`napi_get_last_error_info`][]
-is provided which returns a `napi_extended_error_info` structure.
-The format of the `napi_extended_error_info` structure is as follows:
+为了检索此信息，提供了 [`napi_get_last_error_info`][]，它返回一个 `napi_extended_error_info` 结构体。
+`napi_extended_error_info` 结构体的格式如下：
 
 <!-- YAML
 added: v8.0.0
@@ -1081,17 +797,14 @@ typedef struct napi_extended_error_info {
 };
 ```
 
-* `error_message`: Textual representation of the error that occurred.
-* `engine_reserved`: Opaque handle reserved for engine use only.
-* `engine_error_code`: VM specific error code.
-* `error_code`: Node-API status code for the last error.
+* `error_message`：所发生错误的文本表示。
+* `engine_reserved`：仅供引擎使用的不透明句柄。
+* `engine_error_code`：虚拟机特定的错误代码。
+* `error_code`：最后一个错误的 Node-API 状态代码。
 
-[`napi_get_last_error_info`][] returns the information for the last
-Node-API call that was made.
+[`napi_get_last_error_info`][] 返回最后一次 Node-API 调用的信息。
 
-Do not rely on the content or format of any of the extended information as it
-is not subject to SemVer and may change at any time. It is intended only for
-logging purposes.
+不要依赖任何扩展信息的内容或格式，因为它不受 SemVer 约束，并且可能随时更改。它仅用于日志记录目的。
 
 #### `napi_get_last_error_info`
 
@@ -1106,103 +819,45 @@ napi_get_last_error_info(node_api_basic_env env,
                          const napi_extended_error_info** result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] result`: The `napi_extended_error_info` structure with more
-  information about the error.
+* `[in] env`：调用 API 所处的环境。
+* `[out] result`：包含有关错误的更多信息的 `napi_extended_error_info` 结构体。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API retrieves a `napi_extended_error_info` structure with information
-about the last error that occurred.
+此 API 检索包含有关最后发生错误的信息的 `napi_extended_error_info` 结构体。
 
-The content of the `napi_extended_error_info` returned is only valid up until
-a Node-API function is called on the same `env`. This includes a call to
-`napi_is_exception_pending` so it may often be necessary to make a copy
-of the information so that it can be used later. The pointer returned
-in `error_message` points to a statically-defined string so it is safe to use
-that pointer if you have copied it out of the `error_message` field (which will
-be overwritten) before another Node-API function was called.
+返回的 `napi_extended_error_info` 的内容仅在同一 `env` 上调用 Node-API 函数之前有效。这包括调用 `napi_is_exception_pending`，因此通常有必要复制信息以便以后使用。`error_message` 中返回的指针指向一个静态定义的字符串，因此如果在调用另一个 Node-API 函数之前将其从 `error_message` 字段（将被覆盖）中复制出来，使用该指针是安全的。
 
-Do not rely on the content or format of any of the extended information as it
-is not subject to SemVer and may change at any time. It is intended only for
-logging purposes.
+不要依赖任何扩展信息的内容或格式，因为它不受 SemVer 约束，并且可能随时更改。它仅用于日志记录目的。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在待处理的 JavaScript 异常，也可以调用此 API。
 
-### Exceptions
+### 异常
 
-Any Node-API function call may result in a pending JavaScript exception. This is
-the case for any of the API functions, even those that may not cause the
-execution of JavaScript.
+任何 Node-API 函数调用都可能导致待处理的 JavaScript 异常。
+任何 API 函数都是如此，即使是那些可能不会导致执行 JavaScript 的函数。
 
-If the `napi_status` returned by a function is `napi_ok` then no
-exception is pending and no additional action is required. If the
-`napi_status` returned is anything other than `napi_ok` or
-`napi_pending_exception`, in order to try to recover and continue
-instead of simply returning immediately, [`napi_is_exception_pending`][]
-must be called in order to determine if an exception is pending or not.
+如果函数返回的 `napi_status` 是 `napi_ok`，则没有待处理异常，不需要额外操作。如果返回的 `napi_status` 不是 `napi_ok` 或 `napi_pending_exception`，为了尝试恢复并继续而不是简单地立即返回，必须调用 [`napi_is_exception_pending`][] 以确定是否有待处理异常。
 
-In many cases when a Node-API function is called and an exception is
-already pending, the function will return immediately with a
-`napi_status` of `napi_pending_exception`. However, this is not the case
-for all functions. Node-API allows a subset of the functions to be
-called to allow for some minimal cleanup before returning to JavaScript.
-In that case, `napi_status` will reflect the status for the function. It
-will not reflect previous pending exceptions. To avoid confusion, check
-the error status after every function call.
+在许多情况下，当调用 Node-API 函数且异常已经待处理时，该函数将立即返回，`napi_status` 为 `napi_pending_exception`。然而，并非所有函数都是如此。Node-API 允许调用子集函数，以便在返回 JavaScript 之前进行一些最小的清理。在这种情况下，`napi_status` 将反映该函数的状态。它不会反映之前的待处理异常。为避免混淆，请在每次函数调用后检查错误状态。
 
-When an exception is pending one of two approaches can be employed.
+当异常待处理时，可以采用两种方法之一。
 
-The first approach is to do any appropriate cleanup and then return so that
-execution will return to JavaScript. As part of the transition back to
-JavaScript, the exception will be thrown at the point in the JavaScript
-code where the native method was invoked. The behavior of most Node-API calls
-is unspecified while an exception is pending, and many will simply return
-`napi_pending_exception`, so do as little as possible and then return to
-JavaScript where the exception can be handled.
+第一种方法是进行任何适当的清理，然后返回，以便执行权返回到 JavaScript。作为返回 JavaScript 过渡的一部分，异常将在调用原生方法的 JavaScript 代码点处抛出。当异常待处理时，大多数 Node-API 调用的行为是未指定的，许多将简单地返回 `napi_pending_exception`，因此请尽可能少做操作，然后返回到可以处理异常的 JavaScript。
 
-The second approach is to try to handle the exception. There will be cases
-where the native code can catch the exception, take the appropriate action,
-and then continue. This is only recommended in specific cases
-where it is known that the exception can be safely handled. In these
-cases [`napi_get_and_clear_last_exception`][] can be used to get and
-clear the exception. On success, result will contain the handle to
-the last JavaScript `Object` thrown. If it is determined, after
-retrieving the exception, the exception cannot be handled after all
-it can be re-thrown it with [`napi_throw`][] where error is the
-JavaScript value to be thrown.
+第二种方法是尝试处理异常。有些情况下，原生代码可以捕获异常，采取适当的操作，然后继续。仅在已知可以安全处理异常的特定情况下推荐这样做。在这些情况下，可以使用 [`napi_get_and_clear_last_exception`][] 来获取并清除异常。成功时，result 将包含最后抛出的 JavaScript `Object` 的句柄。如果在检索异常后确定异常根本无法处理，可以使用 [`napi_throw`][] 将其重新抛出，其中 error 是要抛出的 JavaScript 值。
 
-The following utility functions are also available in case native code
-needs to throw an exception or determine if a `napi_value` is an instance
-of a JavaScript `Error` object: [`napi_throw_error`][],
-[`napi_throw_type_error`][], [`napi_throw_range_error`][], [`node_api_throw_syntax_error`][] and [`napi_is_error`][].
+如果原生代码需要抛出异常或确定 `napi_value` 是否是 JavaScript `Error` 对象的实例，还可以使用以下实用函数：[`napi_throw_error`][]、[`napi_throw_type_error`][]、[`napi_throw_range_error`][]、[`node_api_throw_syntax_error`][] 和 [`napi_is_error`][]。
 
-The following utility functions are also available in case native
-code needs to create an `Error` object: [`napi_create_error`][],
-[`napi_create_type_error`][], [`napi_create_range_error`][] and [`node_api_create_syntax_error`][],
-where result is the `napi_value` that refers to the newly created
-JavaScript `Error` object.
+如果原生代码需要创建 `Error` 对象，还可以使用以下实用函数：[`napi_create_error`][]、[`napi_create_type_error`][]、[`napi_create_range_error`][] 和 [`node_api_create_syntax_error`][]，其中 result 是引用新创建的 JavaScript `Error` 对象的 `napi_value`。
 
-The Node.js project is adding error codes to all of the errors
-generated internally. The goal is for applications to use these
-error codes for all error checking. The associated error messages
-will remain, but will only be meant to be used for logging and
-display with the expectation that the message can change without
-SemVer applying. In order to support this model with Node-API, both
-in internal functionality and for module specific functionality
-(as its good practice), the `throw_` and `create_` functions
-take an optional code parameter which is the string for the code
-to be added to the error object. If the optional parameter is `NULL`
-then no code will be associated with the error. If a code is provided,
-the name associated with the error is also updated to be:
+Node.js 项目正在为所有内部生成的错误添加错误代码。目标是让应用程序使用这些错误代码进行所有错误检查。相关的错误消息将保留，但仅用于日志记录和显示，预期消息可以在不适用 SemVer 的情况下更改。为了在 Node-API 中支持此模型，无论是在内部功能还是模块特定功能中（作为一种良好实践），`throw_` 和 `create_` 函数都接受一个可选的 code 参数，该参数是添加到错误对象的代码字符串。如果可选参数为 `NULL`，则不会与错误关联任何代码。如果提供了代码，与错误关联的名称也将更新为：
 
 ```text
 originalName [code]
 ```
 
-where `originalName` is the original name associated with the error
-and `code` is the code that was provided. For example, if the code
-is `'ERR_ERROR_1'` and a `TypeError` is being created the name will be:
+其中 `originalName` 是与错误关联的原始名称，`code` 是提供的代码。例如，如果代码是 `'ERR_ERROR_1'` 并且正在创建 `TypeError`，则名称将为：
 
 ```text
 TypeError [ERR_ERROR_1]
@@ -1219,12 +874,12 @@ napiVersion: 1
 NAPI_EXTERN napi_status napi_throw(napi_env env, napi_value error);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] error`: The JavaScript value to be thrown.
+* `[in] env`：调用 API 所处的环境。
+* `[in] error`：要抛出的 JavaScript 值。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API throws the JavaScript value provided.
+此 API 抛出提供的 JavaScript 值。
 
 #### `napi_throw_error`
 
@@ -1239,13 +894,13 @@ NAPI_EXTERN napi_status napi_throw_error(napi_env env,
                                          const char* msg);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] code`: Optional error code to be set on the error.
-* `[in] msg`: C string representing the text to be associated with the error.
+* `[in] env`：调用 API 所处的环境。
+* `[in] code`：要在错误上设置的可选错误代码。
+* `[in] msg`：C 字符串，表示与错误关联的文本。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API throws a JavaScript `Error` with the text provided.
+此 API 抛出带有提供文本的 JavaScript `Error`。
 
 #### `napi_throw_type_error`
 
@@ -1260,13 +915,13 @@ NAPI_EXTERN napi_status napi_throw_type_error(napi_env env,
                                               const char* msg);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] code`: Optional error code to be set on the error.
-* `[in] msg`: C string representing the text to be associated with the error.
+* `[in] env`：调用 API 所处的环境。
+* `[in] code`：要在错误上设置的可选错误代码。
+* `[in] msg`：C 字符串，表示与错误关联的文本。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API throws a JavaScript `TypeError` with the text provided.
+此 API 抛出带有提供文本的 JavaScript `TypeError`。
 
 #### `napi_throw_range_error`
 
@@ -1281,13 +936,13 @@ NAPI_EXTERN napi_status napi_throw_range_error(napi_env env,
                                                const char* msg);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] code`: Optional error code to be set on the error.
-* `[in] msg`: C string representing the text to be associated with the error.
+* `[in] env`：调用 API 所处的环境。
+* `[in] code`：要在错误上设置的可选错误代码。
+* `[in] msg`：C 字符串，表示与错误关联的文本。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API throws a JavaScript `RangeError` with the text provided.
+此 API 抛出带有提供文本的 JavaScript `RangeError`。
 
 #### `node_api_throw_syntax_error`
 
@@ -1304,13 +959,13 @@ NAPI_EXTERN napi_status node_api_throw_syntax_error(napi_env env,
                                                     const char* msg);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] code`: Optional error code to be set on the error.
-* `[in] msg`: C string representing the text to be associated with the error.
+* `[in] env`：调用 API 所处的环境。
+* `[in] code`：要在错误上设置的可选错误代码。
+* `[in] msg`：C 字符串，表示与错误关联的文本。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API throws a JavaScript `SyntaxError` with the text provided.
+此 API 抛出带有提供文本的 JavaScript `SyntaxError`。
 
 #### `napi_is_error`
 
@@ -1325,14 +980,13 @@ NAPI_EXTERN napi_status napi_is_error(napi_env env,
                                       bool* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The `napi_value` to be checked.
-* `[out] result`: Boolean value that is set to true if `napi_value` represents
-  an error, false otherwise.
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：要检查的 `napi_value`。
+* `[out] result`：布尔值，如果 `napi_value` 表示错误则设置为 true，否则为 false。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API queries a `napi_value` to check if it represents an error object.
+此 API 查询 `napi_value` 以检查它是否表示错误对象。
 
 #### `napi_create_error`
 
@@ -1348,16 +1002,14 @@ NAPI_EXTERN napi_status napi_create_error(napi_env env,
                                           napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] code`: Optional `napi_value` with the string for the error code to be
-  associated with the error.
-* `[in] msg`: `napi_value` that references a JavaScript `string` to be used as
-  the message for the `Error`.
-* `[out] result`: `napi_value` representing the error created.
+* `[in] env`：调用 API 所处的环境。
+* `[in] code`：可选的 `napi_value`，带有要与错误关联的错误代码字符串。
+* `[in] msg`：`napi_value`，引用要用作 `Error` 消息的 JavaScript `string`。
+* `[out] result`：`napi_value`，表示创建的错误。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API returns a JavaScript `Error` with the text provided.
+此 API 返回带有提供文本的 JavaScript `Error`。
 
 #### `napi_create_type_error`
 
@@ -1373,16 +1025,14 @@ NAPI_EXTERN napi_status napi_create_type_error(napi_env env,
                                                napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] code`: Optional `napi_value` with the string for the error code to be
-  associated with the error.
-* `[in] msg`: `napi_value` that references a JavaScript `string` to be used as
-  the message for the `Error`.
-* `[out] result`: `napi_value` representing the error created.
+* `[in] env`：调用 API 所处的环境。
+* `[in] code`：可选的 `napi_value`，带有要与错误关联的错误代码字符串。
+* `[in] msg`：`napi_value`，引用要用作 `Error` 消息的 JavaScript `string`。
+* `[out] result`：`napi_value`，表示创建的错误。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API returns a JavaScript `TypeError` with the text provided.
+此 API 返回带有提供文本的 JavaScript `TypeError`。
 
 #### `napi_create_range_error`
 
@@ -1398,16 +1048,14 @@ NAPI_EXTERN napi_status napi_create_range_error(napi_env env,
                                                 napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] code`: Optional `napi_value` with the string for the error code to be
-  associated with the error.
-* `[in] msg`: `napi_value` that references a JavaScript `string` to be used as
-  the message for the `Error`.
-* `[out] result`: `napi_value` representing the error created.
+* `[in] env`：调用 API 所处的环境。
+* `[in] code`：可选的 `napi_value`，带有要与错误关联的错误代码字符串。
+* `[in] msg`：`napi_value`，引用要用作 `Error` 消息的 JavaScript `string`。
+* `[out] result`：`napi_value`，表示创建的错误。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API returns a JavaScript `RangeError` with the text provided.
+此 API 返回带有提供文本的 JavaScript `RangeError`。
 
 #### `node_api_create_syntax_error`
 
@@ -1425,16 +1073,14 @@ NAPI_EXTERN napi_status node_api_create_syntax_error(napi_env env,
                                                      napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] code`: Optional `napi_value` with the string for the error code to be
-  associated with the error.
-* `[in] msg`: `napi_value` that references a JavaScript `string` to be used as
-  the message for the `Error`.
-* `[out] result`: `napi_value` representing the error created.
+* `[in] env`：调用 API 所处的环境。
+* `[in] code`：可选的 `napi_value`，带有要与错误关联的错误代码字符串。
+* `[in] msg`：`napi_value`，引用要用作 `Error` 消息的 JavaScript `string`。
+* `[out] result`：`napi_value`，表示创建的错误。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API returns a JavaScript `SyntaxError` with the text provided.
+此 API 返回带有提供文本的 JavaScript `SyntaxError`。
 
 #### `napi_get_and_clear_last_exception`
 
@@ -1448,12 +1094,12 @@ napi_status napi_get_and_clear_last_exception(napi_env env,
                                               napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] result`: The exception if one is pending, `NULL` otherwise.
+* `[in] env`：调用 API 所处的环境。
+* `[out] result`：如果有待处理异常则为该异常，否则为 `NULL`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在待处理的 JavaScript 异常，也可以调用此 API。
 
 #### `napi_is_exception_pending`
 
@@ -1466,12 +1112,12 @@ napiVersion: 1
 napi_status napi_is_exception_pending(napi_env env, bool* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] result`: Boolean value that is set to true if an exception is pending.
+* `[in] env`：调用 API 所处的环境。
+* `[out] result`：布尔值，如果有待处理异常则设置为 true。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在待处理的 JavaScript 异常，也可以调用此 API。
 
 #### `napi_fatal_exception`
 
@@ -1484,16 +1130,14 @@ napiVersion: 3
 napi_status napi_fatal_exception(napi_env env, napi_value err);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] err`: The error that is passed to `'uncaughtException'`.
+* `[in] env`：调用 API 所处的环境。
+* `[in] err`：传递给 `'uncaughtException'` 的错误。
 
-Trigger an `'uncaughtException'` in JavaScript. Useful if an async
-callback throws an exception with no way to recover.
+在 JavaScript 中触发 `'uncaughtException'`。如果异步回调抛出异常且无法恢复，则很有用。
 
-### Fatal errors
+### 致命错误
 
-In the event of an unrecoverable error in a native addon, a fatal error can be
-thrown to immediately terminate the process.
+如果原生插件中发生不可恢复的错误，可以抛出致命错误以立即终止进程。
 
 #### `napi_fatal_error`
 
@@ -1509,41 +1153,26 @@ NAPI_NO_RETURN void napi_fatal_error(const char* location,
                                      size_t message_len);
 ```
 
-* `[in] location`: Optional location at which the error occurred.
-* `[in] location_len`: The length of the location in bytes, or
-  `NAPI_AUTO_LENGTH` if it is null-terminated.
-* `[in] message`: The message associated with the error.
-* `[in] message_len`: The length of the message in bytes, or `NAPI_AUTO_LENGTH`
-  if it is null-terminated.
+* `[in] location`：错误发生的可选位置。
+* `[in] location_len`：位置的长度（字节），如果是以空字符结尾则为 `NAPI_AUTO_LENGTH`。
+* `[in] message`：与错误关联的消息。
+* `[in] message_len`：消息的长度（字节），如果是以空字符结尾则为 `NAPI_AUTO_LENGTH`。
 
-The function call does not return, the process will be terminated.
+函数调用不会返回，进程将被终止。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在待处理的 JavaScript 异常，也可以调用此 API。
 
-## Object lifetime management
+## 对象生命周期管理
 
-As Node-API calls are made, handles to objects in the heap for the underlying
-VM may be returned as `napi_values`. These handles must hold the
-objects 'live' until they are no longer required by the native code,
-otherwise the objects could be collected before the native code was
-finished using them.
+随着进行 Node-API 调用，底层虚拟机堆中对象的句柄可能会作为 `napi_values` 返回。这些句柄必须保持对象“存活”，直到原生代码不再需要它们，否则对象可能在原生代码使用完毕之前就被回收了。
 
-As object handles are returned they are associated with a
-'scope'. The lifespan for the default scope is tied to the lifespan
-of the native method call. The result is that, by default, handles
-remain valid and the objects associated with these handles will be
-held live for the lifespan of the native method call.
+当对象句柄被返回时，它们会与一个“作用域”关联。默认作用域的生命周期与原生方法调用的生命周期绑定。结果是，默认情况下，句柄保持有效，且与这些句柄关联的对象将在原生方法调用的生命周期内保持存活。
 
-In many cases, however, it is necessary that the handles remain valid for
-either a shorter or longer lifespan than that of the native method.
-The sections which follow describe the Node-API functions that can be used
-to change the handle lifespan from the default.
+然而，在许多情况下，需要句柄的有效期比原生方法的生命周期更短或更长。接下来的章节描述了可用于更改句柄生命周期（相对于默认值）的 Node-API 函数。
 
-### Making handle lifespan shorter than that of the native method
+### 使句柄生命周期短于原生方法
 
-It is often necessary to make the lifespan of handles shorter than
-the lifespan of a native method. For example, consider a native method
-that has a loop which iterates through the elements in a large array:
+通常有必要使句柄的生命周期短于原生方法的生命周期。例如，考虑一个原生方法，它有一个循环遍历大数组中的元素：
 
 ```c
 for (int i = 0; i < 1000000; i++) {
@@ -1552,30 +1181,17 @@ for (int i = 0; i < 1000000; i++) {
   if (status != napi_ok) {
     break;
   }
-  // do something with element
+  // 对元素执行某些操作
 }
 ```
 
-This would result in a large number of handles being created, consuming
-substantial resources. In addition, even though the native code could only
-use the most recent handle, all of the associated objects would also be
-kept alive since they all share the same scope.
+这将导致创建大量句柄，消耗大量资源。此外，即使原生代码只能使用最新的句柄，所有关联的对象也将保持存活，因为它们都共享同一个作用域。
 
-To handle this case, Node-API provides the ability to establish a new 'scope' to
-which newly created handles will be associated. Once those handles
-are no longer required, the scope can be 'closed' and any handles associated
-with the scope are invalidated. The methods available to open/close scopes are
-[`napi_open_handle_scope`][] and [`napi_close_handle_scope`][].
+为了处理这种情况，Node-API 提供了建立新“作用域”的能力，新创建的句柄将与该作用域关联。一旦不再需要这些句柄，可以“关闭”该作用域，与该作用域关联的任何句柄都将失效。可用于打开/关闭作用域的方法是 [`napi_open_handle_scope`][] 和 [`napi_close_handle_scope`][]。
 
-Node-API only supports a single nested hierarchy of scopes. There is only one
-active scope at any time, and all new handles will be associated with that
-scope while it is active. Scopes must be closed in the reverse order from
-which they are opened. In addition, all scopes created within a native method
-must be closed before returning from that method.
+Node-API 仅支持单一嵌套层次结构的作用域。任何时刻只有一个活动作用域，所有新句柄在该作用域活动时都将与其关联。作用域必须按照与打开顺序相反的顺序关闭。此外，在原生方法内创建的所有作用域必须在从该方法返回之前关闭。
 
-Taking the earlier example, adding calls to [`napi_open_handle_scope`][] and
-[`napi_close_handle_scope`][] would ensure that at most a single handle
-is valid throughout the execution of the loop:
+以前面的示例为例，添加对 [`napi_open_handle_scope`][] 和 [`napi_close_handle_scope`][] 的调用将确保在整个循环执行过程中最多只有一个句柄有效：
 
 ```c
 for (int i = 0; i < 1000000; i++) {
@@ -1589,7 +1205,7 @@ for (int i = 0; i < 1000000; i++) {
   if (status != napi_ok) {
     break;
   }
-  // do something with element
+  // 对元素执行某些操作
   status = napi_close_handle_scope(env, scope);
   if (status != napi_ok) {
     break;
@@ -1597,19 +1213,11 @@ for (int i = 0; i < 1000000; i++) {
 }
 ```
 
-When nesting scopes, there are cases where a handle from an
-inner scope needs to live beyond the lifespan of that scope. Node-API supports
-an 'escapable scope' in order to support this case. An escapable scope
-allows one handle to be 'promoted' so that it 'escapes' the
-current scope and the lifespan of the handle changes from the current
-scope to that of the outer scope.
+在嵌套作用域时，有时内部作用域中的句柄需要比该作用域的生命周期存活得更久。Node-API 支持“可逃逸作用域”以支持这种情况。可逃逸作用域允许将一个句柄“提升”，以便它“逃逸”当前作用域，句柄的生命周期从当前作用域变为外部作用域的生命周期。
 
-The methods available to open/close escapable scopes are
-[`napi_open_escapable_handle_scope`][] and
-[`napi_close_escapable_handle_scope`][].
+可用于打开/关闭可逃逸作用域的方法是 [`napi_open_escapable_handle_scope`][] 和 [`napi_close_escapable_handle_scope`][]。
 
-The request to promote a handle is made through [`napi_escape_handle`][] which
-can only be called once.
+提升句柄的请求是通过 [`napi_escape_handle`][] 发出的，该函数只能调用一次。
 
 #### `napi_open_handle_scope`
 
@@ -1623,12 +1231,12 @@ NAPI_EXTERN napi_status napi_open_handle_scope(napi_env env,
                                                napi_handle_scope* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] result`: `napi_value` representing the new scope.
+* `[in] env`: API 被调用下的环境。
+* `[out] result`: `napi_value` 表示新作用域。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API opens a new scope.
+此 API 打开一个新作用域。
 
 #### `napi_close_handle_scope`
 
@@ -1642,15 +1250,14 @@ NAPI_EXTERN napi_status napi_close_handle_scope(napi_env env,
                                                 napi_handle_scope scope);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] scope`: `napi_value` representing the scope to be closed.
+* `[in] env`: API 被调用下的环境。
+* `[in] scope`: `napi_value` 表示要关闭的作用域。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API closes the scope passed in. Scopes must be closed in the
-reverse order from which they were created.
+此 API 关闭传入的作用域。作用域必须按照与创建顺序相反的顺序关闭。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在待处理的 JavaScript 异常，也可以调用此 API。
 
 #### `napi_open_escapable_handle_scope`
 
@@ -1665,13 +1272,12 @@ NAPI_EXTERN napi_status
                                      napi_handle_scope* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] result`: `napi_value` representing the new scope.
+* `[in] env`: API 被调用下的环境。
+* `[out] result`: `napi_value` 表示新作用域。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API opens a new scope from which one object can be promoted
-to the outer scope.
+此 API 打开一个新作用域，其中一个对象可以从该作用域提升到外部作用域。
 
 #### `napi_close_escapable_handle_scope`
 
@@ -1686,15 +1292,14 @@ NAPI_EXTERN napi_status
                                       napi_handle_scope scope);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] scope`: `napi_value` representing the scope to be closed.
+* `[in] env`: API 被调用下的环境。
+* `[in] scope`: `napi_value` 表示要关闭的作用域。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API closes the scope passed in. Scopes must be closed in the
-reverse order from which they were created.
+此 API 关闭传入的作用域。作用域必须按照与创建顺序相反的顺序关闭。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在待处理的 JavaScript 异常，也可以调用此 API。
 
 #### `napi_escape_handle`
 
@@ -1710,86 +1315,38 @@ napi_status napi_escape_handle(napi_env env,
                                napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] scope`: `napi_value` representing the current scope.
-* `[in] escapee`: `napi_value` representing the JavaScript `Object` to be
-  escaped.
-* `[out] result`: `napi_value` representing the handle to the escaped `Object`
-  in the outer scope.
+* `[in] env`: API 被调用下的环境。
+* `[in] scope`: `napi_value` 表示当前作用域。
+* `[in] escapee`: `napi_value` 表示要逃逸的 JavaScript `Object`。
+* `[out] result`: `napi_value` 表示外部作用域中逃逸的 `Object` 的句柄。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API promotes the handle to the JavaScript object so that it is valid
-for the lifetime of the outer scope. It can only be called once per scope.
-If it is called more than once an error will be returned.
+此 API 将 JavaScript 对象的句柄提升，以便它在外部作用域的生命周期内有效。每个作用域只能调用一次。如果调用多次，将返回错误。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在待处理的 JavaScript 异常，也可以调用此 API。
 
-### References to values with a lifespan longer than that of the native method
+### 对生命周期长于原生方法的值的引用
 
-In some cases, an addon will need to be able to create and reference values
-with a lifespan longer than that of a single native method invocation. For
-example, to create a constructor and later use that constructor
-in a request to create instances, it must be possible to reference
-the constructor object across many different instance creation requests. This
-would not be possible with a normal handle returned as a `napi_value` as
-described in the earlier section. The lifespan of a normal handle is
-managed by scopes and all scopes must be closed before the end of a native
-method.
+在某些情况下，插件需要能够创建和引用生命周期长于单次原生方法调用的值。例如，要创建一个构造函数，稍后在创建实例的请求中使用该构造函数，必须能够在许多不同的实例创建请求中引用构造函数对象。使用前面章节中描述的作为 `napi_value` 返回的普通句柄是不可能的。普通句柄的生命周期由作用域管理，所有作用域必须在原生方法结束之前关闭。
 
-Node-API provides methods for creating persistent references to values.
-Currently Node-API only allows references to be created for a
-limited set of value types, including object, external, function, and symbol.
+Node-API 提供了创建值的持久引用的方法。目前 Node-API 仅允许为有限的值类型创建引用，包括对象、外部对象、函数和符号。
 
-Each reference has an associated count with a value of 0 or higher,
-which determines whether the reference will keep the corresponding value alive.
-References with a count of 0 do not prevent values from being collected.
-Values of object (object, function, external) and symbol types are becoming
-'weak' references and can still be accessed while they are not collected.
-Any count greater than 0 will prevent the values from being collected.
+每个引用都有一个关联的计数，值为 0 或更高，这决定了引用是否会使相应的值保持存活。计数为 0 的引用不会阻止值被回收。对象（对象、函数、外部对象）和符号类型的值变为“弱”引用，并且在未被回收时仍可访问。任何大于 0 的计数都将阻止值被回收。
 
-Symbol values have different flavors. The true weak reference behavior is
-only supported by local symbols created with the `napi_create_symbol` function
-or the JavaScript `Symbol()` constructor calls. Globally registered symbols
-created with the `node_api_symbol_for` function or JavaScript `Symbol.for()`
-function calls remain always strong references because the garbage collector
-does not collect them. The same is true for well-known symbols such as
-`Symbol.iterator`. They are also never collected by the garbage collector.
+Symbol 值有不同的种类。真正的弱引用行为仅支持通过 `napi_create_symbol` 函数或 JavaScript `Symbol()` 构造函数调用创建的本地符号。通过 `node_api_symbol_for` 函数或 JavaScript `Symbol.for()` 函数调用创建的全局注册符号始终保持强引用，因为垃圾回收器不会回收它们。知名符号（如 `Symbol.iterator`）也是如此。它们也永远不会被垃圾回收器回收。
 
-References can be created with an initial reference count. The count can
-then be modified through [`napi_reference_ref`][] and
-[`napi_reference_unref`][]. If an object is collected while the count
-for a reference is 0, all subsequent calls to
-get the object associated with the reference [`napi_get_reference_value`][]
-will return `NULL` for the returned `napi_value`. An attempt to call
-[`napi_reference_ref`][] for a reference whose object has been collected
-results in an error.
+创建引用时可以带有初始引用计数。然后可以通过 [`napi_reference_ref`][] 和 [`napi_reference_unref`][] 修改计数。如果对象在引用的计数为 0 时被回收，所有后续调用获取与引用关联的对象的 [`napi_get_reference_value`][] 将为返回的 `napi_value` 返回 `NULL`。尝试为对象已被回收的引用调用 [`napi_reference_ref`][] 会导致错误。
 
-References must be deleted once they are no longer required by the addon. When
-a reference is deleted, it will no longer prevent the corresponding object from
-being collected. Failure to delete a persistent reference results in
-a 'memory leak' with both the native memory for the persistent reference and
-the corresponding object on the heap being retained forever.
+引用在不再被插件需要时必须被删除。当引用被删除时，它将不再阻止相应的对象被回收。未能删除持久引用会导致“内存泄漏”，持久引用的原生内存和堆上相应的对象将被永远保留。
 
-There can be multiple persistent references created which refer to the same
-object, each of which will either keep the object live or not based on its
-individual count. Multiple persistent references to the same object
-can result in unexpectedly keeping alive native memory. The native structures
-for a persistent reference must be kept alive until finalizers for the
-referenced object are executed. If a new persistent reference is created
-for the same object, the finalizers for that object will not be
-run and the native memory pointed by the earlier persistent reference
-will not be freed. This can be avoided by calling
-`napi_delete_reference` in addition to `napi_reference_unref` when possible.
+可以创建多个持久引用来引用同一个对象，每个引用将根据其单独的计数保持对象存活或不存活。对同一对象的多个持久引用可能导致意外地保持原生内存存活。持久引用的原生结构必须保持存活，直到被引用对象的终结器被执行。如果为同一对象创建了新的持久引用，则该对象的终结器将不会运行，并且早期持久引用指向的原生内存将不会被释放。可以通过在可能时调用 `napi_delete_reference` 以及 `napi_reference_unref` 来避免这种情况。
 
-**Change History:**
+**变更历史：**
 
-* Version 10 (`NAPI_VERSION` is defined as `10` or higher):
+* 版本 10（`NAPI_VERSION` 定义为 `10` 或更高）：
 
-  References can be created for all value types. The new supported value
-  types do not support weak reference semantic and the values of these types
-  are released when the reference count becomes 0 and cannot be accessed from
-  the reference anymore.
+  可以为所有值类型创建引用。新支持的值类型不支持弱引用语义，当引用计数变为 0 时，这些类型的值将被释放，并且无法再从引用访问。
 
 #### `napi_create_reference`
 
@@ -1805,15 +1362,14 @@ NAPI_EXTERN napi_status napi_create_reference(napi_env env,
                                               napi_ref* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The `napi_value` for which a reference is being created.
-* `[in] initial_refcount`: Initial reference count for the new reference.
-* `[out] result`: `napi_ref` pointing to the new reference.
+* `[in] env`: API 被调用下的环境。
+* `[in] value`: 要为其创建引用的 `napi_value`。
+* `[in] initial_refcount`: 新引用的初始引用计数。
+* `[out] result`: `napi_ref` 指向新引用。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates a new reference with the specified reference count
-to the value passed in.
+此 API 为传入的值创建具有指定引用计数的新引用。
 
 #### `napi_delete_reference`
 
@@ -1826,14 +1382,14 @@ napiVersion: 1
 NAPI_EXTERN napi_status napi_delete_reference(napi_env env, napi_ref ref);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] ref`: `napi_ref` to be deleted.
+* `[in] env`: API 被调用下的环境。
+* `[in] ref`: 要删除的 `napi_ref`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API deletes the reference passed in.
+此 API 删除传入的引用。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在待处理的 JavaScript 异常，也可以调用此 API。
 
 #### `napi_reference_ref`
 
@@ -1848,14 +1404,13 @@ NAPI_EXTERN napi_status napi_reference_ref(napi_env env,
                                            uint32_t* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] ref`: `napi_ref` for which the reference count will be incremented.
-* `[out] result`: The new reference count.
+* `[in] env`: API 被调用下的环境。
+* `[in] ref`: 将增加引用计数的 `napi_ref`。
+* `[out] result`: 新的引用计数。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API increments the reference count for the reference
-passed in and returns the resulting reference count.
+此 API 增加传入引用的引用计数并返回结果引用计数。
 
 #### `napi_reference_unref`
 
@@ -1870,14 +1425,13 @@ NAPI_EXTERN napi_status napi_reference_unref(napi_env env,
                                              uint32_t* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] ref`: `napi_ref` for which the reference count will be decremented.
-* `[out] result`: The new reference count.
+* `[in] env`: API 被调用下的环境。
+* `[in] ref`: 将减少引用计数的 `napi_ref`。
+* `[out] result`: 新的引用计数。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API decrements the reference count for the reference
-passed in and returns the resulting reference count.
+此 API 减少传入引用的引用计数并返回结果引用计数。
 
 #### `napi_get_reference_value`
 
@@ -1892,26 +1446,19 @@ NAPI_EXTERN napi_status napi_get_reference_value(napi_env env,
                                                  napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] ref`: The `napi_ref` for which the corresponding value is
-  being requested.
-* `[out] result`: The `napi_value` referenced by the `napi_ref`.
+* `[in] env`: API 被调用下的环境。
+* `[in] ref`: 请求相应值的 `napi_ref`。
+* `[out] result`: `napi_ref` 引用的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-If still valid, this API returns the `napi_value` representing the
-JavaScript value associated with the `napi_ref`. Otherwise, result
-will be `NULL`.
+如果仍然有效，此 API 返回表示与 `napi_ref` 关联的 JavaScript 值的 `napi_value`。否则，结果将为 `NULL`。
 
-### Cleanup on exit of the current Node.js environment
+### 在当前 Node.js 环境退出时的清理
 
-While a Node.js process typically releases all its resources when exiting,
-embedders of Node.js, or future Worker support, may require addons to register
-clean-up hooks that will be run once the current Node.js environment exits.
+虽然 Node.js 进程通常在退出时释放其所有资源，但 Node.js 的嵌入者或未来的 Worker 支持可能需要插件注册清理钩子，这些钩子将在当前 Node.js 环境退出时运行一次。
 
-Node-API provides functions for registering and un-registering such callbacks.
-When those callbacks are run, all resources that are being held by the addon
-should be freed up.
+Node-API 提供了注册和注销此类回调的函数。当运行这些回调时，应释放插件持有的所有资源。
 
 #### `napi_add_env_cleanup_hook`
 
@@ -1926,22 +1473,15 @@ NODE_EXTERN napi_status napi_add_env_cleanup_hook(node_api_basic_env env,
                                                   void* arg);
 ```
 
-Registers `fun` as a function to be run with the `arg` parameter once the
-current Node.js environment exits.
+注册 `fun` 作为在当前 Node.js 环境退出时使用 `arg` 参数运行的函数。
 
-A function can safely be specified multiple times with different
-`arg` values. In that case, it will be called multiple times as well.
-Providing the same `fun` and `arg` values multiple times is not allowed
-and will lead the process to abort.
+可以安全地多次指定具有不同 `arg` 值的函数。在这种情况下，它也将被调用多次。不允许多次提供相同的 `fun` 和 `arg` 值，这将导致进程中止。
 
-The hooks will be called in reverse order, i.e. the most recently added one
-will be called first.
+钩子将按相反顺序调用，即最近添加的钩子将首先被调用。
 
-Removing this hook can be done by using [`napi_remove_env_cleanup_hook`][].
-Typically, that happens when the resource for which this hook was added
-is being torn down anyway.
+可以使用 [`napi_remove_env_cleanup_hook`][] 删除此钩子。通常，这发生在为此钩子添加的资源正在被拆除时。
 
-For asynchronous cleanup, [`napi_add_async_cleanup_hook`][] is available.
+对于异步清理，可以使用 [`napi_add_async_cleanup_hook`][]。
 
 #### `napi_remove_env_cleanup_hook`
 
@@ -1956,12 +1496,9 @@ NAPI_EXTERN napi_status napi_remove_env_cleanup_hook(node_api_basic_env env,
                                                      void* arg);
 ```
 
-Unregisters `fun` as a function to be run with the `arg` parameter once the
-current Node.js environment exits. Both the argument and the function value
-need to be exact matches.
+注销 `fun` 作为在当前 Node.js 环境退出时使用 `arg` 参数运行的函数。参数和函数值都需要完全匹配。
 
-The function must have originally been registered
-with `napi_add_env_cleanup_hook`, otherwise the process will abort.
+该函数必须最初是使用 `napi_add_env_cleanup_hook` 注册的，否则进程将中止。
 
 #### `napi_add_async_cleanup_hook`
 
@@ -1975,7 +1512,7 @@ changes:
     - v14.10.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34819
-    description: Changed signature of the `hook` callback.
+    description: "Changed signature of the `hook` callback."
 -->
 
 ```c
@@ -1986,25 +1523,18 @@ NAPI_EXTERN napi_status napi_add_async_cleanup_hook(
     napi_async_cleanup_hook_handle* remove_handle);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] hook`: The function pointer to call at environment teardown.
-* `[in] arg`: The pointer to pass to `hook` when it gets called.
-* `[out] remove_handle`: Optional handle that refers to the asynchronous cleanup
-  hook.
+* `[in] env`：API 被调用下的环境。
+* `[in] hook`：在环境销毁时调用的函数指针。
+* `[in] arg`：调用 `hook` 时传递的指针。
+* `[out] remove_handle`：可选句柄，引用异步清理钩子。
 
-Registers `hook`, which is a function of type [`napi_async_cleanup_hook`][], as
-a function to be run with the `remove_handle` and `arg` parameters once the
-current Node.js environment exits.
+注册 `hook`（类型为 [`napi_async_cleanup_hook`][] 的函数），作为在当前 Node.js 环境退出时使用 `remove_handle` 和 `arg` 参数运行的函数。
 
-Unlike [`napi_add_env_cleanup_hook`][], the hook is allowed to be asynchronous.
+与 [`napi_add_env_cleanup_hook`][] 不同，该钩子允许是异步的。
 
-Otherwise, behavior generally matches that of [`napi_add_env_cleanup_hook`][].
+否则，行为通常与 [`napi_add_env_cleanup_hook`][] 匹配。
 
-If `remove_handle` is not `NULL`, an opaque value will be stored in it
-that must later be passed to [`napi_remove_async_cleanup_hook`][],
-regardless of whether the hook has already been invoked.
-Typically, that happens when the resource for which this hook was added
-is being torn down anyway.
+如果 `remove_handle` 不是 `NULL`，则将在其中存储一个不透明值，该值必须稍后传递给 [`napi_remove_async_cleanup_hook`][]，无论钩子是否已被调用。通常，这发生在为此钩子添加的资源正在被拆除时。
 
 #### `napi_remove_async_cleanup_hook`
 
@@ -2017,7 +1547,7 @@ changes:
     - v14.10.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34819
-    description: Removed `env` parameter.
+    description: "Removed `env` parameter."
 -->
 
 ```c
@@ -2025,55 +1555,39 @@ NAPI_EXTERN napi_status napi_remove_async_cleanup_hook(
     napi_async_cleanup_hook_handle remove_handle);
 ```
 
-* `[in] remove_handle`: The handle to an asynchronous cleanup hook that was
-  created with [`napi_add_async_cleanup_hook`][].
+* `[in] remove_handle`: 使用 [`napi_add_async_cleanup_hook`][] 创建的异步清理钩子的句柄。
 
-Unregisters the cleanup hook corresponding to `remove_handle`. This will prevent
-the hook from being executed, unless it has already started executing.
-This must be called on any `napi_async_cleanup_hook_handle` value obtained
-from [`napi_add_async_cleanup_hook`][].
+注销与 `remove_handle` 对应的清理钩子。这将防止钩子被执行，除非它已经开始执行。必须对从 [`napi_add_async_cleanup_hook`][] 获得的任何 `napi_async_cleanup_hook_handle` 值调用此函数。
 
-### Finalization on the exit of the Node.js environment
+### 在 Node.js 环境退出时的终结
 
-The Node.js environment may be torn down at an arbitrary time as soon as
-possible with JavaScript execution disallowed, like on the request of
-[`worker.terminate()`][]. When the environment is being torn down, the
-registered `napi_finalize` callbacks of JavaScript objects, thread-safe
-functions and environment instance data are invoked immediately and
-independently.
+Node.js 环境可能在尽可能快的任意时间被销毁，此时禁止执行 JavaScript，例如在请求 [`worker.terminate()`][] 时。当环境被销毁时，注册的 JavaScript 对象、线程安全函数和环境实例数据的 `napi_finalize` 回调会立即且独立地被调用。
 
-The invocation of `napi_finalize` callbacks is scheduled after the manually
-registered cleanup hooks. In order to ensure a proper order of addon
-finalization during environment shutdown to avoid use-after-free in the
-`napi_finalize` callback, addons should register a cleanup hook with
-`napi_add_env_cleanup_hook` and `napi_add_async_cleanup_hook` to manually
-release the allocated resource in a proper order.
+`napi_finalize` 回调的调用安排在手动注册的清理钩子之后。为了确保在环境关闭期间插件终结的正确顺序，以避免在 `napi_finalize` 回调中释放后使用，插件应使用 `napi_add_env_cleanup_hook` 和 `napi_add_async_cleanup_hook` 注册清理钩子，以正确的顺序手动释放分配的资源。
 
-## Module registration
+## 模块注册
 
-Node-API modules are registered in a manner similar to other modules
-except that instead of using the `NODE_MODULE` macro the following
-is used:
+Node-API 模块的注册方式与其他模块类似，
+但不是使用 `NODE_MODULE` 宏，而是使用
+以下内容：
 
 ```c
 NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)
 ```
 
-The next difference is the signature for the `Init` method. For a Node-API
-module it is as follows:
+下一个区别是 `Init` 方法的签名。对于 Node-API
+模块，如下所示：
 
 ```c
 napi_value Init(napi_env env, napi_value exports);
 ```
 
-The return value from `Init` is treated as the `exports` object for the module.
-The `Init` method is passed an empty object via the `exports` parameter as a
-convenience. If `Init` returns `NULL`, the parameter passed as `exports` is
-exported by the module. Node-API modules cannot modify the `module` object but
-can specify anything as the `exports` property of the module.
+`Init` 的返回值被视为模块的 `exports` 对象。
+`Init` 方法通过 `exports` 参数被传入一个空对象以提供便利。如果 `Init` 返回 `NULL`，则作为 `exports` 传入的参数将由模块导出。Node-API 模块不能修改 `module` 对象，但
+可以将任何内容指定为模块的 `exports` 属性。
 
-To add the method `hello` as a function so that it can be called as a method
-provided by the addon:
+要将 `hello` 方法添加为函数，以便它可以作为
+addon 提供的方法被调用：
 
 ```c
 napi_value Init(napi_env env, napi_value exports) {
@@ -2094,7 +1608,7 @@ napi_value Init(napi_env env, napi_value exports) {
 }
 ```
 
-To set a function to be returned by the `require()` for the addon:
+要设置一个函数由 addon 的 `require()` 返回：
 
 ```c
 napi_value Init(napi_env env, napi_value exports) {
@@ -2106,11 +1620,11 @@ napi_value Init(napi_env env, napi_value exports) {
 }
 ```
 
-To define a class so that new instances can be created (often used with
-[Object wrap][]):
+要定义一个类以便可以创建新实例（通常与
+[对象包装][Object wrap] 一起使用）：
 
 ```c
-// NOTE: partial example, not all referenced code is included
+// 注意：部分示例，未包含所有引用的代码
 napi_value Init(napi_env env, napi_value exports) {
   napi_status status;
   napi_property_descriptor properties[] = {
@@ -2134,8 +1648,8 @@ napi_value Init(napi_env env, napi_value exports) {
 }
 ```
 
-You can also use the `NAPI_MODULE_INIT` macro, which acts as a shorthand
-for `NAPI_MODULE` and defining an `Init` function:
+你也可以使用 `NAPI_MODULE_INIT` 宏，它作为
+`NAPI_MODULE` 和定义 `Init` 函数的简写：
 
 ```c
 NAPI_MODULE_INIT(/* napi_env env, napi_value exports */) {
@@ -2152,42 +1666,39 @@ NAPI_MODULE_INIT(/* napi_env env, napi_value exports */) {
 }
 ```
 
-The parameters `env` and `exports` are provided to the body of the
-`NAPI_MODULE_INIT` macro.
+参数 `env` 和 `exports` 被提供给
+`NAPI_MODULE_INIT` 宏的主体。
 
-All Node-API addons are context-aware, meaning they may be loaded multiple
-times. There are a few design considerations when declaring such a module.
-The documentation on [context-aware addons][] provides more details.
+所有 Node-API 插件都是上下文感知的，意味着它们可以被加载多次。声明此类模块时有一些设计考虑。
+[上下文感知插件][context-aware addons] 的文档提供了更多详细信息。
 
-The variables `env` and `exports` will be available inside the function body
-following the macro invocation.
+变量 `env` 和 `exports` 将在宏调用后的函数体内可用。
 
-For more details on setting properties on objects, see the section on
-[Working with JavaScript properties][].
+有关在对象上设置属性的更多详细信息，请参阅
+[使用 JavaScript 属性][Working with JavaScript properties] 部分。
 
-For more details on building addon modules in general, refer to the existing
-API.
+有关构建插件模块的一般更多详细信息，请参阅现有
+API。
 
-## Working with JavaScript values
+## 使用 JavaScript 值
 
-Node-API exposes a set of APIs to create all types of JavaScript values.
-Some of these types are documented under [Section language types][]
-of the [ECMAScript Language Specification][].
+Node-API 公开了一组 API 来创建所有类型的 JavaScript 值。
+其中一些类型记录在 [ECMAScript 语言规范][ECMAScript Language Specification] 的 [语言类型部分][Section language types] 下。
 
-Fundamentally, these APIs are used to do one of the following:
+基本上，这些 API 用于执行以下操作之一：
 
-1. Create a new JavaScript object
-2. Convert from a primitive C type to a Node-API value
-3. Convert from Node-API value to a primitive C type
-4. Get global instances including `undefined` and `null`
+1. 创建一个新的 JavaScript 对象
+2. 从原始 C 类型转换为 Node-API 值
+3. 从 Node-API 值转换为原始 C 类型
+4. 获取全局实例，包括 `undefined` 和 `null`
 
-Node-API values are represented by the type `napi_value`.
-Any Node-API call that requires a JavaScript value takes in a `napi_value`.
-In some cases, the API does check the type of the `napi_value` up-front.
-However, for better performance, it's better for the caller to make sure that
-the `napi_value` in question is of the JavaScript type expected by the API.
+Node-API 值由类型 `napi_value` 表示。
+任何需要 JavaScript 值的 Node-API 调用都接受 `napi_value`。
+在某些情况下，API 确实会预先检查 `napi_value` 的类型。
+但是，为了更好的性能，调用者最好确保
+相关的 `napi_value` 是 API 预期的 JavaScript 类型。
 
-### Enum types
+### 枚举类型
 
 #### `napi_key_collection_mode`
 
@@ -2206,13 +1717,12 @@ typedef enum {
 } napi_key_collection_mode;
 ```
 
-Describes the `Keys/Properties` filter enums:
+描述 `键/属性` 过滤器枚举：
 
-`napi_key_collection_mode` limits the range of collected properties.
+`napi_key_collection_mode` 限制收集属性的范围。
 
-`napi_key_own_only` limits the collected properties to the given
-object only. `napi_key_include_prototypes` will include all keys
-of the objects's prototype chain as well.
+`napi_key_own_only` 将收集的属性限制为仅给定
+对象。`napi_key_include_prototypes` 还将包括对象原型链的所有键。
 
 #### `napi_key_filter`
 
@@ -2235,7 +1745,7 @@ typedef enum {
 } napi_key_filter;
 ```
 
-Property filter bit flag. This works with bit operators to build a composite filter.
+属性过滤器位标志。这与位运算符一起使用以构建复合过滤器。
 
 #### `napi_key_conversion`
 
@@ -2254,15 +1764,15 @@ typedef enum {
 } napi_key_conversion;
 ```
 
-`napi_key_numbers_to_strings` will convert integer indexes to
-strings. `napi_key_keep_numbers` will return numbers for integer
-indexes.
+`napi_key_numbers_to_strings` 将整数索引转换为
+字符串。`napi_key_keep_numbers` 将为整数
+索引返回数字。
 
 #### `napi_valuetype`
 
 ```c
 typedef enum {
-  // ES6 types (corresponds to typeof)
+  // ES6 类型（对应于 typeof）
   napi_undefined,
   napi_null,
   napi_boolean,
@@ -2276,13 +1786,12 @@ typedef enum {
 } napi_valuetype;
 ```
 
-Describes the type of a `napi_value`. This generally corresponds to the types
-described in [Section language types][] of the ECMAScript Language Specification.
-In addition to types in that section, `napi_valuetype` can also represent
-`Function`s and `Object`s with external data.
+描述 `napi_value` 的类型。这通常对应于 ECMAScript 语言规范 [语言类型部分][Section language types] 中描述的类型。
+除了该部分中的类型外，`napi_valuetype` 还可以表示
+带有外部数据的 `Function` 和 `Object`。
 
-A JavaScript value of type `napi_external` appears in JavaScript as a plain
-object such that no properties can be set on it, and no prototype.
+类型为 `napi_external` 的 JavaScript 值在 JavaScript 中显示为普通
+对象，以便不能在其上设置任何属性，并且没有原型。
 
 #### `napi_typedarray_type`
 
@@ -2292,7 +1801,7 @@ changes:
      - v25.5.0
      - v24.13.1
     pr-url: https://github.com/nodejs/node/pull/58879
-    description: Added `napi_float16_array` for Float16Array support.
+    description: "为 Float16Array 支持添加了 `napi_float16_array`。"
 -->
 
 ```c
@@ -2312,11 +1821,10 @@ typedef enum {
 } napi_typedarray_type;
 ```
 
-This represents the underlying binary scalar datatype of the `TypedArray`.
-Elements of this enum correspond to
-[Section TypedArray objects][] of the [ECMAScript Language Specification][].
+这表示 `TypedArray` 的底层二进制标量数据类型。
+此枚举的元素对应于 [ECMAScript 语言规范][ECMAScript Language Specification] 的 [TypedArray 对象部分][Section TypedArray objects]。
 
-### Object creation functions
+### 对象创建函数
 
 #### `napi_create_array`
 
@@ -2329,14 +1837,14 @@ napiVersion: 1
 napi_status napi_create_array(napi_env env, napi_value* result)
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[out] result`: A `napi_value` representing a JavaScript `Array`.
+* `[in] env`：调用 Node-API 的环境。
+* `[out] result`：表示 JavaScript `Array` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API returns a Node-API value corresponding to a JavaScript `Array` type.
-JavaScript arrays are described in
-[Section Array objects][] of the ECMAScript Language Specification.
+此 API 返回对应于 JavaScript `Array` 类型的 Node-API 值。
+JavaScript 数组在 ECMAScript 语言规范的
+[数组对象部分][Section Array objects] 中描述。
 
 #### `napi_create_array_with_length`
 
@@ -2351,22 +1859,21 @@ napi_status napi_create_array_with_length(napi_env env,
                                           napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] length`: The initial length of the `Array`.
-* `[out] result`: A `napi_value` representing a JavaScript `Array`.
+* `[in] env`：调用 API 的环境。
+* `[in] length`：`Array` 的初始长度。
+* `[out] result`：表示 JavaScript `Array` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API returns a Node-API value corresponding to a JavaScript `Array` type.
-The `Array`'s length property is set to the passed-in length parameter.
-However, the underlying buffer is not guaranteed to be pre-allocated by the VM
-when the array is created. That behavior is left to the underlying VM
-implementation. If the buffer must be a contiguous block of memory that can be
-directly read and/or written via C, consider using
-[`napi_create_external_arraybuffer`][].
+此 API 返回对应于 JavaScript `Array` 类型的 Node-API 值。
+`Array` 的 length 属性设置为传入的 length 参数。
+但是，当创建数组时，底层缓冲区不保证由 VM
+预分配。该行为留给底层 VM
+实现。如果缓冲区必须是可以通过 C 直接读取和/或写入的连续内存块，请考虑使用
+[`napi_create_external_arraybuffer`][]。
 
-JavaScript arrays are described in
-[Section Array objects][] of the ECMAScript Language Specification.
+JavaScript 数组在 ECMAScript 语言规范的
+[数组对象部分][Section Array objects] 中描述。
 
 #### `napi_create_arraybuffer`
 
@@ -2382,26 +1889,26 @@ napi_status napi_create_arraybuffer(napi_env env,
                                     napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] length`: The length in bytes of the array buffer to create.
-* `[out] data`: Pointer to the underlying byte buffer of the `ArrayBuffer`.
-  `data` can optionally be ignored by passing `NULL`.
-* `[out] result`: A `napi_value` representing a JavaScript `ArrayBuffer`.
+* `[in] env`：调用 API 的环境。
+* `[in] length`：要创建的数组缓冲区的字节长度。
+* `[out] data`：指向 `ArrayBuffer` 底层字节缓冲区的指针。
+  可以通过传递 `NULL` 选择性地忽略 `data`。
+* `[out] result`：表示 JavaScript `ArrayBuffer` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API returns a Node-API value corresponding to a JavaScript `ArrayBuffer`.
-`ArrayBuffer`s are used to represent fixed-length binary data buffers. They are
-normally used as a backing-buffer for `TypedArray` objects.
-The `ArrayBuffer` allocated will have an underlying byte buffer whose size is
-determined by the `length` parameter that's passed in.
-The underlying buffer is optionally returned back to the caller in case the
-caller wants to directly manipulate the buffer. This buffer can only be
-written to directly from native code. To write to this buffer from JavaScript,
-a typed array or `DataView` object would need to be created.
+此 API 返回对应于 JavaScript `ArrayBuffer` 的 Node-API 值。
+`ArrayBuffer` 用于表示固定长度的二进制数据缓冲区。它们通常
+用作 `TypedArray` 对象的后备缓冲区。
+分配的 `ArrayBuffer` 将具有一个底层字节缓冲区，其大小由
+传入的 `length` 参数确定。
+底层缓冲区选择性地返回给调用者，以防调用者
+想要直接操作缓冲区。此缓冲区只能
+从原生代码直接写入。要从 JavaScript 写入此缓冲区，
+需要创建 typed array 或 `DataView` 对象。
 
-JavaScript `ArrayBuffer` objects are described in
-[Section ArrayBuffer objects][] of the ECMAScript Language Specification.
+JavaScript `ArrayBuffer` 对象在 ECMAScript 语言规范的
+[ArrayBuffer 对象部分][Section ArrayBuffer objects] 中描述。
 
 #### `napi_create_buffer`
 
@@ -2417,16 +1924,16 @@ napi_status napi_create_buffer(napi_env env,
                                napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] size`: Size in bytes of the underlying buffer.
-* `[out] data`: Raw pointer to the underlying buffer.
-  `data` can optionally be ignored by passing `NULL`.
-* `[out] result`: A `napi_value` representing a `node::Buffer`.
+* `[in] env`：调用 API 的环境。
+* `[in] size`：底层缓冲区的字节大小。
+* `[out] data`：指向底层缓冲区的原始指针。
+  可以通过传递 `NULL` 选择性地忽略 `data`。
+* `[out] result`：表示 `node::Buffer` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API allocates a `node::Buffer` object. While this is still a
-fully-supported data structure, in most cases using a `TypedArray` will suffice.
+此 API 分配一个 `node::Buffer` 对象。虽然这仍然是一个
+完全支持的数据结构，但在大多数情况下使用 `TypedArray` 就足够了。
 
 #### `napi_create_buffer_copy`
 
@@ -2443,19 +1950,19 @@ napi_status napi_create_buffer_copy(napi_env env,
                                     napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] size`: Size in bytes of the input buffer (should be the same as the size
-  of the new buffer).
-* `[in] data`: Raw pointer to the underlying buffer to copy from.
-* `[out] result_data`: Pointer to the new `Buffer`'s underlying data buffer.
-  `result_data` can optionally be ignored by passing `NULL`.
-* `[out] result`: A `napi_value` representing a `node::Buffer`.
+* `[in] env`：调用 API 的环境。
+* `[in] size`：输入缓冲区的字节大小（应与新缓冲区的大小
+  相同）。
+* `[in] data`：指向要复制的底层缓冲区的原始指针。
+* `[out] result_data`：指向新 `Buffer` 的底层数据缓冲区的指针。
+  可以通过传递 `NULL` 选择性地忽略 `result_data`。
+* `[out] result`：表示 `node::Buffer` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API allocates a `node::Buffer` object and initializes it with data copied
-from the passed-in buffer. While this is still a fully-supported data
-structure, in most cases using a `TypedArray` will suffice.
+此 API 分配一个 `node::Buffer` 对象并使用从
+传入缓冲区复制的数据初始化它。虽然这仍然是一个完全支持的数据
+结构，但在大多数情况下使用 `TypedArray` 就足够了。
 
 #### `napi_create_date`
 
@@ -2472,19 +1979,19 @@ napi_status napi_create_date(napi_env env,
                              napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] time`: ECMAScript time value in milliseconds since 01 January, 1970 UTC.
-* `[out] result`: A `napi_value` representing a JavaScript `Date`.
+* `[in] env`：调用 API 的环境。
+* `[in] time`：ECMAScript 时间值，单位为自 1970 年 1 月 1 日 UTC 以来的毫秒数。
+* `[out] result`：表示 JavaScript `Date` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API does not observe leap seconds; they are ignored, as
-ECMAScript aligns with POSIX time specification.
+此 API 不观察闰秒；它们被忽略，因为
+ECMAScript 与 POSIX 时间规范保持一致。
 
-This API allocates a JavaScript `Date` object.
+此 API 分配一个 JavaScript `Date` 对象。
 
-JavaScript `Date` objects are described in
-[Section Date objects][] of the ECMAScript Language Specification.
+JavaScript `Date` 对象在 ECMAScript 语言规范的
+[Date 对象部分][Section Date objects] 中描述。
 
 #### `napi_create_external`
 
@@ -2501,26 +2008,24 @@ napi_status napi_create_external(napi_env env,
                                  napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] data`: Raw pointer to the external data.
-* `[in] finalize_cb`: Optional callback to call when the external value is being
-  collected. [`napi_finalize`][] provides more details.
-* `[in] finalize_hint`: Optional hint to pass to the finalize callback during
-  collection.
-* `[out] result`: A `napi_value` representing an external value.
+* `[in] env`：调用 API 的环境。
+* `[in] data`：指向外部数据的原始指针。
+* `[in] finalize_cb`：当外部值被
+  收集时调用的可选回调。[`napi_finalize`][] 提供更多详细信息。
+* `[in] finalize_hint`：在收集期间传递给 finalize 回调的可选提示。
+* `[out] result`：表示外部值的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API allocates a JavaScript value with external data attached to it. This
-is used to pass external data through JavaScript code, so it can be retrieved
-later by native code using [`napi_get_value_external`][].
+此 API 分配一个附加了外部数据的 JavaScript 值。这
+用于通过 JavaScript 代码传递外部数据，以便以后可以使用 [`napi_get_value_external`][] 由原生代码检索。
 
-The API adds a `napi_finalize` callback which will be called when the JavaScript
-object just created has been garbage collected.
+API 添加了一个 `napi_finalize` 回调，当刚刚创建的 JavaScript
+对象被垃圾回收时将调用该回调。
 
-The created value is not an object, and therefore does not support additional
-properties. It is considered a distinct value type: calling `napi_typeof()` with
-an external value yields `napi_external`.
+创建的值不是对象，因此不支持附加
+属性。它被认为是一个不同的值类型：使用
+外部值调用 `napi_typeof()` 会产生 `napi_external`。
 
 #### `napi_create_external_arraybuffer`
 
@@ -2539,41 +2044,38 @@ napi_create_external_arraybuffer(napi_env env,
                                  napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] external_data`: Pointer to the underlying byte buffer of the
-  `ArrayBuffer`.
-* `[in] byte_length`: The length in bytes of the underlying buffer.
-* `[in] finalize_cb`: Optional callback to call when the `ArrayBuffer` is being
-  collected. [`napi_finalize`][] provides more details.
-* `[in] finalize_hint`: Optional hint to pass to the finalize callback during
-  collection.
-* `[out] result`: A `napi_value` representing a JavaScript `ArrayBuffer`.
+* `[in] env`：调用 API 的环境。
+* `[in] external_data`：指向
+  `ArrayBuffer` 底层字节缓冲区的指针。
+* `[in] byte_length`：底层缓冲区的字节长度。
+* `[in] finalize_cb`：当 `ArrayBuffer` 被
+  收集时调用的可选回调。[`napi_finalize`][] 提供更多详细信息。
+* `[in] finalize_hint`：在收集期间传递给 finalize 回调的可选提示。
+* `[out] result`：表示 JavaScript `ArrayBuffer` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-**Some runtimes other than Node.js have dropped support for external buffers**.
-On runtimes other than Node.js this method may return
-`napi_no_external_buffers_allowed` to indicate that external
-buffers are not supported. One such runtime is Electron as
-described in this issue
-[electron/issues/35801](https://github.com/electron/electron/issues/35801).
+**某些非 Node.js 运行时已放弃对外部缓冲区的支持**。
+在 Node.js 以外的运行时上，此方法可能返回
+`napi_no_external_buffers_allowed` 以指示不支持外部
+缓冲区。一个这样的运行时是 Electron，如
+此问题 [electron/issues/35801](https://github.com/electron/electron/issues/35801) 中所述。
 
-In order to maintain broadest compatibility with all runtimes
-you may define `NODE_API_NO_EXTERNAL_BUFFERS_ALLOWED` in your addon before
-includes for the node-api headers. Doing so will hide the 2 functions
-that create external buffers. This will ensure a compilation error
-occurs if you accidentally use one of these methods.
+为了与所有运行时保持最广泛的兼容性，
+你可以在包含 node-api 头文件之前在 addon 中定义 `NODE_API_NO_EXTERNAL_BUFFERS_ALLOWED`。这样做将隐藏 2 个
+创建外部缓冲区的函数。这将确保如果
+你意外使用这些方法之一会发生编译错误。
 
-This API returns a Node-API value corresponding to a JavaScript `ArrayBuffer`.
-The underlying byte buffer of the `ArrayBuffer` is externally allocated and
-managed. The caller must ensure that the byte buffer remains valid until the
-finalize callback is called.
+此 API 返回对应于 JavaScript `ArrayBuffer` 的 Node-API 值。
+`ArrayBuffer` 的底层字节缓冲区是外部分配和
+管理的。调用者必须确保字节缓冲区保持有效，直到
+finalize 回调被调用。
 
-The API adds a `napi_finalize` callback which will be called when the JavaScript
-object just created has been garbage collected.
+API 添加了一个 `napi_finalize` 回调，当刚刚创建的 JavaScript
+对象被垃圾回收时将调用该回调。
 
-JavaScript `ArrayBuffer`s are described in
-[Section ArrayBuffer objects][] of the ECMAScript Language Specification.
+JavaScript `ArrayBuffer` 在 ECMAScript 语言规范的
+[ArrayBuffer 对象部分][Section ArrayBuffer objects] 中描述。
 
 #### `node_api_create_external_sharedarraybuffer`
 
@@ -2591,24 +2093,22 @@ node_api_create_external_sharedarraybuffer(napi_env env,
                                            napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] external_data`: Pointer to the underlying byte buffer of the
-  `SharedArrayBuffer`.
-* `[in] byte_length`: The length in bytes of the underlying buffer.
-* `[in] finalize_cb`: Optional callback to call when the `SharedArrayBuffer` is
-  being collected. Called on an arbitrary thread. Because a `SharedArrayBuffer`
-  can outlive the environment it's created in, the callback does not receive a
-  reference to `env`.
-* `[in] finalize_hint`: Optional hint to pass to the finalize callback during
-  collection.
-* `[out] result`: A `napi_value` representing a JavaScript `SharedArrayBuffer`.
+* `[in] env`: 在该 API 调用所处的环境。
+* `[in] external_data`: 指向 `SharedArrayBuffer` 的
+  底层字节缓冲区的指针。
+* `[in] byte_length`: 底层缓冲区的字节长度。
+* `[in] finalize_cb`: 当 `SharedArrayBuffer` 正在被
+  收集时调用的可选回调。该回调在任意线程上调用。
+  因为 `SharedArrayBuffer` 可能比其创建时的环境存活更久，
+  所以该回调不会接收 `env` 的引用。
+* `[in] finalize_hint`: 在收集期间传递给 finalize 回调的可选提示。
+* `[out] result`: 表示 JavaScript `SharedArrayBuffer` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-Create a `SharedArrayBuffer` with externally managed memory.
+使用外部管理的内存创建一个 `SharedArrayBuffer`。
 
-See the entry on [`napi_create_external_arraybuffer`][] for runtime
-compatibility.
+有关运行时兼容性，请参阅 [`napi_create_external_arraybuffer`][] 的条目。
 
 #### `napi_create_external_buffer`
 
@@ -2626,39 +2126,36 @@ napi_status napi_create_external_buffer(napi_env env,
                                         napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] length`: Size in bytes of the input buffer (should be the same as the
-  size of the new buffer).
-* `[in] data`: Raw pointer to the underlying buffer to expose to JavaScript.
-* `[in] finalize_cb`: Optional callback to call when the `ArrayBuffer` is being
-  collected. [`napi_finalize`][] provides more details.
-* `[in] finalize_hint`: Optional hint to pass to the finalize callback during
-  collection.
-* `[out] result`: A `napi_value` representing a `node::Buffer`.
+* `[in] env`：调用 API 的环境。
+* `[in] length`：输入缓冲区的字节大小（应与
+  新缓冲区的大小相同）。
+* `[in] data`：指向要暴露给 JavaScript 的底层缓冲区的原始指针。
+* `[in] finalize_cb`：当 `ArrayBuffer` 被
+  收集时调用的可选回调。[`napi_finalize`][] 提供更多详细信息。
+* `[in] finalize_hint`：在收集期间传递给 finalize 回调的可选提示。
+* `[out] result`：表示 `node::Buffer` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-**Some runtimes other than Node.js have dropped support for external buffers**.
-On runtimes other than Node.js this method may return
-`napi_no_external_buffers_allowed` to indicate that external
-buffers are not supported. One such runtime is Electron as
-described in this issue
-[electron/issues/35801](https://github.com/electron/electron/issues/35801).
+**某些非 Node.js 运行时已放弃对外部缓冲区的支持**。
+在 Node.js 以外的运行时上，此方法可能返回
+`napi_no_external_buffers_allowed` 以指示不支持外部
+缓冲区。一个这样的运行时是 Electron，如
+此问题 [electron/issues/35801](https://github.com/electron/electron/issues/35801) 中所述。
 
-In order to maintain broadest compatibility with all runtimes
-you may define `NODE_API_NO_EXTERNAL_BUFFERS_ALLOWED` in your addon before
-includes for the node-api headers. Doing so will hide the 2 functions
-that create external buffers. This will ensure a compilation error
-occurs if you accidentally use one of these methods.
+为了与所有运行时保持最广泛的兼容性，
+你可以在包含 node-api 头文件之前在 addon 中定义 `NODE_API_NO_EXTERNAL_BUFFERS_ALLOWED`。这样做将隐藏 2 个
+创建外部缓冲区的函数。这将确保如果
+你意外使用这些方法之一会发生编译错误。
 
-This API allocates a `node::Buffer` object and initializes it with data
-backed by the passed in buffer. While this is still a fully-supported data
-structure, in most cases using a `TypedArray` will suffice.
+此 API 分配一个 `node::Buffer` 对象并使用由
+传入缓冲区支持的数据初始化它。虽然这仍然是一个完全支持的数据
+结构，但在大多数情况下使用 `TypedArray` 就足够了。
 
-The API adds a `napi_finalize` callback which will be called when the JavaScript
-object just created has been garbage collected.
+API 添加了一个 `napi_finalize` 回调，当刚刚创建的 JavaScript
+对象被垃圾回收时将调用该回调。
 
-For Node.js >=4 `Buffers` are `Uint8Array`s.
+对于 Node.js >=4，`Buffers` 是 `Uint8Array`s。
 
 #### `napi_create_object`
 
@@ -2671,16 +2168,15 @@ napiVersion: 1
 napi_status napi_create_object(napi_env env, napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] result`: A `napi_value` representing a JavaScript `Object`.
+* `[in] env`：调用 API 的环境。
+* `[out] result`：表示 JavaScript `Object` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API allocates a default JavaScript `Object`.
-It is the equivalent of doing `new Object()` in JavaScript.
+此 API 分配一个默认的 JavaScript `Object`。
+它相当于在 JavaScript 中执行 `new Object()`。
 
-The JavaScript `Object` type is described in [Section object type][] of the
-ECMAScript Language Specification.
+JavaScript `Object` 类型在 ECMAScript 语言规范的 [对象类型部分][Section object type] 中描述。
 
 #### `node_api_create_object_with_properties`
 
@@ -2690,7 +2186,7 @@ added:
   - v24.12.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 ```cpp
 napi_status node_api_create_object_with_properties(napi_env env,
@@ -2701,25 +2197,24 @@ napi_status node_api_create_object_with_properties(napi_env env,
                                                    napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] prototype_or_null`: The prototype object for the new object. Can be a
-  `napi_value` representing a JavaScript object to use as the prototype, a
-  `napi_value` representing JavaScript `null`, or a `nullptr` that will be converted to `null`.
-* `[in] property_names`: Array of `napi_value` representing the property names.
-* `[in] property_values`: Array of `napi_value` representing the property values.
-* `[in] property_count`: Number of properties in the arrays.
-* `[out] result`: A `napi_value` representing a JavaScript `Object`.
+* `[in] env`：调用 API 的环境。
+* `[in] prototype_or_null`：新对象的原型对象。可以是
+  表示要用作原型的 JavaScript 对象的 `napi_value`，表示 JavaScript `null` 的
+  `napi_value`，或将被转换为 `null` 的 `nullptr`。
+* `[in] property_names`：表示属性名称的 `napi_value` 数组。
+* `[in] property_values`：表示属性值的 `napi_value` 数组。
+* `[in] property_count`：数组中的属性数量。
+* `[out] result`：表示 JavaScript `Object` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates a JavaScript `Object` with the specified prototype and
-properties. This is more efficient than calling `napi_create_object` followed
-by multiple `napi_set_property` calls, as it can create the object with all
-properties atomically, avoiding potential V8 map transitions.
+此 API 创建具有指定原型和
+属性的 JavaScript `Object`。这比调用 `napi_create_object` 后
+跟多个 `napi_set_property` 调用更有效，因为它可以原子地创建具有所有
+属性的对象，避免潜在的 V8 映射转换。
 
-The arrays `property_names` and `property_values` must have the same length
-specified by `property_count`. The properties are added to the object in the
-order they appear in the arrays.
+数组 `property_names` 和 `property_values` 必须具有由
+`property_count` 指定的相同长度。属性按它们在数组中出现的顺序添加到对象。
 
 #### `napi_create_symbol`
 
@@ -2734,17 +2229,16 @@ napi_status napi_create_symbol(napi_env env,
                                napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] description`: Optional `napi_value` which refers to a JavaScript
-  `string` to be set as the description for the symbol.
-* `[out] result`: A `napi_value` representing a JavaScript `symbol`.
+* `[in] env`：调用 API 的环境。
+* `[in] description`：可选 `napi_value`，引用要设置为符号描述的 JavaScript
+  `string`。
+* `[out] result`：表示 JavaScript `symbol` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates a JavaScript `symbol` value from a UTF8-encoded C string.
+此 API 从 UTF8 编码的 C 字符串创建 JavaScript `symbol` 值。
 
-The JavaScript `symbol` type is described in [Section symbol type][]
-of the ECMAScript Language Specification.
+JavaScript `symbol` 类型在 ECMAScript 语言规范的 [符号类型部分][Section symbol type] 中描述。
 
 #### `node_api_symbol_for`
 
@@ -2762,21 +2256,21 @@ napi_status node_api_symbol_for(napi_env env,
                                 napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] utf8description`: UTF-8 C string representing the text to be used as the
-  description for the symbol.
-* `[in] length`: The length of the description string in bytes, or
-  `NAPI_AUTO_LENGTH` if it is null-terminated.
-* `[out] result`: A `napi_value` representing a JavaScript `symbol`.
+* `[in] env`：调用 API 的环境。
+* `[in] utf8description`：UTF-8 C 字符串，表示要用作符号
+  描述的文本。
+* `[in] length`：描述字符串的字节长度，如果它是空终止的则为
+  `NAPI_AUTO_LENGTH`。
+* `[out] result`：表示 JavaScript `symbol` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API searches in the global registry for an existing symbol with the given
-description. If the symbol already exists it will be returned, otherwise a new
-symbol will be created in the registry.
+此 API 在全局注册表中搜索具有给定
+描述的现有符号。如果符号已存在，它将返回，否则将在注册表中创建新
+符号。
 
-The JavaScript `symbol` type is described in [Section symbol type][] of the ECMAScript
-Language Specification.
+JavaScript `symbol` 类型在 ECMAScript
+语言规范的 [符号类型部分][Section symbol type] 中描述。
 
 #### `napi_create_typedarray`
 
@@ -2794,27 +2288,26 @@ napi_status napi_create_typedarray(napi_env env,
                                    napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] type`: Scalar datatype of the elements within the `TypedArray`.
-* `[in] length`: Number of elements in the `TypedArray`.
-* `[in] arraybuffer`: `ArrayBuffer` underlying the typed array.
-* `[in] byte_offset`: The byte offset within the `ArrayBuffer` from which to
-  start projecting the `TypedArray`.
-* `[out] result`: A `napi_value` representing a JavaScript `TypedArray`.
+* `[in] env`：调用 API 的环境。
+* `[in] type`：`TypedArray` 内元素的标量数据类型。
+* `[in] length`：`TypedArray` 中的元素数量。
+* `[in] arraybuffer`：typed array 底层的 `ArrayBuffer`。
+* `[in] byte_offset`：`ArrayBuffer` 内的字节偏移，从该处
+  开始投影 `TypedArray`。
+* `[out] result`：表示 JavaScript `TypedArray` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates a JavaScript `TypedArray` object over an existing
-`ArrayBuffer`. `TypedArray` objects provide an array-like view over an
-underlying data buffer where each element has the same underlying binary scalar
-datatype.
+此 API 在现有
+`ArrayBuffer` 上创建 JavaScript `TypedArray` 对象。`TypedArray` 对象提供对
+底层数据缓冲区的类数组视图，其中每个元素具有相同的底层二进制标量
+数据类型。
 
-It's required that `(length * size_of_element) + byte_offset` should
-be <= the size in bytes of the array passed in. If not, a `RangeError` exception
-is raised.
+要求 `(length * size_of_element) + byte_offset` 应
+<= 传入数组的字节大小。如果不是，则抛出 `RangeError` 异常。
 
-JavaScript `TypedArray` objects are described in
-[Section TypedArray objects][] of the ECMAScript Language Specification.
+JavaScript `TypedArray` 对象在 ECMAScript 语言规范的
+[TypedArray 对象部分][Section TypedArray objects] 中描述。
 
 #### `node_api_create_buffer_from_arraybuffer`
 
@@ -2833,20 +2326,20 @@ napi_status NAPI_CDECL node_api_create_buffer_from_arraybuffer(napi_env env,
                                                               napi_value* result)
 ```
 
-* **`[in] env`**: The environment that the API is invoked under.
-* **`[in] arraybuffer`**: The `ArrayBuffer` from which the buffer will be created.
-* **`[in] byte_offset`**: The byte offset within the `ArrayBuffer` from which to start creating the buffer.
-* **`[in] byte_length`**: The length in bytes of the buffer to be created from the `ArrayBuffer`.
-* **`[out] result`**: A `napi_value` representing the created JavaScript `Buffer` object.
+* **`[in] env`**：调用 API 的环境。
+* **`[in] arraybuffer`**：将创建缓冲区的 `ArrayBuffer`。
+* **`[in] byte_offset`**：`ArrayBuffer` 内的字节偏移，从该处开始创建缓冲区。
+* **`[in] byte_length`**：要从 `ArrayBuffer` 创建的缓冲区的字节长度。
+* **`[out] result`**：表示创建的 JavaScript `Buffer` 对象的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates a JavaScript `Buffer` object from an existing `ArrayBuffer`.
-The `Buffer` object is a Node.js-specific class that provides a way to work with binary data directly in JavaScript.
+此 API 从现有 `ArrayBuffer` 创建 JavaScript `Buffer` 对象。
+`Buffer` 对象是 Node.js 特定的类，提供了一种直接在 JavaScript 中处理二进制数据的方法。
 
-The byte range `[byte_offset, byte_offset + byte_length)`
-must be within the bounds of the `ArrayBuffer`. If `byte_offset + byte_length`
-exceeds the size of the `ArrayBuffer`, a `RangeError` exception is raised.
+字节范围 `[byte_offset, byte_offset + byte_length)`
+必须在 `ArrayBuffer` 的边界内。如果 `byte_offset + byte_length`
+超过 `ArrayBuffer` 的大小，则抛出 `RangeError` 异常。
 
 #### `napi_create_dataview`
 
@@ -2858,7 +2351,7 @@ changes:
      - v25.5.0
      - v24.13.1
     pr-url: https://github.com/nodejs/node/pull/60473
-    description: Added support for `SharedArrayBuffer`.
+    description: "添加了对 `SharedArrayBuffer` 的支持。"
 -->
 
 ```c
@@ -2869,29 +2362,26 @@ napi_status napi_create_dataview(napi_env env,
                                  napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] length`: Number of elements in the `DataView`.
-* `[in] arraybuffer`: `ArrayBuffer` or `SharedArrayBuffer` underlying the
-  `DataView`.
-* `[in] byte_offset`: The byte offset within the `ArrayBuffer` from which to
-  start projecting the `DataView`.
-* `[out] result`: A `napi_value` representing a JavaScript `DataView`.
+* `[in] env`：调用 API 的环境。
+* `[in] length`：`DataView` 中的元素数量。
+* `[in] arraybuffer`：`DataView` 底层的 `ArrayBuffer` 或 `SharedArrayBuffer`。
+* `[in] byte_offset`：`ArrayBuffer` 内的字节偏移，从该处
+  开始投影 `DataView`。
+* `[out] result`：表示 JavaScript `DataView` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates a JavaScript `DataView` object over an existing `ArrayBuffer`
-or `SharedArrayBuffer`. `DataView` objects provide an array-like view over an
-underlying data buffer, but one which allows items of different size and type in
-the `ArrayBuffer` or `SharedArrayBuffer`.
+此 API 在现有 `ArrayBuffer`
+或 `SharedArrayBuffer` 上创建 JavaScript `DataView` 对象。`DataView` 对象提供对
+底层数据缓冲区的类数组视图，但允许 `ArrayBuffer` 或 `SharedArrayBuffer` 中存在不同大小和类型的项。
 
-It is required that `byte_length + byte_offset` is less than or equal to the
-size in bytes of the array passed in. If not, a `RangeError` exception is
-raised.
+要求 `byte_length + byte_offset` 小于或等于
+传入数组的字节大小。如果不是，则抛出 `RangeError` 异常。
 
-JavaScript `DataView` objects are described in
-[Section DataView objects][] of the ECMAScript Language Specification.
+JavaScript `DataView` 对象在 ECMAScript 语言规范的
+[DataView 对象部分][Section DataView objects] 中描述。
 
-### Functions to convert from C types to Node-API
+### 从 C 类型转换为 Node-API 的函数
 
 #### `napi_create_int32`
 
@@ -2904,17 +2394,17 @@ napiVersion: 1
 napi_status napi_create_int32(napi_env env, int32_t value, napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: Integer value to be represented in JavaScript.
-* `[out] result`: A `napi_value` representing a JavaScript `number`.
+* `[in] env`：调用 API 的环境。
+* `[in] value`：要在 JavaScript 中表示的整数值。
+* `[out] result`：表示 JavaScript `number` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API is used to convert from the C `int32_t` type to the JavaScript
-`number` type.
+此 API 用于从 C `int32_t` 类型转换为 JavaScript
+`number` 类型。
 
-The JavaScript `number` type is described in
-[Section number type][] of the ECMAScript Language Specification.
+JavaScript `number` 类型在 ECMAScript 语言规范的
+[数字类型部分][Section number type] 中描述。
 
 #### `napi_create_uint32`
 
@@ -2927,17 +2417,17 @@ napiVersion: 1
 napi_status napi_create_uint32(napi_env env, uint32_t value, napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: Unsigned integer value to be represented in JavaScript.
-* `[out] result`: A `napi_value` representing a JavaScript `number`.
+* `[in] env`：调用 API 的环境。
+* `[in] value`：要在 JavaScript 中表示的无符号整数值。
+* `[out] result`：表示 JavaScript `number` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API is used to convert from the C `uint32_t` type to the JavaScript
-`number` type.
+此 API 用于从 C `uint32_t` 类型转换为 JavaScript
+`number` 类型。
 
-The JavaScript `number` type is described in
-[Section number type][] of the ECMAScript Language Specification.
+JavaScript `number` 类型在 ECMAScript 语言规范的
+[数字类型部分][Section number type] 中描述。
 
 #### `napi_create_int64`
 
@@ -2950,20 +2440,18 @@ napiVersion: 1
 napi_status napi_create_int64(napi_env env, int64_t value, napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: Integer value to be represented in JavaScript.
-* `[out] result`: A `napi_value` representing a JavaScript `number`.
+* `[in] env`：调用 API 的环境。
+* `[in] value`：要在 JavaScript 中表示的整数值。
+* `[out] result`：表示 JavaScript `number` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API is used to convert from the C `int64_t` type to the JavaScript
-`number` type.
+此 API 用于从 C `int64_t` 类型转换为 JavaScript
+`number` 类型。
 
-The JavaScript `number` type is described in [Section number type][]
-of the ECMAScript Language Specification. Note the complete range of `int64_t`
-cannot be represented with full precision in JavaScript. Integer values
-outside the range of [`Number.MIN_SAFE_INTEGER`][] `-(2**53 - 1)` -
-[`Number.MAX_SAFE_INTEGER`][] `(2**53 - 1)` will lose precision.
+JavaScript `number` 类型在 ECMAScript 语言规范的 [数字类型部分][Section number type] 中描述。注意 `int64_t` 的完整范围
+不能在 JavaScript 中以全精度表示。超出 [`Number.MIN_SAFE_INTEGER`][] `-(2**53 - 1)` -
+[`Number.MAX_SAFE_INTEGER`][] `(2**53 - 1)` 范围的整数值将丢失精度。
 
 #### `napi_create_double`
 
@@ -2976,17 +2464,17 @@ napiVersion: 1
 napi_status napi_create_double(napi_env env, double value, napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: Double-precision value to be represented in JavaScript.
-* `[out] result`: A `napi_value` representing a JavaScript `number`.
+* `[in] env`：调用 API 的环境。
+* `[in] value`：要在 JavaScript 中表示的双精度值。
+* `[out] result`：表示 JavaScript `number` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API is used to convert from the C `double` type to the JavaScript
-`number` type.
+此 API 用于从 C `double` 类型转换为 JavaScript
+`number` 类型。
 
-The JavaScript `number` type is described in
-[Section number type][] of the ECMAScript Language Specification.
+JavaScript `number` 类型在 ECMAScript 语言规范的
+[数字类型部分][Section number type] 中描述。
 
 #### `napi_create_bigint_int64`
 
@@ -3001,13 +2489,13 @@ napi_status napi_create_bigint_int64(napi_env env,
                                      napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: Integer value to be represented in JavaScript.
-* `[out] result`: A `napi_value` representing a JavaScript `BigInt`.
+* `[in] env`：调用 API 的环境。
+* `[in] value`：要在 JavaScript 中表示的整数值。
+* `[out] result`：表示 JavaScript `BigInt` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API converts the C `int64_t` type to the JavaScript `BigInt` type.
+此 API 将 C `int64_t` 类型转换为 JavaScript `BigInt` 类型。
 
 #### `napi_create_bigint_uint64`
 
@@ -3022,13 +2510,13 @@ napi_status napi_create_bigint_uint64(napi_env env,
                                       napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: Unsigned integer value to be represented in JavaScript.
-* `[out] result`: A `napi_value` representing a JavaScript `BigInt`.
+* `[in] env`：调用 API 的环境。
+* `[in] value`：要在 JavaScript 中表示的无符号整数值。
+* `[out] result`：表示 JavaScript `BigInt` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API converts the C `uint64_t` type to the JavaScript `BigInt` type.
+此 API 将 C `uint64_t` 类型转换为 JavaScript `BigInt` 类型。
 
 #### `napi_create_bigint_words`
 
@@ -3045,19 +2533,19 @@ napi_status napi_create_bigint_words(napi_env env,
                                      napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] sign_bit`: Determines if the resulting `BigInt` will be positive or
-  negative.
-* `[in] word_count`: The length of the `words` array.
-* `[in] words`: An array of `uint64_t` little-endian 64-bit words.
-* `[out] result`: A `napi_value` representing a JavaScript `BigInt`.
+* `[in] env`：调用 API 的环境。
+* `[in] sign_bit`：确定生成的 `BigInt` 是正数还是
+  负数。
+* `[in] word_count`：`words` 数组的长度。
+* `[in] words`：`uint64_t` 小端 64 位字数组。
+* `[out] result`：表示 JavaScript `BigInt` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API converts an array of unsigned 64-bit words into a single `BigInt`
-value.
+此 API 将无符号 64 位字数组转换为单个 `BigInt`
+值。
 
-The resulting `BigInt` is calculated as: (–1)<sup>`sign_bit`</sup> (`words[0]`
+生成的 `BigInt` 计算为：(–1)<sup>`sign_bit`</sup> (`words[0]`
 × (2<sup>64</sup>)<sup>0</sup> + `words[1]` × (2<sup>64</sup>)<sup>1</sup> + …)
 
 #### `napi_create_string_latin1`
@@ -3074,19 +2562,18 @@ napi_status napi_create_string_latin1(napi_env env,
                                       napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] str`: Character buffer representing an ISO-8859-1-encoded string.
-* `[in] length`: The length of the string in bytes, or `NAPI_AUTO_LENGTH` if it
-  is null-terminated.
-* `[out] result`: A `napi_value` representing a JavaScript `string`.
+* `[in] env`：调用 API 的环境。
+* `[in] str`：表示 ISO-8859-1 编码字符串的字符缓冲区。
+* `[in] length`：字符串的字节长度，如果它是空终止的则为 `NAPI_AUTO_LENGTH`。
+* `[out] result`：表示 JavaScript `string` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates a JavaScript `string` value from an ISO-8859-1-encoded C
-string. The native string is copied.
+此 API 从 ISO-8859-1 编码的 C
+字符串创建 JavaScript `string` 值。原生字符串被复制。
 
-The JavaScript `string` type is described in
-[Section string type][] of the ECMAScript Language Specification.
+JavaScript `string` 类型在 ECMAScript 语言规范的
+[字符串类型部分][Section string type] 中描述。
 
 #### `node_api_create_external_string_latin1`
 
@@ -3108,36 +2595,33 @@ node_api_create_external_string_latin1(napi_env env,
                                        bool* copied);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] str`: Character buffer representing an ISO-8859-1-encoded string.
-* `[in] length`: The length of the string in bytes, or `NAPI_AUTO_LENGTH` if it
-  is null-terminated.
-* `[in] finalize_callback`: The function to call when the string is being
-  collected. The function will be called with the following parameters:
-  * `[in] env`: The environment in which the add-on is running. This value
-    may be null if the string is being collected as part of the termination
-    of the worker or the main Node.js instance.
-  * `[in] data`: This is the value `str` as a `void*` pointer.
-  * `[in] finalize_hint`: This is the value `finalize_hint` that was given
-    to the API.
-    [`napi_finalize`][] provides more details.
-    This parameter is optional. Passing a null value means that the add-on
-    doesn't need to be notified when the corresponding JavaScript string is
-    collected.
-* `[in] finalize_hint`: Optional hint to pass to the finalize callback during
-  collection.
-* `[out] result`: A `napi_value` representing a JavaScript `string`.
-* `[out] copied`: Whether the string was copied. If it was, the finalizer will
-  already have been invoked to destroy `str`.
+* `[in] env`：调用 API 的环境。
+* `[in] str`：表示 ISO-8859-1 编码字符串的字符缓冲区。
+* `[in] length`：字符串的字节长度，如果它是空终止的则为 `NAPI_AUTO_LENGTH`。
+* `[in] finalize_callback`：当字符串被
+  收集时调用的函数。该函数将使用以下参数调用：
+  * `[in] env`：addon 运行的环境。如果字符串作为 worker 或主 Node.js 实例
+    终止的一部分被收集，此值
+    可能为 null。
+  * `[in] data`：这是作为 `void*` 指针的值 `str`。
+  * `[in] finalize_hint`：这是传递给
+    API 的值 `finalize_hint`。
+    [`napi_finalize`][] 提供更多详细信息。
+    此参数是可选的。传递 null 值意味着当相应的 JavaScript 字符串被
+    收集时不需要通知 addon。
+* `[in] finalize_hint`：在收集期间传递给 finalize 回调的可选提示。
+* `[out] result`：表示 JavaScript `string` 的 `napi_value`。
+* `[out] copied`：字符串是否被复制。如果是，终结器将
+  已被调用以销毁 `str`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates a JavaScript `string` value from an ISO-8859-1-encoded C
-string. The native string may not be copied and must thus exist for the entire
-life cycle of the JavaScript value.
+此 API 从 ISO-8859-1 编码的 C
+字符串创建 JavaScript `string` 值。原生字符串可能未被复制，因此必须在 JavaScript 值的整个
+生命周期内存在。
 
-The JavaScript `string` type is described in
-[Section string type][] of the ECMAScript Language Specification.
+JavaScript `string` 类型在 ECMAScript 语言规范的
+[字符串类型部分][Section string type] 中描述。
 
 #### `napi_create_string_utf16`
 
@@ -3153,19 +2637,19 @@ napi_status napi_create_string_utf16(napi_env env,
                                      napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] str`: Character buffer representing a UTF16-LE-encoded string.
-* `[in] length`: The length of the string in two-byte code units, or
-  `NAPI_AUTO_LENGTH` if it is null-terminated.
-* `[out] result`: A `napi_value` representing a JavaScript `string`.
+* `[in] env`：调用 API 的环境。
+* `[in] str`：表示 UTF16-LE 编码字符串的字符缓冲区。
+* `[in] length`：字符串的双字节代码单元长度，如果它是空终止的则为
+  `NAPI_AUTO_LENGTH`。
+* `[out] result`：表示 JavaScript `string` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates a JavaScript `string` value from a UTF16-LE-encoded C string.
-The native string is copied.
+此 API 从 UTF16-LE 编码的 C 字符串创建 JavaScript `string` 值。
+原生字符串被复制。
 
-The JavaScript `string` type is described in
-[Section string type][] of the ECMAScript Language Specification.
+JavaScript `string` 类型在 ECMAScript 语言规范的
+[字符串类型部分][Section string type] 中描述。
 
 #### `node_api_create_external_string_utf16`
 
@@ -3187,36 +2671,34 @@ node_api_create_external_string_utf16(napi_env env,
                                       bool* copied);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] str`: Character buffer representing a UTF16-LE-encoded string.
-* `[in] length`: The length of the string in two-byte code units, or
-  `NAPI_AUTO_LENGTH` if it is null-terminated.
-* `[in] finalize_callback`: The function to call when the string is being
-  collected. The function will be called with the following parameters:
-  * `[in] env`: The environment in which the add-on is running. This value
-    may be null if the string is being collected as part of the termination
-    of the worker or the main Node.js instance.
-  * `[in] data`: This is the value `str` as a `void*` pointer.
-  * `[in] finalize_hint`: This is the value `finalize_hint` that was given
-    to the API.
-    [`napi_finalize`][] provides more details.
-    This parameter is optional. Passing a null value means that the add-on
-    doesn't need to be notified when the corresponding JavaScript string is
-    collected.
-* `[in] finalize_hint`: Optional hint to pass to the finalize callback during
-  collection.
-* `[out] result`: A `napi_value` representing a JavaScript `string`.
-* `[out] copied`: Whether the string was copied. If it was, the finalizer will
-  already have been invoked to destroy `str`.
+* `[in] env`：调用 API 的环境。
+* `[in] str`：表示 UTF16-LE 编码字符串的字符缓冲区。
+* `[in] length`：字符串的双字节代码单元长度，如果它是空终止的则为
+  `NAPI_AUTO_LENGTH`。
+* `[in] finalize_callback`：当字符串被
+  收集时调用的函数。该函数将使用以下参数调用：
+  * `[in] env`：addon 运行的环境。如果字符串作为 worker 或主 Node.js 实例
+    终止的一部分被收集，此值
+    可能为 null。
+  * `[in] data`：这是作为 `void*` 指针的值 `str`。
+  * `[in] finalize_hint`：这是传递给
+    API 的值 `finalize_hint`。
+    [`napi_finalize`][] 提供更多详细信息。
+    此参数是可选的。传递 null 值意味着当相应的 JavaScript 字符串被
+    收集时不需要通知 addon。
+* `[in] finalize_hint`：在收集期间传递给 finalize 回调的可选提示。
+* `[out] result`：表示 JavaScript `string` 的 `napi_value`。
+* `[out] copied`：字符串是否被复制。如果是，终结器将
+  已被调用以销毁 `str`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates a JavaScript `string` value from a UTF16-LE-encoded C string.
-The native string may not be copied and must thus exist for the entire life
-cycle of the JavaScript value.
+此 API 从 UTF16-LE 编码的 C 字符串创建 JavaScript `string` 值。
+原生字符串可能未被复制，因此必须在 JavaScript 值的整个
+生命周期内存在。
 
-The JavaScript `string` type is described in
-[Section string type][] of the ECMAScript Language Specification.
+JavaScript `string` 类型在 ECMAScript 语言规范的
+[字符串类型部分][Section string type] 中描述。
 
 #### `napi_create_string_utf8`
 
@@ -3232,34 +2714,31 @@ napi_status napi_create_string_utf8(napi_env env,
                                     napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] str`: Character buffer representing a UTF8-encoded string.
-* `[in] length`: The length of the string in bytes, or `NAPI_AUTO_LENGTH` if it
-  is null-terminated.
-* `[out] result`: A `napi_value` representing a JavaScript `string`.
+* `[in] env`：调用 API 的环境。
+* `[in] str`：表示 UTF8 编码字符串的字符缓冲区。
+* `[in] length`：字符串的字节长度，如果它是空终止的则为 `NAPI_AUTO_LENGTH`。
+* `[out] result`：表示 JavaScript `string` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates a JavaScript `string` value from a UTF8-encoded C string.
-The native string is copied.
+此 API 从 UTF8 编码的 C 字符串创建 JavaScript `string` 值。
+原生字符串被复制。
 
-The JavaScript `string` type is described in
-[Section string type][] of the ECMAScript Language Specification.
+JavaScript `string` 类型在 ECMAScript 语言规范的
+[字符串类型部分][Section string type] 中描述。
 
-### Functions to create optimized property keys
+### 创建优化属性键的函数
 
-Many JavaScript engines including V8 use internalized strings as keys
-to set and get property values. They typically use a hash table to create
-and lookup such strings. While it adds some cost per key creation, it improves
-the performance after that by enabling comparison of string pointers instead
-of the whole strings.
+包括 V8 在内的许多 JavaScript 引擎使用内部化字符串作为键
+来设置和获取属性值。它们通常使用哈希表来创建
+和查找此类字符串。虽然每次键创建会增加一些成本，但它通过启用字符串指针比较而不是
+整个字符串比较来提高之后的性能。
 
-If a new JavaScript string is intended to be used as a property key, then for
-some JavaScript engines it will be more efficient to use the functions in this
-section. Otherwise, use the `napi_create_string_utf8` or
-`node_api_create_external_string_utf8` series functions as there may be
-additional overhead in creating/storing strings with the property key
-creation methods.
+如果新的 JavaScript 字符串打算用作属性键，那么对于
+某些 JavaScript 引擎，使用本节中的函数会更高效。否则，使用 `napi_create_string_utf8` 或
+`node_api_create_external_string_utf8` 系列函数，因为使用属性键
+创建方法创建/存储字符串可能会有
+额外开销。
 
 #### `node_api_create_property_key_latin1`
 
@@ -3277,23 +2756,22 @@ napi_status NAPI_CDECL node_api_create_property_key_latin1(napi_env env,
                                                            napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] str`: Character buffer representing an ISO-8859-1-encoded string.
-* `[in] length`: The length of the string in bytes, or `NAPI_AUTO_LENGTH` if it
-  is null-terminated.
-* `[out] result`: A `napi_value` representing an optimized JavaScript `string`
-  to be used as a property key for objects.
+* `[in] env`：调用 API 的环境。
+* `[in] str`：表示 ISO-8859-1 编码字符串的字符缓冲区。
+* `[in] length`：字符串的字节长度，如果它是空终止的则为 `NAPI_AUTO_LENGTH`。
+* `[out] result`：表示优化的 JavaScript `string` 的 `napi_value`，
+  用作对象的属性键。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates an optimized JavaScript `string` value from
-an ISO-8859-1-encoded C string to be used as a property key for objects.
-The native string is copied. In contrast with `napi_create_string_latin1`,
-subsequent calls to this function with the same `str` pointer may benefit from a speedup
-in the creation of the requested `napi_value`, depending on the engine.
+此 API 从
+ISO-8859-1 编码的 C 字符串创建优化的 JavaScript `string` 值，用作对象的属性键。
+原生字符串被复制。与 `napi_create_string_latin1` 相比，
+随后使用相同 `str` 指针调用此函数可能会受益于
+请求的 `napi_value` 创建的加速，具体取决于引擎。
 
-The JavaScript `string` type is described in
-[Section string type][] of the ECMAScript Language Specification.
+JavaScript `string` 类型在 ECMAScript 语言规范的
+[字符串类型部分][Section string type] 中描述。
 
 #### `node_api_create_property_key_utf16`
 
@@ -3311,21 +2789,21 @@ napi_status NAPI_CDECL node_api_create_property_key_utf16(napi_env env,
                                                           napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] str`: Character buffer representing a UTF16-LE-encoded string.
-* `[in] length`: The length of the string in two-byte code units, or
-  `NAPI_AUTO_LENGTH` if it is null-terminated.
-* `[out] result`: A `napi_value` representing an optimized JavaScript `string`
-  to be used as a property key for objects.
+* `[in] env`：调用 API 的环境。
+* `[in] str`：表示 UTF16-LE 编码字符串的字符缓冲区。
+* `[in] length`：字符串的双字节代码单元长度，如果它是空终止的则为
+  `NAPI_AUTO_LENGTH`。
+* `[out] result`：表示优化的 JavaScript `string` 的 `napi_value`，
+  用作对象的属性键。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates an optimized JavaScript `string` value from
-a UTF16-LE-encoded C string to be used as a property key for objects.
-The native string is copied.
+此 API 从
+UTF16-LE 编码的 C 字符串创建优化的 JavaScript `string` 值，用作对象的属性键。
+原生字符串被复制。
 
-The JavaScript `string` type is described in
-[Section string type][] of the ECMAScript Language Specification.
+JavaScript `string` 类型在 ECMAScript 语言规范的
+[字符串类型部分][Section string type] 中描述。
 
 #### `node_api_create_property_key_utf8`
 
@@ -3343,23 +2821,23 @@ napi_status NAPI_CDECL node_api_create_property_key_utf8(napi_env env,
                                                          napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] str`: Character buffer representing a UTF8-encoded string.
-* `[in] length`: The length of the string in two-byte code units, or
-  `NAPI_AUTO_LENGTH` if it is null-terminated.
-* `[out] result`: A `napi_value` representing an optimized JavaScript `string`
-  to be used as a property key for objects.
+* `[in] env`：调用 API 的环境。
+* `[in] str`：表示 UTF8 编码字符串的字符缓冲区。
+* `[in] length`：字符串的双字节代码单元长度，如果它是空终止的则为
+  `NAPI_AUTO_LENGTH`。
+* `[out] result`：表示优化的 JavaScript `string` 的 `napi_value`，
+  用作对象的属性键。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API creates an optimized JavaScript `string` value from
-a UTF8-encoded C string to be used as a property key for objects.
-The native string is copied.
+此 API 从
+UTF8 编码的 C 字符串创建优化的 JavaScript `string` 值，用作对象的属性键。
+原生字符串被复制。
 
-The JavaScript `string` type is described in
-[Section string type][] of the ECMAScript Language Specification.
+JavaScript `string` 类型在 ECMAScript 语言规范的
+[字符串类型部分][Section string type] 中描述。
 
-### Functions to convert from Node-API to C types
+### 从 Node-API 转换为 C 类型的函数
 
 #### `napi_get_array_length`
 
@@ -3374,17 +2852,15 @@ napi_status napi_get_array_length(napi_env env,
                                   uint32_t* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing the JavaScript `Array` whose length is
-  being queried.
-* `[out] result`: `uint32` representing length of the array.
+* `[in] env`：调用 API 的环境。
+* `[in] value`：`napi_value` 表示正在查询长度的 JavaScript `Array`。
+* `[out] result`：`uint32` 表示数组的长度。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API returns the length of an array.
+此 API 返回数组的长度。
 
-`Array` length is described in [Section Array instance length][] of the ECMAScript Language
-Specification.
+`Array` 长度在 ECMAScript 语言规范的 [数组实例长度部分][Section Array instance length] 中描述。
 
 #### `napi_get_arraybuffer_info`
 
@@ -3396,7 +2872,7 @@ changes:
      - v24.9.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59071
-    description: Added support for `SharedArrayBuffer`.
+    description: "Added support for `SharedArrayBuffer`."
 -->
 
 ```c
@@ -3406,23 +2882,22 @@ napi_status napi_get_arraybuffer_info(napi_env env,
                                       size_t* byte_length)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] arraybuffer`: `napi_value` representing the `ArrayBuffer` or `SharedArrayBuffer` being queried.
-* `[out] data`: The underlying data buffer of the `ArrayBuffer` or `SharedArrayBuffer`
-  is `0`, this may be `NULL` or any other pointer value.
-* `[out] byte_length`: Length in bytes of the underlying data buffer.
+* `[in] env`：调用 API 的环境。
+* `[in] arraybuffer`：`napi_value` 表示正在查询的 `ArrayBuffer` 或 `SharedArrayBuffer`。
+* `[out] data`：`ArrayBuffer` 或 `SharedArrayBuffer` 的底层数据缓冲区
+  为 `0`，这可能是 `NULL` 或任何其他指针值。
+* `[out] byte_length`：底层数据缓冲区的字节长度。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API is used to retrieve the underlying data buffer of an `ArrayBuffer` or `SharedArrayBuffer` and its length.
+此 API 用于检索 `ArrayBuffer` 或 `SharedArrayBuffer` 的底层数据缓冲区及其长度。
 
-_WARNING_: Use caution while using this API. The lifetime of the underlying data
-buffer is managed by the `ArrayBuffer` or `SharedArrayBuffer` even after it's returned. A
-possible safe way to use this API is in conjunction with
-[`napi_create_reference`][], which can be used to guarantee control over the
-lifetime of the `ArrayBuffer` or `SharedArrayBuffer`. It's also safe to use the returned data buffer
-within the same callback as long as there are no calls to other APIs that might
-trigger a GC.
+_警告_：使用此 API 时要小心。底层数据
+缓冲区的生命周期由 `ArrayBuffer` 或 `SharedArrayBuffer` 管理，即使它被返回后。使用此 API 的一种
+可能的安全方法是与
+[`napi_create_reference`][] 结合使用，它可以用于保证控制
+`ArrayBuffer` 或 `SharedArrayBuffer` 的生命周期。只要没有调用可能
+触发 GC 的其他 API，在同一回调内使用返回的数据缓冲区也是安全的。
 
 #### `napi_get_buffer_info`
 
@@ -3438,24 +2913,22 @@ napi_status napi_get_buffer_info(napi_env env,
                                  size_t* length)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing the `node::Buffer` or `Uint8Array`
-  being queried.
-* `[out] data`: The underlying data buffer of the `node::Buffer` or
-  `Uint8Array`. If length is `0`, this may be `NULL` or any other pointer value.
-* `[out] length`: Length in bytes of the underlying data buffer.
+* `[in] env`：调用 API 的环境。
+* `[in] value`：`napi_value` 表示正在查询的 `node::Buffer` 或 `Uint8Array`。
+* `[out] data`：`node::Buffer` 或 `Uint8Array` 的底层数据缓冲区。如果长度为 `0`，这可能是 `NULL` 或任何其他指针值。
+* `[out] length`：底层数据缓冲区的字节长度。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This method returns the identical `data` and `byte_length` as
-[`napi_get_typedarray_info`][]. And `napi_get_typedarray_info` accepts a
-`node::Buffer` (a Uint8Array) as the value too.
+此方法返回与
+[`napi_get_typedarray_info`][] 相同的 `data` 和 `byte_length`。`napi_get_typedarray_info` 也接受
+`node::Buffer`（一个 Uint8Array）作为值。
 
-This API is used to retrieve the underlying data buffer of a `node::Buffer`
-and its length.
+此 API 用于检索 `node::Buffer` 的底层数据缓冲区
+及其长度。
 
-_Warning_: Use caution while using this API since the underlying data buffer's
-lifetime is not guaranteed if it's managed by the VM.
+_警告_：使用此 API 时要小心，因为如果底层数据缓冲区由 VM 管理，则其
+生命周期不保证。
 
 #### `napi_get_prototype`
 
@@ -3470,13 +2943,12 @@ napi_status napi_get_prototype(napi_env env,
                                napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] object`: `napi_value` representing JavaScript `Object` whose prototype
-  to return. This returns the equivalent of `Object.getPrototypeOf` (which is
-  not the same as the function's `prototype` property).
-* `[out] result`: `napi_value` representing prototype of the given object.
+* `[in] env`：调用 API 的环境。
+* `[in] object`：`napi_value` 表示要返回其原型的 JavaScript `Object`。这返回相当于 `Object.getPrototypeOf`（这与函数的 `prototype` 属性
+  不同）。
+* `[out] result`：`napi_value` 表示给定对象的原型。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
 #### `napi_get_typedarray_info`
 
@@ -3495,30 +2967,29 @@ napi_status napi_get_typedarray_info(napi_env env,
                                      size_t* byte_offset)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] typedarray`: `napi_value` representing the `TypedArray` whose
-  properties to query.
-* `[out] type`: Scalar datatype of the elements within the `TypedArray`.
-* `[out] length`: The number of elements in the `TypedArray`.
-* `[out] data`: The data buffer underlying the `TypedArray` adjusted by
-  the `byte_offset` value so that it points to the first element in the
-  `TypedArray`. If the length of the array is `0`, this may be `NULL` or
-  any other pointer value.
-* `[out] arraybuffer`: The `ArrayBuffer` underlying the `TypedArray`.
-* `[out] byte_offset`: The byte offset within the underlying native array
-  at which the first element of the arrays is located. The value for the data
-  parameter has already been adjusted so that data points to the first element
-  in the array. Therefore, the first byte of the native array would be at
-  `data - byte_offset`.
+* `[in] env`：调用 API 的环境。
+* `[in] typedarray`：`napi_value` 表示要查询其属性的 `TypedArray`。
+* `[out] type`：`TypedArray` 内元素的标量数据类型。
+* `[out] length`：`TypedArray` 中的元素数量。
+* `[out] data`：`TypedArray` 底层的數據缓冲区，根据
+  `byte_offset` 值调整，以便它指向
+  `TypedArray` 中的第一个元素。如果数组的长度为 `0`，这可能是 `NULL` 或
+  任何其他指针值。
+* `[out] arraybuffer`：`TypedArray` 底层的 `ArrayBuffer`。
+* `[out] byte_offset`：第一个数组元素所在的底层原生数组
+  内的字节偏移。data
+  参数的值已经过调整，以便 data 指向数组
+  中的第一个元素。因此，原生数组的第一个字节将位于
+  `data - byte_offset`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API returns various properties of a typed array.
+此 API 返回 typed array 的各种属性。
 
-Any of the out parameters may be `NULL` if that property is unneeded.
+如果不需要该属性，任何输出参数都可以为 `NULL`。
 
-_Warning_: Use caution while using this API since the underlying data buffer
-is managed by the VM.
+_警告_：使用此 API 时要小心，因为底层数据缓冲区
+由 VM 管理。
 
 #### `napi_get_dataview_info`
 
@@ -3536,21 +3007,20 @@ napi_status napi_get_dataview_info(napi_env env,
                                    size_t* byte_offset)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] dataview`: `napi_value` representing the `DataView` whose
-  properties to query.
-* `[out] byte_length`: Number of bytes in the `DataView`.
-* `[out] data`: The data buffer underlying the `DataView`.
-  If byte\_length is `0`, this may be `NULL` or any other pointer value.
-* `[out] arraybuffer`: `ArrayBuffer` underlying the `DataView`.
-* `[out] byte_offset`: The byte offset within the data buffer from which
-  to start projecting the `DataView`.
+* `[in] env`：调用 API 的环境。
+* `[in] dataview`：`napi_value` 表示要查询其属性的 `DataView`。
+* `[out] byte_length`：`DataView` 中的字节数。
+* `[out] data`：`DataView` 底层的数据缓冲区。
+  如果 byte\_length 为 `0`，这可能是 `NULL` 或任何其他指针值。
+* `[out] arraybuffer`：`DataView` 底层的 `ArrayBuffer`。
+* `[out] byte_offset`：数据缓冲区内的字节偏移，从该处
+  开始投影 `DataView`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-Any of the out parameters may be `NULL` if that property is unneeded.
+如果不需要该属性，任何输出参数都可以为 `NULL`。
 
-This API returns various properties of a `DataView`.
+此 API 返回 `DataView` 的各种属性。
 
 #### `napi_get_date_value`
 
@@ -3567,19 +3037,18 @@ napi_status napi_get_date_value(napi_env env,
                                 double* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing a JavaScript `Date`.
-* `[out] result`: Time value as a `double` represented as milliseconds since
-  midnight at the beginning of 01 January, 1970 UTC.
+* `[in] env`：调用 API 的环境。
+* `[in] value`：`napi_value` 表示 JavaScript `Date`。
+* `[out] result`：时间值作为 `double`，表示为自 1970 年 1 月 1 日 UTC 开始午夜以来的毫秒数。
 
-This API does not observe leap seconds; they are ignored, as
-ECMAScript aligns with POSIX time specification.
+此 API 不观察闰秒；它们被忽略，因为
+ECMAScript 与 POSIX 时间规范保持一致。
 
-Returns `napi_ok` if the API succeeded. If a non-date `napi_value` is passed
-in it returns `napi_date_expected`.
+如果 API 成功则返回 `napi_ok`。如果传入非日期 `napi_value`，
+则返回 `napi_date_expected`。
 
-This API returns the C double primitive of time value for the given JavaScript
-`Date`.
+此 API 返回给定 JavaScript
+`Date` 的时间值的 C double 原始值。
 
 #### `napi_get_value_bool`
 
@@ -3592,16 +3061,13 @@ napiVersion: 1
 napi_status napi_get_value_bool(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing JavaScript `Boolean`.
-* `[out] result`: C boolean primitive equivalent of the given JavaScript
-  `Boolean`.
+* `[in] env`: 调用 API 所处的环境。
+* `[in] value`: 代表 JavaScript `Boolean` 的 `napi_value`。
+* `[out] result`: 给定 JavaScript `Boolean` 对应的 C 布尔原始值。
 
-Returns `napi_ok` if the API succeeded. If a non-boolean `napi_value` is
-passed in it returns `napi_boolean_expected`.
+如果 API 成功则返回 `napi_ok`。如果传入非布尔 `napi_value`，则返回 `napi_boolean_expected`。
 
-This API returns the C boolean primitive equivalent of the given JavaScript
-`Boolean`.
+此 API 返回给定 JavaScript `Boolean` 对应的 C 布尔原始值。
 
 #### `napi_get_value_double`
 
@@ -3616,16 +3082,13 @@ napi_status napi_get_value_double(napi_env env,
                                   double* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing JavaScript `number`.
-* `[out] result`: C double primitive equivalent of the given JavaScript
-  `number`.
+* `[in] env`: 调用 API 所处的环境。
+* `[in] value`: 代表 JavaScript `number` 的 `napi_value`。
+* `[out] result`: 给定 JavaScript `number` 对应的 C double 原始值。
 
-Returns `napi_ok` if the API succeeded. If a non-number `napi_value` is passed
-in it returns `napi_number_expected`.
+如果 API 成功则返回 `napi_ok`。如果传入非数字 `napi_value`，则返回 `napi_number_expected`。
 
-This API returns the C double primitive equivalent of the given JavaScript
-`number`.
+此 API 返回给定 JavaScript `number` 对应的 C double 原始值。
 
 #### `napi_get_value_bigint_int64`
 
@@ -3641,18 +3104,14 @@ napi_status napi_get_value_bigint_int64(napi_env env,
                                         bool* lossless);
 ```
 
-* `[in] env`: The environment that the API is invoked under
-* `[in] value`: `napi_value` representing JavaScript `BigInt`.
-* `[out] result`: C `int64_t` primitive equivalent of the given JavaScript
-  `BigInt`.
-* `[out] lossless`: Indicates whether the `BigInt` value was converted
-  losslessly.
+* `[in] env`: 调用 API 所处的环境。
+* `[in] value`: 代表 JavaScript `BigInt` 的 `napi_value`。
+* `[out] result`: 给定 JavaScript `BigInt` 对应的 C `int64_t` 原始值。
+* `[out] lossless`: 指示 `BigInt` 值是否被无损转换。
 
-Returns `napi_ok` if the API succeeded. If a non-`BigInt` is passed in it
-returns `napi_bigint_expected`.
+如果 API 成功则返回 `napi_ok`。如果传入非 `BigInt`，则返回 `napi_bigint_expected`。
 
-This API returns the C `int64_t` primitive equivalent of the given JavaScript
-`BigInt`. If needed it will truncate the value, setting `lossless` to `false`.
+此 API 返回给定 JavaScript `BigInt` 对应的 C `int64_t` 原始值。如果需要，它将截断该值，并将 `lossless` 设置为 `false`。
 
 #### `napi_get_value_bigint_uint64`
 
@@ -3668,18 +3127,14 @@ napi_status napi_get_value_bigint_uint64(napi_env env,
                                         bool* lossless);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing JavaScript `BigInt`.
-* `[out] result`: C `uint64_t` primitive equivalent of the given JavaScript
-  `BigInt`.
-* `[out] lossless`: Indicates whether the `BigInt` value was converted
-  losslessly.
+* `[in] env`: 调用 API 所处的环境。
+* `[in] value`: 代表 JavaScript `BigInt` 的 `napi_value`。
+* `[out] result`: 给定 JavaScript `BigInt` 对应的 C `uint64_t` 原始值。
+* `[out] lossless`: 指示 `BigInt` 值是否被无损转换。
 
-Returns `napi_ok` if the API succeeded. If a non-`BigInt` is passed in it
-returns `napi_bigint_expected`.
+如果 API 成功则返回 `napi_ok`。如果传入非 `BigInt`，则返回 `napi_bigint_expected`。
 
-This API returns the C `uint64_t` primitive equivalent of the given JavaScript
-`BigInt`. If needed it will truncate the value, setting `lossless` to `false`.
+此 API 返回给定 JavaScript `BigInt` 对应的 C `uint64_t` 原始值。如果需要，它将截断该值，并将 `lossless` 设置为 `false`。
 
 #### `napi_get_value_bigint_words`
 
@@ -3696,20 +3151,15 @@ napi_status napi_get_value_bigint_words(napi_env env,
                                         uint64_t* words);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing JavaScript `BigInt`.
-* `[out] sign_bit`: Integer representing if the JavaScript `BigInt` is positive
-  or negative.
-* `[in/out] word_count`: Must be initialized to the length of the `words`
-  array. Upon return, it will be set to the actual number of words that
-  would be needed to store this `BigInt`.
-* `[out] words`: Pointer to a pre-allocated 64-bit word array.
+* `[in] env`: 调用 API 所处的环境。
+* `[in] value`: 代表 JavaScript `BigInt` 的 `napi_value`。
+* `[out] sign_bit`: 整数，表示 JavaScript `BigInt` 是正数还是负数。
+* `[in/out] word_count`: 必须初始化为 `words` 数组的长度。返回时，它将被设置为存储此 `BigInt` 所需的实际字数。
+* `[out] words`: 指向预分配的 64 位字数组的指针。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API converts a single `BigInt` value into a sign bit, 64-bit little-endian
-array, and the number of elements in the array. `sign_bit` and `words` may be
-both set to `NULL`, in order to get only `word_count`.
+此 API 将单个 `BigInt` 值转换为符号位、64 位小端序数组以及数组中的元素数量。`sign_bit` 和 `words` 都可以设置为 `NULL`，以便仅获取 `word_count`。
 
 #### `napi_get_value_external`
 
@@ -3724,15 +3174,13 @@ napi_status napi_get_value_external(napi_env env,
                                     void** result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing JavaScript external value.
-* `[out] result`: Pointer to the data wrapped by the JavaScript external value.
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript 外部值的 `napi_value`。
+* `[out] result`：指向 JavaScript 外部值所包装的数据的指针。
 
-Returns `napi_ok` if the API succeeded. If a non-external `napi_value` is
-passed in it returns `napi_invalid_arg`.
+如果 API 成功则返回 `napi_ok`。如果传入非外部 `napi_value`，则返回 `napi_invalid_arg`。
 
-This API retrieves the external data pointer that was previously passed to
-`napi_create_external()`.
+此 API 检索之前传递给 `napi_create_external()` 的外部数据指针。
 
 #### `napi_get_value_int32`
 
@@ -3747,23 +3195,17 @@ napi_status napi_get_value_int32(napi_env env,
                                  int32_t* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing JavaScript `number`.
-* `[out] result`: C `int32` primitive equivalent of the given JavaScript
-  `number`.
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript `number` 的 `napi_value`。
+* `[out] result`：给定 JavaScript `number` 对应的 C `int32` 原始值。
 
-Returns `napi_ok` if the API succeeded. If a non-number `napi_value`
-is passed in `napi_number_expected`.
+如果 API 成功则返回 `napi_ok`。如果传入非数字 `napi_value`，则返回 `napi_number_expected`。
 
-This API returns the C `int32` primitive equivalent
-of the given JavaScript `number`.
+此 API 返回给定 JavaScript `number` 对应的 C `int32` 原始值。
 
-If the number exceeds the range of the 32 bit integer, then the result is
-truncated to the equivalent of the bottom 32 bits. This can result in a large
-positive number becoming a negative number if the value is > 2<sup>31</sup> - 1.
+如果数字超出 32 位整数的范围，则结果将被截断为等效的低 32 位。如果值 > 2<sup>31</sup> - 1，这可能导致一个大正数变为负数。
 
-Non-finite number values (`NaN`, `+Infinity`, or `-Infinity`) set the
-result to zero.
+非有限数值（`NaN`、`+Infinity` 或 `-Infinity`）会将结果设置为零。
 
 #### `napi_get_value_int64`
 
@@ -3778,23 +3220,17 @@ napi_status napi_get_value_int64(napi_env env,
                                  int64_t* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing JavaScript `number`.
-* `[out] result`: C `int64` primitive equivalent of the given JavaScript
-  `number`.
+* `[in] env`: 调用 API 所处的环境。
+* `[in] value`: 代表 JavaScript `number` 的 `napi_value`。
+* `[out] result`: 给定 JavaScript `number` 对应的 C `int64` 原始值。
 
-Returns `napi_ok` if the API succeeded. If a non-number `napi_value`
-is passed in it returns `napi_number_expected`.
+如果 API 成功则返回 `napi_ok`。如果传入非数字 `napi_value`，则返回 `napi_number_expected`。
 
-This API returns the C `int64` primitive equivalent of the given JavaScript
-`number`.
+此 API 返回给定 JavaScript `number` 对应的 C `int64` 原始值。
 
-`number` values outside the range of [`Number.MIN_SAFE_INTEGER`][]
-`-(2**53 - 1)` - [`Number.MAX_SAFE_INTEGER`][] `(2**53 - 1)` will lose
-precision.
+超出 [`Number.MIN_SAFE_INTEGER`][] `-(2**53 - 1)` 到 [`Number.MAX_SAFE_INTEGER`][] `(2**53 - 1)` 范围的 `number` 值将丢失精度。
 
-Non-finite number values (`NaN`, `+Infinity`, or `-Infinity`) set the
-result to zero.
+非有限数值（`NaN`、`+Infinity` 或 `-Infinity`）会将结果设置为零。
 
 #### `napi_get_value_string_latin1`
 
@@ -3811,23 +3247,15 @@ napi_status napi_get_value_string_latin1(napi_env env,
                                          size_t* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing JavaScript string.
-* `[in] buf`: Buffer to write the ISO-8859-1-encoded string into. If `NULL` is
-  passed in, the length of the string in bytes and excluding the null terminator
-  is returned in `result`.
-* `[in] bufsize`: Size of the destination buffer. When this value is
-  insufficient, the returned string is truncated and null-terminated.
-  If this value is zero, then the string is not returned and no changes are done
-  to the buffer.
-* `[out] result`: Number of bytes copied into the buffer, excluding the null
-  terminator.
+* `[in] env`: 调用 API 所处的环境。
+* `[in] value`: 代表 JavaScript 字符串的 `napi_value`。
+* `[in] buf`: 用于写入 ISO-8859-1 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以字节为单位，不包括空终止符）将返回到 `result` 中。
+* `[in] bufsize`: 目标缓冲区的大小。当此值不足时，返回的字符串将被截断并以空字符终止。如果此值为零，则不返回字符串，也不对缓冲区进行任何更改。
+* `[out] result`: 复制到缓冲区中的字节数，不包括空终止符。
 
-Returns `napi_ok` if the API succeeded. If a non-`string` `napi_value`
-is passed in it returns `napi_string_expected`.
+如果 API 成功则返回 `napi_ok`。如果传入非 `string` `napi_value`，则返回 `napi_string_expected`。
 
-This API returns the ISO-8859-1-encoded string corresponding the value passed
-in.
+此 API 返回对应于传入值的 ISO-8859-1 编码字符串。
 
 #### `napi_get_value_string_utf8`
 
@@ -3844,22 +3272,15 @@ napi_status napi_get_value_string_utf8(napi_env env,
                                        size_t* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing JavaScript string.
-* `[in] buf`: Buffer to write the UTF8-encoded string into. If `NULL` is passed
-  in, the length of the string in bytes and excluding the null terminator is
-  returned in `result`.
-* `[in] bufsize`: Size of the destination buffer. When this value is
-  insufficient, the returned string is truncated and null-terminated.
-  If this value is zero, then the string is not returned and no changes are done
-  to the buffer.
-* `[out] result`: Number of bytes copied into the buffer, excluding the null
-  terminator.
+* `[in] env`: 调用 API 所处的环境。
+* `[in] value`: 代表 JavaScript 字符串的 `napi_value`。
+* `[in] buf`: 用于写入 UTF-8 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以字节为单位，不包括空终止符）将返回到 `result` 中。
+* `[in] bufsize`: 目标缓冲区的大小。当此值不足时，返回的字符串将被截断并以空字符终止。如果此值为零，则不返回字符串，也不对缓冲区进行任何更改。
+* `[out] result`: 复制到缓冲区中的字节数，不包括空终止符。
 
-Returns `napi_ok` if the API succeeded. If a non-`string` `napi_value`
-is passed in it returns `napi_string_expected`.
+如果 API 成功则返回 `napi_ok`。如果传入非 `string` `napi_value`，则返回 `napi_string_expected`。
 
-This API returns the UTF8-encoded string corresponding the value passed in.
+此 API 返回对应于传入值的 UTF-8 编码字符串。
 
 #### `napi_get_value_string_utf16`
 
@@ -3876,22 +3297,15 @@ napi_status napi_get_value_string_utf16(napi_env env,
                                         size_t* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing JavaScript string.
-* `[in] buf`: Buffer to write the UTF16-LE-encoded string into. If `NULL` is
-  passed in, the length of the string in 2-byte code units and excluding the
-  null terminator is returned.
-* `[in] bufsize`: Size of the destination buffer. When this value is
-  insufficient, the returned string is truncated and null-terminated.
-  If this value is zero, then the string is not returned and no changes are done
-  to the buffer.
-* `[out] result`: Number of 2-byte code units copied into the buffer, excluding
-  the null terminator.
+* `[in] env`: 调用 API 所处的环境。
+* `[in] value`: 代表 JavaScript 字符串的 `napi_value`。
+* `[in] buf`: 用于写入 UTF-16LE 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以 2 字节代码单元为单位，不包括空终止符）将被返回。
+* `[in] bufsize`: 目标缓冲区的大小。当此值不足时，返回的字符串将被截断并以空字符终止。如果此值为零，则不返回字符串，也不对缓冲区进行任何更改。
+* `[out] result`: 复制到缓冲区中的 2 字节代码单元的数量，不包括空终止符。
 
-Returns `napi_ok` if the API succeeded. If a non-`string` `napi_value`
-is passed in it returns `napi_string_expected`.
+如果 API 成功则返回 `napi_ok`。如果传入非 `string` `napi_value`，则返回 `napi_string_expected`。
 
-This API returns the UTF16-encoded string corresponding the value passed in.
+此 API 返回对应于传入值的 UTF-16 编码字符串。
 
 #### `napi_get_value_uint32`
 
@@ -3906,18 +3320,15 @@ napi_status napi_get_value_uint32(napi_env env,
                                   uint32_t* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: `napi_value` representing JavaScript `number`.
-* `[out] result`: C primitive equivalent of the given `napi_value` as a
-  `uint32_t`.
+* `[in] env`: 调用 API 所处的环境。
+* `[in] value`: 代表 JavaScript `number` 的 `napi_value`。
+* `[out] result`: 给定 `napi_value` 作为 `uint32_t` 对应的 C 原始值。
 
-Returns `napi_ok` if the API succeeded. If a non-number `napi_value`
-is passed in it returns `napi_number_expected`.
+如果 API 成功则返回 `napi_ok`。如果传入非数字 `napi_value`，则返回 `napi_number_expected`。
 
-This API returns the C primitive equivalent of the given `napi_value` as a
-`uint32_t`.
+此 API 返回给定 `napi_value` 作为 `uint32_t` 对应的 C 原始值。
 
-### Functions to get global instances
+### 获取全局实例的函数
 
 #### `napi_get_boolean`
 
@@ -3930,15 +3341,13 @@ napiVersion: 1
 napi_status napi_get_boolean(napi_env env, bool value, napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The value of the boolean to retrieve.
-* `[out] result`: `napi_value` representing JavaScript `Boolean` singleton to
-  retrieve.
+* `[in] env`: 调用 API 所处的环境。
+* `[in] value`: 要检索的布尔值。
+* `[out] result`: 代表要检索的 JavaScript `Boolean` 单例对象的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API is used to return the JavaScript singleton object that is used to
-represent the given boolean value.
+此 API 用于返回用于表示给定布尔值的 JavaScript 单例对象。
 
 #### `napi_get_global`
 
@@ -3951,12 +3360,12 @@ napiVersion: 1
 napi_status napi_get_global(napi_env env, napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] result`: `napi_value` representing JavaScript `global` object.
+* `[in] env`: 调用 API 所处的环境。
+* `[out] result`: 代表 JavaScript `global` 对象的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API returns the `global` object.
+此 API 返回 `global` 对象。
 
 #### `napi_get_null`
 
@@ -3969,12 +3378,12 @@ napiVersion: 1
 napi_status napi_get_null(napi_env env, napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] result`: `napi_value` representing JavaScript `null` object.
+* `[in] env`: 调用 API 所处的环境。
+* `[out] result`: 代表 JavaScript `null` 对象的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API returns the `null` object.
+此 API 返回 `null` 对象。
 
 #### `napi_get_undefined`
 
@@ -3987,24 +3396,26 @@ napiVersion: 1
 napi_status napi_get_undefined(napi_env env, napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] result`: `napi_value` representing JavaScript Undefined value.
+* `[in] env`: 调用 API 所处的环境。
+* `[out] result`: 代表 JavaScript Undefined 值的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API returns the Undefined object.
+此 API 返回 Undefined 值。
 
-## Working with JavaScript values and abstract operations
+```
 
-Node-API exposes a set of APIs to perform some abstract operations on JavaScript
-values.
+## 使用 JavaScript 值和抽象操作
 
-These APIs support doing one of the following:
+Node-API 公开了一组 API，用于对 JavaScript
+值执行一些抽象操作。
 
-1. Coerce JavaScript values to specific JavaScript types (such as `number` or
-   `string`).
-2. Check the type of a JavaScript value.
-3. Check for equality between two JavaScript values.
+这些 API 支持执行以下操作之一：
+
+1. 将 JavaScript 值强制转换为特定的 JavaScript 类型（例如 `number` 或
+   `string`）。
+2. 检查 JavaScript 值的类型。
+3. 检查两个 JavaScript 值是否相等。
 
 ### `napi_coerce_to_bool`
 
@@ -4019,14 +3430,14 @@ napi_status napi_coerce_to_bool(napi_env env,
                                 napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to coerce.
-* `[out] result`: `napi_value` representing the coerced JavaScript `Boolean`.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要强制转换的 JavaScript 值。
+* `[out] result`：`napi_value`，表示强制转换后的 JavaScript `Boolean`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API implements the abstract operation `ToBoolean()` as defined in
-[Section ToBoolean][] of the ECMAScript Language Specification.
+此 API 实现了 ECMAScript 语言规范
+[ToBoolean 章节][] 中定义的抽象操作 `ToBoolean()`。
 
 ### `napi_coerce_to_number`
 
@@ -4041,16 +3452,15 @@ napi_status napi_coerce_to_number(napi_env env,
                                   napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to coerce.
-* `[out] result`: `napi_value` representing the coerced JavaScript `number`.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要强制转换的 JavaScript 值。
+* `[out] result`：`napi_value`，表示强制转换后的 JavaScript `number`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API implements the abstract operation `ToNumber()` as defined in
-[Section ToNumber][] of the ECMAScript Language Specification.
-This function potentially runs JS code if the passed-in value is an
-object.
+此 API 实现了 ECMAScript 语言规范
+[ToNumber 章节][] 中定义的抽象操作 `ToNumber()`。
+如果传入的值是对象，此函数可能会运行 JS 代码。
 
 ### `napi_coerce_to_object`
 
@@ -4065,14 +3475,14 @@ napi_status napi_coerce_to_object(napi_env env,
                                   napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to coerce.
-* `[out] result`: `napi_value` representing the coerced JavaScript `Object`.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要强制转换的 JavaScript 值。
+* `[out] result`：`napi_value`，表示强制转换后的 JavaScript `Object`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API implements the abstract operation `ToObject()` as defined in
-[Section ToObject][] of the ECMAScript Language Specification.
+此 API 实现了 ECMAScript 语言规范
+[ToObject 章节][] 中定义的抽象操作 `ToObject()`。
 
 ### `napi_coerce_to_string`
 
@@ -4087,16 +3497,15 @@ napi_status napi_coerce_to_string(napi_env env,
                                   napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to coerce.
-* `[out] result`: `napi_value` representing the coerced JavaScript `string`.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要强制转换的 JavaScript 值。
+* `[out] result`：`napi_value`，表示强制转换后的 JavaScript `string`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API implements the abstract operation `ToString()` as defined in
-[Section ToString][] of the ECMAScript Language Specification.
-This function potentially runs JS code if the passed-in value is an
-object.
+此 API 实现了 ECMAScript 语言规范
+[ToString 章节][] 中定义的抽象操作 `ToString()`。
+如果传入的值是对象，此函数可能会运行 JS 代码。
 
 ### `napi_typeof`
 
@@ -4109,24 +3518,24 @@ napiVersion: 1
 napi_status napi_typeof(napi_env env, napi_value value, napi_valuetype* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value whose type to query.
-* `[out] result`: The type of the JavaScript value.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要查询类型的 JavaScript 值。
+* `[out] result`：JavaScript 值的类型。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-* `napi_invalid_arg` if the type of `value` is not a known ECMAScript type and
-  `value` is not an External value.
+* 如果 `value` 的类型不是已知的 ECMAScript 类型且
+  `value` 不是 External 值，则返回 `napi_invalid_arg`。
 
-This API represents behavior similar to invoking the `typeof` Operator on
-the object as defined in [Section typeof operator][] of the ECMAScript Language
-Specification. However, there are some differences:
+此 API 表示的行为类似于在对象上调用 `typeof` 运算符，
+如 ECMAScript 语言规范
+[typeof 运算符章节][] 中所定义。但是，存在一些差异：
 
-1. It has support for detecting an External value.
-2. It detects `null` as a separate type, while ECMAScript `typeof` would detect
-   `object`.
+1. 它支持检测 External 值。
+2. 它将 `null` 检测为单独的类型，而 ECMAScript `typeof` 会将其检测
+   为 `object`。
 
-If `value` has a type that is invalid, an error is returned.
+如果 `value` 具有无效的类型，则返回错误。
 
 ### `napi_instanceof`
 
@@ -4142,17 +3551,16 @@ napi_status napi_instanceof(napi_env env,
                             bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] object`: The JavaScript value to check.
-* `[in] constructor`: The JavaScript function object of the constructor function
-  to check against.
-* `[out] result`: Boolean that is set to true if `object instanceof constructor`
-  is true.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] object`：要检查的 JavaScript 值。
+* `[in] constructor`：要对照检查的构造函数对象的 JavaScript 函数对象。
+* `[out] result`：布尔值，如果 `object instanceof constructor`
+  为 true，则设置为 true。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API represents invoking the `instanceof` Operator on the object as
-defined in [Section instanceof operator][] of the ECMAScript Language Specification.
+此 API 表示在对象上调用 `instanceof` 运算符，如
+ECMAScript 语言规范 [instanceof 运算符章节][] 中所定义。
 
 ### `napi_is_array`
 
@@ -4165,14 +3573,14 @@ napiVersion: 1
 napi_status napi_is_array(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to check.
-* `[out] result`: Whether the given object is an array.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要检查的 JavaScript 值。
+* `[out] result`：给定对象是否为数组。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API represents invoking the `IsArray` operation on the object
-as defined in [Section IsArray][] of the ECMAScript Language Specification.
+此 API 表示在对象上调用 `IsArray` 操作，
+如 ECMAScript 语言规范 [IsArray 章节][] 中所定义。
 
 ### `napi_is_arraybuffer`
 
@@ -4185,13 +3593,13 @@ napiVersion: 1
 napi_status napi_is_arraybuffer(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to check.
-* `[out] result`: Whether the given object is an `ArrayBuffer`.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要检查的 JavaScript 值。
+* `[out] result`：给定对象是否为 `ArrayBuffer`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API checks if the `Object` passed in is an array buffer.
+此 API 检查传入的 `Object` 是否为数组缓冲区。
 
 ### `napi_is_buffer`
 
@@ -4204,16 +3612,16 @@ napiVersion: 1
 napi_status napi_is_buffer(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to check.
-* `[out] result`: Whether the given `napi_value` represents a `node::Buffer` or
-  `Uint8Array` object.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要检查的 JavaScript 值。
+* `[out] result`：给定 `napi_value` 是否表示 `node::Buffer` 或
+  `Uint8Array` 对象。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API checks if the `Object` passed in is a buffer or Uint8Array.
-[`napi_is_typedarray`][] should be preferred if the caller needs to check if the
-value is a Uint8Array.
+此 API 检查传入的 `Object` 是否为缓冲区或 Uint8Array。
+如果调用者需要检查该值是否为 Uint8Array，则应优先使用
+[`napi_is_typedarray`][]。
 
 ### `napi_is_date`
 
@@ -4228,14 +3636,14 @@ napiVersion: 5
 napi_status napi_is_date(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to check.
-* `[out] result`: Whether the given `napi_value` represents a JavaScript `Date`
-  object.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要检查的 JavaScript 值。
+* `[out] result`：给定 `napi_value` 是否表示 JavaScript `Date`
+  对象。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API checks if the `Object` passed in is a date.
+此 API 检查传入的 `Object` 是否为日期。
 
 ### `napi_is_error`
 
@@ -4248,13 +3656,13 @@ napiVersion: 1
 napi_status napi_is_error(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to check.
-* `[out] result`: Whether the given `napi_value` represents an `Error` object.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要检查的 JavaScript 值。
+* `[out] result`：给定 `napi_value` 是否表示 `Error` 对象。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API checks if the `Object` passed in is an `Error`.
+此 API 检查传入的 `Object` 是否为 `Error`。
 
 ### `napi_is_typedarray`
 
@@ -4267,13 +3675,13 @@ napiVersion: 1
 napi_status napi_is_typedarray(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to check.
-* `[out] result`: Whether the given `napi_value` represents a `TypedArray`.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要检查的 JavaScript 值。
+* `[out] result`：给定 `napi_value` 是否表示 `TypedArray`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API checks if the `Object` passed in is a typed array.
+此 API 检查传入的 `Object` 是否为类型化数组。
 
 ### `napi_is_dataview`
 
@@ -4286,13 +3694,13 @@ napiVersion: 1
 napi_status napi_is_dataview(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to check.
-* `[out] result`: Whether the given `napi_value` represents a `DataView`.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要检查的 JavaScript 值。
+* `[out] result`：给定 `napi_value` 是否表示 `DataView`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API checks if the `Object` passed in is a `DataView`.
+此 API 检查传入的 `Object` 是否为 `DataView`。
 
 ### `napi_strict_equals`
 
@@ -4308,15 +3716,15 @@ napi_status napi_strict_equals(napi_env env,
                                bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] lhs`: The JavaScript value to check.
-* `[in] rhs`: The JavaScript value to check against.
-* `[out] result`: Whether the two `napi_value` objects are equal.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] lhs`：要检查的 JavaScript 值。
+* `[in] rhs`：要对照检查的 JavaScript 值。
+* `[out] result`：两个 `napi_value` 对象是否相等。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API represents the invocation of the Strict Equality algorithm as
-defined in [Section IsStrctEqual][] of the ECMAScript Language Specification.
+此 API 表示调用严格相等算法，如
+ECMAScript 语言规范 [IsStrctEqual 章节][] 中所定义。
 
 ### `napi_detach_arraybuffer`
 
@@ -4333,19 +3741,18 @@ napi_status napi_detach_arraybuffer(napi_env env,
                                     napi_value arraybuffer)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] arraybuffer`: The JavaScript `ArrayBuffer` to be detached.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] arraybuffer`：要分离的 JavaScript `ArrayBuffer`。
 
-Returns `napi_ok` if the API succeeded. If a non-detachable `ArrayBuffer` is
-passed in it returns `napi_detachable_arraybuffer_expected`.
+如果 API 成功，则返回 `napi_ok`。如果传入的是不可分离的 `ArrayBuffer`，
+则返回 `napi_detachable_arraybuffer_expected`。
 
-Generally, an `ArrayBuffer` is non-detachable if it has been detached before.
-The engine may impose additional conditions on whether an `ArrayBuffer` is
-detachable. For example, V8 requires that the `ArrayBuffer` be external,
-that is, created with [`napi_create_external_arraybuffer`][].
+通常，如果 `ArrayBuffer` 之前已被分离，则它是不可分离的。
+引擎可能会对 `ArrayBuffer` 是否可分离施加额外的条件。例如，V8 要求 `ArrayBuffer` 是外部的，
+即使用 [`napi_create_external_arraybuffer`][] 创建的。
 
-This API represents the invocation of the `ArrayBuffer` detach operation as
-defined in [Section detachArrayBuffer][] of the ECMAScript Language Specification.
+此 API 表示调用 `ArrayBuffer` 分离操作，如
+ECMAScript 语言规范 [detachArrayBuffer 章节][] 中所定义。
 
 ### `napi_is_detached_arraybuffer`
 
@@ -4363,17 +3770,17 @@ napi_status napi_is_detached_arraybuffer(napi_env env,
                                          bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] arraybuffer`: The JavaScript `ArrayBuffer` to be checked.
-* `[out] result`: Whether the `arraybuffer` is detached.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] arraybuffer`：要检查的 JavaScript `ArrayBuffer`。
+* `[out] result`：`arraybuffer` 是否已分离。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-The `ArrayBuffer` is considered detached if its internal data is `null`.
+如果 `ArrayBuffer` 的内部数据为 `null`，则被视为已分离。
 
-This API represents the invocation of the `ArrayBuffer` `IsDetachedBuffer`
-operation as defined in [Section isDetachedBuffer][] of the ECMAScript Language
-Specification.
+此 API 表示调用 `ArrayBuffer` `IsDetachedBuffer`
+操作，如 ECMAScript 语言规范
+[isDetachedBuffer 章节][] 中所定义。
 
 ### `node_api_is_sharedarraybuffer`
 
@@ -4383,19 +3790,19 @@ added:
  - v22.21.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 ```c
 napi_status node_api_is_sharedarraybuffer(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The JavaScript value to check.
-* `[out] result`: Whether the given `napi_value` represents a `SharedArrayBuffer`.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要检查的 JavaScript 值。
+* `[out] result`：给定 `napi_value` 是否表示 `SharedArrayBuffer`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API checks if the Object passed in is a `SharedArrayBuffer`.
+此 API 检查传入的对象是否为 `SharedArrayBuffer`。
 
 ### `node_api_create_sharedarraybuffer`
 
@@ -4405,7 +3812,7 @@ added:
  - v22.21.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 ```c
 napi_status node_api_create_sharedarraybuffer(napi_env env,
@@ -4414,59 +3821,58 @@ napi_status node_api_create_sharedarraybuffer(napi_env env,
                                              napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] byte_length`: The length in bytes of the shared array buffer to create.
-* `[out] data`: Pointer to the underlying byte buffer of the `SharedArrayBuffer`.
-  `data` can optionally be ignored by passing `NULL`.
-* `[out] result`: A `napi_value` representing a JavaScript `SharedArrayBuffer`.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] byte_length`：要创建的共享数组缓冲区的字节长度。
+* `[out] data`：指向 `SharedArrayBuffer` 底层字节缓冲区的指针。
+  可以通过传递 `NULL` 来选择性忽略 `data`。
+* `[out] result`：表示 JavaScript `SharedArrayBuffer` 的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API returns a Node-API value corresponding to a JavaScript `SharedArrayBuffer`.
-`SharedArrayBuffer`s are used to represent fixed-length binary data buffers that
-can be shared across multiple workers.
+此 API 返回对应于 JavaScript `SharedArrayBuffer` 的 Node-API 值。
+`SharedArrayBuffer` 用于表示可在多个
+工作线程之间共享的固定长度二进制数据缓冲区。
 
-The `SharedArrayBuffer` allocated will have an underlying byte buffer whose size is
-determined by the `byte_length` parameter that's passed in.
-The underlying buffer is optionally returned back to the caller in case the
-caller wants to directly manipulate the buffer. This buffer can only be
-written to directly from native code. To write to this buffer from JavaScript,
-a typed array or `DataView` object would need to be created.
+分配的 `SharedArrayBuffer` 将拥有一个底层字节缓冲区，其大小由
+传入的 `byte_length` 参数决定。
+底层缓冲区可以选择性地返回给调用者，以防调用者
+想要直接操作缓冲区。此缓冲区只能
+从原生代码直接写入。要从 JavaScript 写入此缓冲区，
+需要创建类型化数组或 `DataView` 对象。
 
-JavaScript `SharedArrayBuffer` objects are described in
-[Section SharedArrayBuffer objects][] of the ECMAScript Language Specification.
+JavaScript `SharedArrayBuffer` 对象在
+ECMAScript 语言规范 [SharedArrayBuffer 对象章节][] 中描述。
 
-## Working with JavaScript properties
+## 使用 JavaScript 属性
 
-Node-API exposes a set of APIs to get and set properties on JavaScript
-objects.
+Node-API 暴露了一组 API 用于获取和设置 JavaScript
+对象上的属性。
 
-Properties in JavaScript are represented as a tuple of a key and a value.
-Fundamentally, all property keys in Node-API can be represented in one of the
-following forms:
+JavaScript 中的属性表示为键和值的元组。
+从根本上说，Node-API 中的所有属性键都可以表示为以下
+形式之一：
 
-* Named: a simple UTF8-encoded string
-* Integer-Indexed: an index value represented by `uint32_t`
-* JavaScript value: these are represented in Node-API by `napi_value`. This can
-  be a `napi_value` representing a `string`, `number`, or `symbol`.
+* 命名式：一个简单的 UTF8 编码字符串
+* 整数索引：由 `uint32_t` 表示的索引值
+* JavaScript 值：它们在 Node-API 中由 `napi_value` 表示。这可以
+  是代表 `string`、`number` 或 `symbol` 的 `napi_value`。
 
-Node-API values are represented by the type `napi_value`.
-Any Node-API call that requires a JavaScript value takes in a `napi_value`.
-However, it's the caller's responsibility to make sure that the
-`napi_value` in question is of the JavaScript type expected by the API.
+Node-API 值由类型 `napi_value` 表示。
+任何需要 JavaScript 值的 Node-API 调用都接收一个 `napi_value`。
+但是，调用者有责任确保相关的
+`napi_value` 是 API 所期望的 JavaScript 类型。
 
-The APIs documented in this section provide a simple interface to
-get and set properties on arbitrary JavaScript objects represented by
-`napi_value`.
+本节中记录的 API 提供了一个简单的接口，用于
+获取和设置由 `napi_value` 表示的任意 JavaScript 对象上的属性。
 
-For instance, consider the following JavaScript code snippet:
+例如，考虑以下 JavaScript 代码片段：
 
 ```js
 const obj = {};
 obj.myProp = 123;
 ```
 
-The equivalent can be done using Node-API values with the following snippet:
+使用 Node-API 值可以通过以下片段完成等效操作：
 
 ```c
 napi_status status = napi_generic_failure;
@@ -4476,7 +3882,7 @@ napi_value obj, value;
 status = napi_create_object(env, &obj);
 if (status != napi_ok) return status;
 
-// Create a napi_value for 123
+// 为 123 创建一个 napi_value
 status = napi_create_int32(env, 123, &value);
 if (status != napi_ok) return status;
 
@@ -4485,15 +3891,15 @@ status = napi_set_named_property(env, obj, "myProp", value);
 if (status != napi_ok) return status;
 ```
 
-Indexed properties can be set in a similar manner. Consider the following
-JavaScript snippet:
+索引属性可以用类似的方式设置。考虑以下
+JavaScript 片段：
 
 ```js
 const arr = [];
 arr[123] = 'hello';
 ```
 
-The equivalent can be done using Node-API values with the following snippet:
+使用 Node-API 值可以通过以下片段完成等效操作：
 
 ```c
 napi_status status = napi_generic_failure;
@@ -4503,7 +3909,7 @@ napi_value arr, value;
 status = napi_create_array(env, &arr);
 if (status != napi_ok) return status;
 
-// Create a napi_value for 'hello'
+// 为 'hello' 创建一个 napi_value
 status = napi_create_string_utf8(env, "hello", NAPI_AUTO_LENGTH, &value);
 if (status != napi_ok) return status;
 
@@ -4512,15 +3918,15 @@ status = napi_set_element(env, arr, 123, value);
 if (status != napi_ok) return status;
 ```
 
-Properties can be retrieved using the APIs described in this section.
-Consider the following JavaScript snippet:
+可以使用本节中描述的 API 检索属性。
+考虑以下 JavaScript 片段：
 
 ```js
 const arr = [];
 const value = arr[123];
 ```
 
-The following is the approximate equivalent of the Node-API counterpart:
+以下是 Node-API 对应部分的近似等效代码：
 
 ```c
 napi_status status = napi_generic_failure;
@@ -4535,8 +3941,7 @@ status = napi_get_element(env, arr, 123, &value);
 if (status != napi_ok) return status;
 ```
 
-Finally, multiple properties can also be defined on an object for performance
-reasons. Consider the following JavaScript:
+最后，出于性能原因，也可以在对象上定义多个属性。考虑以下 JavaScript：
 
 ```js
 const obj = {};
@@ -4546,7 +3951,7 @@ Object.defineProperties(obj, {
 });
 ```
 
-The following is the approximate equivalent of the Node-API counterpart:
+以下是 Node-API 对应部分的近似等效代码：
 
 ```c
 napi_status status = napi_status_generic_failure;
@@ -4556,14 +3961,14 @@ napi_value obj;
 status = napi_create_object(env, &obj);
 if (status != napi_ok) return status;
 
-// Create napi_values for 123 and 456
+// 为 123 和 456 创建 napi_values
 napi_value fooValue, barValue;
 status = napi_create_int32(env, 123, &fooValue);
 if (status != napi_ok) return status;
 status = napi_create_int32(env, 456, &barValue);
 if (status != napi_ok) return status;
 
-// Set the properties
+// 设置属性
 napi_property_descriptor descriptors[] = {
   { "foo", NULL, NULL, NULL, NULL, fooValue, napi_writable | napi_configurable, NULL },
   { "bar", NULL, NULL, NULL, NULL, barValue, napi_writable | napi_configurable, NULL }
@@ -4575,7 +3980,7 @@ status = napi_define_properties(env,
 if (status != napi_ok) return status;
 ```
 
-### Structures
+### 结构体
 
 #### `napi_property_attributes`
 
@@ -4583,7 +3988,7 @@ if (status != napi_ok) return status;
 changes:
  - version: v14.12.0
    pr-url: https://github.com/nodejs/node/pull/35214
-   description: added `napi_default_method` and `napi_default_property`.
+   description: "添加了 `napi_default_method` 和 `napi_default_property`。"
 -->
 
 ```c
@@ -4593,45 +3998,40 @@ typedef enum {
   napi_enumerable = 1 << 1,
   napi_configurable = 1 << 2,
 
-  // Used with napi_define_class to distinguish static properties
-  // from instance properties. Ignored by napi_define_properties.
+  // 与 napi_define_class 一起使用，以区分静态属性
+  // 与实例属性。被 napi_define_properties 忽略。
   napi_static = 1 << 10,
 
-  // Default for class methods.
+  // 类方法的默认值。
   napi_default_method = napi_writable | napi_configurable,
 
-  // Default for object properties, like in JS obj[prop].
+  // 对象属性的默认值，类似于 JS 中的 obj[prop]。
   napi_default_jsproperty = napi_writable |
                           napi_enumerable |
                           napi_configurable,
 } napi_property_attributes;
 ```
 
-`napi_property_attributes` are bit flags used to control the behavior of
-properties set on a JavaScript object. Other than `napi_static` they
-correspond to the attributes listed in [Section property attributes][]
-of the [ECMAScript Language Specification][].
-They can be one or more of the following bit flags:
+`napi_property_attributes` 是位标志，用于控制设置在
+JavaScript 对象上的属性的行为。除了 `napi_static` 之外，它们
+对应于 [ECMAScript 语言规范][] 的 [属性部分][] 中列出的属性。
+它们可以是以下一个或多个位标志：
 
-* `napi_default`: No explicit attributes are set on the property. By default, a
-  property is read only, not enumerable and not configurable.
-* `napi_writable`: The property is writable.
-* `napi_enumerable`: The property is enumerable.
-* `napi_configurable`: The property is configurable as defined in
-  [Section property attributes][] of the [ECMAScript Language Specification][].
-* `napi_static`: The property will be defined as a static property on a class as
-  opposed to an instance property, which is the default. This is used only by
-  [`napi_define_class`][]. It is ignored by `napi_define_properties`.
-* `napi_default_method`: Like a method in a JS class, the property is
-  configurable and writeable, but not enumerable.
-* `napi_default_jsproperty`: Like a property set via assignment in JavaScript,
-  the property is writable, enumerable, and configurable.
+* `napi_default`：未在属性上设置显式属性。默认情况下，属性是只读的、不可枚举且不可配置的。
+* `napi_writable`：属性是可写的。
+* `napi_enumerable`：属性是可枚举的。
+* `napi_configurable`：属性是可配置的，如 [ECMAScript 语言规范][] 的 [属性部分][] 中所定义。
+* `napi_static`：属性将被定义为类上的静态属性，而不是实例属性（这是默认值）。这仅由 [`napi_define_class`][] 使用。它被 `napi_define_properties` 忽略。
+* `napi_default_method`：类似于 JS 类中的方法，属性是
+  可配置和可写的，但不可枚举。
+* `napi_default_jsproperty`：类似于通过 JavaScript 中的赋值设置的属性，
+  属性是可写、可枚举和可配置的。
 
 #### `napi_property_descriptor`
 
 ```c
 typedef struct {
-  // One of utf8name or name should be NULL.
+  // utf8name 或 name 之一应为 NULL。
   const char* utf8name;
   napi_value name;
 
@@ -4645,35 +4045,17 @@ typedef struct {
 } napi_property_descriptor;
 ```
 
-* `utf8name`: Optional string describing the key for the property,
-  encoded as UTF8. One of `utf8name` or `name` must be provided for the
-  property.
-* `name`: Optional `napi_value` that points to a JavaScript string or symbol
-  to be used as the key for the property. One of `utf8name` or `name` must
-  be provided for the property.
-* `value`: The value that's retrieved by a get access of the property if the
-  property is a data property. If this is passed in, set `getter`, `setter`,
-  `method` and `data` to `NULL` (since these members won't be used).
-* `getter`: A function to call when a get access of the property is performed.
-  If this is passed in, set `value` and `method` to `NULL` (since these members
-  won't be used). The given function is called implicitly by the runtime when
-  the property is accessed from JavaScript code (or if a get on the property is
-  performed using a Node-API call). [`napi_callback`][] provides more details.
-* `setter`: A function to call when a set access of the property is performed.
-  If this is passed in, set `value` and `method` to `NULL` (since these members
-  won't be used). The given function is called implicitly by the runtime when
-  the property is set from JavaScript code (or if a set on the property is
-  performed using a Node-API call). [`napi_callback`][] provides more details.
-* `method`: Set this to make the property descriptor object's `value`
-  property to be a JavaScript function represented by `method`. If this is
-  passed in, set `value`, `getter` and `setter` to `NULL` (since these members
-  won't be used). [`napi_callback`][] provides more details.
-* `attributes`: The attributes associated with the particular property. See
-  [`napi_property_attributes`][].
-* `data`: The callback data passed into `method`, `getter` and `setter` if this
-  function is invoked.
+* `utf8name`：可选字符串，描述属性的键，
+  编码为 UTF8。必须为属性提供 `utf8name` 或 `name` 之一。
+* `name`：可选 `napi_value`，指向要用作属性键的 JavaScript 字符串或符号。必须为属性提供 `utf8name` 或 `name` 之一。
+* `value`：如果属性是数据属性，则在获取访问属性时检索的值。如果传入此项，请将 `getter`、`setter`、`method` 和 `data` 设置为 `NULL`（因为这些成员不会被使用）。
+* `getter`：在执行属性的获取访问时调用的函数。如果传入此项，请将 `value` 和 `method` 设置为 `NULL`（因为这些成员不会被使用）。当从 JavaScript 代码访问属性时（或使用 Node-API 调用对属性执行获取操作时），运行时隐式调用给定函数。[`napi_callback`][] 提供了更多细节。
+* `setter`：在执行属性的设置访问时调用的函数。如果传入此项，请将 `value` 和 `method` 设置为 `NULL`（因为这些成员不会被使用）。当从 JavaScript 代码设置属性时（或使用 Node-API 调用对属性执行设置操作时），运行时隐式调用给定函数。[`napi_callback`][] 提供了更多细节。
+* `method`：设置此项以使属性描述符对象的 `value` 属性成为由 `method` 表示的 JavaScript 函数。如果传入此项，请将 `value`、`getter` 和 `setter` 设置为 `NULL`（因为这些成员不会被使用）。[`napi_callback`][] 提供了更多细节。
+* `attributes`：与特定属性关联的属性。参见 [`napi_property_attributes`][]。
+* `data`：如果调用此函数，则传入 `method`、`getter` 和 `setter` 的回调数据。
 
-### Functions
+### 函数
 
 #### `napi_get_property_names`
 
@@ -4688,18 +4070,15 @@ napi_status napi_get_property_names(napi_env env,
                                     napi_value* result);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object from which to retrieve the properties.
-* `[out] result`: A `napi_value` representing an array of JavaScript values
-  that represent the property names of the object. The API can be used to
-  iterate over `result` using [`napi_get_array_length`][]
-  and [`napi_get_element`][].
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：从中检索属性的对象。
+* `[out] result`：一个 `napi_value`，表示一个 JavaScript 值数组，
+  代表对象的属性名。可以使用 [`napi_get_array_length`][]
+  和 [`napi_get_element`][] 迭代 `result`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API returns the names of the enumerable properties of `object` as an array
-of strings. The properties of `object` whose key is a symbol will not be
-included.
+此 API 将 `object` 的可枚举属性名作为字符串数组返回。键为符号的 `object` 属性将不包括在内。
 
 #### `napi_get_all_property_names`
 
@@ -4720,20 +4099,19 @@ napi_get_all_property_names(napi_env env,
                             napi_value* result);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object from which to retrieve the properties.
-* `[in] key_mode`: Whether to retrieve prototype properties as well.
-* `[in] key_filter`: Which properties to retrieve
-  (enumerable/readable/writable).
-* `[in] key_conversion`: Whether to convert numbered property keys to strings.
-* `[out] result`: A `napi_value` representing an array of JavaScript values
-  that represent the property names of the object. [`napi_get_array_length`][]
-  and [`napi_get_element`][] can be used to iterate over `result`.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：从中检索属性的对象。
+* `[in] key_mode`：是否也检索原型属性。
+* `[in] key_filter`：检索哪些属性
+  （可枚举/可读/可写）。
+* `[in] key_conversion`：是否将数字属性键转换为字符串。
+* `[out] result`：一个 `napi_value`，表示一个 JavaScript 值数组，
+  代表对象的属性名。可以使用 [`napi_get_array_length`][]
+  和 [`napi_get_element`][] 迭代 `result`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API returns an array containing the names of the available properties
-of this object.
+此 API 返回一个包含此对象可用属性名的数组。
 
 #### `napi_set_property`
 
@@ -4749,14 +4127,14 @@ napi_status napi_set_property(napi_env env,
                               napi_value value);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object on which to set the property.
-* `[in] key`: The name of the property to set.
-* `[in] value`: The property value.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：在其上设置属性的对象。
+* `[in] key`：要设置的属性名。
+* `[in] value`：属性值。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API set a property on the `Object` passed in.
+此 API 在传入的 `Object` 上设置一个属性。
 
 #### `napi_get_property`
 
@@ -4772,14 +4150,14 @@ napi_status napi_get_property(napi_env env,
                               napi_value* result);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object from which to retrieve the property.
-* `[in] key`: The name of the property to retrieve.
-* `[out] result`: The value of the property.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：从中检索属性的对象。
+* `[in] key`：要检索的属性名。
+* `[out] result`：属性的值。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API gets the requested property from the `Object` passed in.
+此 API 从传入的 `Object` 获取请求的属性。
 
 #### `napi_has_property`
 
@@ -4795,14 +4173,14 @@ napi_status napi_has_property(napi_env env,
                               bool* result);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object to query.
-* `[in] key`: The name of the property whose existence to check.
-* `[out] result`: Whether the property exists on the object or not.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：要查询的对象。
+* `[in] key`：要检查其存在性的属性名。
+* `[out] result`：属性是否存在于对象上。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API checks if the `Object` passed in has the named property.
+此 API 检查传入的 `Object` 是否具有命名属性。
 
 #### `napi_delete_property`
 
@@ -4818,15 +4196,15 @@ napi_status napi_delete_property(napi_env env,
                                  bool* result);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object to query.
-* `[in] key`: The name of the property to delete.
-* `[out] result`: Whether the property deletion succeeded or not. `result` can
-  optionally be ignored by passing `NULL`.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：要查询的对象。
+* `[in] key`：要删除的属性名。
+* `[out] result`：属性删除是否成功。`result` 可以
+  通过传递 `NULL` 选择性地忽略。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API attempts to delete the `key` own property from `object`.
+此 API 尝试从 `object` 删除 `key` 自有属性。
 
 #### `napi_has_own_property`
 
@@ -4842,16 +4220,16 @@ napi_status napi_has_own_property(napi_env env,
                                   bool* result);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object to query.
-* `[in] key`: The name of the own property whose existence to check.
-* `[out] result`: Whether the own property exists on the object or not.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：要查询的对象。
+* `[in] key`：要检查其存在性的自有属性名。
+* `[out] result`：自有属性是否存在于对象上。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API checks if the `Object` passed in has the named own property. `key` must
-be a `string` or a `symbol`, or an error will be thrown. Node-API will not
-perform any conversion between data types.
+此 API 检查传入的 `Object` 是否具有命名自有属性。`key` 必须
+是 `string` 或 `symbol`，否则将抛出错误。Node-API 不会
+执行任何数据类型之间的转换。
 
 #### `napi_set_named_property`
 
@@ -4867,15 +4245,14 @@ napi_status napi_set_named_property(napi_env env,
                                     napi_value value);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object on which to set the property.
-* `[in] utf8Name`: The name of the property to set.
-* `[in] value`: The property value.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：在其上设置属性的对象。
+* `[in] utf8Name`：要设置的属性名。
+* `[in] value`：属性值。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This method is equivalent to calling [`napi_set_property`][] with a `napi_value`
-created from the string passed in as `utf8Name`.
+此方法等效于使用从作为 `utf8Name` 传入的字符串创建的 `napi_value` 调用 [`napi_set_property`][]。
 
 #### `napi_get_named_property`
 
@@ -4891,15 +4268,14 @@ napi_status napi_get_named_property(napi_env env,
                                     napi_value* result);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object from which to retrieve the property.
-* `[in] utf8Name`: The name of the property to get.
-* `[out] result`: The value of the property.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：从中检索属性的对象。
+* `[in] utf8Name`：要获取的属性名。
+* `[out] result`：属性的值。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This method is equivalent to calling [`napi_get_property`][] with a `napi_value`
-created from the string passed in as `utf8Name`.
+此方法等效于使用从作为 `utf8Name` 传入的字符串创建的 `napi_value` 调用 [`napi_get_property`][]。
 
 #### `napi_has_named_property`
 
@@ -4915,15 +4291,14 @@ napi_status napi_has_named_property(napi_env env,
                                     bool* result);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object to query.
-* `[in] utf8Name`: The name of the property whose existence to check.
-* `[out] result`: Whether the property exists on the object or not.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：要查询的对象。
+* `[in] utf8Name`：要检查其存在性的属性名。
+* `[out] result`：属性是否存在于对象上。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This method is equivalent to calling [`napi_has_property`][] with a `napi_value`
-created from the string passed in as `utf8Name`.
+此方法等效于使用从作为 `utf8Name` 传入的字符串创建的 `napi_value` 调用 [`napi_has_property`][]。
 
 #### `napi_set_element`
 
@@ -4939,14 +4314,14 @@ napi_status napi_set_element(napi_env env,
                              napi_value value);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object from which to set the properties.
-* `[in] index`: The index of the property to set.
-* `[in] value`: The property value.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：从中设置属性的对象。
+* `[in] index`：要设置的属性索引。
+* `[in] value`：属性值。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API sets an element on the `Object` passed in.
+此 API 在传入的 `Object` 上设置一个元素。
 
 #### `napi_get_element`
 
@@ -4962,14 +4337,14 @@ napi_status napi_get_element(napi_env env,
                              napi_value* result);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object from which to retrieve the property.
-* `[in] index`: The index of the property to get.
-* `[out] result`: The value of the property.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：从中检索属性的对象。
+* `[in] index`：要获取的属性索引。
+* `[out] result`：属性的值。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API gets the element at the requested index.
+此 API 获取请求索引处的元素。
 
 #### `napi_has_element`
 
@@ -4985,15 +4360,14 @@ napi_status napi_has_element(napi_env env,
                              bool* result);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object to query.
-* `[in] index`: The index of the property whose existence to check.
-* `[out] result`: Whether the property exists on the object or not.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：要查询的对象。
+* `[in] index`：要检查其存在性的属性索引。
+* `[out] result`：属性是否存在于对象上。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API returns if the `Object` passed in has an element at the
-requested index.
+此 API 返回传入的 `Object` 是否在请求的索引处具有元素。
 
 #### `napi_delete_element`
 
@@ -5009,15 +4383,15 @@ napi_status napi_delete_element(napi_env env,
                                 bool* result);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object to query.
-* `[in] index`: The index of the property to delete.
-* `[out] result`: Whether the element deletion succeeded or not. `result` can
-  optionally be ignored by passing `NULL`.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：要查询的对象。
+* `[in] index`：要删除的属性索引。
+* `[out] result`：元素删除是否成功。`result` 可以
+  通过传递 `NULL` 选择性地忽略。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API attempts to delete the specified `index` from `object`.
+此 API 尝试从 `object` 删除指定的 `index`。
 
 #### `napi_define_properties`
 
@@ -5033,19 +4407,14 @@ napi_status napi_define_properties(napi_env env,
                                    const napi_property_descriptor* properties);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object from which to retrieve the properties.
-* `[in] property_count`: The number of elements in the `properties` array.
-* `[in] properties`: The array of property descriptors.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：从中检索属性的对象。
+* `[in] property_count`：`properties` 数组中的元素数量。
+* `[in] properties`：属性描述符数组。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This method allows the efficient definition of multiple properties on a given
-object. The properties are defined using property descriptors (see
-[`napi_property_descriptor`][]). Given an array of such property descriptors,
-this API will set the properties on the object one at a time, as defined by
-`DefineOwnProperty()` (described in [Section DefineOwnProperty][] of the ECMA-262
-specification).
+此方法允许在给定对象上高效地定义多个属性。属性使用属性描述符定义（参见 [`napi_property_descriptor`][]）。给定这样一个属性描述符数组，此 API 将一次一个地在对象上设置属性，如 `DefineOwnProperty()` 所定义（在 ECMA-262 规范的 [DefineOwnProperty 部分][] 中描述）。
 
 #### `napi_object_freeze`
 
@@ -5061,18 +4430,16 @@ napi_status napi_object_freeze(napi_env env,
                                napi_value object);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object to freeze.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：要冻结的对象。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This method freezes a given object. This prevents new properties from
-being added to it, existing properties from being removed, prevents
-changing the enumerability, configurability, or writability of existing
-properties, and prevents the values of existing properties from being changed.
-It also prevents the object's prototype from being changed. This is described
-in [Section 19.1.2.6](https://tc39.es/ecma262/#sec-object.freeze) of the
-ECMA-262 specification.
+此方法冻结给定对象。这防止将新属性添加
+到它，防止删除现有属性，防止
+更改现有属性的可枚举性、可配置性或可写性，并防止更改现有属性的值。
+它还防止对象的原型被更改。这在
+ECMA-262 规范的 [第 19.1.2.6 节](https://tc39.es/ecma262/#sec-object.freeze) 中描述。
 
 #### `napi_object_seal`
 
@@ -5088,15 +4455,14 @@ napi_status napi_object_seal(napi_env env,
                              napi_value object);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object to seal.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：要密封的对象。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This method seals a given object. This prevents new properties from being
-added to it, as well as marking all existing properties as non-configurable.
-This is described in [Section 19.1.2.20](https://tc39.es/ecma262/#sec-object.seal)
-of the ECMA-262 specification.
+此方法密封给定对象。这防止将新属性添加
+到它，并将所有现有属性标记为不可配置。
+这在 ECMA-262 规范的 [第 19.1.2.20 节](https://tc39.es/ecma262/#sec-object.seal) 中描述。
 
 #### `node_api_set_prototype`
 
@@ -5106,7 +4472,7 @@ added:
  - v24.13.1
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 ```c
 napi_status node_api_set_prototype(napi_env env,
@@ -5114,37 +4480,31 @@ napi_status node_api_set_prototype(napi_env env,
                                    napi_value value);
 ```
 
-* `[in] env`: The environment that the Node-API call is invoked under.
-* `[in] object`: The object on which to set the prototype.
-* `[in] value`: The prototype value.
+* `[in] env`：调用 Node-API 的环境。
+* `[in] object`：在其上设置原型的对象。
+* `[in] value`：原型值。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功则返回 `napi_ok`。
 
-This API sets the prototype of the `Object` passed in.
+此 API 设置传入的 `Object` 的原型。
 
-## Working with JavaScript functions
+## 使用 JavaScript 函数
 
-Node-API provides a set of APIs that allow JavaScript code to
-call back into native code. Node-APIs that support calling back
-into native code take in a callback functions represented by
-the `napi_callback` type. When the JavaScript VM calls back to
-native code, the `napi_callback` function provided is invoked. The APIs
-documented in this section allow the callback function to do the
-following:
+Node-API 提供了一组 API，允许 JavaScript 代码
+回调到原生代码。支持回调到
+原生代码的 Node-API 接受由
+`napi_callback` 类型表示的回调函数。当 JavaScript 虚拟机回调到
+原生代码时，提供的 `napi_callback` 函数将被调用。本节中记录的 API 允许回调函数执行以下操作：
 
-* Get information about the context in which the callback was invoked.
-* Get the arguments passed into the callback.
-* Return a `napi_value` back from the callback.
+* 获取关于回调被调用时的上下文信息。
+* 获取传递给回调的参数。
+* 从回调返回一个 `napi_value`。
 
-Additionally, Node-API provides a set of functions which allow calling
-JavaScript functions from native code. One can either call a function
-like a regular JavaScript function call, or as a constructor
-function.
+此外，Node-API 提供了一组函数，允许从原生代码调用
+JavaScript 函数。既可以像常规 JavaScript 函数调用那样调用函数，也可以作为构造函数
+调用。
 
-Any non-`NULL` data which is passed to this API via the `data` field of the
-`napi_property_descriptor` items can be associated with `object` and freed
-whenever `object` is garbage-collected by passing both `object` and the data to
-[`napi_add_finalizer`][].
+任何通过 `napi_property_descriptor` 项的 `data` 字段传递到此 API 的非 `NULL` 数据，都可以与 `object` 关联，并在 `object` 被垃圾回收时通过将 `object` 和数据传递给 [`napi_add_finalizer`][] 来释放。
 
 ### `napi_call_function`
 
@@ -5162,23 +4522,18 @@ NAPI_EXTERN napi_status napi_call_function(napi_env env,
                                            napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] recv`: The `this` value passed to the called function.
-* `[in] func`: `napi_value` representing the JavaScript function to be invoked.
-* `[in] argc`: The count of elements in the `argv` array.
-* `[in] argv`: Array of `napi_values` representing JavaScript values passed in
-  as arguments to the function.
-* `[out] result`: `napi_value` representing the JavaScript object returned.
+* `[in] env`：调用 API 所处的环境。
+* `[in] recv`：传递给被调用函数的 `this` 值。
+* `[in] func`：表示要调用的 JavaScript 函数的 `napi_value`。
+* `[in] argc`：`argv` 数组中的元素计数。
+* `[in] argv`：`napi_value` 数组，表示作为参数传递给函数的 JavaScript 值。
+* `[out] result`：表示返回的 JavaScript 对象的 `napi_value`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This method allows a JavaScript function object to be called from a native
-add-on. This is the primary mechanism of calling back _from_ the add-on's
-native code _into_ JavaScript. For the special case of calling into JavaScript
-after an async operation, see [`napi_make_callback`][].
+此方法允许从原生插件调用 JavaScript 函数对象。这是从插件的原生代码回调 _到_ JavaScript 的主要机制。对于异步操作后调用到 JavaScript 的特殊情况，请参阅 [`napi_make_callback`][]。
 
-A sample use case might look as follows. Consider the following JavaScript
-snippet:
+示例用例可能如下所示。考虑以下 JavaScript 代码片段：
 
 ```js
 function AddTwo(num) {
@@ -5187,11 +4542,10 @@ function AddTwo(num) {
 global.AddTwo = AddTwo;
 ```
 
-Then, the above function can be invoked from a native add-on using the
-following code:
+然后，可以使用以下代码从原生插件调用上述函数：
 
 ```c
-// Get the function named "AddTwo" on the global object
+// 获取全局对象上名为 "AddTwo" 的函数
 napi_value global, add_two, arg;
 napi_status status = napi_get_global(env, &global);
 if (status != napi_ok) return;
@@ -5211,7 +4565,7 @@ napi_value return_val;
 status = napi_call_function(env, global, add_two, argc, argv, &return_val);
 if (status != napi_ok) return;
 
-// Convert the result back to a native type
+// 将结果转换回原生类型
 int32_t result;
 status = napi_get_value_int32(env, return_val, &result);
 if (status != napi_ok) return;
@@ -5233,31 +4587,21 @@ napi_status napi_create_function(napi_env env,
                                  napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] utf8Name`: Optional name of the function encoded as UTF8. This is
-  visible within JavaScript as the new function object's `name` property.
-* `[in] length`: The length of the `utf8name` in bytes, or `NAPI_AUTO_LENGTH` if
-  it is null-terminated.
-* `[in] cb`: The native function which should be called when this function
-  object is invoked. [`napi_callback`][] provides more details.
-* `[in] data`: User-provided data context. This will be passed back into the
-  function when invoked later.
-* `[out] result`: `napi_value` representing the JavaScript function object for
-  the newly created function.
+* `[in] env`：调用 API 所处的环境。
+* `[in] utf8Name`：可选的函数名称，编码为 UTF8。这在 JavaScript 中作为新函数对象的 `name` 属性可见。
+* `[in] length`：`utf8name` 的长度（以字节为单位），如果它是空终止的，则为 `NAPI_AUTO_LENGTH`。
+* `[in] cb`：当此函数对象被调用时应调用的原生函数。[`napi_callback`][] 提供了更多详细信息。
+* `[in] data`：用户提供的数据上下文。当稍后调用该函数时，这将传回给函数。
+* `[out] result`：`napi_value`，表示新创建函数的 JavaScript 函数对象。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API allows an add-on author to create a function object in native code.
-This is the primary mechanism to allow calling _into_ the add-on's native code
-_from_ JavaScript.
+此 API 允许插件作者在原生代码中创建函数对象。这是允许从 JavaScript 调用 _到_ 插件原生代码的主要机制。
 
-The newly created function is not automatically visible from script after this
-call. Instead, a property must be explicitly set on any object that is visible
-to JavaScript, in order for the function to be accessible from script.
+在此调用之后，新创建的函数不会自动从脚本中可见。相反，必须在任何对 JavaScript 可见的对象上显式设置属性，以便脚本可以访问该函数。
 
-In order to expose a function as part of the
-add-on's module exports, set the newly created function on the exports
-object. A sample module might look as follows:
+为了将函数作为插件模块导出的一部分公开，请将新创建的函数设置在 exports
+对象上。示例模块可能如下所示：
 
 ```c
 napi_value SayHello(napi_env env, napi_callback_info info) {
@@ -5281,23 +4625,18 @@ napi_value Init(napi_env env, napi_value exports) {
 NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)
 ```
 
-Given the above code, the add-on can be used from JavaScript as follows:
+给定上述代码，可以从 JavaScript 如下使用插件：
 
 ```js
 const myaddon = require('./addon');
 myaddon.sayHello();
 ```
 
-The string passed to `require()` is the name of the target in `binding.gyp`
-responsible for creating the `.node` file.
+传递给 `require()` 的字符串是 `binding.gyp` 中负责创建 `.node` 文件的目标名称。
 
-Any non-`NULL` data which is passed to this API via the `data` parameter can
-be associated with the resulting JavaScript function (which is returned in the
-`result` parameter) and freed whenever the function is garbage-collected by
-passing both the JavaScript function and the data to [`napi_add_finalizer`][].
+任何通过 `data` 参数传递到此 API 的非 `NULL` 数据，都可以与生成的 JavaScript 函数（在 `result` 参数中返回）关联，并在函数被垃圾回收时通过将 JavaScript 函数和数据传递给 [`napi_add_finalizer`][] 来释放。
 
-JavaScript `Function`s are described in [Section Function objects][] of the ECMAScript
-Language Specification.
+JavaScript `Function` 在 ECMAScript 语言规范的 [函数对象部分][] 中描述。
 
 ### `napi_get_cb_info`
 
@@ -5315,26 +4654,16 @@ napi_status napi_get_cb_info(napi_env env,
                              void** data)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] cbinfo`: The callback info passed into the callback function.
-* `[in-out] argc`: Specifies the length of the provided `argv` array and
-  receives the actual count of arguments. `argc` can
-  optionally be ignored by passing `NULL`.
-* `[out] argv`: C array of `napi_value`s to which the arguments will be
-  copied. If there are more arguments than the provided count, only the
-  requested number of arguments are copied. If there are fewer arguments
-  provided than claimed, the rest of `argv` is filled with `napi_value` values
-  that represent `undefined`. `argv` can optionally be ignored by
-  passing `NULL`.
-* `[out] thisArg`: Receives the JavaScript `this` argument for the call.
-  `thisArg` can optionally be ignored by passing `NULL`.
-* `[out] data`: Receives the data pointer for the callback. `data` can
-  optionally be ignored by passing `NULL`.
+* `[in] env`：调用 API 所处的环境。
+* `[in] cbinfo`：传递给回调函数的回调信息。
+* `[in-out] argc`：指定提供的 `argv` 数组的长度，并接收实际的参数计数。`argc` 可以通过传递 `NULL` 来选择性忽略。
+* `[out] argv`：`napi_value` 的 C 数组，参数将被复制到这里。如果参数多于提供的计数，则只复制请求数量的参数。如果提供的参数少于声明的数量，则 `argv` 的其余部分将填充代表 `undefined` 的 `napi_value` 值。`argv` 可以通过传递 `NULL` 来选择性忽略。
+* `[out] thisArg`：接收调用的 JavaScript `this` 参数。`thisArg` 可以通过传递 `NULL` 来选择性忽略。
+* `[out] data`：接收回调的数据指针。`data` 可以通过传递 `NULL` 来选择性忽略。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This method is used within a callback function to retrieve details about the
-call like the arguments and the `this` pointer from a given callback info.
+此方法在回调函数内使用，用于从给定的回调信息中检索有关调用的详细信息，如参数和 `this` 指针。
 
 ### `napi_get_new_target`
 
@@ -5349,14 +4678,13 @@ napi_status napi_get_new_target(napi_env env,
                                 napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] cbinfo`: The callback info passed into the callback function.
-* `[out] result`: The `new.target` of the constructor call.
+* `[in] env`：调用 API 所处的环境。
+* `[in] cbinfo`：传递给回调函数的回调信息。
+* `[out] result`：构造函数调用的 `new.target`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API returns the `new.target` of the constructor call. If the current
-callback is not a constructor call, the result is `NULL`.
+此 API 返回构造函数调用的 `new.target`。如果当前回调不是构造函数调用，则结果为 `NULL`。
 
 ### `napi_new_instance`
 
@@ -5373,19 +4701,13 @@ napi_status napi_new_instance(napi_env env,
                               napi_value* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] cons`: `napi_value` representing the JavaScript function to be invoked
-  as a constructor.
-* `[in] argc`: The count of elements in the `argv` array.
-* `[in] argv`: Array of JavaScript values as `napi_value` representing the
-  arguments to the constructor. If `argc` is zero this parameter may be
-  omitted by passing in `NULL`.
-* `[out] result`: `napi_value` representing the JavaScript object returned,
-  which in this case is the constructed object.
+* `[in] env`：调用 API 所处的环境。
+* `[in] cons`：`napi_value`，表示要作为构造函数调用的 JavaScript 函数。
+* `[in] argc`：`argv` 数组中的元素计数。
+* `[in] argv`：JavaScript 值的数组，作为 `napi_value` 表示构造函数的参数。如果 `argc` 为零，则可以通过传入 `NULL` 来省略此参数。
+* `[out] result`：`napi_value`，表示返回的 JavaScript 对象，在这种情况下是构造的对象。
 
-This method is used to instantiate a new JavaScript value using a given
-`napi_value` that represents the constructor for the object. For example,
-consider the following snippet:
+此方法用于使用给定的 `napi_value` 实例化一个新的 JavaScript 值，该值表示对象的构造函数。例如，考虑以下代码片段：
 
 ```js
 function MyObject(param) {
@@ -5396,10 +4718,10 @@ const arg = 'hello';
 const value = new MyObject(arg);
 ```
 
-The following can be approximated in Node-API using the following snippet:
+可以使用以下代码片段在 Node-API 中近似实现以下内容：
 
 ```c
-// Get the constructor function MyObject
+// 获取构造函数 MyObject
 napi_value global, constructor, arg, value;
 napi_status status = napi_get_global(env, &global);
 if (status != napi_ok) return;
@@ -5418,28 +4740,17 @@ size_t argc = 1;
 status = napi_new_instance(env, constructor, argc, argv, &value);
 ```
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-## Object wrap
+## 对象包装
 
-Node-API offers a way to "wrap" C++ classes and instances so that the class
-constructor and methods can be called from JavaScript.
+Node-API 提供了一种方法来“包装”C++ 类和实例，以便可以从 JavaScript 调用类构造函数和方法。
 
-1. The [`napi_define_class`][] API defines a JavaScript class with constructor,
-   static properties and methods, and instance properties and methods that
-   correspond to the C++ class.
-2. When JavaScript code invokes the constructor, the constructor callback
-   uses [`napi_wrap`][] to wrap a new C++ instance in a JavaScript object,
-   then returns the wrapper object.
-3. When JavaScript code invokes a method or property accessor on the class,
-   the corresponding `napi_callback` C++ function is invoked. For an instance
-   callback, [`napi_unwrap`][] obtains the C++ instance that is the target of
-   the call.
+1. [`napi_define_class`][] API 定义了一个 JavaScript 类，具有构造函数、静态属性和方法，以及对应于 C++ 类的实例属性和方法。
+2. 当 JavaScript 代码调用构造函数时，构造函数回调使用 [`napi_wrap`][] 将新的 C++ 实例包装在 JavaScript 对象中，然后返回包装对象。
+3. 当 JavaScript 代码调用类上的方法或属性访问器时，将调用相应的 `napi_callback` C++ 函数。对于实例回调，[`napi_unwrap`][] 获取作为调用目标的 C++ 实例。
 
-For wrapped objects it may be difficult to distinguish between a function
-called on a class prototype and a function called on an instance of a class.
-A common pattern used to address this problem is to save a persistent
-reference to the class constructor for later `instanceof` checks.
+对于包装的对象，可能很难区分是在类原型上调用的函数还是在类的实例上调用的函数。解决此问题的常用模式是保存对类构造函数的持久引用，以便稍后进行 `instanceof` 检查。
 
 ```c
 napi_value MyClass_constructor = NULL;
@@ -5451,92 +4762,57 @@ assert(napi_ok == status);
 if (is_instance) {
   // napi_unwrap() ...
 } else {
-  // otherwise...
+  // 否则...
 }
 ```
 
-The reference must be freed once it is no longer needed.
+引用不再需要时必须释放。
 
-There are occasions where `napi_instanceof()` is insufficient for ensuring that
-a JavaScript object is a wrapper for a certain native type. This is the case
-especially when wrapped JavaScript objects are passed back into the addon via
-static methods rather than as the `this` value of prototype methods. In such
-cases there is a chance that they may be unwrapped incorrectly.
+有些情况下，`napi_instanceof()` 不足以确保 JavaScript 对象是特定原生类型的包装器。特别是当包装的 JavaScript 对象通过静态方法而不是作为原型方法的 `this` 值传回插件时，就会出现这种情况。在这种情况下，它们可能会被错误地解包。
 
 ```js
 const myAddon = require('./build/Release/my_addon.node');
 
-// `openDatabase()` returns a JavaScript object that wraps a native database
-// handle.
+// `openDatabase()` 返回一个包装了原生数据库
+// 句柄的 JavaScript 对象。
 const dbHandle = myAddon.openDatabase();
 
-// `query()` returns a JavaScript object that wraps a native query handle.
+// `query()` 返回一个包装了原生查询句柄的 JavaScript 对象。
 const queryHandle = myAddon.query(dbHandle, 'Gimme ALL the things!');
 
-// There is an accidental error in the line below. The first parameter to
-// `myAddon.queryHasRecords()` should be the database handle (`dbHandle`), not
-// the query handle (`query`), so the correct condition for the while-loop
-// should be
+// 下面一行有一个意外错误。`myAddon.queryHasRecords()` 的第一个参数应该是
+// 数据库句柄 (`dbHandle`)，而不是查询句柄 (`query`)，所以 while 循环的正确条件应该是
 //
 // myAddon.queryHasRecords(dbHandle, queryHandle)
 //
 while (myAddon.queryHasRecords(queryHandle, dbHandle)) {
-  // retrieve records
+  // 检索记录
 }
 ```
 
-In the above example `myAddon.queryHasRecords()` is a method that accepts two
-arguments. The first is a database handle and the second is a query handle.
-Internally, it unwraps the first argument and casts the resulting pointer to a
-native database handle. It then unwraps the second argument and casts the
-resulting pointer to a query handle. If the arguments are passed in the wrong
-order, the casts will work, however, there is a good chance that the underlying
-database operation will fail, or will even cause an invalid memory access.
+在上面的示例中，`myAddon.queryHasRecords()` 是一个接受两个参数的方法。第一个是数据库句柄，第二个是查询句柄。在内部，它解包第一个参数并将结果指针转换为原生数据库句柄。然后它解包第二个参数并将结果指针转换为查询句柄。如果参数顺序错误，转换将起作用，但是，底层数据库操作很有可能会失败，甚至可能导致无效内存访问。
 
-To ensure that the pointer retrieved from the first argument is indeed a pointer
-to a database handle and, similarly, that the pointer retrieved from the second
-argument is indeed a pointer to a query handle, the implementation of
-`queryHasRecords()` has to perform a type validation. Retaining the JavaScript
-class constructor from which the database handle was instantiated and the
-constructor from which the query handle was instantiated in `napi_ref`s can
-help, because `napi_instanceof()` can then be used to ensure that the instances
-passed into `queryHashRecords()` are indeed of the correct type.
+为了确保从第一个参数检索到的指针确实是指向数据库句柄的指针，同样，从第二个参数检索到的指针确实是指向查询句柄的指针，`queryHasRecords()` 的实现必须执行类型验证。保留数据库句柄实例化所在的 JavaScript 类构造函数和查询句柄实例化所在的构造函数在 `napi_ref` 中会有所帮助，因为随后可以使用 `napi_instanceof()` 来确保传递给 `queryHashRecords()` 的实例确实是正确的类型。
 
-Unfortunately, `napi_instanceof()` does not protect against prototype
-manipulation. For example, the prototype of the database handle instance can be
-set to the prototype of the constructor for query handle instances. In this
-case, the database handle instance can appear as a query handle instance, and it
-will pass the `napi_instanceof()` test for a query handle instance, while still
-containing a pointer to a database handle.
+不幸的是，`napi_instanceof()` 不能防止原型操作。例如，数据库句柄实例的原型可以设置为查询句柄实例构造函数的原型。在这种情况下，数据库句柄实例可以显示为查询句柄实例，并且它将通过查询句柄实例的 `napi_instanceof()` 测试，同时仍然包含指向数据库句柄的指针。
 
-To this end, Node-API provides type-tagging capabilities.
+为此，Node-API 提供了类型标记功能。
 
-A type tag is a 128-bit integer unique to the addon. Node-API provides the
-`napi_type_tag` structure for storing a type tag. When such a value is passed
-along with a JavaScript object or [external][] stored in a `napi_value` to
-`napi_type_tag_object()`, the JavaScript object will be "marked" with the
-type tag. The "mark" is invisible on the JavaScript side. When a JavaScript
-object arrives into a native binding, `napi_check_object_type_tag()` can be used
-along with the original type tag to determine whether the JavaScript object was
-previously "marked" with the type tag. This creates a type-checking capability
-of a higher fidelity than `napi_instanceof()` can provide, because such type-
-tagging survives prototype manipulation and addon unloading/reloading.
+类型标签是插件唯一的 128 位整数。Node-API 提供 `napi_type_tag` 结构用于存储类型标签。当将此值与存储在 `napi_value` 中的 JavaScript 对象或 [外部][] 一起传递给 `napi_type_tag_object()` 时，JavaScript 对象将被“标记”上类型标签。该“标记”在 JavaScript 端是不可见的。当 JavaScript 对象进入原生绑定时，可以使用 `napi_check_object_type_tag()` 配合原始类型标签来确定 JavaScript 对象之前是否被“标记”了该类型标签。这创建了比 `napi_instanceof()` 提供的更高保真度的类型检查功能，因为此类类型标记在原型操作和插件卸载/重新加载后仍然存在。
 
-Continuing the above example, the following skeleton addon implementation
-illustrates the use of `napi_type_tag_object()` and
-`napi_check_object_type_tag()`.
+继续上面的示例，以下插件实现骨架说明了 `napi_type_tag_object()` 和 `napi_check_object_type_tag()` 的使用。
 
 ```c
-// This value is the type tag for a database handle. The command
+// 此值是数据库句柄的类型标签。命令
 //
 //   uuidgen | sed -r -e 's/-//g' -e 's/(.{16})(.*)/0x\1, 0x\2/'
 //
-// can be used to obtain the two values with which to initialize the structure.
+// 可用于获取用于初始化结构的两个值。
 static const napi_type_tag DatabaseHandleTypeTag = {
   0x1edf75a38336451d, 0xa5ed9ce2e4c00c38
 };
 
-// This value is the type tag for a query handle.
+// 此值是查询句柄的类型标签。
 static const napi_type_tag QueryHandleTypeTag = {
   0x9c73317f9fad44a3, 0x93c3920bf3b0ad6a
 };
@@ -5546,27 +4822,26 @@ openDatabase(napi_env env, napi_callback_info info) {
   napi_status status;
   napi_value result;
 
-  // Perform the underlying action which results in a database handle.
+  // 执行底层操作，结果是数据库句柄。
   DatabaseHandle* dbHandle = open_database();
 
-  // Create a new, empty JS object.
+  // 创建一个新的空 JS 对象。
   status = napi_create_object(env, &result);
   if (status != napi_ok) return NULL;
 
-  // Tag the object to indicate that it holds a pointer to a `DatabaseHandle`.
+  // 标记对象以指示它持有指向 `DatabaseHandle` 的指针。
   status = napi_type_tag_object(env, result, &DatabaseHandleTypeTag);
   if (status != napi_ok) return NULL;
 
-  // Store the pointer to the `DatabaseHandle` structure inside the JS object.
+  // 将指向 `DatabaseHandle` 结构的指针存储在 JS 对象内部。
   status = napi_wrap(env, result, dbHandle, NULL, NULL, NULL);
   if (status != napi_ok) return NULL;
 
   return result;
 }
 
-// Later when we receive a JavaScript object purporting to be a database handle
-// we can use `napi_check_object_type_tag()` to ensure that it is indeed such a
-// handle.
+// 稍后当我们收到一个声称是数据库句柄的 JavaScript 对象时，
+// 我们可以使用 `napi_check_object_type_tag()` 来确保它确实是这样的句柄。
 
 static napi_value
 query(napi_env env, napi_callback_info info) {
@@ -5578,17 +4853,16 @@ query(napi_env env, napi_callback_info info) {
   status = napi_get_cb_info(env, info, &argc, argv, NULL, NULL);
   if (status != napi_ok) return NULL;
 
-  // Check that the object passed as the first parameter has the previously
-  // applied tag.
+  // 检查作为第一个参数传入的对象是否具有之前应用的标签。
   status = napi_check_object_type_tag(env,
                                       argv[0],
                                       &DatabaseHandleTypeTag,
                                       &is_db_handle);
   if (status != napi_ok) return NULL;
 
-  // Throw a `TypeError` if it doesn't.
+  // 如果没有，则抛出 `TypeError`。
   if (!is_db_handle) {
-    // Throw a TypeError.
+    // 抛出 TypeError。
     return NULL;
   }
 }
@@ -5612,59 +4886,28 @@ napi_status napi_define_class(napi_env env,
                               napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] utf8name`: Name of the JavaScript constructor function. For clarity,
-  it is recommended to use the C++ class name when wrapping a C++ class.
-* `[in] length`: The length of the `utf8name` in bytes, or `NAPI_AUTO_LENGTH`
-  if it is null-terminated.
-* `[in] constructor`: Callback function that handles constructing instances
-  of the class. When wrapping a C++ class, this method must be a static member
-  with the [`napi_callback`][] signature. A C++ class constructor cannot be
-  used. [`napi_callback`][] provides more details.
-* `[in] data`: Optional data to be passed to the constructor callback as
-  the `data` property of the callback info.
-* `[in] property_count`: Number of items in the `properties` array argument.
-* `[in] properties`: Array of property descriptors describing static and
-  instance data properties, accessors, and methods on the class
-  See `napi_property_descriptor`.
-* `[out] result`: A `napi_value` representing the constructor function for
-  the class.
+* `[in] env`：调用 API 所处的环境。
+* `[in] utf8name`：JavaScript 构造函数的名称。为了清晰起见，建议在包装 C++ 类时使用 C++ 类名。
+* `[in] length`：`utf8name` 的长度（以字节为单位），如果它是空终止的，则为 `NAPI_AUTO_LENGTH`。
+* `[in] constructor`：处理构造类实例的回调函数。当包装 C++ 类时，此方法必须是具有 [`napi_callback`][] 签名的静态成员。不能使用 C++ 类构造函数。[`napi_callback`][] 提供了更多详细信息。
+* `[in] data`：可选数据，作为回调信息的 `data` 属性传递给构造函数回调。
+* `[in] property_count`：`properties` 数组参数中的项数。
+* `[in] properties`：属性描述符数组，描述类上的静态和实例数据属性、访问器和方法。请参阅 `napi_property_descriptor`。
+* `[out] result`：`napi_value`，表示类的构造函数函数。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-Defines a JavaScript class, including:
+定义一个 JavaScript 类，包括：
 
-* A JavaScript constructor function that has the class name. When wrapping a
-  corresponding C++ class, the callback passed via `constructor` can be used to
-  instantiate a new C++ class instance, which can then be placed inside the
-  JavaScript object instance being constructed using [`napi_wrap`][].
-* Properties on the constructor function whose implementation can call
-  corresponding _static_ data properties, accessors, and methods of the C++
-  class (defined by property descriptors with the `napi_static` attribute).
-* Properties on the constructor function's `prototype` object. When wrapping a
-  C++ class, _non-static_ data properties, accessors, and methods of the C++
-  class can be called from the static functions given in the property
-  descriptors without the `napi_static` attribute after retrieving the C++ class
-  instance placed inside the JavaScript object instance by using
-  [`napi_unwrap`][].
+* 一个具有类名的 JavaScript 构造函数函数。当包装相应的 C++ 类时，可以通过 `constructor` 传递的回调用于实例化新的 C++ 类实例，然后可以使用 [`napi_wrap`][] 将其放置在正在构造的 JavaScript 对象实例内部。
+* 构造函数函数上的属性，其实现可以调用 C++ 类的相应 _静态_ 数据属性、访问器和方法（由具有 `napi_static` 属性的属性描述符定义）。
+* 构造函数函数的 `prototype` 对象上的属性。当包装 C++ 类时，在使用 [`napi_unwrap`][] 检索放置在 JavaScript 对象实例内部的 C++ 类实例后，可以从属性描述符中给出的静态函数调用 C++ 类的 _非静态_ 数据属性、访问器和方法，而不带 `napi_static` 属性。
 
-When wrapping a C++ class, the C++ constructor callback passed via `constructor`
-should be a static method on the class that calls the actual class constructor,
-then wraps the new C++ instance in a JavaScript object, and returns the wrapper
-object. See [`napi_wrap`][] for details.
+当包装 C++ 类时，通过 `constructor` 传递的 C++ 构造函数回调应该是类上的静态方法，该方法调用实际的类构造函数，然后将新的 C++ 实例包装在 JavaScript 对象中，并返回包装对象。有关详细信息，请参阅 [`napi_wrap`][]。
 
-The JavaScript constructor function returned from [`napi_define_class`][] is
-often saved and used later to construct new instances of the class from native
-code, and/or to check whether provided values are instances of the class. In
-that case, to prevent the function value from being garbage-collected, a
-strong persistent reference to it can be created using
-[`napi_create_reference`][], ensuring that the reference count is kept >= 1.
+从 [`napi_define_class`][] 返回的 JavaScript 构造函数函数通常被保存并稍后用于从原生代码构造类的新实例，和/或检查提供的值是否是类的实例。在这种情况下，为了防止函数值被垃圾回收，可以使用 [`napi_create_reference`][] 创建对其的强持久引用，确保引用计数保持 >= 1。
 
-Any non-`NULL` data which is passed to this API via the `data` parameter or via
-the `data` field of the `napi_property_descriptor` array items can be associated
-with the resulting JavaScript constructor (which is returned in the `result`
-parameter) and freed whenever the class is garbage-collected by passing both
-the JavaScript function and the data to [`napi_add_finalizer`][].
+任何通过 `data` 参数或 `napi_property_descriptor` 数组项的 `data` 字段传递到此 API 的非 `NULL` 数据，都可以与生成的 JavaScript 构造函数（在 `result` 参数中返回）关联，并在类被垃圾回收时通过将 JavaScript 函数和数据传递给 [`napi_add_finalizer`][] 来释放。
 
 ### `napi_wrap`
 
@@ -5682,53 +4925,28 @@ napi_status napi_wrap(napi_env env,
                       napi_ref* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] js_object`: The JavaScript object that will be the wrapper for the
-  native object.
-* `[in] native_object`: The native instance that will be wrapped in the
-  JavaScript object.
-* `[in] finalize_cb`: Optional native callback that can be used to free the
-  native instance when the JavaScript object has been garbage-collected.
-  [`napi_finalize`][] provides more details.
-* `[in] finalize_hint`: Optional contextual hint that is passed to the
-  finalize callback.
-* `[out] result`: Optional reference to the wrapped object.
+* `[in] env`：调用 API 所处的环境。
+* `[in] js_object`：将作为原生对象包装器的 JavaScript 对象。
+* `[in] native_object`：将包装在 JavaScript 对象中的原生实例。
+* `[in] finalize_cb`：可选的原生回调，可用于在 JavaScript 对象被垃圾回收时释放原生实例。[`napi_finalize`][] 提供了更多详细信息。
+* `[in] finalize_hint`：传递给终结回调的可选上下文提示。
+* `[out] result`：对被包装对象的可选引用。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-Wraps a native instance in a JavaScript object. The native instance can be
-retrieved later using `napi_unwrap()`.
+将原生实例包装在 JavaScript 对象中。稍后可以使用 `napi_unwrap()` 检索原生实例。
 
-When JavaScript code invokes a constructor for a class that was defined using
-`napi_define_class()`, the `napi_callback` for the constructor is invoked.
-After constructing an instance of the native class, the callback must then call
-`napi_wrap()` to wrap the newly constructed instance in the already-created
-JavaScript object that is the `this` argument to the constructor callback.
-(That `this` object was created from the constructor function's `prototype`,
-so it already has definitions of all the instance properties and methods.)
+当 JavaScript 代码调用使用 `napi_define_class()` 定义的类的构造函数时，将调用构造函数的 `napi_callback`。在构造原生类的实例后，回调必须然后调用 `napi_wrap()` 将新构造的实例包装在已经是构造函数回调的 `this` 参数的已创建 JavaScript 对象中。（该 `this` 对象是从构造函数函数的 `prototype` 创建的，因此它已经具有所有实例属性和方法的定义。）
 
-Typically when wrapping a class instance, a finalize callback should be
-provided that simply deletes the native instance that is received as the `data`
-argument to the finalize callback.
+通常在包装类实例时，应提供一个终结回调，该回调简单地删除作为 `data` 参数接收到的原生实例。
 
-The optional returned reference is initially a weak reference, meaning it
-has a reference count of 0. Typically this reference count would be incremented
-temporarily during async operations that require the instance to remain valid.
+可选的返回引用最初是弱引用，意味着它的引用计数为 0。通常，在需要实例保持有效的异步操作期间，此引用计数会暂时增加。
 
-_Caution_: The optional returned reference (if obtained) should be deleted via
-[`napi_delete_reference`][] ONLY in response to the finalize callback
-invocation. If it is deleted before then, then the finalize callback may never
-be invoked. Therefore, when obtaining a reference a finalize callback is also
-required in order to enable correct disposal of the reference.
+_注意_：可选的返回引用（如果获得）应仅响应终结回调调用通过 [`napi_delete_reference`][] 删除。如果在此之前删除，则可能永远不会调用终结回调。因此，在获取引用时也需要终结回调，以便能够正确处置引用。
 
-Finalizer callbacks may be deferred, leaving a window where the object has
-been garbage collected (and the weak reference is invalid) but the finalizer
-hasn't been called yet. When using `napi_get_reference_value()` on weak
-references returned by `napi_wrap()`, you should still handle an empty result.
+终结器回调可能会延迟，留下一个窗口，其中对象已被垃圾回收（并且弱引用无效），但终结器尚未被调用。当对 `napi_wrap()` 返回的弱引用使用 `napi_get_reference_value()` 时，您仍然应该处理空结果。
 
-Calling `napi_wrap()` a second time on an object will return an error. To
-associate another native instance with the object, use `napi_remove_wrap()`
-first.
+在对象上第二次调用 `napi_wrap()` 将返回错误。要将另一个原生实例与对象关联，请先使用 `napi_remove_wrap()`。
 
 ### `napi_unwrap`
 
@@ -5743,20 +4961,15 @@ napi_status napi_unwrap(napi_env env,
                         void** result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] js_object`: The object associated with the native instance.
-* `[out] result`: Pointer to the wrapped native instance.
+* `[in] env`：调用 API 所处的环境。
+* `[in] js_object`：与原生实例关联的对象。
+* `[out] result`：指向被包装的原生实例的指针。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-Retrieves a native instance that was previously wrapped in a JavaScript
-object using `napi_wrap()`.
+检索之前使用 `napi_wrap()` 包装在 JavaScript 对象中的原生实例。
 
-When JavaScript code invokes a method or property accessor on the class, the
-corresponding `napi_callback` is invoked. If the callback is for an instance
-method or accessor, then the `this` argument to the callback is the wrapper
-object; the wrapped C++ instance that is the target of the call can be obtained
-then by calling `napi_unwrap()` on the wrapper object.
+当 JavaScript 代码调用类上的方法或属性访问器时，将调用相应的 `napi_callback`。如果回调是针对实例方法或访问器的，则回调的 `this` 参数是包装对象；然后可以通过在包装对象上调用 `napi_unwrap()` 获取作为调用目标的被包装的 C++ 实例。
 
 ### `napi_remove_wrap`
 
@@ -5771,16 +4984,13 @@ napi_status napi_remove_wrap(napi_env env,
                              void** result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] js_object`: The object associated with the native instance.
-* `[out] result`: Pointer to the wrapped native instance.
+* `[in] env`：调用 API 所处的环境。
+* `[in] js_object`：与原生实例关联的对象。
+* `[out] result`：指向被包装的原生实例的指针。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-Retrieves a native instance that was previously wrapped in the JavaScript
-object `js_object` using `napi_wrap()` and removes the wrapping. If a finalize
-callback was associated with the wrapping, it will no longer be called when the
-JavaScript object becomes garbage-collected.
+检索之前使用 `napi_wrap()` 包装在 JavaScript 对象 `js_object` 中的原生实例，并移除包装。如果终结回调与包装关联，则当 JavaScript 对象变为垃圾回收时，它将不再被调用。
 
 ### `napi_type_tag_object`
 
@@ -5797,19 +5007,15 @@ napi_status napi_type_tag_object(napi_env env,
                                  const napi_type_tag* type_tag);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] js_object`: The JavaScript object or [external][] to be marked.
-* `[in] type_tag`: The tag with which the object is to be marked.
+* `[in] env`：调用 API 所处的环境。
+* `[in] js_object`：要标记的 JavaScript 对象或 [外部][]。
+* `[in] type_tag`：用于标记对象的标签。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-Associates the value of the `type_tag` pointer with the JavaScript object or
-[external][]. `napi_check_object_type_tag()` can then be used to compare the tag
-that was attached to the object with one owned by the addon to ensure that the
-object has the right type.
+将 `type_tag` 指针的值与 JavaScript 对象或 [外部][] 关联。然后可以使用 `napi_check_object_type_tag()` 将附加到对象的标签与插件拥有的标签进行比较，以确保对象具有正确的类型。
 
-If the object already has an associated type tag, this API will return
-`napi_invalid_arg`.
+如果对象已经有关联的类型标签，此 API 将返回 `napi_invalid_arg`。
 
 ### `napi_check_object_type_tag`
 
@@ -5827,19 +5033,14 @@ napi_status napi_check_object_type_tag(napi_env env,
                                        bool* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] js_object`: The JavaScript object or [external][] whose type tag to
-  examine.
-* `[in] type_tag`: The tag with which to compare any tag found on the object.
-* `[out] result`: Whether the type tag given matched the type tag on the
-  object. `false` is also returned if no type tag was found on the object.
+* `[in] env`：调用 API 所处的环境。
+* `[in] js_object`：要检查其类型标签的 JavaScript 对象或 [外部][]。
+* `[in] type_tag`：用于与对象上找到的任何标签进行比较的标签。
+* `[out] result`：给定的类型标签是否与对象上的类型标签匹配。如果对象上未找到类型标签，也返回 `false`。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-Compares the pointer given as `type_tag` with any that can be found on
-`js_object`. If no tag is found on `js_object` or, if a tag is found but it does
-not match `type_tag`, then `result` is set to `false`. If a tag is found and it
-matches `type_tag`, then `result` is set to `true`.
+将作为 `type_tag` 给出的指针与 `js_object` 上可能找到的任何指针进行比较。如果在 `js_object` 上未找到标签，或者如果找到标签但不匹配 `type_tag`，则 `result` 设置为 `false`。如果找到标签且匹配 `type_tag`，则 `result` 设置为 `true`。
 
 ### `napi_add_finalizer`
 
@@ -5857,29 +5058,20 @@ napi_status napi_add_finalizer(napi_env env,
                                napi_ref* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] js_object`: The JavaScript object to which the native data will be
-  attached.
-* `[in] finalize_data`: Optional data to be passed to `finalize_cb`.
-* `[in] finalize_cb`: Native callback that will be used to free the
-  native data when the JavaScript object has been garbage-collected.
-  [`napi_finalize`][] provides more details.
-* `[in] finalize_hint`: Optional contextual hint that is passed to the
-  finalize callback.
-* `[out] result`: Optional reference to the JavaScript object.
+* `[in] env`：调用 API 所处的环境。
+* `[in] js_object`：将附加原生数据的 JavaScript 对象。
+* `[in] finalize_data`：传递给 `finalize_cb` 的可选数据。
+* `[in] finalize_cb`：当 JavaScript 对象被垃圾回收时将用于释放原生数据的原生回调。[`napi_finalize`][] 提供了更多详细信息。
+* `[in] finalize_hint`：传递给终结回调的可选上下文提示。
+* `[out] result`：对 JavaScript 对象的可选引用。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-Adds a `napi_finalize` callback which will be called when the JavaScript object
-in `js_object` has been garbage-collected.
+添加一个 `napi_finalize` 回调，当 `js_object` 中的 JavaScript 对象被垃圾回收时将调用该回调。
 
-This API can be called multiple times on a single JavaScript object.
+此 API 可以在单个 JavaScript 对象上调用多次。
 
-_Caution_: The optional returned reference (if obtained) should be deleted via
-[`napi_delete_reference`][] ONLY in response to the finalize callback
-invocation. If it is deleted before then, then the finalize callback may never
-be invoked. Therefore, when obtaining a reference a finalize callback is also
-required in order to enable correct disposal of the reference.
+_注意_：可选的返回引用（如果获得）应仅响应终结回调调用通过 [`napi_delete_reference`][] 删除。如果在此之前删除，则可能永远不会调用终结回调。因此，在获取引用时也需要终结回调，以便能够正确处置引用。
 
 #### `node_api_post_finalizer`
 
@@ -5890,7 +5082,7 @@ added:
   - v18.19.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 ```c
 napi_status node_api_post_finalizer(node_api_basic_env env,
@@ -5899,53 +5091,32 @@ napi_status node_api_post_finalizer(node_api_basic_env env,
                                     void* finalize_hint);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] finalize_cb`: Native callback that will be used to free the
-  native data when the JavaScript object has been garbage-collected.
-  [`napi_finalize`][] provides more details.
-* `[in] finalize_data`: Optional data to be passed to `finalize_cb`.
-* `[in] finalize_hint`: Optional contextual hint that is passed to the
-  finalize callback.
+* `[in] env`：调用 API 所处的环境。
+* `[in] finalize_cb`：当 JavaScript 对象被垃圾回收时将用于释放原生数据的原生回调。[`napi_finalize`][] 提供了更多详细信息。
+* `[in] finalize_data`：传递给 `finalize_cb` 的可选数据。
+* `[in] finalize_hint`：传递给终结回调的可选上下文提示。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-Schedules a `napi_finalize` callback to be called asynchronously in the
-event loop.
+计划一个 `napi_finalize` 回调在事件循环中异步调用。
 
-Normally, finalizers are called while the GC (garbage collector) collects
-objects. At that point calling any Node-API that may cause changes in the GC
-state will be disabled and will crash Node.js.
+通常，终结器在 GC（垃圾回收器）收集对象时调用。此时调用任何可能导致 GC 状态变化的 Node-API 将被禁用并导致 Node.js 崩溃。
 
-`node_api_post_finalizer` helps to work around this limitation by allowing the
-add-on to defer calls to such Node-APIs to a point in time outside of the GC
-finalization.
+`node_api_post_finalizer` 通过允许插件将对此类 Node-API 的调用推迟到 GC 终结之外的时间点，有助于解决此限制。
 
-## Simple asynchronous operations
+## 简单异步操作
 
-Addon modules often need to leverage async helpers from libuv as part of their
-implementation. This allows them to schedule work to be executed asynchronously
-so that their methods can return in advance of the work being completed. This
-allows them to avoid blocking overall execution of the Node.js application.
+插件模块通常需要在实现中利用 libuv 的异步辅助函数。这使它们能够将工作调度为异步执行，从而使其方法可以在工作完成之前返回。这有助于它们避免阻塞 Node.js 应用程序的整体执行。
 
-Node-API provides an ABI-stable interface for these
-supporting functions which covers the most common asynchronous use cases.
+Node-API 为这些支持函数提供了 ABI 稳定的接口，涵盖最常见的异步用例。
 
-Node-API defines the `napi_async_work` structure which is used to manage
-asynchronous workers. Instances are created/deleted with
-[`napi_create_async_work`][] and [`napi_delete_async_work`][].
+Node-API 定义了 `napi_async_work` 结构体，用于管理异步 worker。实例通过 [`napi_create_async_work`][] 和 [`napi_delete_async_work`][] 创建/删除。
 
-The `execute` and `complete` callbacks are functions that will be
-invoked when the executor is ready to execute and when it completes its
-task respectively.
+`execute` 和 `complete` 回调是函数，分别会在执行器准备好执行以及完成任务时被调用。
 
-The `execute` function should avoid making any Node-API calls
-that could result in the execution of JavaScript or interaction with
-JavaScript objects. Most often, any code that needs to make Node-API
-calls should be made in `complete` callback instead.
-Avoid using the `napi_env` parameter in the execute callback as
-it will likely execute JavaScript.
+`execute` 函数应避免进行任何可能导致执行 JavaScript 或与 JavaScript 对象交互的 Node-API 调用。大多数情况下，任何需要调用 Node-API 的代码都应改为放在 `complete` 回调中。避免在 execute 回调中使用 `napi_env` 参数，因为它可能会执行 JavaScript。
 
-These functions implement the following interfaces:
+这些函数实现以下接口：
 
 ```c
 typedef void (*napi_async_execute_callback)(napi_env env,
@@ -5955,25 +5126,18 @@ typedef void (*napi_async_complete_callback)(napi_env env,
                                              void* data);
 ```
 
-When these methods are invoked, the `data` parameter passed will be the
-addon-provided `void*` data that was passed into the
-`napi_create_async_work` call.
+当调用这些方法时，传入的 `data` 参数将是传递给 `napi_create_async_work` 调用的插件提供的 `void*` 数据。
 
-Once created the async worker can be queued
-for execution using the [`napi_queue_async_work`][] function:
+一旦创建，异步 worker 可以使用 [`napi_queue_async_work`][] 函数排队执行：
 
 ```c
 napi_status napi_queue_async_work(node_api_basic_env env,
                                   napi_async_work work);
 ```
 
-[`napi_cancel_async_work`][] can be used if the work needs
-to be cancelled before the work has started execution.
+如果需要在工作开始执行之前取消工作，可以使用 [`napi_cancel_async_work`][]。
 
-After calling [`napi_cancel_async_work`][], the `complete` callback
-will be invoked with a status value of `napi_cancelled`.
-The work should not be deleted before the `complete`
-callback invocation, even when it was cancelled.
+调用 [`napi_cancel_async_work`][] 后，`complete` 回调将被调用，状态值为 `napi_cancelled`。即使在取消的情况下，也不应在 `complete` 回调被调用之前删除工作。
 
 ### `napi_create_async_work`
 
@@ -5983,7 +5147,7 @@ napiVersion: 1
 changes:
   - version: v8.6.0
     pr-url: https://github.com/nodejs/node/pull/14697
-    description: Added `async_resource` and `async_resource_name` parameters.
+    description: "添加了 `async_resource` 和 `async_resource_name` 参数。"
 -->
 
 ```c
@@ -5996,35 +5160,21 @@ napi_status napi_create_async_work(napi_env env,
                                    napi_async_work* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] async_resource`: An optional object associated with the async work
-  that will be passed to possible `async_hooks` [`init` hooks][].
-* `[in] async_resource_name`: Identifier for the kind of resource that is being
-  provided for diagnostic information exposed by the `async_hooks` API.
-* `[in] execute`: The native function which should be called to execute the
-  logic asynchronously. The given function is called from a worker pool thread
-  and can execute in parallel with the main event loop thread.
-* `[in] complete`: The native function which will be called when the
-  asynchronous logic is completed or is cancelled. The given function is called
-  from the main event loop thread. [`napi_async_complete_callback`][] provides
-  more details.
-* `[in] data`: User-provided data context. This will be passed back into the
-  execute and complete functions.
-* `[out] result`: `napi_async_work*` which is the handle to the newly created
-  async work.
+* `[in] env`：调用 API 所处的环境。
+* `[in] async_resource`：与异步工作关联的可选对象，将传递给可能的 `async_hooks` [`init` 钩子][]。
+* `[in] async_resource_name`：为 `async_hooks` API 公开的诊断信息提供的资源类型标识符。
+* `[in] execute`：应被调用以异步执行逻辑的原生函数。给定函数从线程池线程调用，可与主事件循环线程并行执行。
+* `[in] complete`：当异步逻辑完成或被取消时将调用的原生函数。给定函数从主事件循环线程调用。[`napi_async_complete_callback`][] 提供了更多细节。
+* `[in] data`：用户提供的数据上下文。这将回传给 execute 和 complete 函数。
+* `[out] result`：`napi_async_work*`，即新创建的异步工作句柄。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API allocates a work object that is used to execute logic asynchronously.
-It should be freed using [`napi_delete_async_work`][] once the work is no longer
-required.
+此 API 分配一个用于异步执行逻辑的工作对象。一旦不再需要该工作，应使用 [`napi_delete_async_work`][] 释放它。
 
-`async_resource_name` should be a null-terminated, UTF-8-encoded string.
+`async_resource_name` 应为一个以 null 结尾的 UTF-8 编码字符串。
 
-The `async_resource_name` identifier is provided by the user and should be
-representative of the type of async work being performed. It is also recommended
-to apply namespacing to the identifier, e.g. by including the module name. See
-the [`async_hooks` documentation][async_hooks `type`] for more information.
+`async_resource_name` 标识符由用户提供，应表示正在执行的异步工作类型。还建议对该标识符应用命名空间，例如包含模块名。有关更多信息，请参阅 [`async_hooks` 文档][async_hooks `type`]。
 
 ### `napi_delete_async_work`
 
@@ -6038,14 +5188,14 @@ napi_status napi_delete_async_work(napi_env env,
                                    napi_async_work work);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] work`: The handle returned by the call to `napi_create_async_work`.
+* `[in] env`：调用 API 所处的环境。
+* `[in] work`：调用 `napi_create_async_work` 返回的句柄。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API frees a previously allocated work object.
+此 API 释放先前分配的工作对象。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在挂起的 JavaScript 异常，也可以调用此 API。
 
 ### `napi_queue_async_work`
 
@@ -6059,14 +5209,12 @@ napi_status napi_queue_async_work(node_api_basic_env env,
                                   napi_async_work work);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] work`: The handle returned by the call to `napi_create_async_work`.
+* `[in] env`：调用 API 所处的环境。
+* `[in] work`：调用 `napi_create_async_work` 返回的句柄。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API requests that the previously allocated work be scheduled
-for execution. Once it returns successfully, this API must not be called again
-with the same `napi_async_work` item or the result will be undefined.
+此 API 请求将先前分配的工作调度执行。一旦成功返回，不得再次使用同一个 `napi_async_work` 项调用此 API，否则结果将未定义。
 
 ### `napi_cancel_async_work`
 
@@ -6080,26 +5228,18 @@ napi_status napi_cancel_async_work(node_api_basic_env env,
                                    napi_async_work work);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] work`: The handle returned by the call to `napi_create_async_work`.
+* `[in] env`：调用 API 所处的环境。
+* `[in] work`：调用 `napi_create_async_work` 返回的句柄。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API cancels queued work if it has not yet
-been started. If it has already started executing, it cannot be
-cancelled and `napi_generic_failure` will be returned. If successful,
-the `complete` callback will be invoked with a status value of
-`napi_cancelled`. The work should not be deleted before the `complete`
-callback invocation, even if it has been successfully cancelled.
+此 API 取消尚未开始的排队工作。如果它已经开始执行，则无法取消，并将返回 `napi_generic_failure`。如果成功，`complete` 回调将被调用，状态值为 `napi_cancelled`。即使已成功取消，也不应在 `complete` 回调调用之前删除工作。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在挂起的 JavaScript 异常，也可以调用此 API。
 
-## Custom asynchronous operations
+## 自定义异步操作
 
-The simple asynchronous work APIs above may not be appropriate for every
-scenario. When using any other asynchronous mechanism, the following APIs
-are necessary to ensure an asynchronous operation is properly tracked by
-the runtime.
+上述简单异步工作 API 可能不适用于每种场景。当使用任何其他异步机制时，需要以下 API 来确保异步操作被运行时正确跟踪。
 
 ### `napi_async_init`
 
@@ -6109,7 +5249,7 @@ napiVersion: 1
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/59828
-    description: The `async_resource` object will now be held as a strong reference.
+    description: async_resource 对象现在将作为强引用持有。
 -->
 
 ```c
@@ -6119,28 +5259,16 @@ napi_status napi_async_init(napi_env env,
                             napi_async_context* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] async_resource`: Object associated with the async work
-  that will be passed to possible `async_hooks` [`init` hooks][] and can be
-  accessed by [`async_hooks.executionAsyncResource()`][].
-* `[in] async_resource_name`: Identifier for the kind of resource that is being
-  provided for diagnostic information exposed by the `async_hooks` API.
-* `[out] result`: The initialized async context.
+* `[in] env`：调用 API 所处的环境。
+* `[in] async_resource`：与异步工作关联的对象，将传递给可能的 `async_hooks` [`init` 钩子][]，并且可以通过 [`async_hooks.executionAsyncResource()`][] 访问。
+* `[in] async_resource_name`：为 `async_hooks` API 公开的诊断信息提供的资源类型标识符。
+* `[out] result`：初始化的异步上下文。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-In order to retain ABI compatibility with previous versions, passing `NULL`
-for `async_resource` does not result in an error. However, this is not
-recommended as this will result in undesirable behavior with  `async_hooks`
-[`init` hooks][] and `async_hooks.executionAsyncResource()` as the resource is
-now required by the underlying `async_hooks` implementation in order to provide
-the linkage between async callbacks.
+为了保留与旧版本的 ABI 兼容性，为 `async_resource` 传递 `NULL` 不会导致错误。但是，不建议这样做，因为这会导致 `async_hooks` [`init` 钩子][] 和 `async_hooks.executionAsyncResource()` 出现不良行为，因为底层的 `async_hooks` 实现现在需要该资源来提供异步回调之间的链接。
 
-Previous versions of this API were not maintaining a strong reference to
-`async_resource` while the `napi_async_context` object existed and instead
-expected the caller to hold a strong reference. This has been changed, as a
-corresponding call to [`napi_async_destroy`][] for every call to
-`napi_async_init()` is a requirement in any case to avoid memory leaks.
+此 API 的旧版本在 `napi_async_context` 对象存在期间并未维持对 `async_resource` 的强引用，而是期望调用者持有强引用。这一点已更改，因为无论如何都需要为每次调用 `napi_async_init()` 对应调用 [`napi_async_destroy`][]，以避免内存泄漏。
 
 ### `napi_async_destroy`
 
@@ -6154,12 +5282,12 @@ napi_status napi_async_destroy(napi_env env,
                                napi_async_context async_context);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] async_context`: The async context to be destroyed.
+* `[in] env`：调用 API 所处的环境。
+* `[in] async_context`：要销毁的异步上下文。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在挂起的 JavaScript 异常，也可以调用此 API。
 
 ### `napi_make_callback`
 
@@ -6169,7 +5297,7 @@ napiVersion: 1
 changes:
   - version: v8.6.0
     pr-url: https://github.com/nodejs/node/pull/15189
-    description: Added `async_context` parameter.
+    description: "添加了 `async_context` 参数。"
 -->
 
 ```c
@@ -6182,39 +5310,21 @@ NAPI_EXTERN napi_status napi_make_callback(napi_env env,
                                            napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] async_context`: Context for the async operation that is
-  invoking the callback. This should normally be a value previously
-  obtained from [`napi_async_init`][].
-  In order to retain ABI compatibility with previous versions, passing `NULL`
-  for `async_context` does not result in an error. However, this results
-  in incorrect operation of async hooks. Potential issues include loss of
-  async context when using the `AsyncLocalStorage` API.
-* `[in] recv`: The `this` value passed to the called function.
-* `[in] func`: `napi_value` representing the JavaScript function to be invoked.
-* `[in] argc`: The count of elements in the `argv` array.
-* `[in] argv`: Array of JavaScript values as `napi_value` representing the
-  arguments to the function. If `argc` is zero this parameter may be
-  omitted by passing in `NULL`.
-* `[out] result`: `napi_value` representing the JavaScript object returned.
+* `[in] env`：调用 API 所处的环境。
+* `[in] async_context`：调用回调的异步操作上下文。这通常应是先前从 [`napi_async_init`][] 获得的值。为了保留与旧版本的 ABI 兼容性，为 `async_context` 传递 `NULL` 不会导致错误。但是，这会导致异步钩子操作不正确。潜在问题包括在使用 `AsyncLocalStorage` API 时丢失异步上下文。
+* `[in] recv`：传递给被调用函数的 `this` 值。
+* `[in] func`：`napi_value`，表示要调用的 JavaScript 函数。
+* `[in] argc`：`argv` 数组中的元素计数。
+* `[in] argv`：`napi_value` 形式的 JavaScript 值数组，表示函数的参数。如果 `argc` 为零，可以通过传递 `NULL` 省略此参数。
+* `[out] result`：`napi_value`，表示返回的 JavaScript 对象。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，返回 `napi_ok`。
 
-This method allows a JavaScript function object to be called from a native
-add-on. This API is similar to `napi_call_function`. However, it is used to call
-_from_ native code back _into_ JavaScript _after_ returning from an async
-operation (when there is no other script on the stack). It is a fairly simple
-wrapper around `node::MakeCallback`.
+此方法允许从原生插件调用 JavaScript 函数对象。此 API 类似于 `napi_call_function`。但是，它用于在从异步操作返回后（当栈上没有其他脚本时）从原生代码调用回 JavaScript。它是对 `node::MakeCallback` 的一个相当简单的封装。
 
-Note it is _not_ necessary to use `napi_make_callback` from within a
-`napi_async_complete_callback`; in that situation the callback's async
-context has already been set up, so a direct call to `napi_call_function`
-is sufficient and appropriate. Use of the `napi_make_callback` function
-may be required when implementing custom async behavior that does not use
-`napi_create_async_work`.
+注意，在 `napi_async_complete_callback` 内部_不_需要使用 `napi_make_callback`；在这种情况下，回调的异步上下文已经设置好了，因此直接调用 `napi_call_function` 就足够且合适。在实现不使用 `napi_create_async_work` 的自定义异步行为时，可能需要使用 `napi_make_callback` 函数。
 
-Any `process.nextTick`s or Promises scheduled on the microtask queue by
-JavaScript during the callback are ran before returning back to C/C++.
+回调期间由 JavaScript 调度到微任务队列上的任何 `process.nextTick` 或 Promise 都会在返回 C/C++ 之前运行。
 
 ### `napi_open_callback_scope`
 
@@ -6230,21 +5340,12 @@ NAPI_EXTERN napi_status napi_open_callback_scope(napi_env env,
                                                  napi_callback_scope* result)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] resource_object`: An object associated with the async work
-  that will be passed to possible `async_hooks` [`init` hooks][]. This
-  parameter has been deprecated and is ignored at runtime. Use the
-  `async_resource` parameter in [`napi_async_init`][] instead.
-* `[in] context`: Context for the async operation that is invoking the callback.
-  This should be a value previously obtained from [`napi_async_init`][].
-* `[out] result`: The newly created scope.
+* `[in] env`：调用 API 所处的环境。
+* `[in] resource_object`：与异步工作关联的对象，将传递给可能的 `async_hooks` [`init` 钩子][]。此参数已弃用，在运行时被忽略。请改用 [`napi_async_init`][] 中的 `async_resource` 参数。
+* `[in] context`：调用回调的异步操作上下文。这应是先前从 [`napi_async_init`][] 获得的值。
+* `[out] result`：新创建的作用域。
 
-There are cases (for example, resolving promises) where it is
-necessary to have the equivalent of the scope associated with a callback
-in place when making certain Node-API calls. If there is no other script on
-the stack the [`napi_open_callback_scope`][] and
-[`napi_close_callback_scope`][] functions can be used to open/close
-the required scope.
+在某些情况下（例如解析 promise），在进行某些 Node-API 调用时，必须拥有与回调关联的作用域等效项。如果栈上没有其他脚本，可以使用 [`napi_open_callback_scope`][] 和 [`napi_close_callback_scope`][] 函数来打开/关闭所需的作用域。
 
 ### `napi_close_callback_scope`
 
@@ -6258,12 +5359,12 @@ NAPI_EXTERN napi_status napi_close_callback_scope(napi_env env,
                                                   napi_callback_scope scope)
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] scope`: The scope to be closed.
+* `[in] env`：调用 API 所处的环境。
+* `[in] scope`：要关闭的作用域。
 
-This API can be called even if there is a pending JavaScript exception.
+即使存在挂起的 JavaScript 异常，也可以调用此 API。
 
-## Version management
+## 版本管理
 
 ### `napi_get_node_version`
 
@@ -6284,16 +5385,14 @@ napi_status napi_get_node_version(node_api_basic_env env,
                                   const napi_node_version** version);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] version`: A pointer to version information for Node.js itself.
+* `[in] env`：调用此 API 所处的环境。
+* `[out] version`：指向 Node.js 本身版本信息的指针。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This function fills the `version` struct with the major, minor, and patch
-version of Node.js that is currently running, and the `release` field with the
-value of [`process.release.name`][`process.release`].
+此函数会用当前运行的 Node.js 的主版本、次版本和补丁版本填充 `version` 结构体，并用 [`process.release.name`][`process.release`] 的值填充 `release` 字段。
 
-The returned buffer is statically allocated and does not need to be freed.
+返回的缓冲区是静态分配的，无需释放。
 
 ### `napi_get_version`
 
@@ -6307,26 +5406,19 @@ napi_status napi_get_version(node_api_basic_env env,
                              uint32_t* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] result`: The highest version of Node-API supported.
+* `[in] env`：调用此 API 所处的环境。
+* `[out] result`：支持的最高 Node-API 版本。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API returns the highest Node-API version supported by the
-Node.js runtime. Node-API is planned to be additive such that
-newer releases of Node.js may support additional API functions.
-In order to allow an addon to use a newer function when running with
-versions of Node.js that support it, while providing
-fallback behavior when running with Node.js versions that don't
-support it:
+此 API 返回 Node.js 运行时支持的最高 Node-API 版本。Node-API 计划是累加式的，因此较新版本的 Node.js 可能支持额外的 API 函数。为了允许插件在支持该函数的 Node.js 版本上运行时使用较新的函数，同时在不支持该函数的 Node.js 版本上运行时提供回退行为：
 
-* Call `napi_get_version()` to determine if the API is available.
-* If available, dynamically load a pointer to the function using `uv_dlsym()`.
-* Use the dynamically loaded pointer to invoke the function.
-* If the function is not available, provide an alternate implementation
-  that does not use the function.
+* 调用 `napi_get_version()` 以确定 API 是否可用。
+* 如果可用，使用 `uv_dlsym()` 动态加载函数指针。
+* 使用动态加载的指针调用函数。
+* 如果函数不可用，提供不使用该函数的替代实现。
 
-## Memory management
+## 内存管理
 
 ### `napi_adjust_external_memory`
 
@@ -6341,73 +5433,50 @@ NAPI_EXTERN napi_status napi_adjust_external_memory(node_api_basic_env env,
                                                     int64_t* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] change_in_bytes`: The change in externally allocated memory that is kept
-  alive by JavaScript objects.
-* `[out] result`: The adjusted value. This value should reflect the
-  total amount of external memory with the given `change_in_bytes` included.
-  The absolute value of the returned value should not  be depended on.
-  For example, implementations may use a single counter for all addons, or a
-  counter for each addon.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] change_in_bytes`：由 JavaScript 对象保持存活的外部分配内存变化量。
+* `[out] result`：调整后的值。该值应反映包含给定 `change_in_bytes` 在内的外部内存总量。不应依赖返回值的绝对值。例如，实现可能对所有插件使用单个计数器，或对每个插件使用一个计数器。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This function gives the runtime an indication of the amount of externally
-allocated memory that is kept alive by JavaScript objects
-(i.e. a JavaScript object that points to its own memory allocated by a
-native addon). Registering externally allocated memory may, but is not
-guaranteed to, trigger global garbage collections more
-often than it would otherwise.
+此函数向运行时指示由 JavaScript 对象保持存活的外部分配内存量（即指向由原生插件分配并由其自身持有的内存的 JavaScript 对象）。注册外部分配的内存可能会（但不保证）比未注册时更频繁地触发全局垃圾回收。
 
-This function is expected to be called in a manner such that an
-addon does not decrease the external memory more than it has
-increased the external memory.
+调用此函数时，应确保插件减少的外部内存不超过其增加的外部内存。
 
-## Promises
+## Promise
 
-Node-API provides facilities for creating `Promise` objects as described in
-[Section Promise objects][] of the ECMA specification. It implements promises as a pair of
-objects. When a promise is created by `napi_create_promise()`, a "deferred"
-object is created and returned alongside the `Promise`. The deferred object is
-bound to the created `Promise` and is the only means to resolve or reject the
-`Promise` using `napi_resolve_deferred()` or `napi_reject_deferred()`. The
-deferred object that is created by `napi_create_promise()` is freed by
-`napi_resolve_deferred()` or `napi_reject_deferred()`. The `Promise` object may
-be returned to JavaScript where it can be used in the usual fashion.
+Node-API 提供了创建 `Promise` 对象的功能，如 ECMA 规范 [Promise 对象部分][] 所述。它将 promise 实现为一对对象。当通过 `napi_create_promise()` 创建 promise 时，会创建一个 "deferred" 对象并与 `Promise` 一起返回。deferred 对象绑定到创建的 `Promise`，是使用 `napi_resolve_deferred()` 或 `napi_reject_deferred()` 解决或拒绝 `Promise` 的唯一方式。由 `napi_create_promise()` 创建的 deferred 对象将由 `napi_resolve_deferred()` 或 `napi_reject_deferred()` 释放。`Promise` 对象可以返回给 JavaScript，在那里它可以像通常一样使用。
 
-For example, to create a promise and pass it to an asynchronous worker:
+例如，创建一个 promise 并将其传递给异步 worker：
 
 ```c
 napi_deferred deferred;
 napi_value promise;
 napi_status status;
 
-// Create the promise.
+// 创建 promise。
 status = napi_create_promise(env, &deferred, &promise);
 if (status != napi_ok) return NULL;
 
-// Pass the deferred to a function that performs an asynchronous action.
+// 将 deferred 传递给执行异步操作的函数。
 do_something_asynchronous(deferred);
 
-// Return the promise to JS
+// 将 promise 返回给 JS
 return promise;
 ```
 
-The above function `do_something_asynchronous()` would perform its asynchronous
-action and then it would resolve or reject the deferred, thereby concluding the
-promise and freeing the deferred:
+上述函数 `do_something_asynchronous()` 将执行其异步操作，然后解决或拒绝 deferred，从而结束 promise 并释放 deferred：
 
 ```c
 napi_deferred deferred;
 napi_value undefined;
 napi_status status;
 
-// Create a value with which to conclude the deferred.
+// 创建一个用于结束 deferred 的值。
 status = napi_get_undefined(env, &undefined);
 if (status != napi_ok) return NULL;
 
-// Resolve or reject the promise associated with the deferred depending on
-// whether the asynchronous action succeeded.
+// 根据异步操作是否成功，解决或拒绝与 deferred 关联的 promise。
 if (asynchronous_action_succeeded) {
   status = napi_resolve_deferred(env, deferred, undefined);
 } else {
@@ -6415,7 +5484,7 @@ if (asynchronous_action_succeeded) {
 }
 if (status != napi_ok) return NULL;
 
-// At this point the deferred has been freed, so we should assign NULL to it.
+// 此时 deferred 已被释放，所以我们应该将其赋值为 NULL。
 deferred = NULL;
 ```
 
@@ -6432,15 +5501,13 @@ napi_status napi_create_promise(napi_env env,
                                 napi_value* promise);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] deferred`: A newly created deferred object which can later be passed to
-  `napi_resolve_deferred()` or `napi_reject_deferred()` to resolve resp. reject
-  the associated promise.
-* `[out] promise`: The JavaScript promise associated with the deferred object.
+* `[in] env`：调用此 API 所处的环境。
+* `[out] deferred`：新创建的 deferred 对象，稍后可传递给 `napi_resolve_deferred()` 或 `napi_reject_deferred()` 以分别解决或拒绝关联的 promise。
+* `[out] promise`：与 deferred 对象关联的 JavaScript promise。
 
-Returns `napi_ok` if the API succeeded.
+如果 API 成功，则返回 `napi_ok`。
 
-This API creates a deferred object and a JavaScript promise.
+此 API 创建一个 deferred 对象和一个 JavaScript promise。
 
 ### `napi_resolve_deferred`
 
@@ -6455,18 +5522,13 @@ napi_status napi_resolve_deferred(napi_env env,
                                   napi_value resolution);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] deferred`: The deferred object whose associated promise to resolve.
-* `[in] resolution`: The value with which to resolve the promise.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] deferred`：要解决其关联 promise 的 deferred 对象。
+* `[in] resolution`：用于解决 promise 的值。
 
-This API resolves a JavaScript promise by way of the deferred object
-with which it is associated. Thus, it can only be used to resolve JavaScript
-promises for which the corresponding deferred object is available. This
-effectively means that the promise must have been created using
-`napi_create_promise()` and the deferred object returned from that call must
-have been retained in order to be passed to this API.
+此 API 通过与之关联的 deferred 对象解决 JavaScript promise。因此，它只能用于解决具有相应 deferred 对象的 JavaScript promise。这实际上意味着 promise 必须是使用 `napi_create_promise()` 创建的，并且必须保留该调用返回的 deferred 对象才能传递给此 API。
 
-The deferred object is freed upon successful completion.
+deferred 对象在成功完成后被释放。
 
 ### `napi_reject_deferred`
 
@@ -6481,18 +5543,13 @@ napi_status napi_reject_deferred(napi_env env,
                                  napi_value rejection);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] deferred`: The deferred object whose associated promise to resolve.
-* `[in] rejection`: The value with which to reject the promise.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] deferred`：要拒绝其关联 promise 的 deferred 对象。
+* `[in] rejection`：用于拒绝 promise 的值。
 
-This API rejects a JavaScript promise by way of the deferred object
-with which it is associated. Thus, it can only be used to reject JavaScript
-promises for which the corresponding deferred object is available. This
-effectively means that the promise must have been created using
-`napi_create_promise()` and the deferred object returned from that call must
-have been retained in order to be passed to this API.
+此 API 通过与之关联的 deferred 对象拒绝 JavaScript promise。因此，它只能用于拒绝具有相应 deferred 对象的 JavaScript promise。这实际上意味着 promise 必须是使用 `napi_create_promise()` 创建的，并且必须保留该调用返回的 deferred 对象才能传递给此 API。
 
-The deferred object is freed upon successful completion.
+deferred 对象在成功完成后被释放。
 
 ### `napi_is_promise`
 
@@ -6507,15 +5564,13 @@ napi_status napi_is_promise(napi_env env,
                             bool* is_promise);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] value`: The value to examine
-* `[out] is_promise`: Flag indicating whether `promise` is a native promise
-  object (that is, a promise object created by the underlying engine).
+* `[in] env`：调用此 API 所处的环境。
+* `[in] value`：要检查的值
+* `[out] is_promise`：标志，指示 `promise` 是否为原生 promise 对象（即由底层引擎创建的 promise 对象）。
 
-## Script execution
+## 脚本执行
 
-Node-API provides an API for executing a string containing JavaScript using the
-underlying JavaScript engine.
+Node-API 提供了一个 API，用于使用底层 JavaScript 引擎执行包含 JavaScript 的字符串。
 
 ### `napi_run_script`
 
@@ -6530,27 +5585,19 @@ NAPI_EXTERN napi_status napi_run_script(napi_env env,
                                         napi_value* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] script`: A JavaScript string containing the script to execute.
-* `[out] result`: The value resulting from having executed the script.
+* `[in] env`：调用此 API 所处的环境。
+* `[in] script`：包含要执行脚本的 JavaScript 字符串。
+* `[out] result`：执行脚本后产生的值。
 
-This function executes a string of JavaScript code and returns its result with
-the following caveats:
+此函数执行一段 JavaScript 代码字符串并返回其结果，但有以下注意事项：
 
-* Unlike `eval`, this function does not allow the script to access the current
-  lexical scope, and therefore also does not allow to access the
-  [module scope][], meaning that pseudo-globals such as `require` will not be
-  available.
-* The script can access the [global scope][]. Function and `var` declarations
-  in the script will be added to the [`global`][] object. Variable declarations
-  made using `let` and `const` will be visible globally, but will not be added
-  to the [`global`][] object.
-* The value of `this` is [`global`][] within the script.
+* 与 `eval` 不同，此函数不允许脚本访问当前词法作用域，因此也不允许访问 [模块作用域][]，这意味着 `require` 等伪全局变量将不可用。
+* 脚本可以访问 [全局作用域][]。脚本中的函数和 `var` 声明将被添加到 [`global`][] 对象。使用 `let` 和 `const` 进行的变量声明将在全局可见，但不会添加到 [`global`][] 对象。
+* 脚本中 `this` 的值是 [`global`][]。
 
-## libuv event loop
+## libuv 事件循环
 
-Node-API provides a function for getting the current event loop associated with
-a specific `napi_env`.
+Node-API 提供了一个函数，用于获取与特定 `napi_env` 关联的当前事件循环。
 
 ### `napi_get_uv_event_loop`
 
@@ -6566,145 +5613,59 @@ NAPI_EXTERN napi_status napi_get_uv_event_loop(node_api_basic_env env,
                                                struct uv_loop_s** loop);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] loop`: The current libuv loop instance.
+* `[in] env`：调用此 API 所处的环境。
+* `[out] loop`：当前 libuv 循环实例。
 
-Note: While libuv only [guarantees ABI stability](https://github.com/libuv/libuv?tab=readme-ov-file#versioning)
-in a major version, its use may result in an addon that does not work across
-Node.js major versions.
+注意：尽管 libuv 只在主版本中[保证 ABI 稳定性](https://github.com/libuv/libuv?tab=readme-ov-file#versioning)，
+但使用它可能会导致一个无法跨
+Node.js 主版本工作的插件。
 
-[ThreadSafeFunction](#asynchronous-thread-safe-function-calls)
-is an ABI-stable alternative for many use cases to calling into the
-JavaScript thread from another thread.
+[线程安全函数](#asynchronous-thread-safe-function-calls)
+对于许多用例来说，是一种 ABI 稳定的替代方案，可用于从另一个线程调用
+JavaScript 线程。
 
-## Asynchronous thread-safe function calls
+## 异步线程安全函数调用
 
-JavaScript functions can normally only be called from a native addon's main
-thread. If an addon creates additional threads, then Node-API functions that
-require a `napi_env`, `napi_value`, or `napi_ref` must not be called from those
-threads.
+JavaScript 函数通常只能从原生插件的主线程调用。如果插件创建了额外的线程，那么需要 `napi_env`、`napi_value` 或 `napi_ref` 的 Node-API 函数不得从这些线程中调用。
 
-When an addon has additional threads and JavaScript functions need to be invoked
-based on the processing completed by those threads, those threads must
-communicate with the addon's main thread so that the main thread can invoke the
-JavaScript function on their behalf. The thread-safe function APIs provide an
-easy way to do this.
+当插件拥有额外线程且需要基于这些线程完成的处理来调用 JavaScript 函数时，这些线程必须与插件的主线程通信，以便主线程可以代表它们调用 JavaScript 函数。线程安全函数 API 提供了一种简单的方法来实现这一点。
 
-These APIs provide the type `napi_threadsafe_function` as well as APIs to
-create, destroy, and call objects of this type.
-`napi_create_threadsafe_function()` creates a persistent reference to a
-`napi_value` that holds a JavaScript function which can be called from multiple
-threads. The calls happen asynchronously. This means that values with which the
-JavaScript callback is to be called will be placed in a queue, and, for each
-value in the queue, a call will eventually be made to the JavaScript function.
+这些 API 提供了 `napi_threadsafe_function` 类型以及用于创建、销毁和调用该类型对象的 API。
+`napi_create_threadsafe_function()` 创建一个对 `napi_value` 的持久引用，该 `napi_value` 持有可以从多个线程调用的 JavaScript 函数。调用是异步发生的。这意味着用于调用 JavaScript 回调的值将被放入队列中，并且对于队列中的每个值，最终都会调用该 JavaScript 函数。
 
-Upon creation of a `napi_threadsafe_function` a `napi_finalize` callback can be
-provided. This callback will be invoked on the main thread when the thread-safe
-function is about to be destroyed. It receives the context and the finalize data
-given during construction, and provides an opportunity for cleaning up after the
-threads e.g. by calling `uv_thread_join()`. **Aside from the main loop thread,
-no threads should be using the thread-safe function after the finalize callback
-completes.**
+在创建 `napi_threadsafe_function` 时，可以提供 `napi_finalize` 回调。当线程安全函数即将被销毁时，此回调将在主线程上被调用。它接收构造期间提供的上下文和终结数据，并提供在线程之后清理的机会，例如通过调用 `uv_thread_join()`。**除了主循环线程外，在终结回调完成后，任何线程都不应再使用该线程安全函数。**
 
-The `context` given during the call to `napi_create_threadsafe_function()` can
-be retrieved from any thread with a call to
-`napi_get_threadsafe_function_context()`.
+在调用 `napi_create_threadsafe_function()` 期间给出的 `context` 可以通过调用 `napi_get_threadsafe_function_context()` 从任何线程检索。
 
-### Calling a thread-safe function
+### 调用线程安全函数
 
-`napi_call_threadsafe_function()` can be used for initiating a call into
-JavaScript. `napi_call_threadsafe_function()` accepts a parameter which controls
-whether the API behaves blockingly. If set to `napi_tsfn_nonblocking`, the API
-behaves non-blockingly, returning `napi_queue_full` if the queue was full,
-preventing data from being successfully added to the queue. If set to
-`napi_tsfn_blocking`, the API blocks until space becomes available in the queue.
-`napi_call_threadsafe_function()` never blocks if the thread-safe function was
-created with a maximum queue size of 0.
+`napi_call_threadsafe_function()` 可用于启动对 JavaScript 的调用。`napi_call_threadsafe_function()` 接受一个参数来控制 API 的行为是否阻塞。如果设置为 `napi_tsfn_nonblocking`，API 表现为非阻塞，如果队列已满则返回 `napi_queue_full`，防止数据成功添加到队列。如果设置为 `napi_tsfn_blocking`，API 会阻塞直到队列中有可用空间。如果创建线程安全函数时最大队列大小为 0，则 `napi_call_threadsafe_function()` 永远不会阻塞。
 
-`napi_call_threadsafe_function()` should not be called with `napi_tsfn_blocking`
-from a JavaScript thread, because, if the queue is full, it may cause the
-JavaScript thread to deadlock.
+不应从 JavaScript 线程使用 `napi_tsfn_blocking` 调用 `napi_call_threadsafe_function()`，因为如果队列已满，它可能导致 JavaScript 线程死锁。
 
-The actual call into JavaScript is controlled by the callback given via the
-`call_js_cb` parameter. `call_js_cb` is invoked on the main thread once for each
-value that was placed into the queue by a successful call to
-`napi_call_threadsafe_function()`. If such a callback is not given, a default
-callback will be used, and the resulting JavaScript call will have no arguments.
-The `call_js_cb` callback receives the JavaScript function to call as a
-`napi_value` in its parameters, as well as the `void*` context pointer used when
-creating the `napi_threadsafe_function`, and the next data pointer that was
-created by one of the secondary threads. The callback can then use an API such
-as `napi_call_function()` to call into JavaScript.
+实际对 JavaScript 的调用由通过 `call_js_cb` 参数给出的回调控制。对于每次成功调用 `napi_call_threadsafe_function()` 放入队列的值，`call_js_cb` 会在主线程上被调用一次。如果没有给出这样的回调，将使用默认回调，并且生成的 JavaScript 调用将没有参数。`call_js_cb` 回调在其参数中接收要调用的 JavaScript 函数作为 `napi_value`，以及创建 `napi_threadsafe_function` 时使用的 `void*` 上下文指针，和由其中一个辅助线程创建的下一个数据指针。然后回调可以使用诸如 `napi_call_function()` 之类的 API 调用进入 JavaScript。
 
-The callback may also be invoked with `env` and `call_js_cb` both set to `NULL`
-to indicate that calls into JavaScript are no longer possible, while items
-remain in the queue that may need to be freed. This normally occurs when the
-Node.js process exits while there is a thread-safe function still active.
+该回调也可能被调用，且 `env` 和 `call_js_cb` 均设置为 `NULL`，以表明不再可能调用 JavaScript，而队列中仍有可能需要释放的项目。当 Node.js 进程退出而仍有活动的线程安全函数时，通常会发生这种情况。
 
-It is not necessary to call into JavaScript via `napi_make_callback()` because
-Node-API runs `call_js_cb` in a context appropriate for callbacks.
+不需要通过 `napi_make_callback()` 调用 JavaScript，因为 Node-API 在适合回调的上下文中运行 `call_js_cb`。
 
-Zero or more queued items may be invoked in each tick of the event loop.
-Applications should not depend on a specific behavior other than progress in
-invoking callbacks will be made and events will be invoked
-as time moves forward.
+事件循环的每个 tick 中可能会调用零个或多个排队项。应用程序不应依赖于特定的行为，除了随着时间推移，回调的调用会有进展并且事件会被调用。
 
-### Reference counting of thread-safe functions
+### 线程安全函数的引用计数
 
-Threads can be added to and removed from a `napi_threadsafe_function` object
-during its existence. Thus, in addition to specifying an initial number of
-threads upon creation, `napi_acquire_threadsafe_function` can be called to
-indicate that a new thread will start making use of the thread-safe function.
-Similarly, `napi_release_threadsafe_function` can be called to indicate that an
-existing thread will stop making use of the thread-safe function.
+在线程安全函数对象存在期间，可以向 `napi_threadsafe_function` 对象添加或移除线程。因此，除了在创建时指定初始线程数外，还可以调用 `napi_acquire_threadsafe_function` 来表示新线程将开始使用该线程安全函数。类似地，可以调用 `napi_release_threadsafe_function` 来表示现有线程将停止使用该线程安全函数。
 
-`napi_threadsafe_function` objects are destroyed when every thread which uses
-the object has called `napi_release_threadsafe_function()` or has received a
-return status of `napi_closing` in response to a call to
-`napi_call_threadsafe_function`. The queue is emptied before the
-`napi_threadsafe_function` is destroyed. `napi_release_threadsafe_function()`
-should be the last API call made in conjunction with a given
-`napi_threadsafe_function`, because after the call completes, there is no
-guarantee that the `napi_threadsafe_function` is still allocated. For the same
-reason, do not use a thread-safe function
-after receiving a return value of `napi_closing` in response to a call to
-`napi_call_threadsafe_function`. Data associated with the
-`napi_threadsafe_function` can be freed in its `napi_finalize` callback which
-was passed to `napi_create_threadsafe_function()`. The parameter
-`initial_thread_count` of `napi_create_threadsafe_function` marks the initial
-number of acquisitions of the thread-safe functions, instead of calling
-`napi_acquire_threadsafe_function` multiple times at creation.
+`napi_threadsafe_function` 对象将在每个使用该对象的线程都调用了 `napi_release_threadsafe_function()` 或在响应 `napi_call_threadsafe_function` 调用时收到 `napi_closing` 返回状态时被销毁。在 `napi_threadsafe_function` 被销毁之前，队列会被清空。`napi_release_threadsafe_function()` 应该是与给定 `napi_threadsafe_function` 结合使用的最后一个 API 调用，因为在调用完成后，无法保证 `napi_threadsafe_function` 仍然被分配。出于同样的原因，在响应 `napi_call_threadsafe_function` 调用收到 `napi_closing` 返回值后，不要使用线程安全函数。与 `napi_threadsafe_function` 关联的数据可以在传递给 `napi_create_threadsafe_function()` 的 `napi_finalize` 回调中释放。`napi_create_threadsafe_function` 的参数 `initial_thread_count` 标记线程安全函数的初始获取次数，而不是在创建时多次调用 `napi_acquire_threadsafe_function`。
 
-Once the number of threads making use of a `napi_threadsafe_function` reaches
-zero, no further threads can start making use of it by calling
-`napi_acquire_threadsafe_function()`. In fact, all subsequent API calls
-associated with it, except `napi_release_threadsafe_function()`, will return an
-error value of `napi_closing`.
+一旦使用 `napi_threadsafe_function` 的线程数达到零，就不能再通过调用 `napi_acquire_threadsafe_function()` 开始使用它。实际上，所有与其关联的后续 API 调用，除了 `napi_release_threadsafe_function()`，都将返回错误值 `napi_closing`。
 
-The thread-safe function can be "aborted" by giving a value of `napi_tsfn_abort`
-to `napi_release_threadsafe_function()`. This will cause all subsequent APIs
-associated with the thread-safe function except
-`napi_release_threadsafe_function()` to return `napi_closing` even before its
-reference count reaches zero. In particular, `napi_call_threadsafe_function()`
-will return `napi_closing`, thus informing the threads that it is no longer
-possible to make asynchronous calls to the thread-safe function. This can be
-used as a criterion for terminating the thread. **Upon receiving a return value
-of `napi_closing` from `napi_call_threadsafe_function()` a thread must not use
-the thread-safe function anymore because it is no longer guaranteed to
-be allocated.**
+可以通过向 `napi_release_threadsafe_function()` 提供 `napi_tsfn_abort` 值来“中止”线程安全函数。这将导致所有与该线程安全函数关联的后续 API（`napi_release_threadsafe_function()` 除外）返回 `napi_closing`，即使其引用计数尚未达到零。特别是，`napi_call_threadsafe_function()` 将返回 `napi_closing`，从而通知线程不再可能对该线程安全函数进行异步调用。这可用作终止线程的标准。**在从 `napi_call_threadsafe_function()` 收到 `napi_closing` 返回值后，线程不得再使用该线程安全函数，因为不再保证它被分配。**
 
-### Deciding whether to keep the process running
+### 决定是否保持进程运行
 
-Similarly to libuv handles, thread-safe functions can be "referenced" and
-"unreferenced". A "referenced" thread-safe function will cause the event loop on
-the thread on which it is created to remain alive until the thread-safe function
-is destroyed. In contrast, an "unreferenced" thread-safe function will not
-prevent the event loop from exiting. The APIs `napi_ref_threadsafe_function` and
-`napi_unref_threadsafe_function` exist for this purpose.
+类似于 libuv 句柄，线程安全函数可以被“引用”和“取消引用”。“被引用”的线程安全函数会导致创建它的事件循环保持活动状态，直到线程安全函数被销毁。相反，“未引用”的线程安全函数不会阻止事件循环退出。API `napi_ref_threadsafe_function` 和 `napi_unref_threadsafe_function` 为此目的而存在。
 
-Neither does `napi_unref_threadsafe_function` mark the thread-safe functions as
-able to be destroyed nor does `napi_ref_threadsafe_function` prevent it from
-being destroyed.
+`napi_unref_threadsafe_function` 不会标记线程安全函数为可销毁，`napi_ref_threadsafe_function` 也不会阻止其被销毁。
 
 ### `napi_create_threadsafe_function`
 
@@ -6716,7 +5677,7 @@ changes:
      - v12.6.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/27791
-    description: Made `func` parameter optional with custom `call_js_cb`.
+    description: "使用自定义 `call_js_cb` 时，`func` 参数变为可选。"
 -->
 
 ```c
@@ -6734,36 +5695,23 @@ napi_create_threadsafe_function(napi_env env,
                                 napi_threadsafe_function* result);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] func`: An optional JavaScript function to call from another thread. It
-  must be provided if `NULL` is passed to `call_js_cb`.
-* `[in] async_resource`: An optional object associated with the async work that
-  will be passed to possible `async_hooks` [`init` hooks][].
-* `[in] async_resource_name`: A JavaScript string to provide an identifier for
-  the kind of resource that is being provided for diagnostic information exposed
-  by the `async_hooks` API.
-* `[in] max_queue_size`: Maximum size of the queue. `0` for no limit.
-* `[in] initial_thread_count`: The initial number of acquisitions, i.e. the
-  initial number of threads, including the main thread, which will be making use
-  of this function.
-* `[in] thread_finalize_data`: Optional data to be passed to `thread_finalize_cb`.
-* `[in] thread_finalize_cb`: Optional function to call when the
-  `napi_threadsafe_function` is being destroyed.
-* `[in] context`: Optional data to attach to the resulting
-  `napi_threadsafe_function`.
-* `[in] call_js_cb`: Optional callback which calls the JavaScript function in
-  response to a call on a different thread. This callback will be called on the
-  main thread. If not given, the JavaScript function will be called with no
-  parameters and with `undefined` as its `this` value.
-  [`napi_threadsafe_function_call_js`][] provides more details.
-* `[out] result`: The asynchronous thread-safe JavaScript function.
+* `[in] env`：调用 API 所处的环境。
+* `[in] func`：要从另一个线程调用的可选 JavaScript 函数。如果向 `call_js_cb` 传递 `NULL`，则必须提供此项。
+* `[in] async_resource`：与异步工作关联的可选对象，将传递给可能的 `async_hooks` [`init` hooks][]。
+* `[in] async_resource_name`：一个 JavaScript 字符串，用于为 `async_hooks` API 暴露的诊断信息提供的资源类型提供标识符。
+* `[in] max_queue_size`：队列的最大大小。`0` 表示无限制。
+* `[in] initial_thread_count`：初始获取次数，即初始线程数，包括主线程，将使用此函数。
+* `[in] thread_finalize_data`：传递给 `thread_finalize_cb` 的可选数据。
+* `[in] thread_finalize_cb`：当 `napi_threadsafe_function` 被销毁时调用的可选函数。
+* `[in] context`：附加到结果 `napi_threadsafe_function` 的可选数据。
+* `[in] call_js_cb`：可选回调，响应不同线程上的调用而在主线程上调用 JavaScript 函数。如果未给出，JavaScript 函数将被调用且无参数，其 `this` 值为 `undefined`。[`napi_threadsafe_function_call_js`][] 提供了更多细节。
+* `[out] result`：异步线程安全 JavaScript 函数。
 
-**Change History:**
+**变更历史：**
 
-* Version 10 (`NAPI_VERSION` is defined as `10` or higher):
+* 版本 10（`NAPI_VERSION` 定义为 `10` 或更高）：
 
-  Uncaught exceptions thrown in `call_js_cb` are handled with the
-  [`'uncaughtException'`][] event, instead of being ignored.
+  在 `call_js_cb` 中抛出的未捕获异常将通过 [`'uncaughtException'`][] 事件处理，而不是被忽略。
 
 ### `napi_get_threadsafe_function_context`
 
@@ -6778,10 +5726,10 @@ napi_get_threadsafe_function_context(napi_threadsafe_function func,
                                      void** result);
 ```
 
-* `[in] func`: The thread-safe function for which to retrieve the context.
-* `[out] result`: The location where to store the context.
+* `[in] func`：要检索其上下文的线程安全函数。
+* `[out] result`：存储上下文的位置。
 
-This API may be called from any thread which makes use of `func`.
+此 API 可以从使用 `func` 的任何线程调用。
 
 ### `napi_call_threadsafe_function`
 
@@ -6791,12 +5739,10 @@ napiVersion: 4
 changes:
   - version: v14.5.0
     pr-url: https://github.com/nodejs/node/pull/33453
-    description: Support for `napi_would_deadlock` has been reverted.
+    description: "对 `napi_would_deadlock` 的支持已被回退。"
   - version: v14.1.0
     pr-url: https://github.com/nodejs/node/pull/32689
-    description: Return `napi_would_deadlock` when called with
-                 `napi_tsfn_blocking` from the main thread or a worker thread
-                 and the queue is full.
+    description: "当从主线程或工作线程使用 `napi_tsfn_blocking` 调用且队列已满时，返回 `napi_would_deadlock`。"
 -->
 
 ```c
@@ -6806,23 +5752,15 @@ napi_call_threadsafe_function(napi_threadsafe_function func,
                               napi_threadsafe_function_call_mode is_blocking);
 ```
 
-* `[in] func`: The asynchronous thread-safe JavaScript function to invoke.
-* `[in] data`: Data to send into JavaScript via the callback `call_js_cb`
-  provided during the creation of the thread-safe JavaScript function.
-* `[in] is_blocking`: Flag whose value can be either `napi_tsfn_blocking` to
-  indicate that the call should block if the queue is full or
-  `napi_tsfn_nonblocking` to indicate that the call should return immediately
-  with a status of `napi_queue_full` whenever the queue is full.
+* `[in] func`：要调用的异步线程安全 JavaScript 函数。
+* `[in] data`：通过创建线程安全 JavaScript 函数期间提供的回调 `call_js_cb` 发送到 JavaScript 的数据。
+* `[in] is_blocking`：标志，其值可以是 `napi_tsfn_blocking` 表示如果队列已满调用应阻塞，或 `napi_tsfn_nonblocking` 表示每当队列已满调用应立即返回状态 `napi_queue_full`。
 
-This API should not be called with `napi_tsfn_blocking` from a JavaScript
-thread, because, if the queue is full, it may cause the JavaScript thread to
-deadlock.
+不应从 JavaScript 线程使用 `napi_tsfn_blocking` 调用此 API，因为如果队列已满，它可能导致 JavaScript 线程死锁。
 
-This API will return `napi_closing` if `napi_release_threadsafe_function()` was
-called with `abort` set to `napi_tsfn_abort` from any thread. The value is only
-added to the queue if the API returns `napi_ok`.
+如果从任何线程调用 `napi_release_threadsafe_function()` 时将 `abort` 设置为 `napi_tsfn_abort`，此 API 将返回 `napi_closing`。仅当 API 返回 `napi_ok` 时，值才会被添加到队列。
 
-This API may be called from any thread which makes use of `func`.
+此 API 可以从使用 `func` 的任何线程调用。
 
 ### `napi_acquire_threadsafe_function`
 
@@ -6836,15 +5774,11 @@ NAPI_EXTERN napi_status
 napi_acquire_threadsafe_function(napi_threadsafe_function func);
 ```
 
-* `[in] func`: The asynchronous thread-safe JavaScript function to start making
-  use of.
+* `[in] func`：要开始使用的异步线程安全 JavaScript 函数。
 
-A thread should call this API before passing `func` to any other thread-safe
-function APIs to indicate that it will be making use of `func`. This prevents
-`func` from being destroyed when all other threads have stopped making use of
-it.
+线程在将 `func` 传递给任何其他线程安全函数 API 之前应调用此 API，以表明它将使用 `func`。这可以防止当所有其他线程停止使用它时 `func` 被销毁。
 
-This API may be called from any thread which will start making use of `func`.
+此 API 可以从将开始使用 `func` 的任何线程调用。
 
 ### `napi_release_threadsafe_function`
 
@@ -6859,21 +5793,12 @@ napi_release_threadsafe_function(napi_threadsafe_function func,
                                  napi_threadsafe_function_release_mode mode);
 ```
 
-* `[in] func`: The asynchronous thread-safe JavaScript function whose reference
-  count to decrement.
-* `[in] mode`: Flag whose value can be either `napi_tsfn_release` to indicate
-  that the current thread will make no further calls to the thread-safe
-  function, or `napi_tsfn_abort` to indicate that in addition to the current
-  thread, no other thread should make any further calls to the thread-safe
-  function. If set to `napi_tsfn_abort`, further calls to
-  `napi_call_threadsafe_function()` will return `napi_closing`, and no further
-  values will be placed in the queue.
+* `[in] func`：要递减其引用计数的异步线程安全 JavaScript 函数。
+* `[in] mode`：标志，其值可以是 `napi_tsfn_release` 表示当前线程将不再调用线程安全函数，或 `napi_tsfn_abort` 表示除了当前线程外，其他线程也不应再调用线程安全函数。如果设置为 `napi_tsfn_abort`，进一步调用 `napi_call_threadsafe_function()` 将返回 `napi_closing`，并且不会再将值放入队列。
 
-A thread should call this API when it stops making use of `func`. Passing `func`
-to any thread-safe APIs after having called this API has undefined results, as
-`func` may have been destroyed.
+当线程停止使用 `func` 时应调用此 API。在调用此 API 后将 `func` 传递给任何线程安全 API 会导致未定义的结果，因为 `func` 可能已被销毁。
 
-This API may be called from any thread which will stop making use of `func`.
+此 API 可以从将停止使用 `func` 的任何线程调用。
 
 ### `napi_ref_threadsafe_function`
 
@@ -6887,19 +5812,14 @@ NAPI_EXTERN napi_status
 napi_ref_threadsafe_function(node_api_basic_env env, napi_threadsafe_function func);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] func`: The thread-safe function to reference.
+* `[in] env`：调用 API 所处的环境。
+* `[in] func`：要引用的线程安全函数。
 
-This API is used to indicate that the event loop running on the main thread
-should not exit until `func` has been destroyed. Similar to [`uv_ref`][] it is
-also idempotent.
+此 API 用于表明在主线程上运行的事件循环不应退出，直到 `func` 被销毁。类似于 [`uv_ref`][]，它也是幂等的。
 
-Neither does `napi_unref_threadsafe_function` mark the thread-safe functions as
-able to be destroyed nor does `napi_ref_threadsafe_function` prevent it from
-being destroyed. `napi_acquire_threadsafe_function` and
-`napi_release_threadsafe_function` are available for that purpose.
+`napi_unref_threadsafe_function` 不会标记线程安全函数为可销毁，`napi_ref_threadsafe_function` 也不会阻止其被销毁。`napi_acquire_threadsafe_function` 和 `napi_release_threadsafe_function` 可用于此目的。
 
-This API may only be called from the main thread.
+此 API 只能从主线程调用。
 
 ### `napi_unref_threadsafe_function`
 
@@ -6913,16 +5833,14 @@ NAPI_EXTERN napi_status
 napi_unref_threadsafe_function(node_api_basic_env env, napi_threadsafe_function func);
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[in] func`: The thread-safe function to unreference.
+* `[in] env`：调用 API 所处的环境。
+* `[in] func`：要取消引用的线程安全函数。
 
-This API is used to indicate that the event loop running on the main thread
-may exit before `func` is destroyed. Similar to [`uv_unref`][] it is also
-idempotent.
+此 API 用于表明在主线程上运行的事件循环可以在 `func` 被销毁之前退出。类似于 [`uv_unref`][]，它也是幂等的。
 
-This API may only be called from the main thread.
+此 API 只能从主线程调用。
 
-## Miscellaneous utilities
+## 杂项工具
 
 ### `node_api_get_module_file_name`
 
@@ -6940,60 +5858,56 @@ node_api_get_module_file_name(node_api_basic_env env, const char** result);
 
 ```
 
-* `[in] env`: The environment that the API is invoked under.
-* `[out] result`: A URL containing the absolute path of the
-  location from which the add-on was loaded. For a file on the local
-  file system it will start with `file://`. The string is null-terminated and
-  owned by `env` and must thus not be modified or freed.
+* `[in] env`：调用此 API 时所处的环境。
+* `[out] result`：一个 URL，包含加载插件位置的绝对路径。对于本地文件系统上的文件，它将以 `file://` 开头。该字符串以空字符结尾并由 `env` 拥有，因此不得修改或释放。
 
-`result` may be an empty string if the add-on loading process fails to establish
-the add-on's file name during loading.
+如果插件加载过程在加载期间无法确定插件的文件名，则 `result` 可能为空字符串。
 
-[ABI Stability]: https://nodejs.org/en/docs/guides/abi-stability/
+[ABI 稳定性]: https://nodejs.org/en/docs/guides/abi-stability/
 [AppVeyor]: https://www.appveyor.com
-[C++ Addons]: addons.md
+[C++ 插件]: addons.md
 [CMake]: https://cmake.org
 [CMake.js]: https://github.com/cmake-js/cmake-js
-[ECMAScript Language Specification]: https://tc39.es/ecma262/
-[Error handling]: #error-handling
+[ECMAScript 语言规范]: https://tc39.es/ecma262/
+[错误处理]: #error-handling
 [GCC]: https://gcc.gnu.org
 [GYP]: https://gyp.gsrc.io
-[GitHub releases]: https://help.github.com/en/github/administering-a-repository/about-releases
+[GitHub 发布]: https://help.github.com/en/github/administering-a-repository/about-releases
 [LLVM]: https://llvm.org
-[Native Abstractions for Node.js]: https://github.com/nodejs/nan
-[Node-API Media]: https://github.com/nodejs/abi-stable-node/blob/HEAD/node-api-media.md
-[Object lifetime management]: #object-lifetime-management
-[Object wrap]: #object-wrap
-[Section Agents]: https://tc39.es/ecma262/#sec-agents
-[Section Array instance length]: https://tc39.es/ecma262/#sec-properties-of-array-instances-length
-[Section Array objects]: https://tc39.es/ecma262/#sec-array-objects
-[Section ArrayBuffer objects]: https://tc39.es/ecma262/#sec-arraybuffer-objects
-[Section DataView objects]: https://tc39.es/ecma262/#sec-dataview-objects
-[Section Date objects]: https://tc39.es/ecma262/#sec-date-objects
-[Section DefineOwnProperty]: https://tc39.es/ecma262/#sec-ordinary-object-internal-methods-and-internal-slots-defineownproperty-p-desc
-[Section Function objects]: https://tc39.es/ecma262/#sec-function-objects
-[Section IsArray]: https://tc39.es/ecma262/#sec-isarray
-[Section IsStrctEqual]: https://tc39.es/ecma262/#sec-strict-equality-comparison
-[Section Promise objects]: https://tc39.es/ecma262/#sec-promise-objects
-[Section SharedArrayBuffer objects]: https://tc39.es/ecma262/#sec-sharedarraybuffer-objects
-[Section ToBoolean]: https://tc39.es/ecma262/#sec-toboolean
-[Section ToNumber]: https://tc39.es/ecma262/#sec-tonumber
-[Section ToObject]: https://tc39.es/ecma262/#sec-toobject
-[Section ToString]: https://tc39.es/ecma262/#sec-tostring
-[Section TypedArray objects]: https://tc39.es/ecma262/#sec-typedarray-objects
-[Section detachArrayBuffer]: https://tc39.es/ecma262/#sec-detacharraybuffer
-[Section instanceof operator]: https://tc39.es/ecma262/#sec-instanceofoperator
-[Section isDetachedBuffer]: https://tc39.es/ecma262/#sec-isdetachedbuffer
-[Section language types]: https://tc39.es/ecma262/#sec-ecmascript-data-types-and-values
-[Section number type]: https://tc39.es/ecma262/#sec-ecmascript-language-types-number-type
-[Section object type]: https://tc39.es/ecma262/#sec-object-type
-[Section property attributes]: https://tc39.es/ecma262/#sec-property-attributes
-[Section string type]: https://tc39.es/ecma262/#sec-ecmascript-language-types-string-type
-[Section symbol type]: https://tc39.es/ecma262/#sec-ecmascript-language-types-symbol-type
-[Section typeof operator]: https://tc39.es/ecma262/#sec-typeof-operator
+[Node.js 原生抽象]: https://github.com/nodejs/nan
+[Node-API 媒体]: https://github.com/nodejs/abi-stable-node/blob/HEAD/node-api-media.md
+[对象生命周期管理]: #object-lifetime-management
+[对象包装]: #object-wrap
+[Agents 部分]: https://tc39.es/ecma262/#sec-agents
+[Array 实例 length 部分]: https://tc39.es/ecma262/#sec-properties-of-array-instances-length
+[Array 对象部分]: https://tc39.es/ecma262/#sec-array-objects
+[ArrayBuffer 对象部分]: https://tc39.es/ecma262/#sec-arraybuffer-objects
+[DataView 对象部分]: https://tc39.es/ecma262/#sec-dataview-objects
+[Date 对象部分]: https://tc39.es/ecma262/#sec-date-objects
+[DefineOwnProperty 部分]: https://tc39.es/ecma262/#sec-ordinary-object-internal-methods-and-internal-slots-defineownproperty-p-desc
+[Function 对象部分]: https://tc39.es/ecma262/#sec-function-objects
+[IsArray 部分]: https://tc39.es/ecma262/#sec-isarray
+[IsStrctEqual 部分]: https://tc39.es/ecma262/#sec-strict-equality-comparison
+[Promise 对象部分]: https://tc39.es/ecma262/#sec-promise-objects
+[SharedArrayBuffer 对象部分]: https://tc39.es/ecma262/#sec-sharedarraybuffer-objects
+[ToBoolean 部分]: https://tc39.es/ecma262/#sec-toboolean
+[ToNumber 部分]: https://tc39.es/ecma262/#sec-tonumber
+[ToObject 部分]: https://tc39.es/ecma262/#sec-toobject
+[ToString 部分]: https://tc39.es/ecma262/#sec-tostring
+[TypedArray 对象部分]: https://tc39.es/ecma262/#sec-typedarray-objects
+[detachArrayBuffer 部分]: https://tc39.es/ecma262/#sec-detacharraybuffer
+[instanceof 运算符部分]: https://tc39.es/ecma262/#sec-instanceofoperator
+[isDetachedBuffer 部分]: https://tc39.es/ecma262/#sec-isdetachedbuffer
+[语言类型部分]: https://tc39.es/ecma262/#sec-ecmascript-data-types-and-values
+[number 类型部分]: https://tc39.es/ecma262/#sec-ecmascript-language-types-number-type
+[object 类型部分]: https://tc39.es/ecma262/#sec-object-type
+[属性特性部分]: https://tc39.es/ecma262/#sec-property-attributes
+[string 类型部分]: https://tc39.es/ecma262/#sec-ecmascript-language-types-string-type
+[symbol 类型部分]: https://tc39.es/ecma262/#sec-ecmascript-language-types-symbol-type
+[typeof 运算符部分]: https://tc39.es/ecma262/#sec-typeof-operator
 [Travis CI]: https://travis-ci.org
 [Visual Studio]: https://visualstudio.microsoft.com
-[Working with JavaScript properties]: #working-with-javascript-properties
+[使用 JavaScript 属性]: #working-with-javascript-properties
 [Xcode]: https://developer.apple.com/xcode/
 [`'uncaughtException'`]: process.md#event-uncaughtexception
 [`Number.MAX_SAFE_INTEGER`]: https://tc39.es/ecma262/#sec-number.max_safe_integer
@@ -7002,7 +5916,7 @@ the add-on's file name during loading.
 [`async_hooks.executionAsyncResource()`]: async_hooks.md#async_hooksexecutionasyncresource
 [`build_with_cmake`]: https://github.com/nodejs/node-addon-examples/tree/main/src/8-tooling/build_with_cmake
 [`global`]: globals.md#global
-[`init` hooks]: async_hooks.md#initasyncid-type-triggerasyncid-resource
+[`init` 钩子]: async_hooks.md#initasyncid-type-triggerasyncid-resource
 [`napi_add_async_cleanup_hook`]: #napi_add_async_cleanup_hook
 [`napi_add_env_cleanup_hook`]: #napi_add_env_cleanup_hook
 [`napi_add_finalizer`]: #napi_add_finalizer
@@ -7072,16 +5986,16 @@ the add-on's file name during loading.
 [`uv_unref`]: https://docs.libuv.org/en/v1.x/handle.html#c.uv_unref
 [`worker.terminate()`]: worker_threads.md#workerterminate
 [async_hooks `type`]: async_hooks.md#type
-[context-aware addons]: addons.md#context-aware-addons
-[docs]: https://github.com/nodejs/node-addon-api#api-documentation
-[external]: #napi_create_external
-[externals]: #napi_create_external
-[global scope]: globals.md
+[上下文感知插件]: addons.md#context-aware-addons
+[文档]: https://github.com/nodejs/node-addon-api#api-documentation
+[外部]: #napi_create_external
+[外部]: #napi_create_external
+[全局作用域]: globals.md
 [gyp-next]: https://github.com/nodejs/gyp-next
-[language and engine bindings]: https://github.com/nodejs/abi-stable-node/blob/doc/node-api-engine-bindings.md
-[module scope]: modules.md#the-module-scope
+[语言和引擎绑定]: https://github.com/nodejs/abi-stable-node/blob/doc/node-api-engine-bindings.md
+[模块作用域]: modules.md#the-module-scope
 [node-gyp]: https://github.com/nodejs/node-gyp
 [node-pre-gyp]: https://github.com/mapbox/node-pre-gyp
 [prebuild]: https://github.com/prebuild/prebuild
 [prebuildify]: https://github.com/prebuild/prebuildify
-[worker threads]: https://nodejs.org/api/worker_threads.html
+[工作线程]: https://nodejs.org/api/worker_threads.html

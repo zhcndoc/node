@@ -2,20 +2,17 @@
 
 <!--introduced_in=v0.10.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/http.js -->
 
-This module, containing both a client and server, can be imported via
-`require('node:http')` (CommonJS) or `import * as http from 'node:http'` (ES module).
+此模块包含客户端和服务器，可以通过 `require('node:http')` (CommonJS) 或 `import * as http from 'node:http'` (ES 模块) 导入。
 
-The HTTP interfaces in Node.js are designed to support many features
-of the protocol which have been traditionally difficult to use.
-In particular, large, possibly chunk-encoded, messages. The interface is
-careful to never buffer entire requests or responses, so the
-user is able to stream data.
+Node.js 中的 HTTP 接口旨在支持该协议的许多传统上难以使用的功能。
+特别是大型的、可能分块编码的消息。该接口谨慎地从不缓冲整个请求或响应，以便
+用户能够流式传输数据。
 
-HTTP message headers are represented by an object like this:
+HTTP 消息头由如下对象表示：
 
 ```json
 { "content-length": "123",
@@ -25,19 +22,19 @@ HTTP message headers are represented by an object like this:
   "accept": "*/*" }
 ```
 
-Keys are lowercased. Values are not modified.
+键为小写。值不会被修改。
 
-In order to support the full spectrum of possible HTTP applications, the Node.js
-HTTP API is very low-level. It deals with stream handling and message
-parsing only. It parses a message into headers and body but it does not
-parse the actual headers or the body.
+为了支持各种可能的 HTTP 应用，Node.js
+HTTP API 非常底层。它仅处理流处理和消息
+解析。它将消息解析为头和主体，但不
+解析实际的头或主体。
 
-See [`message.headers`][] for details on how duplicate headers are handled.
+详见 [`message.headers`][] 了解如何处理重复头的详情。
 
-The raw headers as they were received are retained in the `rawHeaders`
-property, which is an array of `[key, value, key2, value2, ...]`. For
-example, the previous message header object might have a `rawHeaders`
-list like the following:
+接收到的原始头信息保留在 `rawHeaders`
+属性中，它是一个 `[key, value, key2, value2, ...]` 数组。例如，
+前面的消息头对象可能具有如下 `rawHeaders`
+列表：
 
 <!-- eslint-disable @stylistic/js/semi -->
 
@@ -50,65 +47,119 @@ list like the following:
   'accepT', '*/*' ]
 ```
 
-## Class: `http.Agent`
+## 类：`http.Agent`
 
 <!-- YAML
 added: v0.3.4
+changes:
+  - version:
+    - v24.7.0
+    - v22.20.0
+    pr-url: https://github.com/nodejs/node/pull/59315
+    description: "添加对 `agentKeepAliveTimeoutBuffer` 的支持。"
+  - version:
+    - v24.5.0
+    - v22.21.0
+    pr-url: https://github.com/nodejs/node/pull/58980
+    description: "添加对 `proxyEnv` 的支持。"
+  - version:
+    - v24.5.0
+    - v22.21.0
+    pr-url: https://github.com/nodejs/node/pull/58980
+    description: "添加对 `defaultPort` 和 `protocol` 的支持。"
+  - version:
+      - v15.6.0
+      - v14.17.0
+    pr-url: https://github.com/nodejs/node/pull/36685
+    description: 将默认调度从 'fifo' 更改为 'lifo'。
+  - version:
+    - v14.5.0
+    - v12.19.0
+    pr-url: https://github.com/nodejs/node/pull/33617
+    description: "向 agent 构造函数添加 `maxTotalSockets` 选项。"
+  - version:
+      - v14.5.0
+      - v12.20.0
+    pr-url: https://github.com/nodejs/node/pull/33278
+    description: "添加 `scheduling` 选项以指定空闲套接字调度策略。"
 -->
 
-An `Agent` is responsible for managing connection persistence
-and reuse for HTTP clients. It maintains a queue of pending requests
-for a given host and port, reusing a single socket connection for each
-until the queue is empty, at which time the socket is either destroyed
-or put into a pool where it is kept to be used again for requests to the
-same host and port. Whether it is destroyed or pooled depends on the
-`keepAlive` [option](#new-agentoptions).
+* `options` {Object} 要在 agent 上设置的可配置选项集。
+  可以包含以下字段：
+  * `keepAlive` {boolean} 即使没有
+    未完成的请求也保留套接字，以便它们可用于未来的请求而
+    无需重新建立 TCP 连接。不要与
+    `Connection` 头的 `keep-alive` 值混淆。使用 agent 时始终发送
+    `Connection: keep-alive` 头，除非显式指定了 `Connection`
+    头，或者当 `keepAlive` 和 `maxSockets`
+    选项分别设置为 `false` 和 `Infinity` 时，在这种情况下
+    将使用 `Connection: close`。**默认值：** `false`。
+  * `keepAliveMsecs` {number} 当使用 `keepAlive` 选项时，指定
+    TCP Keep-Alive 数据包的 [初始延迟][]。
+    当 `keepAlive` 选项为 `false` 或
+    `undefined` 时忽略。**默认值：** `1000`。
+  * `agentKeepAliveTimeoutBuffer` {number} 在确定套接字
+    过期时间时，从服务器提供的 `keep-alive: timeout=...` 提示中减去的毫秒数。
+    此缓冲区有助于确保 agent 在服务器之前稍微关闭套接字，
+    减少在即将被服务器关闭的套接字上发送请求的几率。
+    **默认值：** `1000`。
+  * `maxSockets` {number} 允许每个主机的最大套接字数。
+    如果同一主机打开多个并发连接，每个请求
+    将使用新套接字，直到达到 `maxSockets` 值。
+    如果主机尝试打开超过 `maxSockets` 的连接，
+    额外的请求将进入待处理请求队列，并在现有连接终止时
+    进入活动连接状态。
+    这确保在任何时间点，给定主机最多有 `maxSockets` 个活动连接。
+    **默认值：** `Infinity`。
+  * `maxTotalSockets` {number} 允许所有主机的最大套接字总数。
+    每个请求将使用一个新套接字，
+    直到达到最大值。
+    **默认值：** `Infinity`。
+  * `maxFreeSockets` {number} 每个主机保持在空闲状态的最大套接字数。
+    仅当 `keepAlive` 设置为 `true` 时相关。
+    **默认值：** `256`。
+  * `scheduling` {string} 选择下一个可用套接字时应用的调度策略。
+    可以是 `'fifo'` 或 `'lifo'`。
+    两种调度策略的主要区别在于 `'lifo'`
+    选择最近使用的套接字，而 `'fifo'` 选择
+    最久未使用的套接字。
+    在每秒请求率较低的情况下，`'lifo'` 调度
+    将降低选择可能因不活动而被服务器关闭的套接字的风险。
+    在每秒请求率较高的情况下，
+    `'fifo'` 调度将最大化打开套接字的数量，
+    而 `'lifo'` 调度将使其保持尽可能低。
+    **默认值：** `'lifo'`。
+  * `timeout` {number} 套接字超时时间（毫秒）。
+    这将在创建套接字时设置超时。
+  * `proxyEnv` {Object|undefined} 用于代理配置的环境变量。
+    详见 [内置代理支持][]。**默认值：** `undefined`
+    * `HTTP_PROXY` {string|undefined} HTTP 请求应使用的代理服务器 URL。
+      如果为 undefined，HTTP 请求不使用代理。
+    * `HTTPS_PROXY` {string|undefined} HTTPS 请求应使用的代理服务器 URL。
+      如果为 undefined，HTTPS 请求不使用代理。
+    * `NO_PROXY` {string|undefined} 指定不应通过代理路由的端点的模式。
+    * `http_proxy` {string|undefined} 与 `HTTP_PROXY` 相同。如果两者都设置，`http_proxy` 优先。
+    * `https_proxy` {string|undefined} 与 `HTTPS_PROXY` 相同。如果两者都设置，`https_proxy` 优先。
+    * `no_proxy` {string|undefined} 与 `NO_PROXY` 相同。如果两者都设置，`no_proxy` 优先。
+  * `defaultPort` {number} 当请求中未指定端口时使用的默认端口。**默认值：** `80`。
+  * `protocol` {string} agent 使用的协议。**默认值：** `'http:'`。
 
-Pooled connections have TCP Keep-Alive enabled for them, but servers may
-still close idle connections, in which case they will be removed from the
-pool and a new connection will be made when a new HTTP request is made for
-that host and port. Servers may also refuse to allow multiple requests
-over the same connection, in which case the connection will have to be
-remade for every request and cannot be pooled. The `Agent` will still make
-the requests to that server, but each one will occur over a new connection.
+[`socket.connect()`][] 中的 `options` 也受支持。
 
-When a connection is closed by the client or the server, it is removed
-from the pool. Any unused sockets in the pool will be unrefed so as not
-to keep the Node.js process running when there are no outstanding requests.
-(see [`socket.unref()`][]).
+要配置其中任何一项，必须创建自定义 [`http.Agent`][] 实例。
 
-It is good practice, to [`destroy()`][] an `Agent` instance when it is no
-longer in use, because unused sockets consume OS resources.
-
-Sockets are removed from an agent when the socket emits either
-a `'close'` event or an `'agentRemove'` event. When intending to keep one
-HTTP request open for a long time without keeping it in the agent, something
-like the following may be done:
-
-```js
-http.get(options, (res) => {
-  // Do stuff
-}).on('socket', (socket) => {
-  socket.emit('agentRemove');
-});
+```mjs
+import { Agent, request } from 'node:http';
+const keepAliveAgent = new Agent({ keepAlive: true });
+options.agent = keepAliveAgent;
+request(options, onResponseCallback);
 ```
 
-An agent may also be used for an individual request. By providing
-`{agent: false}` as an option to the `http.get()` or `http.request()`
-functions, a one-time use `Agent` with default options will be used
-for the client connection.
-
-`agent:false`:
-
-```js
-http.get({
-  hostname: 'localhost',
-  port: 80,
-  path: '/',
-  agent: false,  // Create a new agent just for this one request
-}, (res) => {
-  // Do stuff with response
-});
+```cjs
+const http = require('node:http');
+const keepAliveAgent = new http.Agent({ keepAlive: true });
+options.agent = keepAliveAgent;
+http.request(options, onResponseCallback);
 ```
 
 ### `new Agent([options])`
@@ -120,103 +171,97 @@ changes:
     - v24.7.0
     - v22.20.0
     pr-url: https://github.com/nodejs/node/pull/59315
-    description: Add support for `agentKeepAliveTimeoutBuffer`.
+    description: "添加对 `agentKeepAliveTimeoutBuffer` 的支持。"
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: Add support for `proxyEnv`.
+    description: "添加对 `proxyEnv` 的支持。"
   - version:
     - v24.5.0
     - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/58980
-    description: Add support for `defaultPort` and `protocol`.
+    description: "添加对 `defaultPort` 和 `protocol` 的支持。"
   - version:
       - v15.6.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/36685
-    description: Change the default scheduling from 'fifo' to 'lifo'.
+    description: 将默认调度从 'fifo' 更改为 'lifo'。
   - version:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33617
-    description: Add `maxTotalSockets` option to agent constructor.
+    description: "向 agent 构造函数添加 `maxTotalSockets` 选项。"
   - version:
       - v14.5.0
       - v12.20.0
     pr-url: https://github.com/nodejs/node/pull/33278
-    description: Add `scheduling` option to specify the free socket
-                 scheduling strategy.
+    description: "添加 `scheduling` 选项以指定空闲套接字调度策略。"
 -->
 
-* `options` {Object} Set of configurable options to set on the agent.
-  Can have the following fields:
-  * `keepAlive` {boolean} Keep sockets around even when there are no
-    outstanding requests, so they can be used for future requests without
-    having to reestablish a TCP connection. Not to be confused with the
-    `keep-alive` value of the `Connection` header. The `Connection: keep-alive`
-    header is always sent when using an agent except when the `Connection`
-    header is explicitly specified or when the `keepAlive` and `maxSockets`
-    options are respectively set to `false` and `Infinity`, in which case
-    `Connection: close` will be used. **Default:** `false`.
-  * `keepAliveMsecs` {number} When using the `keepAlive` option, specifies
-    the [initial delay][]
-    for TCP Keep-Alive packets. Ignored when the
-    `keepAlive` option is `false` or `undefined`. **Default:** `1000`.
-  * `agentKeepAliveTimeoutBuffer` {number} Milliseconds to subtract from
-    the server-provided `keep-alive: timeout=...` hint when determining socket
-    expiration time. This buffer helps ensure the agent closes the socket
-    slightly before the server does, reducing the chance of sending a request
-    on a socket that’s about to be closed by the server.
-    **Default:** `1000`.
-  * `maxSockets` {number} Maximum number of sockets to allow per host.
-    If the same host opens multiple concurrent connections, each request
-    will use new socket until the `maxSockets` value is reached.
-    If the host attempts to open more connections than `maxSockets`,
-    the additional requests will enter into a pending request queue, and
-    will enter active connection state when an existing connection terminates.
-    This makes sure there are at most `maxSockets` active connections at
-    any point in time, from a given host.
-    **Default:** `Infinity`.
-  * `maxTotalSockets` {number} Maximum number of sockets allowed for
-    all hosts in total. Each request will use a new socket
-    until the maximum is reached.
-    **Default:** `Infinity`.
-  * `maxFreeSockets` {number} Maximum number of sockets per host to leave open
-    in a free state. Only relevant if `keepAlive` is set to `true`.
-    **Default:** `256`.
-  * `scheduling` {string} Scheduling strategy to apply when picking
-    the next free socket to use. It can be `'fifo'` or `'lifo'`.
-    The main difference between the two scheduling strategies is that `'lifo'`
-    selects the most recently used socket, while `'fifo'` selects
-    the least recently used socket.
-    In case of a low rate of request per second, the `'lifo'` scheduling
-    will lower the risk of picking a socket that might have been closed
-    by the server due to inactivity.
-    In case of a high rate of request per second,
-    the `'fifo'` scheduling will maximize the number of open sockets,
-    while the `'lifo'` scheduling will keep it as low as possible.
-    **Default:** `'lifo'`.
-  * `timeout` {number} Socket timeout in milliseconds.
-    This will set the timeout when the socket is created.
-  * `proxyEnv` {Object|undefined} Environment variables for proxy configuration.
-    See [Built-in Proxy Support][] for details. **Default:** `undefined`
-    * `HTTP_PROXY` {string|undefined} URL for the proxy server that HTTP requests should use.
-      If undefined, no proxy is used for HTTP requests.
-    * `HTTPS_PROXY` {string|undefined} URL for the proxy server that HTTPS requests should use.
-      If undefined, no proxy is used for HTTPS requests.
-    * `NO_PROXY` {string|undefined} Patterns specifying the endpoints
-      that should not be routed through a proxy.
-    * `http_proxy` {string|undefined} Same as `HTTP_PROXY`. If both are set, `http_proxy` takes precedence.
-    * `https_proxy` {string|undefined} Same as `HTTPS_PROXY`. If both are set, `https_proxy` takes precedence.
-    * `no_proxy` {string|undefined} Same as `NO_PROXY`. If both are set, `no_proxy` takes precedence.
-  * `defaultPort` {number} Default port to use when the port is not specified
-    in requests. **Default:** `80`.
-  * `protocol` {string} The protocol to use for the agent. **Default:** `'http:'`.
+* `options` {Object} 要在 agent 上设置的可配置选项集。
+  可以包含以下字段：
+  * `keepAlive` {boolean} 即使没有
+    未完成的请求也保留套接字，以便它们可用于未来的请求而
+    无需重新建立 TCP 连接。不要与
+    `Connection` 头的 `keep-alive` 值混淆。使用 agent 时始终发送
+    `Connection: keep-alive` 头，除非显式指定了 `Connection`
+    头，或者当 `keepAlive` 和 `maxSockets`
+    选项分别设置为 `false` 和 `Infinity` 时，在这种情况下
+    将使用 `Connection: close`。**默认值：** `false`。
+  * `keepAliveMsecs` {number} 当使用 `keepAlive` 选项时，指定
+    TCP Keep-Alive 数据包的 [初始延迟][]。
+    当 `keepAlive` 选项为 `false` 或
+    `undefined` 时忽略。**默认值：** `1000`。
+  * `agentKeepAliveTimeoutBuffer` {number} 在确定套接字
+    过期时间时，从服务器提供的 `keep-alive: timeout=...` 提示中减去的毫秒数。
+    此缓冲区有助于确保 agent 在服务器之前稍微关闭套接字，
+    减少在即将被服务器关闭的套接字上发送请求的几率。
+    **默认值：** `1000`。
+  * `maxSockets` {number} 允许每个主机的最大套接字数。
+    如果同一主机打开多个并发连接，每个请求
+    将使用新套接字，直到达到 `maxSockets` 值。
+    如果主机尝试打开超过 `maxSockets` 的连接，
+    额外的请求将进入待处理请求队列，并在现有连接终止时
+    进入活动连接状态。
+    这确保在任何时间点，给定主机最多有 `maxSockets` 个活动连接。
+    **默认值：** `Infinity`。
+  * `maxTotalSockets` {number} 允许所有主机的最大套接字总数。
+    每个请求将使用一个新套接字，
+    直到达到最大值。
+    **默认值：** `Infinity`。
+  * `maxFreeSockets` {number} 每个主机保持在空闲状态的最大套接字数。
+    仅当 `keepAlive` 设置为 `true` 时相关。
+    **默认值：** `256`。
+  * `scheduling` {string} 选择下一个可用套接字时应用的调度策略。
+    可以是 `'fifo'` 或 `'lifo'`。
+    两种调度策略的主要区别在于 `'lifo'`
+    选择最近使用的套接字，而 `'fifo'` 选择
+    最久未使用的套接字。
+    在每秒请求率较低的情况下，`'lifo'` 调度
+    将降低选择可能因不活动而被服务器关闭的套接字的风险。
+    在每秒请求率较高的情况下，
+    `'fifo'` 调度将最大化打开套接字的数量，
+    而 `'lifo'` 调度将使其保持尽可能低。
+    **默认值：** `'lifo'`。
+  * `timeout` {number} 套接字超时时间（毫秒）。
+    这将在创建套接字时设置超时。
+  * `proxyEnv` {Object|undefined} 用于代理配置的环境变量。
+    详见 [内置代理支持][]。**默认值：** `undefined`
+    * `HTTP_PROXY` {string|undefined} HTTP 请求应使用的代理服务器 URL。
+      如果为 undefined，HTTP 请求不使用代理。
+    * `HTTPS_PROXY` {string|undefined} HTTPS 请求应使用的代理服务器 URL。
+      如果为 undefined，HTTPS 请求不使用代理。
+    * `NO_PROXY` {string|undefined} 指定不应通过代理路由的端点的模式。
+    * `http_proxy` {string|undefined} 与 `HTTP_PROXY` 相同。如果两者都设置，`http_proxy` 优先。
+    * `https_proxy` {string|undefined} 与 `HTTPS_PROXY` 相同。如果两者都设置，`https_proxy` 优先。
+    * `no_proxy` {string|undefined} 与 `NO_PROXY` 相同。如果两者都设置，`no_proxy` 优先。
+  * `defaultPort` {number} 当请求中未指定端口时使用的默认端口。**默认值：** `80`。
+  * `protocol` {string} agent 使用的协议。**默认值：** `'http:'`。
 
-`options` in [`socket.connect()`][] are also supported.
+[`socket.connect()`][] 中的 `options` 也受支持。
 
-To configure any of them, a custom [`http.Agent`][] instance must be created.
+要配置其中任何一项，必须创建自定义 [`http.Agent`][] 实例。
 
 ```mjs
 import { Agent, request } from 'node:http';
@@ -238,38 +283,36 @@ http.request(options, onResponseCallback);
 added: v0.11.4
 -->
 
-* `options` {Object} Options containing connection details. Check
-  [`net.createConnection()`][] for the format of the options. For custom agents,
-  this object is passed to the custom `createConnection` function.
-* `callback` {Function} (Optional, primarily for custom agents) A function to be
-  called by a custom `createConnection` implementation when the socket is
-  created, especially for asynchronous operations.
-  * `err` {Error | null} An error object if socket creation failed.
-  * `socket` {stream.Duplex} The created socket.
-* Returns: {stream.Duplex} The created socket. This is returned by the default
-  implementation or by a custom synchronous `createConnection` implementation.
-  If a custom `createConnection` uses the `callback` for asynchronous
-  operation, this return value might not be the primary way to obtain the socket.
+* `options` {Object} 包含连接详情的选项。检查
+  [`net.createConnection()`][] 了解选项的格式。对于自定义 agent，
+  此对象传递给自定义 `createConnection` 函数。
+* `callback` {Function} （可选，主要用于自定义 agent）当套接字
+  创建时由自定义 `createConnection` 实现调用的函数，
+  特别是对于异步操作。
+  * `err` {Error | null} 如果套接字创建失败则为错误对象。
+  * `socket` {stream.Duplex} 创建的套接字。
+* 返回：{stream.Duplex} 创建的套接字。这是由默认
+  实现或自定义同步 `createConnection` 实现返回的。
+  如果自定义 `createConnection` 使用 `callback` 进行异步
+  操作，此返回值可能不是获取套接字的主要方式。
 
-Produces a socket/stream to be used for HTTP requests.
+产生一个用于 HTTP 请求的套接字/流。
 
-By default, this function behaves identically to [`net.createConnection()`][],
-synchronously returning the created socket. The optional `callback` parameter in the
-signature is **not** used by this default implementation.
+默认情况下，此函数的行为与 [`net.createConnection()`][] 完全相同，
+同步返回创建的套接字。签名中的可选 `callback` 参数**不**被此默认实现使用。
 
-However, custom agents may override this method to provide greater flexibility,
-for example, to create sockets asynchronously. When overriding `createConnection`:
+然而，自定义 agent 可以重写此方法以提供更大的灵活性，
+例如，异步创建套接字。当重写 `createConnection` 时：
 
-1. **Synchronous socket creation**: The overriding method can return the
-   socket/stream directly.
-2. **Asynchronous socket creation**: The overriding method can accept the `callback`
-   and pass the created socket/stream to it (e.g., `callback(null, newSocket)`).
-   If an error occurs during socket creation, it should be passed as the first
-   argument to the `callback` (e.g., `callback(err)`).
+1. **同步套接字创建**：重写的方法可以直接返回
+   套接字/流。
+2. **异步套接字创建**：重写的方法可以接受 `callback`
+   并将创建的套接字/流传递给它（例如，`callback(null, newSocket)`）。
+   如果在套接字创建期间发生错误，应将其作为第一个
+   参数传递给 `callback`（例如，`callback(err)`）。
 
-The agent will call the provided `createConnection` function with `options` and
-this internal `callback`. The `callback` provided by the agent has a signature
-of `(err, stream)`.
+agent 将使用 `options` 和此内部 `callback` 调用提供的 `createConnection` 函数。
+agent 提供的 `callback` 的签名为 `(err, stream)`。
 
 ### `agent.keepSocketAlive(socket)`
 
@@ -279,8 +322,8 @@ added: v8.1.0
 
 * `socket` {stream.Duplex}
 
-Called when `socket` is detached from a request and could be persisted by the
-`Agent`. Default behavior is to:
+当 `socket` 从请求分离并可由
+`Agent` 持久化时调用。默认行为是：
 
 ```js
 socket.setKeepAlive(true, this.keepAliveMsecs);
@@ -288,12 +331,12 @@ socket.unref();
 return true;
 ```
 
-This method can be overridden by a particular `Agent` subclass. If this
-method returns a falsy value, the socket will be destroyed instead of persisting
-it for use with the next request.
+此方法可被特定的 `Agent` 子类重写。如果此
+方法返回假值，套接字将被销毁而不是持久化
+以供下一个请求使用。
 
-The `socket` argument can be an instance of {net.Socket}, a subclass of
-{stream.Duplex}.
+`socket` 参数可以是 {net.Socket} 的实例，即
+{stream.Duplex} 的子类。
 
 ### `agent.reuseSocket(socket, request)`
 
@@ -304,17 +347,17 @@ added: v8.1.0
 * `socket` {stream.Duplex}
 * `request` {http.ClientRequest}
 
-Called when `socket` is attached to `request` after being persisted because of
-the keep-alive options. Default behavior is to:
+当 `socket` 因 keep-alive 选项而被持久化后附加到 `request` 时调用。
+默认行为是：
 
 ```js
 socket.ref();
 ```
 
-This method can be overridden by a particular `Agent` subclass.
+此方法可被特定的 `Agent` 子类重写。
 
-The `socket` argument can be an instance of {net.Socket}, a subclass of
-{stream.Duplex}.
+`socket` 参数可以是 {net.Socket} 的实例，即
+{stream.Duplex} 的子类。
 
 ### `agent.destroy()`
 
@@ -322,13 +365,12 @@ The `socket` argument can be an instance of {net.Socket}, a subclass of
 added: v0.11.4
 -->
 
-Destroy any sockets that are currently in use by the agent.
+销毁 agent 当前使用的任何套接字。
 
-It is usually not necessary to do this. However, if using an
-agent with `keepAlive` enabled, then it is best to explicitly shut down
-the agent when it is no longer needed. Otherwise,
-sockets might stay open for quite a long time before the server
-terminates them.
+通常不需要这样做。但是，如果使用启用了
+`keepAlive` 的 agent，则最好在不再需要时显式关闭
+agent。否则，
+套接字可能会在服务器终止它们之前保持打开很长时间。
 
 ### `agent.freeSockets`
 
@@ -337,16 +379,16 @@ added: v0.11.4
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: The property now has a `null` prototype.
+    description: "该属性现在具有 `null` 原型。"
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-An object which contains arrays of sockets currently awaiting use by
-the agent when `keepAlive` is enabled. Do not modify.
+当 `keepAlive` 启用时，包含 agent 当前等待使用的套接字数组的对象。
+请勿修改。
 
-Sockets in the `freeSockets` list will be automatically destroyed and
-removed from the array on `'timeout'`.
+`freeSockets` 列表中的套接字将在 `'timeout'` 时自动销毁并
+从数组中移除。
 
 ### `agent.getName([options])`
 
@@ -357,23 +399,21 @@ changes:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41906
-    description: The `options` parameter is now optional.
+    description: "`options` 参数现在是可选的。"
 -->
 
-* `options` {Object} A set of options providing information for name generation
-  * `host` {string} A domain name or IP address of the server to issue the
-    request to
-  * `port` {number} Port of remote server
-  * `localAddress` {string} Local interface to bind for network connections
-    when issuing the request
-  * `family` {integer} Must be 4 or 6 if this doesn't equal `undefined`.
-* Returns: {string}
+* `options` {Object} 提供名称生成信息的一组选项
+  * `host` {string} 发出请求的服务器的域名或 IP 地址
+  * `port` {number} 远程服务器的端口
+  * `localAddress` {string} 发出请求时绑定网络连接的本机接口
+  * `family` {integer} 如果不等于 `undefined`，则必须为 4 或 6。
+* 返回：{string}
 
-Get a unique name for a set of request options, to determine whether a
-connection can be reused. For an HTTP agent, this returns
-`host:port:localAddress` or `host:port:localAddress:family`. For an HTTPS agent,
-the name includes the CA, cert, ciphers, and other HTTPS/TLS-specific options
-that determine socket reusability.
+获取一组请求选项的唯一名称，以确定连接
+是否可以复用。对于 HTTP agent，这将返回
+`host:port:localAddress` 或 `host:port:localAddress:family`。对于 HTTPS agent，
+名称包括 CA、cert、ciphers 和其他决定套接字可复用性的
+HTTPS/TLS 特定选项。
 
 ### `agent.maxFreeSockets`
 
@@ -381,11 +421,10 @@ that determine socket reusability.
 added: v0.11.7
 -->
 
-* Type: {number}
+* 类型：{number}
 
-By default set to 256. For agents with `keepAlive` enabled, this
-sets the maximum number of sockets that will be left open in the free
-state.
+默认设置为 256。对于启用了 `keepAlive` 的 agent，这
+设置了将保持在空闲状态的最大套接字数。
 
 ### `agent.maxSockets`
 
@@ -393,10 +432,10 @@ state.
 added: v0.3.6
 -->
 
-* Type: {number}
+* 类型：{number}
 
-By default set to `Infinity`. Determines how many concurrent sockets the agent
-can have open per origin. Origin is the returned value of [`agent.getName()`][].
+默认设置为 `Infinity`。确定 agent
+每个源可以打开多少个并发套接字。源是 [`agent.getName()`][] 的返回值。
 
 ### `agent.maxTotalSockets`
 
@@ -406,10 +445,10 @@ added:
   - v12.19.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-By default set to `Infinity`. Determines how many concurrent sockets the agent
-can have open. Unlike `maxSockets`, this parameter applies across all origins.
+默认设置为 `Infinity`。确定 agent
+可以打开多少个并发套接字。与 `maxSockets` 不同，此参数适用于所有源。
 
 ### `agent.requests`
 
@@ -418,13 +457,13 @@ added: v0.5.9
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: The property now has a `null` prototype.
+    description: "该属性现在具有 `null` 原型。"
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-An object which contains queues of requests that have not yet been assigned to
-sockets. Do not modify.
+包含尚未分配给
+套接字的请求队列的对象。请勿修改。
 
 ### `agent.sockets`
 
@@ -433,57 +472,37 @@ added: v0.3.6
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36409
-    description: The property now has a `null` prototype.
+    description: "该属性现在具有 `null` 原型。"
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-An object which contains arrays of sockets currently in use by the
-agent. Do not modify.
+包含 agent 当前使用的套接字数组的对象。
+请勿修改。
 
-## Class: `http.ClientRequest`
+## 类：`http.ClientRequest`
 
 <!-- YAML
 added: v0.1.17
 -->
 
-* Extends: {http.OutgoingMessage}
+* 继承：{http.OutgoingMessage}
 
-This object is created internally and returned from [`http.request()`][]. It
-represents an _in-progress_ request whose header has already been queued. The
-header is still mutable using the [`setHeader(name, value)`][],
-[`getHeader(name)`][], [`removeHeader(name)`][] API. The actual header will
-be sent along with the first data chunk or when calling [`request.end()`][].
+此对象在内部创建并从 [`http.request()`][] 返回。它表示一个_进行中_的请求，其头部已入队。头部仍然可以使用 [`setHeader(name, value)`][]、[`getHeader(name)`][]、[`removeHeader(name)`][] API 进行可变操作。实际头部将随第一个数据块一起发送，或在调用 [`request.end()`][] 时发送。
 
-To get the response, add a listener for [`'response'`][] to the request object.
-[`'response'`][] will be emitted from the request object when the response
-headers have been received. The [`'response'`][] event is executed with one
-argument which is an instance of [`http.IncomingMessage`][].
+要获取响应，请为请求对象添加 [`'response'`][] 监听器。当收到响应头部时，[`'response'`][] 将从请求对象触发。[`'response'`][] 事件执行时带有一个参数，该参数是 [`http.IncomingMessage`][] 的实例。
 
-During the [`'response'`][] event, one can add listeners to the
-response object; particularly to listen for the `'data'` event.
+在 [`'response'`][] 事件期间，可以向响应对象添加监听器；特别是监听 `'data'` 事件。
 
-If no [`'response'`][] handler is added, then the response will be
-entirely discarded. However, if a [`'response'`][] event handler is added,
-then the data from the response object **must** be consumed, either by
-calling `response.read()` whenever there is a `'readable'` event, or
-by adding a `'data'` handler, or by calling the `.resume()` method.
-Until the data is consumed, the `'end'` event will not fire. Also, until
-the data is read it will consume memory that can eventually lead to a
-'process out of memory' error.
+如果没有添加 [`'response'`][] 处理程序，则响应将被完全丢弃。但是，如果添加了 [`'response'`][] 事件处理程序，则**必须**消费来自响应对象的数据，要么在有 `'readable'` 事件时调用 `response.read()`，要么添加 `'data'` 处理程序，要么调用 `.resume()` 方法。在数据被消费之前，`'end'` 事件不会触发。此外，在数据被读取之前，它将消耗内存，最终可能导致 '进程内存溢出' 错误。
 
-For backward compatibility, `res` will only emit `'error'` if there is an
-`'error'` listener registered.
+为了向后兼容，只有在注册了 `'error'` 监听器的情况下，`res` 才会触发 `'error'`。
 
-Set `Content-Length` header to limit the response body size.
-If [`response.strictContentLength`][] is set to `true`, mismatching the
-`Content-Length` header value will result in an `Error` being thrown,
-identified by `code:` [`'ERR_HTTP_CONTENT_LENGTH_MISMATCH'`][].
+设置 `Content-Length` 头部以限制响应体大小。如果 [`response.strictContentLength`][] 设置为 `true`，`Content-Length` 头部值不匹配将导致抛出 `Error`，标识为 `code:` [`'ERR_HTTP_CONTENT_LENGTH_MISMATCH'`][]。
 
-`Content-Length` value should be in bytes, not characters. Use
-[`Buffer.byteLength()`][] to determine the length of the body in bytes.
+`Content-Length` 值应为字节数，而非字符数。使用 [`Buffer.byteLength()`][] 来确定主体的字节长度。
 
-### Event: `'abort'`
+### 事件：`'abort'`
 
 <!-- YAML
 added: v1.4.1
@@ -492,21 +511,19 @@ deprecated:
   - v16.12.0
 -->
 
-> Stability: 0 - Deprecated. Listen for the `'close'` event instead.
+> 稳定性：0 - 已废弃。请改为监听 `'close'` 事件。
 
-Emitted when the request has been aborted by the client. This event is only
-emitted on the first call to `abort()`.
+当请求被客户端中止时触发。此事件仅在第一次调用 `abort()` 时触发。
 
-### Event: `'close'`
+### 事件：`'close'`
 
 <!-- YAML
 added: v0.5.4
 -->
 
-Indicates that the request is completed, or its underlying connection was
-terminated prematurely (before the response completion).
+表示请求已完成，或其底层连接在响应完成之前被提前终止。
 
-### Event: `'connect'`
+### 事件：`'connect'`
 
 <!-- YAML
 added: v0.7.0
@@ -516,28 +533,24 @@ added: v0.7.0
 * `socket` {stream.Duplex}
 * `head` {Buffer}
 
-Emitted each time a server responds to a request with a `CONNECT` method. If
-this event is not being listened for, clients receiving a `CONNECT` method will
-have their connections closed.
+每当服务器响应带有 `CONNECT` 方法的请求时触发。如果没有监听此事件，接收 `CONNECT` 方法的客户端的连接将被关闭。
 
-This event is guaranteed to be passed an instance of the {net.Socket} class,
-a subclass of {stream.Duplex}, unless the user specifies a socket
-type other than {net.Socket}.
+除非用户指定了 {net.Socket} 以外的 socket 类型，否则保证此事件会传递一个 {net.Socket} 类的实例，它是 {stream.Duplex} 的子类。
 
-A client and server pair demonstrating how to listen for the `'connect'` event:
+演示如何监听 `'connect'` 事件的客户端和服务器配对示例：
 
 ```mjs
 import { createServer, request } from 'node:http';
 import { connect } from 'node:net';
 import { URL } from 'node:url';
 
-// Create an HTTP tunneling proxy
+// 创建一个 HTTP 隧道代理
 const proxy = createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end('okay');
 });
 proxy.on('connect', (req, clientSocket, head) => {
-  // Connect to an origin server
+  // 连接到源服务器
   const { port, hostname } = new URL(`http://${req.url}`);
   const serverSocket = connect(port || 80, hostname, () => {
     clientSocket.write('HTTP/1.1 200 Connection Established\r\n' +
@@ -549,10 +562,10 @@ proxy.on('connect', (req, clientSocket, head) => {
   });
 });
 
-// Now that proxy is running
+// 现在代理正在运行
 proxy.listen(1337, '127.0.0.1', () => {
 
-  // Make a request to a tunneling proxy
+  // 向隧道代理发出请求
   const options = {
     port: 1337,
     host: '127.0.0.1',
@@ -566,7 +579,7 @@ proxy.listen(1337, '127.0.0.1', () => {
   req.on('connect', (res, socket, head) => {
     console.log('got connected!');
 
-    // Make a request over an HTTP tunnel
+    // 通过 HTTP 隧道发出请求
     socket.write('GET / HTTP/1.1\r\n' +
                  'Host: www.google.com:80\r\n' +
                  'Connection: close\r\n' +
@@ -586,13 +599,13 @@ const http = require('node:http');
 const net = require('node:net');
 const { URL } = require('node:url');
 
-// Create an HTTP tunneling proxy
+// 创建一个 HTTP 隧道代理
 const proxy = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end('okay');
 });
 proxy.on('connect', (req, clientSocket, head) => {
-  // Connect to an origin server
+  // 连接到源服务器
   const { port, hostname } = new URL(`http://${req.url}`);
   const serverSocket = net.connect(port || 80, hostname, () => {
     clientSocket.write('HTTP/1.1 200 Connection Established\r\n' +
@@ -604,10 +617,10 @@ proxy.on('connect', (req, clientSocket, head) => {
   });
 });
 
-// Now that proxy is running
+// 现在代理正在运行
 proxy.listen(1337, '127.0.0.1', () => {
 
-  // Make a request to a tunneling proxy
+  // 向隧道代理发出请求
   const options = {
     port: 1337,
     host: '127.0.0.1',
@@ -621,7 +634,7 @@ proxy.listen(1337, '127.0.0.1', () => {
   req.on('connect', (res, socket, head) => {
     console.log('got connected!');
 
-    // Make a request over an HTTP tunnel
+    // 通过 HTTP 隧道发出请求
     socket.write('GET / HTTP/1.1\r\n' +
                  'Host: www.google.com:80\r\n' +
                  'Connection: close\r\n' +
@@ -636,28 +649,23 @@ proxy.listen(1337, '127.0.0.1', () => {
 });
 ```
 
-### Event: `'continue'`
+### 事件：`'continue'`
 
 <!-- YAML
 added: v0.3.2
 -->
 
-Emitted when the server sends a '100 Continue' HTTP response, usually because
-the request contained 'Expect: 100-continue'. This is an instruction that
-the client should send the request body.
+当服务器发送 '100 Continue' HTTP 响应时触发，通常是因为请求包含 'Expect: 100-continue'。这是一个指示客户端发送请求体的指令。
 
-### Event: `'finish'`
+### 事件：`'finish'`
 
 <!-- YAML
 added: v0.3.6
 -->
 
-Emitted when the request has been sent. More specifically, this event is emitted
-when the last segment of the request headers and body have been handed off to
-the operating system for transmission over the network. It does not imply that
-the server has received anything yet.
+当请求已发送时触发。更具体地说，当请求头部和主体的最后一段已移交操作系统以便通过网络传输时，会触发此事件。这并不意味着服务器已经收到了任何内容。
 
-### Event: `'information'`
+### 事件：`'information'`
 
 <!-- YAML
 added: v10.0.0
@@ -672,10 +680,7 @@ added: v10.0.0
   * `headers` {Object}
   * `rawHeaders` {string\[]}
 
-Emitted when the server sends a 1xx intermediate response (excluding 101
-Upgrade). The listeners of this event will receive an object containing the
-HTTP version, status code, status message, key-value headers object,
-and array with the raw header names followed by their respective values.
+当服务器发送 1xx 中间响应时触发（不包括 101 Upgrade）。此事件的监听器将接收一个对象，其中包含 HTTP 版本、状态码、状态消息、键值头部对象，以及包含原始头部名称及其各自值的数组。
 
 ```mjs
 import { request } from 'node:http';
@@ -686,7 +691,7 @@ const options = {
   path: '/length_request',
 };
 
-// Make a request
+// 发出请求
 const req = request(options);
 req.end();
 
@@ -704,7 +709,7 @@ const options = {
   path: '/length_request',
 };
 
-// Make a request
+// 发出请求
 const req = http.request(options);
 req.end();
 
@@ -713,12 +718,9 @@ req.on('information', (info) => {
 });
 ```
 
-101 Upgrade statuses do not fire this event due to their break from the
-traditional HTTP request/response chain, such as web sockets, in-place TLS
-upgrades, or HTTP 2.0. To be notified of 101 Upgrade notices, listen for the
-[`'upgrade'`][] event instead.
+101 Upgrade 状态不会触发此事件，因为它们打破了传统的 HTTP 请求/响应链，例如 web sockets、原地 TLS 升级或 HTTP 2.0。要接收 101 Upgrade 通知，请改为监听 [`'upgrade'`][] 事件。
 
-### Event: `'response'`
+### 事件：`'response'`
 
 <!-- YAML
 added: v0.1.0
@@ -726,10 +728,9 @@ added: v0.1.0
 
 * `response` {http.IncomingMessage}
 
-Emitted when a response is received to this request. This event is emitted only
-once.
+当收到此请求的响应时触发。此事件仅触发一次。
 
-### Event: `'socket'`
+### 事件：`'socket'`
 
 <!-- YAML
 added: v0.5.3
@@ -737,22 +738,19 @@ added: v0.5.3
 
 * `socket` {stream.Duplex}
 
-This event is guaranteed to be passed an instance of the {net.Socket} class,
-a subclass of {stream.Duplex}, unless the user specifies a socket
-type other than {net.Socket}.
+除非用户指定了 {net.Socket} 以外的 socket 类型，否则保证此事件会传递一个 {net.Socket} 类的实例，它是 {stream.Duplex} 的子类。
 
-### Event: `'timeout'`
+### 事件：`'timeout'`
 
 <!-- YAML
 added: v0.7.8
 -->
 
-Emitted when the underlying socket times out from inactivity. This only notifies
-that the socket has been idle. The request must be destroyed manually.
+当底层 socket 因无活动而超时时触发。这仅通知 socket 处于空闲状态。必须手动销毁请求。
 
-See also: [`request.setTimeout()`][].
+另见：[`request.setTimeout()`][]。
 
-### Event: `'upgrade'`
+### 事件：`'upgrade'`
 
 <!-- YAML
 added: v0.1.94
@@ -762,22 +760,17 @@ added: v0.1.94
 * `stream` {stream.Duplex}
 * `head` {Buffer}
 
-Emitted each time a server responds to a request with an upgrade. If this
-event is not being listened for and the response status code is 101 Switching
-Protocols, clients receiving an upgrade header will have their connections
-closed.
+每当服务器响应带有升级的请求时触发。如果没有监听此事件且响应状态码为 101 Switching Protocols，接收升级头部的客户端的连接将被关闭。
 
-This event is guaranteed to be passed an instance of the {net.Socket} class,
-a subclass of {stream.Duplex}, unless the user specifies a socket
-type other than {net.Socket}.
+除非用户指定了 {net.Socket} 以外的 socket 类型，否则保证此事件会传递一个 {net.Socket} 类的实例，它是 {stream.Duplex} 的子类。
 
-A client server pair demonstrating how to listen for the `'upgrade'` event.
+演示如何监听 `'upgrade'` 事件的客户端服务器配对示例。
 
 ```mjs
 import http from 'node:http';
 import process from 'node:process';
 
-// Create an HTTP server
+// 创建一个 HTTP 服务器
 const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end('okay');
@@ -788,13 +781,13 @@ server.on('upgrade', (req, stream, head) => {
                'Connection: Upgrade\r\n' +
                '\r\n');
 
-  stream.pipe(stream); // echo back
+  stream.pipe(stream); // 回显
 });
 
-// Now that server is running
+// 现在服务器正在运行
 server.listen(1337, '127.0.0.1', () => {
 
-  // make a request
+  // 发出请求
   const options = {
     port: 1337,
     host: '127.0.0.1',
@@ -818,7 +811,7 @@ server.listen(1337, '127.0.0.1', () => {
 ```cjs
 const http = require('node:http');
 
-// Create an HTTP server
+// 创建一个 HTTP 服务器
 const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end('okay');
@@ -829,13 +822,13 @@ server.on('upgrade', (req, stream, head) => {
                'Connection: Upgrade\r\n' +
                '\r\n');
 
-  stream.pipe(stream); // echo back
+  stream.pipe(stream); // 回显
 });
 
-// Now that server is running
+// 现在服务器正在运行
 server.listen(1337, '127.0.0.1', () => {
 
-  // make a request
+  // 发出请求
   const options = {
     port: 1337,
     host: '127.0.0.1',
@@ -865,10 +858,9 @@ deprecated:
   - v13.14.0
 -->
 
-> Stability: 0 - Deprecated: Use [`request.destroy()`][] instead.
+> 稳定性：0 - 已废弃：请改用 [`request.destroy()`][]。
 
-Marks the request as aborting. Calling this will cause remaining data
-in the response to be dropped and the socket to be destroyed.
+将请求标记为中止。调用此方法将导致响应中的剩余数据被丢弃并且 socket 被销毁。
 
 ### `request.aborted`
 
@@ -880,15 +872,14 @@ deprecated:
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/20230
-    description: The `aborted` property is no longer a timestamp number.
+    description: "`aborted` 属性不再是一个时间戳数字。"
 -->
 
-> Stability: 0 - Deprecated. Check [`request.destroyed`][] instead.
+> 稳定性：0 - 已废弃。请改用检查 [`request.destroyed`][]。
 
-* Type: {boolean}
+* 类型：{boolean}
 
-The `request.aborted` property will be `true` if the request has
-been aborted.
+如果请求已被中止，则 `request.aborted` 属性将为 `true`。
 
 ### `request.connection`
 
@@ -897,11 +888,11 @@ added: v0.3.0
 deprecated: v13.0.0
 -->
 
-> Stability: 0 - Deprecated. Use [`request.socket`][].
+> 稳定性：0 - 已废弃。请使用 [`request.socket`][]。
 
-* Type: {stream.Duplex}
+* 类型：{stream.Duplex}
 
-See [`request.socket`][].
+参见 [`request.socket`][]。
 
 ### `request.cork()`
 
@@ -911,7 +902,7 @@ added:
  - v12.16.0
 -->
 
-See [`writable.cork()`][].
+参见 [`writable.cork()`][]。
 
 ### `request.end([data[, encoding]][, callback])`
 
@@ -920,26 +911,22 @@ added: v0.1.90
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: The `data` parameter can now be a `Uint8Array`.
+    description: "`data` 参数现在可以是 `Uint8Array`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18780
-    description: This method now returns a reference to `ClientRequest`.
+    description: "此方法现在返回对 `ClientRequest` 的引用。"
 -->
 
 * `data` {string|Buffer|Uint8Array}
 * `encoding` {string}
 * `callback` {Function}
-* Returns: {this}
+* 返回：{this}
 
-Finishes sending the request. If any parts of the body are
-unsent, it will flush them to the stream. If the request is
-chunked, this will send the terminating `'0\r\n\r\n'`.
+完成发送请求。如果主体的任何部分未发送，它将把它们冲刷到流中。如果请求是分块的，这将发送终止符 `'0\r\n\r\n'`。
 
-If `data` is specified, it is equivalent to calling
-[`request.write(data, encoding)`][] followed by `request.end(callback)`.
+如果指定了 `data`，则相当于调用 [`request.write(data, encoding)`][] 后跟 `request.end(callback)`。
 
-If `callback` is specified, it will be called when the request stream
-is finished.
+如果指定了 `callback`，它将在请求流完成时被调用。
 
 ### `request.destroy([error])`
 
@@ -948,19 +935,15 @@ added: v0.3.0
 changes:
   - version: v14.5.0
     pr-url: https://github.com/nodejs/node/pull/32789
-    description: The function returns `this` for consistency with other Readable
-                 streams.
+    description: "为了与其他 Readable 流保持一致，该函数返回 `this`。"
 -->
 
-* `error` {Error} Optional, an error to emit with `'error'` event.
-* Returns: {this}
+* `error` {Error} 可选，一个随 `'error'` 事件触发的错误。
+* 返回：{this}
 
-Destroy the request. Optionally emit an `'error'` event,
-and emit a `'close'` event. Calling this will cause remaining data
-in the response to be dropped, and the socket to be destroyed if used,
-or returned to the corresponding Agent pool otherwise if possible.
+销毁请求。可选择触发 `'error'` 事件，并触发 `'close'` 事件。调用此方法会导致响应中的剩余数据被丢弃，并在使用了 socket 时销毁 socket；否则在可能的情况下将其返回到相应的 Agent 池。
 
-See [`writable.destroy()`][] for further details.
+详见 [`writable.destroy()`][]。
 
 #### `request.destroyed`
 
@@ -970,11 +953,11 @@ added:
   - v13.14.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Is `true` after [`request.destroy()`][] has been called.
+在调用 [`request.destroy()`][] 后为 `true`。
 
-See [`writable.destroyed`][] for further details.
+详见 [`writable.destroyed`][]。
 
 ### `request.finished`
 
@@ -985,13 +968,11 @@ deprecated:
  - v12.16.0
 -->
 
-> Stability: 0 - Deprecated. Use [`request.writableEnded`][].
+> 稳定性：0 - 已废弃。请使用 [`request.writableEnded`][]。
 
-* Type: {boolean}
+* 类型：{boolean}
 
-The `request.finished` property will be `true` if [`request.end()`][]
-has been called. `request.end()` will automatically be called if the
-request was initiated via [`http.get()`][].
+如果调用了 [`request.end()`][]，`request.finished` 属性将为 `true`。如果请求是通过 [`http.get()`][] 发起的，`request.end()` 将被自动调用。
 
 ### `request.flushHeaders()`
 
@@ -999,15 +980,11 @@ request was initiated via [`http.get()`][].
 added: v1.6.0
 -->
 
-Flushes the request headers.
+冲刷请求头部。
 
-For efficiency reasons, Node.js normally buffers the request headers until
-`request.end()` is called or the first chunk of request data is written. It
-then tries to pack the request headers and data into a single TCP packet.
+出于效率原因，Node.js 通常缓冲请求头部，直到调用 `request.end()` 或写入第一块请求数据。然后它尝试将请求头部和数据打包到单个 TCP 数据包中。
 
-That's usually desired (it saves a TCP round-trip), but not when the first
-data is not sent until possibly much later. `request.flushHeaders()` bypasses
-the optimization and kickstarts the request.
+这通常是理想的（它节省了一次 TCP 往返），但当第一块数据直到可能更晚的时候才发送时则不然。`request.flushHeaders()` 绕过优化并启动请求。
 
 ### `request.getHeader(name)`
 
@@ -1016,22 +993,20 @@ added: v1.6.0
 -->
 
 * `name` {string}
-* Returns: {any}
+* 返回：{any}
 
-Reads out a header on the request. The name is case-insensitive.
-The type of the return value depends on the arguments provided to
-[`request.setHeader()`][].
+读取请求上的一个头部。名称不区分大小写。返回值的类型取决于提供给 [`request.setHeader()`][] 的参数。
 
 ```js
 request.setHeader('content-type', 'text/html');
 request.setHeader('Content-Length', Buffer.byteLength(body));
 request.setHeader('Cookie', ['type=ninja', 'language=javascript']);
 const contentType = request.getHeader('Content-Type');
-// 'contentType' is 'text/html'
+// 'contentType' 是 'text/html'
 const contentLength = request.getHeader('Content-Length');
-// 'contentLength' is of type number
+// 'contentLength' 是 number 类型
 const cookie = request.getHeader('Cookie');
-// 'cookie' is of type string[]
+// 'cookie' 是 string[] 类型
 ```
 
 ### `request.getHeaderNames()`
@@ -1040,10 +1015,9 @@ const cookie = request.getHeader('Cookie');
 added: v7.7.0
 -->
 
-* Returns: {string\[]}
+* 返回：{string\[]}
 
-Returns an array containing the unique names of the current outgoing headers.
-All header names are lowercase.
+返回一个包含当前传出头部唯一名称的数组。所有头部名称均为小写。
 
 ```js
 request.setHeader('Foo', 'bar');
@@ -1059,18 +1033,11 @@ const headerNames = request.getHeaderNames();
 added: v7.7.0
 -->
 
-* Returns: {Object}
+* 返回：{Object}
 
-Returns a shallow copy of the current outgoing headers. Since a shallow copy
-is used, array values may be mutated without additional calls to various
-header-related http module methods. The keys of the returned object are the
-header names and the values are the respective header values. All header names
-are lowercase.
+返回当前传出头部的浅拷贝。由于使用了浅拷贝，数组值可能会被变更，而无需额外调用各种头部相关的 http 模块方法。返回对象的键是头部名称，值是相应的头部值。所有头部名称均为小写。
 
-The object returned by the `request.getHeaders()` method _does not_
-prototypically inherit from the JavaScript `Object`. This means that typical
-`Object` methods such as `obj.toString()`, `obj.hasOwnProperty()`, and others
-are not defined and _will not work_.
+`request.getHeaders()` 方法返回的对象 _不_ 原型继承自 JavaScript `Object`。这意味着典型的 `Object` 方法（如 `obj.toString()`、`obj.hasOwnProperty()` 等）未定义且 _将无法工作_。
 
 ```js
 request.setHeader('Foo', 'bar');
@@ -1088,10 +1055,9 @@ added:
   - v14.17.0
 -->
 
-* Returns: {string\[]}
+* 返回：{string\[]}
 
-Returns an array containing the unique names of the current outgoing raw
-headers. Header names are returned with their exact casing being set.
+返回一个包含当前传出原始头部唯一名称的数组。头部名称返回时保留其设置的确切大小写形式。
 
 ```js
 request.setHeader('Foo', 'bar');
@@ -1108,10 +1074,9 @@ added: v7.7.0
 -->
 
 * `name` {string}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the header identified by `name` is currently set in the
-outgoing headers. The header name matching is case-insensitive.
+如果由 `name` 标识的头部当前已设置在传出头部中，则返回 `true`。头部名称匹配不区分大小写。
 
 ```js
 const hasContentType = request.hasHeader('content-type');
@@ -1119,9 +1084,9 @@ const hasContentType = request.hasHeader('content-type');
 
 ### `request.maxHeadersCount`
 
-* Type: {number} **Default:** `2000`
+* 类型：{number} **默认：** `2000`
 
-Limits maximum response headers count. If set to 0, no limit will be applied.
+限制最大响应头部数量。如果设置为 0，则不应用限制。
 
 ### `request.path`
 
@@ -1129,7 +1094,7 @@ Limits maximum response headers count. If set to 0, no limit will be applied.
 added: v0.4.0
 -->
 
-* Type: {string} The request path.
+* 类型：{string} 请求路径。
 
 ### `request.method`
 
@@ -1137,7 +1102,7 @@ added: v0.4.0
 added: v0.1.97
 -->
 
-* Type: {string} The request method.
+* 类型：{string} 请求方法。
 
 ### `request.host`
 
@@ -1147,7 +1112,7 @@ added:
   - v12.19.0
 -->
 
-* Type: {string} The request host.
+* 类型：{string} 请求主机。
 
 ### `request.protocol`
 
@@ -1157,7 +1122,7 @@ added:
   - v12.19.0
 -->
 
-* Type: {string} The request protocol.
+* 类型：{string} 请求协议。
 
 ### `request.removeHeader(name)`
 
@@ -1167,7 +1132,7 @@ added: v1.6.0
 
 * `name` {string}
 
-Removes a header that's already defined into headers object.
+移除已在头部对象中定义的头部。
 
 ```js
 request.removeHeader('Content-Type');
@@ -1181,17 +1146,15 @@ added:
  - v12.16.0
 -->
 
-* Type: {boolean} Whether the request is send through a reused socket.
+* 类型：{boolean} 请求是否通过重用的 socket 发送。
 
-When sending request through a keep-alive enabled agent, the underlying socket
-might be reused. But if server closes connection at unfortunate time, client
-may run into a 'ECONNRESET' error.
+当通过启用了 keep-alive 的 agent 发送请求时，底层 socket 可能会被重用。但如果服务器在不当时机关闭连接，客户端可能会遇到 'ECONNRESET' 错误。
 
 ```mjs
 import http from 'node:http';
 const agent = new http.Agent({ keepAlive: true });
 
-// Server has a 5 seconds keep-alive timeout by default
+// 服务器默认有 5 秒的 keep-alive 超时
 http
   .createServer((req, res) => {
     res.write('hello\n');
@@ -1200,20 +1163,20 @@ http
   .listen(3000);
 
 setInterval(() => {
-  // Adapting a keep-alive agent
+  // 适配一个 keep-alive agent
   http.get('http://localhost:3000', { agent }, (res) => {
     res.on('data', (data) => {
-      // Do nothing
+      // 什么都不做
     });
   });
-}, 5000); // Sending request on 5s interval so it's easy to hit idle timeout
+}, 5000); // 每 5 秒发送一次请求，以便容易触发空闲超时
 ```
 
 ```cjs
 const http = require('node:http');
 const agent = new http.Agent({ keepAlive: true });
 
-// Server has a 5 seconds keep-alive timeout by default
+// 服务器默认有 5 秒的 keep-alive 超时
 http
   .createServer((req, res) => {
     res.write('hello\n');
@@ -1222,17 +1185,16 @@ http
   .listen(3000);
 
 setInterval(() => {
-  // Adapting a keep-alive agent
+  // 适配一个 keep-alive agent
   http.get('http://localhost:3000', { agent }, (res) => {
     res.on('data', (data) => {
-      // Do nothing
+      // 什么都不做
     });
   });
-}, 5000); // Sending request on 5s interval so it's easy to hit idle timeout
+}, 5000); // 每 5 秒发送一次请求，以便容易触发空闲超时
 ```
 
-By marking a request whether it reused socket or not, we can do
-automatic error retry base on it.
+通过标记请求是否重用了 socket，我们可以基于此进行自动错误重试。
 
 ```mjs
 import http from 'node:http';
@@ -1244,7 +1206,7 @@ function retriableRequest() {
       // ...
     })
     .on('error', (err) => {
-      // Check if retry is needed
+      // 检查是否需要重试
       if (req.reusedSocket && err.code === 'ECONNRESET') {
         retriableRequest();
       }
@@ -1264,7 +1226,7 @@ function retriableRequest() {
       // ...
     })
     .on('error', (err) => {
-      // Check if retry is needed
+      // 检查是否需要重试
       if (req.reusedSocket && err.code === 'ECONNRESET') {
         retriableRequest();
       }
@@ -1283,28 +1245,21 @@ added: v1.6.0
 * `name` {string}
 * `value` {any}
 
-Sets a single header value for headers object. If this header already exists in
-the to-be-sent headers, its value will be replaced. Use an array of strings
-here to send multiple headers with the same name. Non-string values will be
-stored without modification. Therefore, [`request.getHeader()`][] may return
-non-string values. However, the non-string values will be converted to strings
-for network transmission.
+为头部对象设置单个头部值。如果此头部已存在于待发送的头部中，其值将被替换。此处使用字符串数组来发送多个具有相同名称的头部。非字符串值将未经修改地存储。因此，[`request.getHeader()`][] 可能返回非字符串值。但是，非字符串值将被转换为字符串以便网络传输。
 
 ```js
 request.setHeader('Content-Type', 'application/json');
 ```
 
-or
+或
 
 ```js
 request.setHeader('Cookie', ['type=ninja', 'language=javascript']);
 ```
 
-When the value is a string an exception will be thrown if it contains
-characters outside the `latin1` encoding.
+当值为字符串时，如果它包含 `latin1` 编码之外的字符，将抛出异常。
 
-If you need to pass UTF-8 characters in the value please encode the value
-using the [RFC 8187][] standard.
+如果需要在值中传递 UTF-8 字符，请使用 [RFC 8187][] 标准对值进行编码。
 
 ```js
 const filename = 'Rock 🎵.txt';
@@ -1319,8 +1274,7 @@ added: v0.5.9
 
 * `noDelay` {boolean}
 
-Once a socket is assigned to this request and is connected
-[`socket.setNoDelay()`][] will be called.
+一旦 socket 被分配给此请求并连接，[`socket.setNoDelay()`][] 将被调用。
 
 ### `request.setSocketKeepAlive([enable][, initialDelay])`
 
@@ -1331,8 +1285,7 @@ added: v0.5.9
 * `enable` {boolean}
 * `initialDelay` {number}
 
-Once a socket is assigned to this request and is connected
-[`socket.setKeepAlive()`][] will be called.
+一旦 socket 被分配给此请求并连接，[`socket.setKeepAlive()`][] 将被调用。
 
 ### `request.setTimeout(timeout[, callback])`
 
@@ -1341,16 +1294,14 @@ added: v0.5.9
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/8895
-    description: Consistently set socket timeout only when the socket connects.
+    description: 仅在 socket 连接时一致地设置 socket 超时。
 -->
 
-* `timeout` {number} Milliseconds before a request times out.
-* `callback` {Function} Optional function to be called when a timeout occurs.
-  Same as binding to the `'timeout'` event.
-* Returns: {http.ClientRequest}
+* `timeout` {number} 请求超时前的毫秒数。
+* `callback` {Function} 超时发生时调用的可选函数。等同于绑定到 `'timeout'` 事件。
+* 返回：{http.ClientRequest}
 
-Once a socket is assigned to this request and is connected
-[`socket.setTimeout()`][] will be called.
+一旦 socket 被分配给此请求并连接，[`socket.setTimeout()`][] 将被调用。
 
 ### `request.socket`
 
@@ -1358,11 +1309,9 @@ Once a socket is assigned to this request and is connected
 added: v0.3.0
 -->
 
-* Type: {stream.Duplex}
+* 类型：{stream.Duplex}
 
-Reference to the underlying socket. Usually users will not want to access
-this property. In particular, the socket will not emit `'readable'` events
-because of how the protocol parser attaches to the socket.
+指向底层 socket 的引用。通常用户不希望访问此属性。特别是，由于协议解析器附加到 socket 的方式，socket 不会触发 `'readable'` 事件。
 
 ```mjs
 import http from 'node:http';
@@ -1375,7 +1324,7 @@ req.once('response', (res) => {
   const ip = req.socket.localAddress;
   const port = req.socket.localPort;
   console.log(`Your IP address is ${ip} and your source port is ${port}.`);
-  // Consume response object
+  // 消费响应对象
 });
 ```
 
@@ -1390,13 +1339,11 @@ req.once('response', (res) => {
   const ip = req.socket.localAddress;
   const port = req.socket.localPort;
   console.log(`Your IP address is ${ip} and your source port is ${port}.`);
-  // Consume response object
+  // 消费响应对象
 });
 ```
 
-This property is guaranteed to be an instance of the {net.Socket} class,
-a subclass of {stream.Duplex}, unless the user specified a socket
-type other than {net.Socket}.
+除非用户指定了 {net.Socket} 以外的 socket 类型，否则保证此属性是 {net.Socket} 类的实例，它是 {stream.Duplex} 的子类。
 
 ### `request.uncork()`
 
@@ -1406,7 +1353,7 @@ added:
  - v12.16.0
 -->
 
-See [`writable.uncork()`][].
+参见 [`writable.uncork()`][]。
 
 ### `request.writableEnded`
 
@@ -1414,11 +1361,9 @@ See [`writable.uncork()`][].
 added: v12.9.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Is `true` after [`request.end()`][] has been called. This property
-does not indicate whether the data has been flushed, for this use
-[`request.writableFinished`][] instead.
+在调用 [`request.end()`][] 后为 `true`。此属性不指示数据是否已冲刷，为此请改用 [`request.writableFinished`][]。
 
 ### `request.writableFinished`
 
@@ -1426,10 +1371,9 @@ does not indicate whether the data has been flushed, for this use
 added: v12.7.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Is `true` if all data has been flushed to the underlying system, immediately
-before the [`'finish'`][] event is emitted.
+如果在 [`'finish'`][] 事件触发之前，所有数据已冲刷到底层系统，则为 `true`。
 
 ### `request.write(chunk[, encoding][, callback])`
 
@@ -1438,42 +1382,33 @@ added: v0.1.29
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: The `chunk` parameter can now be a `Uint8Array`.
+    description: "`chunk` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `chunk` {string|Buffer|Uint8Array}
 * `encoding` {string}
 * `callback` {Function}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Sends a chunk of the body. This method can be called multiple times. If no
-`Content-Length` is set, data will automatically be encoded in HTTP Chunked
-transfer encoding, so that server knows when the data ends. The
-`Transfer-Encoding: chunked` header is added. Calling [`request.end()`][]
-is necessary to finish sending the request.
+发送一块主体数据。此方法可以调用多次。如果未设置 `Content-Length`，数据将自动以 HTTP 分块传输编码进行编码，以便服务器知道数据何时结束。将添加 `Transfer-Encoding: chunked` 头部。必须调用 [`request.end()`][] 来完成发送请求。
 
-The `encoding` argument is optional and only applies when `chunk` is a string.
-Defaults to `'utf8'`.
+`encoding` 参数是可选的，仅当 `chunk` 是字符串时适用。默认为 `'utf8'`。
 
-The `callback` argument is optional and will be called when this chunk of data
-is flushed, but only if the chunk is non-empty.
+`callback` 参数是可选的，当这块数据被冲刷时将被调用，但仅当这块数据非空时。
 
-Returns `true` if the entire data was flushed successfully to the kernel
-buffer. Returns `false` if all or part of the data was queued in user memory.
-`'drain'` will be emitted when the buffer is free again.
+如果整个数据成功冲刷到内核缓冲区，则返回 `true`。如果全部或部分数据入队到用户内存，则返回 `false`。当缓冲区再次空闲时，将触发 `'drain'`。
 
-When `write` function is called with empty string or buffer, it does
-nothing and waits for more input.
+当 `write` 函数使用空字符串或缓冲区调用时，它什么都不做并等待更多输入。
 
-## Class: `http.Server`
+## 类：`http.Server`
 
 <!-- YAML
 added: v0.1.17
 -->
 
-* Extends: {net.Server}
+* 继承自：{net.Server}
 
-### Event: `'checkContinue'`
+### 事件：`'checkContinue'`
 
 <!-- YAML
 added: v0.3.0
@@ -1482,19 +1417,17 @@ added: v0.3.0
 * `request` {http.IncomingMessage}
 * `response` {http.ServerResponse}
 
-Emitted each time a request with an HTTP `Expect: 100-continue` is received.
-If this event is not listened for, the server will automatically respond
-with a `100 Continue` as appropriate.
+每当收到带有 HTTP `Expect: 100-continue` 的请求时发出。
+如果没有监听此事件，服务器将自动响应
+`100 Continue`（视情况而定）。
 
-Handling this event involves calling [`response.writeContinue()`][] if the
-client should continue to send the request body, or generating an appropriate
-HTTP response (e.g. 400 Bad Request) if the client should not continue to send
-the request body.
+处理此事件涉及调用 [`response.writeContinue()`][]（如果客户端应继续发送请求主体），或者生成适当的
+HTTP 响应（例如 400 Bad Request）（如果客户端不应继续发送请求主体）。
 
-When this event is emitted and handled, the [`'request'`][] event will
-not be emitted.
+当此事件被发出并处理后，[`'request'`][] 事件将
+不会被发出。
 
-### Event: `'checkExpectation'`
+### 事件：`'checkExpectation'`
 
 <!-- YAML
 added: v5.5.0
@@ -1503,54 +1436,47 @@ added: v5.5.0
 * `request` {http.IncomingMessage}
 * `response` {http.ServerResponse}
 
-Emitted each time a request with an HTTP `Expect` header is received, where the
-value is not `100-continue`. If this event is not listened for, the server will
-automatically respond with a `417 Expectation Failed` as appropriate.
+每当收到带有 HTTP `Expect` 头部的请求时发出，其中
+值不是 `100-continue`。如果没有监听此事件，服务器将
+自动响应 `417 Expectation Failed`（视情况而定）。
 
-When this event is emitted and handled, the [`'request'`][] event will
-not be emitted.
+当此事件被发出并处理后，[`'request'`][] 事件将
+不会被发出。
 
-### Event: `'clientError'`
+### 事件：`'clientError'`
 
 <!-- YAML
 added: v0.1.94
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25605
-    description: The default behavior will return a 431 Request Header
-                 Fields Too Large if a HPE_HEADER_OVERFLOW error occurs.
+    description: "如果发生 HPE_HEADER_OVERFLOW 错误，默认行为将返回 431 Request HeaderFields Too Large。"
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/17672
-    description: The `rawPacket` is the current buffer that just parsed. Adding
-                 this buffer to the error object of `'clientError'` event is to
-                 make it possible that developers can log the broken packet.
+    description: "`rawPacket` 是刚刚解析的当前缓冲区。将此缓冲区添加到 `'clientError'` 事件的错误对象中是为了使开发人员能够记录损坏的数据包。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4557
-    description: The default action of calling `.destroy()` on the `socket`
-                 will no longer take place if there are listeners attached
-                 for `'clientError'`.
+    description: "如果附加了 `'clientError'` 的监听器，调用 `socket`上 `.destroy()` 的默认操作将不再发生。"
 -->
 
 * `exception` {Error}
 * `socket` {stream.Duplex}
 
-If a client connection emits an `'error'` event, it will be forwarded here.
-Listener of this event is responsible for closing/destroying the underlying
-socket. For example, one may wish to more gracefully close the socket with a
-custom HTTP response instead of abruptly severing the connection. The socket
-**must be closed or destroyed** before the listener ends.
+如果客户端连接发出 `'error'` 事件，它将被转发到这里。
+此事件的监听器负责关闭/销毁底层
+socket。例如，人们可能希望使用
+自定义 HTTP 响应更优雅地关闭 socket，而不是突然切断连接。在监听器结束之前，socket
+**必须被关闭或销毁**。
 
-This event is guaranteed to be passed an instance of the {net.Socket} class,
-a subclass of {stream.Duplex}, unless the user specifies a socket
-type other than {net.Socket}.
+除非用户指定了 {net.Socket} 以外的 socket 类型，否则此事件保证传递一个 {net.Socket} 类的实例，
+它是 {stream.Duplex} 的子类。
 
-Default behavior is to try close the socket with a HTTP '400 Bad Request',
-or a HTTP '431 Request Header Fields Too Large' in the case of a
-[`HPE_HEADER_OVERFLOW`][] error. If the socket is not writable or headers
-of the current attached [`http.ServerResponse`][] has been sent, it is
-immediately destroyed.
+默认行为是尝试用 HTTP '400 Bad Request' 关闭 socket，
+或者在 [`HPE_HEADER_OVERFLOW`][] 错误的情况下使用
+HTTP '431 Request Header Fields Too Large'。如果 socket 不可写或当前附加的 [`http.ServerResponse`][] 的
+头部已发送，则立即销毁它。
 
-`socket` is the [`net.Socket`][] object that the error originated from.
+`socket` 是错误来源的 [`net.Socket`][] 对象。
 
 ```mjs
 import http from 'node:http';
@@ -1576,21 +1502,20 @@ server.on('clientError', (err, socket) => {
 server.listen(8000);
 ```
 
-When the `'clientError'` event occurs, there is no `request` or `response`
-object, so any HTTP response sent, including response headers and payload,
-_must_ be written directly to the `socket` object. Care must be taken to
-ensure the response is a properly formatted HTTP response message.
+当 `'clientError'` 事件发生时，没有 `request` 或 `response`
+对象，因此任何发送的 HTTP 响应，包括响应头部和负载，
+_必须_ 直接写入 `socket` 对象。必须注意
+确保响应是格式正确的 HTTP 响应消息。
 
-`err` is an instance of `Error` with two extra columns:
+`err` 是 `Error` 的实例，带有两个额外的列：
 
-* `bytesParsed`: the bytes count of request packet that Node.js may have parsed
-  correctly;
-* `rawPacket`: the raw packet of current request.
+* `bytesParsed`：Node.js 可能已正确解析的请求数据包的字节数；
+* `rawPacket`：当前请求的原始数据包。
 
-In some cases, the client has already received the response and/or the socket
-has already been destroyed, like in case of `ECONNRESET` errors. Before
-trying to send data to the socket, it is better to check that it is still
-writable.
+在某些情况下，客户端已经收到响应和/或 socket
+已经被销毁，例如 `ECONNRESET` 错误的情况。在
+尝试向 socket 发送数据之前，最好检查它是否仍然
+可写。
 
 ```js
 server.on('clientError', (err, socket) => {
@@ -1602,38 +1527,37 @@ server.on('clientError', (err, socket) => {
 });
 ```
 
-### Event: `'close'`
+### 事件：`'close'`
 
 <!-- YAML
 added: v0.1.4
 -->
 
-Emitted when the server closes.
+当服务器关闭时发出。
 
-### Event: `'connect'`
+### 事件：`'connect'`
 
 <!-- YAML
 added: v0.7.0
 -->
 
-* `request` {http.IncomingMessage} Arguments for the HTTP request, as it is in
-  the [`'request'`][] event
-* `socket` {stream.Duplex} Network socket between the server and client
-* `head` {Buffer} The first packet of the tunneling stream (may be empty)
+* `request` {http.IncomingMessage} HTTP 请求的参数，与
+  [`'request'`][] 事件中一样
+* `socket` {stream.Duplex} 服务器和客户端之间的网络套接字
+* `head` {Buffer} 隧道流的第一个数据包（可能为空）
 
-Emitted each time a client requests an HTTP `CONNECT` method. If this event is
-not listened for, then clients requesting a `CONNECT` method will have their
-connections closed.
+每当客户端请求 HTTP `CONNECT` 方法时发出。如果没有监听此事件，
+则请求 `CONNECT` 方法的客户端的
+连接将被关闭。
 
-This event is guaranteed to be passed an instance of the {net.Socket} class,
-a subclass of {stream.Duplex}, unless the user specifies a socket
-type other than {net.Socket}.
+除非用户指定了 {net.Socket} 以外的 socket 类型，否则此事件保证传递一个 {net.Socket} 类的实例，
+它是 {stream.Duplex} 的子类。
 
-After this event is emitted, the request's socket will not have a `'data'`
-event listener, meaning it will need to be bound in order to handle data
-sent to the server on that socket.
+发出此事件后，请求的 socket 将没有 `'data'`
+事件监听器，这意味着需要绑定它以便处理
+发送到该服务器上数据的数据。
 
-### Event: `'connection'`
+### 事件：`'connection'`
 
 <!-- YAML
 added: v0.1.0
@@ -1641,24 +1565,22 @@ added: v0.1.0
 
 * `socket` {stream.Duplex}
 
-This event is emitted when a new TCP stream is established. `socket` is
-typically an object of type [`net.Socket`][]. Usually users will not want to
-access this event. In particular, the socket will not emit `'readable'` events
-because of how the protocol parser attaches to the socket. The `socket` can
-also be accessed at `request.socket`.
+当建立新的 TCP 流时发出此事件。`socket` 通常
+是 [`net.Socket`][] 类型的对象。通常用户不希望
+访问此事件。特别是，由于协议解析器附加到 socket 的方式，socket 不会发出 `'readable'` 事件。
+`socket` 也可以在 `request.socket` 处访问。
 
-This event can also be explicitly emitted by users to inject connections
-into the HTTP server. In that case, any [`Duplex`][] stream can be passed.
+用户也可以显式发出此事件以将连接
+注入到 HTTP 服务器中。在这种情况下，可以传递任何 [`Duplex`][] 流。
 
-If `socket.setTimeout()` is called here, the timeout will be replaced with
-`server.keepAliveTimeout` when the socket has served a request (if
-`server.keepAliveTimeout` is non-zero).
+如果在此处调用 `socket.setTimeout()`，当 socket 服务了一个请求后，超时将被替换为
+`server.keepAliveTimeout`（如果
+`server.keepAliveTimeout` 非零）。
 
-This event is guaranteed to be passed an instance of the {net.Socket} class,
-a subclass of {stream.Duplex}, unless the user specifies a socket
-type other than {net.Socket}.
+除非用户指定了 {net.Socket} 以外的 socket 类型，否则此事件保证传递一个 {net.Socket} 类的实例，
+它是 {stream.Duplex} 的子类。
 
-### Event: `'dropRequest'`
+### 事件：`'dropRequest'`
 
 <!-- YAML
 added:
@@ -1666,15 +1588,15 @@ added:
   - v16.17.0
 -->
 
-* `request` {http.IncomingMessage} Arguments for the HTTP request, as it is in
-  the [`'request'`][] event
-* `socket` {stream.Duplex} Network socket between the server and client
+* `request` {http.IncomingMessage} HTTP 请求的参数，与
+  [`'request'`][] 事件中一样
+* `socket` {stream.Duplex} 服务器和客户端之间的网络套接字
 
-When the number of requests on a socket reaches the threshold of
-`server.maxRequestsPerSocket`, the server will drop new requests
-and emit `'dropRequest'` event instead, then send `503` to client.
+当 socket 上的请求数量达到
+`server.maxRequestsPerSocket` 的阈值时，服务器将丢弃新请求
+并发出 `'dropRequest'` 事件，然后向客户端发送 `503`。
 
-### Event: `'request'`
+### 事件：`'request'`
 
 <!-- YAML
 added: v0.1.0
@@ -1683,68 +1605,54 @@ added: v0.1.0
 * `request` {http.IncomingMessage}
 * `response` {http.ServerResponse}
 
-Emitted each time there is a request. There may be multiple requests
-per connection (in the case of HTTP Keep-Alive connections).
+每当有请求时发出。每个连接可能有多个请求
+（在 HTTP Keep-Alive 连接的情况下）。
 
-### Event: `'upgrade'`
+### 事件：`'upgrade'`
 
 <!-- YAML
 added: v0.1.94
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/60016
-    description: Request bodies are no longer exposed raw (unparsed) on the
-                 socket argument. Instead, if a body is received, the stream
-                 argument will be a duplex that emits socket content only
-                 after the request body, while the parsed request body data
-                 will be emitted from the request, just as in normal server
-                 `'request'` events.
+    description: "请求主体不再以原始（未解析）形式暴露在 socket 参数上。相反，如果收到主体，流参数将是一个双工流，仅在请求主体之后发出 socket 内容，而解析后的请求主体数据将从请求中发出，就像在普通服务器`'request'`事件中一样。"
   - version:
      - v24.9.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59824
-    description: Whether this event is fired can now be controlled by the
-                 `shouldUpgradeCallback` and sockets will be destroyed
-                 if upgraded while no event handler is listening.
+    description: "是否触发此事件现在可以通过`shouldUpgradeCallback` 控制，如果没有事件处理程序监听，socket 将在升级时被销毁。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19981
-    description: Not listening to this event no longer causes the socket
-                 to be destroyed if a client sends an Upgrade header.
+    description: "不再监听此事件不再导致 socket 在客户端发送 Upgrade 头部时被销毁。"
 -->
 
-* `request` {http.IncomingMessage} Arguments for the HTTP request, as it is in
-  the [`'request'`][] event
-* `stream` {stream.Duplex} The upgraded stream between the server and client
-* `head` {Buffer} The first packet of the upgraded stream (may be empty)
+* `request` {http.IncomingMessage} HTTP 请求的参数，与
+  [`'request'`][] 事件中一样
+* `stream` {stream.Duplex} 服务器和客户端之间升级后的流
+* `head` {Buffer} 升级后的流的第一个数据包（可能为空）
 
-Emitted each time a client's HTTP upgrade request is accepted. By default
-all HTTP upgrade requests are ignored (i.e. only regular `'request'` events
-are emitted, sticking with the normal HTTP request/response flow) unless you
-listen to this event, in which case they are all accepted (i.e. the `'upgrade'`
-event is emitted instead, and future communication must handled directly
-through the raw stream). You can control this more precisely by using the
-server `shouldUpgradeCallback` option.
+每当客户端的 HTTP 升级请求被接受时发出。默认情况下
+所有 HTTP 升级请求都被忽略（即只发出常规的 `'request'` 事件
+，坚持正常的 HTTP 请求/响应流程），除非你
+监听此事件，在这种情况下它们都被接受（即发出 `'upgrade'`
+事件，未来的通信必须直接通过原始流处理）。你可以使用
+服务器 `shouldUpgradeCallback` 选项更精确地控制此行为。
 
-Listening to this event is optional and clients cannot insist on a protocol
-change.
+监听此事件是可选的，客户端不能坚持协议
+更改。
 
-If an upgrade is accepted by `shouldUpgradeCallback` but no event handler
-is registered then the socket will be destroyed, resulting in an immediate
-connection closure for the client.
+如果升级被 `shouldUpgradeCallback` 接受但没有注册事件处理程序
+，则 socket 将被销毁，导致客户端立即连接关闭。
 
-In the uncommon case that the incoming request has a body, this body will be
-parsed as normal, separate to the upgrade stream, and the raw stream data will
-only begin after it has completed. To ensure that reading from the stream isn't
-blocked by waiting for the request body to be read, any reads on the stream
-will start the request body flowing automatically. If you want to read the
-request body, ensure that you do so (i.e. you attach `'data'` listeners)
-before starting to read from the upgraded stream.
+在传入请求带有主体的罕见情况下，该主体将被
+正常解析，与升级流分开，原始流数据将
+仅在其完成后才开始。为了确保从流读取不会被
+等待请求主体读取所阻塞，流上的任何读取将自动开始请求主体流动。如果你想读取
+请求主体，请确保在开始从升级流读取之前这样做（即你附加了 `'data'` 监听器）。
 
-The stream argument will typically be the {net.Socket} instance used by the
-request, but in some cases (such as with a request body) it may be a duplex
-stream. If required, you can access the raw connection underlying the request
-via [`request.socket`][], which is guaranteed to be an instance of {net.Socket}
-unless the user specified another socket type.
+流参数通常是请求使用的 {net.Socket} 实例，但在某些情况下（例如带有请求主体），它可能是双工
+流。如果需要，你可以通过 [`request.socket`][] 访问请求底层的原始连接
+，除非用户指定了另一个 socket 类型，否则它保证是 {net.Socket} 的实例。
 
 ### `server.close([callback])`
 
@@ -1754,16 +1662,16 @@ changes:
   - version:
       - v19.0.0
     pr-url: https://github.com/nodejs/node/pull/43522
-    description: The method closes idle connections before returning.
+    description: 该方法在返回前关闭空闲连接。
 
 -->
 
 * `callback` {Function}
 
-Stops the server from accepting new connections and closes all connections
-connected to this server which are not sending a request or waiting for
-a response.
-See [`net.Server.close()`][].
+停止服务器接受新连接，并关闭所有
+连接到此服务器但未发送请求或等待
+响应的连接。
+参见 [`net.Server.close()`][]。
 
 ```js
 const http = require('node:http');
@@ -1776,10 +1684,10 @@ const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
 });
 
 server.listen(8000);
-// Close the server after 10 seconds
+// 10 秒后关闭服务器
 setTimeout(() => {
   server.close(() => {
-    console.log('server on port 8000 closed successfully');
+    console.log('8000 端口的服务器已成功关闭');
   });
 }, 10000);
 ```
@@ -1790,15 +1698,14 @@ setTimeout(() => {
 added: v18.2.0
 -->
 
-Closes all established HTTP(S) connections connected to this server, including
-active connections connected to this server which are sending a request or
-waiting for a response. This does _not_ destroy sockets upgraded to a different
-protocol, such as WebSocket or HTTP/2.
+关闭所有连接到此服务器的已建立 HTTP(S) 连接，包括
+连接到此服务器正在发送请求或等待响应的活动连接。这 _不会_ 销毁升级到不同
+协议（如 WebSocket 或 HTTP/2）的 socket。
 
-> This is a forceful way of closing all connections and should be used with
-> caution. Whenever using this in conjunction with `server.close`, calling this
-> _after_ `server.close` is recommended as to avoid race conditions where new
-> connections are created between a call to this and a call to `server.close`.
+> 这是一种强制关闭所有连接的方式，应谨慎使用。
+> 每当与 `server.close` 结合使用时，建议在此调用 _之后_ 调用
+> `server.close`，以避免在此调用和调用 `server.close` 之间
+> 创建新连接的竞争条件。
 
 ```js
 const http = require('node:http');
@@ -1811,12 +1718,12 @@ const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
 });
 
 server.listen(8000);
-// Close the server after 10 seconds
+// 10 秒后关闭服务器
 setTimeout(() => {
   server.close(() => {
-    console.log('server on port 8000 closed successfully');
+    console.log('8000 端口的服务器已成功关闭');
   });
-  // Closes all connections, ensuring the server closes successfully
+  // 关闭所有连接，确保服务器成功关闭
   server.closeAllConnections();
 }, 10000);
 ```
@@ -1827,17 +1734,14 @@ setTimeout(() => {
 added: v18.2.0
 -->
 
-Closes all connections connected to this server which are not sending a request
-or waiting for a response.
+关闭所有连接到此服务器但未发送请求
+或等待响应的连接。
 
-> Starting with Node.js 19.0.0, there's no need for calling this method in
-> conjunction with `server.close` to reap `keep-alive` connections. Using it
-> won't cause any harm though, and it can be useful to ensure backwards
-> compatibility for libraries and applications that need to support versions
-> older than 19.0.0. Whenever using this in conjunction with `server.close`,
-> calling this _after_ `server.close` is recommended as to avoid race
-> conditions where new connections are created between a call to this and a
-> call to `server.close`.
+> 从 Node.js 19.0.0 开始，无需结合 `server.close` 调用此方法来回收 `keep-alive` 连接。使用它不会造成任何危害，
+> 并且对于需要支持 19.0.0 之前版本的库和应用程序来说，确保向后兼容性可能很有用。
+> 每当与 `server.close` 结合使用时，建议在此调用 _之后_ 调用
+> `server.close`，以避免在此调用和调用 `server.close` 之间
+> 创建新连接的竞争条件。
 
 ```js
 const http = require('node:http');
@@ -1850,13 +1754,12 @@ const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
 });
 
 server.listen(8000);
-// Close the server after 10 seconds
+// 10 秒后关闭服务器
 setTimeout(() => {
   server.close(() => {
-    console.log('server on port 8000 closed successfully');
+    console.log('8000 端口的服务器已成功关闭');
   });
-  // Closes idle connections, such as keep-alive connections. Server will close
-  // once remaining active connections are terminated
+  // 关闭空闲连接，例如 keep-alive 连接。一旦剩余的活动连接终止，服务器将关闭
   server.closeIdleConnections();
 }, 10000);
 ```
@@ -1872,25 +1775,24 @@ changes:
     - v19.4.0
     - v18.14.0
     pr-url: https://github.com/nodejs/node/pull/45778
-    description: The default is now set to the minimum between 60000 (60 seconds) or `requestTimeout`.
+    description: "默认值现在设置为 [`server.requestTimeout`][] 或 `60000` 之间的最小值。"
 -->
 
-* Type: {number} **Default:** The minimum between [`server.requestTimeout`][] or `60000`.
+* 类型：{number} **默认值：** [`server.requestTimeout`][] 或 `60000` 之间的最小值。
 
-Limit the amount of time the parser will wait to receive the complete HTTP
-headers.
+限制解析器等待接收完整 HTTP
+头部的时间量。
 
-If the timeout expires, the server responds with status 408 without
-forwarding the request to the request listener and then closes the connection.
+如果超时过期，服务器响应状态 408，而不
+将请求转发给请求监听器，然后关闭连接。
 
-It must be set to a non-zero value (e.g. 120 seconds) to protect against
-potential Denial-of-Service attacks in case the server is deployed without a
-reverse proxy in front.
+必须将其设置为非零值（例如 120 秒），以便在服务器前面没有部署反向代理的情况下保护免受
+潜在的拒绝服务攻击。
 
 ### `server.listen()`
 
-Starts the HTTP server listening for connections.
-This method is identical to [`server.listen()`][] from [`net.Server`][].
+启动 HTTP 服务器监听连接。
+此方法与 [`net.Server`][] 中的 [`server.listen()`][] 相同。
 
 ### `server.listening`
 
@@ -1898,7 +1800,7 @@ This method is identical to [`server.listen()`][] from [`net.Server`][].
 added: v5.7.0
 -->
 
-* Type: {boolean} Indicates whether or not the server is listening for connections.
+* 类型：{boolean} 指示服务器是否正在监听连接。
 
 ### `server.maxHeadersCount`
 
@@ -1906,9 +1808,9 @@ added: v5.7.0
 added: v0.7.0
 -->
 
-* Type: {number} **Default:** `2000`
+* 类型：{number} **默认值：** `2000`
 
-Limits maximum incoming headers count. If set to 0, no limit will be applied.
+限制最大传入头部计数。如果设置为 0，将不应用限制。
 
 ### `server.requestTimeout`
 
@@ -1917,21 +1819,18 @@ added: v14.11.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41263
-    description: The default request timeout changed
-                 from no timeout to 300s (5 minutes).
+    description: 默认请求超时从无超时更改为 300 秒（5 分钟）。
 -->
 
-* Type: {number} **Default:** `300000`
+* 类型：{number} **默认值：** `300000`
 
-Sets the timeout value in milliseconds for receiving the entire request from
-the client.
+设置从客户端接收整个请求的超时值（毫秒）。
 
-If the timeout expires, the server responds with status 408 without
-forwarding the request to the request listener and then closes the connection.
+如果超时过期，服务器响应状态 408，而不
+将请求转发给请求监听器，然后关闭连接。
 
-It must be set to a non-zero value (e.g. 120 seconds) to protect against
-potential Denial-of-Service attacks in case the server is deployed without a
-reverse proxy in front.
+必须将其设置为非零值（例如 120 秒），以便在服务器前面没有部署反向代理的情况下保护免受
+潜在的拒绝服务攻击。
 
 ### `server.setTimeout([msecs][, callback])`
 
@@ -1940,23 +1839,23 @@ added: v0.9.12
 changes:
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27558
-    description: The default timeout changed from 120s to 0 (no timeout).
+    description: 默认超时从 120 秒更改为 0（无超时）。
 -->
 
-* `msecs` {number} **Default:** 0 (no timeout)
+* `msecs` {number} **默认值：** 0（无超时）
 * `callback` {Function}
-* Returns: {http.Server}
+* 返回：{http.Server}
 
-Sets the timeout value for sockets, and emits a `'timeout'` event on
-the Server object, passing the socket as an argument, if a timeout
-occurs.
+设置 socket 的超时值，如果发生超时，则在
+Server 对象上发出 `'timeout'` 事件，并将
+socket 作为参数传递。
 
-If there is a `'timeout'` event listener on the Server object, then it
-will be called with the timed-out socket as an argument.
+如果 Server 对象上有 `'timeout'` 事件监听器，则它将
+使用超时的 socket 作为参数被调用。
 
-By default, the Server does not timeout sockets. However, if a callback
-is assigned to the Server's `'timeout'` event, timeouts must be handled
-explicitly.
+默认情况下，服务器不会使 socket 超时。但是，如果将回调
+分配给服务器的 `'timeout'` 事件，则必须显式处理
+超时。
 
 ### `server.maxRequestsPerSocket`
 
@@ -1964,16 +1863,14 @@ explicitly.
 added: v16.10.0
 -->
 
-* Type: {number} Requests per socket. **Default:** 0 (no limit)
+* 类型：{number} 每个 socket 的请求数。 **默认值：** 0（无限制）
 
-The maximum number of requests socket can handle
-before closing keep alive connection.
+关闭 keep alive 连接之前 socket 可以处理的最大请求数。
 
-A value of `0` will disable the limit.
+值 `0` 将禁用限制。
 
-When the limit is reached it will set the `Connection` header value to `close`,
-but will not actually close the connection, subsequent requests sent
-after the limit is reached will get `503 Service Unavailable` as a response.
+当达到限制时，它将 `Connection` 头部值设置为 `close`，
+但不会实际关闭连接，达到限制后发送的后续请求将获得 `503 Service Unavailable` 作为响应。
 
 ### `server.timeout`
 
@@ -1982,18 +1879,17 @@ added: v0.9.12
 changes:
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27558
-    description: The default timeout changed from 120s to 0 (no timeout).
+    description: 默认超时从 120 秒更改为 0（无超时）。
 -->
 
-* Type: {number} Timeout in milliseconds. **Default:** 0 (no timeout)
+* 类型：{number} 超时时间（毫秒）。 **默认值：** 0（无超时）
 
-The number of milliseconds of inactivity before a socket is presumed
-to have timed out.
+在 socket 被假定超时之前的不活动毫秒数。
 
-A value of `0` will disable the timeout behavior on incoming connections.
+值 `0` 将禁用传入连接的超时行为。
 
-The socket timeout logic is set up on connection, so changing this
-value only affects new connections to the server, not any existing connections.
+socket 超时逻辑在连接时设置，因此更改此
+值仅影响服务器的新连接，不影响任何现有连接。
 
 ### `server.keepAliveTimeout`
 
@@ -2001,26 +1897,25 @@ value only affects new connections to the server, not any existing connections.
 added: v8.0.0
 -->
 
-* Type: {number} Timeout in milliseconds. **Default:** `5000` (5 seconds).
+* 类型：{number} 超时时间（毫秒）。 **默认值：** `5000`（5 秒）。
 
-The number of milliseconds of inactivity a server needs to wait for additional
-incoming data, after it has finished writing the last response, before a socket
-will be destroyed.
+服务器在完成写入最后一个响应后，需要等待额外
+传入数据的不活动毫秒数，之后
+socket 将被销毁。
 
-This timeout value is combined with the
-[`server.keepAliveTimeoutBuffer`][] option to determine the actual socket
-timeout, calculated as:
+此超时值与
+[`server.keepAliveTimeoutBuffer`][] 选项结合以确定实际
+socket 超时，计算方式为：
 socketTimeout = keepAliveTimeout + keepAliveTimeoutBuffer
-If the server receives new data before the keep-alive timeout has fired, it
-will reset the regular inactivity timeout, i.e., [`server.timeout`][].
+如果在 keep-alive 超时触发之前服务器收到新数据，它
+将重置常规不活动超时，即 [`server.timeout`][]。
 
-A value of `0` will disable the keep-alive timeout behavior on incoming
-connections.
-A value of `0` makes the HTTP server behave similarly to Node.js versions prior
-to 8.0.0, which did not have a keep-alive timeout.
+值 `0` 将禁用传入连接的 keep-alive 超时行为。
+值 `0` 使 HTTP 服务器行为类似于 8.0.0 之前的 Node.js 版本，
+后者没有 keep-alive 超时。
 
-The socket timeout logic is set up on connection, so changing this value only
-affects new connections to the server, not any existing connections.
+socket 超时逻辑在连接时设置，因此更改此值仅
+影响服务器的新连接，不影响任何现有连接。
 
 ### `server.keepAliveTimeoutBuffer`
 
@@ -2030,15 +1925,16 @@ added:
  - v22.19.0
 -->
 
-* Type: {number} Timeout in milliseconds. **Default:** `1000` (1 second).
+* 类型：{number} 超时时间（毫秒）。 **默认值：** `1000`（1 秒）。
 
-An additional buffer time added to the
-[`server.keepAliveTimeout`][] to extend the internal socket timeout.
+添加到
+[`server.keepAliveTimeout`][] 的额外缓冲时间，以延长内部
+socket 超时。
 
-This buffer helps reduce connection reset (`ECONNRESET`) errors by increasing
-the socket timeout slightly beyond the advertised keep-alive timeout.
+此缓冲有助于通过略微增加超过广告 keep-alive 超时的
+socket 超时时间来减少连接重置 (`ECONNRESET`) 错误。
 
-This option applies only to new incoming connections.
+此选项仅适用于新的传入连接。
 
 ### `server[Symbol.asyncDispose]()`
 
@@ -2047,42 +1943,37 @@ added: v20.4.0
 changes:
  - version: v24.2.0
    pr-url: https://github.com/nodejs/node/pull/58467
-   description: No longer experimental.
+   description: 不再是实验性的。
 -->
 
-Calls [`server.close()`][] and returns a promise that fulfills when the
-server has closed.
+调用 [`server.close()`][] 并返回一个 promise，当
+服务器关闭时该 promise 会被履行。
 
-## Class: `http.ServerResponse`
+## 类：`http.ServerResponse`
 
 <!-- YAML
 added: v0.1.17
 -->
 
-* Extends: {http.OutgoingMessage}
+* 继承：{http.OutgoingMessage}
 
-This object is created internally by an HTTP server, not by the user. It is
-passed as the second parameter to the [`'request'`][] event.
+此对象由 HTTP 服务器内部创建，而非由用户创建。它作为第二个参数传递给 [`'request'`][] 事件。
 
-### Event: `'close'`
+### 事件：`'close'`
 
 <!-- YAML
 added: v0.6.7
 -->
 
-Indicates that the response is completed, or its underlying connection was
-terminated prematurely (before the response completion).
+表示响应已完成，或其底层连接在响应完成之前被提前终止。
 
-### Event: `'finish'`
+### 事件：`'finish'`
 
 <!-- YAML
 added: v0.3.6
 -->
 
-Emitted when the response has been sent. More specifically, this event is
-emitted when the last segment of the response headers and body have been
-handed off to the operating system for transmission over the network. It
-does not imply that the client has received anything yet.
+当响应已发送时触发。更具体地说，当响应头部和主体的最后一段已移交操作系统以便通过网络传输时，会触发此事件。这并不意味着客户端已经收到任何内容。
 
 ### `response.addTrailers(headers)`
 
@@ -2092,15 +1983,11 @@ added: v0.3.0
 
 * `headers` {Object}
 
-This method adds HTTP trailing headers (a header but at the end of the
-message) to the response.
+此方法将 HTTP 尾部头（消息末尾的头）添加到响应中。
 
-Trailers will **only** be emitted if chunked encoding is used for the
-response; if it is not (e.g. if the request was HTTP/1.0), they will
-be silently discarded.
+仅当响应使用分块编码时，尾部头 **才会** 被发出；如果不是（例如，如果请求是 HTTP/1.0），它们将被静默丢弃。
 
-HTTP requires the `Trailer` header to be sent in order to
-emit trailers, with a list of the header fields in its value. E.g.,
+HTTP 要求发送 `Trailer` 头才能发出尾部头，其值中包含头部字段列表。例如，
 
 ```js
 response.writeHead(200, { 'Content-Type': 'text/plain',
@@ -2110,8 +1997,7 @@ response.addTrailers({ 'Content-MD5': '7895bf4b8828b55ceaf47747b4bca667' });
 response.end();
 ```
 
-Attempting to set a header field name or value that contains invalid characters
-will result in a [`TypeError`][] being thrown.
+尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][]。
 
 ### `response.connection`
 
@@ -2120,11 +2006,11 @@ added: v0.3.0
 deprecated: v13.0.0
 -->
 
-> Stability: 0 - Deprecated. Use [`response.socket`][].
+> 稳定性：0 - 已弃用。使用 [`response.socket`][]。
 
-* Type: {stream.Duplex}
+* 类型：{stream.Duplex}
 
-See [`response.socket`][].
+参见 [`response.socket`][]。
 
 ### `response.cork()`
 
@@ -2134,7 +2020,7 @@ added:
  - v12.16.0
 -->
 
-See [`writable.cork()`][].
+参见 [`writable.cork()`][]。
 
 ### `response.end([data[, encoding]][, callback])`
 
@@ -2143,26 +2029,22 @@ added: v0.1.90
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: The `data` parameter can now be a `Uint8Array`.
+    description: "`data` 参数现在可以是 `Uint8Array`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18780
-    description: This method now returns a reference to `ServerResponse`.
+    description: "此方法现在返回对 `ServerResponse` 的引用。"
 -->
 
 * `data` {string|Buffer|Uint8Array}
 * `encoding` {string}
 * `callback` {Function}
-* Returns: {this}
+* 返回：{this}
 
-This method signals to the server that all of the response headers and body
-have been sent; that server should consider this message complete.
-The method, `response.end()`, MUST be called on each response.
+此方法向服务器发出信号，表明所有响应头部和主体都已发送；服务器应认为此消息已完成。每个响应都必须调用 `response.end()` 方法。
 
-If `data` is specified, it is similar in effect to calling
-[`response.write(data, encoding)`][] followed by `response.end(callback)`.
+如果指定了 `data`，其效果类似于调用 [`response.write(data, encoding)`][] 后跟 `response.end(callback)`。
 
-If `callback` is specified, it will be called when the response stream
-is finished.
+如果指定了 `callback`，它将在响应流完成时调用。
 
 ### `response.finished`
 
@@ -2173,12 +2055,11 @@ deprecated:
  - v12.16.0
 -->
 
-> Stability: 0 - Deprecated. Use [`response.writableEnded`][].
+> 稳定性：0 - 已弃用。使用 [`response.writableEnded`][]。
 
-* Type: {boolean}
+* 类型：{boolean}
 
-The `response.finished` property will be `true` if [`response.end()`][]
-has been called.
+如果已调用 [`response.end()`][]，则 `response.finished` 属性将为 `true`。
 
 ### `response.flushHeaders()`
 
@@ -2186,7 +2067,7 @@ has been called.
 added: v1.6.0
 -->
 
-Flushes the response headers. See also: [`request.flushHeaders()`][].
+刷新响应头部。另参见：[`request.flushHeaders()`][]。
 
 ### `response.getHeader(name)`
 
@@ -2195,22 +2076,20 @@ added: v0.4.0
 -->
 
 * `name` {string}
-* Returns: {number | string | string\[] | undefined}
+* 返回：{number | string | string\[] | undefined}
 
-Reads out a header that's already been queued but not sent to the client.
-The name is case-insensitive. The type of the return value depends
-on the arguments provided to [`response.setHeader()`][].
+读取已排队但尚未发送给客户端的头部。名称不区分大小写。返回值的类型取决于提供给 [`response.setHeader()`][] 的参数。
 
 ```js
 response.setHeader('Content-Type', 'text/html');
 response.setHeader('Content-Length', Buffer.byteLength(body));
 response.setHeader('Set-Cookie', ['type=ninja', 'language=javascript']);
 const contentType = response.getHeader('content-type');
-// contentType is 'text/html'
+// contentType 是 'text/html'
 const contentLength = response.getHeader('Content-Length');
-// contentLength is of type number
+// contentLength 是 number 类型
 const setCookie = response.getHeader('set-cookie');
-// setCookie is of type string[]
+// setCookie 是 string[] 类型
 ```
 
 ### `response.getHeaderNames()`
@@ -2219,10 +2098,9 @@ const setCookie = response.getHeader('set-cookie');
 added: v7.7.0
 -->
 
-* Returns: {string\[]}
+* 返回：{string\[]}
 
-Returns an array containing the unique names of the current outgoing headers.
-All header names are lowercase.
+返回一个包含当前传出头部唯一名称的数组。所有头部名称均为小写。
 
 ```js
 response.setHeader('Foo', 'bar');
@@ -2238,18 +2116,11 @@ const headerNames = response.getHeaderNames();
 added: v7.7.0
 -->
 
-* Returns: {Object}
+* 返回：{Object}
 
-Returns a shallow copy of the current outgoing headers. Since a shallow copy
-is used, array values may be mutated without additional calls to various
-header-related http module methods. The keys of the returned object are the
-header names and the values are the respective header values. All header names
-are lowercase.
+返回当前传出头部的浅拷贝。由于使用的是浅拷贝，数组值可以在不调用各种头部相关的 http 模块方法的情况下被突变。返回对象的键是头部名称，值是相应的头部值。所有头部名称均为小写。
 
-The object returned by the `response.getHeaders()` method _does not_
-prototypically inherit from the JavaScript `Object`. This means that typical
-`Object` methods such as `obj.toString()`, `obj.hasOwnProperty()`, and others
-are not defined and _will not work_.
+`response.getHeaders()` 方法返回的对象 _不_ 从 JavaScript `Object` 原型继承。这意味着典型的 `Object` 方法（如 `obj.toString()`、`obj.hasOwnProperty()` 等）未定义且 _无法工作_。
 
 ```js
 response.setHeader('Foo', 'bar');
@@ -2266,10 +2137,9 @@ added: v7.7.0
 -->
 
 * `name` {string}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the header identified by `name` is currently set in the
-outgoing headers. The header name matching is case-insensitive.
+如果由 `name` 标识的头部当前设置在传出头部中，则返回 `true`。头部名称匹配不区分大小写。
 
 ```js
 const hasContentType = response.hasHeader('content-type');
@@ -2281,9 +2151,9 @@ const hasContentType = response.hasHeader('content-type');
 added: v0.9.3
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Boolean (read-only). True if headers were sent, false otherwise.
+布尔值（只读）。如果已发送头部则为 true，否则为 false。
 
 ### `response.removeHeader(name)`
 
@@ -2293,7 +2163,7 @@ added: v0.4.0
 
 * `name` {string}
 
-Removes a header that's queued for implicit sending.
+移除排队等待隐式发送的头部。
 
 ```js
 response.removeHeader('Content-Encoding');
@@ -2305,9 +2175,9 @@ response.removeHeader('Content-Encoding');
 added: v15.7.0
 -->
 
-* Type: {http.IncomingMessage}
+* 类型：{http.IncomingMessage}
 
-A reference to the original HTTP `request` object.
+对原始 HTTP `request` 对象的引用。
 
 ### `response.sendDate`
 
@@ -2315,13 +2185,11 @@ A reference to the original HTTP `request` object.
 added: v0.7.5
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-When true, the Date header will be automatically generated and sent in
-the response if it is not already present in the headers. Defaults to true.
+当为 true 时，如果头部中尚未存在 Date 头部，则会自动生成并在响应中发送 Date 头部。默认为 true。
 
-This should only be disabled for testing; the Date header is required in
-most HTTP responses (see [RFC 9110 Section 6.6.1][] for details).
+这应仅用于测试；大多数 HTTP 响应都需要 Date 头部（详见 [RFC 9110 Section 6.6.1][]）。
 
 ### `response.setHeader(name, value)`
 
@@ -2331,37 +2199,28 @@ added: v0.4.0
 
 * `name` {string}
 * `value` {number | string | string\[]}
-* Returns: {http.ServerResponse}
+* 返回：{http.ServerResponse}
 
-Returns the response object.
+返回响应对象。
 
-Sets a single header value for implicit headers. If this header already exists
-in the to-be-sent headers, its value will be replaced. Use an array of strings
-here to send multiple headers with the same name. Non-string values will be
-stored without modification. Therefore, [`response.getHeader()`][] may return
-non-string values. However, the non-string values will be converted to strings
-for network transmission. The same response object is returned to the caller,
-to enable call chaining.
+为隐式头部设置单个头部值。如果此头部已存在于待发送的头部中，其值将被替换。此处使用字符串数组来发送多个具有相同名称的头部。非字符串值将未经修改地存储。因此，[`response.getHeader()`][] 可能返回非字符串值。但是，非字符串值将在网络传输时转换为字符串。返回相同的响应对象给调用者，以启用链式调用。
 
 ```js
 response.setHeader('Content-Type', 'text/html');
 ```
 
-or
+或
 
 ```js
 response.setHeader('Set-Cookie', ['type=ninja', 'language=javascript']);
 ```
 
-Attempting to set a header field name or value that contains invalid characters
-will result in a [`TypeError`][] being thrown.
+尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][]。
 
-When headers have been set with [`response.setHeader()`][], they will be merged
-with any headers passed to [`response.writeHead()`][], with the headers passed
-to [`response.writeHead()`][] given precedence.
+当使用 [`response.setHeader()`][] 设置头部时，它们将与传递给 [`response.writeHead()`][] 的任何头部合并，传递给 [`response.writeHead()`][] 的头部具有优先级。
 
 ```js
-// Returns content-type = text/plain
+// 返回 content-type = text/plain
 const server = http.createServer((req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Foo', 'bar');
@@ -2370,12 +2229,7 @@ const server = http.createServer((req, res) => {
 });
 ```
 
-If [`response.writeHead()`][] method is called and this method has not been
-called, it will directly write the supplied header values onto the network
-channel without caching internally, and the [`response.getHeader()`][] on the
-header will not yield the expected result. If progressive population of headers
-is desired with potential future retrieval and modification, use
-[`response.setHeader()`][] instead of [`response.writeHead()`][].
+如果调用了 [`response.writeHead()`][] 方法且未调用此方法，它将直接把提供的头部值写入网络通道而不内部缓存，并且对该头部的 [`response.getHeader()`][] 将不会产生预期结果。如果希望逐步填充头部以便将来检索和修改，请使用 [`response.setHeader()`][] 而不是 [`response.writeHead()`][]。
 
 ### `response.setTimeout(msecs[, callback])`
 
@@ -2385,16 +2239,11 @@ added: v0.9.12
 
 * `msecs` {number}
 * `callback` {Function}
-* Returns: {http.ServerResponse}
+* 返回：{http.ServerResponse}
 
-Sets the Socket's timeout value to `msecs`. If a callback is
-provided, then it is added as a listener on the `'timeout'` event on
-the response object.
+将 Socket 的超时值设置为 `msecs`。如果提供了 callback，则它作为监听器添加到响应对象的 `'timeout'` 事件上。
 
-If no `'timeout'` listener is added to the request, the response, or
-the server, then sockets are destroyed when they time out. If a handler is
-assigned to the request, the response, or the server's `'timeout'` events,
-timed out sockets must be handled explicitly.
+如果未将 `'timeout'` 监听器添加到请求、响应或服务器，则套接字在超时时会被销毁。如果处理程序分配给了请求、响应或服务器的 `'timeout'` 事件，则必须显式处理超时的套接字。
 
 ### `response.socket`
 
@@ -2402,19 +2251,16 @@ timed out sockets must be handled explicitly.
 added: v0.3.0
 -->
 
-* Type: {stream.Duplex}
+* 类型：{stream.Duplex}
 
-Reference to the underlying socket. Usually users will not want to access
-this property. In particular, the socket will not emit `'readable'` events
-because of how the protocol parser attaches to the socket. After
-`response.end()`, the property is nulled.
+对底层 socket 的引用。通常用户不希望访问此属性。特别是，由于协议解析器附加到 socket 的方式，socket 不会发出 `'readable'` 事件。在 `response.end()` 之后，该属性被置空。
 
 ```mjs
 import http from 'node:http';
 const server = http.createServer((req, res) => {
   const ip = res.socket.remoteAddress;
   const port = res.socket.remotePort;
-  res.end(`Your IP address is ${ip} and your source port is ${port}.`);
+  res.end(`您的 IP 地址是 ${ip}，源端口是 ${port}。`);
 }).listen(3000);
 ```
 
@@ -2423,13 +2269,11 @@ const http = require('node:http');
 const server = http.createServer((req, res) => {
   const ip = res.socket.remoteAddress;
   const port = res.socket.remotePort;
-  res.end(`Your IP address is ${ip} and your source port is ${port}.`);
+  res.end(`您的 IP 地址是 ${ip}，源端口是 ${port}。`);
 }).listen(3000);
 ```
 
-This property is guaranteed to be an instance of the {net.Socket} class,
-a subclass of {stream.Duplex}, unless the user specified a socket
-type other than {net.Socket}.
+除非用户指定了 {net.Socket} 以外的 socket 类型，否则此属性保证是 {net.Socket} 类的实例，它是 {stream.Duplex} 的子类。
 
 ### `response.statusCode`
 
@@ -2437,18 +2281,15 @@ type other than {net.Socket}.
 added: v0.4.0
 -->
 
-* Type: {number} **Default:** `200`
+* 类型：{number} **默认：** `200`
 
-When using implicit headers (not calling [`response.writeHead()`][] explicitly),
-this property controls the status code that will be sent to the client when
-the headers get flushed.
+当使用隐式头部（未显式调用 [`response.writeHead()`][]）时，此属性控制在刷新头部时发送给客户端的状态码。
 
 ```js
 response.statusCode = 404;
 ```
 
-After response header was sent to the client, this property indicates the
-status code which was sent out.
+在响应头部发送给客户端后，此属性指示发出的状态码。
 
 ### `response.statusMessage`
 
@@ -2456,19 +2297,15 @@ status code which was sent out.
 added: v0.11.8
 -->
 
-* Type: {string}
+* 类型：{string}
 
-When using implicit headers (not calling [`response.writeHead()`][] explicitly),
-this property controls the status message that will be sent to the client when
-the headers get flushed. If this is left as `undefined` then the standard
-message for the status code will be used.
+当使用隐式头部（未显式调用 [`response.writeHead()`][]）时，此属性控制在刷新头部时发送给客户端的状态消息。如果此属性保持为 `undefined`，则将使用该状态码的标准消息。
 
 ```js
 response.statusMessage = 'Not found';
 ```
 
-After response header was sent to the client, this property indicates the
-status message which was sent out.
+在响应头部发送给客户端后，此属性指示发出的状态消息。
 
 ### `response.strictContentLength`
 
@@ -2478,12 +2315,9 @@ added:
   - v16.18.0
 -->
 
-* Type: {boolean} **Default:** `false`
+* 类型：{boolean} **默认：** `false`
 
-If set to `true`, Node.js will check whether the `Content-Length`
-header value and the size of the body, in bytes, are equal.
-Mismatching the `Content-Length` header value will result
-in an `Error` being thrown, identified by `code:` [`'ERR_HTTP_CONTENT_LENGTH_MISMATCH'`][].
+如果设置为 `true`，Node.js 将检查 `Content-Length` 头部值与主体大小（以字节为单位）是否相等。`Content-Length` 头部值不匹配将导致抛出 `Error`，标识为 `code:` [`'ERR_HTTP_CONTENT_LENGTH_MISMATCH'`][]。
 
 ### `response.uncork()`
 
@@ -2493,7 +2327,7 @@ added:
  - v12.16.0
 -->
 
-See [`writable.uncork()`][].
+参见 [`writable.uncork()`][]。
 
 ### `response.writableEnded`
 
@@ -2501,11 +2335,9 @@ See [`writable.uncork()`][].
 added: v12.9.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Is `true` after [`response.end()`][] has been called. This property
-does not indicate whether the data has been flushed, for this use
-[`response.writableFinished`][] instead.
+在调用 [`response.end()`][] 之后为 `true`。此属性不指示数据是否已刷新，为此请使用 [`response.writableFinished`][]。
 
 ### `response.writableFinished`
 
@@ -2513,10 +2345,9 @@ does not indicate whether the data has been flushed, for this use
 added: v12.7.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Is `true` if all data has been flushed to the underlying system, immediately
-before the [`'finish'`][] event is emitted.
+如果所有数据都已刷新到底层系统，则在 [`'finish'`][] 事件发出之前立即为 `true`。
 
 ### `response.write(chunk[, encoding][, callback])`
 
@@ -2525,42 +2356,27 @@ added: v0.1.29
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: The `chunk` parameter can now be a `Uint8Array`.
+    description: "`chunk` 参数现在可以是 `Uint8Array`。"
 -->
 
 * `chunk` {string|Buffer|Uint8Array}
-* `encoding` {string} **Default:** `'utf8'`
+* `encoding` {string} **默认：** `'utf8'`
 * `callback` {Function}
-* Returns: {boolean}
+* 返回：{boolean}
 
-If this method is called and [`response.writeHead()`][] has not been called,
-it will switch to implicit header mode and flush the implicit headers.
+如果调用了此方法且尚未调用 [`response.writeHead()`][]，它将切换到隐式头部模式并刷新隐式头部。
 
-This sends a chunk of the response body. This method may
-be called multiple times to provide successive parts of the body.
+这发送响应主体的一块。可以多次调用此方法以提供主体的连续部分。
 
-If `rejectNonStandardBodyWrites` is set to true in `createServer`
-then writing to the body is not allowed when the request method or response
-status do not support content. If an attempt is made to write to the body for a
-HEAD request or as part of a `204` or `304`response, a synchronous `Error`
-with the code `ERR_HTTP_BODY_NOT_ALLOWED` is thrown.
+如果在 `createServer` 中将 `rejectNonStandardBodyWrites` 设置为 true，则当请求方法或响应状态不支持内容时，不允许写入主体。如果尝试为 HEAD 请求写入主体或作为 `204` 或 `304` 响应的一部分写入主体，则会抛出代码为 `ERR_HTTP_BODY_NOT_ALLOWED` 的同步 `Error`。
 
-`chunk` can be a string or a buffer. If `chunk` is a string,
-the second parameter specifies how to encode it into a byte stream.
-`callback` will be called when this chunk of data is flushed.
+`chunk` 可以是字符串或 buffer。如果 `chunk` 是字符串，则第二个参数指定如何将其编码为字节流。当这块数据被刷新时，将调用 `callback`。
 
-This is the raw HTTP body and has nothing to do with higher-level multi-part
-body encodings that may be used.
+这是原始 HTTP 主体，与可能使用的更高级的多部分主体编码无关。
 
-The first time [`response.write()`][] is called, it will send the buffered
-header information and the first chunk of the body to the client. The second
-time [`response.write()`][] is called, Node.js assumes data will be streamed,
-and sends the new data separately. That is, the response is buffered up to the
-first chunk of the body.
+第一次调用 [`response.write()`][] 时，它将把缓冲的头部信息和第一块主体发送给客户端。第二次调用 [`response.write()`][] 时，Node.js 假设数据将被流式传输，并单独发送新数据。也就是说，响应被缓冲到主体的第一块。
 
-Returns `true` if the entire data was flushed successfully to the kernel
-buffer. Returns `false` if all or part of the data was queued in user memory.
-`'drain'` will be emitted when the buffer is free again.
+如果整个数据成功刷新到内核缓冲区，则返回 `true`。如果全部或部分数据排队在用户内存中，则返回 `false`。当缓冲区再次空闲时，将发出 `'drain'`。
 
 ### `response.writeContinue()`
 
@@ -2568,9 +2384,7 @@ buffer. Returns `false` if all or part of the data was queued in user memory.
 added: v0.3.0
 -->
 
-Sends an HTTP/1.1 100 Continue message to the client, indicating that
-the request body should be sent. See the [`'checkContinue'`][] event on
-`Server`.
+向客户端发送 HTTP/1.1 100 Continue 消息，表示应发送请求主体。参见 `Server` 上的 [`'checkContinue'`][] 事件。
 
 ### `response.writeEarlyHints(hints[, callback])`
 
@@ -2579,19 +2393,15 @@ added: v18.11.0
 changes:
   - version: v18.11.0
     pr-url: https://github.com/nodejs/node/pull/44820
-    description: Allow passing hints as an object.
+    description: 允许将 hints 作为对象传递。
 -->
 
 * `hints` {Object}
 * `callback` {Function}
 
-Sends an HTTP/1.1 103 Early Hints message to the client with a Link header,
-indicating that the user agent can preload/preconnect the linked resources.
-The `hints` is an object containing the values of headers to be sent with
-early hints message. The optional `callback` argument will be called when
-the response message has been written.
+向客户端发送带有 Link 头部的 HTTP/1.1 103 Early Hints 消息，指示用户代理可以预加载/预连接链接的资源。`hints` 是一个对象，包含要随 early hints 消息发送的头部值。可选的 `callback` 参数将在写入响应消息时调用。
 
-**Example**
+**示例**
 
 ```js
 const earlyHintsLink = '</styles.css>; rel=preload; as=style';
@@ -2621,37 +2431,29 @@ added: v0.1.30
 changes:
   - version: v14.14.0
     pr-url: https://github.com/nodejs/node/pull/35274
-    description: Allow passing headers as an array.
+    description: 允许将头部作为数组传递。
   - version:
      - v11.10.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/25974
-    description: Return `this` from `writeHead()` to allow chaining with
-                 `end()`.
+    description: "从 `writeHead()` 返回 `this` 以允许与 `end()` 链式调用。"
   - version:
     - v5.11.0
     - v4.4.5
     pr-url: https://github.com/nodejs/node/pull/6291
-    description: A `RangeError` is thrown if `statusCode` is not a number in
-                 the range `[100, 999]`.
+    description: "如果 `statusCode` 不是 `[100, 999]` 范围内的数字，则抛出 `RangeError`。"
 -->
 
 * `statusCode` {number}
 * `statusMessage` {string}
 * `headers` {Object|Array}
-* Returns: {http.ServerResponse}
+* 返回：{http.ServerResponse}
 
-Sends a response header to the request. The status code is a 3-digit HTTP
-status code, like `404`. The last argument, `headers`, are the response headers.
-Optionally one can give a human-readable `statusMessage` as the second
-argument.
+向请求发送响应头。状态码是 3 位 HTTP 状态码，如 `404`。最后一个参数 `headers` 是响应头。可选地，可以将人类可读的 `statusMessage` 作为第二个参数给出。
 
-`headers` may be an `Array` where the keys and values are in the same list.
-It is _not_ a list of tuples. So, the even-numbered offsets are key values,
-and the odd-numbered offsets are the associated values. The array is in the same
-format as `request.rawHeaders`.
+`headers` 可以是一个 `Array`，其中键和值在同一列表中。它 _不是_ 元组列表。因此，偶数偏移量是键值，奇数偏移量是关联值。数组格式与 `request.rawHeaders` 相同。
 
-Returns a reference to the `ServerResponse`, so that calls can be chained.
+返回对 `ServerResponse` 的引用，以便调用可以链式进行。
 
 ```js
 const body = 'hello world';
@@ -2663,25 +2465,16 @@ response
   .end(body);
 ```
 
-This method must only be called once on a message and it must
-be called before [`response.end()`][] is called.
+此方法在消息上只能调用一次，且必须在调用 [`response.end()`][] 之前调用。
 
-If [`response.write()`][] or [`response.end()`][] are called before calling
-this, the implicit/mutable headers will be calculated and call this function.
+如果在调用此之前调用了 [`response.write()`][] 或 [`response.end()`][]，则将计算隐式/可变头部并调用此函数。
 
-When headers have been set with [`response.setHeader()`][], they will be merged
-with any headers passed to [`response.writeHead()`][], with the headers passed
-to [`response.writeHead()`][] given precedence.
+当使用 [`response.setHeader()`][] 设置头部时，它们将与传递给 [`response.writeHead()`][] 的任何头部合并，传递给 [`response.writeHead()`][] 的头部具有优先级。
 
-If this method is called and [`response.setHeader()`][] has not been called,
-it will directly write the supplied header values onto the network channel
-without caching internally, and the [`response.getHeader()`][] on the header
-will not yield the expected result. If progressive population of headers is
-desired with potential future retrieval and modification, use
-[`response.setHeader()`][] instead.
+如果调用了此方法且未调用 [`response.setHeader()`][]，它将直接把提供的头部值写入网络通道而不内部缓存，并且对该头部的 [`response.getHeader()`][] 将不会产生预期结果。如果希望逐步填充头部以便将来检索和修改，请使用 [`response.setHeader()`][]。
 
 ```js
-// Returns content-type = text/plain
+// 返回 content-type = text/plain
 const server = http.createServer((req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Foo', 'bar');
@@ -2690,13 +2483,9 @@ const server = http.createServer((req, res) => {
 });
 ```
 
-`Content-Length` is read in bytes, not characters. Use
-[`Buffer.byteLength()`][] to determine the length of the body in bytes. Node.js
-will check whether `Content-Length` and the length of the body which has
-been transmitted are equal or not.
+`Content-Length` 以字节为单位读取，而不是字符。使用 [`Buffer.byteLength()`][] 确定主体的字节长度。Node.js 将检查 `Content-Length` 与已传输的主体长度是否相等。
 
-Attempting to set a header field name or value that contains invalid characters
-will result in a [`TypeError`][] being thrown.
+尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][]。
 
 ### `response.writeProcessing()`
 
@@ -2704,38 +2493,30 @@ will result in a [`TypeError`][] being thrown.
 added: v10.0.0
 -->
 
-Sends a HTTP/1.1 102 Processing message to the client, indicating that
-the request body should be sent.
+向客户端发送 HTTP/1.1 102 Processing 消息，表示应发送请求主体。
 
-## Class: `http.IncomingMessage`
+## 类：`http.IncomingMessage`
 
 <!-- YAML
 added: v0.1.17
 changes:
   - version: v15.5.0
     pr-url: https://github.com/nodejs/node/pull/33035
-    description: The `destroyed` value returns `true` after the incoming data
-                 is consumed.
+    description: "传入数据被消费后，`destroyed` 值返回 `true`。"
   - version:
      - v13.1.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30135
-    description: The `readableHighWaterMark` value mirrors that of the socket.
+    description: "`readableHighWaterMark` 值与 socket 的值镜像一致。"
 -->
 
-* Extends: {stream.Readable}
+* 继承自：{stream.Readable}
 
-An `IncomingMessage` object is created by [`http.Server`][] or
-[`http.ClientRequest`][] and passed as the first argument to the [`'request'`][]
-and [`'response'`][] event respectively. It may be used to access response
-status, headers, and data.
+`IncomingMessage` 对象由 [`http.Server`][] 或 [`http.ClientRequest`][] 创建，并分别作为第一个参数传递给 [`'request'`][] 和 [`'response'`][] 事件。它可用于访问响应状态、头部和数据。
 
-Different from its `socket` value which is a subclass of {stream.Duplex}, the
-`IncomingMessage` itself extends {stream.Readable} and is created separately to
-parse and emit the incoming HTTP headers and payload, as the underlying socket
-may be reused multiple times in case of keep-alive.
+与其 `socket` 值（{stream.Duplex} 的子类）不同，`IncomingMessage` 本身继承自 {stream.Readable} 并单独创建，用于解析和发出传入的 HTTP 头部和负载，因为底层 socket 可能在保持活动的情况下被多次重用。
 
-### Event: `'aborted'`
+### 事件：`'aborted'`
 
 <!-- YAML
 added: v0.3.8
@@ -2744,22 +2525,21 @@ deprecated:
   - v16.12.0
 -->
 
-> Stability: 0 - Deprecated. Listen for `'close'` event instead.
+> 稳定性：0 - 已弃用。请改为监听 `'close'` 事件。
 
-Emitted when the request has been aborted.
+当请求被中止时发出。
 
-### Event: `'close'`
+### 事件：`'close'`
 
 <!-- YAML
 added: v0.4.2
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/33035
-    description: The close event is now emitted when the request has been completed and not when the
-                 underlying socket is closed.
+    description: "`close` 事件现在在请求完成时发出，而不是在底层 socket 关闭时。"
 -->
 
-Emitted when the request has been completed.
+当请求完成时发出。
 
 ### `message.aborted`
 
@@ -2770,12 +2550,11 @@ deprecated:
   - v16.12.0
 -->
 
-> Stability: 0 - Deprecated. Check `message.destroyed` from {stream.Readable}.
+> 稳定性：0 - 已弃用。请检查 {stream.Readable} 中的 `message.destroyed`。
 
-* Type: {boolean}
+* 类型：{boolean}
 
-The `message.aborted` property will be `true` if the request has
-been aborted.
+如果请求已被中止，`message.aborted` 属性将为 `true`。
 
 ### `message.complete`
 
@@ -2783,13 +2562,11 @@ been aborted.
 added: v0.3.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-The `message.complete` property will be `true` if a complete HTTP message has
-been received and successfully parsed.
+如果完整的 HTTP 消息已被接收并成功解析，`message.complete` 属性将为 `true`。
 
-This property is particularly useful as a means of determining if a client or
-server fully transmitted a message before a connection was terminated:
+此属性特别有用，可用于确定在连接终止之前客户端或服务器是否完全传输了消息：
 
 ```js
 const req = http.request({
@@ -2801,7 +2578,7 @@ const req = http.request({
   res.on('end', () => {
     if (!res.complete)
       console.error(
-        'The connection was terminated while the message was still being sent');
+        '消息仍在发送时连接被终止');
   });
 });
 ```
@@ -2813,9 +2590,9 @@ added: v0.1.90
 deprecated: v16.0.0
  -->
 
-> Stability: 0 - Deprecated. Use [`message.socket`][].
+> 稳定性：0 - 已弃用。使用 [`message.socket`][]。
 
-Alias for [`message.socket`][].
+[`message.socket`][] 的别名。
 
 ### `message.destroy([error])`
 
@@ -2826,16 +2603,13 @@ changes:
     - v14.5.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/32789
-    description: The function returns `this` for consistency with other Readable
-                 streams.
+    description: "该函数返回 `this` 以与其他 Readable 流保持一致。"
 -->
 
 * `error` {Error}
-* Returns: {this}
+* 返回：{this}
 
-Calls `destroy()` on the socket that received the `IncomingMessage`. If `error`
-is provided, an `'error'` event is emitted on the socket and `error` is passed
-as an argument to any listeners on the event.
+在接收 `IncomingMessage` 的 socket 上调用 `destroy()`。如果提供了 `error`，则在 socket 上发出 `'error'` 事件，并将 `error` 作为参数传递给该事件的任何监听器。
 
 ### `message.headers`
 
@@ -2847,28 +2621,21 @@ changes:
     - v18.14.0
     pr-url: https://github.com/nodejs/node/pull/45982
     description: >-
-     The `joinDuplicateHeaders` option in the `http.request()`
-     and `http.createServer()` functions ensures that duplicate
-     headers are not discarded, but rather combined using a
-     comma separator, in accordance with RFC 9110 Section 5.3.
+     `http.request()` 和 `http.createServer()` 函数中的 `joinDuplicateHeaders` 选项确保不会丢弃重复的头部，而是根据 RFC 9110 第 5.3 节使用逗号分隔符将它们组合起来。
   - version: v15.1.0
     pr-url: https://github.com/nodejs/node/pull/35281
     description: >-
-      `message.headers` is now lazily computed using an accessor property
-      on the prototype and is no longer enumerable.
+      `message.headers` 现在使用原型上的访问器属性惰性计算，不再可枚举。
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-The request/response headers object.
+请求/响应头部对象。
 
-Key-value pairs of header names and values. Header names are lower-cased.
-
-The object has a null prototype and should not be accessed using the `in`
-operator.
+头部名称和值的键值对。头部名称为小写。
 
 ```js
-// Prints something like:
+// 打印类似以下内容：
 //
 // { 'user-agent': 'curl/7.22.0',
 //   host: '127.0.0.1:8000',
@@ -2876,20 +2643,13 @@ operator.
 console.log(request.headers);
 ```
 
-Duplicates in raw headers are handled in the following ways, depending on the
-header name:
+原始头部中的重复项根据头部名称按以下方式处理：
 
-* Duplicates of `age`, `authorization`, `content-length`, `content-type`,
-  `etag`, `expires`, `from`, `host`, `if-modified-since`, `if-unmodified-since`,
-  `last-modified`, `location`, `max-forwards`, `proxy-authorization`, `referer`,
-  `retry-after`, `server`, or `user-agent` are discarded.
-  To allow duplicate values of the headers listed above to be joined,
-  use the option `joinDuplicateHeaders` in [`http.request()`][]
-  and [`http.createServer()`][]. See RFC 9110 Section 5.3 for more
-  information.
-* `set-cookie` is always an array. Duplicates are added to the array.
-* For duplicate `cookie` headers, the values are joined together with `; `.
-* For all other headers, the values are joined together with `, `.
+* `age`、`authorization`、`content-length`、`content-type`、`etag`、`expires`、`from`、`host`、`if-modified-since`、`if-unmodified-since`、`last-modified`、`location`、`max-forwards`、`proxy-authorization`、`referer`、`retry-after`、`server` 或 `user-agent` 的重复项将被丢弃。
+  要允许上述列出的头部重复值被连接，请在 [`http.request()`][] 和 [`http.createServer()`][] 中使用 `joinDuplicateHeaders` 选项。有关更多信息，请参阅 RFC 9110 第 5.3 节。
+* `set-cookie` 始终是一个数组。重复项会被添加到数组中。
+* 对于重复的 `cookie` 头部，值用 `; ` 连接在一起。
+* 对于所有其他头部，值用 `, ` 连接在一起。
 
 ### `message.headersDistinct`
 
@@ -2899,16 +2659,12 @@ added:
   - v16.17.0
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-Similar to [`message.headers`][], but there is no join logic and the values are
-always arrays of strings, even for headers received just once.
-
-The object has a null prototype and should not be accessed using the `in`
-operator.
+类似于 [`message.headers`][]，但没有连接逻辑，且值始终是字符串数组，即使对于只接收一次的头部也是如此。
 
 ```js
-// Prints something like:
+// 打印类似以下内容：
 //
 // { 'user-agent': ['curl/7.22.0'],
 //   host: ['127.0.0.1:8000'],
@@ -2922,14 +2678,12 @@ console.log(request.headersDistinct);
 added: v0.1.1
 -->
 
-* Type: {string}
+* 类型：{string}
 
-In case of server request, the HTTP version sent by the client. In the case of
-client response, the HTTP version of the connected-to server.
-Probably either `'1.1'` or `'1.0'`.
+如果是服务器请求，则为客户端发送的 HTTP 版本。如果是客户端响应，则为所连接服务器的 HTTP 版本。
+可能是 `'1.1'` 或 `'1.0'`。
 
-Also `message.httpVersionMajor` is the first integer and
-`message.httpVersionMinor` is the second.
+此外，`message.httpVersionMajor` 是第一个整数，`message.httpVersionMinor` 是第二个整数。
 
 ### `message.method`
 
@@ -2937,11 +2691,11 @@ Also `message.httpVersionMajor` is the first integer and
 added: v0.1.1
 -->
 
-* Type: {string}
+* 类型：{string}
 
-**Only valid for request obtained from [`http.Server`][].**
+**仅对从 [`http.Server`][] 获得的请求有效。**
 
-The request method as a string. Read only. Examples: `'GET'`, `'DELETE'`.
+请求方法，字符串形式。只读。示例：`'GET'`、`'DELETE'`。
 
 ### `message.rawHeaders`
 
@@ -2949,21 +2703,19 @@ The request method as a string. Read only. Examples: `'GET'`, `'DELETE'`.
 added: v0.11.6
 -->
 
-* Type: {string\[]}
+* 类型：{string\[]}
 
-The raw request/response headers list exactly as they were received.
+原始请求/响应头部列表，完全按照接收到的样子。
 
-The keys and values are in the same list. It is _not_ a
-list of tuples. So, the even-numbered offsets are key values, and the
-odd-numbered offsets are the associated values.
+键和值在同一个列表中。它 _不是_ 元组列表。因此，偶数偏移量是键值，奇数偏移量是关联值。
 
-Header names are not lowercased, and duplicates are not merged.
+头部名称不大写，重复项不合并。
 
 ```js
-// Prints something like:
+// 打印类似以下内容：
 //
 // [ 'user-agent',
-//   'this is invalid because there can be only one',
+//   '这是无效的，因为只能有一个',
 //   'User-Agent',
 //   'curl/7.22.0',
 //   'Host',
@@ -2979,10 +2731,9 @@ console.log(request.rawHeaders);
 added: v0.11.6
 -->
 
-* Type: {string\[]}
+* 类型：{string\[]}
 
-The raw request/response trailer keys and values exactly as they were
-received. Only populated at the `'end'` event.
+原始请求/响应尾部键和值，完全按照接收到的样子。仅在 `'end'` 事件处填充。
 
 ### `message.setTimeout(msecs[, callback])`
 
@@ -2992,9 +2743,9 @@ added: v0.5.9
 
 * `msecs` {number}
 * `callback` {Function}
-* Returns: {http.IncomingMessage}
+* 返回：{http.IncomingMessage}
 
-Calls `message.socket.setTimeout(msecs, callback)`.
+调用 `message.socket.setTimeout(msecs, callback)`。
 
 ### `message.signal`
 
@@ -3002,14 +2753,11 @@ Calls `message.socket.setTimeout(msecs, callback)`.
 added: REPLACEME
 -->
 
-* Type: {AbortSignal}
+* 类型：{AbortSignal}
 
-An {AbortSignal} that is aborted when the underlying socket closes or the
-request is destroyed. The signal is created lazily on first access — no
-{AbortController} is allocated for requests that never use this property.
+当底层 socket 关闭或请求被销毁时中止的 {AbortSignal}。该信号在首次访问时惰性创建——对于从未使用此属性的请求，不会分配 {AbortController}。
 
-This is useful for cancelling downstream asynchronous work such as database
-queries or `fetch` calls when a client disconnects mid-request.
+当客户端在请求中途断开连接时，这对于取消下游异步工作（例如数据库查询或 `fetch` 调用）非常有用。
 
 ```mjs
 import http from 'node:http';
@@ -3047,16 +2795,13 @@ http.createServer(async (req, res) => {
 added: v0.3.0
 -->
 
-* Type: {stream.Duplex}
+* 类型：{stream.Duplex}
 
-The [`net.Socket`][] object associated with the connection.
+与连接关联的 [`net.Socket`][] 对象。
 
-With HTTPS support, use [`request.socket.getPeerCertificate()`][] to obtain the
-client's authentication details.
+支持 HTTPS 时，使用 [`request.socket.getPeerCertificate()`][] 获取客户端的身份验证详细信息。
 
-This property is guaranteed to be an instance of the {net.Socket} class,
-a subclass of {stream.Duplex}, unless the user specified a socket
-type other than {net.Socket} or internally nulled.
+除非用户指定了 {net.Socket} 以外的 socket 类型或在内部设为空，否则此属性保证是 {net.Socket} 类（{stream.Duplex} 的子类）的实例。
 
 ### `message.statusCode`
 
@@ -3064,11 +2809,11 @@ type other than {net.Socket} or internally nulled.
 added: v0.1.1
 -->
 
-* Type: {number}
+* 类型：{number}
 
-**Only valid for response obtained from [`http.ClientRequest`][].**
+**仅对从 [`http.ClientRequest`][] 获得的响应有效。**
 
-The 3-digit HTTP response status code. E.G. `404`.
+3 位 HTTP 响应状态码。例如 `404`。
 
 ### `message.statusMessage`
 
@@ -3076,12 +2821,11 @@ The 3-digit HTTP response status code. E.G. `404`.
 added: v0.11.10
 -->
 
-* Type: {string}
+* 类型：{string}
 
-**Only valid for response obtained from [`http.ClientRequest`][].**
+**仅对从 [`http.ClientRequest`][] 获得的响应有效。**
 
-The HTTP response status message (reason phrase). E.G. `OK` or `Internal Server
-Error`.
+HTTP 响应状态消息（原因短语）。例如 `OK` 或 `Internal Server Error`。
 
 ### `message.trailers`
 
@@ -3089,12 +2833,9 @@ Error`.
 added: v0.3.0
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-The request/response trailers object. Only populated at the `'end'` event.
-
-The object has a null prototype and should not be accessed using the `in`
-operator.
+请求/响应尾部对象。仅在 `'end'` 事件处填充。
 
 ### `message.trailersDistinct`
 
@@ -3104,14 +2845,10 @@ added:
   - v16.17.0
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-Similar to [`message.trailers`][], but there is no join logic and the values are
-always arrays of strings, even for headers received just once.
-Only populated at the `'end'` event.
-
-The object has a null prototype and should not be accessed using the `in`
-operator.
+类似于 [`message.trailers`][]，但没有连接逻辑，且值始终是字符串数组，即使对于只接收一次的头部也是如此。
+仅在 `'end'` 事件处填充。
 
 ### `message.url`
 
@@ -3119,25 +2856,24 @@ operator.
 added: v0.1.90
 -->
 
-* Type: {string}
+* 类型：{string}
 
-**Only valid for request obtained from [`http.Server`][].**
+**仅对从 [`http.Server`][] 获得的请求有效。**
 
-Request URL string. This contains only the URL that is present in the actual
-HTTP request. Take the following request:
+请求 URL 字符串。这仅包含实际 HTTP 请求中存在的 URL。例如以下请求：
 
 ```http
 GET /status?name=ryan HTTP/1.1
 Accept: text/plain
 ```
 
-To parse the URL into its parts:
+要将 URL 解析为其组成部分：
 
 ```js
 new URL(`http://${process.env.HOST ?? 'localhost'}${request.url}`);
 ```
 
-When `request.url` is `'/status?name=ryan'` and `process.env.HOST` is undefined:
+当 `request.url` 为 `'/status?name=ryan'` 且 `process.env.HOST` 为 undefined 时：
 
 ```console
 $ node
@@ -3158,47 +2894,42 @@ URL {
 }
 ```
 
-Ensure that you set `process.env.HOST` to the server's host name, or consider
-replacing this part entirely. If using `req.headers.host`, ensure proper
-validation is used, as clients may specify a custom `Host` header.
+确保将 `process.env.HOST` 设置为服务器的主机名，或者考虑完全替换此部分。如果使用 `req.headers.host`，请确保使用适当的验证，因为客户端可能会指定自定义 `Host` 头部。
 
-## Class: `http.OutgoingMessage`
+## 类：`http.OutgoingMessage`
 
 <!-- YAML
 added: v0.1.17
 -->
 
-* Extends: {Stream}
+* 继承自：{Stream}
 
-This class serves as the parent class of [`http.ClientRequest`][]
-and [`http.ServerResponse`][]. It is an abstract outgoing message from
-the perspective of the participants of an HTTP transaction.
+此类作为 [`http.ClientRequest`][] 和 [`http.ServerResponse`][] 的父类。从 HTTP 事务参与者的角度来看，它是一个抽象的传出消息。
 
-### Event: `'drain'`
+### 事件：`'drain'`
 
 <!-- YAML
 added: v0.3.6
 -->
 
-Emitted when the buffer of the message is free again.
+当消息的缓冲区再次空闲时发出。
 
-### Event: `'finish'`
+### 事件：`'finish'`
 
 <!-- YAML
 added: v0.1.17
 -->
 
-Emitted when the transmission is finished successfully.
+当传输成功完成时发出。
 
-### Event: `'prefinish'`
+### 事件：`'prefinish'`
 
 <!-- YAML
 added: v0.11.6
 -->
 
-Emitted after `outgoingMessage.end()` is called.
-When the event is emitted, all data has been processed but not necessarily
-completely flushed.
+在调用 `outgoingMessage.end()` 后发出。
+发出事件时，所有数据都已处理完毕，但不一定完全刷新。
 
 ### `outgoingMessage.addTrailers(headers)`
 
@@ -3208,13 +2939,11 @@ added: v0.3.0
 
 * `headers` {Object}
 
-Adds HTTP trailers (headers but at the end of the message) to the message.
+将 HTTP 尾部（头部但在消息末尾）添加到消息中。
 
-Trailers will **only** be emitted if the message is chunked encoded. If not,
-the trailers will be silently discarded.
+仅当消息采用分块编码时，才会发出尾部。否则，尾部将被静默丢弃。
 
-HTTP requires the `Trailer` header to be sent to emit trailers,
-with a list of header field names in its value, e.g.
+HTTP 要求发送 `Trailer` 头部以发出尾部，其值中包含头部字段名称列表，例如：
 
 ```js
 message.writeHead(200, { 'Content-Type': 'text/plain',
@@ -3224,8 +2953,7 @@ message.addTrailers({ 'Content-MD5': '7895bf4b8828b55ceaf47747b4bca667' });
 message.end();
 ```
 
-Attempting to set a header field name or value that contains invalid characters
-will result in a `TypeError` being thrown.
+尝试设置包含无效字符的头部字段名称或值将导致抛出 `TypeError`。
 
 ### `outgoingMessage.appendHeader(name, value)`
 
@@ -3235,21 +2963,17 @@ added:
   - v16.17.0
 -->
 
-* `name` {string} Header name
-* `value` {string|string\[]} Header value
-* Returns: {this}
+* `name` {string} 头部名称
+* `value` {string|string\[]} 头部值
+* 返回：{this}
 
-Append a single header value to the header object.
+将单个头部值附加到头部对象。
 
-If the value is an array, this is equivalent to calling this method multiple
-times.
+如果值是数组，则相当于多次调用此方法。
 
-If there were no previous values for the header, this is equivalent to calling
-[`outgoingMessage.setHeader(name, value)`][].
+如果该头部之前没有值，则相当于调用 [`outgoingMessage.setHeader(name, value)`][]。
 
-Depending of the value of `options.uniqueHeaders` when the client request or the
-server were created, this will end up in the header being sent multiple times or
-a single time with values joined using `; `.
+根据创建客户端请求或服务器时 `options.uniqueHeaders` 的值，这将导致头部被发送多次，或者单次发送且值用 `; ` 连接。
 
 ### `outgoingMessage.connection`
 
@@ -3260,9 +2984,9 @@ deprecated:
   - v14.17.1
 -->
 
-> Stability: 0 - Deprecated: Use [`outgoingMessage.socket`][] instead.
+> 稳定性：0 - 已弃用：请改用 [`outgoingMessage.socket`][]。
 
-Alias of [`outgoingMessage.socket`][].
+[`outgoingMessage.socket`][] 的别名。
 
 ### `outgoingMessage.cork()`
 
@@ -3272,7 +2996,7 @@ added:
   - v12.16.0
 -->
 
-See [`writable.cork()`][].
+参见 [`writable.cork()`][]。
 
 ### `outgoingMessage.destroy([error])`
 
@@ -3280,11 +3004,10 @@ See [`writable.cork()`][].
 added: v0.3.0
 -->
 
-* `error` {Error} Optional, an error to emit with `error` event
-* Returns: {this}
+* `error` {Error} 可选，随 `error` 事件发出的错误
+* 返回：{this}
 
-Destroys the message. Once a socket is associated with the message
-and is connected, that socket will be destroyed as well.
+销毁消息。一旦 socket 与消息关联并连接，该 socket 也将被销毁。
 
 ### `outgoingMessage.end(chunk[, encoding][, callback])`
 
@@ -3293,26 +3016,21 @@ added: v0.1.90
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: The `chunk` parameter can now be a `Uint8Array`.
+    description: "`chunk` 参数现在可以是 `Uint8Array`。"
   - version: v0.11.6
-    description: add `callback` argument.
+    description: "添加 `callback` 参数。"
 -->
 
 * `chunk` {string|Buffer|Uint8Array}
-* `encoding` {string} Optional, **Default**: `utf8`
-* `callback` {Function} Optional
-* Returns: {this}
+* `encoding` {string} 可选，**默认**：`utf8`
+* `callback` {Function} 可选
+* 返回：{this}
 
-Finishes the outgoing message. If any parts of the body are unsent, it will
-flush them to the underlying system. If the message is chunked, it will
-send the terminating chunk `0\r\n\r\n`, and send the trailers (if any).
+完成传出消息。如果有任何主体部分未发送，它将把它们刷新到底层系统。如果消息是分块的，它将发送终止块 `0\r\n\r\n`，并发送尾部（如果有）。
 
-If `chunk` is specified, it is equivalent to calling
-`outgoingMessage.write(chunk, encoding)`, followed by
-`outgoingMessage.end(callback)`.
+如果指定了 `chunk`，则相当于调用 `outgoingMessage.write(chunk, encoding)`，然后调用 `outgoingMessage.end(callback)`。
 
-If `callback` is provided, it will be called when the message is finished
-(equivalent to a listener of the `'finish'` event).
+如果提供了 `callback`，它将在消息完成时调用（相当于 `'finish'` 事件的监听器）。
 
 ### `outgoingMessage.flushHeaders()`
 
@@ -3320,16 +3038,11 @@ If `callback` is provided, it will be called when the message is finished
 added: v1.6.0
 -->
 
-Flushes the message headers.
+刷新消息头部。
 
-For efficiency reason, Node.js normally buffers the message headers
-until `outgoingMessage.end()` is called or the first chunk of message data
-is written. It then tries to pack the headers and data into a single TCP
-packet.
+出于效率原因，Node.js 通常缓冲消息头部，直到调用 `outgoingMessage.end()` 或写入第一块消息数据。然后它尝试将头部和数据打包到单个 TCP 数据包中。
 
-It is usually desired (it saves a TCP round-trip), but not when the first
-data is not sent until possibly much later. `outgoingMessage.flushHeaders()`
-bypasses the optimization and kickstarts the message.
+这通常是希望的（它节省了一次 TCP 往返），但当第一块数据直到可能更晚才发送时则不然。`outgoingMessage.flushHeaders()` 绕过优化并启动消息。
 
 ### `outgoingMessage.getHeader(name)`
 
@@ -3337,11 +3050,10 @@ bypasses the optimization and kickstarts the message.
 added: v0.4.0
 -->
 
-* `name` {string} Name of header
-* Returns: {number | string | string\[] | undefined}
+* `name` {string} 头部名称
+* 返回：{number | string | string\[] | undefined}
 
-Gets the value of the HTTP header with the given name. If that header is not
-set, the returned value will be `undefined`.
+获取给定名称的 HTTP 头部的值。如果未设置该头部，返回值将为 `undefined`。
 
 ### `outgoingMessage.getHeaderNames()`
 
@@ -3349,10 +3061,9 @@ set, the returned value will be `undefined`.
 added: v7.7.0
 -->
 
-* Returns: {string\[]}
+* 返回：{string\[]}
 
-Returns an array containing the unique names of the current outgoing headers.
-All names are lowercase.
+返回一个包含当前传出头部唯一名称的数组。所有名称均为小写。
 
 ### `outgoingMessage.getHeaders()`
 
@@ -3360,18 +3071,11 @@ All names are lowercase.
 added: v7.7.0
 -->
 
-* Returns: {Object}
+* 返回：{Object}
 
-Returns a shallow copy of the current outgoing headers. Since a shallow
-copy is used, array values may be mutated without additional calls to
-various header-related HTTP module methods. The keys of the returned
-object are the header names and the values are the respective header
-values. All header names are lowercase.
+返回当前传出头部的浅拷贝。由于使用的是浅拷贝，数组值可能会被修改，而无需额外调用各种头部相关的 HTTP 模块方法。返回对象的键是头部名称，值是相应的头部值。所有头部名称均为小写。
 
-The object returned by the `outgoingMessage.getHeaders()` method does
-not prototypically inherit from the JavaScript `Object`. This means that
-typical `Object` methods such as `obj.toString()`, `obj.hasOwnProperty()`,
-and others are not defined and will not work.
+`outgoingMessage.getHeaders()` 方法返回的对象不从 JavaScript `Object` 原型继承。这意味着典型的 `Object` 方法（如 `obj.toString()`、`obj.hasOwnProperty()` 等）未定义且无法工作。
 
 ```js
 outgoingMessage.setHeader('Foo', 'bar');
@@ -3388,10 +3092,9 @@ added: v7.7.0
 -->
 
 * `name` {string}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the header identified by `name` is currently set in the
-outgoing headers. The header name is case-insensitive.
+如果由 `name` 标识的头部当前已设置在传出头部中，则返回 `true`。头部名称不区分大小写。
 
 ```js
 const hasContentType = outgoingMessage.hasHeader('content-type');
@@ -3403,9 +3106,9 @@ const hasContentType = outgoingMessage.hasHeader('content-type');
 added: v0.9.3
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Read-only. `true` if the headers were sent, otherwise `false`.
+只读。如果已发送头部，则为 `true`，否则为 `false`。
 
 ### `outgoingMessage.pipe()`
 
@@ -3413,11 +3116,9 @@ Read-only. `true` if the headers were sent, otherwise `false`.
 added: v9.0.0
 -->
 
-Overrides the `stream.pipe()` method inherited from the legacy `Stream` class
-which is the parent class of `http.OutgoingMessage`.
+覆盖从遗留 `Stream` 类（`http.OutgoingMessage` 的父类）继承的 `stream.pipe()` 方法。
 
-Calling this method will throw an `Error` because `outgoingMessage` is a
-write-only stream.
+调用此方法将抛出 `Error`，因为 `outgoingMessage` 是只写流。
 
 ### `outgoingMessage.removeHeader(name)`
 
@@ -3425,9 +3126,9 @@ write-only stream.
 added: v0.4.0
 -->
 
-* `name` {string} Header name
+* `name` {string} 头部名称
 
-Removes a header that is queued for implicit sending.
+移除排队等待隐式发送的头部。
 
 ```js
 outgoingMessage.removeHeader('Content-Encoding');
@@ -3439,13 +3140,11 @@ outgoingMessage.removeHeader('Content-Encoding');
 added: v0.4.0
 -->
 
-* `name` {string} Header name
-* `value` {number | string | string\[]} Header value
-* Returns: {this}
+* `name` {string} 头部名称
+* `value` {number | string | string\[]} 头部值
+* 返回：{this}
 
-Sets a single header value. If the header already exists in the to-be-sent
-headers, its value will be replaced. Use an array of strings to send multiple
-headers with the same name.
+设置单个头部值。如果该头部已存在于待发送头部中，其值将被替换。使用字符串数组发送多个同名的头部。
 
 ### `outgoingMessage.setHeaders(headers)`
 
@@ -3456,31 +3155,31 @@ added:
 -->
 
 * `headers` {Headers|Map}
-* Returns: {this}
+* 返回：{this}
 
-Sets multiple header values for implicit headers.
-`headers` must be an instance of [`Headers`][] or `Map`,
-if a header already exists in the to-be-sent headers,
-its value will be replaced.
+为隐式头部设置多个头部值。
+`headers` 必须是 [`Headers`][] 或 `Map` 的实例，
+如果头部已存在于待发送头部中，
+其值将被替换。
 
 ```js
 const headers = new Headers({ foo: 'bar' });
 outgoingMessage.setHeaders(headers);
 ```
 
-or
+或
 
 ```js
 const headers = new Map([['foo', 'bar']]);
 outgoingMessage.setHeaders(headers);
 ```
 
-When headers have been set with [`outgoingMessage.setHeaders()`][],
-they will be merged with any headers passed to [`response.writeHead()`][],
-with the headers passed to [`response.writeHead()`][] given precedence.
+当使用 [`outgoingMessage.setHeaders()`][] 设置头部时，
+它们将与传递给 [`response.writeHead()`][] 的任何头部合并，
+传递给 [`response.writeHead()`][] 的头部具有优先级。
 
 ```js
-// Returns content-type = text/plain
+// 返回 content-type = text/plain
 const server = http.createServer((req, res) => {
   const headers = new Headers({ 'Content-Type': 'text/html' });
   res.setHeaders(headers);
@@ -3496,12 +3195,11 @@ added: v0.9.12
 -->
 
 * `msecs` {number}
-* `callback` {Function} Optional function to be called when a timeout
-  occurs. Same as binding to the `timeout` event.
-* Returns: {this}
+* `callback` {Function} 超时发生时调用的可选函数。与绑定到 `timeout` 事件相同。
+* 返回：{this}
 
-Once a socket is associated with the message and is connected,
-[`socket.setTimeout()`][] will be called with `msecs` as the first parameter.
+一旦 socket 与消息关联并连接，
+[`socket.setTimeout()`][] 将被调用，`msecs` 作为第一个参数。
 
 ### `outgoingMessage.socket`
 
@@ -3509,12 +3207,11 @@ Once a socket is associated with the message and is connected,
 added: v0.3.0
 -->
 
-* Type: {stream.Duplex}
+* 类型：{stream.Duplex}
 
-Reference to the underlying socket. Usually, users will not want to access
-this property.
+底层 socket 的引用。通常，用户不希望访问此属性。
 
-After calling `outgoingMessage.end()`, this property will be nulled.
+调用 `outgoingMessage.end()` 后，此属性将被设为空。
 
 ### `outgoingMessage.uncork()`
 
@@ -3524,7 +3221,7 @@ added:
   - v12.16.0
 -->
 
-See [`writable.uncork()`][]
+参见 [`writable.uncork()`][]
 
 ### `outgoingMessage.writableCorked`
 
@@ -3534,9 +3231,9 @@ added:
   - v12.16.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The number of times `outgoingMessage.cork()` has been called.
+`outgoingMessage.cork()` 被调用的次数。
 
 ### `outgoingMessage.writableEnded`
 
@@ -3544,11 +3241,9 @@ The number of times `outgoingMessage.cork()` has been called.
 added: v12.9.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Is `true` if `outgoingMessage.end()` has been called. This property does
-not indicate whether the data has been flushed. For that purpose, use
-`message.writableFinished` instead.
+如果已调用 `outgoingMessage.end()`，则为 `true`。此属性不指示数据是否已刷新。为此，请改用 `message.writableFinished`。
 
 ### `outgoingMessage.writableFinished`
 
@@ -3556,9 +3251,9 @@ not indicate whether the data has been flushed. For that purpose, use
 added: v12.7.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Is `true` if all data has been flushed to the underlying system.
+如果所有数据都已刷新到底层系统，则为 `true`。
 
 ### `outgoingMessage.writableHighWaterMark`
 
@@ -3566,10 +3261,9 @@ Is `true` if all data has been flushed to the underlying system.
 added: v12.9.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The `highWaterMark` of the underlying socket if assigned. Otherwise, the default
-buffer level when [`writable.write()`][] starts returning false (`16384`).
+如果已分配，则为底层 socket 的 `highWaterMark`。否则，为 [`writable.write()`][] 开始返回 false 时的默认缓冲区级别（`16384`）。
 
 ### `outgoingMessage.writableLength`
 
@@ -3577,9 +3271,9 @@ buffer level when [`writable.write()`][] starts returning false (`16384`).
 added: v12.9.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-The number of buffered bytes.
+缓冲字节的数量。
 
 ### `outgoingMessage.writableObjectMode`
 
@@ -3587,9 +3281,9 @@ The number of buffered bytes.
 added: v12.9.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-Always `false`.
+始终为 `false`。
 
 ### `outgoingMessage.write(chunk[, encoding][, callback])`
 
@@ -3598,27 +3292,23 @@ added: v0.1.29
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33155
-    description: The `chunk` parameter can now be a `Uint8Array`.
+    description: "`chunk` 参数现在可以是 `Uint8Array`。"
   - version: v0.11.6
-    description: The `callback` argument was added.
+    description: "添加了 `callback` 参数。"
 -->
 
 * `chunk` {string|Buffer|Uint8Array}
-* `encoding` {string} **Default**: `utf8`
+* `encoding` {string} **默认**：`utf8`
 * `callback` {Function}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Sends a chunk of the body. This method can be called multiple times.
+发送一块主体。此方法可以调用多次。
 
-The `encoding` argument is only relevant when `chunk` is a string. Defaults to
-`'utf8'`.
+仅当 `chunk` 为字符串时，`encoding` 参数才相关。默认为 `'utf8'`。
 
-The `callback` argument is optional and will be called when this chunk of data
-is flushed.
+`callback` 参数是可选的，当这块数据被刷新时将调用它。
 
-Returns `true` if the entire data was flushed successfully to the kernel
-buffer. Returns `false` if all or part of the data was queued in the user
-memory. The `'drain'` event will be emitted when the buffer is free again.
+如果整个数据成功刷新到内核缓冲区，则返回 `true`。如果全部或部分数据排队在用户内存中，则返回 `false`。当缓冲区再次空闲时，将发出 `'drain'` 事件。
 
 ## `http.METHODS`
 
@@ -3626,9 +3316,9 @@ memory. The `'drain'` event will be emitted when the buffer is free again.
 added: v0.11.8
 -->
 
-* Type: {string\[]}
+* 类型：{string[]}
 
-A list of the HTTP methods that are supported by the parser.
+解析器支持的 HTTP 方法列表。
 
 ## `http.STATUS_CODES`
 
@@ -3636,11 +3326,9 @@ A list of the HTTP methods that are supported by the parser.
 added: v0.1.22
 -->
 
-* Type: {Object}
+* 类型：{Object}
 
-A collection of all the standard HTTP response status codes, and the
-short description of each. For example, `http.STATUS_CODES[404] === 'Not
-Found'`.
+所有标准 HTTP 响应状态码及其简短描述的集合。例如，`http.STATUS_CODES[404] === 'Not Found'`。
 
 ## `http.createServer([options][, requestListener])`
 
@@ -3651,133 +3339,111 @@ changes:
       - v25.1.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/59778
-    description: Add optimizeEmptyRequests option.
+    description: 添加 optimizeEmptyRequests 选项。
   - version:
      - v24.9.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59824
-    description: The `shouldUpgradeCallback` option is now supported.
+    description: "现在支持 `shouldUpgradeCallback` 选项。"
   - version:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47405
-    description: The `highWaterMark` option is supported now.
+    description: "现在支持 `highWaterMark` 选项。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41263
-    description: The `requestTimeout`, `headersTimeout`, `keepAliveTimeout`, and
-                 `connectionsCheckingInterval` options are supported now.
+    description: "现在支持 `requestTimeout`、`headersTimeout`、`keepAliveTimeout` 和`connectionsCheckingInterval` 选项。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42163
-    description: The `noDelay` option now defaults to `true`.
+    description: "`noDelay` 选项现在默认为 `true`。"
   - version:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41310
-    description: The `noDelay`, `keepAlive` and `keepAliveInitialDelay`
-                 options are supported now.
+    description: "现在支持 `noDelay`、`keepAlive` 和 `keepAliveInitialDelay`选项。"
   - version:
      - v13.8.0
      - v12.15.0
      - v10.19.0
     pr-url: https://github.com/nodejs/node/pull/31448
-    description: The `insecureHTTPParser` option is supported now.
+    description: "现在支持 `insecureHTTPParser` 选项。"
   - version: v13.3.0
     pr-url: https://github.com/nodejs/node/pull/30570
-    description: The `maxHeaderSize` option is supported now.
+    description: "现在支持 `maxHeaderSize` 选项。"
   - version:
     - v9.6.0
     - v8.12.0
     pr-url: https://github.com/nodejs/node/pull/15752
-    description: The `options` argument is supported now.
+    description: "现在支持 `options` 参数。"
 -->
 
 * `options` {Object}
-  * `connectionsCheckingInterval`: Sets the interval value in milliseconds to
-    check for request and headers timeout in incomplete requests.
-    **Default:** `30000`.
-  * `headersTimeout`: Sets the timeout value in milliseconds for receiving
-    the complete HTTP headers from the client.
-    See [`server.headersTimeout`][] for more information.
-    **Default:** `60000`.
-  * `highWaterMark` {number} Optionally overrides all `socket`s'
-    `readableHighWaterMark` and `writableHighWaterMark`. This affects
-    `highWaterMark` property of both `IncomingMessage` and `ServerResponse`.
-    **Default:** See [`stream.getDefaultHighWaterMark()`][].
-  * `insecureHTTPParser` {boolean} If set to `true`, it will use a HTTP parser
-    with leniency flags enabled. Using the insecure parser should be avoided.
-    See [`--insecure-http-parser`][] for more information.
-    **Default:** `false`.
-  * `IncomingMessage` {http.IncomingMessage} Specifies the `IncomingMessage`
-    class to be used. Useful for extending the original `IncomingMessage`.
-    **Default:** `IncomingMessage`.
-  * `joinDuplicateHeaders` {boolean} If set to `true`, this option allows
-    joining the field line values of multiple headers in a request with
-    a comma (`, `) instead of discarding the duplicates.
-    For more information, refer to [`message.headers`][].
-    **Default:** `false`.
-  * `keepAlive` {boolean} If set to `true`, it enables keep-alive functionality
-    on the socket immediately after a new incoming connection is received,
-    similarly on what is done in \[`socket.setKeepAlive([enable][, initialDelay])`]\[`socket.setKeepAlive(enable, initialDelay)`].
-    **Default:** `false`.
-  * `keepAliveInitialDelay` {number} If set to a positive number, it sets the
-    initial delay before the first keepalive probe is sent on an idle socket.
-    **Default:** `0`.
-  * `keepAliveTimeout`: The number of milliseconds of inactivity a server
-    needs to wait for additional incoming data, after it has finished writing
-    the last response, before a socket will be destroyed.
-    See [`server.keepAliveTimeout`][] for more information.
-    **Default:** `5000`.
-  * `maxHeaderSize` {number} Optionally overrides the value of
-    [`--max-http-header-size`][] for requests received by this server, i.e.
-    the maximum length of request headers in bytes.
-    **Default:** 16384 (16 KiB).
-  * `noDelay` {boolean} If set to `true`, it disables the use of Nagle's
-    algorithm immediately after a new incoming connection is received.
-    **Default:** `true`.
-  * `requestTimeout`: Sets the timeout value in milliseconds for receiving
-    the entire request from the client.
-    See [`server.requestTimeout`][] for more information.
-    **Default:** `300000`.
-  * `requireHostHeader` {boolean} If set to `true`, it forces the server to
-    respond with a 400 (Bad Request) status code to any HTTP/1.1
-    request message that lacks a Host header
-    (as mandated by the specification).
-    **Default:** `true`.
-  * `ServerResponse` {http.ServerResponse} Specifies the `ServerResponse` class
-    to be used. Useful for extending the original `ServerResponse`. **Default:**
-    `ServerResponse`.
-  * `shouldUpgradeCallback(request)` {Function} A callback which receives an
-    incoming request and returns a boolean, to control which upgrade attempts
-    should be accepted. Accepted upgrades will fire an `'upgrade'` event (or
-    their sockets will be destroyed, if no listener is registered) while
-    rejected upgrades will fire a `'request'` event like any non-upgrade
-    request. This options defaults to
-    `() => server.listenerCount('upgrade') > 0`.
-  * `uniqueHeaders` {Array} A list of response headers that should be sent only
-    once. If the header's value is an array, the items will be joined
-    using `; `.
-  * `rejectNonStandardBodyWrites` {boolean} If set to `true`, an error is thrown
-    when writing to an HTTP response which does not have a body.
-    **Default:** `false`.
-  * `optimizeEmptyRequests` {boolean} If set to `true`, requests without `Content-Length`
-    or `Transfer-Encoding` headers (indicating no body) will be initialized with an
-    already-ended body stream, so they will never emit any stream events
-    (like `'data'` or `'end'`). You can use `req.readableEnded` to detect this case.
-    **Default:** `false`.
+  * `connectionsCheckingInterval`：设置检查不完整请求中的请求和头部超时的间隔值（毫秒）。
+    **默认值：** `30000`。
+  * `headersTimeout`：设置从客户端接收完整 HTTP 头部的超时值（毫秒）。
+    有关更多信息，请参阅 [`server.headersTimeout`][]。
+    **默认值：** `60000`。
+  * `highWaterMark` {number} 可选地覆盖所有 `socket` 的
+    `readableHighWaterMark` 和 `writableHighWaterMark`。这会影响
+    `IncomingMessage` 和 `ServerResponse` 的 `highWaterMark` 属性。
+    **默认值：** 请参阅 [`stream.getDefaultHighWaterMark()`][]。
+  * `insecureHTTPParser` {boolean} 如果设置为 `true`，它将使用启用了宽容标志的 HTTP 解析器。应避免使用不安全的解析器。
+    有关更多信息，请参阅 [`--insecure-http-parser`][]。
+    **默认值：** `false`。
+  * `IncomingMessage` {http.IncomingMessage} 指定要使用的 `IncomingMessage`
+    类。对于扩展原始 `IncomingMessage` 很有用。
+    **默认值：** `IncomingMessage`。
+  * `joinDuplicateHeaders` {boolean} 如果设置为 `true`，此选项允许
+    将请求中多个头部的字段行值用逗号（`, `）连接，而不是丢弃重复项。
+    有关更多信息，请参阅 [`message.headers`][]。
+    **默认值：** `false`。
+  * `keepAlive` {boolean} 如果设置为 `true`，它会在收到新的传入连接后立即在 socket 上启用 keep-alive 功能，
+    类似于在 \[`socket.setKeepAlive([enable][, initialDelay])`]\[`socket.setKeepAlive(enable, initialDelay)`] 中所做的。
+    **默认值：** `false`。
+  * `keepAliveInitialDelay` {number} 如果设置为正数，它设置在空闲 socket 上发送第一个 keepalive 探测之前的初始延迟。
+    **默认值：** `0`。
+  * `keepAliveTimeout`：服务器在完成写入最后一个响应后，需要等待额外传入数据的非活动毫秒数，之后 socket 将被销毁。
+    有关更多信息，请参阅 [`server.keepAliveTimeout`][]。
+    **默认值：** `5000`。
+  * `maxHeaderSize` {number} 可选地覆盖此服务器接收请求的
+    [`--max-http-header-size`][] 的值，即请求头部的最大长度（字节）。
+    **默认值：** 16384 (16 KiB)。
+  * `noDelay` {boolean} 如果设置为 `true`，它会在收到新的传入连接后立即禁用 Nagle 算法的使用。
+    **默认值：** `true`。
+  * `requestTimeout`：设置从客户端接收整个请求的超时值（毫秒）。
+    有关更多信息，请参阅 [`server.requestTimeout`][]。
+    **默认值：** `300000`。
+  * `requireHostHeader` {boolean} 如果设置为 `true`，它强制服务器对任何缺少 Host 头部的 HTTP/1.1
+    请求消息响应 400 (Bad Request) 状态码
+    （根据规范强制要求）。
+    **默认值：** `true`。
+  * `ServerResponse` {http.ServerResponse} 指定要使用的 `ServerResponse` 类
+    。对于扩展原始 `ServerResponse` 很有用。**默认值：**
+    `ServerResponse`。
+  * `shouldUpgradeCallback(request)` {Function} 一个回调，接收传入请求并返回布尔值，以控制应接受哪些升级尝试。接受的升级将触发 `'upgrade'` 事件（或者如果没有注册监听器，它们的 socket 将被销毁），而被拒绝的升级将像任何非升级请求一样触发 `'request'` 事件。此选项默认为
+    `() => server.listenerCount('upgrade') > 0`。
+  * `uniqueHeaders` {Array} 应只发送一次的响应头列表。如果头部的值是数组，项将使用
+    `; ` 连接。
+  * `rejectNonStandardBodyWrites` {boolean} 如果设置为 `true`，则在写入没有正文的 HTTP 响应时会抛出错误。
+    **默认值：** `false`。
+  * `optimizeEmptyRequests` {boolean} 如果设置为 `true`，没有 `Content-Length`
+    或 `Transfer-Encoding` 头部（表示没有正文）的请求将使用已结束的正文流初始化，因此它们永远不会发出任何流事件
+    （如 `'data'` 或 `'end'`）。你可以使用 `req.readableEnded` 来检测这种情况。
+    **默认值：** `false`。
 
 * `requestListener` {Function}
 
-* Returns: {http.Server}
+* 返回值：{http.Server}
 
-Returns a new instance of [`http.Server`][].
+返回 [`http.Server`][] 的新实例。
 
-The `requestListener` is a function which is automatically
-added to the [`'request'`][] event.
+`requestListener` 是一个自动
+添加到 [`'request'`][] 事件的函数。
 
 ```mjs
 import http from 'node:http';
 
-// Create a local server to receive data from
+// 创建一个本地服务器来接收数据
 const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({
@@ -3791,7 +3457,7 @@ server.listen(8000);
 ```cjs
 const http = require('node:http');
 
-// Create a local server to receive data from
+// 创建一个本地服务器来接收数据
 const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({
@@ -3805,10 +3471,10 @@ server.listen(8000);
 ```mjs
 import http from 'node:http';
 
-// Create a local server to receive data from
+// 创建一个本地服务器来接收数据
 const server = http.createServer();
 
-// Listen to the request event
+// 监听 request 事件
 server.on('request', (request, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({
@@ -3822,10 +3488,10 @@ server.listen(8000);
 ```cjs
 const http = require('node:http');
 
-// Create a local server to receive data from
+// 创建一个本地服务器来接收数据
 const server = http.createServer();
 
-// Listen to the request event
+// 监听 request 事件
 server.on('request', (request, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({
@@ -3845,29 +3511,25 @@ added: v0.3.6
 changes:
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21616
-    description: The `url` parameter can now be passed along with a separate
-                 `options` object.
+    description: "`url` 参数现在可以与单独的`options` 对象一起传递。"
   - version: v7.5.0
     pr-url: https://github.com/nodejs/node/pull/10638
-    description: The `options` parameter can be a WHATWG `URL` object.
+    description: "`options` 参数可以是 WHATWG `URL` 对象。"
 -->
 
 * `url` {string | URL}
-* `options` {Object} Accepts the same `options` as
-  [`http.request()`][], with the method set to GET by default.
+* `options` {Object} 接受与
+  [`http.request()`][] 相同的 `options`，默认方法设置为 GET。
 * `callback` {Function}
-* Returns: {http.ClientRequest}
+* 返回值：{http.ClientRequest}
 
-Since most requests are GET requests without bodies, Node.js provides this
-convenience method. The only difference between this method and
-[`http.request()`][] is that it sets the method to GET by default and calls `req.end()`
-automatically. The callback must take care to consume the response
-data for reasons stated in [`http.ClientRequest`][] section.
+由于大多数请求都是没有正文的 GET 请求，Node.js 提供了这个便捷方法。此方法与
+[`http.request()`][] 的唯一区别在于，它默认将方法设置为 GET 并自动调用 `req.end()`。出于 [`http.ClientRequest`][] 部分所述的原因，回调必须注意消耗响应数据。
 
-The `callback` is invoked with a single argument that is an instance of
-[`http.IncomingMessage`][].
+使用单个参数调用 `callback`，该参数是
+[`http.IncomingMessage`][] 的实例。
 
-JSON fetching example:
+JSON 获取示例：
 
 ```js
 http.get('http://localhost:8000/', (res) => {
@@ -3875,8 +3537,8 @@ http.get('http://localhost:8000/', (res) => {
   const contentType = res.headers['content-type'];
 
   let error;
-  // Any 2xx status code signals a successful response but
-  // here we're only checking for 200.
+  // 任何 2xx 状态码都表示响应成功，但
+  // 这里我们只检查 200。
   if (statusCode !== 200) {
     error = new Error('Request Failed.\n' +
                       `Status Code: ${statusCode}`);
@@ -3886,7 +3548,7 @@ http.get('http://localhost:8000/', (res) => {
   }
   if (error) {
     console.error(error.message);
-    // Consume response data to free up memory
+    // 消耗响应数据以释放内存
     res.resume();
     return;
   }
@@ -3906,7 +3568,7 @@ http.get('http://localhost:8000/', (res) => {
   console.error(`Got error: ${e.message}`);
 });
 
-// Create a local server to receive data from
+// 创建一个本地服务器来接收数据
 const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({
@@ -3925,15 +3587,12 @@ changes:
   - version:
       - v19.0.0
     pr-url: https://github.com/nodejs/node/pull/43522
-    description: The agent now uses HTTP Keep-Alive and a 5 second timeout by
-                 default.
+    description: Agent 现在默认使用 HTTP Keep-Alive 和 5 秒超时。
 -->
 
-* Type: {http.Agent}
+* 类型：{http.Agent}
 
-Global instance of `Agent` which is used as the default for all HTTP client
-requests. Diverges from a default `Agent` configuration by having `keepAlive`
-enabled and a `timeout` of 5 seconds.
+`Agent` 的全局实例，用作所有 HTTP 客户端请求的默认值。与默认 `Agent` 配置不同的是，它启用了 `keepAlive` 且 `timeout` 为 5 秒。
 
 ## `http.maxHeaderSize`
 
@@ -3943,14 +3602,11 @@ added:
  - v10.15.0
 -->
 
-* Type: {number}
+* 类型：{number}
 
-Read-only property specifying the maximum allowed size of HTTP headers in bytes.
-Defaults to 16 KiB. Configurable using the [`--max-http-header-size`][] CLI
-option.
+只读属性，指定 HTTP 头部的最大允许大小（字节）。默认为 16 KiB。可使用 [`--max-http-header-size`][] CLI 选项进行配置。
 
-This can be overridden for servers and client requests by passing the
-`maxHeaderSize` option.
+可以通过传递 `maxHeaderSize` 选项来覆盖服务器和客户端请求的此设置。
 
 ## `http.request(options[, callback])`
 
@@ -3963,118 +3619,73 @@ changes:
       - v16.7.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/39310
-    description: When using a `URL` object parsed username and
-                 password will now be properly URI decoded.
+    description: "当使用 `URL` 对象时，解析后的用户名和密码现在将进行正确的 URI 解码。"
   - version:
       - v15.3.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/36048
-    description: It is possible to abort a request with an AbortSignal.
+    description: 现在可以使用 AbortSignal 中止请求。
   - version:
      - v13.8.0
      - v12.15.0
      - v10.19.0
     pr-url: https://github.com/nodejs/node/pull/31448
-    description: The `insecureHTTPParser` option is supported now.
+    description: "现在支持 `insecureHTTPParser` 选项。"
   - version: v13.3.0
     pr-url: https://github.com/nodejs/node/pull/30570
-    description: The `maxHeaderSize` option is supported now.
+    description: "现在支持 `maxHeaderSize` 选项。"
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21616
-    description: The `url` parameter can now be passed along with a separate
-                 `options` object.
+    description: "现在可以连同单独的 `options` 对象一起传递 `url` 参数。"
   - version: v7.5.0
     pr-url: https://github.com/nodejs/node/pull/10638
-    description: The `options` parameter can be a WHATWG `URL` object.
+    description: "`options` 参数可以是 WHATWG `URL` 对象。"
 -->
 
 * `url` {string | URL}
 * `options` {Object}
-  * `agent` {http.Agent | boolean} Controls [`Agent`][] behavior. Possible
-    values:
-    * `undefined` (default): use [`http.globalAgent`][] for this host and port.
-    * `Agent` object: explicitly use the passed in `Agent`.
-    * `false`: causes a new `Agent` with default values to be used.
-  * `auth` {string} Basic authentication (`'user:password'`) to compute an
-    Authorization header.
-  * `createConnection` {Function} A function that produces a socket/stream to
-    use for the request when the `agent` option is not used. This can be used to
-    avoid creating a custom `Agent` class just to override the default
-    `createConnection` function. See [`agent.createConnection()`][] for more
-    details. Any [`Duplex`][] stream is a valid return value.
-  * `defaultPort` {number} Default port for the protocol. **Default:**
-    `agent.defaultPort` if an `Agent` is used, else `undefined`.
-  * `family` {number} IP address family to use when resolving `host` or
-    `hostname`. Valid values are `4` or `6`. When unspecified, both IP v4 and
-    v6 will be used.
-  * `headers` {Object|Array} An object or an array of strings containing request
-    headers. The array is in the same format as [`message.rawHeaders`][].
-  * `hints` {number} Optional [`dns.lookup()` hints][].
-  * `host` {string} A domain name or IP address of the server to issue the
-    request to. **Default:** `'localhost'`.
-  * `hostname` {string} Alias for `host`. To support [`url.parse()`][],
-    `hostname` will be used if both `host` and `hostname` are specified.
-  * `insecureHTTPParser` {boolean} If set to `true`, it will use a HTTP parser
-    with leniency flags enabled. Using the insecure parser should be avoided.
-    See [`--insecure-http-parser`][] for more information.
-    **Default:** `false`
-  * `joinDuplicateHeaders` {boolean} It joins the field line values of
-    multiple headers in a request with `, ` instead of discarding
-    the duplicates. See [`message.headers`][] for more information.
-    **Default:** `false`.
-  * `localAddress` {string} Local interface to bind for network connections.
-  * `localPort` {number} Local port to connect from.
-  * `lookup` {Function} Custom lookup function. **Default:** [`dns.lookup()`][].
-  * `maxHeaderSize` {number} Optionally overrides the value of
-    [`--max-http-header-size`][] (the maximum length of response headers in
-    bytes) for responses received from the server.
-    **Default:** 16384 (16 KiB).
-  * `method` {string} A string specifying the HTTP request method. **Default:**
-    `'GET'`.
-  * `path` {string} Request path. Should include query string if any.
-    E.G. `'/index.html?page=12'`. An exception is thrown when the request path
-    contains illegal characters. Currently, only spaces are rejected but that
-    may change in the future. **Default:** `'/'`.
-  * `port` {number} Port of remote server. **Default:** `defaultPort` if set,
-    else `80`.
-  * `protocol` {string} Protocol to use. **Default:** `'http:'`.
-  * `setDefaultHeaders` {boolean}: Specifies whether or not to automatically add
-    default headers such as `Connection`, `Content-Length`, `Transfer-Encoding`,
-    and `Host`. If set to `false` then all necessary headers must be added
-    manually. Defaults to `true`.
-  * `setHost` {boolean}: Specifies whether or not to automatically add the
-    `Host` header. If provided, this overrides `setDefaultHeaders`. Defaults to
-    `true`.
-  * `signal` {AbortSignal}: An AbortSignal that may be used to abort an ongoing
-    request.
-  * `socketPath` {string} Unix domain socket. Cannot be used if one of `host`
-    or `port` is specified, as those specify a TCP Socket.
-  * `timeout` {number}: A number specifying the socket timeout in milliseconds.
-    This will set the timeout before the socket is connected.
-  * `uniqueHeaders` {Array} A list of request headers that should be sent
-    only once. If the header's value is an array, the items will be joined
-    using `; `.
+  * `agent` {http.Agent | boolean} 控制 [`Agent`][] 行为。可能的值：
+    * `undefined`（默认）：为此主机和端口使用 [`http.globalAgent`][]。
+    * `Agent` 对象：显式使用传入的 `Agent`。
+    * `false`：导致使用默认值创建新的 `Agent`。
+  * `auth` {string} 基本认证（`'user:password'`），用于计算 Authorization 头部。
+  * `createConnection` {Function} 当未使用 `agent` 选项时，产生用于请求的套接字/流的函数。这可用于避免仅为了覆盖默认 `createConnection` 函数而创建自定义 `Agent` 类。详见 [`agent.createConnection()`][]。任何 [`Duplex`][] 流都是有效的返回值。
+  * `defaultPort` {number} 协议的默认端口。**默认：** 如果使用了 `Agent` 则为 `agent.defaultPort`，否则为 `undefined`。
+  * `family` {number} 解析 `host` 或 `hostname` 时使用的 IP 地址族。有效值为 `4` 或 `6`。未指定时，将同时使用 IP v4 和 v6。
+  * `headers` {Object|Array} 包含请求头部的对象或字符串数组。数组格式与 [`message.rawHeaders`][] 相同。
+  * `hints` {number} 可选的 [`dns.lookup()` 提示][]。
+  * `host` {string} 发出请求的服务器的域名或 IP 地址。**默认：** `'localhost'`。
+  * `hostname` {string} `host` 的别名。为了支持 [`url.parse()`][]，如果同时指定了 `host` 和 `hostname`，将使用 `hostname`。
+  * `insecureHTTPParser` {boolean} 如果设置为 `true`，将使用启用了宽松标志的 HTTP 解析器。应避免使用不安全的解析器。详见 [`--insecure-http-parser`][]。**默认：** `false`
+  * `joinDuplicateHeaders` {boolean} 它将请求中多个头部的字段行值用 `, ` 连接起来，而不是丢弃重复项。详见 [`message.headers`][]。**默认：** `false`。
+  * `localAddress` {string} 用于网络连接绑定的本地接口。
+  * `localPort` {number} 用于连接的本地端口。
+  * `lookup` {Function} 自定义查找函数。**默认：** [`dns.lookup()`][]。
+  * `maxHeaderSize` {number} 可选地覆盖 [`--max-http-header-size`][] 的值（服务器接收到的响应头部的最大长度，字节）。**默认：** 16384 (16 KiB)。
+  * `method` {string} 指定 HTTP 请求方法的字符串。**默认：** `'GET'`。
+  * `path` {string} 请求路径。如有查询字符串应包含在内。例如：`'/index.html?page=12'`。当请求路径包含非法字符时会抛出异常。目前，只有空格会被拒绝，但未来可能会改变。**默认：** `'/'`。
+  * `port` {number} 远程服务器的端口。**默认：** 如果设置了 `defaultPort` 则为 `defaultPort`，否则为 `80`。
+  * `protocol` {string} 使用的协议。**默认：** `'http:'`。
+  * `setDefaultHeaders` {boolean}：指定是否自动添加默认头部，如 `Connection`、`Content-Length`、`Transfer-Encoding` 和 `Host`。如果设置为 `false`，则必须手动添加所有必要的头部。默认为 `true`。
+  * `setHost` {boolean}：指定是否自动添加 `Host` 头部。如果提供，此项将覆盖 `setDefaultHeaders`。默认为 `true`。
+  * `signal` {AbortSignal}：一个可用于中止正在进行的请求的 AbortSignal。
+  * `socketPath` {string} Unix 域套接字。如果指定了 `host` 或 `port` 之一，则不能使用此项，因为它们指定的是 TCP 套接字。
+  * `timeout` {number}：一个数字，指定套接字超时时间（毫秒）。这将在套接字连接之前设置超时。
+  * `uniqueHeaders` {Array} 应只发送一次的请求头部列表。如果头部的值是数组，项将使用 `; ` 连接。
 * `callback` {Function}
-* Returns: {http.ClientRequest}
+* 返回：{http.ClientRequest}
 
-`options` in [`socket.connect()`][] are also supported.
+[`socket.connect()`][] 中的 `options` 也受支持。
 
-Node.js maintains several connections per server to make HTTP requests.
-This function allows one to transparently issue requests.
+Node.js 维护每个服务器的多个连接以发出 HTTP 请求。此函数允许透明地发出请求。
 
-`url` can be a string or a [`URL`][] object. If `url` is a
-string, it is automatically parsed with [`new URL()`][]. If it is a [`URL`][]
-object, it will be automatically converted to an ordinary `options` object.
+`url` 可以是字符串或 [`URL`][] 对象。如果 `url` 是字符串，它将使用 [`new URL()`][] 自动解析。如果它是 [`URL`][] 对象，它将自动转换为普通的 `options` 对象。
 
-If both `url` and `options` are specified, the objects are merged, with the
-`options` properties taking precedence.
+如果同时指定了 `url` 和 `options`，则对象会被合并，`options` 属性优先。
 
-The optional `callback` parameter will be added as a one-time listener for
-the [`'response'`][] event.
+可选的 `callback` 参数将作为 [`'response'`][] 事件的一次性监听器添加。
 
-`http.request()` returns an instance of the [`http.ClientRequest`][]
-class. The `ClientRequest` instance is a writable stream. If one needs to
-upload a file with a POST request, then write to the `ClientRequest` object.
+`http.request()` 返回 [`http.ClientRequest`][] 类的一个实例。`ClientRequest` 实例是一个可写流。如果需要使用 POST 请求上传文件，则写入 `ClientRequest` 对象。
 
 ```mjs
 import http from 'node:http';
@@ -4111,7 +3722,7 @@ req.on('error', (e) => {
   console.error(`problem with request: ${e.message}`);
 });
 
-// Write data to request body
+// 向请求主体写入数据
 req.write(postData);
 req.end();
 ```
@@ -4150,36 +3761,26 @@ req.on('error', (e) => {
   console.error(`problem with request: ${e.message}`);
 });
 
-// Write data to request body
+// 向请求主体写入数据
 req.write(postData);
 req.end();
 ```
 
-In the example `req.end()` was called. With `http.request()` one
-must always call `req.end()` to signify the end of the request -
-even if there is no data being written to the request body.
+在示例中调用了 `req.end()`。使用 `http.request()` 时，必须始终调用 `req.end()` 来表示请求结束——即使没有数据写入请求主体。
 
-If any error is encountered during the request (be that with DNS resolution,
-TCP level errors, or actual HTTP parse errors) an `'error'` event is emitted
-on the returned request object. As with all `'error'` events, if no listeners
-are registered the error will be thrown.
+如果在请求期间遇到任何错误（无论是 DNS 解析、TCP 级别错误还是实际的 HTTP 解析错误），都会在返回的请求对象上发出 `'error'` 事件。与所有 `'error'` 事件一样，如果没有注册监听器，错误将被抛出。
 
-There are a few special headers that should be noted.
+有几个特殊的头部需要注意。
 
-* Sending a 'Connection: keep-alive' will notify Node.js that the connection to
-  the server should be persisted until the next request.
+* 发送 'Connection: keep-alive' 将通知 Node.js 与服务器的连接应持续到下一个请求。
 
-* Sending a 'Content-Length' header will disable the default chunked encoding.
+* 发送 'Content-Length' 头部将禁用默认的分块编码。
 
-* Sending an 'Expect' header will immediately send the request headers.
-  Usually, when sending 'Expect: 100-continue', both a timeout and a listener
-  for the `'continue'` event should be set. See RFC 2616 Section 8.2.3 for more
-  information.
+* 发送 'Expect' 头部将立即发送请求头部。通常，发送 'Expect: 100-continue' 时，应设置超时和 `'continue'` 事件的监听器。详见 RFC 2616 第 8.2.3 节。
 
-* Sending an Authorization header will override using the `auth` option
-  to compute basic authentication.
+* 发送 Authorization 头部将覆盖使用 `auth` 选项来计算基本认证。
 
-Example using a [`URL`][] as `options`:
+使用 [`URL`][] 作为 `options` 的示例：
 
 ```js
 const options = new URL('http://abc:xyz@example.com');
@@ -4189,113 +3790,90 @@ const req = http.request(options, (res) => {
 });
 ```
 
-In a successful request, the following events will be emitted in the following
-order:
+在成功的请求中，将按以下顺序发出以下事件：
 
 * `'socket'`
 * `'response'`
-  * `'data'` any number of times, on the `res` object
-    (`'data'` will not be emitted at all if the response body is empty, for
-    instance, in most redirects)
-  * `'end'` on the `res` object
+  * `'data'` 任意次数，在 `res` 对象上（如果响应主体为空，例如在大多数重定向中，则根本不会发出 `'data'`）
+  * `'end'` 在 `res` 对象上
 * `'close'`
 
-In the case of a connection error, the following events will be emitted:
+在连接错误的情况下，将发出以下事件：
 
 * `'socket'`
 * `'error'`
 * `'close'`
 
-In the case of a premature connection close before the response is received,
-the following events will be emitted in the following order:
+在响应接收之前连接过早关闭的情况下，将按以下顺序发出以下事件：
 
 * `'socket'`
-* `'error'` with an error with message `'Error: socket hang up'` and code
-  `'ECONNRESET'`
+* `'error'` 带有消息 `'Error: socket hang up'` 和代码 `'ECONNRESET'` 的错误
 * `'close'`
 
-In the case of a premature connection close after the response is received,
-the following events will be emitted in the following order:
+在响应接收之后连接过早关闭的情况下，将按以下顺序发出以下事件：
 
 * `'socket'`
 * `'response'`
-  * `'data'` any number of times, on the `res` object
-* (connection closed here)
-* `'aborted'` on the `res` object
+  * `'data'` 任意次数，在 `res` 对象上
+* （此处连接关闭）
+* `'aborted'` 在 `res` 对象上
 * `'close'`
-* `'error'` on the `res` object with an error with message
-  `'Error: aborted'` and code `'ECONNRESET'`
-* `'close'` on the `res` object
+* `'error'` 在 `res` 对象上，带有消息 `'Error: aborted'` 和代码 `'ECONNRESET'` 的错误
+* `'close'` 在 `res` 对象上
 
-If `req.destroy()` is called before a socket is assigned, the following
-events will be emitted in the following order:
+如果在分配套接字之前调用了 `req.destroy()`，将按以下顺序发出以下事件：
 
-* (`req.destroy()` called here)
-* `'error'` with an error with message `'Error: socket hang up'` and code
-  `'ECONNRESET'`, or the error with which `req.destroy()` was called
+* （此处调用了 `req.destroy()`）
+* `'error'` 带有消息 `'Error: socket hang up'` 和代码 `'ECONNRESET'` 的错误，或调用 `req.destroy()` 时使用的错误
 * `'close'`
 
-If `req.destroy()` is called before the connection succeeds, the following
-events will be emitted in the following order:
+如果在连接成功之前调用了 `req.destroy()`，将按以下顺序发出以下事件：
 
 * `'socket'`
-* (`req.destroy()` called here)
-* `'error'` with an error with message `'Error: socket hang up'` and code
-  `'ECONNRESET'`, or the error with which `req.destroy()` was called
+* （此处调用了 `req.destroy()`）
+* `'error'` 带有消息 `'Error: socket hang up'` 和代码 `'ECONNRESET'` 的错误，或调用 `req.destroy()` 时使用的错误
 * `'close'`
 
-If `req.destroy()` is called after the response is received, the following
-events will be emitted in the following order:
+如果在接收到响应之后调用了 `req.destroy()`，将按以下顺序发出以下事件：
 
 * `'socket'`
 * `'response'`
-  * `'data'` any number of times, on the `res` object
-* (`req.destroy()` called here)
-* `'aborted'` on the `res` object
+  * `'data'` 任意次数，在 `res` 对象上
+* （此处调用了 `req.destroy()`）
+* `'aborted'` 在 `res` 对象上
 * `'close'`
-* `'error'` on the `res` object with an error with message `'Error: aborted'`
-  and code `'ECONNRESET'`, or the error with which `req.destroy()` was called
-* `'close'` on the `res` object
+* `'error'` 在 `res` 对象上，带有消息 `'Error: aborted'` 和代码 `'ECONNRESET'` 的错误，或调用 `req.destroy()` 时使用的错误
+* `'close'` 在 `res` 对象上
 
-If `req.abort()` is called before a socket is assigned, the following
-events will be emitted in the following order:
+如果在分配套接字之前调用了 `req.abort()`，将按以下顺序发出以下事件：
 
-* (`req.abort()` called here)
+* （此处调用了 `req.abort()`）
 * `'abort'`
 * `'close'`
 
-If `req.abort()` is called before the connection succeeds, the following
-events will be emitted in the following order:
+如果在连接成功之前调用了 `req.abort()`，将按以下顺序发出以下事件：
 
 * `'socket'`
-* (`req.abort()` called here)
+* （此处调用了 `req.abort()`）
 * `'abort'`
-* `'error'` with an error with message `'Error: socket hang up'` and code
-  `'ECONNRESET'`
+* `'error'` 带有消息 `'Error: socket hang up'` 和代码 `'ECONNRESET'` 的错误
 * `'close'`
 
-If `req.abort()` is called after the response is received, the following
-events will be emitted in the following order:
+如果在接收到响应之后调用了 `req.abort()`，将按以下顺序发出以下事件：
 
 * `'socket'`
 * `'response'`
-  * `'data'` any number of times, on the `res` object
-* (`req.abort()` called here)
+  * `'data'` 任意次数，在 `res` 对象上
+* （此处调用了 `req.abort()`）
 * `'abort'`
-* `'aborted'` on the `res` object
-* `'error'` on the `res` object with an error with message
-  `'Error: aborted'` and code `'ECONNRESET'`.
+* `'aborted'` 在 `res` 对象上
+* `'error'` 在 `res` 对象上，带有消息 `'Error: aborted'` 和代码 `'ECONNRESET'` 的错误。
 * `'close'`
-* `'close'` on the `res` object
+* `'close'` 在 `res` 对象上
 
-Setting the `timeout` option or using the `setTimeout()` function will
-not abort the request or do anything besides add a `'timeout'` event.
+设置 `timeout` 选项或使用 `setTimeout()` 函数不会中止请求，除了添加 `'timeout'` 事件外不做任何事。
 
-Passing an `AbortSignal` and then calling `abort()` on the corresponding
-`AbortController` will behave the same way as calling `.destroy()` on the
-request. Specifically, the `'error'` event will be emitted with an error with
-the message `'AbortError: The operation was aborted'`, the code `'ABORT_ERR'`
-and the `cause`, if one was provided.
+传递 `AbortSignal` 然后在相应的 `AbortController` 上调用 `abort()` 将与在请求上调用 `.destroy()` 的行为相同。具体来说，将发出 `'error'` 事件，错误消息为 `'AbortError: The operation was aborted'`，代码为 `'ABORT_ERR'`，以及 `cause`（如果提供了的话）。
 
 ## `http.validateHeaderName(name[, label])`
 
@@ -4306,22 +3884,19 @@ changes:
     - v19.5.0
     - v18.14.0
     pr-url: https://github.com/nodejs/node/pull/46143
-    description: The `label` parameter is added.
+    description: "添加了 `label` 参数。"
 -->
 
 * `name` {string}
-* `label` {string} Label for error message. **Default:** `'Header name'`.
+* `label` {string} 错误消息的标签。**默认值：** `'Header name'`。
 
-Performs the low-level validations on the provided `name` that are done when
-`res.setHeader(name, value)` is called.
+对提供的 `name` 执行低级验证，这些验证会在调用 `res.setHeader(name, value)` 时进行。
 
-Passing illegal value as `name` will result in a [`TypeError`][] being thrown,
-identified by `code: 'ERR_INVALID_HTTP_TOKEN'`.
+传递非法的 `name` 值将导致抛出 [`TypeError`][]，标识为 `code: 'ERR_INVALID_HTTP_TOKEN'`。
 
-It is not necessary to use this method before passing headers to an HTTP request
-or response. The HTTP module will automatically validate such headers.
+在将头信息传递给 HTTP 请求或响应之前，不必使用此方法。HTTP 模块将自动验证此类头信息。
 
-Example:
+示例：
 
 ```mjs
 import { validateHeaderName } from 'node:http';
@@ -4331,7 +3906,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code); // --> 'ERR_INVALID_HTTP_TOKEN'
-  console.error(err.message); // --> 'Header name must be a valid HTTP token [""]'
+  console.error(err.message); // --> 'Header 名称必须是有效的 HTTP 令牌 [""]'
 }
 ```
 
@@ -4343,7 +3918,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code); // --> 'ERR_INVALID_HTTP_TOKEN'
-  console.error(err.message); // --> 'Header name must be a valid HTTP token [""]'
+  console.error(err.message); // --> 'Header 名称必须是有效的 HTTP 令牌 [""]'
 }
 ```
 
@@ -4356,18 +3931,16 @@ added: v14.3.0
 * `name` {string}
 * `value` {any}
 
-Performs the low-level validations on the provided `value` that are done when
-`res.setHeader(name, value)` is called.
+对提供的 `value` 执行低级验证，这些验证会在调用 `res.setHeader(name, value)` 时进行。
 
-Passing illegal value as `value` will result in a [`TypeError`][] being thrown.
+传递非法的 `value` 值将导致抛出 [`TypeError`][]。
 
-* Undefined value error is identified by `code: 'ERR_HTTP_INVALID_HEADER_VALUE'`.
-* Invalid value character error is identified by `code: 'ERR_INVALID_CHAR'`.
+* Undefined 值错误标识为 `code: 'ERR_HTTP_INVALID_HEADER_VALUE'`。
+* 无效值字符错误标识为 `code: 'ERR_INVALID_CHAR'`。
 
-It is not necessary to use this method before passing headers to an HTTP request
-or response. The HTTP module will automatically validate such headers.
+在将头信息传递给 HTTP 请求或响应之前，不必使用此方法。HTTP 模块将自动验证此类头信息。
 
-Examples:
+示例：
 
 ```mjs
 import { validateHeaderValue } from 'node:http';
@@ -4377,7 +3950,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code === 'ERR_HTTP_INVALID_HEADER_VALUE'); // --> true
-  console.error(err.message); // --> 'Invalid value "undefined" for header "x-my-header"'
+  console.error(err.message); // --> '头信息 "x-my-header" 的值 "undefined" 无效'
 }
 
 try {
@@ -4385,7 +3958,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code === 'ERR_INVALID_CHAR'); // --> true
-  console.error(err.message); // --> 'Invalid character in header content ["x-my-header"]'
+  console.error(err.message); // --> '头信息内容中的字符无效 ["x-my-header"]'
 }
 ```
 
@@ -4397,7 +3970,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code === 'ERR_HTTP_INVALID_HEADER_VALUE'); // --> true
-  console.error(err.message); // --> 'Invalid value "undefined" for header "x-my-header"'
+  console.error(err.message); // --> '头信息 "x-my-header" 的值 "undefined" 无效'
 }
 
 try {
@@ -4405,7 +3978,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code === 'ERR_INVALID_CHAR'); // --> true
-  console.error(err.message); // --> 'Invalid character in header content ["x-my-header"]'
+  console.error(err.message); // --> '头信息内容中的字符无效 ["x-my-header"]'
 }
 ```
 
@@ -4417,9 +3990,9 @@ added:
   - v16.18.0
 -->
 
-* `max` {number} **Default:** `1000`.
+* `max` {number} **默认值：** `1000`。
 
-Set the maximum number of idle HTTP parsers.
+设置空闲 HTTP 解析器的最大数量。
 
 ## `http.setGlobalProxyFromEnv([proxyEnv])`
 
@@ -4429,35 +4002,25 @@ added:
   - v24.14.0
 -->
 
-* `proxyEnv` {Object} An object containing proxy configuration. This accepts the
-  same options as the `proxyEnv` option accepted by [`Agent`][]. **Default:**
-  `process.env`.
-* Returns: {Function} A function that restores the original agent and dispatcher
-  settings to the state before this `http.setGlobalProxyFromEnv()` is invoked.
+* `proxyEnv` {Object} 包含代理配置的对象。它接受与 [`Agent`][] 接受的 `proxyEnv` 选项相同的选项。**默认值：** `process.env`。
+* 返回：{Function} 一个函数，用于将原始 agent 和 dispatcher 设置恢复到此 `http.setGlobalProxyFromEnv()` 被调用之前的状态。
 
-Dynamically resets the global configurations to enable built-in proxy support for
-`fetch()` and `http.request()`/`https.request()` at runtime, as an alternative
-to using the `--use-env-proxy` flag or `NODE_USE_ENV_PROXY` environment variable.
-It can also be used to override settings configured from the environment variables.
+动态重置全局配置，以便在运行时为 `fetch()` 和 `http.request()`/`https.request()` 启用内置代理支持，作为使用 `--use-env-proxy` 标志或 `NODE_USE_ENV_PROXY` 环境变量的替代方案。它也可用于覆盖从环境变量配置的设置。
 
-As this function resets the global configurations, any previously configured
-`http.globalAgent`, `https.globalAgent` or undici global dispatcher would be
-overridden after this function is invoked. It's recommended to invoke it before any
-requests are made and avoid invoking it in the middle of any requests.
+由于此函数重置全局配置，任何之前配置的 `http.globalAgent`、`https.globalAgent` 或 undici 全局 dispatcher 在此函数被调用后将被覆盖。建议在发出任何请求之前调用它，并避免在任何请求中间调用它。
 
-See [Built-in Proxy Support][] for details on proxy URL formats and `NO_PROXY`
-syntax.
+有关代理 URL 格式和 `NO_PROXY` 语法的详细信息，请参阅 [内置代理支持][]。
 
-## Class: `WebSocket`
+## 类：`WebSocket`
 
 <!-- YAML
 added:
   - v22.5.0
 -->
 
-A browser-compatible implementation of {WebSocket}.
+{WebSocket} 的浏览器兼容实现。
 
-## Built-in Proxy Support
+## 内置代理支持
 
 <!-- YAML
 added:
@@ -4465,110 +4028,99 @@ added:
  - v22.21.0
 -->
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
-When Node.js creates the global agent, if the `NODE_USE_ENV_PROXY` environment variable is
-set to `1` or `--use-env-proxy` is enabled, the global agent will be constructed
-with `proxyEnv: process.env`, enabling proxy support based on the environment variables.
+当 Node.js 创建全局 agent 时，如果 `NODE_USE_ENV_PROXY` 环境变量设置为 `1` 或启用了 `--use-env-proxy`，全局 agent 将使用 `proxyEnv: process.env` 构建，从而启用基于环境变量的代理支持。
 
-To enable proxy support dynamically and globally, use [`http.setGlobalProxyFromEnv()`][].
+要动态且全局地启用代理支持，请使用 [`http.setGlobalProxyFromEnv()`][]。
 
-Custom agents can also be created with proxy support by passing a
-`proxyEnv` option when constructing the agent. The value can be `process.env`
-if they just want to inherit the configuration from the environment variables,
-or an object with specific setting overriding the environment.
+也可以通过在构建 agent 时传递 `proxyEnv` 选项来创建具有代理支持的自定义 agent。如果它们只想从环境变量继承配置，该值可以是 `process.env`，或者是具有特定设置以覆盖环境的对象。
 
-The following properties of the `proxyEnv` are checked to configure proxy
-support.
+检查 `proxyEnv` 的以下属性以配置代理支持。
 
-* `HTTP_PROXY` or `http_proxy`: Proxy server URL for HTTP requests. If both are set,
-  `http_proxy` takes precedence.
-* `HTTPS_PROXY` or `https_proxy`: Proxy server URL for HTTPS requests. If both are set,
-  `https_proxy` takes precedence.
-* `NO_PROXY` or `no_proxy`: Comma-separated list of hosts to bypass the proxy. If both are set,
-  `no_proxy` takes precedence.
+* `HTTP_PROXY` 或 `http_proxy`：HTTP 请求的代理服务器 URL。如果两者都设置，`http_proxy` 优先。
+* `HTTPS_PROXY` 或 `https_proxy`：HTTPS 请求的代理服务器 URL。如果两者都设置，`https_proxy` 优先。
+* `NO_PROXY` 或 `no_proxy`：绕过代理的主机逗号分隔列表。如果两者都设置，`no_proxy` 优先。
 
-If the request is made to a Unix domain socket, the proxy settings will be ignored.
+如果请求是发往 Unix 域套接字的，代理设置将被忽略。
 
-### Proxy URL Format
+### 代理 URL 格式
 
-Proxy URLs can use either HTTP or HTTPS protocols:
+代理 URL 可以使用 HTTP 或 HTTPS 协议：
 
-* HTTP proxy: `http://proxy.example.com:8080`
-* HTTPS proxy: `https://proxy.example.com:8080`
-* Proxy with authentication: `http://username:password@proxy.example.com:8080`
+* HTTP 代理：`http://proxy.example.com:8080`
+* HTTPS 代理：`https://proxy.example.com:8080`
+* 带身份验证的代理：`http://username:password@proxy.example.com:8080`
 
-### `NO_PROXY` Format
+### `NO_PROXY` 格式
 
-The `NO_PROXY` environment variable supports several formats:
+`NO_PROXY` 环境变量支持多种格式：
 
-* `*` - Bypass proxy for all hosts
-* `example.com` - Exact host name match
-* `.example.com` - Domain suffix match (matches `sub.example.com`)
-* `*.example.com` - Wildcard domain match
-* `192.168.1.100` - Exact IP address match
-* `192.168.1.1-192.168.1.100` - IP address range
-* `example.com:8080` - Hostname with specific port
+* `*` - 绕过所有主机的代理
+* `example.com` - 精确主机名匹配
+* `.example.com` - 域名后缀匹配（匹配 `sub.example.com`）
+* `*.example.com` - 通配符域名匹配
+* `192.168.1.100` - 精确 IP 地址匹配
+* `192.168.1.1-192.168.1.100` - IP 地址范围
+* `example.com:8080` - 带特定端口的主机名
 
-Multiple entries should be separated by commas.
+多个条目应由逗号分隔。
 
-### Example
+### 示例
 
-To start a Node.js process with proxy support enabled for all requests sent
-through the default global agent, either use the `NODE_USE_ENV_PROXY` environment
-variable:
+要启动一个启用了代理支持的 Node.js 进程，用于通过默认全局 agent 发送的所有请求，可以使用 `NODE_USE_ENV_PROXY` 环境变量：
 
 ```console
 NODE_USE_ENV_PROXY=1 HTTP_PROXY=http://proxy.example.com:8080 NO_PROXY=localhost,127.0.0.1 node client.js
 ```
 
-Or the `--use-env-proxy` flag.
+或使用 `--use-env-proxy` 标志。
 
 ```console
 HTTP_PROXY=http://proxy.example.com:8080 NO_PROXY=localhost,127.0.0.1 node --use-env-proxy client.js
 ```
 
-To enable proxy support dynamically and globally with `process.env` (the default option of `http.setGlobalProxyFromEnv()`):
+要使用 `process.env`（`http.setGlobalProxyFromEnv()` 的默认选项）动态且全局地启用代理支持：
 
 ```cjs
 const http = require('node:http');
 
-// Reads proxy-related environment variables from process.env
+// 从 process.env 读取与代理相关的环境变量
 const restore = http.setGlobalProxyFromEnv();
 
-// Subsequent requests will use the configured proxies from environment variables
+// 后续请求将使用环境变量中配置的代理
 http.get('http://www.example.com', (res) => {
-  // This request will be proxied if HTTP_PROXY or http_proxy is set
+  // 如果设置了 HTTP_PROXY 或 http_proxy，此请求将通过代理
 });
 
 fetch('https://www.example.com', (res) => {
-  // This request will be proxied if HTTPS_PROXY or https_proxy is set
+  // 如果设置了 HTTPS_PROXY 或 https_proxy，此请求将通过代理
 });
 
-// To restore the original global agent and dispatcher settings, call the returned function.
+// 要恢复原始的全局 agent 和 dispatcher 设置，请调用返回的函数。
 // restore();
 ```
 
 ```mjs
 import http from 'node:http';
 
-// Reads proxy-related environment variables from process.env
+// 从 process.env 读取与代理相关的环境变量
 http.setGlobalProxyFromEnv();
 
-// Subsequent requests will use the configured proxies from environment variables
+// 后续请求将使用环境变量中配置的代理
 http.get('http://www.example.com', (res) => {
-  // This request will be proxied if HTTP_PROXY or http_proxy is set
+  // 如果设置了 HTTP_PROXY 或 http_proxy，此请求将通过代理
 });
 
 fetch('https://www.example.com', (res) => {
-  // This request will be proxied if HTTPS_PROXY or https_proxy is set
+  // 如果设置了 HTTPS_PROXY 或 https_proxy，此请求将通过代理
 });
 
-// To restore the original global agent and dispatcher settings, call the returned function.
+// 要恢复原始的全局 agent 和 dispatcher 设置，请调用返回的函数。
 // restore();
 ```
 
-To enable proxy support dynamically and globally with custom settings:
+要使用自定义设置动态且全局地启用代理支持：
 
 ```cjs
 const http = require('node:http');
@@ -4579,13 +4131,13 @@ const restore = http.setGlobalProxyFromEnv({
   no_proxy: 'localhost,127.0.0.1,.internal.example.com',
 });
 
-// Subsequent requests will use the configured proxies
+// 后续请求将使用配置的代理
 http.get('http://www.example.com', (res) => {
-  // This request will be proxied through proxy.example.com:8080
+  // 此请求将通过 proxy.example.com:8080 进行代理
 });
 
 fetch('https://www.example.com', (res) => {
-  // This request will be proxied through proxy.example.com:8443
+  // 此请求将通过 proxy.example.com:8443 进行代理
 });
 ```
 
@@ -4598,22 +4150,22 @@ http.setGlobalProxyFromEnv({
   no_proxy: 'localhost,127.0.0.1,.internal.example.com',
 });
 
-// Subsequent requests will use the configured proxies
+// 后续请求将使用配置的代理
 http.get('http://www.example.com', (res) => {
-  // This request will be proxied through proxy.example.com:8080
+  // 此请求将通过 proxy.example.com:8080 进行代理
 });
 
 fetch('https://www.example.com', (res) => {
-  // This request will be proxied through proxy.example.com:8443
+  // 此请求将通过 proxy.example.com:8443 进行代理
 });
 ```
 
-To create a custom agent with built-in proxy support:
+要创建具有内置代理支持的自定义 agent：
 
 ```cjs
 const http = require('node:http');
 
-// Creating a custom agent with custom proxy support.
+// 创建具有自定义代理支持的自定义 agent。
 const agent = new http.Agent({ proxyEnv: { HTTP_PROXY: 'http://proxy.example.com:8080' } });
 
 http.request({
@@ -4622,24 +4174,23 @@ http.request({
   path: '/',
   agent,
 }, (res) => {
-  // This request will be proxied through proxy.example.com:8080 using the HTTP protocol.
+  // 此请求将通过 proxy.example.com:8080 使用 HTTP 协议进行代理。
   console.log(`STATUS: ${res.statusCode}`);
 });
 ```
 
-Alternatively, the following also works:
+或者，以下方法也有效：
 
 ```cjs
 const http = require('node:http');
-// Use lower-cased option name.
+// 使用小写选项名。
 const agent1 = new http.Agent({ proxyEnv: { http_proxy: 'http://proxy.example.com:8080' } });
-// Use values inherited from the environment variables, if the process is started with
-// HTTP_PROXY=http://proxy.example.com:8080 this will use the proxy server specified
-// in process.env.HTTP_PROXY.
+// 使用从环境变量继承的值，如果进程启动时带有
+// HTTP_PROXY=http://proxy.example.com:8080 这将使用 process.env.HTTP_PROXY 中指定的代理服务器。
 const agent2 = new http.Agent({ proxyEnv: process.env });
 ```
 
-[Built-in Proxy Support]: #built-in-proxy-support
+[内置代理支持]: #built-in-proxy-support
 [RFC 8187]: https://www.rfc-editor.org/rfc/rfc8187.txt
 [RFC 9110 Section 6.6.1]: https://www.rfc-editor.org/rfc/rfc9110#section-6.6.1
 [`'ERR_HTTP_CONTENT_LENGTH_MISMATCH'`]: errors.md#err_http_content_length_mismatch
@@ -4729,4 +4280,4 @@ const agent2 = new http.Agent({ proxyEnv: process.env });
 [`writable.destroyed`]: stream.md#writabledestroyed
 [`writable.uncork()`]: stream.md#writableuncork
 [`writable.write()`]: stream.md#writablewritechunk-encoding-callback
-[initial delay]: net.md#socketsetkeepaliveenable-initialdelay
+[初始延迟]: net.md#socketsetkeepaliveenable-initialdelay

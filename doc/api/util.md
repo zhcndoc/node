@@ -1,14 +1,12 @@
-# Util
+# util 模块
 
 <!--introduced_in=v0.10.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/util.js -->
 
-The `node:util` module supports the needs of Node.js internal APIs. Many of the
-utilities are useful for application and module developers as well. To access
-it:
+`node:util` 模块支持 Node.js 内部 API 的需求。许多工具函数对应用程序和模块开发者也很有用。要访问它：
 
 ```mjs
 import util from 'node:util';
@@ -24,14 +22,10 @@ const util = require('node:util');
 added: v8.2.0
 -->
 
-* `original` {Function} An `async` function
-* Returns: {Function} a callback style function
+* `original` {Function} 一个 `async` 函数
+* 返回值：{Function} 一个回调风格的函数
 
-Takes an `async` function (or a function that returns a `Promise`) and returns a
-function following the error-first callback style, i.e. taking
-an `(err, value) => ...` callback as the last argument. In the callback, the
-first argument will be the rejection reason (or `null` if the `Promise`
-resolved), and the second argument will be the resolved value.
+接受一个 `async` 函数（或返回一个 `Promise` 的函数），并返回一个遵循错误优先回调风格的函数，即接受一个 `(err, value) => ...` 回调作为最后一个参数。在回调中，第一个参数将是拒绝原因（如果 `Promise` 解析则为 `null`），第二个参数将是解析值。
 
 ```mjs
 import { callbackify } from 'node:util';
@@ -61,20 +55,15 @@ callbackFunction((err, ret) => {
 });
 ```
 
-Will print:
+将打印：
 
 ```text
 hello world
 ```
 
-The callback is executed asynchronously, and will have a limited stack trace.
-If the callback throws, the process will emit an [`'uncaughtException'`][]
-event, and if not handled will exit.
+回调是异步执行的，并且将具有有限的堆栈跟踪。如果回调抛出，进程将发出 [`'uncaughtException'`][] 事件，如果未处理则将退出。
 
-Since `null` has a special meaning as the first argument to a callback, if a
-wrapped function rejects a `Promise` with a falsy value as a reason, the value
-is wrapped in an `Error` with the original value stored in a field named
-`reason`.
+由于 `null` 作为回调的第一个参数具有特殊含义，如果被包装的函数用一个假值作为原因拒绝了一个 `Promise`，则该值会被包装在一个 `Error` 中，原始值存储在一个名为 `reason` 的字段中。
 
 ```js
 function fn() {
@@ -83,8 +72,8 @@ function fn() {
 const callbackFunction = util.callbackify(fn);
 
 callbackFunction((err, ret) => {
-  // When the Promise was rejected with `null` it is wrapped with an Error and
-  // the original value is stored in `reason`.
+  // 当 Promise 被 `null` 拒绝时，它会被包装成一个 Error 并且
+  // 原始值存储在 `reason` 中。
   err && Object.hasOwn(err, 'reason') && err.reason === null;  // true
 });
 ```
@@ -97,15 +86,12 @@ added:
  - v24.14.0
 -->
 
-* `signal` {string} A signal name (e.g. `'SIGTERM'`)
-* Returns: {number} The exit code corresponding to `signal`
+* `signal` {string} 信号名称（例如 `'SIGTERM'`）
+* 返回值：{number} 对应于 `signal` 的退出码
 
-The `util.convertProcessSignalToExitCode()` method converts a signal name to its
-corresponding POSIX exit code. Following the POSIX standard, the exit code
-for a process terminated by a signal is calculated as `128 + signal number`.
+`util.convertProcessSignalToExitCode()` 方法将信号名称转换为其对应的 POSIX 退出码。遵循 POSIX 标准，被信号终止的进程的退出码计算为 `128 + 信号编号`。
 
-If `signal` is not a valid signal name, then an error will be thrown. See
-[`signal(7)`][] for a list of valid signals.
+如果 `signal` 不是有效的信号名称，则将抛出错误。参见 [`signal(7)`][] 获取有效信号列表。
 
 ```mjs
 import { convertProcessSignalToExitCode } from 'node:util';
@@ -121,8 +107,7 @@ console.log(convertProcessSignalToExitCode('SIGTERM')); // 143 (128 + 15)
 console.log(convertProcessSignalToExitCode('SIGKILL')); // 137 (128 + 9)
 ```
 
-This is particularly useful when working with processes to determine
-the exit code based on the signal that terminated the process.
+当处理进程以根据终止进程的信号确定退出码时，这特别有用。
 
 ## `util.debuglog(section[, callback])`
 
@@ -130,17 +115,11 @@ the exit code based on the signal that terminated the process.
 added: v0.11.3
 -->
 
-* `section` {string} A string identifying the portion of the application for
-  which the `debuglog` function is being created.
-* `callback` {Function} A callback invoked the first time the logging function
-  is called with a function argument that is a more optimized logging function.
-* Returns: {Function} The logging function
+* `section` {string} 一个字符串，标识为其创建 `debuglog` 函数的应用程序部分。
+* `callback` {Function} 一个回调，在日志函数第一次被调用时 invoked，带有一个函数参数，该参数是一个更优化的日志函数。
+* 返回值：{Function} 日志函数
 
-The `util.debuglog()` method is used to create a function that conditionally
-writes debug messages to `stderr` based on the existence of the `NODE_DEBUG`
-environment variable. If the `section` name appears within the value of that
-environment variable, then the returned function operates similar to
-[`console.error()`][]. If not, then the returned function is a no-op.
+`util.debuglog()` 方法用于创建一个函数，该函数根据 `NODE_DEBUG` 环境变量的存在与否，有条件地将调试消息写入 `stderr`。如果 `section` 名称出现在该环境变量的值中，则返回的函数操作类似于 [`console.error()`][]。否则，返回的函数是无操作。
 
 ```mjs
 import { debuglog } from 'node:util';
@@ -156,17 +135,15 @@ const log = debuglog('foo');
 log('hello from foo [%d]', 123);
 ```
 
-If this program is run with `NODE_DEBUG=foo` in the environment, then
-it will output something like:
+如果此程序运行时环境中带有 `NODE_DEBUG=foo`，则将输出类似以下内容：
 
 ```console
 FOO 3245: hello from foo [123]
 ```
 
-where `3245` is the process id. If it is not run with that
-environment variable set, then it will not print anything.
+其中 `3245` 是进程 ID。如果未设置该环境变量运行，则不会打印任何内容。
 
-The `section` supports wildcard also:
+`section` 也支持通配符：
 
 ```mjs
 import { debuglog } from 'node:util';
@@ -182,25 +159,21 @@ const log = debuglog('foo-bar');
 log('hi there, it\'s foo-bar [%d]', 2333);
 ```
 
-if it is run with `NODE_DEBUG=foo*` in the environment, then it will output
-something like:
+如果运行时环境中带有 `NODE_DEBUG=foo*`，则将输出类似以下内容：
 
 ```console
 FOO-BAR 3257: hi there, it's foo-bar [2333]
 ```
 
-Multiple comma-separated `section` names may be specified in the `NODE_DEBUG`
-environment variable: `NODE_DEBUG=fs,net,tls`.
+可以在 `NODE_DEBUG` 环境变量中指定多个逗号分隔的 `section` 名称：`NODE_DEBUG=fs,net,tls`。
 
-The optional `callback` argument can be used to replace the logging function
-with a different function that doesn't have any initialization or
-unnecessary wrapping.
+可选的 `callback` 参数可用于将日志函数替换为不同的函数，该函数没有任何初始化或不必要的包装。
 
 ```mjs
 import { debuglog } from 'node:util';
 let log = debuglog('internals', (debug) => {
-  // Replace with a logging function that optimizes out
-  // testing if the section is enabled
+  // 替换为一个日志函数，优化掉
+  // 测试 section 是否启用的过程
   log = debug;
 });
 ```
@@ -208,8 +181,8 @@ let log = debuglog('internals', (debug) => {
 ```cjs
 const { debuglog } = require('node:util');
 let log = debuglog('internals', (debug) => {
-  // Replace with a logging function that optimizes out
-  // testing if the section is enabled
+  // 替换为一个日志函数，优化掉
+  // 测试 section 是否启用的过程
   log = debug;
 });
 ```
@@ -220,13 +193,9 @@ let log = debuglog('internals', (debug) => {
 added: v14.9.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
-The `util.debuglog().enabled` getter is used to create a test that can be used
-in conditionals based on the existence of the `NODE_DEBUG` environment variable.
-If the `section` name appears within the value of that environment variable,
-then the returned value will be `true`. If not, then the returned value will be
-`false`.
+`util.debuglog().enabled` getter 用于创建一个测试，该测试可用于基于 `NODE_DEBUG` 环境变量存在的条件判断。如果 `section` 名称出现在该环境变量的值中，则返回的值将为 `true`。否则，返回的值将为 `false`。
 
 ```mjs
 import { debuglog } from 'node:util';
@@ -244,8 +213,7 @@ if (enabled) {
 }
 ```
 
-If this program is run with `NODE_DEBUG=foo` in the environment, then it will
-output something like:
+如果此程序运行时环境中带有 `NODE_DEBUG=foo`，则将输出类似以下内容：
 
 ```console
 hello from foo [123]
@@ -257,8 +225,7 @@ hello from foo [123]
 added: v14.9.0
 -->
 
-Alias for `util.debuglog`. Usage allows for readability of that doesn't imply
-logging when only using `util.debuglog().enabled`.
+`util.debuglog` 的别名。用法允许在不暗示日志记录的情况下提高可读性，当仅使用 `util.debuglog().enabled` 时。
 
 ## `util.deprecate(fn, msg[, code[, options]])`
 
@@ -269,32 +236,27 @@ changes:
       - v25.2.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/59982
-    description: Add options object with modifyPrototype to conditionally
-                 modify the prototype of the deprecated object.
+    description: "Add options object with modifyPrototype to conditionallymodify the prototype of the deprecated object."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/16393
     description: Deprecation warnings are only emitted once for each code.
 -->
 
-* `fn` {Function} The function that is being deprecated.
-* `msg` {string} A warning message to display when the deprecated function is
-  invoked.
-* `code` {string} A deprecation code. See the [list of deprecated APIs][] for a
-  list of codes.
+* `fn` {Function} 正在被弃用的函数。
+* `msg` {string} 当调用弃用函数时显示的警告消息。
+* `code` {string} 弃用代码。参见 [弃用 API 列表][] 获取代码列表。
 * `options` {Object}
-  * `modifyPrototype` {boolean} When false do not change the prototype of object
-    while emitting the deprecation warning.
-    **Default:** `true`.
-* Returns: {Function} The deprecated function wrapped to emit a warning.
+  * `modifyPrototype` {boolean} 为 false 时，在发出弃用警告时不更改对象的原型。
+    **默认值：** `true`。
+* 返回值：{Function} 被包装以发出警告的弃用函数。
 
-The `util.deprecate()` method wraps `fn` (which may be a function or class) in
-such a way that it is marked as deprecated.
+`util.deprecate()` 方法包装 `fn`（可以是函数或类），使其被标记为已弃用。
 
 ```mjs
 import { deprecate } from 'node:util';
 
 export const obsoleteFunction = deprecate(() => {
-  // Do something here.
+  // 在这里做一些事情。
 }, 'obsoleteFunction() is deprecated. Use newShinyFunction() instead.');
 ```
 
@@ -302,18 +264,13 @@ export const obsoleteFunction = deprecate(() => {
 const { deprecate } = require('node:util');
 
 exports.obsoleteFunction = deprecate(() => {
-  // Do something here.
+  // 在这里做一些事情。
 }, 'obsoleteFunction() is deprecated. Use newShinyFunction() instead.');
 ```
 
-When called, `util.deprecate()` will return a function that will emit a
-`DeprecationWarning` using the [`'warning'`][] event. The warning will
-be emitted and printed to `stderr` the first time the returned function is
-called. After the warning is emitted, the wrapped function is called without
-emitting a warning.
+调用时，`util.deprecate()` 将返回一个函数，该函数将使用 [`'warning'`][] 事件发出 `DeprecationWarning`。警告将在返回的函数第一次被调用时发出并打印到 `stderr`。警告发出后，包装的函数被调用且不再发出警告。
 
-If the same optional `code` is supplied in multiple calls to `util.deprecate()`,
-the warning will be emitted only once for that `code`.
+如果在多次调用 `util.deprecate()` 时提供相同的可选 `code`，则该 `code` 的警告将只发出一次。
 
 ```mjs
 import { deprecate } from 'node:util';
@@ -328,8 +285,8 @@ const fn2 = deprecate(
   'other dep message',
   'DEP0001',
 );
-fn1(); // Emits a deprecation warning with code DEP0001
-fn2(); // Does not emit a deprecation warning because it has the same code
+fn1(); // 发出带有代码 DEP0001 的弃用警告
+fn2(); // 不发出弃用警告，因为它具有相同的代码
 ```
 
 ```cjs
@@ -349,26 +306,17 @@ const fn2 = deprecate(
   'other dep message',
   'DEP0001',
 );
-fn1(); // Emits a deprecation warning with code DEP0001
-fn2(); // Does not emit a deprecation warning because it has the same code
+fn1(); // 发出带有代码 DEP0001 的弃用警告
+fn2(); // 不发出弃用警告，因为它具有相同的代码
 ```
 
-If either the `--no-deprecation` or `--no-warnings` command-line flags are
-used, or if the `process.noDeprecation` property is set to `true` _prior_ to
-the first deprecation warning, the `util.deprecate()` method does nothing.
+如果使用了 `--no-deprecation` 或 `--no-warnings` 命令行标志，或者如果 `process.noDeprecation` 属性在第一次弃用警告之前被设置为 `true`，则 `util.deprecate()` 方法什么都不做。
 
-If the `--trace-deprecation` or `--trace-warnings` command-line flags are set,
-or the `process.traceDeprecation` property is set to `true`, a warning and a
-stack trace are printed to `stderr` the first time the deprecated function is
-called.
+如果设置了 `--trace-deprecation` 或 `--trace-warnings` 命令行标志，或者 `process.traceDeprecation` 属性被设置为 `true`，则警告和堆栈跟踪将在弃用函数第一次被调用时打印到 `stderr`。
 
-If the `--throw-deprecation` command-line flag is set, or the
-`process.throwDeprecation` property is set to `true`, then an exception will be
-thrown when the deprecated function is called.
+如果设置了 `--throw-deprecation` 命令行标志，或者 `process.throwDeprecation` 属性被设置为 `true`，那么当调用弃用函数时将抛出异常。
 
-The `--throw-deprecation` command-line flag and `process.throwDeprecation`
-property take precedence over `--trace-deprecation` and
-`process.traceDeprecation`.
+`--throw-deprecation` 命令行标志和 `process.throwDeprecation` 属性优先于 `--trace-deprecation` 和 `process.traceDeprecation`。
 
 ## `util.diff(actual, expected)`
 
@@ -378,32 +326,31 @@ added:
   - v22.15.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-* `actual` {Array|string} The first value to compare
+* `actual` {Array|string} 要比较的第一个值
 
-* `expected` {Array|string} The second value to compare
+* `expected` {Array|string} 要比较的第二个值
 
-* Returns: {Array} An array of difference entries. Each entry is an array with two elements:
-  * `0` {number} Operation code: `-1` for delete, `0` for no-op/unchanged, `1` for insert
-  * `1` {string} The value associated with the operation
+* 返回：{Array} 差异条目数组。每个条目是一个包含两个元素的数组：
+  * `0` {number} 操作代码：`-1` 表示删除，`0` 表示无操作/未更改，`1` 表示插入
+  * `1` {string} 与该操作关联的值
 
-* Algorithm complexity: O(N\*D), where:
+* 算法复杂度：O(N\*D)，其中：
 
-* N is the total length of the two sequences combined (N = actual.length + expected.length)
+* N 是两个序列的总长度 (N = actual.length + expected.length)
 
-* D is the edit distance (the minimum number of operations required to transform one sequence into the other).
+* D 是编辑距离（将一个序列转换为另一个序列所需的最少操作数）。
 
-[`util.diff()`][] compares two string or array values and returns an array of difference entries.
-It uses the Myers diff algorithm to compute minimal differences, which is the same algorithm
-used internally by assertion error messages.
+[`util.diff()`][] 比较两个字符串或数组值，并返回一个差异条目数组。
+它使用 Myers 差异算法来计算最小差异，这与断言错误消息内部使用的算法相同。
 
-If the values are equal, an empty array is returned.
+如果值相等，则返回一个空数组。
 
 ```js
 const { diff } = require('node:util');
 
-// Comparing strings
+// 比较字符串
 const actualString = '12345678';
 const expectedString = '12!!5!7!';
 console.log(diff(actualString, expectedString));
@@ -421,7 +368,7 @@ console.log(diff(actualString, expectedString));
 //   [1, '8'],
 //   [-1, '!'],
 // ]
-// Comparing arrays
+// 比较数组
 const actualArray = ['1', '2', '3'];
 const expectedArray = ['1', '3', '4'];
 console.log(diff(actualArray, expectedArray));
@@ -431,7 +378,7 @@ console.log(diff(actualArray, expectedArray));
 //   [0, '3'],
 //   [-1, '4'],
 // ]
-// Equal values return empty array
+// 相等的值返回空数组
 console.log(diff('same', 'same'));
 // []
 ```
@@ -443,104 +390,81 @@ added: v0.5.3
 changes:
   - version: v12.11.0
     pr-url: https://github.com/nodejs/node/pull/29606
-    description: The `%c` specifier is ignored now.
+    description: "现在 `%c` 说明符被忽略。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/23162
-    description: The `format` argument is now only taken as such if it actually
-                 contains format specifiers.
+    description: "现在仅当 `format` 参数实际包含格式说明符时才将其视为格式字符串。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/23162
-    description: If the `format` argument is not a format string, the output
-                 string's formatting is no longer dependent on the type of the
-                 first argument. This change removes previously present quotes
-                 from strings that were being output when the first argument
-                 was not a string.
+    description: "如果 `format` 参数不是格式字符串，则输出字符串的格式不再依赖于第一个参数的类型。此更改移除了以前当第一个参数不是字符串时输出字符串中存在的引号。"
   - version: v11.4.0
     pr-url: https://github.com/nodejs/node/pull/23708
-    description: The `%d`, `%f`, and `%i` specifiers now support Symbols
-                 properly.
+    description: "`%d`、`%f` 和 `%i` 说明符现在正确支持 Symbol。"
   - version: v11.4.0
     pr-url: https://github.com/nodejs/node/pull/24806
-    description: The `%o` specifier's `depth` has default depth of 4 again.
+    description: "`%o` 说明符的 `depth` 再次默认深度为 4。"
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/17907
-    description: The `%o` specifier's `depth` option will now fall back to the
-                 default depth.
+    description: "`%o` 说明符的 `depth` 选项现在将回退到默认深度。"
   - version: v10.12.0
     pr-url: https://github.com/nodejs/node/pull/22097
-    description: The `%d` and `%i` specifiers now support BigInt.
+    description: "`%d` 和 `%i` 说明符现在支持 BigInt。"
   - version: v8.4.0
     pr-url: https://github.com/nodejs/node/pull/14558
-    description: The `%o` and `%O` specifiers are supported now.
+    description: "现在支持 `%o` 和 `%O` 说明符。"
 -->
 
-* `format` {string} A `printf`-like format string.
+* `format` {string} 一个 `printf` 风格的格式字符串。
 
-The `util.format()` method returns a formatted string using the first argument
-as a `printf`-like format string which can contain zero or more format
-specifiers. Each specifier is replaced with the converted value from the
-corresponding argument. Supported specifiers are:
+`util.format()` 方法使用第一个参数作为 `printf` 风格的格式字符串返回一个格式化字符串，
+该字符串可以包含零个或多个格式说明符。每个说明符都被替换为相应参数的转换值。支持的说明符有：
 
-* `%s`: `String` will be used to convert all values except `BigInt`, `Object`
-  and `-0`. `BigInt` values will be represented with an `n` and Objects that
-  have neither a user defined `toString` function nor `Symbol.toPrimitive` function are inspected using `util.inspect()`
-  with options `{ depth: 0, colors: false, compact: 3 }`.
-* `%d`: `Number` will be used to convert all values except `BigInt` and
-  `Symbol`.
-* `%i`: `parseInt(value, 10)` is used for all values except `BigInt` and
-  `Symbol`.
-* `%f`: `parseFloat(value)` is used for all values expect `Symbol`.
-* `%j`: JSON. Replaced with the string `'[Circular]'` if the argument contains
-  circular references.
-* `%o`: `Object`. A string representation of an object with generic JavaScript
-  object formatting. Similar to `util.inspect()` with options
-  `{ showHidden: true, showProxy: true }`. This will show the full object
-  including non-enumerable properties and proxies.
-* `%O`: `Object`. A string representation of an object with generic JavaScript
-  object formatting. Similar to `util.inspect()` without options. This will show
-  the full object not including non-enumerable properties and proxies.
-* `%c`: `CSS`. This specifier is ignored and will skip any CSS passed in.
-* `%%`: single percent sign (`'%'`). This does not consume an argument.
-* Returns: {string} The formatted string
+* `%s`: `String` 将用于转换除 `BigInt`、`Object` 和 `-0` 之外的所有值。`BigInt` 值将用 `n` 表示，
+  既没有用户定义的 `toString` 函数也没有 `Symbol.toPrimitive` 函数的对象将使用选项 `{ depth: 0, colors: false, compact: 3 }` 通过 `util.inspect()` 进行检查。
+* `%d`: `Number` 将用于转换除 `BigInt` 和 `Symbol` 之外的所有值。
+* `%i`: `parseInt(value, 10)` 用于除 `BigInt` 和 `Symbol` 之外的所有值。
+* `%f`: `parseFloat(value)` 用于除 `Symbol` 之外的所有值。
+* `%j`: JSON。如果参数包含循环引用，则替换为字符串 `'[Circular]'`。
+* `%o`: `Object`。具有通用 JavaScript 对象格式化的对象的字符串表示。类似于使用选项 `{ showHidden: true, showProxy: true }` 的 `util.inspect()`。
+  这将显示完整对象，包括不可枚举属性和代理。
+* `%O`: `Object`。具有通用 JavaScript 对象格式化的对象的字符串表示。类似于不带选项的 `util.inspect()`。
+  这将显示完整对象，不包括不可枚举属性和代理。
+* `%c`: `CSS`。此说明符被忽略，将跳过任何传入的 CSS。
+* `%%`: 单个百分号 (`'%'`)。这不消耗参数。
+* 返回：{string} 格式化后的字符串
 
-If a specifier does not have a corresponding argument, it is not replaced:
+如果说明符没有相应的参数，则不会被替换：
 
 ```js
 util.format('%s:%s', 'foo');
-// Returns: 'foo:%s'
+// 返回：'foo:%s'
 ```
 
-Values that are not part of the format string are formatted using
-`util.inspect()` if their type is not `string`.
+不属于格式字符串部分的值，如果其类型不是 `string`，则使用 `util.inspect()` 进行格式化。
 
-If there are more arguments passed to the `util.format()` method than the
-number of specifiers, the extra arguments are concatenated to the returned
-string, separated by spaces:
+如果传递给 `util.format()` 方法的参数多于说明符的数量，则额外的参数会连接到返回的字符串，用空格分隔：
 
 ```js
 util.format('%s:%s', 'foo', 'bar', 'baz');
-// Returns: 'foo:bar baz'
+// 返回：'foo:bar baz'
 ```
 
-If the first argument does not contain a valid format specifier, `util.format()`
-returns a string that is the concatenation of all arguments separated by spaces:
+如果第一个参数不包含有效的格式说明符，`util.format()` 返回一个字符串，该字符串是所有参数用空格连接而成的：
 
 ```js
 util.format(1, 2, 3);
-// Returns: '1 2 3'
+// 返回：'1 2 3'
 ```
 
-If only one argument is passed to `util.format()`, it is returned as it is
-without any formatting:
+如果只传递一个参数给 `util.format()`，则原样返回，不进行任何格式化：
 
 ```js
 util.format('%% %s');
-// Returns: '%% %s'
+// 返回：'%% %s'
 ```
 
-`util.format()` is a synchronous method that is intended as a debugging tool.
-Some input values can have a significant performance overhead that can block the
-event loop. Use this function with care and never in a hot code path.
+`util.format()` 是一个旨在作为调试工具的同步方法。
+某些输入值可能会产生显著的性能开销，从而阻塞事件循环。请谨慎使用此函数，切勿在热点代码路径中使用。
 
 ## `util.formatWithOptions(inspectOptions, format[, ...args])`
 
@@ -551,14 +475,12 @@ added: v10.0.0
 * `inspectOptions` {Object}
 * `format` {string}
 
-This function is identical to [`util.format()`][], except in that it takes
-an `inspectOptions` argument which specifies options that are passed along to
-[`util.inspect()`][].
+此函数与 [`util.format()`][] 相同，不同之处在于它接受一个 `inspectOptions` 参数，
+该参数指定传递给 [`util.inspect()`][] 的选项。
 
 ```js
 util.formatWithOptions({ colors: true }, 'See object %O', { foo: 42 });
-// Returns 'See object { foo: 42 }', where `42` is colored as a number
-// when printed to a terminal.
+// 返回 'See object { foo: 42 }'，其中 `42` 在打印到终端时作为数字着色
 ```
 
 ## `util.getCallSites([frameCount][, options])`
@@ -570,39 +492,36 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56584
-    description: Property `column` is deprecated in favor of `columnNumber`.
+    description: "属性 `column` 已弃用，推荐使用 `columnNumber`。"
   - version:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56551
-    description: Property `CallSite.scriptId` is exposed.
+    description: "暴露了属性 `CallSite.scriptId`。"
   - version:
     - v23.3.0
     - v22.12.0
     pr-url: https://github.com/nodejs/node/pull/55626
-    description: The API is renamed from `util.getCallSite` to `util.getCallSites()`.
+    description: "API 已从 `util.getCallSite` 重命名为 `util.getCallSites()`。"
 -->
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
-* `frameCount` {integer} Optional number of frames to capture as call site objects.
-  **Default:** `10`. Allowable range is between 1 and 200.
-* `options` {Object} Optional
-  * `sourceMap` {boolean} Reconstruct the original location in the stacktrace from the source-map.
-    Enabled by default with the flag `--enable-source-maps`.
-* Returns: {Object\[]} An array of call site objects
-  * `functionName` {string} Returns the name of the function associated with this call site.
-  * `scriptName` {string} Returns the name of the resource that contains the script for the
-    function for this call site.
-  * `scriptId` {string} Returns the unique id of the script, as in Chrome DevTools protocol [`Runtime.ScriptId`][].
-  * `lineNumber` {number} Returns the JavaScript script line number (1-based).
-  * `columnNumber` {number} Returns the JavaScript script column number (1-based).
+* `frameCount` {integer} 可选的要捕获为调用站点对象的帧数。
+  **默认值：** `10`。允许范围在 1 到 200 之间。
+* `options` {Object} 可选
+  * `sourceMap` {boolean} 从源映射重建堆栈跟踪中的原始位置。
+    默认情况下通过标志 `--enable-source-maps` 启用。
+* 返回：{Object\[]} 调用站点对象数组
+  * `functionName` {string} 返回与此调用站点关联的函数名称。
+  * `scriptName` {string} 返回包含此调用站点函数脚本的资源名称。
+  * `scriptId` {string} 返回脚本的唯一 id，如 Chrome DevTools 协议 [`Runtime.ScriptId`][] 中所述。
+  * `lineNumber` {number} 返回 JavaScript 脚本行号（从 1 开始）。
+  * `columnNumber` {number} 返回 JavaScript 脚本列号（从 1 开始）。
 
-Returns an array of call site objects containing the stack of
-the caller function.
+返回一个包含调用函数堆栈的调用站点对象数组。
 
-Unlike accessing an `error.stack`, the result returned from this API is not
-interfered with `Error.prepareStackTrace`.
+与访问 `error.stack` 不同，从此 API 返回的结果不受 `Error.prepareStackTrace` 干扰。
 
 ```mjs
 import { getCallSites } from 'node:util';
@@ -633,7 +552,7 @@ function exampleFunction() {
   // ...
 }
 
-// A function to simulate another stack layer
+// 一个模拟另一个堆栈层的函数
 function anotherFunction() {
   exampleFunction();
 }
@@ -670,7 +589,7 @@ function exampleFunction() {
   // ...
 }
 
-// A function to simulate another stack layer
+// 一个模拟另一个堆栈层的函数
 function anotherFunction() {
   exampleFunction();
 }
@@ -678,9 +597,9 @@ function anotherFunction() {
 anotherFunction();
 ```
 
-It is possible to reconstruct the original locations by setting the option `sourceMap` to `true`.
-If the source map is not available, the original location will be the same as the current location.
-When the `--enable-source-maps` flag is enabled,`sourceMap` will be true by default.
+可以通过将选项 `sourceMap` 设置为 `true` 来重建原始位置。
+如果源映射不可用，则原始位置将与当前位置相同。
+当启用 `--enable-source-maps` 标志时，`sourceMap` 默认为 true。
 
 ```ts
 import { getCallSites } from 'node:util';
@@ -691,13 +610,13 @@ interface Foo {
 
 const callSites = getCallSites({ sourceMap: true });
 
-// With sourceMap:
+// 使用 sourceMap:
 // Function Name: ''
 // Script Name: example.js
 // Line Number: 7
 // Column Number: 26
 
-// Without sourceMap:
+// 不使用 sourceMap:
 // Function Name: ''
 // Script Name: example.js
 // Line Number: 2
@@ -709,13 +628,13 @@ const { getCallSites } = require('node:util');
 
 const callSites = getCallSites({ sourceMap: true });
 
-// With sourceMap:
+// 使用 sourceMap:
 // Function Name: ''
 // Script Name: example.js
 // Line Number: 7
 // Column Number: 26
 
-// Without sourceMap:
+// 不使用 sourceMap:
 // Function Name: ''
 // Script Name: example.js
 // Line Number: 2
@@ -729,11 +648,11 @@ added: v9.7.0
 -->
 
 * `err` {number}
-* Returns: {string}
+* 返回值：{string}
 
-Returns the string name for a numeric error code that comes from a Node.js API.
-The mapping between error codes and error names is platform-dependent.
-See [Common System Errors][] for the names of common errors.
+返回来自 Node.js API 的数字错误代码的字符串名称。
+错误代码和错误名称之间的映射取决于平台。
+参见 [常见系统错误][] 以了解常见错误的名称。
 
 ```js
 fs.access('file/that/does/not/exist', (err) => {
@@ -750,11 +669,11 @@ added:
   - v14.17.0
 -->
 
-* Returns: {Map}
+* 返回值：{Map}
 
-Returns a Map of all system error codes available from the Node.js API.
-The mapping between error codes and error names is platform-dependent.
-See [Common System Errors][] for the names of common errors.
+返回 Node.js API 可用的所有系统错误代码的 Map。
+错误代码和错误名称之间的映射取决于平台。
+参见 [常见系统错误][] 以了解常见错误的名称。
 
 ```js
 fs.access('file/that/does/not/exist', (err) => {
@@ -773,16 +692,15 @@ added:
 -->
 
 * `err` {number}
-* Returns: {string}
+* 返回值：{string}
 
-Returns the string message for a numeric error code that comes from a Node.js
-API.
-The mapping between error codes and string messages is platform-dependent.
+返回来自 Node.js API 的数字错误代码的字符串消息。
+错误代码和字符串消息之间的映射取决于平台。
 
 ```js
 fs.access('file/that/does/not/exist', (err) => {
   const message = util.getSystemErrorMessage(err.errno);
-  console.error(message);  // No such file or directory
+  console.error(message);  // 没有这样的文件或目录
 });
 ```
 
@@ -796,7 +714,7 @@ added:
 
 * `enable` {boolean}
 
-Enable or disable printing a stack trace on `SIGINT`. The API is only available on the main thread.
+启用或禁用在 `SIGINT` 上打印堆栈跟踪。该 API 仅在主线程上可用。
 
 ## `util.inherits(constructor, superConstructor)`
 
@@ -805,26 +723,19 @@ added: v0.3.0
 changes:
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/3455
-    description: The `constructor` parameter can refer to an ES6 class now.
+    description: "`constructor` 参数现在可以引用 ES6 类。"
 -->
 
-> Stability: 3 - Legacy: Use ES2015 class syntax and `extends` keyword instead.
+> 稳定性：3 - 遗留：请改用 ES2015 类语法和 `extends` 关键字。
 
 * `constructor` {Function}
 * `superConstructor` {Function}
 
-Usage of `util.inherits()` is discouraged. Please use the ES6 `class` and
-`extends` keywords to get language level inheritance support. Also note
-that the two styles are [semantically incompatible][].
+不推荐使用 `util.inherits()`。请使用 ES6 `class` 和 `extends` 关键字以获得语言级别的继承支持。另请注意，这两种风格在 [语义上不兼容][]。
 
-Inherit the prototype methods from one [constructor][] into another. The
-prototype of `constructor` will be set to a new object created from
-`superConstructor`.
+将一个 [构造函数][] 的原型方法继承到另一个构造函数中。`constructor` 的原型将被设置为从 `superConstructor` 创建的新对象。
 
-This mainly adds some input validation on top of
-`Object.setPrototypeOf(constructor.prototype, superConstructor.prototype)`.
-As an additional convenience, `superConstructor` will be accessible
-through the `constructor.super_` property.
+这主要在 `Object.setPrototypeOf(constructor.prototype, superConstructor.prototype)` 之上添加了一些输入验证。作为额外的便利，`superConstructor` 将通过 `constructor.super_` 属性访问。
 
 ```js
 const util = require('node:util');
@@ -848,10 +759,10 @@ console.log(MyStream.super_ === EventEmitter); // true
 stream.on('data', (data) => {
   console.log(`Received data: "${data}"`);
 });
-stream.write('It works!'); // Received data: "It works!"
+stream.write('It works!'); // 接收到的数据："It works!"
 ```
 
-ES6 example using `class` and `extends`:
+使用 `class` 和 `extends` 的 ES6 示例：
 
 ```mjs
 import EventEmitter from 'node:events';
@@ -897,148 +808,101 @@ changes:
   - version:
     - v25.0.0
     pr-url: https://github.com/nodejs/node/pull/59710
-    description: The util.inspect.styles.regexp style is now a method that is
-                 invoked for coloring the stringified regular expression.
+    description: "`util.inspect.styles.regexp` 样式现在是一个方法，用于为字符串化的正则表达式着色。"
   - version:
     - v17.3.0
     - v16.14.0
     pr-url: https://github.com/nodejs/node/pull/41003
-    description: The `numericSeparator` option is supported now.
+    description: "现在支持 `numericSeparator` 选项。"
   - version: v16.18.0
     pr-url: https://github.com/nodejs/node/pull/43576
-    description: add support for `maxArrayLength` when inspecting `Set` and `Map`.
+    description: "检查 `Set` 和 `Map` 时添加了对 `maxArrayLength` 的支持。"
   - version:
     - v14.6.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/33690
-    description: If `object` is from a different `vm.Context` now, a custom
-                 inspection function on it will not receive context-specific
-                 arguments anymore.
+    description: "如果 `object` 来自不同的 `vm.Context`，其上的自定义检查函数将不再接收特定于上下文的参数。"
   - version:
      - v13.13.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/32392
-    description: The `maxStringLength` option is supported now.
+    description: "现在支持 `maxStringLength` 选项。"
   - version:
      - v13.5.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30768
-    description: User defined prototype properties are inspected in case
-                 `showHidden` is `true`.
+    description: "如果 `showHidden` 为 `true`，则会检查用户定义的原型属性。"
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27685
-    description: Circular references now include a marker to the reference.
+    description: 循环引用现在包含对引用的标记。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/27109
-    description: The `compact` options default is changed to `3` and the
-                 `breakLength` options default is changed to `80`.
+    description: "`compact` 选项的默认值更改为 `3`，`breakLength` 选项的默认值更改为 `80`。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/24971
-    description: Internal properties no longer appear in the context argument
-                 of a custom inspection function.
+    description: 内部属性不再出现在自定义检查函数的上下文参数中。
   - version: v11.11.0
     pr-url: https://github.com/nodejs/node/pull/26269
-    description: The `compact` option accepts numbers for a new output mode.
+    description: "`compact` 选项接受数字以用于新的输出模式。"
   - version: v11.7.0
     pr-url: https://github.com/nodejs/node/pull/25006
-    description: ArrayBuffers now also show their binary contents.
+    description: ArrayBuffers 现在也显示它们的二进制内容。
   - version: v11.5.0
     pr-url: https://github.com/nodejs/node/pull/24852
-    description: The `getters` option is supported now.
+    description: "现在支持 `getters` 选项。"
   - version: v11.4.0
     pr-url: https://github.com/nodejs/node/pull/24326
-    description: The `depth` default changed back to `2`.
+    description: "`depth` 默认值改回 `2`。"
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22846
-    description: The `depth` default changed to `20`.
+    description: "`depth` 默认值更改为 `20`。"
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22756
-    description: The inspection output is now limited to about 128 MiB. Data
-                 above that size will not be fully inspected.
+    description: 检查输出现在限制为约 128 MiB。超过该大小的数据将不会被完全检查。
   - version: v10.12.0
     pr-url: https://github.com/nodejs/node/pull/22788
-    description: The `sorted` option is supported now.
+    description: "现在支持 `sorted` 选项。"
   - version: v10.6.0
     pr-url: https://github.com/nodejs/node/pull/20725
-    description: Inspecting linked lists and similar objects is now possible
-                 up to the maximum call stack size.
+    description: 现在可以检查链表和类似对象，直到最大调用堆栈大小。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19259
-    description: The `WeakMap` and `WeakSet` entries can now be inspected
-                 as well.
+    description: "`WeakMap` 和 `WeakSet` 条目现在也可以被检查。"
   - version: v9.9.0
     pr-url: https://github.com/nodejs/node/pull/17576
-    description: The `compact` option is supported now.
+    description: "现在支持 `compact` 选项。"
   - version: v6.6.0
     pr-url: https://github.com/nodejs/node/pull/8174
-    description: Custom inspection functions can now return `this`.
+    description: "自定义检查函数现在可以返回 `this`。"
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/7499
-    description: The `breakLength` option is supported now.
+    description: "现在支持 `breakLength` 选项。"
   - version: v6.1.0
     pr-url: https://github.com/nodejs/node/pull/6334
-    description: The `maxArrayLength` option is supported now; in particular,
-                 long arrays are truncated by default.
+    description: "现在支持 `maxArrayLength` 选项；特别是，长数组默认会被截断。"
   - version: v6.1.0
     pr-url: https://github.com/nodejs/node/pull/6465
-    description: The `showProxy` option is supported now.
+    description: "现在支持 `showProxy` 选项。"
 -->
 
-* `object` {any} Any JavaScript primitive or `Object`.
+* `object` {any} 任何 JavaScript 原始值或 `Object`。
 * `options` {Object}
-  * `showHidden` {boolean} If `true`, `object`'s non-enumerable symbols and
-    properties are included in the formatted result. {WeakMap} and
-    {WeakSet} entries are also included as well as user defined prototype
-    properties (excluding method properties). **Default:** `false`.
-  * `depth` {number} Specifies the number of times to recurse while formatting
-    `object`. This is useful for inspecting large objects. To recurse up to
-    the maximum call stack size pass `Infinity` or `null`.
-    **Default:** `2`.
-  * `colors` {boolean} If `true`, the output is styled with ANSI color
-    codes. Colors are customizable. See [Customizing `util.inspect` colors][].
-    **Default:** `false`.
-  * `customInspect` {boolean} If `false`,
-    `[util.inspect.custom](depth, opts, inspect)` functions are not invoked.
-    **Default:** `true`.
-  * `showProxy` {boolean} If `true`, `Proxy` inspection includes
-    the [`target` and `handler`][] objects. **Default:** `false`.
-  * `maxArrayLength` {integer} Specifies the maximum number of `Array`,
-    {TypedArray}, {Map}, {WeakMap}, and {WeakSet} elements to include when formatting.
-    Set to `null` or `Infinity` to show all elements. Set to `0` or
-    negative to show no elements. **Default:** `100`.
-  * `maxStringLength` {integer} Specifies the maximum number of characters to
-    include when formatting. Set to `null` or `Infinity` to show all elements.
-    Set to `0` or negative to show no characters. **Default:** `10000`.
-  * `breakLength` {integer} The length at which input values are split across
-    multiple lines. Set to `Infinity` to format the input as a single line
-    (in combination with `compact` set to `true` or any number >= `1`).
-    **Default:** `80`.
-  * `compact` {boolean|integer} Setting this to `false` causes each object key
-    to be displayed on a new line. It will break on new lines in text that is
-    longer than `breakLength`. If set to a number, the most `n` inner elements
-    are united on a single line as long as all properties fit into
-    `breakLength`. Short array elements are also grouped together. For more
-    information, see the example below. **Default:** `3`.
-  * `sorted` {boolean|Function} If set to `true` or a function, all properties
-    of an object, and `Set` and `Map` entries are sorted in the resulting
-    string. If set to `true` the [default sort][] is used. If set to a function,
-    it is used as a [compare function][].
-  * `getters` {boolean|string} If set to `true`, getters are inspected. If set
-    to `'get'`, only getters without a corresponding setter are inspected. If
-    set to `'set'`, only getters with a corresponding setter are inspected.
-    This might cause side effects depending on the getter function.
-    **Default:** `false`.
-  * `numericSeparator` {boolean} If set to `true`, an underscore is used to
-    separate every three digits in all bigints and numbers.
-    **Default:** `false`.
-* Returns: {string} The representation of `object`.
+  * `showHidden` {boolean} 如果为 `true`，`object` 的不可枚举符号和属性将包含在格式化结果中。{WeakMap} 和 {WeakSet} 条目以及用户定义的原型属性（不包括方法属性）也包含在内。**默认值：** `false`。
+  * `depth` {number} 指定格式化 `object` 时递归的次数。这对于检查大型对象很有用。要递归到最大调用堆栈大小，请传递 `Infinity` 或 `null`。**默认值：** `2`。
+  * `colors` {boolean} 如果为 `true`，输出将使用 ANSI 颜色代码进行样式化。颜色是可自定义的。参见 [自定义 `util.inspect` 颜色][]。**默认值：** `false`。
+  * `customInspect` {boolean} 如果为 `false`，则不会调用 `[util.inspect.custom](depth, opts, inspect)` 函数。**默认值：** `true`。
+  * `showProxy` {boolean} 如果为 `true`，`Proxy` 检查包括 [`target` 和 `handler`][] 对象。**默认值：** `false`。
+  * `maxArrayLength` {integer} 指定格式化时要包含的 `Array`、{TypedArray}、{Map}、{WeakMap} 和 {WeakSet} 元素的最大数量。设置为 `null` 或 `Infinity` 以显示所有元素。设置为 `0` 或负数以不显示任何元素。**默认值：** `100`。
+  * `maxStringLength` {integer} 指定格式化时要包含的最大字符数。设置为 `null` 或 `Infinity` 以显示所有元素。设置为 `0` 或负数以不显示任何字符。**默认值：** `10000`。
+  * `breakLength` {integer} 输入值跨多行分割的长度。设置为 `Infinity` 将输入格式化为单行（结合 `compact` 设置为 `true` 或任何 >= `1` 的数字）。**默认值：** `80`。
+  * `compact` {boolean|integer} 将其设置为 `false` 会导致每个对象键显示在新行上。它将在长于 `breakLength` 的文本中的新行处断开。如果设置为数字，只要所有属性都适合 `breakLength`，最多 `n` 个内部元素将合并在一行上。短数组元素也会分组在一起。更多信息，请参见下面的示例。**默认值：** `3`。
+  * `sorted` {boolean|Function} 如果设置为 `true` 或函数，对象的所有属性以及 `Set` 和 `Map` 条目将在结果字符串中排序。如果设置为 `true`，则使用 [默认排序][]。如果设置为函数，则用作 [比较函数][]。
+  * `getters` {boolean|string} 如果设置为 `true`，则检查 getter。如果设置为 `'get'`，则仅检查没有相应 setter 的 getter。如果设置为 `'set'`，则仅检查有相应 setter 的 getter。根据 getter 函数，这可能会导致副作用。**默认值：** `false`。
+  * `numericSeparator` {boolean} 如果设置为 `true`，则使用下划线分隔所有 bigint 和数字中的每三位数字。**默认值：** `false`。
+* 返回值：{string} `object` 的表示。
 
-The `util.inspect()` method returns a string representation of `object` that is
-intended for debugging. The output of `util.inspect` may change at any time
-and should not be depended upon programmatically. Additional `options` may be
-passed that alter the result.
-`util.inspect()` will use the constructor's name and/or `Symbol.toStringTag`
-property to make an identifiable tag for an inspected value.
+`util.inspect()` 方法返回 `object` 的字符串表示形式，旨在用于调试。`util.inspect` 的输出可能会随时更改，不应以编程方式依赖。可以传递额外的 `options` 来改变结果。
+`util.inspect()` 将使用构造函数的名称和/或 `Symbol.toStringTag` 属性为检查的值制作可识别的标签。
 
 ```js
 class Foo {
@@ -1056,7 +920,7 @@ util.inspect(new Bar()); // 'Bar {}'
 util.inspect(baz);       // '[foo] {}'
 ```
 
-Circular references point to their anchor by using a reference index:
+循环引用通过使用引用索引指向其锚点：
 
 ```mjs
 import { inspect } from 'node:util';
@@ -1090,7 +954,7 @@ console.log(inspect(obj));
 // }
 ```
 
-The following example inspects all properties of the `util` object:
+以下示例检查 `util` 对象的所有属性：
 
 ```mjs
 import util from 'node:util';
@@ -1104,7 +968,7 @@ const util = require('node:util');
 console.log(util.inspect(util, { showHidden: true, depth: null }));
 ```
 
-The following example highlights the effect of the `compact` option:
+以下示例突出了 `compact` 选项的效果：
 
 ```mjs
 import { inspect } from 'node:util';
@@ -1122,13 +986,13 @@ console.log(inspect(o, { compact: true, depth: 5, breakLength: 80 }));
 // { a:
 //   [ 1,
 //     2,
-//     [ [ 'Lorem ipsum dolor sit amet,\nconsectetur [...]', // A long line
+//     [ [ 'Lorem ipsum dolor sit amet,\nconsectetur [...]', // 长行
 //           'test',
 //           'foo' ] ],
 //     4 ],
 //   b: Map(2) { 'za' => 1, 'zb' => 'test' } }
 
-// Setting `compact` to false or an integer creates more reader friendly output.
+// 将 `compact` 设置为 false 或整数会创建更易读的输出。
 console.log(inspect(o, { compact: false, depth: 5, breakLength: 80 }));
 
 // {
@@ -1152,8 +1016,7 @@ console.log(inspect(o, { compact: false, depth: 5, breakLength: 80 }));
 //   }
 // }
 
-// Setting `breakLength` to e.g. 150 will print the "Lorem ipsum" text in a
-// single line.
+// 将 `breakLength` 设置为例如 150 将在单行中打印 "Lorem ipsum" 文本。
 ```
 
 ```cjs
@@ -1172,13 +1035,13 @@ console.log(inspect(o, { compact: true, depth: 5, breakLength: 80 }));
 // { a:
 //   [ 1,
 //     2,
-//     [ [ 'Lorem ipsum dolor sit amet,\nconsectetur [...]', // A long line
+//     [ [ 'Lorem ipsum dolor sit amet,\nconsectetur [...]', // 长行
 //           'test',
 //           'foo' ] ],
 //     4 ],
 //   b: Map(2) { 'za' => 1, 'zb' => 'test' } }
 
-// Setting `compact` to false or an integer creates more reader friendly output.
+// 将 `compact` 设置为 false 或整数会创建更易读的输出。
 console.log(inspect(o, { compact: false, depth: 5, breakLength: 80 }));
 
 // {
@@ -1202,15 +1065,10 @@ console.log(inspect(o, { compact: false, depth: 5, breakLength: 80 }));
 //   }
 // }
 
-// Setting `breakLength` to e.g. 150 will print the "Lorem ipsum" text in a
-// single line.
+// 将 `breakLength` 设置为例如 150 将在单行中打印 "Lorem ipsum" 文本。
 ```
 
-The `showHidden` option allows {WeakMap} and {WeakSet} entries to be
-inspected. If there are more entries than `maxArrayLength`, there is no
-guarantee which entries are displayed. That means retrieving the same
-{WeakSet} entries twice may result in different output. Furthermore, entries
-with no remaining strong references may be garbage collected at any time.
+`showHidden` 选项允许检查 {WeakMap} 和 {WeakSet} 条目。如果条目多于 `maxArrayLength`，则不保证显示哪些条目。这意味着检索相同的 {WeakSet} 条目两次可能会导致不同的输出。此外，没有剩余强引用的条目可能会随时被垃圾回收。
 
 ```mjs
 import { inspect } from 'node:util';
@@ -1234,8 +1092,7 @@ console.log(inspect(weakSet, { showHidden: true }));
 // WeakSet { { a: 1 }, { b: 2 } }
 ```
 
-The `sorted` option ensures that an object's property insertion order does not
-impact the result of `util.inspect()`.
+`sorted` 选项确保对象的属性插入顺序不会影响 `util.inspect()` 的结果。
 
 ```mjs
 import { inspect } from 'node:util';
@@ -1287,8 +1144,7 @@ assert.strict.equal(
 );
 ```
 
-The `numericSeparator` option adds an underscore every three digits to all
-numbers.
+`numericSeparator` 选项在所有数字的每三位数字后添加一个下划线。
 
 ```mjs
 import { inspect } from 'node:util';
@@ -1326,80 +1182,62 @@ console.log(inspect(bigDecimal, { numericSeparator: true }));
 // 1_234.123_45
 ```
 
-`util.inspect()` is a synchronous method intended for debugging. Its maximum
-output length is approximately 128 MiB. Inputs that result in longer output will
-be truncated.
+`util.inspect()` 是一种旨在用于调试的同步方法。其最大输出长度约为 128 MiB。导致更长输出的输入将被截断。
 
-### Customizing `util.inspect` colors
+### 自定义 `util.inspect` 颜色
 
 <!-- type=misc -->
 
-Color output (if enabled) of `util.inspect` is customizable globally
-via the `util.inspect.styles` and `util.inspect.colors` properties.
+`util.inspect` 的颜色输出（如果启用）可以通过 `util.inspect.styles` 和 `util.inspect.colors` 属性在全局范围内自定义。
 
-`util.inspect.styles` is a map associating a style name to a color from
-`util.inspect.colors`.
+`util.inspect.styles` 是一个将样式名称映射到 `util.inspect.colors` 中的颜色的 map。
 
-The default styles and associated colors are:
+默认样式和相关颜色如下：
 
 * `bigint`: `yellow`
 * `boolean`: `yellow`
 * `date`: `magenta`
 * `module`: `underline`
-* `name`: (no styling)
+* `name`: (无样式)
 * `null`: `bold`
 * `number`: `yellow`
-* `regexp`: A method that colors character classes, groups, assertions, and
-  other parts for improved readability. To customize the coloring, change the
-  `colors` property. It is set to
-  `['red', 'green', 'yellow', 'cyan', 'magenta']` by default and may be
-  adjusted as needed. The array is repetitively iterated through depending on
-  the "depth".
-* `special`: `cyan` (e.g., `Proxies`)
+* `regexp`: 一种为字符类、组、断言和其他部分着色的方法，以提高可读性。要自定义着色，请更改 `colors` 属性。默认设置为 `['red', 'green', 'yellow', 'cyan', 'magenta']`，可根据需要调整。数组会根据“深度”重复迭代。
+* `special`: `cyan` (例如，`Proxies`)
 * `string`: `green`
 * `symbol`: `green`
 * `undefined`: `grey`
 
-Color styling uses ANSI control codes that may not be supported on all
-terminals. To verify color support use [`tty.hasColors()`][].
+颜色样式使用 ANSI 控制代码，可能不受所有终端支持。要验证颜色支持，请使用 [`tty.hasColors()`][]。
 
-Predefined control codes are listed below (grouped as "Modifiers", "Foreground
-colors", and "Background colors").
+预定义的控制代码列在下面（分为“修饰符”、“前景色”和“背景色”）。
 
-#### Complex custom coloring
+#### 复杂自定义着色
 
-It is possible to define a method as style. It receives the stringified value
-of the input. It is invoked in case coloring is active and the type is
-inspected.
+可以将方法定义为样式。它接收输入的字符串化值。在着色激活且类型被检查时调用它。
 
-Example: `util.inspect.styles.regexp(value)`
+示例：`util.inspect.styles.regexp(value)`
 
-* `value` {string} The string representation of the input type.
-* Returns: {string} The adjusted representation of `object`.
+* `value` {string} 输入类型的字符串表示。
+* 返回值：{string} `object` 的调整后的表示。
 
-#### Modifiers
+#### 修饰符
 
-Modifier support varies throughout different terminals. They will mostly be
-ignored, if not supported.
+修饰符支持因不同终端而异。如果不支持，它们大多会被忽略。
 
-* `reset` - Resets all (color) modifiers to their defaults
-* **bold** - Make text bold
-* _italic_ - Make text italic
-* <span style="border-bottom: 1px solid;">underline</span> - Make text underlined
-* ~~strikethrough~~ - Puts a horizontal line through the center of the text
-  (Alias: `strikeThrough`, `crossedout`, `crossedOut`)
-* `hidden` - Prints the text, but makes it invisible (Alias: conceal)
-* <span style="opacity: 0.5;">dim</span> - Decreased color intensity (Alias:
-  `faint`)
-* <span style="border-top: 1px solid;">overlined</span> - Make text overlined
-* blink - Hides and shows the text in an interval
-* <span style="filter: invert(100%);">inverse</span> - Swap foreground and
-  background colors (Alias: `swapcolors`, `swapColors`)
-* <span style="border-bottom: 1px double;">doubleunderline</span> - Make text
-  double underlined (Alias: `doubleUnderline`)
-* <span style="border: 1px solid;">framed</span> - Draw a frame around the text
+* `reset` - 将所有（颜色）修饰符重置为默认值
+* **bold** - 使文本加粗
+* _italic_ - 使文本倾斜
+* <span style="border-bottom: 1px solid;">underline</span> - 使文本下划线
+* ~~strikethrough~~ - 在文本中心画一条水平线（别名：`strikeThrough`, `crossedout`, `crossedOut`）
+* `hidden` - 打印文本，但使其不可见（别名：conceal）
+* <span style="opacity: 0.5;">dim</span> - 降低颜色强度（别名：`faint`）
+* <span style="border-top: 1px solid;">overlined</span> - 使文本上划线
+* blink - 以间隔隐藏和显示文本
+* <span style="filter: invert(100%);">inverse</span> - 交换前景和背景颜色（别名：`swapcolors`, `swapColors`）
+* <span style="border-bottom: 1px double;">doubleunderline</span> - 使文本双下划线（别名：`doubleUnderline`）
+* <span style="border: 1px solid;">framed</span> - 在文本周围绘制边框
 
-#### Foreground colors
+#### 前景色
 
 * `black`
 * `red`
@@ -1409,7 +1247,7 @@ ignored, if not supported.
 * `magenta`
 * `cyan`
 * `white`
-* `gray` (alias: `grey`, `blackBright`)
+* `gray` (别名：`grey`, `blackBright`)
 * `redBright`
 * `greenBright`
 * `yellowBright`
@@ -1418,7 +1256,7 @@ ignored, if not supported.
 * `cyanBright`
 * `whiteBright`
 
-#### Background colors
+#### 背景色
 
 * `bgBlack`
 * `bgRed`
@@ -1428,7 +1266,7 @@ ignored, if not supported.
 * `bgMagenta`
 * `bgCyan`
 * `bgWhite`
-* `bgGray` (alias: `bgGrey`, `bgBlackBright`)
+* `bgGray` (别名：`bgGrey`, `bgBlackBright`)
 * `bgRedBright`
 * `bgGreenBright`
 * `bgYellowBright`
@@ -1437,7 +1275,7 @@ ignored, if not supported.
 * `bgCyanBright`
 * `bgWhiteBright`
 
-### Custom inspection functions on objects
+### 对象上的自定义检查函数
 
 <!-- type=misc -->
 
@@ -1448,13 +1286,10 @@ changes:
       - v17.3.0
       - v16.14.0
     pr-url: https://github.com/nodejs/node/pull/41019
-    description: The inspect argument is added for more interoperability.
+    description: 添加了 inspect 参数以提高互操作性。
 -->
 
-Objects may also define their own
-[`[util.inspect.custom](depth, opts, inspect)`][util.inspect.custom] function,
-which `util.inspect()` will invoke and use the result of when inspecting
-the object.
+对象也可以定义它们自己的 [`[util.inspect.custom](depth, opts, inspect)`][util.inspect.custom] 函数，`util.inspect()` 将在检查对象时调用该函数并使用其结果。
 
 ```mjs
 import { inspect } from 'node:util';
@@ -1473,7 +1308,7 @@ class Box {
       depth: options.depth === null ? null : options.depth - 1,
     });
 
-    // Five space padding because that's the size of "Box< ".
+    // 五个空格填充，因为那是 "Box< " 的大小。
     const padding = ' '.repeat(5);
     const inner = inspect(this.value, newOptions)
                   .replace(/\n/g, `\n${padding}`);
@@ -1504,7 +1339,7 @@ class Box {
       depth: options.depth === null ? null : options.depth - 1,
     });
 
-    // Five space padding because that's the size of "Box< ".
+    // 五个空格填充，因为那是 "Box< " 的大小。
     const padding = ' '.repeat(5);
     const inner = inspect(this.value, newOptions)
                   .replace(/\n/g, `\n${padding}`);
@@ -1518,9 +1353,7 @@ console.log(inspect(box));
 // "Box< true >"
 ```
 
-Custom `[util.inspect.custom](depth, opts, inspect)` functions typically return
-a string but may return a value of any type that will be formatted accordingly
-by `util.inspect()`.
+自定义 `[util.inspect.custom](depth, opts, inspect)` 函数通常返回字符串，但可以返回任何类型的值，`util.inspect()` 将相应地格式化该值。
 
 ```mjs
 import { inspect } from 'node:util';
@@ -1553,19 +1386,14 @@ added: v6.6.0
 changes:
   - version: v10.12.0
     pr-url: https://github.com/nodejs/node/pull/20857
-    description: This is now defined as a shared symbol.
+    description: 现在定义为共享符号。
 -->
 
-* Type: {symbol} that can be used to declare custom inspect functions.
+* 类型：{symbol} 可用于声明自定义检查函数。
 
-In addition to being accessible through `util.inspect.custom`, this
-symbol is [registered globally][global symbol registry] and can be
-accessed in any environment as `Symbol.for('nodejs.util.inspect.custom')`.
+除了可以通过 `util.inspect.custom` 访问外，此符号还在 [全局符号注册表][global symbol registry] 中注册，可以在任何环境中作为 `Symbol.for('nodejs.util.inspect.custom')` 访问。
 
-Using this allows code to be written in a portable fashion, so that the custom
-inspect function is used in an Node.js environment and ignored in the browser.
-The `util.inspect()` function itself is passed as third argument to the custom
-inspect function to allow further portability.
+使用此允许以可移植的方式编写代码，以便自定义检查函数在 Node.js 环境中使用而在浏览器中被忽略。`util.inspect()` 函数本身作为第三个参数传递给自定义检查函数，以允许进一步的可移植性。
 
 ```js
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
@@ -1586,10 +1414,10 @@ class Password {
 
 const password = new Password('r0sebud');
 console.log(password);
-// Prints Password <xxxxxxxx>
+// 打印 Password <xxxxxxxx>
 ```
 
-See [Custom inspection functions on Objects][] for more details.
+有关更多详细信息，请参阅 [对象上的自定义检查函数][]。
 
 ### `util.inspect.defaultOptions`
 
@@ -1597,28 +1425,24 @@ See [Custom inspection functions on Objects][] for more details.
 added: v6.4.0
 -->
 
-The `defaultOptions` value allows customization of the default options used by
-`util.inspect`. This is useful for functions like `console.log` or
-`util.format` which implicitly call into `util.inspect`. It shall be set to an
-object containing one or more valid [`util.inspect()`][] options. Setting
-option properties directly is also supported.
+`defaultOptions` 值允许自定义 `util.inspect` 使用的默认选项。这对于像 `console.log` 或 `util.format` 这样隐式调用 `util.inspect` 的函数很有用。它应设置为包含一个或多个有效 [`util.inspect()`][] 选项的对象。也支持直接设置选项属性。
 
 ```mjs
 import { inspect } from 'node:util';
 const arr = Array(156).fill(0);
 
-console.log(arr); // Logs the truncated array
+console.log(arr); // 记录被截断的数组
 inspect.defaultOptions.maxArrayLength = null;
-console.log(arr); // logs the full array
+console.log(arr); // 记录完整数组
 ```
 
 ```cjs
 const { inspect } = require('node:util');
 const arr = Array(156).fill(0);
 
-console.log(arr); // Logs the truncated array
+console.log(arr); // 记录被截断的数组
 inspect.defaultOptions.maxArrayLength = null;
-console.log(arr); // logs the full array
+console.log(arr); // 记录完整数组
 ```
 
 ## `util.isDeepStrictEqual(val1, val2[, options])`
@@ -1628,22 +1452,18 @@ added: v9.0.0
 changes:
   - version: v24.9.0
     pr-url: https://github.com/nodejs/node/pull/59762
-    description: Added `options` parameter to allow skipping prototype comparison.
+    description: "添加了 `options` 参数以允许跳过原型比较。"
 -->
 
 * `val1` {any}
 * `val2` {any}
-* `skipPrototype` {boolean} If `true`, prototype and constructor
-  comparison is skipped during deep strict equality check. **Default:** `false`.
-* Returns: {boolean}
+* `skipPrototype` {boolean} 如果为 `true`，则在深度严格相等检查期间跳过原型和构造函数比较。**默认值：** `false`。
+* 返回值：{boolean}
 
-Returns `true` if there is deep strict equality between `val1` and `val2`.
-Otherwise, returns `false`.
+如果 `val1` 和 `val2` 之间存在深度严格相等，则返回 `true`。
+否则，返回 `false`。
 
-By default, deep strict equality includes comparison of object prototypes and
-constructors. When `skipPrototype` is `true`, objects with
-different prototypes or constructors can still be considered equal if their
-enumerable properties are deeply strictly equal.
+默认情况下，深度严格相等包括对象原型和构造函数的比较。当 `skipPrototype` 为 `true` 时，如果具有不同原型或构造函数的对象的可枚举属性深度严格相等，它们仍可被视为相等。
 
 ```js
 const util = require('node:util');
@@ -1663,7 +1483,7 @@ class Bar {
 const foo = new Foo(1);
 const bar = new Bar(1);
 
-// Different constructors, same properties
+// 构造函数不同，属性相同
 console.log(util.isDeepStrictEqual(foo, bar));
 // false
 
@@ -1671,10 +1491,9 @@ console.log(util.isDeepStrictEqual(foo, bar, true));
 // true
 ```
 
-See [`assert.deepStrictEqual()`][] for more information about deep strict
-equality.
+有关深度严格相等的更多信息，请参阅 [`assert.deepStrictEqual()`][]。
 
-## Class: `util.MIMEType`
+## 类：`util.MIMEType`
 
 <!-- YAML
 added:
@@ -1685,24 +1504,20 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定版。
 -->
 
-An implementation of [the MIMEType class](https://bmeck.github.io/node-proposal-mime-api/).
+[MIMEType 类](https://bmeck.github.io/node-proposal-mime-api/) 的实现。
 
-In accordance with browser conventions, all properties of `MIMEType` objects
-are implemented as getters and setters on the class prototype, rather than as
-data properties on the object itself.
+按照浏览器惯例，`MIMEType` 对象的所有属性都作为类原型上的 getter 和 setter 实现，而不是作为对象本身的数据属性。
 
-A MIME string is a structured string containing multiple meaningful
-components. When parsed, a `MIMEType` object is returned containing
-properties for each of these components.
+MIME 字符串是包含多个有意义组件的结构化字符串。解析后，将返回一个 `MIMEType` 对象，其中包含每个组件的属性。
 
 ### `new MIMEType(input)`
 
-* `input` {string} The input MIME to parse
+* `input` {string} 要解析的输入 MIME
 
-Creates a new `MIMEType` object by parsing the `input`.
+通过解析 `input` 创建一个新的 `MIMEType` 对象。
 
 ```mjs
 import { MIMEType } from 'node:util';
@@ -1716,41 +1531,39 @@ const { MIMEType } = require('node:util');
 const myMIME = new MIMEType('text/plain');
 ```
 
-A `TypeError` will be thrown if the `input` is not a valid MIME. Note
-that an effort will be made to coerce the given values into strings. For
-instance:
+如果 `input` 不是有效的 MIME，将抛出 `TypeError`。请注意，将努力将给定值强制转换为字符串。例如：
 
 ```mjs
 import { MIMEType } from 'node:util';
 const myMIME = new MIMEType({ toString: () => 'text/plain' });
 console.log(String(myMIME));
-// Prints: text/plain
+// 输出：text/plain
 ```
 
 ```cjs
 const { MIMEType } = require('node:util');
 const myMIME = new MIMEType({ toString: () => 'text/plain' });
 console.log(String(myMIME));
-// Prints: text/plain
+// 输出：text/plain
 ```
 
 ### `mime.type`
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the type portion of the MIME.
+获取并设置 MIME 的类型部分。
 
 ```mjs
 import { MIMEType } from 'node:util';
 
 const myMIME = new MIMEType('text/javascript');
 console.log(myMIME.type);
-// Prints: text
+// 输出：text
 myMIME.type = 'application';
 console.log(myMIME.type);
-// Prints: application
+// 输出：application
 console.log(String(myMIME));
-// Prints: application/javascript
+// 输出：application/javascript
 ```
 
 ```cjs
@@ -1758,31 +1571,31 @@ const { MIMEType } = require('node:util');
 
 const myMIME = new MIMEType('text/javascript');
 console.log(myMIME.type);
-// Prints: text
+// 输出：text
 myMIME.type = 'application';
 console.log(myMIME.type);
-// Prints: application
+// 输出：application
 console.log(String(myMIME));
-// Prints: application/javascript
+// 输出：application/javascript
 ```
 
 ### `mime.subtype`
 
-* Type: {string}
+* 类型：{string}
 
-Gets and sets the subtype portion of the MIME.
+获取并设置 MIME 的子类型部分。
 
 ```mjs
 import { MIMEType } from 'node:util';
 
 const myMIME = new MIMEType('text/ecmascript');
 console.log(myMIME.subtype);
-// Prints: ecmascript
+// 输出：ecmascript
 myMIME.subtype = 'javascript';
 console.log(myMIME.subtype);
-// Prints: javascript
+// 输出：javascript
 console.log(String(myMIME));
-// Prints: text/javascript
+// 输出：text/javascript
 ```
 
 ```cjs
@@ -1790,32 +1603,32 @@ const { MIMEType } = require('node:util');
 
 const myMIME = new MIMEType('text/ecmascript');
 console.log(myMIME.subtype);
-// Prints: ecmascript
+// 输出：ecmascript
 myMIME.subtype = 'javascript';
 console.log(myMIME.subtype);
-// Prints: javascript
+// 输出：javascript
 console.log(String(myMIME));
-// Prints: text/javascript
+// 输出：text/javascript
 ```
 
 ### `mime.essence`
 
-* Type: {string}
+* 类型：{string}
 
-Gets the essence of the MIME. This property is read only.
-Use `mime.type` or `mime.subtype` to alter the MIME.
+获取 MIME 的本质。此属性为只读。
+使用 `mime.type` 或 `mime.subtype` 来更改 MIME。
 
 ```mjs
 import { MIMEType } from 'node:util';
 
 const myMIME = new MIMEType('text/javascript;key=value');
 console.log(myMIME.essence);
-// Prints: text/javascript
+// 输出：text/javascript
 myMIME.type = 'application';
 console.log(myMIME.essence);
-// Prints: application/javascript
+// 输出：application/javascript
 console.log(String(myMIME));
-// Prints: application/javascript;key=value
+// 输出：application/javascript;key=value
 ```
 
 ```cjs
@@ -1823,39 +1636,35 @@ const { MIMEType } = require('node:util');
 
 const myMIME = new MIMEType('text/javascript;key=value');
 console.log(myMIME.essence);
-// Prints: text/javascript
+// 输出：text/javascript
 myMIME.type = 'application';
 console.log(myMIME.essence);
-// Prints: application/javascript
+// 输出：application/javascript
 console.log(String(myMIME));
-// Prints: application/javascript;key=value
+// 输出：application/javascript;key=value
 ```
 
 ### `mime.params`
 
-* Type: {MIMEParams}
+* 类型：{MIMEParams}
 
-Gets the [`MIMEParams`][] object representing the
-parameters of the MIME. This property is read-only. See
-[`MIMEParams`][] documentation for details.
+获取表示 MIME 参数的 [`MIMEParams`][] 对象。此属性为只读。有关详细信息，请参阅 [`MIMEParams`][] 文档。
 
 ### `mime.toString()`
 
-* Returns: {string}
+* 返回值：{string}
 
-The `toString()` method on the `MIMEType` object returns the serialized MIME.
+`MIMEType` 对象上的 `toString()` 方法返回序列化的 MIME。
 
-Because of the need for standard compliance, this method does not allow users
-to customize the serialization process of the MIME.
+由于需要符合标准，此方法不允许用户自定义 MIME 的序列化过程。
 
 ### `mime.toJSON()`
 
-* Returns: {string}
+* 返回值：{string}
 
-Alias for [`mime.toString()`][].
+[`mime.toString()`][] 的别名。
 
-This method is automatically called when an `MIMEType` object is serialized
-with [`JSON.stringify()`][].
+当使用 [`JSON.stringify()`][] 序列化 `MIMEType` 对象时，会自动调用此方法。
 
 ```mjs
 import { MIMEType } from 'node:util';
@@ -1865,7 +1674,7 @@ const myMIMES = [
   new MIMEType('image/gif'),
 ];
 console.log(JSON.stringify(myMIMES));
-// Prints: ["image/png", "image/gif"]
+// 输出：["image/png", "image/gif"]
 ```
 
 ```cjs
@@ -1876,10 +1685,10 @@ const myMIMES = [
   new MIMEType('image/gif'),
 ];
 console.log(JSON.stringify(myMIMES));
-// Prints: ["image/png", "image/gif"]
+// 输出：["image/png", "image/gif"]
 ```
 
-## Class: `util.MIMEParams`
+## 类：`util.MIMEParams`
 
 <!-- YAML
 added:
@@ -1887,12 +1696,11 @@ added:
   - v18.13.0
 -->
 
-The `MIMEParams` API provides read and write access to the parameters of a
-`MIMEType`.
+`MIMEParams` API 提供对 `MIMEType` 参数的读写访问。
 
 ### `new MIMEParams()`
 
-Creates a new `MIMEParams` object by with empty parameters
+创建一个带有空参数的新 `MIMEParams` 对象
 
 ```mjs
 import { MIMEParams } from 'node:util';
@@ -1910,37 +1718,33 @@ const myParams = new MIMEParams();
 
 * `name` {string}
 
-Remove all name-value pairs whose name is `name`.
+移除所有名称为 `name` 的名称 - 值对。
 
 ### `mimeParams.entries()`
 
-* Returns: {Iterator}
+* 返回值：{Iterator}
 
-Returns an iterator over each of the name-value pairs in the parameters.
-Each item of the iterator is a JavaScript `Array`. The first item of the array
-is the `name`, the second item of the array is the `value`.
+返回一个迭代器，遍历参数中的每个名称 - 值对。迭代器的每个项都是一个 JavaScript `Array`。数组的第一项是 `name`，数组的第二项是 `value`。
 
 ### `mimeParams.get(name)`
 
 * `name` {string}
-* Returns: {string | null} A string or `null` if there is no name-value pair
-  with the given `name`.
+* 返回值：{string | null} 如果不存在给定 `name` 的名称 - 值对，则返回字符串或 `null`。
 
-Returns the value of the first name-value pair whose name is `name`. If there
-are no such pairs, `null` is returned.
+返回名称为 `name` 的第一个名称 - 值对的值。如果没有这样的对，则返回 `null`。
 
 ### `mimeParams.has(name)`
 
 * `name` {string}
-* Returns: {boolean}
+* 返回值：{boolean}
 
-Returns `true` if there is at least one name-value pair whose name is `name`.
+如果存在至少一个名称为 `name` 的名称 - 值对，则返回 `true`。
 
 ### `mimeParams.keys()`
 
-* Returns: {Iterator}
+* 返回值：{Iterator}
 
-Returns an iterator over the names of each name-value pair.
+返回一个迭代器，遍历每个名称 - 值对的名称。
 
 ```mjs
 import { MIMEType } from 'node:util';
@@ -1949,7 +1753,7 @@ const { params } = new MIMEType('text/plain;foo=0;bar=1');
 for (const name of params.keys()) {
   console.log(name);
 }
-// Prints:
+// 输出：
 //   foo
 //   bar
 ```
@@ -1961,7 +1765,7 @@ const { params } = new MIMEType('text/plain;foo=0;bar=1');
 for (const name of params.keys()) {
   console.log(name);
 }
-// Prints:
+// 输出：
 //   foo
 //   bar
 ```
@@ -1971,9 +1775,7 @@ for (const name of params.keys()) {
 * `name` {string}
 * `value` {string}
 
-Sets the value in the `MIMEParams` object associated with `name` to
-`value`. If there are any pre-existing name-value pairs whose names are `name`,
-set the first such pair's value to `value`.
+将 `MIMEParams` 对象中与 `name` 关联的值设置为 `value`。如果存在任何名称为 `name` 的现有名称 - 值对，则将第一对的值设置为 `value`。
 
 ```mjs
 import { MIMEType } from 'node:util';
@@ -1982,7 +1784,7 @@ const { params } = new MIMEType('text/plain;foo=0;bar=1');
 params.set('foo', 'def');
 params.set('baz', 'xyz');
 console.log(params.toString());
-// Prints: foo=def;bar=1;baz=xyz
+// 输出：foo=def;bar=1;baz=xyz
 ```
 
 ```cjs
@@ -1992,20 +1794,20 @@ const { params } = new MIMEType('text/plain;foo=0;bar=1');
 params.set('foo', 'def');
 params.set('baz', 'xyz');
 console.log(params.toString());
-// Prints: foo=def;bar=1;baz=xyz
+// 输出：foo=def;bar=1;baz=xyz
 ```
 
 ### `mimeParams.values()`
 
-* Returns: {Iterator}
+* 返回值：{Iterator}
 
-Returns an iterator over the values of each name-value pair.
+返回一个迭代器，遍历每个名称 - 值对的值。
 
 ### `mimeParams[Symbol.iterator]()`
 
-* Returns: {Iterator}
+* 返回值：{Iterator}
 
-Alias for [`mimeParams.entries()`][].
+[`mimeParams.entries()`][] 的别名。
 
 ```mjs
 import { MIMEType } from 'node:util';
@@ -2014,7 +1816,7 @@ const { params } = new MIMEType('text/plain;foo=bar;xyz=baz');
 for (const [name, value] of params) {
   console.log(name, value);
 }
-// Prints:
+// 输出：
 //   foo bar
 //   xyz baz
 ```
@@ -2026,7 +1828,7 @@ const { params } = new MIMEType('text/plain;foo=bar;xyz=baz');
 for (const [name, value] of params) {
   console.log(name, value);
 }
-// Prints:
+// 输出：
 //   foo bar
 //   xyz baz
 ```
@@ -2042,67 +1844,45 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53107
-    description: add support for allowing negative options in input `config`.
+    description: "添加支持以在输入 `config` 中允许负选项。"
   - version:
     - v20.0.0
     pr-url: https://github.com/nodejs/node/pull/46718
-    description: The API is no longer experimental.
+    description: API 不再是实验性的。
   - version:
     - v18.11.0
     - v16.19.0
     pr-url: https://github.com/nodejs/node/pull/44631
-    description: Add support for default values in input `config`.
+    description: "添加支持以在输入 `config` 中使用默认值。"
   - version:
     - v18.7.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43459
-    description: add support for returning detailed parse information
-                 using `tokens` in input `config` and returned properties.
+    description: "添加支持以使用输入 `config` 中的 `tokens` 和返回的属性返回详细的解析信息。"
 -->
 
-* `config` {Object} Used to provide arguments for parsing and to configure
-  the parser. `config` supports the following properties:
-  * `args` {string\[]} array of argument strings. **Default:** `process.argv`
-    with `execPath` and `filename` removed.
-  * `options` {Object} Used to describe arguments known to the parser.
-    Keys of `options` are the long names of options and values are an
-    {Object} accepting the following properties:
-    * `type` {string} Type of argument, which must be either `boolean` or `string`.
-    * `multiple` {boolean} Whether this option can be provided multiple
-      times. If `true`, all values will be collected in an array. If
-      `false`, values for the option are last-wins. **Default:** `false`.
-    * `short` {string} A single character alias for the option.
-    * `default` {string | boolean | string\[] | boolean\[]} The value to assign to
-      the option if it does not appear in the arguments to be parsed. The value
-      must match the type specified by the `type` property. If `multiple` is
-      `true`, it must be an array. No default value is applied when the option
-      does appear in the arguments to be parsed, even if the provided value
-      is falsy.
-  * `strict` {boolean} Should an error be thrown when unknown arguments
-    are encountered, or when arguments are passed that do not match the
-    `type` configured in `options`.
-    **Default:** `true`.
-  * `allowPositionals` {boolean} Whether this command accepts positional
-    arguments.
-    **Default:** `false` if `strict` is `true`, otherwise `true`.
-  * `allowNegative` {boolean} If `true`, allows explicitly setting boolean
-    options to `false` by prefixing the option name with `--no-`.
-    **Default:** `false`.
-  * `tokens` {boolean} Return the parsed tokens. This is useful for extending
-    the built-in behavior, from adding additional checks through to reprocessing
-    the tokens in different ways.
-    **Default:** `false`.
+* `config` {Object} 用于提供解析参数和配置解析器。`config` 支持以下属性：
+  * `args` {string\[]} 参数字符串数组。**默认值：** `process.argv` 移除 `execPath` 和 `filename`。
+  * `options` {Object} 用于描述解析器已知的参数。`options` 的键是选项的长名称，值是接受以下属性的 {Object}：
+    * `type` {string} 参数类型，必须是 `boolean` 或 `string`。
+    * `multiple` {boolean} 此选项是否可以提供多次。如果为 `true`，所有值将收集在一个数组中。如果为 `false`，选项的值以后者为准。**默认值：** `false`。
+    * `short` {string} 选项的单字符别名。
+    * `default` {string | boolean | string\[] | boolean\[]} 如果选项未出现在要解析的参数中，则分配给该选项的值。该值必须与 `type` 属性指定的类型匹配。如果 `multiple` 为 `true`，则必须是数组。当选项确实出现在要解析的参数中时，不应用默认值，即使提供的值为 falsy。
+  * `strict` {boolean} 当遇到未知参数时，或者当传递的参数与 `options` 中配置的 `type` 不匹配时，是否应抛出错误。
+    **默认值：** `true`。
+  * `allowPositionals` {boolean} 此命令是否接受位置参数。
+    **默认值：** 如果 `strict` 为 `true` 则为 `false`，否则为 `true`。
+  * `allowNegative` {boolean} 如果为 `true`，允许通过在选项名称前加上 `--no-` 显式地将布尔选项设置为 `false`。
+    **默认值：** `false`。
+  * `tokens` {boolean} 返回解析后的令牌。这对于扩展内置行为很有用，从添加额外检查到以不同方式重新处理令牌。
+    **默认值：** `false`。
 
-* Returns: {Object} The parsed command line arguments:
-  * `values` {Object} A mapping of parsed option names with their {string}
-    or {boolean} values.
-  * `positionals` {string\[]} Positional arguments.
-  * `tokens` {Object\[] | undefined} See [parseArgs tokens](#parseargs-tokens)
-    section. Only returned if `config` includes `tokens: true`.
+* 返回值：{Object} 解析后的命令行参数：
+  * `values` {Object} 解析后的选项名称及其 {string} 或 {boolean} 值的映射。
+  * `positionals` {string\[]} 位置参数。
+  * `tokens` {Object\[] | undefined} 请参阅 [parseArgs tokens](#parseargs-tokens) 部分。仅当 `config` 包含 `tokens: true` 时返回。
 
-Provides a higher level API for command-line argument parsing than interacting
-with `process.argv` directly. Takes a specification for the expected arguments
-and returns a structured object with the parsed options and positionals.
+提供了比直接与 `process.argv` 交互更高级的命令行参数解析 API。接受预期参数的规范，并返回一个包含解析后的选项和位置参数的结构化对象。
 
 ```mjs
 import { parseArgs } from 'node:util';
@@ -2121,7 +1901,7 @@ const {
   positionals,
 } = parseArgs({ args, options });
 console.log(values, positionals);
-// Prints: [Object: null prototype] { foo: true, bar: 'b' } []
+// 输出：[Object: null prototype] { foo: true, bar: 'b' } []
 ```
 
 ```cjs
@@ -2141,38 +1921,29 @@ const {
   positionals,
 } = parseArgs({ args, options });
 console.log(values, positionals);
-// Prints: [Object: null prototype] { foo: true, bar: 'b' } []
+// 输出：[Object: null prototype] { foo: true, bar: 'b' } []
 ```
 
 ### `parseArgs` `tokens`
 
-Detailed parse information is available for adding custom behaviors by
-specifying `tokens: true` in the configuration.
-The returned tokens have properties describing:
+通过在配置中指定 `tokens: true`，可以使用详细的解析信息来添加自定义行为。
+返回的令牌具有描述以下内容的属性：
 
-* all tokens
-  * `kind` {string} One of 'option', 'positional', or 'option-terminator'.
-  * `index` {number} Index of element in `args` containing token. So the
-    source argument for a token is `args[token.index]`.
-* option tokens
-  * `name` {string} Long name of option.
-  * `rawName` {string} How option used in args, like `-f` of `--foo`.
-  * `value` {string | undefined} Option value specified in args.
-    Undefined for boolean options.
-  * `inlineValue` {boolean | undefined} Whether option value specified inline,
-    like `--foo=bar`.
-* positional tokens
-  * `value` {string} The value of the positional argument in args (i.e. `args[index]`).
-* option-terminator token
+* 所有令牌
+  * `kind` {string} 'option'、'positional' 或 'option-terminator' 之一。
+  * `index` {number} `args` 中包含令牌的元素的索引。因此令牌的源参数是 `args[token.index]`。
+* 选项令牌
+  * `name` {string} 选项的长名称。
+  * `rawName` {string} 选项在参数中的使用方式，如 `-f` 或 `--foo`。
+  * `value` {string | undefined} 在参数中指定的选项值。布尔选项为 undefined。
+  * `inlineValue` {boolean | undefined} 选项值是否以内联方式指定，如 `--foo=bar`。
+* 位置令牌
+  * `value` {string} 参数中位置参数的值（即 `args[index]`）。
+* 选项终止符令牌
 
-The returned tokens are in the order encountered in the input args. Options
-that appear more than once in args produce a token for each use. Short option
-groups like `-xy` expand to a token for each option. So `-xxx` produces
-three tokens.
+返回的令牌按输入参数中遇到的顺序排列。在参数中出现多次的选项会为每次使用生成一个令牌。短选项组（如 `-xy`）会扩展为每个选项一个令牌。因此 `-xxx` 生成三个令牌。
 
-For example, to add support for a negated option like `--no-color` (which
-`allowNegative` supports when the option is of `boolean` type), the returned
-tokens can be reprocessed to change the value stored for the negated option.
+例如，要添加对否定选项（如 `--no-color`）的支持（当选项类型为 `boolean` 时，`allowNegative` 支持此功能），可以重新处理返回的令牌以更改为否定选项存储的值。
 
 ```mjs
 import { parseArgs } from 'node:util';
@@ -2185,17 +1956,17 @@ const options = {
 };
 const { values, tokens } = parseArgs({ options, tokens: true });
 
-// Reprocess the option tokens and overwrite the returned values.
+// 重新处理选项令牌并覆盖返回的值。
 tokens
   .filter((token) => token.kind === 'option')
   .forEach((token) => {
     if (token.name.startsWith('no-')) {
-      // Store foo:false for --no-foo
+      // 为 --no-foo 存储 foo:false
       const positiveName = token.name.slice(3);
       values[positiveName] = false;
       delete values[token.name];
     } else {
-      // Resave value so last one wins if both --foo and --no-foo.
+      // 重新保存值，以便如果同时存在 --foo 和 --no-foo，则最后一个生效。
       values[token.name] = token.value ?? true;
     }
   });
@@ -2217,17 +1988,17 @@ const options = {
 };
 const { values, tokens } = parseArgs({ options, tokens: true });
 
-// Reprocess the option tokens and overwrite the returned values.
+// 重新处理选项令牌并覆盖返回的值。
 tokens
   .filter((token) => token.kind === 'option')
   .forEach((token) => {
     if (token.name.startsWith('no-')) {
-      // Store foo:false for --no-foo
+      // 为 --no-foo 存储 foo:false
       const positiveName = token.name.slice(3);
       values[positiveName] = false;
       delete values[token.name];
     } else {
-      // Resave value so last one wins if both --foo and --no-foo.
+      // 重新保存值，以便如果同时存在 --foo 和 --no-foo，则最后一个生效。
       values[token.name] = token.value ?? true;
     }
   });
@@ -2238,8 +2009,7 @@ const logfile = values.logfile ?? 'default.log';
 console.log({ logfile, color });
 ```
 
-Example usage showing negated options, and when an option is used
-multiple ways then last one wins.
+示例用法显示否定选项，以及当选项以多种方式使用时，最后一个生效。
 
 ```console
 $ node negate.js
@@ -2263,29 +2033,29 @@ changes:
      - v24.10.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59925
-    description: This API is no longer experimental.
+    description: 此 API 不再是实验性的。
 -->
 
-* `content` {string}
+* `content` {字符串}
 
-The raw contents of a `.env` file.
+`.env` 文件的原始内容。
 
-* Returns: {Object}
+* 返回：{对象}
 
-Given an example `.env` file:
+给定一个 `.env` 文件示例：
 
 ```cjs
 const { parseEnv } = require('node:util');
 
 parseEnv('HELLO=world\nHELLO=oh my\n');
-// Returns: { HELLO: 'oh my' }
+// 返回：{ HELLO: 'oh my' }
 ```
 
 ```mjs
 import { parseEnv } from 'node:util';
 
 parseEnv('HELLO=world\nHELLO=oh my\n');
-// Returns: { HELLO: 'oh my' }
+// 返回：{ HELLO: 'oh my' }
 ```
 
 ## `util.promisify(original)`
@@ -2295,16 +2065,13 @@ added: v8.0.0
 changes:
   - version: v20.8.0
     pr-url: https://github.com/nodejs/node/pull/49647
-    description: Calling `promisify` on a function that returns a `Promise` is
-                 deprecated.
+    description: "在返回 `Promise` 的函数上调用 `promisify` 已被弃用。"
 -->
 
-* `original` {Function}
-* Returns: {Function}
+* `original` {函数}
+* 返回：{函数}
 
-Takes a function following the common error-first callback style, i.e. taking
-an `(err, value) => ...` callback as the last argument, and returns a version
-that returns promises.
+接受一个遵循常见的错误优先回调风格的函数，即接受一个 `(err, value) => ...` 回调作为最后一个参数，并返回一个返回 Promise 的版本。
 
 ```mjs
 import { promisify } from 'node:util';
@@ -2312,9 +2079,9 @@ import { stat } from 'node:fs';
 
 const promisifiedStat = promisify(stat);
 promisifiedStat('.').then((stats) => {
-  // Do something with `stats`
+  // 对 `stats` 做一些事情
 }).catch((error) => {
-  // Handle the error.
+  // 处理错误。
 });
 ```
 
@@ -2324,13 +2091,13 @@ const { stat } = require('node:fs');
 
 const promisifiedStat = promisify(stat);
 promisifiedStat('.').then((stats) => {
-  // Do something with `stats`
+  // 对 `stats` 做一些事情
 }).catch((error) => {
-  // Handle the error.
+  // 处理错误。
 });
 ```
 
-Or, equivalently using `async function`s:
+或者，等效地使用 `async function`：
 
 ```mjs
 import { promisify } from 'node:util';
@@ -2340,7 +2107,7 @@ const promisifiedStat = promisify(stat);
 
 async function callStat() {
   const stats = await promisifiedStat('.');
-  console.log(`This directory is owned by ${stats.uid}`);
+  console.log(`此目录归属于 ${stats.uid}`);
 }
 
 callStat();
@@ -2354,23 +2121,17 @@ const promisifiedStat = promisify(stat);
 
 async function callStat() {
   const stats = await promisifiedStat('.');
-  console.log(`This directory is owned by ${stats.uid}`);
+  console.log(`此目录归属于 ${stats.uid}`);
 }
 
 callStat();
 ```
 
-If there is an `original[util.promisify.custom]` property present, `promisify`
-will return its value, see [Custom promisified functions][].
+如果存在 `original[util.promisify.custom]` 属性，`promisify` 将返回其值，参见 [自定义 Promise 化函数][]。
 
-`promisify()` assumes that `original` is a function taking a callback as its
-final argument in all cases. If `original` is not a function, `promisify()`
-will throw an error. If `original` is a function but its last argument is not
-an error-first callback, it will still be passed an error-first
-callback as its last argument.
+`promisify()` 假设在所有情况下 `original` 都是一个将回调作为最终参数的函数。如果 `original` 不是函数，`promisify()` 将抛出错误。如果 `original` 是函数但其最后一个参数不是错误优先回调，它仍然会被传入一个错误优先回调作为其最后一个参数。
 
-Using `promisify()` on class methods or other methods that use `this` may not
-work as expected unless handled specially:
+除非特殊处理，否则在类方法或其他使用 `this` 的方法上使用 `promisify()` 可能无法按预期工作：
 
 ```mjs
 import { promisify } from 'node:util';
@@ -2388,7 +2149,7 @@ class Foo {
 const foo = new Foo();
 
 const naiveBar = promisify(foo.bar);
-// TypeError: Cannot read properties of undefined (reading 'a')
+// TypeError: 无法读取 undefined 的属性 (读取 'a')
 // naiveBar().then(a => console.log(a));
 
 naiveBar.call(foo).then((a) => console.log(a)); // '42'
@@ -2413,7 +2174,7 @@ class Foo {
 const foo = new Foo();
 
 const naiveBar = promisify(foo.bar);
-// TypeError: Cannot read properties of undefined (reading 'a')
+// TypeError: 无法读取 undefined 的属性 (读取 'a')
 // naiveBar().then(a => console.log(a));
 
 naiveBar.call(foo).then((a) => console.log(a)); // '42'
@@ -2422,10 +2183,9 @@ const bindBar = naiveBar.bind(foo);
 bindBar().then((a) => console.log(a)); // '42'
 ```
 
-### Custom promisified functions
+### 自定义 Promise 化函数
 
-Using the `util.promisify.custom` symbol one can override the return value of
-[`util.promisify()`][]:
+使用 `util.promisify.custom` 符号可以覆盖 [`util.promisify()`][] 的返回值：
 
 ```mjs
 import { promisify } from 'node:util';
@@ -2440,7 +2200,7 @@ doSomething[promisify.custom] = (foo) => {
 
 const promisified = promisify(doSomething);
 console.log(promisified === doSomething[promisify.custom]);
-// prints 'true'
+// 打印 'true'
 ```
 
 ```cjs
@@ -2456,14 +2216,12 @@ doSomething[promisify.custom] = (foo) => {
 
 const promisified = promisify(doSomething);
 console.log(promisified === doSomething[promisify.custom]);
-// prints 'true'
+// 打印 'true'
 ```
 
-This can be useful for cases where the original function does not follow the
-standard format of taking an error-first callback as the last argument.
+这对于原始函数不符合标准的错误优先回调作为最后一个参数的格式的情况很有用。
 
-For example, with a function that takes in
-`(foo, onSuccessCallback, onErrorCallback)`:
+例如，对于接受 `(foo, onSuccessCallback, onErrorCallback)` 的函数：
 
 ```js
 doSomething[util.promisify.custom] = (foo) => {
@@ -2473,8 +2231,7 @@ doSomething[util.promisify.custom] = (foo) => {
 };
 ```
 
-If `promisify.custom` is defined but is not a function, `promisify()` will
-throw an error.
+如果定义了 `promisify.custom` 但不是函数，`promisify()` 将抛出错误。
 
 ### `util.promisify.custom`
 
@@ -2485,18 +2242,14 @@ changes:
       - v13.12.0
       - v12.16.2
     pr-url: https://github.com/nodejs/node/pull/31672
-    description: This is now defined as a shared symbol.
+    description: 这现在被定义为一个共享符号。
 -->
 
-* Type: {symbol} that can be used to declare custom promisified variants of functions,
-  see [Custom promisified functions][].
+* 类型：{符号} 可用于声明函数的自定义 Promise 化变体，参见 [自定义 Promise 化函数][]。
 
-In addition to being accessible through `util.promisify.custom`, this
-symbol is [registered globally][global symbol registry] and can be
-accessed in any environment as `Symbol.for('nodejs.util.promisify.custom')`.
+除了可以通过 `util.promisify.custom` 访问外，此符号还 [全局注册][全局符号注册表]，并且可以在任何环境中作为 `Symbol.for('nodejs.util.promisify.custom')` 访问。
 
-For example, with a function that takes in
-`(foo, onSuccessCallback, onErrorCallback)`:
+例如，对于接受 `(foo, onSuccessCallback, onErrorCallback)` 的函数：
 
 ```js
 const kCustomPromisifiedSymbol = Symbol.for('nodejs.util.promisify.custom');
@@ -2514,14 +2267,14 @@ doSomething[kCustomPromisifiedSymbol] = (foo) => {
 added: v16.11.0
 -->
 
-* `str` {string}
-* Returns: {string}
+* `str` {字符串}
+* 返回：{字符串}
 
-Returns `str` with any ANSI escape codes removed.
+返回移除了任何 ANSI 转义码的 `str`。
 
 ```js
 console.log(util.stripVTControlCharacters('\u001B[4mvalue\u001B[0m'));
-// Prints "value"
+// 打印 "value"
 ```
 
 ## `util.styleText(format, text[, options])`
@@ -2538,18 +2291,17 @@ changes:
       - v24.2.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/58437
-    description: Added the `'none'` format as a non-op format.
+    description: "添加了 `'none'` 格式作为无操作格式。"
   - version:
     - v23.5.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/56265
-    description: styleText is now stable.
+    description: styleText 现在是稳定的。
   - version:
     - v22.8.0
     - v20.18.0
     pr-url: https://github.com/nodejs/node/pull/54389
-    description: Respect isTTY and environment variables
-      such as NO_COLOR, NODE_DISABLE_COLORS, and FORCE_COLOR.
+    description: 尊重 isTTY 和环境变量，例如 NO_COLOR、NODE_DISABLE_COLORS 和 FORCE_COLOR。
 -->
 
 * `format` {string | Array} A text format or an Array
@@ -2560,10 +2312,7 @@ changes:
   * `validateStream` {boolean} When true, `stream` is checked to see if it can handle colors. **Default:** `true`.
   * `stream` {Stream} A stream that will be validated if it can be colored. **Default:** `process.stdout`.
 
-This function returns a formatted text considering the `format` passed
-for printing in a terminal. It is aware of the terminal's capabilities
-and acts according to the configuration set via `NO_COLOR`,
-`NODE_DISABLE_COLORS` and `FORCE_COLOR` environment variables.
+此函数返回考虑了传入的 `format` 用于在终端中打印的格式化文本。它知道终端的功能，并根据通过 `NO_COLOR`、`NODE_DISABLE_COLORS` 和 `FORCE_COLOR` 环境变量设置的配置行事。
 
 ```mjs
 import { styleText } from 'node:util';
@@ -2575,7 +2324,7 @@ console.log(successMessage);
 const errorMessage = styleText(
   'red',
   'Error! Error!',
-  // Validate if process.stderr has TTY
+  // 验证 process.stderr 是否有 TTY
   { stream: stderr },
 );
 console.error(errorMessage);
@@ -2591,14 +2340,13 @@ console.log(successMessage);
 const errorMessage = styleText(
   'red',
   'Error! Error!',
-  // Validate if process.stderr has TTY
+  // 验证 process.stderr 是否有 TTY
   { stream: stderr },
 );
 console.error(errorMessage);
 ```
 
-`util.inspect.colors` also provides text formats such as `italic`, and
-`underline` and you can combine both:
+`util.inspect.colors` 还提供文本格式，如 `italic` 和 `underline`，你可以组合使用：
 
 ```cjs
 console.log(
@@ -2606,16 +2354,15 @@ console.log(
 );
 ```
 
-When passing an array of formats, the order of the format applied
-is left to right so the following style might overwrite the previous one.
+当传递格式数组时，格式应用的顺序是从左到右，因此以下样式可能会覆盖前一个样式。
 
 ```cjs
 console.log(
-  util.styleText(['red', 'green'], 'text'), // green
+  util.styleText(['red', 'green'], 'text'), // 绿色
 );
 ```
 
-The special format value `none` applies no additional styling to the text.
+特殊格式值 `none` 不对文本应用额外样式。
 
 In addition to predefined color names, `util.styleText()` supports hex color
 strings using ANSI TrueColor (24-bit) escape sequences. Hex colors can be
@@ -2643,17 +2390,17 @@ console.log(styleText('#f00', 'Red text'));
 
 The full list of formats can be found in [modifiers][].
 
-## Class: `util.TextDecoder`
+## 类：`util.TextDecoder`
 
 <!-- YAML
 added: v8.3.0
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22281
-    description: The class is now available on the global object.
+    description: 该类现在在全局对象上可用。
 -->
 
-An implementation of the [WHATWG Encoding Standard][] `TextDecoder` API.
+[WHATWG 编码标准][] `TextDecoder` API 的实现。
 
 ```js
 const decoder = new TextDecoder();
@@ -2661,18 +2408,15 @@ const u8arr = new Uint8Array([72, 101, 108, 108, 111]);
 console.log(decoder.decode(u8arr)); // Hello
 ```
 
-### WHATWG supported encodings
+### WHATWG 支持的编码
 
-Per the [WHATWG Encoding Standard][], the encodings supported by the
-`TextDecoder` API are outlined in the tables below. For each encoding,
-one or more aliases may be used.
+根据 [WHATWG 编码标准][]，`TextDecoder` API 支持的编码在下表中列出。对于每种编码，可以使用一个或多个别名。
 
-Different Node.js build configurations support different sets of encodings.
-(see [Internationalization][])
+不同的 Node.js 构建配置支持不同的编码集。（参见 [国际化][]）
 
-#### Encodings supported by default (with full ICU data)
+#### 默认支持的编码（带有完整 ICU 数据）
 
-| Encoding           | Aliases                                                                                                                                                                                                                             |
+| 编码               | 别名                                                                                                                                                                                                                             |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `'ibm866'`         | `'866'`, `'cp866'`, `'csibm866'`                                                                                                                                                                                                    |
 | `'iso-8859-2'`     | `'csisolatin2'`, `'iso-ir-101'`, `'iso8859-2'`, `'iso88592'`, `'iso_8859-2'`, `'iso_8859-2:1987'`, `'l2'`, `'latin2'`                                                                                                               |
@@ -2709,105 +2453,88 @@ Different Node.js build configurations support different sets of encodings.
 | `'shift_jis'`      | `'csshiftjis'`, `'ms932'`, `'ms_kanji'`, `'shift-jis'`, `'sjis'`, `'windows-31j'`, `'x-sjis'`                                                                                                                                       |
 | `'euc-kr'`         | `'cseuckr'`, `'csksc56011987'`, `'iso-ir-149'`, `'korean'`, `'ks_c_5601-1987'`, `'ks_c_5601-1989'`, `'ksc5601'`, `'ksc_5601'`, `'windows-949'`                                                                                      |
 
-#### Encodings supported when Node.js is built with the `small-icu` option
+#### 当 Node.js 使用 `small-icu` 选项构建时支持的编码
 
-| Encoding     | Aliases                         |
+| 编码         | 别名                          |
 | ------------ | ------------------------------- |
 | `'utf-8'`    | `'unicode-1-1-utf-8'`, `'utf8'` |
 | `'utf-16le'` | `'utf-16'`                      |
 | `'utf-16be'` |                                 |
 
-#### Encodings supported when ICU is disabled
+#### 当 ICU 被禁用时支持的编码
 
-| Encoding     | Aliases                         |
+| 编码         | 别名                          |
 | ------------ | ------------------------------- |
 | `'utf-8'`    | `'unicode-1-1-utf-8'`, `'utf8'` |
 | `'utf-16le'` | `'utf-16'`                      |
 
-The `'iso-8859-16'` encoding listed in the [WHATWG Encoding Standard][]
-is not supported.
+[WHATWG 编码标准][] 中列出的 `'iso-8859-16'` 编码不受支持。
 
 ### `new TextDecoder([encoding[, options]])`
 
-* `encoding` {string} Identifies the `encoding` that this `TextDecoder` instance
-  supports. **Default:** `'utf-8'`.
-* `options` {Object}
-  * `fatal` {boolean} `true` if decoding failures are fatal.
-    This option is not supported when ICU is disabled
-    (see [Internationalization][]). **Default:** `false`.
-  * `ignoreBOM` {boolean} When `true`, the `TextDecoder` will include the byte
-    order mark in the decoded result. When `false`, the byte order mark will
-    be removed from the output. This option is only used when `encoding` is
-    `'utf-8'`, `'utf-16be'`, or `'utf-16le'`. **Default:** `false`.
+* `encoding` {字符串} 标识此 `TextDecoder` 实例支持的 `encoding`。**默认：** `'utf-8'`。
+* `options` {对象}
+  * `fatal` {布尔值} 如果解码失败是致命的则为 `true`。当 ICU 被禁用时不支持此选项（参见 [国际化][]）。**默认：** `false`。
+  * `ignoreBOM` {布尔值} 为 `true` 时，`TextDecoder` 将在解码结果中包含字节顺序标记。为 `false` 时，字节顺序标记将从输出中移除。此选项仅在 `encoding` 为 `'utf-8'`、`'utf-16be'` 或 `'utf-16le'` 时使用。**默认：** `false`。
 
-Creates a new `TextDecoder` instance. The `encoding` may specify one of the
-supported encodings or an alias.
+创建一个新的 `TextDecoder` 实例。`encoding` 可以指定支持的编码之一或别名。
 
-The `TextDecoder` class is also available on the global object.
+`TextDecoder` 类也可在全局对象上使用。
 
 ### `textDecoder.decode([input[, options]])`
 
-* `input` {ArrayBuffer|DataView|TypedArray} An `ArrayBuffer`, `DataView`, or
-  `TypedArray` instance containing the encoded data.
-* `options` {Object}
-  * `stream` {boolean} `true` if additional chunks of data are expected.
-    **Default:** `false`.
-* Returns: {string}
+* `input` {ArrayBuffer|DataView|TypedArray} 包含编码数据的 `ArrayBuffer`、`DataView` 或 `TypedArray` 实例。
+* `options` {对象}
+  * `stream` {布尔值} 如果预期有更多数据块则为 `true`。**默认：** `false`。
+* 返回：{字符串}
 
-Decodes the `input` and returns a string. If `options.stream` is `true`, any
-incomplete byte sequences occurring at the end of the `input` are buffered
-internally and emitted after the next call to `textDecoder.decode()`.
+解码 `input` 并返回一个字符串。如果 `options.stream` 为 `true`，出现在 `input` 末尾的任何不完整字节序列将在内部缓冲，并在下次调用 `textDecoder.decode()` 后发出。
 
-If `textDecoder.fatal` is `true`, decoding errors that occur will result in a
-`TypeError` being thrown.
+如果 `textDecoder.fatal` 为 `true`，发生的解码错误将导致抛出 `TypeError`。
 
 ### `textDecoder.encoding`
 
-* Type: {string}
+* 类型：{字符串}
 
-The encoding supported by the `TextDecoder` instance.
+`TextDecoder` 实例支持的编码。
 
 ### `textDecoder.fatal`
 
-* Type: {boolean}
+* 类型：{布尔值}
 
-The value will be `true` if decoding errors result in a `TypeError` being
-thrown.
+如果解码错误导致抛出 `TypeError`，则值为 `true`。
 
 ### `textDecoder.ignoreBOM`
 
-* Type: {boolean}
+* 类型：{布尔值}
 
-The value will be `true` if the decoding result will include the byte order
-mark.
+如果解码结果包含字节顺序标记，则值为 `true`。
 
-## Class: `util.TextEncoder`
+## 类：`util.TextEncoder`
 
 <!-- YAML
 added: v8.3.0
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22281
-    description: The class is now available on the global object.
+    description: 该类现在可用于全局对象。
 -->
 
-An implementation of the [WHATWG Encoding Standard][] `TextEncoder` API. All
-instances of `TextEncoder` only support UTF-8 encoding.
+[WHATWG 编码标准][] `TextEncoder` API 的实现。`TextEncoder` 的所有实例仅支持 UTF-8 编码。
 
 ```js
 const encoder = new TextEncoder();
 const uint8array = encoder.encode('this is some data');
 ```
 
-The `TextEncoder` class is also available on the global object.
+`TextEncoder` 类也可用于全局对象。
 
 ### `textEncoder.encode([input])`
 
-* `input` {string} The text to encode. **Default:** an empty string.
-* Returns: {Uint8Array}
+* `input` {string} 要编码的文本。**默认：** 空字符串。
+* 返回：{Uint8Array}
 
-UTF-8 encodes the `input` string and returns a `Uint8Array` containing the
-encoded bytes.
+UTF-8 编码 `input` 字符串并返回一个包含编码字节的 `Uint8Array`。
 
 ### `textEncoder.encodeInto(src, dest)`
 
@@ -2815,14 +2542,13 @@ encoded bytes.
 added: v12.11.0
 -->
 
-* `src` {string} The text to encode.
-* `dest` {Uint8Array} The array to hold the encode result.
-* Returns: {Object}
-  * `read` {number} The read Unicode code units of src.
-  * `written` {number} The written UTF-8 bytes of dest.
+* `src` {string} 要编码的文本。
+* `dest` {Uint8Array} 用于保存编码结果的数组。
+* 返回：{Object}
+  * `read` {number} 已读取的 src 的 Unicode 代码单元。
+  * `written` {number} 已写入的 dest 的 UTF-8 字节。
 
-UTF-8 encodes the `src` string to the `dest` Uint8Array and returns an object
-containing the read Unicode code units and written UTF-8 bytes.
+将 `src` 字符串 UTF-8 编码到 `dest` Uint8Array 并返回一个对象，其中包含读取的 Unicode 代码单元和写入的 UTF-8 字节。
 
 ```js
 const encoder = new TextEncoder();
@@ -2833,9 +2559,9 @@ const { read, written } = encoder.encodeInto(src, dest);
 
 ### `textEncoder.encoding`
 
-* Type: {string}
+* 类型：{string}
 
-The encoding supported by the `TextEncoder` instance. Always set to `'utf-8'`.
+`TextEncoder` 实例支持的编码。始终设置为 `'utf-8'`。
 
 ## `util.toUSVString(string)`
 
@@ -2847,9 +2573,7 @@ added:
 
 * `string` {string}
 
-Returns the `string` after replacing any surrogate code points
-(or equivalently, any unpaired surrogate code units) with the
-Unicode "replacement character" U+FFFD.
+返回替换了任何代理码点（或等效地，任何未配对的代理代码单元）为 Unicode“替换字符”U+FFFD 后的 `string`。
 
 ## `util.transferableAbortController()`
 
@@ -2860,11 +2584,10 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
-Creates and returns an {AbortController} instance whose {AbortSignal} is marked
-as transferable and can be used with `structuredClone()` or `postMessage()`.
+创建并返回一个 {AbortController} 实例，其 {AbortSignal} 被标记为可转移，并可与 `structuredClone()` 或 `postMessage()` 一起使用。
 
 ## `util.transferableAbortSignal(signal)`
 
@@ -2875,14 +2598,13 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: Marking the API stable.
+   description: 标记 API 为稳定。
 -->
 
 * `signal` {AbortSignal}
-* Returns: {AbortSignal}
+* 返回：{AbortSignal}
 
-Marks the given {AbortSignal} as transferable so that it can be used with
-`structuredClone()` and `postMessage()`.
+将给定的 {AbortSignal} 标记为可转移，以便它可以与 `structuredClone()` 和 `postMessage()` 一起使用。
 
 ```js
 const signal = transferableAbortSignal(AbortSignal.timeout(100));
@@ -2901,59 +2623,58 @@ changes:
    - v24.0.0
    - v22.16.0
    pr-url: https://github.com/nodejs/node/pull/57765
-   description: Change stability index for this feature from Experimental to Stable.
+   description: 将此功能的稳定性索引从实验性更改为稳定。
 -->
 
 * `signal` {AbortSignal}
-* `resource` {Object} Any non-null object tied to the abortable operation and held weakly.
-  If `resource` is garbage collected before the `signal` aborts, the promise remains pending,
-  allowing Node.js to stop tracking it.
-  This helps prevent memory leaks in long-running or non-cancelable operations.
-* Returns: {Promise}
+* `resource` {Object} 任何与可中止操作绑定且被弱引用的非空对象。
+  如果 `resource` 在 `signal` 中止之前被垃圾回收，则 promise 保持 pending 状态，允许 Node.js 停止跟踪它。
+  这有助于防止长时间运行或不可取消的操作中的内存泄漏。
+* 返回：{Promise}
 
-Listens to abort event on the provided `signal` and returns a promise that resolves when the `signal` is aborted.
-If `resource` is provided, it weakly references the operation's associated object,
-so if `resource` is garbage collected before the `signal` aborts,
-then returned promise shall remain pending.
-This prevents memory leaks in long-running or non-cancelable operations.
+监听提供的 `signal` 上的中止事件，并返回一个在 `signal` 被中止时解析的 promise。
+如果提供了 `resource`，它会弱引用操作关联的对象，
+因此如果 `resource` 在 `signal` 中止之前被垃圾回收，
+则返回的 promise 将保持 pending 状态。
+这可以防止长时间运行或不可取消的操作中的内存泄漏。
 
 ```cjs
 const { aborted } = require('node:util');
 
-// Obtain an object with an abortable signal, like a custom resource or operation.
+// 获取一个带有可中止信号的对象，例如自定义资源或操作。
 const dependent = obtainSomethingAbortable();
 
-// Pass `dependent` as the resource, indicating the promise should only resolve
-// if `dependent` is still in memory when the signal is aborted.
+// 将 `dependent` 作为资源传递，表示 promise 应该只在
+// 信号中止时 `dependent` 仍在内存中才解析。
 aborted(dependent.signal, dependent).then(() => {
 
-  // This code runs when `dependent` is aborted.
+  // 当 `dependent` 被中止时运行此代码。
   console.log('Dependent resource was aborted.');
 });
 
-// Simulate an event that triggers the abort.
+// 模拟触发中止的事件。
 dependent.on('event', () => {
-  dependent.abort(); // This will cause the `aborted` promise to resolve.
+  dependent.abort(); // 这将导致 `aborted` promise 解析。
 });
 ```
 
 ```mjs
 import { aborted } from 'node:util';
 
-// Obtain an object with an abortable signal, like a custom resource or operation.
+// 获取一个带有可中止信号的对象，例如自定义资源或操作。
 const dependent = obtainSomethingAbortable();
 
-// Pass `dependent` as the resource, indicating the promise should only resolve
-// if `dependent` is still in memory when the signal is aborted.
+// 将 `dependent` 作为资源传递，表示 promise 应该只在
+// 信号中止时 `dependent` 仍在内存中才解析。
 aborted(dependent.signal, dependent).then(() => {
 
-  // This code runs when `dependent` is aborted.
+  // 当 `dependent` 被中止时运行此代码。
   console.log('Dependent resource was aborted.');
 });
 
-// Simulate an event that triggers the abort.
+// 模拟触发中止的事件。
 dependent.on('event', () => {
-  dependent.abort(); // This will cause the `aborted` promise to resolve.
+  dependent.abort(); // 这将导致 `aborted` promise 解析。
 });
 ```
 
@@ -2964,19 +2685,15 @@ added: v10.0.0
 changes:
   - version: v15.3.0
     pr-url: https://github.com/nodejs/node/pull/34055
-    description: Exposed as `require('util/types')`.
+    description: "作为 `require('util/types')` 暴露。"
 -->
 
-`util.types` provides type checks for different kinds of built-in objects.
-Unlike `instanceof` or `Object.prototype.toString.call(value)`, these checks do
-not inspect properties of the object that are accessible from JavaScript (like
-their prototype), and usually have the overhead of calling into C++.
+`util.types` 提供针对不同种类内置对象的类型检查。
+与 `instanceof` 或 `Object.prototype.toString.call(value)` 不同，这些检查不检查对象可从 JavaScript 访问的属性（如它们的原型），并且通常具有调用 C++ 的开销。
 
-The result generally does not make any guarantees about what kinds of
-properties or behavior a value exposes in JavaScript. They are primarily
-useful for addon developers who prefer to do type checking in JavaScript.
+结果通常不对值在 JavaScript 中暴露的属性或行为类型做出任何保证。它们主要用于更喜欢在 JavaScript 中进行类型检查的 addon 开发者。
 
-The API is accessible via `require('node:util').types` or `require('node:util/types')`.
+该 API 可通过 `require('node:util').types` 或 `require('node:util/types')` 访问。
 
 ### `util.types.isAnyArrayBuffer(value)`
 
@@ -2985,17 +2702,15 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {ArrayBuffer} or
-{SharedArrayBuffer} instance.
+如果值是内置 {ArrayBuffer} 或 {SharedArrayBuffer} 实例，则返回 `true`。
 
-See also [`util.types.isArrayBuffer()`][] and
-[`util.types.isSharedArrayBuffer()`][].
+另见 [`util.types.isArrayBuffer()`][] 和 [`util.types.isSharedArrayBuffer()`][]。
 
 ```js
-util.types.isAnyArrayBuffer(new ArrayBuffer());  // Returns true
-util.types.isAnyArrayBuffer(new SharedArrayBuffer());  // Returns true
+util.types.isAnyArrayBuffer(new ArrayBuffer());  // 返回 true
+util.types.isAnyArrayBuffer(new SharedArrayBuffer());  // 返回 true
 ```
 
 ### `util.types.isArrayBufferView(value)`
@@ -3005,11 +2720,9 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is an instance of one of the {ArrayBuffer}
-views, such as typed array objects or {DataView}. Equivalent to
-[`ArrayBuffer.isView()`][].
+如果值是 {ArrayBuffer} 视图之一的实例，例如类型化数组对象或 {DataView}，则返回 `true`。等同于 [`ArrayBuffer.isView()`][]。
 
 ```js
 util.types.isArrayBufferView(new Int8Array());  // true
@@ -3025,15 +2738,15 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is an `arguments` object.
+如果值是 `arguments` 对象，则返回 `true`。
 
 <!-- eslint-disable prefer-rest-params -->
 
 ```js
 function foo() {
-  util.types.isArgumentsObject(arguments);  // Returns true
+  util.types.isArgumentsObject(arguments);  // 返回 true
 }
 ```
 
@@ -3044,15 +2757,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {ArrayBuffer} instance.
-This does _not_ include {SharedArrayBuffer} instances. Usually, it is
-desirable to test for both; See [`util.types.isAnyArrayBuffer()`][] for that.
+如果值是内置 {ArrayBuffer} 实例，则返回 `true`。
+这_不_包括 {SharedArrayBuffer} 实例。通常，需要同时测试两者；参见 [`util.types.isAnyArrayBuffer()`][]。
 
 ```js
-util.types.isArrayBuffer(new ArrayBuffer());  // Returns true
-util.types.isArrayBuffer(new SharedArrayBuffer());  // Returns false
+util.types.isArrayBuffer(new ArrayBuffer());  // 返回 true
+util.types.isArrayBuffer(new SharedArrayBuffer());  // 返回 false
 ```
 
 ### `util.types.isAsyncFunction(value)`
@@ -3062,16 +2774,15 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is an [async function][].
-This only reports back what the JavaScript engine is seeing;
-in particular, the return value may not match the original source code if
-a transpilation tool was used.
+如果值是 [异步函数][]，则返回 `true`。
+这仅报告 JavaScript 引擎所见的内容；
+特别是，如果使用了转译工具，返回值可能与原始源代码不匹配。
 
 ```js
-util.types.isAsyncFunction(function foo() {});  // Returns false
-util.types.isAsyncFunction(async function foo() {});  // Returns true
+util.types.isAsyncFunction(function foo() {});  // 返回 false
+util.types.isAsyncFunction(async function foo() {});  // 返回 true
 ```
 
 ### `util.types.isBigInt64Array(value)`
@@ -3081,13 +2792,13 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a `BigInt64Array` instance.
+如果值是 `BigInt64Array` 实例，则返回 `true`。
 
 ```js
-util.types.isBigInt64Array(new BigInt64Array());   // Returns true
-util.types.isBigInt64Array(new BigUint64Array());  // Returns false
+util.types.isBigInt64Array(new BigInt64Array());   // 返回 true
+util.types.isBigInt64Array(new BigUint64Array());  // 返回 false
 ```
 
 ### `util.types.isBigIntObject(value)`
@@ -3097,15 +2808,14 @@ added: v10.4.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a BigInt object, e.g. created
-by `Object(BigInt(123))`.
+如果值是 BigInt 对象，例如由 `Object(BigInt(123))` 创建，则返回 `true`。
 
 ```js
-util.types.isBigIntObject(Object(BigInt(123)));   // Returns true
-util.types.isBigIntObject(BigInt(123));   // Returns false
-util.types.isBigIntObject(123);  // Returns false
+util.types.isBigIntObject(Object(BigInt(123)));   // 返回 true
+util.types.isBigIntObject(BigInt(123));   // 返回 false
+util.types.isBigIntObject(123);  // 返回 false
 ```
 
 ### `util.types.isBigUint64Array(value)`
@@ -3115,13 +2825,13 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a `BigUint64Array` instance.
+如果值是 `BigUint64Array` 实例，则返回 `true`。
 
 ```js
-util.types.isBigUint64Array(new BigInt64Array());   // Returns false
-util.types.isBigUint64Array(new BigUint64Array());  // Returns true
+util.types.isBigUint64Array(new BigInt64Array());   // 返回 false
+util.types.isBigUint64Array(new BigUint64Array());  // 返回 true
 ```
 
 ### `util.types.isBooleanObject(value)`
@@ -3131,18 +2841,17 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a boolean object, e.g. created
-by `new Boolean()`.
+如果值是布尔对象，例如由 `new Boolean()` 创建，则返回 `true`。
 
 ```js
-util.types.isBooleanObject(false);  // Returns false
-util.types.isBooleanObject(true);   // Returns false
-util.types.isBooleanObject(new Boolean(false)); // Returns true
-util.types.isBooleanObject(new Boolean(true));  // Returns true
-util.types.isBooleanObject(Boolean(false)); // Returns false
-util.types.isBooleanObject(Boolean(true));  // Returns false
+util.types.isBooleanObject(false);  // 返回 false
+util.types.isBooleanObject(true);   // 返回 false
+util.types.isBooleanObject(new Boolean(false)); // 返回 true
+util.types.isBooleanObject(new Boolean(true));  // 返回 true
+util.types.isBooleanObject(Boolean(false)); // 返回 false
+util.types.isBooleanObject(Boolean(true));  // 返回 false
 ```
 
 ### `util.types.isBoxedPrimitive(value)`
@@ -3152,19 +2861,18 @@ added: v10.11.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is any boxed primitive object, e.g. created
-by `new Boolean()`, `new String()` or `Object(Symbol())`.
+如果值是任何装箱原始对象，例如由 `new Boolean()`、`new String()` 或 `Object(Symbol())` 创建，则返回 `true`。
 
-For example:
+例如：
 
 ```js
-util.types.isBoxedPrimitive(false); // Returns false
-util.types.isBoxedPrimitive(new Boolean(false)); // Returns true
-util.types.isBoxedPrimitive(Symbol('foo')); // Returns false
-util.types.isBoxedPrimitive(Object(Symbol('foo'))); // Returns true
-util.types.isBoxedPrimitive(Object(BigInt(5))); // Returns true
+util.types.isBoxedPrimitive(false); // 返回 false
+util.types.isBoxedPrimitive(new Boolean(false)); // 返回 true
+util.types.isBoxedPrimitive(Symbol('foo')); // 返回 false
+util.types.isBoxedPrimitive(Object(Symbol('foo'))); // 返回 true
+util.types.isBoxedPrimitive(Object(BigInt(5))); // 返回 true
 ```
 
 ### `util.types.isCryptoKey(value)`
@@ -3174,9 +2882,9 @@ added: v16.2.0
 -->
 
 * `value` {Object}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if `value` is a {CryptoKey}, `false` otherwise.
+如果 `value` 是 {CryptoKey}，则返回 `true`，否则返回 `false`。
 
 ### `util.types.isDataView(value)`
 
@@ -3185,17 +2893,17 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {DataView} instance.
+如果值是内置 {DataView} 实例，则返回 `true`。
 
 ```js
 const ab = new ArrayBuffer(20);
-util.types.isDataView(new DataView(ab));  // Returns true
-util.types.isDataView(new Float64Array());  // Returns false
+util.types.isDataView(new DataView(ab));  // 返回 true
+util.types.isDataView(new Float64Array());  // 返回 false
 ```
 
-See also [`ArrayBuffer.isView()`][].
+另见 [`ArrayBuffer.isView()`][]。
 
 ### `util.types.isDate(value)`
 
@@ -3204,12 +2912,12 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Date} instance.
+如果值是内置 {Date} 实例，则返回 `true`。
 
 ```js
-util.types.isDate(new Date());  // Returns true
+util.types.isDate(new Date());  // 返回 true
 ```
 
 ### `util.types.isExternal(value)`
@@ -3219,15 +2927,11 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a native `External` value.
+如果值是原生 `External` 值，则返回 `true`。
 
-A native `External` value is a special type of object that contains a
-raw C++ pointer (`void*`) for access from native code, and has no other
-properties. Such objects are created either by Node.js internals or native
-addons. In JavaScript, they are [frozen][`Object.freeze()`] objects with a
-`null` prototype.
+原生 `External` 值是一种特殊类型的对象，包含一个用于原生代码访问的原始 C++ 指针 (`void*`)，没有其他属性。此类对象由 Node.js 内部或原生 addon 创建。在 JavaScript 中，它们是带有 `null` 原型的 [冻结][`Object.freeze()`] 对象。
 
 ```c
 #include <js_native_api.h>
@@ -3252,9 +2956,9 @@ import native from 'napi_addon.node';
 import { types } from 'node:util';
 
 const data = native.myNapi();
-types.isExternal(data); // returns true
-types.isExternal(0); // returns false
-types.isExternal(new String('foo')); // returns false
+types.isExternal(data); // 返回 true
+types.isExternal(0); // 返回 false
+types.isExternal(new String('foo')); // 返回 false
 ```
 
 ```cjs
@@ -3262,13 +2966,12 @@ const native = require('napi_addon.node');
 const { types } = require('node:util');
 
 const data = native.myNapi();
-types.isExternal(data); // returns true
-types.isExternal(0); // returns false
-types.isExternal(new String('foo')); // returns false
+types.isExternal(data); // 返回 true
+types.isExternal(0); // 返回 false
+types.isExternal(new String('foo')); // 返回 false
 ```
 
-For further information on `napi_create_external`, refer to
-[`napi_create_external()`][].
+有关 `napi_create_external` 的更多信息，请参阅 [`napi_create_external()`][]。
 
 ### `util.types.isFloat16Array(value)`
 
@@ -3279,14 +2982,14 @@ added:
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Float16Array} instance.
+如果值是内置 {Float16Array} 实例，则返回 `true`。
 
 ```js
-util.types.isFloat16Array(new ArrayBuffer());  // Returns false
-util.types.isFloat16Array(new Float16Array());  // Returns true
-util.types.isFloat16Array(new Float32Array());  // Returns false
+util.types.isFloat16Array(new ArrayBuffer());  // 返回 false
+util.types.isFloat16Array(new Float16Array());  // 返回 true
+util.types.isFloat16Array(new Float32Array());  // 返回 false
 ```
 
 ### `util.types.isFloat32Array(value)`
@@ -3296,14 +2999,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Float32Array} instance.
+如果值是内置 {Float32Array} 实例，则返回 `true`。
 
 ```js
-util.types.isFloat32Array(new ArrayBuffer());  // Returns false
-util.types.isFloat32Array(new Float32Array());  // Returns true
-util.types.isFloat32Array(new Float64Array());  // Returns false
+util.types.isFloat32Array(new ArrayBuffer());  // 返回 false
+util.types.isFloat32Array(new Float32Array());  // 返回 true
+util.types.isFloat32Array(new Float64Array());  // 返回 false
 ```
 
 ### `util.types.isFloat64Array(value)`
@@ -3313,14 +3016,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Float64Array} instance.
+如果值是内置 {Float64Array} 实例，则返回 `true`。
 
 ```js
-util.types.isFloat64Array(new ArrayBuffer());  // Returns false
-util.types.isFloat64Array(new Uint8Array());  // Returns false
-util.types.isFloat64Array(new Float64Array());  // Returns true
+util.types.isFloat64Array(new ArrayBuffer());  // 返回 false
+util.types.isFloat64Array(new Uint8Array());  // 返回 false
+util.types.isFloat64Array(new Float64Array());  // 返回 true
 ```
 
 ### `util.types.isGeneratorFunction(value)`
@@ -3330,16 +3033,15 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a generator function.
-This only reports back what the JavaScript engine is seeing;
-in particular, the return value may not match the original source code if
-a transpilation tool was used.
+如果值是生成器函数，则返回 `true`。
+这仅报告 JavaScript 引擎所见的内容；
+特别是，如果使用了转译工具，返回值可能与原始源代码不匹配。
 
 ```js
-util.types.isGeneratorFunction(function foo() {});  // Returns false
-util.types.isGeneratorFunction(function* foo() {});  // Returns true
+util.types.isGeneratorFunction(function foo() {});  // 返回 false
+util.types.isGeneratorFunction(function* foo() {});  // 返回 true
 ```
 
 ### `util.types.isGeneratorObject(value)`
@@ -3349,18 +3051,16 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a generator object as returned from a
-built-in generator function.
-This only reports back what the JavaScript engine is seeing;
-in particular, the return value may not match the original source code if
-a transpilation tool was used.
+如果值是内置生成器函数返回的生成器对象，则返回 `true`。
+这仅报告 JavaScript 引擎所见的内容；
+特别是，如果使用了转译工具，返回值可能与原始源代码不匹配。
 
 ```js
 function* foo() {}
 const generator = foo();
-util.types.isGeneratorObject(generator);  // Returns true
+util.types.isGeneratorObject(generator);  // 返回 true
 ```
 
 ### `util.types.isInt8Array(value)`
@@ -3370,14 +3070,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Int8Array} instance.
+如果值是内置 {Int8Array} 实例，则返回 `true`。
 
 ```js
-util.types.isInt8Array(new ArrayBuffer());  // Returns false
-util.types.isInt8Array(new Int8Array());  // Returns true
-util.types.isInt8Array(new Float64Array());  // Returns false
+util.types.isInt8Array(new ArrayBuffer());  // 返回 false
+util.types.isInt8Array(new Int8Array());  // 返回 true
+util.types.isInt8Array(new Float64Array());  // 返回 false
 ```
 
 ### `util.types.isInt16Array(value)`
@@ -3387,14 +3087,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Int16Array} instance.
+如果值是内置 {Int16Array} 实例，则返回 `true`。
 
 ```js
-util.types.isInt16Array(new ArrayBuffer());  // Returns false
-util.types.isInt16Array(new Int16Array());  // Returns true
-util.types.isInt16Array(new Float64Array());  // Returns false
+util.types.isInt16Array(new ArrayBuffer());  // 返回 false
+util.types.isInt16Array(new Int16Array());  // 返回 true
+util.types.isInt16Array(new Float64Array());  // 返回 false
 ```
 
 ### `util.types.isInt32Array(value)`
@@ -3404,14 +3104,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Int32Array} instance.
+如果值是内置 {Int32Array} 实例，则返回 `true`。
 
 ```js
-util.types.isInt32Array(new ArrayBuffer());  // Returns false
-util.types.isInt32Array(new Int32Array());  // Returns true
-util.types.isInt32Array(new Float64Array());  // Returns false
+util.types.isInt32Array(new ArrayBuffer());  // 返回 false
+util.types.isInt32Array(new Int32Array());  // 返回 true
+util.types.isInt32Array(new Float64Array());  // 返回 false
 ```
 
 ### `util.types.isKeyObject(value)`
@@ -3421,9 +3121,9 @@ added: v16.2.0
 -->
 
 * `value` {Object}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if `value` is a {KeyObject}, `false` otherwise.
+如果 `value` 是 {KeyObject}，则返回 `true`，否则返回 `false`。
 
 ### `util.types.isMap(value)`
 
@@ -3432,12 +3132,12 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Map} instance.
+如果值是内置 {Map} 实例，则返回 `true`。
 
 ```js
-util.types.isMap(new Map());  // Returns true
+util.types.isMap(new Map());  // 返回 true
 ```
 
 ### `util.types.isMapIterator(value)`
@@ -3447,17 +3147,16 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is an iterator returned for a built-in
-{Map} instance.
+如果值是为内置 {Map} 实例返回的迭代器，则返回 `true`。
 
 ```js
 const map = new Map();
-util.types.isMapIterator(map.keys());  // Returns true
-util.types.isMapIterator(map.values());  // Returns true
-util.types.isMapIterator(map.entries());  // Returns true
-util.types.isMapIterator(map[Symbol.iterator]());  // Returns true
+util.types.isMapIterator(map.keys());  // 返回 true
+util.types.isMapIterator(map.values());  // 返回 true
+util.types.isMapIterator(map.entries());  // 返回 true
+util.types.isMapIterator(map[Symbol.iterator]());  // 返回 true
 ```
 
 ### `util.types.isModuleNamespaceObject(value)`
@@ -3467,14 +3166,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is an instance of a [Module Namespace Object][].
+如果值是 [模块命名空间对象][] 的实例，则返回 `true`。
 
 ```mjs
 import * as ns from './a.js';
 
-util.types.isModuleNamespaceObject(ns);  // Returns true
+util.types.isModuleNamespaceObject(ns);  // 返回 true
 ```
 
 ### `util.types.isNativeError(value)`
@@ -3484,16 +3183,15 @@ added: v10.0.0
 deprecated: v24.2.0
 -->
 
-> Stability: 0 - Deprecated: Use [`Error.isError`][] instead.
+> 稳定性：0 - 已弃用：请改用 [`Error.isError`][]。
 
-**Note:** As of Node.js 24, `Error.isError()` is currently slower than `util.types.isNativeError()`.
-If performance is critical, consider benchmarking both in your environment.
+**注意：** 截至 Node.js 24，`Error.isError()` 目前比 `util.types.isNativeError()` 慢。
+如果性能至关重要，请考虑在你的环境中对两者进行基准测试。
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value was returned by the constructor of a
-[built-in `Error` type][].
+如果值是由 [内置 `Error` 类型][] 的构造函数返回的，则返回 `true`。
 
 ```js
 console.log(util.types.isNativeError(new Error()));  // true
@@ -3501,17 +3199,14 @@ console.log(util.types.isNativeError(new TypeError()));  // true
 console.log(util.types.isNativeError(new RangeError()));  // true
 ```
 
-Subclasses of the native error types are also native errors:
+原生错误类型的子类也是原生错误：
 
 ```js
 class MyError extends Error {}
 console.log(util.types.isNativeError(new MyError()));  // true
 ```
 
-A value being `instanceof` a native error class is not equivalent to `isNativeError()`
-returning `true` for that value. `isNativeError()` returns `true` for errors
-which come from a different [realm][] while `instanceof Error` returns `false`
-for these errors:
+值是原生错误类的 `instanceof` 并不等同于 `isNativeError()` 对该值返回 `true`。`isNativeError()` 对来自不同 [域][] 的错误返回 `true`，而 `instanceof Error` 对这些错误返回 `false`：
 
 ```mjs
 import { createContext, runInContext } from 'node:vm';
@@ -3533,9 +3228,7 @@ console.log(types.isNativeError(myError)); // true
 console.log(myError instanceof Error); // false
 ```
 
-Conversely, `isNativeError()` returns `false` for all objects which were not
-returned by the constructor of a native error. That includes values
-which are `instanceof` native errors:
+相反，`isNativeError()` 对所有不是由原生错误构造函数返回的对象返回 `false`。这包括那些是原生错误 `instanceof` 的值：
 
 ```js
 const myError = { __proto__: Error.prototype };
@@ -3550,14 +3243,13 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a number object, e.g. created
-by `new Number()`.
+如果值是数字对象，例如由 `new Number()` 创建，则返回 `true`。
 
 ```js
-util.types.isNumberObject(0);  // Returns false
-util.types.isNumberObject(new Number(0));   // Returns true
+util.types.isNumberObject(0);  // 返回 false
+util.types.isNumberObject(new Number(0));   // 返回 true
 ```
 
 ### `util.types.isPromise(value)`
@@ -3567,12 +3259,12 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Promise}.
+如果值是内置 {Promise}，则返回 `true`。
 
 ```js
-util.types.isPromise(Promise.resolve(42));  // Returns true
+util.types.isPromise(Promise.resolve(42));  // 返回 true
 ```
 
 ### `util.types.isProxy(value)`
@@ -3582,15 +3274,15 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a {Proxy} instance.
+如果值是 {Proxy} 实例，则返回 `true`。
 
 ```js
 const target = {};
 const proxy = new Proxy(target, {});
-util.types.isProxy(target);  // Returns false
-util.types.isProxy(proxy);  // Returns true
+util.types.isProxy(target);  // 返回 false
+util.types.isProxy(proxy);  // 返回 true
 ```
 
 ### `util.types.isRegExp(value)`
@@ -3600,13 +3292,13 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a regular expression object.
+如果值是正则表达式对象，则返回 `true`。
 
 ```js
-util.types.isRegExp(/abc/);  // Returns true
-util.types.isRegExp(new RegExp('abc'));  // Returns true
+util.types.isRegExp(/abc/);  // 返回 true
+util.types.isRegExp(new RegExp('abc'));  // 返回 true
 ```
 
 ### `util.types.isSet(value)`
@@ -3616,12 +3308,12 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Set} instance.
+如果值是内置 {Set} 实例，则返回 `true`。
 
 ```js
-util.types.isSet(new Set());  // Returns true
+util.types.isSet(new Set());  // 返回 true
 ```
 
 ### `util.types.isSetIterator(value)`
@@ -3631,17 +3323,16 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is an iterator returned for a built-in
-{Set} instance.
+如果值是为内置 {Set} 实例返回的迭代器，则返回 `true`。
 
 ```js
 const set = new Set();
-util.types.isSetIterator(set.keys());  // Returns true
-util.types.isSetIterator(set.values());  // Returns true
-util.types.isSetIterator(set.entries());  // Returns true
-util.types.isSetIterator(set[Symbol.iterator]());  // Returns true
+util.types.isSetIterator(set.keys());  // 返回 true
+util.types.isSetIterator(set.values());  // 返回 true
+util.types.isSetIterator(set.entries());  // 返回 true
+util.types.isSetIterator(set[Symbol.iterator]());  // 返回 true
 ```
 
 ### `util.types.isSharedArrayBuffer(value)`
@@ -3651,15 +3342,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {SharedArrayBuffer} instance.
-This does _not_ include {ArrayBuffer} instances. Usually, it is
-desirable to test for both; See [`util.types.isAnyArrayBuffer()`][] for that.
+如果值是内置 {SharedArrayBuffer} 实例，则返回 `true`。
+这_不_包括 {ArrayBuffer} 实例。通常，需要同时测试两者；参见 [`util.types.isAnyArrayBuffer()`][]。
 
 ```js
-util.types.isSharedArrayBuffer(new ArrayBuffer());  // Returns false
-util.types.isSharedArrayBuffer(new SharedArrayBuffer());  // Returns true
+util.types.isSharedArrayBuffer(new ArrayBuffer());  // 返回 false
+util.types.isSharedArrayBuffer(new SharedArrayBuffer());  // 返回 true
 ```
 
 ### `util.types.isStringObject(value)`
@@ -3669,14 +3359,13 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a string object, e.g. created
-by `new String()`.
+如果值是字符串对象，例如由 `new String()` 创建，则返回 `true`。
 
 ```js
-util.types.isStringObject('foo');  // Returns false
-util.types.isStringObject(new String('foo'));   // Returns true
+util.types.isStringObject('foo');  // 返回 false
+util.types.isStringObject(new String('foo'));   // 返回 true
 ```
 
 ### `util.types.isSymbolObject(value)`
@@ -3686,15 +3375,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a symbol object, created
-by calling `Object()` on a `Symbol` primitive.
+如果值是符号对象，通过对 `Symbol` 原始值调用 `Object()` 创建，则返回 `true`。
 
 ```js
 const symbol = Symbol('foo');
-util.types.isSymbolObject(symbol);  // Returns false
-util.types.isSymbolObject(Object(symbol));   // Returns true
+util.types.isSymbolObject(symbol);  // 返回 false
+util.types.isSymbolObject(Object(symbol));   // 返回 true
 ```
 
 ### `util.types.isTypedArray(value)`
@@ -3704,17 +3392,17 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {TypedArray} instance.
+如果值是内置 {TypedArray} 实例，则返回 `true`。
 
 ```js
-util.types.isTypedArray(new ArrayBuffer());  // Returns false
-util.types.isTypedArray(new Uint8Array());  // Returns true
-util.types.isTypedArray(new Float64Array());  // Returns true
+util.types.isTypedArray(new ArrayBuffer());  // 返回 false
+util.types.isTypedArray(new Uint8Array());  // 返回 true
+util.types.isTypedArray(new Float64Array());  // 返回 true
 ```
 
-See also [`ArrayBuffer.isView()`][].
+另见 [`ArrayBuffer.isView()`][]。
 
 ### `util.types.isUint8Array(value)`
 
@@ -3723,14 +3411,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Uint8Array} instance.
+如果值是内置 {Uint8Array} 实例，则返回 `true`。
 
 ```js
-util.types.isUint8Array(new ArrayBuffer());  // Returns false
-util.types.isUint8Array(new Uint8Array());  // Returns true
-util.types.isUint8Array(new Float64Array());  // Returns false
+util.types.isUint8Array(new ArrayBuffer());  // 返回 false
+util.types.isUint8Array(new Uint8Array());  // 返回 true
+util.types.isUint8Array(new Float64Array());  // 返回 false
 ```
 
 ### `util.types.isUint8ClampedArray(value)`
@@ -3740,14 +3428,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Uint8ClampedArray} instance.
+如果值是内置 {Uint8ClampedArray} 实例，则返回 `true`。
 
 ```js
-util.types.isUint8ClampedArray(new ArrayBuffer());  // Returns false
-util.types.isUint8ClampedArray(new Uint8ClampedArray());  // Returns true
-util.types.isUint8ClampedArray(new Float64Array());  // Returns false
+util.types.isUint8ClampedArray(new ArrayBuffer());  // 返回 false
+util.types.isUint8ClampedArray(new Uint8ClampedArray());  // 返回 true
+util.types.isUint8ClampedArray(new Float64Array());  // 返回 false
 ```
 
 ### `util.types.isUint16Array(value)`
@@ -3757,14 +3445,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Uint16Array} instance.
+如果值是内置 {Uint16Array} 实例，则返回 `true`。
 
 ```js
-util.types.isUint16Array(new ArrayBuffer());  // Returns false
-util.types.isUint16Array(new Uint16Array());  // Returns true
-util.types.isUint16Array(new Float64Array());  // Returns false
+util.types.isUint16Array(new ArrayBuffer());  // 返回 false
+util.types.isUint16Array(new Uint16Array());  // 返回 true
+util.types.isUint16Array(new Float64Array());  // 返回 false
 ```
 
 ### `util.types.isUint32Array(value)`
@@ -3774,14 +3462,14 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {Uint32Array} instance.
+如果值是内置 {Uint32Array} 实例，则返回 `true`。
 
 ```js
-util.types.isUint32Array(new ArrayBuffer());  // Returns false
-util.types.isUint32Array(new Uint32Array());  // Returns true
-util.types.isUint32Array(new Float64Array());  // Returns false
+util.types.isUint32Array(new ArrayBuffer());  // 返回 false
+util.types.isUint32Array(new Uint32Array());  // 返回 true
+util.types.isUint32Array(new Float64Array());  // 返回 false
 ```
 
 ### `util.types.isWeakMap(value)`
@@ -3791,12 +3479,12 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {WeakMap} instance.
+如果值是内置 {WeakMap} 实例，则返回 `true`。
 
 ```js
-util.types.isWeakMap(new WeakMap());  // Returns true
+util.types.isWeakMap(new WeakMap());  // 返回 true
 ```
 
 ### `util.types.isWeakSet(value)`
@@ -3806,18 +3494,17 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* Returns: {boolean}
+* 返回：{boolean}
 
-Returns `true` if the value is a built-in {WeakSet} instance.
+如果值是内置 {WeakSet} 实例，则返回 `true`。
 
 ```js
-util.types.isWeakSet(new WeakSet());  // Returns true
+util.types.isWeakSet(new WeakSet());  // 返回 true
 ```
 
-## Deprecated APIs
+## 已弃用的 API
 
-The following APIs are deprecated and should no longer be used. Existing
-applications and modules should be updated to find alternative approaches.
+以下 API 已弃用，不应再使用。现有的应用程序和模块应更新以寻找替代方案。
 
 ### `util._extend(target, source)`
 
@@ -3826,18 +3513,16 @@ added: v0.7.5
 deprecated: v6.0.0
 -->
 
-> Stability: 0 - Deprecated: Use [`Object.assign()`][] instead.
+> 稳定性：0 - 已弃用：请改用 [`Object.assign()`][]。
 
 * `target` {Object}
 * `source` {Object}
 
-The `util._extend()` method was never intended to be used outside of internal
-Node.js modules. The community found and used it anyway.
+`util._extend()` 方法从未打算在内部 Node.js 模块之外使用。但社区还是发现并使用了它。
 
-It is deprecated and should not be used in new code. JavaScript comes with very
-similar built-in functionality through [`Object.assign()`][].
+它已弃用，不应在新代码中使用。JavaScript 通过 [`Object.assign()`][] 提供了非常类似的内置功能。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-extend-to-object-assign)):
+提供自动迁移工具（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-extend-to-object-assign)）：
 
 ```bash
 npx codemod@latest @nodejs/util-extend-to-object-assign
@@ -3850,39 +3535,39 @@ added: v0.6.0
 deprecated: v4.0.0
 -->
 
-> Stability: 0 - Deprecated: Use [`Array.isArray()`][] instead.
+> 稳定性：0 - 已弃用：请改用 [`Array.isArray()`][]。
 
 * `object` {any}
-* Returns: {boolean}
+* 返回值：{boolean}
 
-Alias for [`Array.isArray()`][].
+[`Array.isArray()`][] 的别名。
 
-Returns `true` if the given `object` is an `Array`. Otherwise, returns `false`.
+如果给定的 `object` 是 `Array`，则返回 `true`。否则，返回 `false`。
 
 ```js
 const util = require('node:util');
 
 util.isArray([]);
-// Returns: true
+// 返回值：true
 util.isArray(new Array());
-// Returns: true
+// 返回值：true
 util.isArray({});
-// Returns: false
+// 返回值：false
 ```
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)):
+提供自动迁移工具（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-is)）：
 
 ```bash
 npx codemod@latest @nodejs/util-is
 ```
 
-[Common System Errors]: errors.md#common-system-errors
-[Custom inspection functions on objects]: #custom-inspection-functions-on-objects
-[Custom promisified functions]: #custom-promisified-functions
-[Customizing `util.inspect` colors]: #customizing-utilinspect-colors
-[Internationalization]: intl.md
-[Module Namespace Object]: https://tc39.github.io/ecma262/#sec-module-namespace-exotic-objects
-[WHATWG Encoding Standard]: https://encoding.spec.whatwg.org/
+[常见系统错误]: errors.md#common-system-errors
+[对象上的自定义检查函数]: #custom-inspection-functions-on-objects
+[自定义 Promise 化函数]: #custom-promisified-functions
+[自定义 `util.inspect` 颜色]: #customizing-utilinspect-colors
+[国际化]: intl.md
+[模块命名空间对象]: https://tc39.github.io/ecma262/#sec-module-namespace-exotic-objects
+[WHATWG 编码标准]: https://encoding.spec.whatwg.org/
 [`'uncaughtException'`]: process.md#event-uncaughtexception
 [`'warning'`]: process.md#event-warning
 [`Array.isArray()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray
@@ -3899,7 +3584,7 @@ npx codemod@latest @nodejs/util-is
 [`mimeParams.entries()`]: #mimeparamsentries
 [`napi_create_external()`]: n-api.md#napi_create_external
 [`signal(7)`]: https://man7.org/linux/man-pages/man7/signal.7.html
-[`target` and `handler`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy#terminology
+[`target` 和 `handler`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy#terminology
 [`tty.hasColors()`]: tty.md#writestreamhascolorscount-env
 [`util.diff()`]: #utildiffactual-expected
 [`util.format()`]: #utilformatformat-args
@@ -3908,14 +3593,14 @@ npx codemod@latest @nodejs/util-is
 [`util.types.isAnyArrayBuffer()`]: #utiltypesisanyarraybuffervalue
 [`util.types.isArrayBuffer()`]: #utiltypesisarraybuffervalue
 [`util.types.isSharedArrayBuffer()`]: #utiltypesissharedarraybuffervalue
-[async function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
-[built-in `Error` type]: https://tc39.es/ecma262/#sec-error-objects
-[compare function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#parameters
-[constructor]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/constructor
-[default sort]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-[global symbol registry]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/for
-[list of deprecated APIS]: deprecations.md#list-of-deprecated-apis
-[modifiers]: #modifiers
-[realm]: https://tc39.es/ecma262/#realm
-[semantically incompatible]: https://github.com/nodejs/node/issues/4179
+[异步函数]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
+[内置 `Error` 类型]: https://tc39.es/ecma262/#sec-error-objects
+[比较函数]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort#parameters
+[构造函数]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/constructor
+[默认排序]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+[全局符号注册表]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/for
+[已弃用 API 列表]: deprecations.md#list-of-deprecated-apis
+[修饰符]: #modifiers
+[领域]: https://tc39.es/ecma262/#realm
+[语义不兼容]: https://github.com/nodejs/node/issues/4179
 [util.inspect.custom]: #utilinspectcustom

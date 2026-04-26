@@ -2,13 +2,12 @@
 
 <!--introduced_in=v0.10.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/repl.js -->
 
-The `node:repl` module provides a Read-Eval-Print-Loop (REPL) implementation
-that is available both as a standalone program or includible in other
-applications. It can be accessed using:
+`node:repl` 模块提供一个读取 - 求值 - 输出 循环 (REPL) 实现，
+既可用作独立程序，也可包含在其他应用程序中。可以通过以下方式访问：
 
 ```mjs
 import repl from 'node:repl';
@@ -18,43 +17,41 @@ import repl from 'node:repl';
 const repl = require('node:repl');
 ```
 
-## Design and features
+## 设计和特性
 
-The `node:repl` module exports the [`repl.REPLServer`][] class. While running,
-instances of [`repl.REPLServer`][] will accept individual lines of user input,
-evaluate those according to a user-defined evaluation function, then output the
-result. Input and output may be from `stdin` and `stdout`, respectively, or may
-be connected to any Node.js [stream][].
+`node:repl` 模块导出 [`repl.REPLServer`][] 类。运行时，
+[`repl.REPLServer`][] 的实例将接受单行用户输入，
+根据用户定义的求值函数对其进行求值，然后输出结果。输入和输出可能分别来自 `stdin` 和 `stdout`，或者
+可以连接到任何 Node.js [流][]。
 
-Instances of [`repl.REPLServer`][] support automatic completion of inputs,
-completion preview, simplistic Emacs-style line editing, multi-line inputs,
-[ZSH][]-like reverse-i-search, [ZSH][]-like substring-based history search,
-ANSI-styled output, saving and restoring current REPL session state, error
-recovery, and customizable evaluation functions. Terminals that do not support
-ANSI styles and Emacs-style line editing automatically fall back to a limited
-feature set.
+[`repl.REPLServer`][] 的实例支持输入自动补全、
+补全预览、简单的 Emacs 风格行编辑、多行输入、
+类 [ZSH][] 反向 i 搜索、类 [ZSH][] 基于子串的历史搜索、
+ANSI 风格输出、保存和恢复当前 REPL 会话状态、错误
+恢复以及可自定义的求值函数。不支持
+ANSI 风格和 Emacs 风格行编辑的终端会自动回退到有限的功能集。
 
-### Commands and special keys
+### 命令和特殊按键
 
-The following special commands are supported by all REPL instances:
+所有 REPL 实例都支持以下特殊命令：
 
-* `.break`: When in the process of inputting a multi-line expression, enter
-  the `.break` command (or press <kbd>Ctrl</kbd>+<kbd>C</kbd>) to abort
-  further input or processing of that expression.
-* `.clear`: Resets the REPL `context` to an empty object and clears any
-  multi-line expression being input.
-* `.exit`: Close the I/O stream, causing the REPL to exit.
-* `.help`: Show this list of special commands.
-* `.save`: Save the current REPL session to a file:
+* `.break`：在输入多行表达式的过程中，输入
+  `.break` 命令（或按 <kbd>Ctrl</kbd>+<kbd>C</kbd>）以中止
+  该表达式的进一步输入或处理。
+* `.clear`：将 REPL `context` 重置为空对象并清除任何
+  正在输入的多行表达式。
+* `.exit`：关闭 I/O 流，导致 REPL 退出。
+* `.help`：显示此特殊命令列表。
+* `.save`：将当前 REPL 会话保存到文件：
   `> .save ./file/to/save.js`
-* `.load`: Load a file into the current REPL session.
+* `.load`：将文件加载到当前 REPL 会话中。
   `> .load ./file/to/load.js`
-* `.editor`: Enter editor mode (<kbd>Ctrl</kbd>+<kbd>D</kbd> to
-  finish, <kbd>Ctrl</kbd>+<kbd>C</kbd> to cancel).
+* `.editor`：进入编辑器模式（按 <kbd>Ctrl</kbd>+<kbd>D</kbd> 
+  完成，按 <kbd>Ctrl</kbd>+<kbd>C</kbd> 取消）。
 
 ```console
 > .editor
-// Entering editor mode (^D to finish, ^C to cancel)
+// 进入编辑器模式 (^D 完成，^C 取消)
 function welcome(name) {
   return `Hello ${name}!`;
 }
@@ -66,30 +63,29 @@ welcome('Node.js User');
 >
 ```
 
-The following key combinations in the REPL have these special effects:
+REPL 中的以下按键组合具有这些特殊效果：
 
-* <kbd>Ctrl</kbd>+<kbd>C</kbd>: When pressed once, has the same effect as the
-  `.break` command.
-  When pressed twice on a blank line, has the same effect as the `.exit`
-  command.
-* <kbd>Ctrl</kbd>+<kbd>D</kbd>: Has the same effect as the `.exit` command.
-* <kbd>Tab</kbd>: When pressed on a blank line, displays global and local
-  (scope) variables. When pressed while entering other input, displays relevant
-  autocompletion options.
+* <kbd>Ctrl</kbd>+<kbd>C</kbd>：按一次时，效果与
+  `.break` 命令相同。
+  在空行上按两次时，效果与 `.exit`
+  命令相同。
+* <kbd>Ctrl</kbd>+<kbd>D</kbd>：效果与 `.exit` 命令相同。
+* <kbd>Tab</kbd>：在空行上按下时，显示全局和局部
+  （作用域）变量。在输入其他内容时按下，显示相关的
+  自动补全选项。
 
-For key bindings related to the reverse-i-search, see [`reverse-i-search`][].
-For all other key bindings, see [TTY keybindings][].
+有关反向 i 搜索的按键绑定，请参阅 [`reverse-i-search`][]。
+有关所有其他按键绑定，请参阅 [TTY 按键绑定][]。
 
-### Default evaluation
+### 默认求值
 
-By default, all instances of [`repl.REPLServer`][] use an evaluation function
-that evaluates JavaScript expressions and provides access to Node.js built-in
-modules. This default behavior can be overridden by passing in an alternative
-evaluation function when the [`repl.REPLServer`][] instance is created.
+默认情况下，[`repl.REPLServer`][] 的所有实例都使用一个求值函数
+该函数求值 JavaScript 表达式并提供对 Node.js 内置模块的访问。此默认行为可以通过在创建 [`repl.REPLServer`][] 实例时传入替代的
+求值函数来覆盖。
 
-#### JavaScript expressions
+#### JavaScript 表达式
 
-The default evaluator supports direct evaluation of JavaScript expressions:
+默认求值器支持直接求值 JavaScript 表达式：
 
 ```console
 > 1 + 1
@@ -100,15 +96,13 @@ undefined
 3
 ```
 
-Unless otherwise scoped within blocks or functions, variables declared
-either implicitly or using the `const`, `let`, or `var` keywords
-are declared at the global scope.
+除非在块或函数内另有作用域，否则使用 `const`、`let` 或 `var` 关键字
+隐式或使用这些关键字声明的变量
+都在全局作用域声明。
 
-#### Global and local scope
+#### 全局和局部作用域
 
-The default evaluator provides access to any variables that exist in the global
-scope. It is possible to expose a variable to the REPL explicitly by assigning
-it to the `context` object associated with each `REPLServer`:
+默认求值器提供对全局作用域中存在的任何变量的访问。可以通过将变量赋值给与每个 `REPLServer` 关联的 `context` 对象，从而显式地将变量暴露给 REPL：
 
 ```mjs
 import repl from 'node:repl';
@@ -124,7 +118,7 @@ const msg = 'message';
 repl.start('> ').context.m = msg;
 ```
 
-Properties in the `context` object appear as local within the REPL:
+`context` 对象中的属性在 REPL 内显示为局部变量：
 
 ```console
 $ node repl_test.js
@@ -132,8 +126,8 @@ $ node repl_test.js
 'message'
 ```
 
-Context properties are not read-only by default. To specify read-only globals,
-context properties must be defined using `Object.defineProperty()`:
+上下文属性默认不是只读的。要指定只读全局变量，
+必须使用 `Object.defineProperty()` 定义上下文属性：
 
 ```mjs
 import repl from 'node:repl';
@@ -159,62 +153,59 @@ Object.defineProperty(r.context, 'm', {
 });
 ```
 
-#### Accessing core Node.js modules
+#### 访问 Node.js 核心模块
 
-The default evaluator will automatically load Node.js core modules into the
-REPL environment when used. For instance, unless otherwise declared as a
-global or scoped variable, the input `fs` will be evaluated on-demand as
-`global.fs = require('node:fs')`.
+默认求值器在使用时会自动将 Node.js 核心模块加载到
+REPL 环境中。例如，除非另外声明为
+全局或作用域变量，否则输入 `fs` 将按需求值为
+`global.fs = require('node:fs')`。
 
 ```console
 > fs.createReadStream('./some/file');
 ```
 
-#### Global uncaught exceptions
+#### 全局未捕获异常
 
 <!-- YAML
 changes:
   - version: v12.3.0
     pr-url: https://github.com/nodejs/node/pull/27151
-    description: The `'uncaughtException'` event is from now on triggered if the
-                 repl is used as standalone program.
+    description: "The `'uncaughtException'` event is from now on triggered if therepl is used as standalone program."
 -->
 
-The REPL uses the [`domain`][] module to catch all uncaught exceptions for that
-REPL session.
+REPL 使用 [`domain`][] 模块来捕获该
+REPL 会话的所有未捕获异常。
 
-This use of the [`domain`][] module in the REPL has these side effects:
+在 REPL 中使用 [`domain`][] 模块有以下副作用：
 
-* Uncaught exceptions only emit the [`'uncaughtException'`][] event in the
-  standalone REPL. Adding a listener for this event in a REPL within
-  another Node.js program results in [`ERR_INVALID_REPL_INPUT`][].
+* 未捕获异常仅在独立 REPL 中发出 [`'uncaughtException'`][] 事件。在另一个
+  Node.js 程序中的 REPL 内为此事件添加监听器会导致 [`ERR_INVALID_REPL_INPUT`][]。
 
   ```js
   const r = repl.start();
 
   r.write('process.on("uncaughtException", () => console.log("Foobar"));\n');
-  // Output stream includes:
-  //   TypeError [ERR_INVALID_REPL_INPUT]: Listeners for `uncaughtException`
-  //   cannot be used in the REPL
+  // 输出流包括：
+  //   TypeError [ERR_INVALID_REPL_INPUT]: uncaughtException 的监听器
+  //   不能在 REPL 中使用
 
   r.close();
   ```
 
-* Trying to use [`process.setUncaughtExceptionCaptureCallback()`][] throws
-  an [`ERR_DOMAIN_CANNOT_SET_UNCAUGHT_EXCEPTION_CAPTURE`][] error.
+* 尝试使用 [`process.setUncaughtExceptionCaptureCallback()`][] 会抛出
+  [`ERR_DOMAIN_CANNOT_SET_UNCAUGHT_EXCEPTION_CAPTURE`][] 错误。
 
-#### Assignment of the `_` (underscore) variable
+#### _(下划线) 变量的赋值
 
 <!-- YAML
 changes:
   - version: v9.8.0
     pr-url: https://github.com/nodejs/node/pull/18919
-    description: Added `_error` support.
+    description: "Added `_error` support."
 -->
 
-The default evaluator will, by default, assign the result of the most recently
-evaluated expression to the special variable `_` (underscore).
-Explicitly setting `_` to a value will disable this behavior.
+默认情况下，默认求值器会将最近求值的表达式结果赋值给特殊变量 `_` (下划线)。
+显式设置 `_` 为某个值将禁用此行为。
 
 ```console
 > [ 'a', 'b', 'c' ]
@@ -230,8 +221,8 @@ Expression assignment to _ now disabled.
 4
 ```
 
-Similarly, `_error` will refer to the last seen error, if there was any.
-Explicitly setting `_error` to a value will disable this behavior.
+类似地，`_error` 将引用最后看到的错误（如果有的话）。
+显式设置 `_error` 为某个值将禁用此行为。
 
 ```console
 > throw new Error('foo');
@@ -240,9 +231,9 @@ Uncaught Error: foo
 'foo'
 ```
 
-#### `await` keyword
+#### `await` 关键字
 
-Support for the `await` keyword is enabled at the top level.
+对 `await` 关键字的支持在顶层启用。
 
 ```console
 > await Promise.resolve(123)
@@ -257,10 +248,10 @@ undefined
 undefined
 ```
 
-One known limitation of using the `await` keyword in the REPL is that
-it will invalidate the lexical scoping of the `const` keywords.
+在 REPL 中使用 `await` 关键字的一个已知限制是
+它会使 `const` 关键字的词法作用域失效。
 
-For example:
+例如：
 
 ```console
 > const m = await Promise.resolve(123)
@@ -269,14 +260,14 @@ undefined
 123
 > m = await Promise.resolve(234)
 234
-// redeclaring the constant does error
+// 重新声明常量会报错
 > const m = await Promise.resolve(345)
 Uncaught SyntaxError: Identifier 'm' has already been declared
 ```
 
-[`--no-experimental-repl-await`][] shall disable top-level await in REPL.
+[`--no-experimental-repl-await`][] 将禁用 REPL 中的顶层 await。
 
-### Reverse-i-search
+### 反向 i 搜索
 
 <!-- YAML
 added:
@@ -284,38 +275,37 @@ added:
  - v12.17.0
 -->
 
-The REPL supports bi-directional reverse-i-search similar to [ZSH][]. It is
-triggered with <kbd>Ctrl</kbd>+<kbd>R</kbd> to search backward
-and <kbd>Ctrl</kbd>+<kbd>S</kbd> to search forwards.
+REPL 支持类似于 [ZSH][] 的双向反向 i 搜索。它由
+<kbd>Ctrl</kbd>+<kbd>R</kbd> 触发向后搜索
+和 <kbd>Ctrl</kbd>+<kbd>S</kbd> 触发向前搜索。
 
-Duplicated history entries will be skipped.
+重复的历史条目将被跳过。
 
-Entries are accepted as soon as any key is pressed that doesn't correspond
-with the reverse search. Cancelling is possible by pressing <kbd>Esc</kbd>
-or <kbd>Ctrl</kbd>+<kbd>C</kbd>.
+一旦按下任何不对应
+反向搜索的键，条目即被接受。可以通过按 <kbd>Esc</kbd>
+或 <kbd>Ctrl</kbd>+<kbd>C</kbd> 来取消。
 
-Changing the direction immediately searches for the next entry in the expected
-direction from the current position on.
+改变方向会立即从当前位置开始向预期
+方向搜索下一个条目。
 
-### Custom evaluation functions
+### 自定义求值函数
 
-When a new [`repl.REPLServer`][] is created, a custom evaluation function may be
-provided. This can be used, for instance, to implement fully customized REPL
-applications.
+当创建新的 [`repl.REPLServer`][] 时，可以提供自定义求值函数。例如，这可用于实现完全自定义的 REPL
+应用程序。
 
-An evaluation function accepts the following four arguments:
+求值函数接受以下四个参数：
 
-* `code` {string} The code to be executed (e.g. `1 + 1`).
-* `context` {Object} The context in which the code is executed. This can either be the JavaScript `global`
-  context or a context specific to the REPL instance, depending on the `useGlobal` option.
-* `replResourceName` {string} An identifier for the REPL resource associated with the current code
-  evaluation. This can be useful for debugging purposes.
-* `callback` {Function} A function to invoke once the code evaluation is complete. The callback takes two parameters:
-  * An error object to provide if an error occurred during evaluation, or `null`/`undefined` if no error occurred.
-  * The result of the code evaluation (this is not relevant if an error is provided).
+* `code` {string} 要执行的代码（例如 `1 + 1`）。
+* `context` {Object} 代码执行的上下文。这可以是 JavaScript `global`
+  上下文，也可以是特定于 REPL 实例的上下文，具体取决于 `useGlobal` 选项。
+* `replResourceName` {string} 与当前代码
+  求值关联的 REPL 资源的标识符。这对于调试目的可能很有用。
+* `callback` {Function} 代码求值完成后调用的函数。回调接受两个参数：
+  * 如果在求值期间发生错误则提供的错误对象，如果没有发生错误则为 `null`/`undefined`。
+  * 代码求值的结果（如果提供了错误则此结果不相关）。
 
-The following illustrates an example of a REPL that squares a given number, an error is instead printed
-if the provided input is not actually a number:
+以下示例说明了一个对给定数字求平方的 REPL，如果
+提供的输入实际上不是数字，则打印错误：
 
 ```mjs
 import repl from 'node:repl';
@@ -353,11 +343,11 @@ function myEval(code, context, replResourceName, callback) {
 repl.start({ prompt: 'Enter a number: ', eval: myEval });
 ```
 
-#### Recoverable errors
+#### 可恢复错误
 
-At the REPL prompt, pressing <kbd>Enter</kbd> sends the current line of input to
-the `eval` function. In order to support multi-line input, the `eval` function
-can return an instance of `repl.Recoverable` to the provided callback function:
+在 REPL 提示符处，按 <kbd>Enter</kbd> 将当前输入行发送到
+`eval` 函数。为了支持多行输入，`eval` 函数
+可以向提供的回调函数返回 `repl.Recoverable` 的实例：
 
 ```js
 function myEval(cmd, context, filename, callback) {
@@ -380,22 +370,22 @@ function isRecoverableError(error) {
 }
 ```
 
-### Customizing REPL output
+### 自定义 REPL 输出
 
-By default, [`repl.REPLServer`][] instances format output using the
-[`util.inspect()`][] method before writing the output to the provided `Writable`
-stream (`process.stdout` by default). The `showProxy` inspection option is set
-to true by default and the `colors` option is set to true depending on the
-REPL's `useColors` option.
+默认情况下，[`repl.REPLServer`][] 实例在将输出写入提供的 `Writable`
+流（默认为 `process.stdout`）之前，使用
+[`util.inspect()`][] 方法格式化输出。`showProxy` 检查选项默认设置为
+true，`colors` 选项根据
+REPL 的 `useColors` 选项设置为 true。
 
-The `useColors` boolean option can be specified at construction to instruct the
-default writer to use ANSI style codes to colorize the output from the
-`util.inspect()` method.
+可以在构造时指定 `useColors` 布尔选项，以指示
+默认写入器使用 ANSI 风格代码来为
+`util.inspect()` 方法的输出着色。
 
-If the REPL is run as standalone program, it is also possible to change the
-REPL's [inspection defaults][`util.inspect()`] from inside the REPL by using the
-`inspect.replDefaults` property which mirrors the `defaultOptions` from
-[`util.inspect()`][].
+如果 REPL 作为独立程序运行，也可以通过使用
+`inspect.replDefaults` 属性从 REPL 内部更改
+REPL 的 [检查默认值][`util.inspect()`]，该属性镜像了
+[`util.inspect()`][] 中的 `defaultOptions`。
 
 ```console
 > util.inspect.replDefaults.compact = false;
@@ -407,9 +397,8 @@ false
 >
 ```
 
-To fully customize the output of a [`repl.REPLServer`][] instance pass in a new
-function for the `writer` option on construction. The following example, for
-instance, simply converts any input text to upper case:
+要完全自定义 [`repl.REPLServer`][] 实例的输出，请在构造时为 `writer` 选项传入新
+函数。例如，以下示例简单地将任何输入文本转换为大写：
 
 ```mjs
 import repl from 'node:repl';
@@ -439,17 +428,16 @@ function myWriter(output) {
 }
 ```
 
-## Class: `REPLServer`
+## 类：`REPLServer`
 
 <!-- YAML
 added: v0.1.91
 -->
 
-* `options` {Object|string} See [`repl.start()`][]
-* Extends: {readline.Interface}
+* `options` {Object|string} 参见 [`repl.start()`][]
+* 继承：{readline.Interface}
 
-Instances of `repl.REPLServer` are created using the [`repl.start()`][] method
-or directly using the JavaScript `new` keyword.
+`repl.REPLServer` 的实例是使用 [`repl.start()`][] 方法创建的，或者直接使用 JavaScript `new` 关键字创建。
 
 ```mjs
 import repl from 'node:repl';
@@ -469,18 +457,13 @@ const firstInstance = repl.start(options);
 const secondInstance = new repl.REPLServer(options);
 ```
 
-### Event: `'exit'`
+### 事件：`'exit'`
 
 <!-- YAML
 added: v0.7.7
 -->
 
-The `'exit'` event is emitted when the REPL is exited either by receiving the
-`.exit` command as input, the user pressing <kbd>Ctrl</kbd>+<kbd>C</kbd> twice
-to signal `SIGINT`,
-or by pressing <kbd>Ctrl</kbd>+<kbd>D</kbd> to signal `'end'` on the input
-stream. The listener
-callback is invoked without any arguments.
+当通过接收 `.exit` 命令作为输入、用户按两次 <kbd>Ctrl</kbd>+<kbd>C</kbd> 发出 `SIGINT` 信号，或按 <kbd>Ctrl</kbd>+<kbd>D</kbd> 在输入流上发出 `'end'` 信号而退出 REPL 时，会发出 `'exit'` 事件。监听器回调被调用时不带任何参数。
 
 ```js
 replServer.on('exit', () => {
@@ -489,20 +472,15 @@ replServer.on('exit', () => {
 });
 ```
 
-### Event: `'reset'`
+### 事件：`'reset'`
 
 <!-- YAML
 added: v0.11.0
 -->
 
-The `'reset'` event is emitted when the REPL's context is reset. This occurs
-whenever the `.clear` command is received as input _unless_ the REPL is using
-the default evaluator and the `repl.REPLServer` instance was created with the
-`useGlobal` option set to `true`. The listener callback will be called with a
-reference to the `context` object as the only argument.
+当 REPL 的上下文被重置时，会发出 `'reset'` 事件。每当收到 `.clear` 命令作为输入时就会发生这种情况，_除非_ REPL 正在使用默认评估器且 `repl.REPLServer` 实例创建时将 `useGlobal` 选项设置为 `true`。监听器回调将被调用，并仅传入对 `context` 对象的引用作为唯一参数。
 
-This can be used primarily to re-initialize REPL context to some pre-defined
-state:
+这主要用于将 REPL 上下文重新初始化为某些预定义状态：
 
 ```mjs
 import repl from 'node:repl';
@@ -530,8 +508,7 @@ initializeContext(r.context);
 r.on('reset', initializeContext);
 ```
 
-When this code is executed, the global `'m'` variable can be modified but then
-reset to its initial value using the `.clear` command:
+当执行此代码时，全局 `'m'` 变量可以被修改，然后使用 `.clear` 命令重置为其初始值：
 
 ```console
 $ ./node example.js
@@ -554,19 +531,15 @@ Clearing context...
 added: v0.3.0
 -->
 
-* `keyword` {string} The command keyword (_without_ a leading `.` character).
-* `cmd` {Object|Function} The function to invoke when the command is processed.
+* `keyword` {string} 命令关键字（_不带_ 前导 `.` 字符）。
+* `cmd` {Object|Function} 当处理命令时要调用的函数。
 
-The `replServer.defineCommand()` method is used to add new `.`-prefixed commands
-to the REPL instance. Such commands are invoked by typing a `.` followed by the
-`keyword`. The `cmd` is either a `Function` or an `Object` with the following
-properties:
+`replServer.defineCommand()` 方法用于向 REPL 实例添加新的 `.` 前缀命令。此类命令通过输入 `.` 后跟 `keyword` 来调用。`cmd` 是一个 `Function` 或具有以下属性的 `Object`：
 
-* `help` {string} Help text to be displayed when `.help` is entered (Optional).
-* `action` {Function} The function to execute, optionally accepting a single
-  string argument.
+* `help` {string} 当输入 `.help` 时显示的帮助文本（可选）。
+* `action` {Function} 要执行的函数，可选地接受单个字符串参数。
 
-The following example shows two new commands added to the REPL instance:
+以下示例显示了添加到 REPL 实例的两个新命令：
 
 ```mjs
 import repl from 'node:repl';
@@ -604,7 +577,7 @@ replServer.defineCommand('saybye', function saybye() {
 });
 ```
 
-The new commands can then be used from within the REPL instance:
+然后可以在 REPL 实例中使用新命令：
 
 ```console
 > .sayhello Node.js User
@@ -621,18 +594,13 @@ added: v0.1.91
 
 * `preserveCursor` {boolean}
 
-The `replServer.displayPrompt()` method readies the REPL instance for input
-from the user, printing the configured `prompt` to a new line in the `output`
-and resuming the `input` to accept new input.
+`replServer.displayPrompt()` 方法使 REPL 实例准备好接收用户输入，将配置的 `prompt` 打印到 `output` 中的新行，并恢复 `input` 以接受新输入。
 
-When multi-line input is being entered, a pipe `'|'` is printed rather than the
-'prompt'.
+当输入多行内容时，会打印管道符 `'|'` 而不是提示符。
 
-When `preserveCursor` is `true`, the cursor placement will not be reset to `0`.
+当 `preserveCursor` 为 `true` 时，光标位置不会重置为 `0`。
 
-The `replServer.displayPrompt` method is primarily intended to be called from
-within the action function for commands registered using the
-`replServer.defineCommand()` method.
+`replServer.displayPrompt` 方法主要旨在从使用 `replServer.defineCommand()` 方法注册的命令的动作函数内部调用。
 
 ### `replServer.clearBufferedCommand()`
 
@@ -640,10 +608,7 @@ within the action function for commands registered using the
 added: v9.0.0
 -->
 
-The `replServer.clearBufferedCommand()` method clears any command that has been
-buffered but not yet executed. This method is primarily intended to be
-called from within the action function for commands registered using the
-`replServer.defineCommand()` method.
+`replServer.clearBufferedCommand()` 方法清除任何已缓冲但尚未执行的命令。此方法主要旨在从使用 `replServer.defineCommand()` 方法注册的命令的动作函数内部调用。
 
 ### `replServer.setupHistory(historyConfig, callback)`
 
@@ -652,36 +617,24 @@ added: v11.10.0
 changes:
   - version: v24.2.0
     pr-url: https://github.com/nodejs/node/pull/58225
-    description: Updated the `historyConfig` parameter to accept an object
-                 with `filePath`, `size`, `removeHistoryDuplicates` and
-                 `onHistoryFileLoaded` properties.
+    description: "Updated the `historyConfig` parameter to accept an object with `filePath`, `size`, `removeHistoryDuplicates` and `onHistoryFileLoaded` properties."
 -->
 
-* `historyConfig` {Object|string} the path to the history file
-  If it is a string, it is the path to the history file.
-  If it is an object, it can have the following properties:
-  * `filePath` {string} the path to the history file
-  * `size` {number} Maximum number of history lines retained. To disable
-    the history set this value to `0`. This option makes sense only if
-    `terminal` is set to `true` by the user or by an internal `output` check,
-    otherwise the history caching mechanism is not initialized at all.
-    **Default:** `30`.
-  * `removeHistoryDuplicates` {boolean} If `true`, when a new input line added
-    to the history list duplicates an older one, this removes the older line
-    from the list. **Default:** `false`.
-  * `onHistoryFileLoaded` {Function} called when history writes are ready or upon error
+* `historyConfig` {Object|string} 历史文件的路径
+  如果它是字符串，则是历史文件的路径。
+  如果它是对象，它可以具有以下属性：
+  * `filePath` {string} 历史文件的路径
+  * `size` {number} 保留的最大历史行数。要禁用历史，将此值设置为 `0`。仅当用户将 `terminal` 设置为 `true` 或通过内部 `output` 检查设置为 `true` 时，此选项才有意义，否则历史缓存机制根本不会初始化。**默认值：** `30`。
+  * `removeHistoryDuplicates` {boolean} 如果为 `true`，当添加到历史列表的新输入行重复旧行时，这会从列表中删除旧行。**默认值：** `false`。
+  * `onHistoryFileLoaded` {Function} 当历史写入准备就绪或发生错误时调用
     * `err` {Error}
     * `repl` {repl.REPLServer}
-* `callback` {Function} called when history writes are ready or upon error
-  (Optional if provided as `onHistoryFileLoaded` in `historyConfig`)
+* `callback` {Function} 当历史写入准备就绪或发生错误时调用
+  （如果在 `historyConfig` 中作为 `onHistoryFileLoaded` 提供，则为可选）
   * `err` {Error}
   * `repl` {repl.REPLServer}
 
-Initializes a history log file for the REPL instance. When executing the
-Node.js binary and using the command-line REPL, a history file is initialized
-by default. However, this is not the case when creating a REPL
-programmatically. Use this method to initialize a history log file when working
-with REPL instances programmatically.
+为 REPL 实例初始化历史日志文件。当执行 Node.js 二进制文件并使用命令行 REPL 时，默认情况下会初始化历史文件。但是，以编程方式创建 REPL 时并非如此。当以编程方式使用 REPL 实例时，使用此方法初始化历史日志文件。
 
 ## `repl.builtinModules`
 
@@ -692,13 +645,13 @@ deprecated:
   - v22.16.0
 -->
 
-> Stability: 0 - Deprecated. Use [`module.builtinModules`][] instead.
+> 稳定性：0 - 已弃用。请改用 [`module.builtinModules`][]。
 
-* Type: {string\[]}
+* 类型：{string\[]}
 
-A list of the names of some Node.js modules, e.g., `'http'`.
+一些 Node.js 模块名称的列表，例如 `'http'`。
 
-An automated migration is available ([source](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-builtin-modules)):
+提供了一个自动迁移工具（[源代码](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-builtin-modules)）：
 
 ```bash
 npx codemod@latest @nodejs/repl-builtin-modules
@@ -711,121 +664,76 @@ added: v0.1.91
 changes:
   - version: v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62188
-    description: The `handleError` parameter has been added.
+    description: "The `handleError` parameter has been added."
   - version: v24.1.0
     pr-url: https://github.com/nodejs/node/pull/58003
-    description: Added the possibility to add/edit/remove multilines
-                 while adding a multiline command.
+    description: "Added the possibility to add/edit/remove multilineswhile adding a multiline command."
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/57400
-    description: The multi-line indicator is now "|" instead of "...".
-                 Added support for multi-line history.
-                 It is now possible to "fix" multi-line commands with syntax errors
-                 by visiting the history and editing the command.
-                 When visiting the multiline history from an old node version,
-                 the multiline structure is not preserved.
+    description: "The multi-line indicator is now '|' instead of '...'. Added support for multi-line history. It is now possible to 'fix' multi-line commands with syntax errors by visiting the history and editing the command. When visiting the multiline history from an old node version, the multiline structure is not preserved."
   - version:
      - v13.4.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/30811
-    description: The `preview` option is now available.
+    description: "The `preview` option is now available."
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26518
-    description: The `terminal` option now follows the default description in
-                 all cases and `useColors` checks `hasColors()` if available.
+    description: "The `terminal` option now follows the default description inall cases and `useColors` checks `hasColors()` if available."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19187
-    description: The `REPL_MAGIC_MODE` `replMode` was removed.
+    description: "The `REPL_MAGIC_MODE` `replMode` was removed."
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6635
-    description: The `breakEvalOnSigint` option is supported now.
+    description: "The `breakEvalOnSigint` option is supported now."
   - version: v5.8.0
     pr-url: https://github.com/nodejs/node/pull/5388
-    description: The `options` parameter is optional now.
+    description: "The `options` parameter is optional now."
 -->
 
 * `options` {Object|string}
-  * `prompt` {string} The input prompt to display. **Default:** `'> '`
-    (with a trailing space).
-  * `input` {stream.Readable} The `Readable` stream from which REPL input will
-    be read. **Default:** `process.stdin`.
-  * `output` {stream.Writable} The `Writable` stream to which REPL output will
-    be written. **Default:** `process.stdout`.
-  * `terminal` {boolean} If `true`, specifies that the `output` should be
-    treated as a TTY terminal.
-    **Default:** checking the value of the `isTTY` property on the `output`
-    stream upon instantiation.
-  * `eval` {Function} The function to be used when evaluating each given line
-    of input. **Default:** an async wrapper for the JavaScript `eval()`
-    function. An `eval` function can error with `repl.Recoverable` to indicate
-    the input was incomplete and prompt for additional lines. See the
-    [custom evaluation functions][] section for more details.
-  * `useColors` {boolean} If `true`, specifies that the default `writer`
-    function should include ANSI color styling to REPL output. If a custom
-    `writer` function is provided then this has no effect. **Default:** checking
-    color support on the `output` stream if the REPL instance's `terminal` value
-    is `true`.
-  * `useGlobal` {boolean} If `true`, specifies that the default evaluation
-    function will use the JavaScript `global` as the context as opposed to
-    creating a new separate context for the REPL instance. The node CLI REPL
-    sets this value to `true`. **Default:** `false`.
-  * `ignoreUndefined` {boolean} If `true`, specifies that the default writer
-    will not output the return value of a command if it evaluates to
-    `undefined`. **Default:** `false`.
-  * `writer` {Function} The function to invoke to format the output of each
-    command before writing to `output`. **Default:** [`util.inspect()`][].
-  * `completer` {Function} An optional function used for custom Tab auto
-    completion. See [`readline.InterfaceCompleter`][] for an example.
-  * `replMode` {symbol} A flag that specifies whether the default evaluator
-    executes all JavaScript commands in strict mode or default (sloppy) mode.
-    Acceptable values are:
-    * `repl.REPL_MODE_SLOPPY` to evaluate expressions in sloppy mode.
-    * `repl.REPL_MODE_STRICT` to evaluate expressions in strict mode. This is
-      equivalent to prefacing every repl statement with `'use strict'`.
-  * `breakEvalOnSigint` {boolean} Stop evaluating the current piece of code when
-    `SIGINT` is received, such as when <kbd>Ctrl</kbd>+<kbd>C</kbd> is pressed.
-    This cannot be used
-    together with a custom `eval` function. **Default:** `false`.
-  * `preview` {boolean} Defines if the repl prints autocomplete and output
-    previews or not. **Default:** `true` with the default eval function and
-    `false` in case a custom eval function is used. If `terminal` is falsy, then
-    there are no previews and the value of `preview` has no effect.
-  * `handleError` {Function} This function customizes error handling in the REPL.
-    It receives the thrown exception as its first argument and must return one
-    of the following values synchronously:
-    * `'print'` to print the error to the output stream (default behavior).
-    * `'ignore'` to skip all remaining error handling.
-    * `'unhandled'` to treat the exception as fully unhandled. In this case,
-      the error will be passed to process-wide exception handlers, such as
-      the [`'uncaughtException'`][] event.
-      The `'unhandled'` value may or may not be desirable in situations
-      where the `REPLServer` instance has been closed, depending on the particular
-      use case.
-* Returns: {repl.REPLServer}
+  * `prompt` {string} 要显示的输入提示符。**默认值：** `'> '`（带尾随空格）。
+  * `input` {stream.Readable} 将读取 REPL 输入的 `Readable` 流。**默认值：** `process.stdin`。
+  * `output` {stream.Writable} 将写入 REPL 输出的 `Writable` 流。**默认值：** `process.stdout`。
+  * `terminal` {boolean} 如果为 `true`，指定 `output` 应被视为 TTY 终端。**默认值：** 实例化时检查 `output` 流上的 `isTTY` 属性值。
+  * `eval` {Function} 用于评估每一行给定输入内容的函数。**默认值：** JavaScript `eval()` 函数的异步包装器。`eval` 函数可以使用 `repl.Recoverable` 报错，以指示输入不完整并提示输入额外的行。有关更多详细信息，请参阅 [自定义评估函数][] 部分。
+  * `useColors` {boolean} 如果为 `true`，指定默认 `writer` 函数应在 REPL 输出中包含 ANSI 颜色样式。如果提供了自定义 `writer` 函数，则此选项无效。**默认值：** 如果 REPL 实例的 `terminal` 值为 `true`，则检查 `output` 流上的颜色支持。
+  * `useGlobal` {boolean} 如果为 `true`，指定默认评估函数将使用 JavaScript `global` 作为上下文，而不是为 REPL 实例创建新的单独上下文。node CLI REPL 将此值设置为 `true`。**默认值：** `false`。
+  * `ignoreUndefined` {boolean} 如果为 `true`，指定默认写入器如果命令的返回值为 `undefined` 则不会输出该返回值。**默认值：** `false`。
+  * `writer` {Function} 在写入 `output` 之前调用该函数以格式化每个命令的输出。**默认值：** [`util.inspect()`][]。
+  * `completer` {Function} 用于自定义 Tab 自动完成的可选函数。参见 [`readline.InterfaceCompleter`][] 获取示例。
+  * `replMode` {symbol} 一个标志，指定默认评估器是在严格模式还是默认（宽松）模式下执行所有 JavaScript 命令。可接受的值为：
+    * `repl.REPL_MODE_SLOPPY` 以宽松模式评估表达式。
+    * `repl.REPL_MODE_STRICT` 以严格模式评估表达式。这相当于在每个 repl 语句前加上 `'use strict'`。
+  * `breakEvalOnSigint` {boolean} 当收到 `SIGINT` 时停止评估当前代码片段，例如当按下 <kbd>Ctrl</kbd>+<kbd>C</kbd> 时。这不能与自定义 `eval` 函数一起使用。**默认值：** `false`。
+  * `preview` {boolean} 定义 repl 是否打印自动完成和输出预览。**默认值：** 使用默认 eval 函数时为 `true`，使用自定义 eval 函数时为 `false`。如果 `terminal` 为假值，则没有预览，`preview` 的值无效。
+  * `handleError` {Function} 此函数自定义 REPL 中的错误处理。它接收抛出的异常作为第一个参数，并必须同步返回以下值之一：
+    * `'print'` 将错误打印到输出流（默认行为）。
+    * `'ignore'` 跳过所有剩余的错误处理。
+    * `'unhandled'` 将异常视为完全未处理。在这种情况下，错误将传递给进程范围的异常处理程序，例如 [`'uncaughtException'`][] 事件。
+      `'unhandled'` 值在 `REPLServer` 实例已关闭的情况下是否可取，取决于特定的用例。
+* 返回：{repl.REPLServer}
 
-The `repl.start()` method creates and starts a [`repl.REPLServer`][] instance.
+`repl.start()` 方法创建并启动 [`repl.REPLServer`][] 实例。
 
-If `options` is a string, then it specifies the input prompt:
+如果 `options` 是字符串，则它指定输入提示符：
 
 ```mjs
 import repl from 'node:repl';
 
-// a Unix style prompt
+// 一个 Unix 风格的提示符
 repl.start('$ ');
 ```
 
 ```cjs
 const repl = require('node:repl');
 
-// a Unix style prompt
+// 一个 Unix 风格的提示符
 repl.start('$ ');
 ```
 
-## The Node.js REPL
+## Node.js REPL
 
-Node.js itself uses the `node:repl` module to provide its own interactive
-interface for executing JavaScript. This can be used by executing the Node.js
-binary without passing any arguments (or by passing the `-i` argument):
+Node.js 本身使用 `node:repl` 模块来提供其自身的交互式界面以执行 JavaScript。可以通过在不传递任何参数（或传递 `-i` 参数）的情况下执行 Node.js 二进制文件来使用它：
 
 ```console
 $ node
@@ -841,50 +749,33 @@ undefined
 3
 ```
 
-### Environment variable options
+### 环境变量选项
 
-Various behaviors of the Node.js REPL can be customized using the following
-environment variables:
+可以使用以下环境变量自定义 Node.js REPL 的各种行为：
 
-* `NODE_REPL_HISTORY`: When a valid path is given, persistent REPL history
-  will be saved to the specified file rather than `.node_repl_history` in the
-  user's home directory. Setting this value to `''` (an empty string) will
-  disable persistent REPL history. Whitespace will be trimmed from the value.
-  On Windows platforms environment variables with empty values are invalid so
-  set this variable to one or more spaces to disable persistent REPL history.
-* `NODE_REPL_HISTORY_SIZE`: Controls how many lines of history will be
-  persisted if history is available. Must be a positive number.
-  **Default:** `1000`.
-* `NODE_REPL_MODE`: May be either `'sloppy'` or `'strict'`. **Default:**
-  `'sloppy'`, which will allow non-strict mode code to be run.
+* `NODE_REPL_HISTORY`：当给定有效路径时，持久化的 REPL 历史记录将保存到指定的文件，而不是用户主目录中的 `.node_repl_history`。将此值设置为 `''`（空字符串）将禁用持久化的 REPL 历史记录。值中的空白将被修剪。在 Windows 平台上，具有空值的环境变量是无效的，因此将此变量设置为一个或多个空格以禁用持久化的 REPL 历史记录。
+* `NODE_REPL_HISTORY_SIZE`：控制如果历史记录可用，将持久化多少行历史记录。必须是正数。**默认值：** `1000`。
+* `NODE_REPL_MODE`：可以是 `'sloppy'` 或 `'strict'`。**默认值：** `'sloppy'`，这将允许运行非严格模式代码。
 
-### Persistent history
+### 持久化历史记录
 
-By default, the Node.js REPL will persist history between `node` REPL sessions
-by saving inputs to a `.node_repl_history` file located in the user's home
-directory. This can be disabled by setting the environment variable
-`NODE_REPL_HISTORY=''`.
+默认情况下，Node.js REPL 通过将输入保存到位于用户主目录的 `.node_repl_history` 文件中，在 `node` REPL 会话之间持久化历史记录。可以通过设置环境变量 `NODE_REPL_HISTORY=''` 来禁用此功能。
 
-### Using the Node.js REPL with advanced line-editors
+### 将 Node.js REPL 与高级行编辑器一起使用
 
-For advanced line-editors, start Node.js with the environment variable
-`NODE_NO_READLINE=1`. This will start the main and debugger REPL in canonical
-terminal settings, which will allow use with `rlwrap`.
+对于高级行编辑器，请使用环境变量 `NODE_NO_READLINE=1` 启动 Node.js。这将以规范终端设置启动主 REPL 和调试器 REPL，这将允许与 `rlwrap` 一起使用。
 
-For example, the following can be added to a `.bashrc` file:
+例如，可以将以下内容添加到 `.bashrc` 文件中：
 
 ```bash
 alias node="env NODE_NO_READLINE=1 rlwrap node"
 ```
 
-### Starting multiple REPL instances in the same process
+### 在同一进程中启动多个 REPL 实例
 
-It is possible to create and run multiple REPL instances against a single
-running instance of Node.js that share a single `global` object (by setting
-the `useGlobal` option to `true`) but have separate I/O interfaces.
+可以针对单个正在运行的 Node.js 实例创建并运行多个 REPL 实例，它们共享单个 `global` 对象（通过将 `useGlobal` 选项设置为 `true`），但具有单独的 I/O 接口。
 
-The following example, for instance, provides separate REPLs on `stdin`, a Unix
-socket, and a TCP socket, all sharing the same `global` object:
+例如，以下代码在 `stdin`、Unix socket 和 TCP socket 上提供单独的 REPL，所有这些都共享相同的 `global` 对象：
 
 ```mjs
 import net from 'node:net';
@@ -903,7 +794,7 @@ repl.start({
 
 const unixSocketPath = '/tmp/node-repl-sock';
 
-// If the socket file already exists let's remove it
+// 如果 socket 文件已存在，让我们移除它
 fs.rmSync(unixSocketPath, { force: true });
 
 net.createServer((socket) => {
@@ -947,7 +838,7 @@ repl.start({
 
 const unixSocketPath = '/tmp/node-repl-sock';
 
-// If the socket file already exists let's remove it
+// 如果 socket 文件已存在，让我们移除它
 fs.rmSync(unixSocketPath, { force: true });
 
 net.createServer((socket) => {
@@ -975,23 +866,17 @@ net.createServer((socket) => {
 }).listen(5001);
 ```
 
-Running this application from the command line will start a REPL on stdin.
-Other REPL clients may connect through the Unix socket or TCP socket. `telnet`,
-for instance, is useful for connecting to TCP sockets, while `socat` can be used
-to connect to both Unix and TCP sockets.
+从命令行运行此应用程序将在 stdin 上启动 REPL。其他 REPL 客户端可以通过 Unix socket 或 TCP socket 连接。例如，`telnet` 对于连接 TCP sockets 很有用，而 `socat` 可用于连接 Unix 和 TCP sockets。
 
-By starting a REPL from a Unix socket-based server instead of stdin, it is
-possible to connect to a long-running Node.js process without restarting it.
+通过从基于 Unix socket 的服务器启动 REPL 而不是从 stdin 启动，可以在不重启的情况下连接到长期运行的 Node.js 进程。
 
-### Examples
+### 示例
 
-#### Full-featured "terminal" REPL over `net.Server` and `net.Socket`
+#### 通过 `net.Server` 和 `net.Socket` 实现功能齐全的“终端”REPL
 
-This is an example on how to run a "full-featured" (terminal) REPL using
-[`net.Server`][] and [`net.Socket`][]
+这是一个如何使用 [`net.Server`][] 和 [`net.Socket`][] 运行“功能齐全”（终端）REPL 的示例。
 
-The following script starts an HTTP server on port `1337` that allows
-clients to establish socket connections to its REPL instance.
+以下脚本启动一个端口为 `1337` 的 HTTP 服务器，允许客户端建立与其 REPL 实例的 socket 连接。
 
 ```mjs
 // repl-server.js
@@ -1037,8 +922,7 @@ net
   .listen(1337);
 ```
 
-While the following implements a client that can create a socket connection
-with the above defined server over port `1337`.
+而以下代码实现了一个客户端，可以通过端口 `1337` 与上述定义的服务器创建 socket 连接。
 
 ```mjs
 // repl-client.js
@@ -1105,17 +989,15 @@ process.stdin.on('data', (b) => {
 });
 ```
 
-To run the example open two different terminals on your machine, start the server
-with `node repl-server.js` in one terminal and `node repl-client.js` on the other.
+要运行此示例，请在机器上打开两个不同的终端，在一个终端中使用 `node repl-server.js` 启动服务器，在另一个终端中使用 `node repl-client.js`。
 
-Original code from <https://gist.github.com/TooTallNate/2209310>.
+原始代码来自 <https://gist.github.com/TooTallNate/2209310>。
 
-#### REPL over `curl`
+#### 通过 `curl` 实现 REPL
 
-This is an example on how to run a REPL instance over [`curl()`][]
+这是一个如何通过 [`curl()`][] 运行 REPL 实例的示例。
 
-The following script starts an HTTP server on port `8000` that can accept
-a connection established via [`curl()`][].
+以下脚本启动一个端口为 `8000` 的 HTTP 服务器，可以接受通过 [`curl()`][] 建立的连接。
 
 ```mjs
 import http from 'node:http';
@@ -1157,20 +1039,15 @@ const server = http.createServer((req, res) => {
 server.listen(8000);
 ```
 
-When the above script is running you can then use [`curl()`][] to connect to
-the server and connect to its REPL instance by running `curl --no-progress-meter -sSNT. localhost:8000`.
+当上述脚本运行时，您可以使用 [`curl()`][] 连接到服务器，并通过运行 `curl --no-progress-meter -sSNT. localhost:8000` 连接到其 REPL 实例。
 
-**Warning** This example is intended purely for educational purposes to demonstrate how
-Node.js REPLs can be started using different I/O streams.
-It should **not** be used in production environments or any context where security
-is a concern without additional protective measures.
-If you need to implement REPLs in a real-world application, consider alternative
-approaches that mitigate these risks, such as using secure input mechanisms and
-avoiding open network interfaces.
+**警告** 此示例仅用于教育目的，以演示如何使用不同的 I/O 流启动 Node.js REPL。
+**不应** 在生产环境或任何涉及安全问题的上下文中使用，除非采取额外的保护措施。
+如果需要在现实世界的应用程序中实现 REPL，请考虑替代方法来减轻这些风险，例如使用安全的输入机制并避免开放的网络接口。
 
-Original code from <https://gist.github.com/TooTallNate/2053342>.
+原始代码来自 <https://gist.github.com/TooTallNate/2053342>。
 
-[TTY keybindings]: readline.md#tty-keybindings
+[TTY 键绑定]: readline.md#tty-keybindings
 [ZSH]: https://en.wikipedia.org/wiki/Z_shell
 [`'uncaughtException'`]: process.md#event-uncaughtexception
 [`--no-experimental-repl-await`]: cli.md#--no-experimental-repl-await
@@ -1187,5 +1064,5 @@ Original code from <https://gist.github.com/TooTallNate/2053342>.
 [`repl.start()`]: #replstartoptions
 [`reverse-i-search`]: #reverse-i-search
 [`util.inspect()`]: util.md#utilinspectobject-options
-[custom evaluation functions]: #custom-evaluation-functions
+[自定义评估函数]: #custom-evaluation-functions
 [stream]: stream.md

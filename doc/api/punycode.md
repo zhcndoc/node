@@ -6,38 +6,25 @@ deprecated: v7.0.0
 
 <!--introduced_in=v0.10.0-->
 
-> Stability: 0 - Deprecated
+> 稳定性：0 - 已弃用
 
 <!-- source_link=lib/punycode.js -->
 
-**The version of the punycode module bundled in Node.js is being deprecated.**
-In a future major version of Node.js this module will be removed. Users
-currently depending on the `punycode` module should switch to using the
-userland-provided [Punycode.js][] module instead. For punycode-based URL
-encoding, see [`url.domainToASCII`][] or, more generally, the
-[WHATWG URL API][].
+**Node.js 捆绑的 punycode 模块版本已被弃用。**
+在未来的 Node.js 主版本中，此模块将被移除。当前依赖 `punycode` 模块的用户应改用用户空间提供的 [Punycode.js][] 模块。对于基于 punycode 的 URL 编码，请参阅 [`url.domainToASCII`][] 或更通用的 [WHATWG URL API][]。
 
-The `punycode` module is a bundled version of the [Punycode.js][] module. It
-can be accessed using:
+`punycode` 模块是 [Punycode.js][] 模块的捆绑版本。
+可以使用以下方式访问：
 
 ```js
 const punycode = require('node:punycode');
 ```
 
-[Punycode][] is a character encoding scheme defined by RFC 3492 that is
-primarily intended for use in Internationalized Domain Names. Because host
-names in URLs are limited to ASCII characters only, Domain Names that contain
-non-ASCII characters must be converted into ASCII using the Punycode scheme.
-For instance, the Japanese character that translates into the English word,
-`'example'` is `'例'`. The Internationalized Domain Name, `'例.com'` (equivalent
-to `'example.com'`) is represented by Punycode as the ASCII string
-`'xn--fsq.com'`.
+[Punycode][] 是一种由 RFC 3492 定义的字符编码方案，主要用于国际化域名。因为 URL 中的主机名仅限于 ASCII 字符，所以包含非 ASCII 字符的域名必须使用 Punycode 方案转换为 ASCII。例如，翻译成英文单词 `'example'` 的日文字符是 `'例'`。国际化域名 `'例.com'`（等同于 `'example.com'`）由 Punycode 表示为 ASCII 字符串 `'xn--fsq.com'`。
 
-The `punycode` module provides a simple implementation of the Punycode standard.
+`punycode` 模块提供了 Punycode 标准的简单实现。
 
-The `punycode` module is a third-party dependency used by Node.js and
-made available to developers as a convenience. Fixes or other modifications to
-the module must be directed to the [Punycode.js][] project.
+`punycode` 模块是 Node.js 使用的第三方依赖项，为方便开发者而提供。对该模块的修复或其他修改必须指向 [Punycode.js][] 项目。
 
 ## `punycode.decode(string)`
 
@@ -47,8 +34,7 @@ added: v0.5.1
 
 * `string` {string}
 
-The `punycode.decode()` method converts a [Punycode][] string of ASCII-only
-characters to the equivalent string of Unicode codepoints.
+`punycode.decode()` 方法将仅包含 ASCII 字符的 [Punycode][] 字符串转换为等效的 Unicode 码点字符串。
 
 ```js
 punycode.decode('maana-pta'); // 'mañana'
@@ -63,8 +49,7 @@ added: v0.5.1
 
 * `string` {string}
 
-The `punycode.encode()` method converts a string of Unicode codepoints to a
-[Punycode][] string of ASCII-only characters.
+`punycode.encode()` 方法将 Unicode 码点字符串转换为仅包含 ASCII 字符的 [Punycode][] 字符串。
 
 ```js
 punycode.encode('mañana'); // 'maana-pta'
@@ -79,13 +64,10 @@ added: v0.6.1
 
 * `domain` {string}
 
-The `punycode.toASCII()` method converts a Unicode string representing an
-Internationalized Domain Name to [Punycode][]. Only the non-ASCII parts of the
-domain name will be converted. Calling `punycode.toASCII()` on a string that
-already only contains ASCII characters will have no effect.
+`punycode.toASCII()` 方法将表示国际化域名的 Unicode 字符串转换为 [Punycode][]。只有域名的非 ASCII 部分会被转换。在已经仅包含 ASCII 字符的字符串上调用 `punycode.toASCII()` 将不会产生任何效果。
 
 ```js
-// encode domain names
+// 编码域名
 punycode.toASCII('mañana.com');  // 'xn--maana-pta.com'
 punycode.toASCII('☃-⌘.com');   // 'xn----dqo34k.com'
 punycode.toASCII('example.com'); // 'example.com'
@@ -99,12 +81,10 @@ added: v0.6.1
 
 * `domain` {string}
 
-The `punycode.toUnicode()` method converts a string representing a domain name
-containing [Punycode][] encoded characters into Unicode. Only the [Punycode][]
-encoded parts of the domain name are be converted.
+`punycode.toUnicode()` 方法将表示包含 [Punycode][] 编码字符的域名的字符串转换为 Unicode。只有域名的 [Punycode][] 编码部分会被转换。
 
 ```js
-// decode domain names
+// 解码域名
 punycode.toUnicode('xn--maana-pta.com'); // 'mañana.com'
 punycode.toUnicode('xn----dqo34k.com');  // '☃-⌘.com'
 punycode.toUnicode('example.com');       // 'example.com'
@@ -124,12 +104,11 @@ added: v0.7.0
 
 * `string` {string}
 
-The `punycode.ucs2.decode()` method returns an array containing the numeric
-codepoint values of each Unicode symbol in the string.
+`punycode.ucs2.decode()` 方法返回一个数组，包含字符串中每个 Unicode 符号的数字码点值。
 
 ```js
 punycode.ucs2.decode('abc'); // [0x61, 0x62, 0x63]
-// surrogate pair for U+1D306 tetragram for centre:
+// U+1D306 中心四面体的代理对：
 punycode.ucs2.decode('\uD834\uDF06'); // [0x1D306]
 ```
 
@@ -141,8 +120,7 @@ added: v0.7.0
 
 * `codePoints` {integer\[]}
 
-The `punycode.ucs2.encode()` method returns a string based on an array of
-numeric code point values.
+`punycode.ucs2.encode()` 方法基于数字码点值数组返回一个字符串。
 
 ```js
 punycode.ucs2.encode([0x61, 0x62, 0x63]); // 'abc'
@@ -155,9 +133,9 @@ punycode.ucs2.encode([0x1D306]); // '\uD834\uDF06'
 added: v0.6.1
 -->
 
-* Type: {string}
+* 类型：{string}
 
-Returns a string identifying the current [Punycode.js][] version number.
+返回一个字符串，标识当前的 [Punycode.js][] 版本号。
 
 [Punycode]: https://tools.ietf.org/html/rfc3492
 [Punycode.js]: https://github.com/bestiejs/punycode.js

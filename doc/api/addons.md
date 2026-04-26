@@ -1,62 +1,55 @@
-# C++ addons
+# C++ 插件
 
 <!--introduced_in=v0.10.0-->
 
 <!-- type=misc -->
 
-_Addons_ are dynamically-linked shared objects that can be loaded via the
-[`require()`][] function as ordinary Node.js modules.
-Addons provide a foreign function interface between JavaScript and native code.
+_插件_ 是动态链接的共享对象，可以通过 [`require()`][] 函数作为普通的 Node.js 模块加载。
+插件提供了 JavaScript 和本地代码之间的外部函数接口。
 
-There are three options for implementing addons:
+实现插件有三种选项：
 
-* [Node-API][] (recommended)
-* `nan` ([Native Abstractions for Node.js][])
-* direct use of internal V8, libuv, and Node.js libraries
+* [Node-API][]（推荐）
+* `nan`（[Native Abstractions for Node.js][]）
+* 直接使用内部的 V8、libuv 和 Node.js 库
 
-This rest of this document focuses on the latter, requiring
-knowledge of multiple components and APIs:
+本文档的其余部分侧重于后者，需要了解多个组件和 API：
 
-* [V8][]: the C++ library Node.js uses to provide the
-  JavaScript implementation. It provides the mechanisms for creating objects,
-  calling functions, etc. The V8's API is documented mostly in the
-  `v8.h` header file (`deps/v8/include/v8.h` in the Node.js source
-  tree), and is also available [online][v8-docs].
+* [V8][]：Node.js 用于提供 JavaScript 实现的 C++ 库。它提供了创建对象、
+  调用函数等的机制。V8 的 API 主要在 `v8.h` 头文件中文档化（Node.js 源代码
+  树中的 `deps/v8/include/v8.h`），也可 [在线][v8-docs] 获取。
 
-* [`libuv`][]: The C library that implements the Node.js event loop, its worker
-  threads and all of the asynchronous behaviors of the platform. It also
-  serves as a cross-platform abstraction library, giving easy, POSIX-like
-  access across all major operating systems to many common system tasks, such
-  as interacting with the file system, sockets, timers, and system events. libuv
-  also provides a threading abstraction similar to POSIX threads for
-  more sophisticated asynchronous addons that need to move beyond the
-  standard event loop. Addon authors should
-  avoid blocking the event loop with I/O or other time-intensive tasks by
-  offloading work via libuv to non-blocking system operations, worker threads,
-  or a custom use of libuv threads.
+* [`libuv`][]：实现 Node.js 事件循环、其工作
+  线程以及平台所有异步行为的 C 库。它还
+  作为一个跨平台抽象库，在所有主要操作系统上提供简单、类似 POSIX 的
+  访问许多常见系统任务的方式，例如
+  与文件系统、套接字、定时器和系统事件交互。libuv
+  还为需要超越
+  标准事件循环的更复杂的异步插件提供类似 POSIX 线程的线程抽象。插件作者应
+  避免通过 I/O 或其他耗时任务阻塞事件循环，方法是通过 libuv 将工作
+  卸载到非阻塞系统操作、工作线程，
+  或自定义使用 libuv 线程。
 
-* Internal Node.js libraries: Node.js itself exports C++ APIs that addons can
-  use, the most important of which is the `node::ObjectWrap` class.
+* 内部 Node.js 库：Node.js 本身导出插件可以
+  使用的 C++ API，其中最重要的是 `node::ObjectWrap` 类。
 
-* Other statically linked libraries (including OpenSSL): These
-  other libraries are located in the `deps/` directory in the Node.js source
-  tree. Only the libuv, OpenSSL, V8, and zlib symbols are purposefully
-  re-exported by Node.js and may be used to various extents by addons. See
-  [Linking to libraries included with Node.js][] for additional information.
+* 其他静态链接库（包括 OpenSSL）：这些
+  其他库位于 Node.js 源代码树中的 `deps/` 目录中。只有 libuv、OpenSSL、V8 和 zlib 符号是 Node.js 有意
+  重新导出的，插件可以在不同程度上使用它们。请参阅
+  [链接到 Node.js 包含的库][] 以获取更多信息。
 
-All of the following examples are available for [download][] and may
-be used as the starting-point for an addon.
+以下所有示例均可 [下载][]，并可
+  用作插件的起点。
 
-## Hello world
+## 你好世界
 
-This "Hello world" example is a simple addon, written in C++, that is the
-equivalent of the following JavaScript code:
+这个"Hello world"示例是一个简单的插件，用 C++ 编写，相当于以下 JavaScript 代码：
 
 ```js
 module.exports.hello = () => 'world';
 ```
 
-First, create the file `hello.cc`:
+首先，创建文件 `hello.cc`：
 
 ```cpp
 // hello.cc
@@ -82,12 +75,12 @@ void Initialize(Local<Object> exports) {
   NODE_SET_METHOD(exports, "hello", Method);
 }
 
-NODE_MODULE(NODE_GYP_MODULE_NAME, Initialize) // N.B.: no semi-colon, this is not a function
+NODE_MODULE(NODE_GYP_MODULE_NAME, Initialize) // 注意：没有分号，这不是一个函数
 
 }  // namespace demo
 ```
 
-On most platforms, the following `Makefile` can get us started:
+在大多数平台上，以下 `Makefile` 可以帮助我们开始：
 
 <!--lint disable no-tabs remark-lint-->
 
@@ -101,7 +94,7 @@ hello.node: hello.cc
 
 <!--lint enable no-tabs remark-lint-->
 
-Then running the following commands will compile and run the code:
+然后运行以下命令将编译并运行代码：
 
 ```console
 $ make
@@ -109,24 +102,22 @@ $ node -p 'require("./hello.node").hello()'
 world
 ```
 
-To integrate with the npm ecosystem, see the [Building][] section.
+要与 npm 生态系统集成，请参阅 [构建][] 部分。
 
-### Context-aware addons
+### 感知上下文的插件
 
-Addons defined with `NODE_MODULE()` can not be loaded in multiple contexts or
-multiple threads at the same time.
+使用 `NODE_MODULE()` 定义的插件不能同时在多个上下文或
+多个线程中加载。
 
-There are environments in which Node.js addons may need to be loaded multiple
-times in multiple contexts. For example, the [Electron][] runtime runs multiple
-instances of Node.js in a single process. Each instance will have its own
-`require()` cache, and thus each instance will need a native addon to behave
-correctly when loaded via `require()`. This means that the addon
-must support multiple initializations.
+有些环境中，Node.js 插件可能需要多次加载到多个上下文中。例如，[Electron][] 运行时在单个进程中运行多个
+Node.js 实例。每个实例都有自己的
+`require()` 缓存，因此每个实例都需要一个本地插件在通过 `require()` 加载时表现
+正确。这意味着插件
+必须支持多次初始化。
 
-A context-aware addon can be constructed by using the macro
-`NODE_MODULE_INITIALIZER`, which expands to the name of a function which Node.js
-will expect to find when it loads an addon. An addon can thus be initialized as
-in the following example:
+可以通过使用宏
+`NODE_MODULE_INITIALIZER` 构建感知上下文的插件，该宏扩展为 Node.js
+加载插件时期望找到的函数名称。因此，插件可以如下例所示进行初始化：
 
 ```cpp
 using namespace v8;
@@ -135,60 +126,51 @@ extern "C" NODE_MODULE_EXPORT void
 NODE_MODULE_INITIALIZER(Local<Object> exports,
                         Local<Value> module,
                         Local<Context> context) {
-  /* Perform addon initialization steps here. */
+  /* 在此处执行插件初始化步骤。 */
 }
 ```
 
-Another option is to use the macro `NODE_MODULE_INIT()`, which will also
-construct a context-aware addon. Unlike `NODE_MODULE()`, which is used to
-construct an addon around a given addon initializer function,
-`NODE_MODULE_INIT()` serves as the declaration of such an initializer to be
-followed by a function body.
+另一个选项是使用宏 `NODE_MODULE_INIT()`，它也将
+构建一个感知上下文的插件。与 `NODE_MODULE()` 不同（后者用于
+围绕给定的插件初始化函数构建插件），
+`NODE_MODULE_INIT()` 作为此类初始化函数的声明，后跟函数体。
 
-The following three variables may be used inside the function body following an
-invocation of `NODE_MODULE_INIT()`:
+在调用 `NODE_MODULE_INIT()` 之后的函数体内可以使用以下三个变量：
 
-* `Local<Object> exports`,
-* `Local<Value> module`, and
+* `Local<Object> exports`，
+* `Local<Value> module`，和
 * `Local<Context> context`
 
-Building a context-aware addon requires careful management of global static data
-to ensure stability and correctness. Since the addon may be loaded multiple
-times, potentially even from different threads, any global static data stored
-in the addon must be properly protected, and must not contain any persistent
-references to JavaScript objects. The reason for this is that JavaScript
-objects are only valid in one context, and will likely cause a crash when
-accessed from the wrong context or from a different thread than the one on which
-they were created.
+构建感知上下文的插件需要仔细管理全局静态数据
+以确保稳定性和正确性。由于插件可能会多次加载，甚至可能从不同的线程加载，因此插件中存储的任何全局静态数据都必须得到适当保护，并且不能包含任何对
+JavaScript 对象的持久引用。原因是 JavaScript
+对象仅在一个上下文中有效，如果从错误的上下文或从不同于它们创建的线程访问，很可能会导致崩溃。
 
-The context-aware addon can be structured to avoid global static data by
-performing the following steps:
+可以通过执行以下步骤来构建感知上下文的插件，以避免全局静态数据：
 
-* Define a class which will hold per-addon-instance data and which has a static
-  member of the form
+* 定义一个类，该类将保存每个插件实例的数据，并具有一个静态
+  成员，形式为
   ```cpp
   static void DeleteInstance(void* data) {
-    // Cast `data` to an instance of the class and delete it.
+    // 将 `data` 强制转换为类的实例并删除它。
   }
   ```
-* Heap-allocate an instance of this class in the addon initializer. This can be
-  accomplished using the `new` keyword.
-* Call `node::AddEnvironmentCleanupHook()`, passing it the above-created
-  instance and a pointer to `DeleteInstance()`. This will ensure the instance is
-  deleted when the environment is torn down.
-* Store the instance of the class in a `v8::External`, and
-* Pass the `v8::External` to all methods exposed to JavaScript by passing it
-  to `v8::FunctionTemplate::New()` or `v8::Function::New()` which creates the
-  native-backed JavaScript functions. The third parameter of
-  `v8::FunctionTemplate::New()` or `v8::Function::New()`  accepts the
-  `v8::External` and makes it available in the native callback using the
-  `v8::FunctionCallbackInfo::Data()` method.
+* 在插件初始化器中堆分配该类的一个实例。这可以
+  通过使用 `new` 关键字完成。
+* 调用 `node::AddEnvironmentCleanupHook()`，将上面创建的
+  实例和指向 `DeleteInstance()` 的指针传递给它。这将确保实例在
+  环境销毁时被删除。
+* 将类的实例存储在 `v8::External` 中，并
+* 通过将 `v8::External` 传递给 `v8::FunctionTemplate::New()` 或 `v8::Function::New()` 来将其传递给所有暴露给 JavaScript 的方法，这两个函数创建
+  本地支持的 JavaScript 函数。
+  `v8::FunctionTemplate::New()` 或 `v8::Function::New()` 的第三个参数接受
+  `v8::External` 并使用
+  `v8::FunctionCallbackInfo::Data()` 方法在本地回调中使其可用。
 
-This will ensure that the per-addon-instance data reaches each binding that can
-be called from JavaScript. The per-addon-instance data must also be passed into
-any asynchronous callbacks the addon may create.
+这将确保每个插件实例的数据到达每个可以从 JavaScript 调用的绑定。每个插件实例的数据也必须传递到
+插件可能创建的任何异步回调中。
 
-The following example illustrates the implementation of a context-aware addon:
+以下示例说明了感知上下文插件的实现：
 
 ```cpp
 #include <node.h>
@@ -199,11 +181,11 @@ class AddonData {
  public:
   explicit AddonData(Isolate* isolate):
       call_count(0) {
-    // Ensure this per-addon-instance data is deleted at environment cleanup.
+    // 确保此每个插件实例的数据在环境清理时被删除。
     node::AddEnvironmentCleanupHook(isolate, DeleteInstance, this);
   }
 
-  // Per-addon data.
+  // 每个插件的数据。
   int call_count;
 
   static void DeleteInstance(void* data) {
@@ -212,28 +194,28 @@ class AddonData {
 };
 
 static void Method(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  // Retrieve the per-addon-instance data.
+  // 检索每个插件实例的数据。
   AddonData* data =
       reinterpret_cast<AddonData*>(info.Data().As<External>()->Value());
   data->call_count++;
   info.GetReturnValue().Set((double)data->call_count);
 }
 
-// Initialize this addon to be context-aware.
+// 初始化此插件以感知上下文。
 NODE_MODULE_INIT(/* exports, module, context */) {
   Isolate* isolate = Isolate::GetCurrent();
 
-  // Create a new instance of `AddonData` for this instance of the addon and
-  // tie its life cycle to that of the Node.js environment.
+  // 为此插件实例创建一个新的 `AddonData` 实例并
+  // 将其生命周期与 Node.js 环境的生命周期绑定。
   AddonData* data = new AddonData(isolate);
 
-  // Wrap the data in a `v8::External` so we can pass it to the method we
-  // expose.
+  // 将数据包装在 `v8::External` 中，以便我们可以将其传递给我们
+  // 暴露的方法。
   Local<External> external = External::New(isolate, data);
 
-  // Expose the method `Method` to JavaScript, and make sure it receives the
-  // per-addon-instance data we created above by passing `external` as the
-  // third parameter to the `FunctionTemplate` constructor.
+  // 将方法 `Method` 暴露给 JavaScript，并通过将 `external` 作为
+  // 第三个参数传递给 `FunctionTemplate` 构造函数，确保它接收我们
+  // 上面创建的每个插件实例的数据。
   exports->Set(context,
                String::NewFromUtf8(isolate, "method").ToLocalChecked(),
                FunctionTemplate::New(isolate, Method, external)
@@ -241,7 +223,7 @@ NODE_MODULE_INIT(/* exports, module, context */) {
 }
 ```
 
-#### Worker support
+#### Worker 支持
 
 <!-- YAML
 changes:
@@ -249,18 +231,18 @@ changes:
     - v14.8.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34572
-    description: Cleanup hooks may now be asynchronous.
+    description: 清理钩子现在可以是异步的。
 -->
 
-In order to be loaded from multiple Node.js environments,
-such as a main thread and a Worker thread, an add-on needs to either:
+为了能够从多个 Node.js 环境加载，
+例如主线程和 Worker 线程，插件需要：
 
-* Be an [Node-API][] addon.
-* Be declared as context-aware using `NODE_MODULE_INIT()` as described above.
+* 是一个 [Node-API][] 插件。
+* 如上所述使用 `NODE_MODULE_INIT()` 声明为感知上下文。
 
-In order to support [`Worker`][] threads, addons need to clean up any resources
-they may have allocated when such a thread exits. This can be achieved through
-the usage of the `AddEnvironmentCleanupHook()` function:
+为了支持 [`Worker`][] 线程，插件需要清理任何
+在此类线程退出时可能已分配的资源。这可以通过
+使用 `AddEnvironmentCleanupHook()` 函数来实现：
 
 ```cpp
 void AddEnvironmentCleanupHook(v8::Isolate* isolate,
@@ -268,17 +250,17 @@ void AddEnvironmentCleanupHook(v8::Isolate* isolate,
                                void* arg);
 ```
 
-This function adds a hook that will run before a given Node.js instance shuts
-down. If necessary, such hooks can be removed before they are run using
-`RemoveEnvironmentCleanupHook()`, which has the same signature. Callbacks are
-run in last-in first-out order.
+此函数添加一个钩子，该钩子将在给定 Node.js 实例关闭
+之前运行。如有必要，可以在运行之前使用
+`RemoveEnvironmentCleanupHook()` 删除此类钩子，它具有相同的签名。回调按
+后进先出顺序运行。
 
-If necessary, there is an additional pair of `AddEnvironmentCleanupHook()`
-and `RemoveEnvironmentCleanupHook()` overloads, where the cleanup hook takes a
-callback function. This can be used for shutting down asynchronous resources,
-such as any libuv handles registered by the addon.
+如有必要，还有一对额外的 `AddEnvironmentCleanupHook()`
+和 `RemoveEnvironmentCleanupHook()` 重载，其中清理钩子接受一个
+回调函数。这可用于关闭异步资源，
+例如插件注册的任何 libuv 句柄。
 
-The following `addon.cc` uses `AddEnvironmentCleanupHook`:
+以下 `addon.cc` 使用 `AddEnvironmentCleanupHook`：
 
 <!-- addon-verify-file worker_support/addon.cc -->
 
@@ -294,7 +276,7 @@ using v8::Isolate;
 using v8::Local;
 using v8::Object;
 
-// Note: In a real-world application, do not rely on static/global data.
+// 注意：在实际应用中，不要依赖静态/全局数据。
 static char cookie[] = "yum yum";
 static int cleanup_cb1_called = 0;
 static int cleanup_cb2_called = 0;
@@ -303,7 +285,7 @@ static void cleanup_cb1(void* arg) {
   Isolate* isolate = static_cast<Isolate*>(arg);
   HandleScope scope(isolate);
   Local<Object> obj = Object::New(isolate);
-  assert(!obj.IsEmpty());  // assert VM is still alive
+  assert(!obj.IsEmpty());  // 断言 VM 仍然存活
   assert(obj->IsObject());
   cleanup_cb1_called++;
 }
@@ -318,7 +300,7 @@ static void sanity_check(void*) {
   assert(cleanup_cb2_called == 1);
 }
 
-// Initialize this addon to be context-aware.
+// 初始化此插件以感知上下文。
 NODE_MODULE_INIT(/* exports, module, context */) {
   Isolate* isolate = Isolate::GetCurrent();
 
@@ -328,7 +310,7 @@ NODE_MODULE_INIT(/* exports, module, context */) {
 }
 ```
 
-Test in JavaScript by running:
+通过运行以下命令在 JavaScript 中测试：
 
 <!-- addon-verify-file worker_support/test.js -->
 
@@ -337,13 +319,12 @@ Test in JavaScript by running:
 require('./build/Release/addon');
 ```
 
-### Building
+### 构建
 
-Once the source code has been written, it must be compiled into the binary
-`addon.node` file. To do so, create a file called `binding.gyp` in the
-top-level of the project describing the build configuration of the module
-using a JSON-like format. This file is used by [`node-gyp`][], a tool written
-specifically to compile Node.js addons.
+一旦源代码编写完成，必须将其编译为二进制
+`addon.node` 文件。为此，在项目的
+顶层创建一个名为 `binding.gyp` 的文件，使用类似 JSON 的格式描述模块的构建配置。此文件由 [`node-gyp`][] 使用，这是一个专门
+用于编译 Node.js 插件的工具。
 
 ```json
 {
@@ -356,43 +337,38 @@ specifically to compile Node.js addons.
 }
 ```
 
-A version of the `node-gyp` utility is bundled and distributed with
-Node.js as part of `npm`. This version is not made directly available for
-developers to use and is intended only to support the ability to use the
-`npm install` command to compile and install addons. Developers who wish to
-use `node-gyp` directly can install it using the command
-`npm install -g node-gyp`. See the `node-gyp` [installation instructions][] for
-more information, including platform-specific requirements.
+`node-gyp` 工具的一个版本随 Node.js 一起捆绑分发，作为 `npm` 的一部分。此版本不直接供
+开发人员使用，仅旨在支持使用
+`npm install` 命令编译和安装插件的能力。希望直接使用 `node-gyp` 的开发人员可以使用命令
+`npm install -g node-gyp` 安装它。请参阅 `node-gyp` [安装说明][] 以
+获取更多信息，包括特定于平台的要求。
 
-Once the `binding.gyp` file has been created, use `node-gyp configure` to
-generate the appropriate project build files for the current platform. This
-will generate either a `Makefile` (on Unix platforms) or a `vcxproj` file
-(on Windows) in the `build/` directory.
+创建 `binding.gyp` 文件后，使用 `node-gyp configure` 为
+当前平台生成适当的项目构建文件。这
+将在 `build/` 目录中生成 `Makefile`（在 Unix 平台上）或 `vcxproj` 文件
+（在 Windows 上）。
 
-Next, invoke the `node-gyp build` command to generate the compiled `addon.node`
-file. This will be put into the `build/Release/` directory.
+接下来，调用 `node-gyp build` 命令生成编译后的 `addon.node`
+文件。这将放入 `build/Release/` 目录中。
 
-When using `npm install` to install a Node.js addon, npm uses its own bundled
-version of `node-gyp` to perform this same set of actions, generating a
-compiled version of the addon for the user's platform on demand.
+使用 `npm install` 安装 Node.js 插件时，npm 使用其自己捆绑的
+`node-gyp` 版本执行这组相同的操作，按需为用户的平台生成
+插件的编译版本。
 
-Once built, the binary addon can be used from within Node.js by pointing
-[`require()`][] to the built `addon.node` module:
+构建完成后，可以通过将
+[`require()`][] 指向构建的 `addon.node` 模块在 Node.js 中使用二进制插件：
 
 ```js
 // hello.js
 const addon = require('./build/Release/addon');
 
 console.log(addon.hello());
-// Prints: 'world'
+// 打印：'world'
 ```
 
-Because the exact path to the compiled addon binary can vary depending on how
-it is compiled (i.e. sometimes it may be in `./build/Debug/`), addons can use
-the [bindings][] package to load the compiled module.
+因为编译后的插件二进制文件的确切路径可能因编译方式而异（即有时它可能在 `./build/Debug/` 中），插件可以使用 [bindings][] 包来加载编译后的模块。
 
-While the `bindings` package implementation is more sophisticated in how it
-locates addon modules, it is essentially using a `try…catch` pattern similar to:
+虽然 `bindings` 包的实现在定位插件模块方面更复杂，但它本质上使用类似于以下的 `try…catch` 模式：
 
 ```js
 try {
@@ -402,41 +378,39 @@ try {
 }
 ```
 
-### Linking to libraries included with Node.js
+### 链接到 Node.js 包含的库
 
-Node.js uses statically linked libraries such as V8, libuv, and OpenSSL. All
-addons are required to link to V8 and may link to any of the other dependencies
-as well. Typically, this is as simple as including the appropriate
-`#include <...>` statements (e.g. `#include <v8.h>`) and `node-gyp` will locate
-the appropriate headers automatically. However, there are a few caveats to be
-aware of:
+Node.js 使用静态链接库，如 V8、libuv 和 OpenSSL。所有
+插件都需要链接到 V8，并且也可以链接到任何其他依赖项
+。通常，这就像包含适当的
+`#include <...>` 语句（例如 `#include <v8.h>`）一样简单，`node-gyp` 将自动
+找到适当的头文件。但是，需要注意以下几点：
 
-* When `node-gyp` runs, it will detect the specific release version of Node.js
-  and download either the full source tarball or just the headers. If the full
-  source is downloaded, addons will have complete access to the full set of
-  Node.js dependencies. However, if only the Node.js headers are downloaded,
-  then only the symbols exported by Node.js will be available.
+* 当 `node-gyp` 运行时，它将检测 Node.js 的特定发布版本
+  并下载完整的源代码 tarball 或仅下载头文件。如果下载了完整
+  的源代码，插件将完全访问全套
+  Node.js 依赖项。但是，如果仅下载了 Node.js 头文件，
+  则只有 Node.js 导出的符号可用。
 
-* `node-gyp` can be run using the `--nodedir` flag pointing at a local Node.js
-  source image. Using this option, the addon will have access to the full set of
-  dependencies.
+* `node-gyp` 可以使用 `--nodedir` 标志运行，指向本地 Node.js
+  源代码镜像。使用此选项，插件将访问全套
+  依赖项。
 
-### Loading addons using `require()`
+### 使用 `require()` 加载插件
 
-The filename extension of the compiled addon binary is `.node` (as opposed
-to `.dll` or `.so`). The [`require()`][] function is written to look for
-files with the `.node` file extension and initialize those as dynamically-linked
-libraries.
+编译后的插件二进制文件的文件扩展名是 `.node`（与
+`.dll` 或 `.so` 相反）。[`require()`][] 函数被编写为查找
+具有 `.node` 文件扩展名的文件，并将它们初始化为动态链接
+库。
 
-When calling [`require()`][], the `.node` extension can usually be
-omitted and Node.js will still find and initialize the addon. One caveat,
-however, is that Node.js will first attempt to locate and load modules or
-JavaScript files that happen to share the same base name. For instance, if
-there is a file `addon.js` in the same directory as the binary `addon.node`,
-then [`require('addon')`][`require()`] will give precedence to the `addon.js` file
-and load it instead.
+调用 [`require()`][] 时，通常可以省略 `.node` 扩展名，Node.js 仍将找到并初始化插件。然而，有一个注意事项，
+即 Node.js 将首先尝试定位和加载恰好共享相同
+基本名称的模块或 JavaScript 文件。例如，如果
+二进制文件 `addon.node` 所在的同一目录中有一个文件 `addon.js`，
+那么 [`require('addon')`][`require()`] 将优先使用 `addon.js` 文件
+并加载它。
 
-### Loading addons using `import`
+### 使用 `import` 加载插件
 
 <!-- YAML
 added:
@@ -444,17 +418,17 @@ added:
   - v22.20.0
 -->
 
-> Stability: 1.0 - Early development
+> 稳定性：1.0 - 早期开发
 
-You can use the [`--experimental-addon-modules`][] flag to enable support for
-both static `import` and dynamic `import()` to load binary addons.
+你可以使用 [`--experimental-addon-modules`][] 标志来启用支持
+静态 `import` 和动态 `import()` 来加载二进制插件。
 
-If we reuse the Hello World example from earlier, you could do:
+如果我们重用之前的 Hello World 示例，你可以这样做：
 
 ```mjs
 // hello.mjs
 import myAddon from './hello.node';
-// N.B.: import {hello} from './hello.node' would not work
+// 注意：import {hello} from './hello.node' 不起作用
 
 console.log(myAddon.hello());
 ```
@@ -464,36 +438,36 @@ $ node --experimental-addon-modules hello.mjs
 world
 ```
 
-## Native abstractions for Node.js
+## Node.js 的原生抽象
 
-Each of the examples illustrated in this document directly use the
-Node.js and V8 APIs for implementing addons. The V8 API can, and has, changed
-dramatically from one V8 release to the next (and one major Node.js release to
-the next). With each change, addons may need to be updated and recompiled in
-order to continue functioning. The Node.js release schedule is designed to
-minimize the frequency and impact of such changes but there is little that
-Node.js can do to ensure stability of the V8 APIs.
+本文档中展示的每个示例都直接使用
+Node.js 和 V8 API 来实现插件。V8 API 可能会，并且已经
+从一个 V8 版本到下一个版本（以及从一个主要 Node.js 版本到
+下一个版本）发生了巨大的变化。随着每次更改，插件可能需要
+更新和重新编译才能继续运行。Node.js 的发布计划旨在
+最小化此类更改的频率和影响，但 Node.js 几乎无法
+确保 V8 API 的稳定性。
 
-The [Native Abstractions for Node.js][] (or `nan`) provide a set of tools that
-addon developers are recommended to use to keep compatibility between past and
-future releases of V8 and Node.js. See the `nan` [examples][] for an
-illustration of how it can be used.
+[Node.js 的原生抽象][]（或 `nan`）提供了一套工具，
+建议插件开发者使用这些工具来保持与过去和
+未来版本的 V8 和 Node.js 的兼容性。请参阅 `nan` [示例][] 以
+了解如何使用它的说明。
 
 ## Node-API
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
-See [C/C++ addons with Node-API][Node-API].
+请参阅 [使用 Node-API 的 C/C++ 插件][Node-API]。
 
-## Addon examples
+## 插件示例
 
-Following are some example addons intended to help developers get started. The
-examples use the V8 APIs. Refer to the online [V8 reference][v8-docs]
-for help with the various V8 calls, and V8's [Embedder's Guide][] for an
-explanation of several concepts used such as handles, scopes, function
-templates, etc.
+以下是一些示例插件，旨在帮助开发者入门。这些
+示例使用 V8 API。请参阅在线 [V8 参考][v8-docs]
+以获取各种 V8 调用的帮助，并参阅 V8 的 [嵌入者指南][] 以
+了解所使用的几个概念的解释，例如句柄、作用域、函数
+模板等。
 
-Each of these examples using the following `binding.gyp` file:
+每个示例都使用以下 `binding.gyp` 文件：
 
 ```json
 {
@@ -506,29 +480,29 @@ Each of these examples using the following `binding.gyp` file:
 }
 ```
 
-In cases where there is more than one `.cc` file, simply add the additional
-filename to the `sources` array:
+如果有多个 `.cc` 文件，只需将额外的
+文件名添加到 `sources` 数组中：
 
 ```json
 "sources": ["addon.cc", "myexample.cc"]
 ```
 
-Once the `binding.gyp` file is ready, the example addons can be configured and
-built using `node-gyp`:
+一旦 `binding.gyp` 文件准备就绪，可以使用 `node-gyp` 配置和
+构建示例插件：
 
 ```bash
 node-gyp configure build
 ```
 
-### Function arguments
+### 函数参数
 
-Addons will typically expose objects and functions that can be accessed from
-JavaScript running within Node.js. When functions are invoked from JavaScript,
-the input arguments and return value must be mapped to and from the C/C++
-code.
+插件通常会暴露对象和函数，以便在 Node.js 中运行的
+JavaScript 访问。当从 JavaScript 调用函数时，
+输入参数和返回值必须与 C/C++
+代码之间进行映射。
 
-The following example illustrates how to read function arguments passed from
-JavaScript and how to return a result:
+以下示例说明了如何读取从
+JavaScript 传递的函数参数以及如何返回结果：
 
 <!-- addon-verify-file function_arguments/addon.cc -->
 
@@ -547,22 +521,22 @@ using v8::Object;
 using v8::String;
 using v8::Value;
 
-// This is the implementation of the "add" method
-// Input arguments are passed using the
-// const FunctionCallbackInfo<Value>& args struct
+// 这是 "add" 方法的实现
+// 输入参数通过
+// const FunctionCallbackInfo<Value>& args 结构体传递
 void Add(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
 
-  // Check the number of arguments passed.
+  // 检查传递的参数数量。
   if (args.Length() < 2) {
-    // Throw an Error that is passed back to JavaScript
+    // 抛出一个错误并传回 JavaScript
     isolate->ThrowException(Exception::TypeError(
         String::NewFromUtf8(isolate,
                             "Wrong number of arguments").ToLocalChecked()));
     return;
   }
 
-  // Check the argument types
+  // 检查参数类型
   if (!args[0]->IsNumber() || !args[1]->IsNumber()) {
     isolate->ThrowException(Exception::TypeError(
         String::NewFromUtf8(isolate,
@@ -570,13 +544,13 @@ void Add(const FunctionCallbackInfo<Value>& args) {
     return;
   }
 
-  // Perform the operation
+  // 执行操作
   double value =
       args[0].As<Number>()->Value() + args[1].As<Number>()->Value();
   Local<Number> num = Number::New(isolate, value);
 
-  // Set the return value (using the passed in
-  // FunctionCallbackInfo<Value>&)
+  // 设置返回值（使用传入的
+  // FunctionCallbackInfo<Value>&）
   args.GetReturnValue().Set(num);
 }
 
@@ -589,7 +563,7 @@ NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 }  // namespace demo
 ```
 
-Once compiled, the example addon can be required and used from within Node.js:
+编译完成后，可以在 Node.js 中要求并使用示例插件：
 
 <!-- addon-verify-file function_arguments/test.js -->
 
@@ -597,14 +571,14 @@ Once compiled, the example addon can be required and used from within Node.js:
 // test.js
 const addon = require('./build/Release/addon');
 
-console.log('This should be eight:', addon.add(3, 5));
+console.log('这应该是八：', addon.add(3, 5));
 ```
 
-### Callbacks
+### 回调
 
-It is common practice within addons to pass JavaScript functions to a C++
-function and execute them from there. The following example illustrates how
-to invoke such callbacks:
+在插件中，将 JavaScript 函数传递给 C++
+函数并从那里执行它们是常见的做法。以下示例说明了如何
+调用此类回调：
 
 <!-- addon-verify-file callbacks/addon.cc -->
 
@@ -644,12 +618,12 @@ NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 }  // namespace demo
 ```
 
-This example uses a two-argument form of `Init()` that receives the full
-`module` object as the second argument. This allows the addon to completely
-overwrite `exports` with a single function instead of adding the function as a
-property of `exports`.
+此示例使用 `Init()` 的双参数形式，它将完整的
+`module` 对象作为第二个参数接收。这允许插件完全
+用单个函数覆盖 `exports`，而不是将该函数作为
+`exports` 的属性添加。
 
-To test it, run the following JavaScript:
+要测试它，运行以下 JavaScript：
 
 <!-- addon-verify-file callbacks/test.js -->
 
@@ -659,17 +633,16 @@ const addon = require('./build/Release/addon');
 
 addon((msg) => {
   console.log(msg);
-// Prints: 'hello world'
+// 打印：'hello world'
 });
 ```
 
-In this example, the callback function is invoked synchronously.
+在此示例中，回调函数是同步调用的。
 
-### Object factory
+### 对象工厂
 
-Addons can create and return new objects from within a C++ function as
-illustrated in the following example. An object is created and returned with a
-property `msg` that echoes the string passed to `createObject()`:
+插件可以在 C++ 函数中创建并返回新对象，如下例所示。创建并返回一个对象，该对象具有一个
+属性 `msg`，该属性回显传递给 `createObject()` 的字符串：
 
 <!-- addon-verify-file object_factory/addon.cc -->
 
@@ -710,7 +683,7 @@ NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 }  // namespace demo
 ```
 
-To test it in JavaScript:
+在 JavaScript 中测试它：
 
 <!-- addon-verify-file object_factory/test.js -->
 
@@ -721,13 +694,13 @@ const addon = require('./build/Release/addon');
 const obj1 = addon('hello');
 const obj2 = addon('world');
 console.log(obj1.msg, obj2.msg);
-// Prints: 'hello world'
+// 打印：'hello world'
 ```
 
-### Function factory
+### 函数工厂
 
-Another common scenario is creating JavaScript functions that wrap C++
-functions and returning those back to JavaScript:
+另一种常见的情景是创建包装 C++
+函数的 JavaScript 函数，并将它们返回给 JavaScript：
 
 <!-- addon-verify-file function_factory/addon.cc -->
 
@@ -760,7 +733,7 @@ void CreateFunction(const FunctionCallbackInfo<Value>& args) {
   Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, MyFunction);
   Local<Function> fn = tpl->GetFunction(context).ToLocalChecked();
 
-  // omit this to make it anonymous
+  // 省略此项以使其匿名
   fn->SetName(String::NewFromUtf8(
       isolate, "theFunction").ToLocalChecked());
 
@@ -776,7 +749,7 @@ NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 }  // namespace demo
 ```
 
-To test:
+测试：
 
 <!-- addon-verify-file function_factory/test.js -->
 
@@ -786,13 +759,13 @@ const addon = require('./build/Release/addon');
 
 const fn = addon();
 console.log(fn());
-// Prints: 'hello world'
+// 打印：'hello world'
 ```
 
-### Wrapping C++ objects
+### 包装 C++ 对象
 
-It is also possible to wrap C++ objects/classes in a way that allows new
-instances to be created using the JavaScript `new` operator:
+也可以包装 C++ 对象/类，以便可以使用
+JavaScript `new` 运算符创建新实例：
 
 <!-- addon-verify-file wrapping_c_objects/addon.cc -->
 
@@ -815,7 +788,7 @@ NODE_MODULE(NODE_GYP_MODULE_NAME, InitAll)
 }  // namespace demo
 ```
 
-Then, in `myobject.h`, the wrapper class inherits from `node::ObjectWrap`:
+然后，在 `myobject.h` 中，包装类继承自 `node::ObjectWrap`：
 
 <!-- addon-verify-file wrapping_c_objects/myobject.h -->
 
@@ -848,9 +821,9 @@ class MyObject : public node::ObjectWrap {
 #endif
 ```
 
-In `myobject.cc`, implement the various methods that are to be exposed.
-In the following code, the method `plusOne()` is exposed by adding it to the
-constructor's prototype:
+在 `myobject.cc` 中，实现要暴露的各种方法。
+在以下代码中，通过将 `plusOne()` 方法添加到
+构造函数的原型中来暴露它：
 
 <!-- addon-verify-file wrapping_c_objects/myobject.cc -->
 
@@ -883,16 +856,16 @@ void MyObject::Init(Local<Object> exports) {
   Local<Context> context = isolate->GetCurrentContext();
 
   Local<ObjectTemplate> addon_data_tpl = ObjectTemplate::New(isolate);
-  addon_data_tpl->SetInternalFieldCount(1);  // 1 field for the MyObject::New()
+  addon_data_tpl->SetInternalFieldCount(1);  // MyObject::New() 的 1 个字段
   Local<Object> addon_data =
       addon_data_tpl->NewInstance(context).ToLocalChecked();
 
-  // Prepare constructor template
+  // 准备构造函数模板
   Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, New, addon_data);
   tpl->SetClassName(String::NewFromUtf8(isolate, "MyObject").ToLocalChecked());
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-  // Prototype
+  // 原型
   NODE_SET_PROTOTYPE_METHOD(tpl, "plusOne", PlusOne);
 
   Local<Function> constructor = tpl->GetFunction(context).ToLocalChecked();
@@ -907,14 +880,14 @@ void MyObject::New(const FunctionCallbackInfo<Value>& args) {
   Local<Context> context = isolate->GetCurrentContext();
 
   if (args.IsConstructCall()) {
-    // Invoked as constructor: `new MyObject(...)`
+    // 作为构造函数调用：`new MyObject(...)`
     double value = args[0]->IsUndefined() ?
         0 : args[0]->NumberValue(context).FromMaybe(0);
     MyObject* obj = new MyObject(value);
     obj->Wrap(args.This());
     args.GetReturnValue().Set(args.This());
   } else {
-    // Invoked as plain function `MyObject(...)`, turn into construct call.
+    // 作为普通函数 `MyObject(...)` 调用，转为构造调用。
     const int argc = 1;
     Local<Value> argv[argc] = { args[0] };
     Local<Function> cons =
@@ -938,8 +911,8 @@ void MyObject::PlusOne(const FunctionCallbackInfo<Value>& args) {
 }  // namespace demo
 ```
 
-To build this example, the `myobject.cc` file must be added to the
-`binding.gyp`:
+要构建此示例，必须将 `myobject.cc` 文件添加到
+`binding.gyp`：
 
 ```json
 {
@@ -955,7 +928,7 @@ To build this example, the `myobject.cc` file must be added to the
 }
 ```
 
-Test it with:
+测试它：
 
 <!-- addon-verify-file wrapping_c_objects/test.js -->
 
@@ -965,36 +938,36 @@ const addon = require('./build/Release/addon');
 
 const obj = new addon.MyObject(10);
 console.log(obj.plusOne());
-// Prints: 11
+// 打印：11
 console.log(obj.plusOne());
-// Prints: 12
+// 打印：12
 console.log(obj.plusOne());
-// Prints: 13
+// 打印：13
 ```
 
-The destructor for a wrapper object will run when the object is
-garbage-collected. For destructor testing, there are command-line flags that
-can be used to make it possible to force garbage collection. These flags are
-provided by the underlying V8 JavaScript engine. They are subject to change
-or removal at any time. They are not documented by Node.js or V8, and they
-should never be used outside of testing.
+包装对象的析构函数将在对象被
+垃圾回收时运行。对于析构函数测试，有一些命令行标志
+可用于强制垃圾回收。这些标志
+由底层的 V8 JavaScript 引擎提供。它们可能会随时
+更改或删除。Node.js 或 V8 未记录它们，并且
+绝不应在测试之外使用它们。
 
-During shutdown of the process or worker threads destructors are not called
-by the JS engine. Therefore it's the responsibility of the user to track
-these objects and ensure proper destruction to avoid resource leaks.
+在进程或工作线程关闭期间，JS 引擎不会调用
+析构函数。因此，用户有责任跟踪
+这些对象并确保适当销毁以避免资源泄漏。
 
-### Factory of wrapped objects
+### 包装对象的工厂
 
-Alternatively, it is possible to use a factory pattern to avoid explicitly
-creating object instances using the JavaScript `new` operator:
+或者，可以使用工厂模式来避免使用
+JavaScript `new` 运算符显式创建对象实例：
 
 ```js
 const obj = addon.createObject();
-// instead of:
+// 而不是：
 // const obj = new addon.Object();
 ```
 
-First, the `createObject()` method is implemented in `addon.cc`:
+首先，在 `addon.cc` 中实现 `createObject()` 方法：
 
 <!-- addon-verify-file factory_of_wrapped_objects/addon.cc -->
 
@@ -1027,9 +1000,9 @@ NODE_MODULE(NODE_GYP_MODULE_NAME, InitAll)
 }  // namespace demo
 ```
 
-In `myobject.h`, the static method `NewInstance()` is added to handle
-instantiating the object. This method takes the place of using `new` in
-JavaScript:
+在 `myobject.h` 中，添加了静态方法 `NewInstance()` 来处理
+实例化对象。此方法代替了在
+JavaScript 中使用 `new`：
 
 <!-- addon-verify-file factory_of_wrapped_objects/myobject.h -->
 
@@ -1063,7 +1036,7 @@ class MyObject : public node::ObjectWrap {
 #endif
 ```
 
-The implementation in `myobject.cc` is similar to the previous example:
+`myobject.cc` 中的实现与前面的示例类似：
 
 <!-- addon-verify-file factory_of_wrapped_objects/myobject.cc -->
 
@@ -1087,8 +1060,8 @@ using v8::Object;
 using v8::String;
 using v8::Value;
 
-// Warning! This is not thread-safe, this addon cannot be used for worker
-// threads.
+// 警告！这不是线程安全的，此插件不能用于工作
+// 线程。
 Global<Function> MyObject::constructor;
 
 MyObject::MyObject(double value) : value_(value) {
@@ -1099,12 +1072,12 @@ MyObject::~MyObject() {
 
 void MyObject::Init() {
   Isolate* isolate = Isolate::GetCurrent();
-  // Prepare constructor template
+  // 准备构造函数模板
   Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, New);
   tpl->SetClassName(String::NewFromUtf8(isolate, "MyObject").ToLocalChecked());
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
-  // Prototype
+  // 原型
   NODE_SET_PROTOTYPE_METHOD(tpl, "plusOne", PlusOne);
 
   Local<Context> context = isolate->GetCurrentContext();
@@ -1120,14 +1093,14 @@ void MyObject::New(const FunctionCallbackInfo<Value>& args) {
   Local<Context> context = isolate->GetCurrentContext();
 
   if (args.IsConstructCall()) {
-    // Invoked as constructor: `new MyObject(...)`
+    // 作为构造函数调用：`new MyObject(...)`
     double value = args[0]->IsUndefined() ?
         0 : args[0]->NumberValue(context).FromMaybe(0);
     MyObject* obj = new MyObject(value);
     obj->Wrap(args.This());
     args.GetReturnValue().Set(args.This());
   } else {
-    // Invoked as plain function `MyObject(...)`, turn into construct call.
+    // 作为普通函数 `MyObject(...)` 调用，转为构造调用。
     const int argc = 1;
     Local<Value> argv[argc] = { args[0] };
     Local<Function> cons = Local<Function>::New(isolate, constructor);
@@ -1162,8 +1135,8 @@ void MyObject::PlusOne(const FunctionCallbackInfo<Value>& args) {
 }  // namespace demo
 ```
 
-Once again, to build this example, the `myobject.cc` file must be added to the
-`binding.gyp`:
+再次强调，要构建此示例，必须将 `myobject.cc` 文件添加到
+`binding.gyp`：
 
 ```json
 {
@@ -1179,7 +1152,7 @@ Once again, to build this example, the `myobject.cc` file must be added to the
 }
 ```
 
-Test it with:
+测试它：
 
 <!-- addon-verify-file factory_of_wrapped_objects/test.js -->
 
@@ -1189,27 +1162,27 @@ const createObject = require('./build/Release/addon');
 
 const obj = createObject(10);
 console.log(obj.plusOne());
-// Prints: 11
+// 打印：11
 console.log(obj.plusOne());
-// Prints: 12
+// 打印：12
 console.log(obj.plusOne());
-// Prints: 13
+// 打印：13
 
 const obj2 = createObject(20);
 console.log(obj2.plusOne());
-// Prints: 21
+// 打印：21
 console.log(obj2.plusOne());
-// Prints: 22
+// 打印：22
 console.log(obj2.plusOne());
-// Prints: 23
+// 打印：23
 ```
 
-### Passing wrapped objects around
+### 传递包装对象
 
-In addition to wrapping and returning C++ objects, it is possible to pass
-wrapped objects around by unwrapping them with the Node.js helper function
-`node::ObjectWrap::Unwrap`. The following examples shows a function `add()`
-that can take two `MyObject` objects as input arguments:
+除了包装和返回 C++ 对象外，还可以通过使用 Node.js 辅助函数
+`node::ObjectWrap::Unwrap` 解包它们来传递
+包装对象。以下示例显示了一个函数 `add()`，
+它可以接受两个 `MyObject` 对象作为输入参数：
 
 <!-- addon-verify-file passing_wrapped_objects_around/addon.cc -->
 
@@ -1259,8 +1232,7 @@ NODE_MODULE(NODE_GYP_MODULE_NAME, InitAll)
 }  // namespace demo
 ```
 
-In `myobject.h`, a new public method is added to allow access to private values
-after unwrapping the object.
+在 `myobject.h` 中，添加了一个新的公共方法，以便在解包对象后访问私有值。
 
 <!-- addon-verify-file passing_wrapped_objects_around/myobject.h -->
 
@@ -1294,7 +1266,7 @@ class MyObject : public node::ObjectWrap {
 #endif
 ```
 
-The implementation of `myobject.cc` remains similar to the previous version:
+`myobject.cc` 的实现与之前的版本类似：
 
 <!-- addon-verify-file passing_wrapped_objects_around/myobject.cc -->
 
@@ -1317,8 +1289,8 @@ using v8::Object;
 using v8::String;
 using v8::Value;
 
-// Warning! This is not thread-safe, this addon cannot be used for worker
-// threads.
+// 警告！这不是线程安全的，此插件不能用于工作
+// 线程。
 Global<Function> MyObject::constructor;
 
 MyObject::MyObject(double value) : value_(value) {
@@ -1329,7 +1301,7 @@ MyObject::~MyObject() {
 
 void MyObject::Init() {
   Isolate* isolate = Isolate::GetCurrent();
-  // Prepare constructor template
+  // 准备构造函数模板
   Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, New);
   tpl->SetClassName(String::NewFromUtf8(isolate, "MyObject").ToLocalChecked());
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
@@ -1347,14 +1319,14 @@ void MyObject::New(const FunctionCallbackInfo<Value>& args) {
   Local<Context> context = isolate->GetCurrentContext();
 
   if (args.IsConstructCall()) {
-    // Invoked as constructor: `new MyObject(...)`
+    // 作为构造函数调用：`new MyObject(...)`
     double value = args[0]->IsUndefined() ?
         0 : args[0]->NumberValue(context).FromMaybe(0);
     MyObject* obj = new MyObject(value);
     obj->Wrap(args.This());
     args.GetReturnValue().Set(args.This());
   } else {
-    // Invoked as plain function `MyObject(...)`, turn into construct call.
+    // 作为普通函数 `MyObject(...)` 调用，转为构造调用。
     const int argc = 1;
     Local<Value> argv[argc] = { args[0] };
     Local<Function> cons = Local<Function>::New(isolate, constructor);
@@ -1380,7 +1352,7 @@ void MyObject::NewInstance(const FunctionCallbackInfo<Value>& args) {
 }  // namespace demo
 ```
 
-Test it with:
+测试它：
 
 <!-- addon-verify-file passing_wrapped_objects_around/test.js -->
 
@@ -1393,14 +1365,14 @@ const obj2 = addon.createObject(20);
 const result = addon.add(obj1, obj2);
 
 console.log(result);
-// Prints: 30
+// 打印：30
 ```
 
-[Building]: #building
+[构建]: #building
 [Electron]: https://electronjs.org/
-[Embedder's Guide]: https://v8.dev/docs/embed
-[Linking to libraries included with Node.js]: #linking-to-libraries-included-with-nodejs
-[Native Abstractions for Node.js]: https://github.com/nodejs/nan
+[嵌入者指南]: https://v8.dev/docs/embed
+[链接到 Node.js 包含的库]: #linking-to-libraries-included-with-nodejs
+[Node.js 的原生抽象]: https://github.com/nodejs/nan
 [Node-API]: n-api.md
 [V8]: https://v8.dev/
 [`--experimental-addon-modules`]: cli.md#--experimental-addon-modules
@@ -1409,7 +1381,7 @@ console.log(result);
 [`node-gyp`]: https://github.com/nodejs/node-gyp
 [`require()`]: modules.md#requireid
 [bindings]: https://github.com/TooTallNate/node-bindings
-[download]: https://github.com/nodejs/node-addon-examples
-[examples]: https://github.com/nodejs/nan/tree/HEAD/examples/
-[installation instructions]: https://github.com/nodejs/node-gyp#installation
+[下载]: https://github.com/nodejs/node-addon-examples
+[示例]: https://github.com/nodejs/nan/tree/HEAD/examples/
+[安装说明]: https://github.com/nodejs/node-gyp#installation
 [v8-docs]: https://v8docs.nodesource.com/

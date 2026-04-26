@@ -1,14 +1,12 @@
-# Child process
+# 子进程
 
 <!--introduced_in=v0.10.0-->
 
-> Stability: 2 - Stable
+> 稳定性：2 - 稳定
 
 <!-- source_link=lib/child_process.js -->
 
-The `node:child_process` module provides the ability to spawn subprocesses in
-a manner that is similar, but not identical, to popen(3). This capability
-is primarily provided by the [`child_process.spawn()`][] function:
+`node:child_process` 模块提供了生成子进程的能力，其方式与 popen(3) 类似但不完全相同。此功能主要由 [`child_process.spawn()`][] 函数提供：
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -44,98 +42,51 @@ const [code] = await once(ls, 'close');
 console.log(`child process exited with code ${code}`);
 ```
 
-By default, pipes for `stdin`, `stdout`, and `stderr` are established between
-the parent Node.js process and the spawned subprocess. These pipes have
-limited (and platform-specific) capacity. If the subprocess writes to
-stdout in excess of that limit without the output being captured, the
-subprocess blocks, waiting for the pipe buffer to accept more data. This is
-identical to the behavior of pipes in the shell. Use the `{ stdio: 'ignore' }`
-option if the output will not be consumed.
+默认情况下，`stdin`、`stdout` 和 `stderr` 的管道会在父 Node.js 进程和生成的子进程之间建立。这些管道的容量有限（且特定于平台）。如果子进程向 stdout 写入的数据超过该限制且输出未被捕获，子进程将阻塞，等待管道缓冲区接受更多数据。这与 shell 中管道的行为相同。如果输出不会被消费，请使用 `{ stdio: 'ignore' }` 选项。
 
-The command lookup is performed using the `options.env.PATH` environment
-variable if `env` is in the `options` object. Otherwise, `process.env.PATH` is
-used. If `options.env` is set without `PATH`, lookup on Unix is performed
-on a default search path search of `/usr/bin:/bin` (see your operating system's
-manual for execvpe/execvp), on Windows the current processes environment
-variable `PATH` is used.
+如果 `options` 对象中存在 `env`，则命令查找使用 `options.env.PATH` 环境变量。否则，使用 `process.env.PATH`。如果设置了 `options.env` 但没有 `PATH`，则在 Unix 上查找默认搜索路径 `/usr/bin:/bin`（请参阅操作系统的 execvpe/execvp 手册），在 Windows 上使用当前进程的环境变量 `PATH`。
 
-On Windows, environment variables are case-insensitive. Node.js
-lexicographically sorts the `env` keys and uses the first one that
-case-insensitively matches. Only first (in lexicographic order) entry will be
-passed to the subprocess. This might lead to issues on Windows when passing
-objects to the `env` option that have multiple variants of the same key, such as
-`PATH` and `Path`.
+在 Windows 上，环境变量不区分大小写。Node.js 按字典序对 `env` 键进行排序，并使用第一个不区分大小写匹配的键。只有第一个（按字典序）条目会被传递给子进程。当向 `env` 选项传递具有同一键的多个变体（例如 `PATH` 和 `Path`）的对象时，这可能会导致 Windows 上的问题。
 
-The [`child_process.spawn()`][] method spawns the child process asynchronously,
-without blocking the Node.js event loop. The [`child_process.spawnSync()`][]
-function provides equivalent functionality in a synchronous manner that blocks
-the event loop until the spawned process either exits or is terminated.
+[`child_process.spawn()`][] 方法异步生成子进程，而不阻塞 Node.js 事件循环。[`child_process.spawnSync()`][] 函数以同步方式提供等效功能，会阻塞事件循环直到生成的进程退出或被终止。
 
-For convenience, the `node:child_process` module provides a handful of
-synchronous and asynchronous alternatives to [`child_process.spawn()`][] and
-[`child_process.spawnSync()`][]. Each of these alternatives are implemented on
-top of [`child_process.spawn()`][] or [`child_process.spawnSync()`][].
+为了方便起见，`node:child_process` 模块提供了一些 [`child_process.spawn()`][] 和 [`child_process.spawnSync()`][] 的同步和异步替代方法。这些替代方法均基于 [`child_process.spawn()`][] 或 [`child_process.spawnSync()`][] 实现。
 
-* [`child_process.exec()`][]: spawns a shell and runs a command within that
-  shell, passing the `stdout` and `stderr` to a callback function when
-  complete.
-* [`child_process.execFile()`][]: similar to [`child_process.exec()`][] except
-  that it spawns the command directly without first spawning a shell by
-  default.
-* [`child_process.fork()`][]: spawns a new Node.js process and invokes a
-  specified module with an IPC communication channel established that allows
-  sending messages between parent and child.
-* [`child_process.execSync()`][]: a synchronous version of
-  [`child_process.exec()`][] that will block the Node.js event loop.
-* [`child_process.execFileSync()`][]: a synchronous version of
-  [`child_process.execFile()`][] that will block the Node.js event loop.
+* [`child_process.exec()`][]：生成一个 shell 并在该 shell 中运行命令，完成后将 `stdout` 和 `stderr` 传递给回调函数。
+* [`child_process.execFile()`][]：类似于 [`child_process.exec()`][]，不同之处在于它默认直接生成命令而不先生成 shell。
+* [`child_process.fork()`][]：生成一个新的 Node.js 进程并调用指定的模块，同时建立 IPC 通信通道，允许在父进程和子进程之间发送消息。
+* [`child_process.execSync()`][]：[`child_process.exec()`][] 的同步版本，会阻塞 Node.js 事件循环。
+* [`child_process.execFileSync()`][]：[`child_process.execFile()`][] 的同步版本，会阻塞 Node.js 事件循环。
 
-For certain use cases, such as automating shell scripts, the
-[synchronous counterparts][] may be more convenient. In many cases, however,
-the synchronous methods can have significant impact on performance due to
-stalling the event loop while spawned processes complete.
+对于某些用例，例如自动化 shell 脚本，[同步对应方法][] 可能更方便。然而，在许多情况下，同步方法可能会因为阻塞事件循环等待生成的进程完成而对性能产生重大影响。
 
-## Asynchronous process creation
+## 异步进程创建
 
-The [`child_process.spawn()`][], [`child_process.fork()`][], [`child_process.exec()`][],
-and [`child_process.execFile()`][] methods all follow the idiomatic asynchronous
-programming pattern typical of other Node.js APIs.
+[`child_process.spawn()`][]、[`child_process.fork()`][]、[`child_process.exec()`][] 和 [`child_process.execFile()`][] 方法都遵循其他 Node.js API 典型的惯用异步编程模式。
 
-Each of the methods returns a [`ChildProcess`][] instance. These objects
-implement the Node.js [`EventEmitter`][] API, allowing the parent process to
-register listener functions that are called when certain events occur during
-the life cycle of the child process.
+每个方法都返回一个 [`ChildProcess`][] 实例。这些对象实现了 Node.js [`EventEmitter`][] API，允许父进程注册监听器函数，当子进程生命周期中发生某些事件时调用这些函数。
 
-The [`child_process.exec()`][] and [`child_process.execFile()`][] methods
-additionally allow for an optional `callback` function to be specified that is
-invoked when the child process terminates.
+[`child_process.exec()`][] 和 [`child_process.execFile()`][] 方法还允许指定一个可选的 `callback` 函数，当子进程终止时调用该函数。
 
-### Spawning `.bat` and `.cmd` files on Windows
+### 在 Windows 上生成 `.bat` 和 `.cmd` 文件
 
-The importance of the distinction between [`child_process.exec()`][] and
-[`child_process.execFile()`][] can vary based on platform. On Unix-type
-operating systems (Unix, Linux, macOS) [`child_process.execFile()`][] can be
-more efficient because it does not spawn a shell by default. On Windows,
-however, `.bat` and `.cmd` files are not executable on their own without a
-terminal, and therefore cannot be launched using [`child_process.execFile()`][].
-When running on Windows, `.bat` and `.cmd` files can be invoked by:
+[`child_process.exec()`][] 和 [`child_process.execFile()`][] 之间区别的重要性可能因平台而异。在 Unix 类操作系统（Unix、Linux、macOS）上，[`child_process.execFile()`][] 可能更高效，因为它默认不生成 shell。然而，在 Windows 上，`.bat` 和 `.cmd` 文件如果没有终端则无法自行执行，因此不能使用 [`child_process.execFile()`][] 启动。在 Windows 上运行时，可以通过以下方式调用 `.bat` 和 `.cmd` 文件：
 
-* using [`child_process.spawn()`][] with the `shell` option set (not recommended, see [DEP0190][]), or
-* using [`child_process.exec()`][], or
-* spawning `cmd.exe` and passing the `.bat` or `.cmd` file as an argument
-  (which is what [`child_process.exec()`][] does internally).
+* 使用 [`child_process.spawn()`][] 并将 `shell` 选项设置为 `true`（不推荐，参见 [DEP0190][]），或
+* 使用 [`child_process.exec()`][]，或
+* 生成 `cmd.exe` 并将 `.bat` 或 `.cmd` 文件作为参数传递（这是 [`child_process.exec()`][] 内部所做的）。
 
-In any case, if the script filename contains spaces, it needs to be quoted.
+在任何情况下，如果脚本文件名包含空格，则需要加引号。
 
 ```cjs
 const { exec, spawn } = require('node:child_process');
 
 exec('my.bat', (err, stdout, stderr) => { /* ... */ });
 
-// Or, spawning cmd.exe directly:
+// 或者，直接生成 cmd.exe：
 const bat = spawn('cmd.exe', ['/c', 'my.bat']);
 
-// If the script filename contains spaces, it needs to be quoted
+// 如果脚本文件名包含空格，则需要加引号
 exec('"my script.cmd" a b', (err, stdout, stderr) => { /* ... */ });
 ```
 
@@ -144,10 +95,10 @@ import { exec, spawn } from 'node:child_process';
 
 exec('my.bat', (err, stdout, stderr) => { /* ... */ });
 
-// Or, spawning cmd.exe directly:
+// 或者，直接生成 cmd.exe：
 const bat = spawn('cmd.exe', ['/c', 'my.bat']);
 
-// If the script filename contains spaces, it needs to be quoted
+// 如果脚本文件名包含空格，则需要加引号
 exec('"my script.cmd" a b', (err, stdout, stderr) => { /* ... */ });
 ```
 
@@ -160,87 +111,61 @@ changes:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: The `cwd` option can be a WHATWG `URL` object using
-                 `file:` protocol.
+    description: "cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。"
   - version: v15.4.0
     pr-url: https://github.com/nodejs/node/pull/36308
-    description: AbortSignal support was added.
+    description: 添加了 AbortSignal 支持。
   - version: v8.8.0
     pr-url: https://github.com/nodejs/node/pull/15380
-    description: The `windowsHide` option is supported now.
+    description: 现在支持 windowsHide 选项。
 -->
 
-* `command` {string} The command to run, with space-separated arguments.
+* `command` {string} 要运行的命令，包含空格分隔的参数。
 * `options` {Object}
-  * `cwd` {string|URL} Current working directory of the child process.
-    **Default:** `process.cwd()`.
-  * `env` {Object} Environment key-value pairs. **Default:** `process.env`.
-  * `encoding` {string} **Default:** `'utf8'`
-  * `shell` {string} Shell to execute the command with. See
-    [Shell requirements][] and [Default Windows shell][]. **Default:**
-    `'/bin/sh'` on Unix, `process.env.ComSpec` on Windows.
-  * `signal` {AbortSignal} allows aborting the child process using an
-    AbortSignal.
-  * `timeout` {number} **Default:** `0`
-  * `maxBuffer` {number} Largest amount of data in bytes allowed on stdout or
-    stderr. If exceeded, the child process is terminated and any output is
-    truncated. See caveat at [`maxBuffer` and Unicode][].
-    **Default:** `1024 * 1024`.
-  * `killSignal` {string|integer} **Default:** `'SIGTERM'`
-  * `uid` {number} Sets the user identity of the process (see setuid(2)).
-  * `gid` {number} Sets the group identity of the process (see setgid(2)).
-  * `windowsHide` {boolean} Hide the subprocess console window that would
-    normally be created on Windows systems. **Default:** `false`.
-* `callback` {Function} called with the output when process terminates.
+  * `cwd` {string|URL} 子进程的当前工作目录。**默认值：** `process.cwd()`。
+  * `env` {Object} 环境键值对。**默认值：** `process.env`。
+  * `encoding` {string} **默认值：** `'utf8'`
+  * `shell` {string} 用于执行命令的 shell。参见 [Shell 要求][] 和 [默认 Windows shell][]。**默认值：** Unix 上为 `'/bin/sh'`，Windows 上为 `process.env.ComSpec`。
+  * `signal` {AbortSignal} 允许使用 AbortSignal 中止子进程。
+  * `timeout` {number} **默认值：** `0`
+  * `maxBuffer` {number} stdout 或 stderr 上允许的最大数据量（字节）。如果超过，子进程将被终止，任何输出将被截断。参见 [`maxBuffer` 和 Unicode][] 处的注意事项。**默认值：** `1024 * 1024`。
+  * `killSignal` {string|integer} **默认值：** `'SIGTERM'`
+  * `uid` {number} 设置进程的用户身份（参见 setuid(2)）。
+  * `gid` {number} 设置进程的组身份（参见 setgid(2)）。
+  * `windowsHide` {boolean} 隐藏 Windows 系统上通常创建的子进程控制台窗口。**默认值：** `false`。
+* `callback` {Function} 进程终止时带着输出调用。
   * `error` {Error}
   * `stdout` {string|Buffer}
   * `stderr` {string|Buffer}
-* Returns: {ChildProcess}
+* 返回：{ChildProcess}
 
-Spawns a shell then executes the `command` within that shell, buffering any
-generated output. The `command` string passed to the exec function is processed
-directly by the shell and special characters (vary based on
-[shell](https://en.wikipedia.org/wiki/List_of_command-line_interpreters))
-need to be dealt with accordingly:
+生成一个 shell，然后在该 shell 中执行 `command`，缓冲任何生成的输出。传递给 exec 函数的 `command` 字符串由 shell 直接处理，特殊字符（因 [shell](https://en.wikipedia.org/wiki/List_of_command-line_interpreters) 而异）需要相应处理：
 
 ```cjs
 const { exec } = require('node:child_process');
 
 exec('"/path/to/test file/test.sh" arg1 arg2');
-// Double quotes are used so that the space in the path is not interpreted as
-// a delimiter of multiple arguments.
+// 使用双引号是为了防止路径中的空格被解释为多个参数的分隔符。
 
 exec('echo "The \\$HOME variable is $HOME"');
-// The $HOME variable is escaped in the first instance, but not in the second.
+// $HOME 变量在第一个实例中被转义，但在第二个中没有。
 ```
 
 ```mjs
 import { exec } from 'node:child_process';
 
 exec('"/path/to/test file/test.sh" arg1 arg2');
-// Double quotes are used so that the space in the path is not interpreted as
-// a delimiter of multiple arguments.
+// 使用双引号是为了防止路径中的空格被解释为多个参数的分隔符。
 
 exec('echo "The \\$HOME variable is $HOME"');
-// The $HOME variable is escaped in the first instance, but not in the second.
+// $HOME 变量在第一个实例中被转义，但在第二个中没有。
 ```
 
-**Never pass unsanitized user input to this function. Any input containing shell
-metacharacters may be used to trigger arbitrary command execution.**
+**切勿将未清理的用户输入传递给此函数。任何包含 shell 元字符的输入都可能被用于触发任意命令执行。**
 
-If a `callback` function is provided, it is called with the arguments
-`(error, stdout, stderr)`. On success, `error` will be `null`. On error,
-`error` will be an instance of [`Error`][]. The `error.code` property will be
-the exit code of the process. By convention, any exit code other than `0`
-indicates an error. `error.signal` will be the signal that terminated the
-process.
+如果提供了 `callback` 函数，它将使用参数 `(error, stdout, stderr)` 调用。成功时，`error` 将为 `null`。出错时，`error` 将是 [`Error`][] 的实例。`error.code` 属性将是进程的退出码。按照惯例，任何非 `0` 的退出码都表示错误。`error.signal` 将是终止进程的信号。
 
-The `stdout` and `stderr` arguments passed to the callback will contain the
-stdout and stderr output of the child process. By default, Node.js will decode
-the output as UTF-8 and pass strings to the callback. The `encoding` option
-can be used to specify the character encoding used to decode the stdout and
-stderr output. If `encoding` is `'buffer'`, or an unrecognized character
-encoding, `Buffer` objects will be passed to the callback instead.
+传递给回调的 `stdout` 和 `stderr` 参数将包含子进程的 stdout 和 stderr 输出。默认情况下，Node.js 会将输出解码为 UTF-8 并将字符串传递给回调。`encoding` 选项可用于指定用于解码 stdout 和 stderr 输出的字符编码。如果 `encoding` 为 `'buffer'` 或无法识别的字符编码，则会将 `Buffer` 对象传递给回调。
 
 ```cjs
 const { exec } = require('node:child_process');
@@ -266,19 +191,11 @@ exec('cat *.js missing_file | wc -l', (error, stdout, stderr) => {
 });
 ```
 
-If `timeout` is greater than `0`, the parent process will send the signal
-identified by the `killSignal` property (the default is `'SIGTERM'`) if the
-child process runs longer than `timeout` milliseconds.
+如果 `timeout` 大于 `0`，则当子进程运行时间超过 `timeout` 毫秒时，父进程将发送由 `killSignal` 属性标识的信号（默认值为 `'SIGTERM'`）。
 
-Unlike the exec(3) POSIX system call, `child_process.exec()` does not replace
-the existing process and uses a shell to execute the command.
+与 exec(3) POSIX 系统调用不同，`child_process.exec()` 不会替换现有进程，而是使用 shell 来执行命令。
 
-If this method is invoked as its [`util.promisify()`][]ed version, it returns
-a `Promise` for an `Object` with `stdout` and `stderr` properties. The returned
-`ChildProcess` instance is attached to the `Promise` as a `child` property. In
-case of an error (including any error resulting in an exit code other than 0), a
-rejected promise is returned, with the same `error` object given in the
-callback, but with two additional properties `stdout` and `stderr`.
+如果此方法以其 [`util.promisify()`][] 版本调用，它返回一个 `Promise`，对应一个具有 `stdout` 和 `stderr` 属性的 `Object`。返回的 `ChildProcess` 实例作为 `child` 属性附加到 `Promise`。如果出错（包括任何导致退出码非 0 的错误），则返回一个被拒绝的 promise，带有回调中给出的相同 `error` 对象，但附加了两个属性 `stdout` 和 `stderr`。
 
 ```cjs
 const util = require('node:util');
@@ -305,16 +222,14 @@ async function lsExample() {
 lsExample();
 ```
 
-If the `signal` option is enabled, calling `.abort()` on the corresponding
-`AbortController` is similar to calling `.kill()` on the child process except
-the error passed to the callback will be an `AbortError`:
+如果启用了 `signal` 选项，则在相应的 `AbortController` 上调用 `.abort()` 类似于在子进程上调用 `.kill()`，不同之处在于传递给回调的错误将是 `AbortError`：
 
 ```cjs
 const { exec } = require('node:child_process');
 const controller = new AbortController();
 const { signal } = controller;
 const child = exec('grep ssh', { signal }, (error) => {
-  console.error(error); // an AbortError
+  console.error(error); // 一个 AbortError
 });
 controller.abort();
 ```
@@ -324,7 +239,7 @@ import { exec } from 'node:child_process';
 const controller = new AbortController();
 const { signal } = controller;
 const child = exec('grep ssh', { signal }, (error) => {
-  console.error(error); // an AbortError
+  console.error(error); // 一个 AbortError
 });
 controller.abort();
 ```
@@ -338,61 +253,46 @@ changes:
       - v23.11.0
       - v22.15.0
     pr-url: https://github.com/nodejs/node/pull/57389
-    description: Passing `args` when `shell` is set to `true` is deprecated.
+    description: 当 shell 设置为 true 时传递 args 已弃用。
   - version:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: The `cwd` option can be a WHATWG `URL` object using
-                 `file:` protocol.
+    description: "cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。"
   - version:
       - v15.4.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/36308
-    description: AbortSignal support was added.
+    description: 添加了 AbortSignal 支持。
   - version: v8.8.0
     pr-url: https://github.com/nodejs/node/pull/15380
-    description: The `windowsHide` option is supported now.
+    description: 现在支持 windowsHide 选项。
 -->
 
-* `file` {string} The name or path of the executable file to run.
-* `args` {string\[]} List of string arguments.
+* `file` {string} 要运行的可执行文件的名称或路径。
+* `args` {string\[]} 字符串参数列表。
 * `options` {Object}
-  * `cwd` {string|URL} Current working directory of the child process.
-  * `env` {Object} Environment key-value pairs. **Default:** `process.env`.
-  * `encoding` {string} **Default:** `'utf8'`
-  * `timeout` {number} **Default:** `0`
-  * `maxBuffer` {number} Largest amount of data in bytes allowed on stdout or
-    stderr. If exceeded, the child process is terminated and any output is
-    truncated. See caveat at [`maxBuffer` and Unicode][].
-    **Default:** `1024 * 1024`.
-  * `killSignal` {string|integer} **Default:** `'SIGTERM'`
-  * `uid` {number} Sets the user identity of the process (see setuid(2)).
-  * `gid` {number} Sets the group identity of the process (see setgid(2)).
-  * `windowsHide` {boolean} Hide the subprocess console window that would
-    normally be created on Windows systems. **Default:** `false`.
-  * `windowsVerbatimArguments` {boolean} No quoting or escaping of arguments is
-    done on Windows. Ignored on Unix. **Default:** `false`.
-  * `shell` {boolean|string} If `true`, runs `command` inside of a shell. Uses
-    `'/bin/sh'` on Unix, and `process.env.ComSpec` on Windows. A different
-    shell can be specified as a string. See [Shell requirements][] and
-    [Default Windows shell][]. **Default:** `false` (no shell).
-  * `signal` {AbortSignal} allows aborting the child process using an
-    AbortSignal.
-* `callback` {Function} Called with the output when process terminates.
+  * `cwd` {string|URL} 子进程的当前工作目录。
+  * `env` {Object} 环境键值对。**默认值：** `process.env`。
+  * `encoding` {string} **默认值：** `'utf8'`
+  * `timeout` {number} **默认值：** `0`
+  * `maxBuffer` {number} stdout 或 stderr 上允许的最大数据量（字节）。如果超过，子进程将被终止，任何输出将被截断。参见 [`maxBuffer` 和 Unicode][] 处的注意事项。**默认值：** `1024 * 1024`。
+  * `killSignal` {string|integer} **默认值：** `'SIGTERM'`
+  * `uid` {number} 设置进程的用户身份（参见 setuid(2)）。
+  * `gid` {number} 设置进程的组身份（参见 setgid(2)）。
+  * `windowsHide` {boolean} 隐藏 Windows 系统上通常创建的子进程控制台窗口。**默认值：** `false`。
+  * `windowsVerbatimArguments` {boolean} 在 Windows 上不对参数进行引号或转义。在 Unix 上忽略。**默认值：** `false`。
+  * `shell` {boolean|string} 如果为 `true`，则在 shell 内部运行 `command`。在 Unix 上使用 `'/bin/sh'`，在 Windows 上使用 `process.env.ComSpec`。可以将不同的 shell 指定为字符串。参见 [Shell 要求][] 和 [默认 Windows shell][]。**默认值：** `false`（无 shell）。
+  * `signal` {AbortSignal} 允许使用 AbortSignal 中止子进程。
+* `callback` {Function} 进程终止时带着输出调用。
   * `error` {Error}
   * `stdout` {string|Buffer}
   * `stderr` {string|Buffer}
-* Returns: {ChildProcess}
+* 返回：{ChildProcess}
 
-The `child_process.execFile()` function is similar to [`child_process.exec()`][]
-except that it does not spawn a shell by default. Rather, the specified
-executable `file` is spawned directly as a new process making it slightly more
-efficient than [`child_process.exec()`][].
+`child_process.execFile()` 函数类似于 [`child_process.exec()`][]，不同之处在于它默认不生成 shell。相反，指定的可执行 `file` 直接作为新进程生成，使其比 [`child_process.exec()`][] 稍微更高效。
 
-The same options as [`child_process.exec()`][] are supported. Since a shell is
-not spawned, behaviors such as I/O redirection and file globbing are not
-supported.
+支持与 [`child_process.exec()`][] 相同的选项。由于未生成 shell，因此不支持 I/O 重定向和文件 globbing 等行为。
 
 ```cjs
 const { execFile } = require('node:child_process');
@@ -414,19 +314,9 @@ const child = execFile('node', ['--version'], (error, stdout, stderr) => {
 });
 ```
 
-The `stdout` and `stderr` arguments passed to the callback will contain the
-stdout and stderr output of the child process. By default, Node.js will decode
-the output as UTF-8 and pass strings to the callback. The `encoding` option
-can be used to specify the character encoding used to decode the stdout and
-stderr output. If `encoding` is `'buffer'`, or an unrecognized character
-encoding, `Buffer` objects will be passed to the callback instead.
+传递给回调的 `stdout` 和 `stderr` 参数将包含子进程的 stdout 和 stderr 输出。默认情况下，Node.js 会将输出解码为 UTF-8 并将字符串传递给回调。`encoding` 选项可用于指定用于解码 stdout 和 stderr 输出的字符编码。如果 `encoding` 为 `'buffer'` 或无法识别的字符编码，则会将 `Buffer` 对象传递给回调。
 
-If this method is invoked as its [`util.promisify()`][]ed version, it returns
-a `Promise` for an `Object` with `stdout` and `stderr` properties. The returned
-`ChildProcess` instance is attached to the `Promise` as a `child` property. In
-case of an error (including any error resulting in an exit code other than 0), a
-rejected promise is returned, with the same `error` object given in the
-callback, but with two additional properties `stdout` and `stderr`.
+如果此方法以其 [`util.promisify()`][] 版本调用，它返回一个 `Promise`，对应一个具有 `stdout` 和 `stderr` 属性的 `Object`。返回的 `ChildProcess` 实例作为 `child` 属性附加到 `Promise`。如果出错（包括任何导致退出码非 0 的错误），则返回一个被拒绝的 promise，带有回调中给出的相同 `error` 对象，但附加了两个属性 `stdout` 和 `stderr`。
 
 ```cjs
 const util = require('node:util');
@@ -449,20 +339,16 @@ async function getVersion() {
 getVersion();
 ```
 
-**If the `shell` option is enabled, do not pass unsanitized user input to this
-function. Any input containing shell metacharacters may be used to trigger
-arbitrary command execution.**
+**如果启用了 `shell` 选项，切勿将未清理的用户输入传递给此函数。任何包含 shell 元字符的输入都可能被用于触发任意命令执行。**
 
-If the `signal` option is enabled, calling `.abort()` on the corresponding
-`AbortController` is similar to calling `.kill()` on the child process except
-the error passed to the callback will be an `AbortError`:
+如果启用了 `signal` 选项，则在相应的 `AbortController` 上调用 `.abort()` 类似于在子进程上调用 `.kill()`，不同之处在于传递给回调的错误将是 `AbortError`：
 
 ```cjs
 const { execFile } = require('node:child_process');
 const controller = new AbortController();
 const { signal } = controller;
 const child = execFile('node', ['--version'], { signal }, (error) => {
-  console.error(error); // an AbortError
+  console.error(error); // 一个 AbortError
 });
 controller.abort();
 ```
@@ -472,7 +358,7 @@ import { execFile } from 'node:child_process';
 const controller = new AbortController();
 const { signal } = controller;
 const child = execFile('node', ['--version'], { signal }, (error) => {
-  console.error(error); // an AbortError
+  console.error(error); // 一个 AbortError
 });
 controller.abort();
 ```
@@ -486,108 +372,72 @@ changes:
       - v17.4.0
       - v16.14.0
     pr-url: https://github.com/nodejs/node/pull/41225
-    description: The `modulePath` parameter can be a WHATWG `URL` object using
-                 `file:` protocol.
+    description: "modulePath 参数可以是一个使用 file: 协议的 WHATWG URL 对象。"
   - version:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: The `cwd` option can be a WHATWG `URL` object using
-                 `file:` protocol.
+    description: "cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。"
   - version:
       - v15.13.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37256
-    description: timeout was added.
+    description: 添加了 timeout。
   - version:
       - v15.11.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37325
-    description: killSignal for AbortSignal was added.
+    description: 为 AbortSignal 添加了 killSignal。
   - version:
       - v15.6.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/36603
-    description: AbortSignal support was added.
+    description: 添加了 AbortSignal 支持。
   - version:
       - v13.2.0
       - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30162
-    description: The `serialization` option is supported now.
+    description: 现在支持 serialization 选项。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10866
-    description: The `stdio` option can now be a string.
+    description: stdio 选项现在可以是字符串。
   - version: v6.4.0
     pr-url: https://github.com/nodejs/node/pull/7811
-    description: The `stdio` option is supported now.
+    description: 现在支持 stdio 选项。
 -->
 
-* `modulePath` {string|URL} The module to run in the child.
-* `args` {string\[]} List of string arguments.
+* `modulePath` {string|URL} 要在子进程中运行的模块。
+* `args` {string\[]} 字符串参数列表。
 * `options` {Object}
-  * `cwd` {string|URL} Current working directory of the child process.
-  * `detached` {boolean} Prepare child process to run independently of its
-    parent process. Specific behavior depends on the platform (see
-    [`options.detached`][]).
-  * `env` {Object} Environment key-value pairs. **Default:** `process.env`.
-  * `execPath` {string} Executable used to create the child process.
-  * `execArgv` {string\[]} List of string arguments passed to the executable.
-    **Default:** `process.execArgv`.
-  * `gid` {number} Sets the group identity of the process (see setgid(2)).
-  * `serialization` {string} Specify the kind of serialization used for sending
-    messages between processes. Possible values are `'json'` and `'advanced'`.
-    See [Advanced serialization][] for more details. **Default:** `'json'`.
-  * `signal` {AbortSignal} Allows closing the child process using an
-    AbortSignal.
-  * `killSignal` {string|integer} The signal value to be used when the spawned
-    process will be killed by timeout or abort signal. **Default:** `'SIGTERM'`.
-  * `silent` {boolean} If `true`, stdin, stdout, and stderr of the child
-    process will be piped to the parent process, otherwise they will be inherited
-    from the parent process, see the `'pipe'` and `'inherit'` options for
-    [`child_process.spawn()`][]'s [`stdio`][] for more details.
-    **Default:** `false`.
-  * `stdio` {Array|string} See [`child_process.spawn()`][]'s [`stdio`][].
-    When this option is provided, it overrides `silent`. If the array variant
-    is used, it must contain exactly one item with value `'ipc'` or an error
-    will be thrown. For instance `[0, 1, 2, 'ipc']`.
-  * `uid` {number} Sets the user identity of the process (see setuid(2)).
-  * `windowsVerbatimArguments` {boolean} No quoting or escaping of arguments is
-    done on Windows. Ignored on Unix. **Default:** `false`.
-  * `timeout` {number} In milliseconds the maximum amount of time the process
-    is allowed to run. **Default:** `undefined`.
-* Returns: {ChildProcess}
+  * `cwd` {string|URL} 子进程的当前工作目录。
+  * `detached` {boolean} 准备子进程独立于其父进程运行。具体行为取决于平台（参见 [`options.detached`][]）。
+  * `env` {Object} 环境键值对。**默认值：** `process.env`。
+  * `execPath` {string} 用于创建子进程的可执行文件。
+  * `execArgv` {string\[]} 传递给可执行文件的字符串参数列表。**默认值：** `process.execArgv`。
+  * `gid` {number} 设置进程的组身份（参见 setgid(2)）。
+  * `serialization` {string} 指定用于在进程之间发送消息的序列化类型。可能的值为 `'json'` 和 `'advanced'`。参见 [高级序列化][] 了解更多详情。**默认值：** `'json'`。
+  * `signal` {AbortSignal} 允许使用 AbortSignal 关闭子进程。
+  * `killSignal` {string|integer} 当生成的进程因超时或中止信号而被杀死时使用的信号值。**默认值：** `'SIGTERM'`。
+  * `silent` {boolean} 如果为 `true`，子进程的 stdin、stdout 和 stderr 将被管道传输到父进程，否则它们将从父进程继承，参见 [`child_process.spawn()`][] 的 [`stdio`][] 的 `'pipe'` 和 `'inherit'` 选项了解更多详情。**默认值：** `false`。
+  * `stdio` {Array|string} 参见 [`child_process.spawn()`][] 的 [`stdio`][]。提供此选项时，它将覆盖 `silent`。如果使用数组变体，它必须恰好包含一个值为 `'ipc'` 的项，否则将抛出错误。例如 `[0, 1, 2, 'ipc']`。
+  * `uid` {number} 设置进程的用户身份（参见 setuid(2)）。
+  * `windowsVerbatimArguments` {boolean} 在 Windows 上不对参数进行引号或转义。在 Unix 上忽略。**默认值：** `false`。
+  * `timeout` {number} 进程允许运行的最大时间（毫秒）。**默认值：** `undefined`。
+* 返回：{ChildProcess}
 
-The `child_process.fork()` method is a special case of
-[`child_process.spawn()`][] used specifically to spawn new Node.js processes.
-Like [`child_process.spawn()`][], a [`ChildProcess`][] object is returned. The
-returned [`ChildProcess`][] will have an additional communication channel
-built-in that allows messages to be passed back and forth between the parent and
-child. See [`subprocess.send()`][] for details.
+`child_process.fork()` 方法是 [`child_process.spawn()`][] 的一个特例，专门用于生成新的 Node.js 进程。像 [`child_process.spawn()`][] 一样，返回一个 [`ChildProcess`][] 对象。返回的 [`ChildProcess`][] 将具有一个内置的额外通信通道，允许消息在父进程和子进程之间来回传递。详见 [`subprocess.send()`][]。
 
-Keep in mind that spawned Node.js child processes are
-independent of the parent with exception of the IPC communication channel
-that is established between the two. Each process has its own memory, with
-their own V8 instances. Because of the additional resource allocations
-required, spawning a large number of child Node.js processes is not
-recommended.
+请记住，生成的 Node.js 子进程独立于父进程，除了两者之间建立的 IPC 通信通道。每个进程都有自己的内存和自己的 V8 实例。由于需要额外的资源分配，不建议生成大量子 Node.js 进程。
 
-By default, `child_process.fork()` will spawn new Node.js instances using the
-[`process.execPath`][] of the parent process. The `execPath` property in the
-`options` object allows for an alternative execution path to be used.
+默认情况下，`child_process.fork()` 将使用父进程的 [`process.execPath`][] 生成新的 Node.js 实例。`options` 对象中的 `execPath` 属性允许使用替代执行路径。
 
-Node.js processes launched with a custom `execPath` will communicate with the
-parent process using the file descriptor (fd) identified using the
-environment variable `NODE_CHANNEL_FD` on the child process.
+使用自定义 `execPath` 启动的 Node.js 进程将使用子进程上环境变量 `NODE_CHANNEL_FD` 标识的文件描述符 (fd) 与父进程通信。
 
-Unlike the fork(2) POSIX system call, `child_process.fork()` does not clone the
-current process.
+与 fork(2) POSIX 系统调用不同，`child_process.fork()` 不克隆当前进程。
 
-The `shell` option available in [`child_process.spawn()`][] is not supported by
-`child_process.fork()` and will be ignored if set.
+[`child_process.spawn()`][] 中可用的 `shell` 选项不受 `child_process.fork()` 支持，如果设置将被忽略。
 
-If the `signal` option is enabled, calling `.abort()` on the corresponding
-`AbortController` is similar to calling `.kill()` on the child process except
-the error passed to the callback will be an `AbortError`:
+如果启用了 `signal` 选项，则在相应的 `AbortController` 上调用 `.abort()` 类似于在子进程上调用 `.kill()`，不同之处在于传递给回调的错误将是 `AbortError`：
 
 ```cjs
 const { fork } = require('node:child_process');
@@ -602,9 +452,9 @@ if (process.argv[2] === 'child') {
   const { signal } = controller;
   const child = fork(__filename, ['child'], { signal });
   child.on('error', (err) => {
-    // This will be called with err being an AbortError if the controller aborts
+    // 如果控制器中止，此处将被调用，err 为 AbortError
   });
-  controller.abort(); // Stops the child process
+  controller.abort(); // 停止子进程
 }
 ```
 
@@ -621,9 +471,9 @@ if (process.argv[2] === 'child') {
   const { signal } = controller;
   const child = fork(import.meta.url, ['child'], { signal });
   child.on('error', (err) => {
-    // This will be called with err being an AbortError if the controller aborts
+    // 如果控制器中止，此处将被调用，err 为 AbortError
   });
-  controller.abort(); // Stops the child process
+  controller.abort(); // 停止子进程
 }
 ```
 
@@ -636,87 +486,67 @@ changes:
       - v23.11.0
       - v22.15.0
     pr-url: https://github.com/nodejs/node/pull/57389
-    description: Passing `args` when `shell` is set to `true` is deprecated.
+    description: 当 shell 设置为 true 时传递 args 已弃用。
   - version:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: The `cwd` option can be a WHATWG `URL` object using
-                 `file:` protocol.
+    description: "cwd 选项可以是一个使用 file: 协议的 WHATWG URL 对象。"
   - version:
       - v15.13.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37256
-    description: timeout was added.
+    description: 添加了 timeout。
   - version:
       - v15.11.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37325
-    description: killSignal for AbortSignal was added.
+    description: 为 AbortSignal 添加了 killSignal。
   - version:
       - v15.5.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/36432
-    description: AbortSignal support was added.
+    description: 添加了 AbortSignal 支持。
   - version:
       - v13.2.0
       - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30162
-    description: The `serialization` option is supported now.
+    description: 现在支持 serialization 选项。
   - version: v8.8.0
     pr-url: https://github.com/nodejs/node/pull/15380
-    description: The `windowsHide` option is supported now.
+    description: 现在支持 windowsHide 选项。
   - version: v6.4.0
     pr-url: https://github.com/nodejs/node/pull/7696
-    description: The `argv0` option is supported now.
+    description: 现在支持 argv0 选项。
   - version: v5.7.0
     pr-url: https://github.com/nodejs/node/pull/4598
-    description: The `shell` option is supported now.
+    description: 现在支持 shell 选项。
 -->
 
-* `command` {string} The command to run.
-* `args` {string\[]} List of string arguments.
+* `command` {string} 要运行的命令。
+* `args` {string\[]} 字符串参数列表。
 * `options` {Object}
-  * `cwd` {string|URL} Current working directory of the child process.
-  * `env` {Object} Environment key-value pairs. **Default:** `process.env`.
-  * `argv0` {string} Explicitly set the value of `argv[0]` sent to the child
-    process. This will be set to `command` if not specified.
-  * `stdio` {Array|string} Child's stdio configuration (see
-    [`options.stdio`][`stdio`]).
-  * `detached` {boolean} Prepare child process to run independently of
-    its parent process. Specific behavior depends on the platform (see
-    [`options.detached`][]).
-  * `uid` {number} Sets the user identity of the process (see setuid(2)).
-  * `gid` {number} Sets the group identity of the process (see setgid(2)).
-  * `serialization` {string} Specify the kind of serialization used for sending
-    messages between processes. Possible values are `'json'` and `'advanced'`.
-    See [Advanced serialization][] for more details. **Default:** `'json'`.
-  * `shell` {boolean|string} If `true`, runs `command` inside of a shell. Uses
-    `'/bin/sh'` on Unix, and `process.env.ComSpec` on Windows. A different
-    shell can be specified as a string. See [Shell requirements][] and
-    [Default Windows shell][]. **Default:** `false` (no shell).
-  * `windowsVerbatimArguments` {boolean} No quoting or escaping of arguments is
-    done on Windows. Ignored on Unix. This is set to `true` automatically
-    when `shell` is specified and is CMD. **Default:** `false`.
-  * `windowsHide` {boolean} Hide the subprocess console window that would
-    normally be created on Windows systems. **Default:** `false`.
-  * `signal` {AbortSignal} allows aborting the child process using an
-    AbortSignal.
-  * `timeout` {number} In milliseconds the maximum amount of time the process
-    is allowed to run. **Default:** `undefined`.
-  * `killSignal` {string|integer} The signal value to be used when the spawned
-    process will be killed by timeout or abort signal. **Default:** `'SIGTERM'`.
-* Returns: {ChildProcess}
+  * `cwd` {string|URL} 子进程的当前工作目录。
+  * `env` {Object} 环境键值对。**默认值：** `process.env`。
+  * `argv0` {string} 显式设置发送给子进程的 `argv[0]` 的值。如果未指定，这将设置为 `command`。
+  * `stdio` {Array|string} 子进程的 stdio 配置（参见 [`options.stdio`][`stdio`]）。
+  * `detached` {boolean} 准备子进程独立于其父进程运行。具体行为取决于平台（参见 [`options.detached`][]）。
+  * `uid` {number} 设置进程的用户身份（参见 setuid(2)）。
+  * `gid` {number} 设置进程的组身份（参见 setgid(2)）。
+  * `serialization` {string} 指定用于在进程之间发送消息的序列化类型。可能的值为 `'json'` 和 `'advanced'`。参见 [高级序列化][] 了解更多详情。**默认值：** `'json'`。
+  * `shell` {boolean|string} 如果为 `true`，则在 shell 内部运行 `command`。在 Unix 上使用 `'/bin/sh'`，在 Windows 上使用 `process.env.ComSpec`。可以将不同的 shell 指定为字符串。参见 [Shell 要求][] 和 [默认 Windows shell][]。**默认值：** `false`（无 shell）。
+  * `windowsVerbatimArguments` {boolean} 在 Windows 上不对参数进行引号或转义。在 Unix 上忽略。当指定 `shell` 且为 CMD 时，此值自动设置为 `true`。**默认值：** `false`。
+  * `windowsHide` {boolean} 隐藏 Windows 系统上通常创建的子进程控制台窗口。**默认值：** `false`。
+  * `signal` {AbortSignal} 允许使用 AbortSignal 中止子进程。
+  * `timeout` {number} 进程允许运行的最大时间（毫秒）。**默认值：** `undefined`。
+  * `killSignal` {string|integer} 当生成的进程因超时或中止信号而被杀死时使用的信号值。**默认值：** `'SIGTERM'`。
+* 返回：{ChildProcess}
 
-The `child_process.spawn()` method spawns a new process using the given
-`command`, with command-line arguments in `args`. If omitted, `args` defaults
-to an empty array.
+`child_process.spawn()` 方法使用给定的 `command` 生成一个新进程，命令行参数在 `args` 中。如果省略，`args` 默认为空数组。
 
-**If the `shell` option is enabled, do not pass unsanitized user input to this
-function. Any input containing shell metacharacters may be used to trigger
-arbitrary command execution.**
+**如果启用了 `shell` 选项，切勿将未清理的用户输入传递给此函数。任何包含 shell 元字符的输入都可能被用于触发任意命令执行。**
 
-A third argument may be used to specify additional options, with these defaults:
+第三个参数可用于指定附加选项，默认值如下：
 
 ```js
 const defaults = {
@@ -725,19 +555,13 @@ const defaults = {
 };
 ```
 
-Use `cwd` to specify the working directory from which the process is spawned.
-If not given, the default is to inherit the current working directory. If given,
-but the path does not exist, the child process emits an `ENOENT` error
-and exits immediately. `ENOENT` is also emitted when the command
-does not exist.
+使用 `cwd` 指定生成进程的工作目录。如果未给出，默认是继承当前工作目录。如果给出但路径不存在，子进程将发出 `ENOENT` 错误并立即退出。当命令不存在时也会发出 `ENOENT`。
 
-Use `env` to specify environment variables that will be visible to the new
-process, the default is [`process.env`][].
+使用 `env` 指定新进程可见的环境变量，默认值为 [`process.env`][]。
 
-`undefined` values in `env` will be ignored.
+`env` 中的 `undefined` 值将被忽略。
 
-Example of running `ls -lh /usr`, capturing `stdout`, `stderr`, and the
-exit code:
+运行 `ls -lh /usr` 的示例，捕获 `stdout`、`stderr` 和退出码：
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -773,7 +597,7 @@ const [code] = await once(ls, 'close');
 console.log(`child process exited with code ${code}`);
 ```
 
-Example: A very elaborate way to run `ps ax | grep ssh`
+示例：运行 `ps ax | grep ssh` 的一种非常详细的方式
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -845,7 +669,7 @@ grep.on('close', (code) => {
 });
 ```
 
-Example of checking for failed `spawn`:
+检查 `spawn` 失败的示例：
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -865,17 +689,11 @@ subprocess.on('error', (err) => {
 });
 ```
 
-Certain platforms (macOS, Linux) will use the value of `argv[0]` for the process
-title while others (Windows, SunOS) will use `command`.
+某些平台（macOS、Linux）将使用 `argv[0]` 的值作为进程标题，而其他平台（Windows、SunOS）将使用 `command`。
 
-Node.js overwrites `argv[0]` with `process.execPath` on startup, so
-`process.argv[0]` in a Node.js child process will not match the `argv0`
-parameter passed to `spawn` from the parent. Retrieve it with the
-`process.argv0` property instead.
+Node.js 在启动时用 `process.execPath` 覆盖 `argv[0]`，因此 Node.js 子进程中的 `process.argv[0]` 将与父进程传递给 `spawn` 的 `argv0` 参数不匹配。请改用 `process.argv0` 属性检索它。
 
-If the `signal` option is enabled, calling `.abort()` on the corresponding
-`AbortController` is similar to calling `.kill()` on the child process except
-the error passed to the callback will be an `AbortError`:
+如果启用了 `signal` 选项，则在相应的 `AbortController` 上调用 `.abort()` 类似于在子进程上调用 `.kill()`，不同之处在于传递给回调的错误将是 `AbortError`：
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -883,9 +701,9 @@ const controller = new AbortController();
 const { signal } = controller;
 const grep = spawn('grep', ['ssh'], { signal });
 grep.on('error', (err) => {
-  // This will be called with err being an AbortError if the controller aborts
+  // 如果控制器中止，此处将被调用，err 为 AbortError
 });
-controller.abort(); // Stops the child process
+controller.abort(); // 停止子进程
 ```
 
 ```mjs
@@ -894,9 +712,9 @@ const controller = new AbortController();
 const { signal } = controller;
 const grep = spawn('grep', ['ssh'], { signal });
 grep.on('error', (err) => {
-  // This will be called with err being an AbortError if the controller aborts
+  // 如果控制器中止，此处将被调用，err 为 AbortError
 });
-controller.abort(); // Stops the child process
+controller.abort(); // 停止子进程
 ```
 
 #### `options.detached`
@@ -905,31 +723,15 @@ controller.abort(); // Stops the child process
 added: v0.7.10
 -->
 
-On Windows, setting `options.detached` to `true` makes it possible for the
-child process to continue running after the parent exits. The child process
-will have its own console window. Once enabled for a child process,
-it cannot be disabled.
+在 Windows 上，将 `options.detached` 设置为 `true` 使得子进程在父进程退出后继续运行成为可能。子进程将拥有自己的控制台窗口。一旦为子进程启用，就无法禁用。
 
-On non-Windows platforms, if `options.detached` is set to `true`, the child
-process will be made the leader of a new process group and session. Child
-processes may continue running after the parent exits regardless of whether
-they are detached or not. See setsid(2) for more information.
+在非 Windows 平台上，如果 `options.detached` 设置为 `true`，子进程将成为新进程组和会话的领导者。无论是否分离，子进程都可以在父进程退出后继续运行。参见 setsid(2) 了解更多信息。
 
-By default, the parent will wait for the detached child process to exit.
-To prevent the parent process from waiting for a given `subprocess` to exit, use
-the `subprocess.unref()` method. Doing so will cause the parent process' event
-loop to not include the child process in its reference count, allowing the
-parent process to exit independently of the child process, unless there is an established
-IPC channel between the child and the parent processes.
+默认情况下，父进程将等待分离的子进程退出。为了防止父进程等待给定的 `subprocess` 退出，请使用 `subprocess.unref()` 方法。这样做将导致父进程的事件循环不在其引用计数中包含子进程，允许父进程独立于子进程退出，除非子进程和父进程之间建立了 IPC 通道。
 
-When using the `detached` option to start a long-running process, the process
-will not stay running in the background after the parent exits unless it is
-provided with a `stdio` configuration that is not connected to the parent.
-If the parent process' `stdio` is inherited, the child process will remain attached
-to the controlling terminal.
+当使用 `detached` 选项启动长期运行的进程时，除非提供了未连接到父进程的 `stdio` 配置，否则进程在父进程退出后不会在后台保持运行。如果父进程的 `stdio` 被继承，子进程将保持连接到控制终端。
 
-Example of a long-running process, by detaching and also ignoring its parent
-`stdio` file descriptors, in order to ignore the parent's termination:
+长期运行进程的示例，通过分离并忽略其父进程 `stdio` 文件描述符，以便忽略父进程的终止：
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -955,7 +757,7 @@ const subprocess = spawn(process.argv[0], ['child_program.js'], {
 subprocess.unref();
 ```
 
-Alternatively one can redirect the child process' output into files:
+或者，可以将子进程的输出重定向到文件：
 
 ```cjs
 const { openSync } = require('node:fs');
@@ -973,7 +775,7 @@ subprocess.unref();
 
 ```mjs
 import { openSync } from 'node:fs';
-import { spawn } from 'node:child_process';
+import { spawn } = 'node:child_process';
 const out = openSync('./out.log', 'a');
 const err = openSync('./out.log', 'a');
 
@@ -994,99 +796,46 @@ changes:
       - v15.6.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/29412
-    description: Added the `overlapped` stdio flag.
+    description: 添加了 overlapped stdio 标志。
   - version: v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2727
-    description: The value `0` is now accepted as a file descriptor.
+    description: 值 0 现在被接受为文件描述符。
 -->
 
-The `options.stdio` option is used to configure the pipes that are established
-between the parent and child process. By default, the child's stdin, stdout,
-and stderr are redirected to corresponding [`subprocess.stdin`][],
-[`subprocess.stdout`][], and [`subprocess.stderr`][] streams on the
-[`ChildProcess`][] object. This is equivalent to setting the `options.stdio`
-equal to `['pipe', 'pipe', 'pipe']`.
+`options.stdio` 选项用于配置在父进程和子进程之间建立的管道。默认情况下，子进程的 stdin、stdout 和 stderr 被重定向到 [`ChildProcess`][] 对象上相应的 [`subprocess.stdin`][]、[`subprocess.stdout`][] 和 [`subprocess.stderr`][] 流。这等同于将 `options.stdio` 设置为 `['pipe', 'pipe', 'pipe']`。
 
-For convenience, `options.stdio` may be one of the following strings:
+为了方便起见，`options.stdio` 可以是以下字符串之一：
 
-* `'pipe'`: equivalent to `['pipe', 'pipe', 'pipe']` (the default)
-* `'overlapped'`: equivalent to `['overlapped', 'overlapped', 'overlapped']`
-* `'ignore'`: equivalent to `['ignore', 'ignore', 'ignore']`
-* `'inherit'`: equivalent to `['inherit', 'inherit', 'inherit']` or `[0, 1, 2]`
+* `'pipe'`：等同于 `['pipe', 'pipe', 'pipe']`（默认值）
+* `'overlapped'`：等同于 `['overlapped', 'overlapped', 'overlapped']`
+* `'ignore'`：等同于 `['ignore', 'ignore', 'ignore']`
+* `'inherit'`：等同于 `['inherit', 'inherit', 'inherit']` 或 `[0, 1, 2]`
 
-Otherwise, the value of `options.stdio` is an array where each index corresponds
-to an fd in the child. The fds 0, 1, and 2 correspond to stdin, stdout,
-and stderr, respectively. Additional fds can be specified to create additional
-pipes between the parent and child. The value is one of the following:
+否则，`options.stdio` 的值是一个数组，其中每个索引对应子进程中的一个 fd。fd 0、1 和 2 分别对应 stdin、stdout 和 stderr。可以指定额外的 fd 以在父进程和子进程之间创建额外的管道。值是以下之一：
 
-1. `'pipe'`: Create a pipe between the child process and the parent process.
-   The parent end of the pipe is exposed to the parent as a property on the
-   `child_process` object as [`subprocess.stdio[fd]`][`subprocess.stdio`]. Pipes
-   created for fds 0, 1, and 2 are also available as [`subprocess.stdin`][],
-   [`subprocess.stdout`][] and [`subprocess.stderr`][], respectively.
-   These are not actual Unix pipes and therefore the child process
-   can not use them by their descriptor files,
-   e.g. `/dev/fd/2` or `/dev/stdout`.
-2. `'overlapped'`: Same as `'pipe'` except that the `FILE_FLAG_OVERLAPPED` flag
-   is set on the handle. This is necessary for overlapped I/O on the child
-   process's stdio handles. See the
-   [docs](https://docs.microsoft.com/en-us/windows/win32/fileio/synchronous-and-asynchronous-i-o)
-   for more details. This is exactly the same as `'pipe'` on non-Windows
-   systems.
-3. `'ipc'`: Create an IPC channel for passing messages/file descriptors
-   between parent and child. A [`ChildProcess`][] may have at most one IPC
-   stdio file descriptor. Setting this option enables the
-   [`subprocess.send()`][] method. If the child process is a Node.js instance,
-   the presence of an IPC channel will enable [`process.send()`][] and
-   [`process.disconnect()`][] methods, as well as [`'disconnect'`][] and
-   [`'message'`][] events within the child process.
+1. `'pipe'`：在子进程和父进程之间创建管道。管道的父端作为 [`child_process`][] 对象上的属性 [`subprocess.stdio[fd]`][`subprocess.stdio`] 暴露给父进程。为 fd 0、1 和 2 创建的管道也可分别作为 [`subprocess.stdin`][]、[`subprocess.stdout`][] 和 [`subprocess.stderr`][] 使用。这些不是实际的 Unix 管道，因此子进程不能通过其描述符文件使用它们，例如 `/dev/fd/2` 或 `/dev/stdout`。
+2. `'overlapped'`：与 `'pipe'` 相同，不同之处在于句柄上设置了 `FILE_FLAG_OVERLAPPED` 标志。这对于子进程 stdio 句柄上的重叠 I/O 是必需的。参见 [文档](https://docs.microsoft.com/en-us/windows/win32/fileio/synchronous-and-asynchronous-i-o) 了解更多详情。在非 Windows 系统上，这与 `'pipe'` 完全相同。
+3. `'ipc'`：创建一个 IPC 通道，用于在父进程和子进程之间传递消息/文件描述符。[`ChildProcess`][] 最多可以有一个 IPC stdio 文件描述符。设置此选项将启用 [`subprocess.send()`][] 方法。如果子进程是 Node.js 实例，IPC 通道的存在将启用子进程内的 [`process.send()`][] 和 [`process.disconnect()`][] 方法，以及 [`'disconnect'`][] 和 [`'message'`][] 事件。
 
-   Accessing the IPC channel fd in any way other than [`process.send()`][]
-   or using the IPC channel with a child process that is not a Node.js instance
-   is not supported.
-4. `'ignore'`: Instructs Node.js to ignore the fd in the child. While Node.js
-   will always open fds 0, 1, and 2 for the processes it spawns, setting the fd
-   to `'ignore'` will cause Node.js to open `/dev/null` and attach it to the
-   child's fd.
-5. `'inherit'`: Pass through the corresponding stdio stream to/from the
-   parent process. In the first three positions, this is equivalent to
-   `process.stdin`, `process.stdout`, and `process.stderr`, respectively. In
-   any other position, equivalent to `'ignore'`.
-6. {Stream} object: Share a readable or writable stream that refers to a tty,
-   file, socket, or a pipe with the child process. The stream's underlying
-   file descriptor is duplicated in the child process to the fd that
-   corresponds to the index in the `stdio` array. The stream must have an
-   underlying descriptor (file streams do not start until the `'open'` event has
-   occurred).
-   **NOTE:** While it is technically possible to pass `stdin` as a writable or
-   `stdout`/`stderr` as readable, it is not recommended.
-   Readable and writable streams are designed with distinct behaviors, and using
-   them incorrectly (e.g., passing a readable stream where a writable stream is
-   expected) can lead to unexpected results or errors. This practice is discouraged
-   as it may result in undefined behavior or dropped callbacks if the stream
-   encounters errors. Always ensure that `stdin` is used as readable and
-   `stdout`/`stderr` as writable to maintain the intended flow of data between
-   the parent and child processes.
-7. Positive integer: The integer value is interpreted as a file descriptor
-   that is open in the parent process. It is shared with the child
-   process, similar to how {Stream} objects can be shared. Passing sockets
-   is not supported on Windows.
-8. `null`, `undefined`: Use default value. For stdio fds 0, 1, and 2 (in other
-   words, stdin, stdout, and stderr) a pipe is created. For fd 3 and up, the
-   default is `'ignore'`.
+   除了 [`process.send()`][] 之外，以任何方式访问 IPC 通道 fd，或将 IPC 通道与非 Node.js 实例的子进程一起使用是不支持的。
+4. `'ignore'`：指示 Node.js 忽略子进程中的 fd。虽然 Node.js 总是为其生成的进程打开 fd 0、1 和 2，但将 fd 设置为 `'ignore'` 将导致 Node.js 打开 `/dev/null` 并将其附加到子进程的 fd。
+5. `'inherit'`：将相应的 stdio 流从/传递给父进程。在前三个位置，这分别等同于 `process.stdin`、`process.stdout` 和 `process.stderr`。在任何其他位置，等同于 `'ignore'`。
+6. {Stream} 对象：与子进程共享引用 tty、文件、socket 或管道的可读或可写流。流的底层文件描述符在子进程中复制到对应于 `stdio` 数组中索引的 fd。流必须具有底层描述符（文件流直到 `'open'` 事件发生后才开始）。
+   **注意：** 虽然技术上可以将 `stdin` 作为可写流传递，或将 `stdout`/`stderr` 作为可读流传递，但不推荐这样做。可读和可写流设计有不同的行为，错误地使用它们（例如，在期望可写流的地方传递可读流）可能导致意外结果或错误。不鼓励这种做法，因为它可能导致未定义的行为，或者如果流遇到错误则导致回调丢失。始终确保 `stdin` 用作可读，`stdout`/`stderr` 用作可写，以维持父进程和子进程之间预期的数据流。
+7. 正整数：整数值被解释为在父进程中打开的文件描述符。它与子进程共享，类似于 {Stream} 对象的共享方式。在 Windows 上不支持传递 socket。
+8. `null`、`undefined`：使用默认值。对于 stdio fd 0、1 和 2（即 stdin、stdout 和 stderr），创建管道。对于 fd 3 及以上，默认值为 `'ignore'`。
 
 ```cjs
 const { spawn } = require('node:child_process');
 const process = require('node:process');
 
-// Child will use parent's stdios.
+// 子进程将使用父进程的 stdio。
 spawn('prg', [], { stdio: 'inherit' });
 
-// Spawn child sharing only stderr.
+// 生成只共享 stderr 的子进程。
 spawn('prg', [], { stdio: ['pipe', 'pipe', process.stderr] });
 
-// Open an extra fd=4, to interact with programs presenting a
-// startd-style interface.
+// 打开一个额外的 fd=4，以便与呈现 startd 风格界面的程序交互。
 spawn('prg', [], { stdio: ['pipe', null, null, null, 'pipe'] });
 ```
 
@@ -1094,36 +843,29 @@ spawn('prg', [], { stdio: ['pipe', null, null, null, 'pipe'] });
 import { spawn } from 'node:child_process';
 import process from 'node:process';
 
-// Child will use parent's stdios.
+// 子进程将使用父进程的 stdio。
 spawn('prg', [], { stdio: 'inherit' });
 
-// Spawn child sharing only stderr.
+// 生成只共享 stderr 的子进程。
 spawn('prg', [], { stdio: ['pipe', 'pipe', process.stderr] });
 
-// Open an extra fd=4, to interact with programs presenting a
-// startd-style interface.
+// 打开一个额外的 fd=4，以便与呈现 startd 风格界面的程序交互。
 spawn('prg', [], { stdio: ['pipe', null, null, null, 'pipe'] });
 ```
 
-_It is worth noting that when an IPC channel is established between the
-parent and child processes, and the child process is a Node.js instance,
-the child process is launched with the IPC channel unreferenced (using
-`unref()`) until the child process registers an event handler for the
-[`'disconnect'`][] event or the [`'message'`][] event. This allows the
-child process to exit normally without the process being held open by the
-open IPC channel._
-See also: [`child_process.exec()`][] and [`child_process.fork()`][].
+_值得注意的是，当在父进程和子进程之间建立 IPC 通道，且子进程是 Node.js 实例时，子进程启动时 IPC 通道未被引用（使用 `unref()`），直到子进程为 [`'disconnect'`][] 事件或 [`'message'`][] 事件注册事件处理程序。这允许子进程正常退出，而进程不会被打开的 IPC 通道保持打开状态。_
+另参见：[`child_process.exec()`][] 和 [`child_process.fork()`][]。
 
-## Synchronous process creation
+## 同步进程创建
 
-The [`child_process.spawnSync()`][], [`child_process.execSync()`][], and
-[`child_process.execFileSync()`][] methods are synchronous and will block the
-Node.js event loop, pausing execution of any additional code until the spawned
-process exits.
+[`child_process.spawnSync()`][]、[`child_process.execSync()`][] 和
+[`child_process.execFileSync()`][] 方法是同步的，会阻塞
+Node.js 事件循环，暂停任何附加代码的执行，直到派生的
+进程退出。
 
-Blocking calls like these are mostly useful for simplifying general-purpose
-scripting tasks and for simplifying the loading/processing of application
-configuration at startup.
+像这样的阻塞调用主要用于简化通用
+脚本任务，以及简化启动时应用程序配置
+的加载/处理。
 
 ### `child_process.execFileSync(file[, args][, options])`
 
@@ -1134,95 +876,84 @@ changes:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: The `cwd` option can be a WHATWG `URL` object using
-                 `file:` protocol.
+    description: "`cwd` 选项可以是一个使用`file:` 协议的 WHATWG `URL` 对象。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22409
-    description: The `input` option can now be any `TypedArray` or a
-                 `DataView`.
+    description: "`input` 选项现在可以是任何 `TypedArray` 或`DataView`。"
   - version: v8.8.0
     pr-url: https://github.com/nodejs/node/pull/15380
-    description: The `windowsHide` option is supported now.
+    description: "现在支持 `windowsHide` 选项。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10653
-    description: The `input` option can now be a `Uint8Array`.
+    description: "`input` 选项现在可以是 `Uint8Array`。"
   - version:
     - v6.2.1
     - v4.5.0
     pr-url: https://github.com/nodejs/node/pull/6939
-    description: The `encoding` option can now explicitly be set to `buffer`.
+    description: "`encoding` 选项现在可以显式设置为 `buffer`。"
 -->
 
-* `file` {string} The name or path of the executable file to run.
-* `args` {string\[]} List of string arguments.
+* `file` {string} 要运行的可执行文件的名称或路径。
+* `args` {string\[]} 字符串参数列表。
 * `options` {Object}
-  * `cwd` {string|URL} Current working directory of the child process.
-  * `input` {string|Buffer|TypedArray|DataView} The value which will be passed
-    as stdin to the spawned process. If `stdio[0]` is set to `'pipe'`, Supplying
-    this value will override `stdio[0]`.
-  * `stdio` {string|Array} Child's stdio configuration.
-    See [`child_process.spawn()`][]'s [`stdio`][]. `stderr` by default will
-    be output to the parent process' stderr unless `stdio` is specified.
-    **Default:** `'pipe'`.
-  * `env` {Object} Environment key-value pairs. **Default:** `process.env`.
-  * `uid` {number} Sets the user identity of the process (see setuid(2)).
-  * `gid` {number} Sets the group identity of the process (see setgid(2)).
-  * `timeout` {number} In milliseconds the maximum amount of time the process
-    is allowed to run. **Default:** `undefined`.
-  * `killSignal` {string|integer} The signal value to be used when the spawned
-    process will be killed. **Default:** `'SIGTERM'`.
-  * `maxBuffer` {number} Largest amount of data in bytes allowed on stdout or
-    stderr. If exceeded, the child process is terminated. See caveat at
-    [`maxBuffer` and Unicode][]. **Default:** `1024 * 1024`.
-  * `encoding` {string} The encoding used for all stdio inputs and outputs.
-    **Default:** `'buffer'`.
-  * `windowsHide` {boolean} Hide the subprocess console window that would
-    normally be created on Windows systems. **Default:** `false`.
-  * `shell` {boolean|string} If `true`, runs `command` inside of a shell. Uses
-    `'/bin/sh'` on Unix, and `process.env.ComSpec` on Windows. A different
-    shell can be specified as a string. See [Shell requirements][] and
-    [Default Windows shell][]. **Default:** `false` (no shell).
-* Returns: {Buffer|string} The stdout from the command.
+  * `cwd` {string|URL} 子进程的当前工作目录。
+  * `input` {string|Buffer|TypedArray|DataView} 将作为 stdin 传递给派生进程的值。如果 `stdio[0]` 设置为 `'pipe'`，提供
+    此值将覆盖 `stdio[0]`。
+  * `stdio` {string|Array} 子进程的 stdio 配置。
+    参见 [`child_process.spawn()`][] 的 [`stdio`][]。除非指定了 `stdio`，否则 `stderr` 默认将
+    输出到父进程的 stderr。
+    **默认值：** `'pipe'`。
+  * `env` {Object} 环境键值对。**默认值：** `process.env`。
+  * `uid` {number} 设置进程的用户身份（参见 setuid(2)）。
+  * `gid` {number} 设置进程的用户组身份（参见 setgid(2)）。
+  * `timeout` {number} 进程允许运行的最大时间（毫秒）。**默认值：** `undefined`。
+  * `killSignal` {string|integer} 用于杀死派生进程的信号值。**默认值：** `'SIGTERM'`。
+  * `maxBuffer` {number} stdout 或 stderr 上允许的最大数据量（字节）。如果超过，子进程将被终止。参见 [`maxBuffer` 和 Unicode][] 处的注意事项。**默认值：** `1024 * 1024`。
+  * `encoding` {string} 用于所有 stdio 输入和输出的编码。
+    **默认值：** `'buffer'`。
+  * `windowsHide` {boolean} 隐藏通常在 Windows 系统上创建的子进程控制台窗口。**默认值：** `false`。
+  * `shell` {boolean|string} 如果为 `true`，则在 shell 内部运行 `command`。在 Unix 上使用
+    `'/bin/sh'`，在 Windows 上使用 `process.env.ComSpec`。可以将不同的
+    shell 指定为字符串。参见 [Shell 要求][] 和
+    [默认 Windows shell][]。**默认值：** `false`（无 shell）。
+* 返回：{Buffer|string} 命令的 stdout。
 
-The `child_process.execFileSync()` method is generally identical to
-[`child_process.execFile()`][] with the exception that the method will not
-return until the child process has fully closed. When a timeout has been
-encountered and `killSignal` is sent, the method won't return until the process
-has completely exited.
+`child_process.execFileSync()` 方法通常与
+[`child_process.execFile()`][] 相同，例外情况是该方法直到子进程完全关闭才会返回。当遇到超时且
+发送了 `killSignal` 时，该方法直到进程完全退出才会返回。
 
-If the child process intercepts and handles the `SIGTERM` signal and
-does not exit, the parent process will still wait until the child process has
-exited.
+如果子进程拦截并处理 `SIGTERM` 信号且
+未退出，父进程仍将等待直到子进程退出。
 
-If the process times out or has a non-zero exit code, this method will throw an
-[`Error`][] that will include the full result of the underlying
-[`child_process.spawnSync()`][].
+如果进程超时或具有非零退出码，此方法将抛出一个
+[`Error`][]，其中将包含底层
+[`child_process.spawnSync()`][] 的完整结果。
 
-**If the `shell` option is enabled, do not pass unsanitized user input to this
-function. Any input containing shell metacharacters may be used to trigger
-arbitrary command execution.**
+**如果启用了 `shell` 选项，请勿将未经清理的用户输入传递给此
+函数。任何包含 shell 元字符的输入都可能被用于触发
+任意命令执行。**
 
 ```cjs
 const { execFileSync } = require('node:child_process');
 
 try {
   const stdout = execFileSync('my-script.sh', ['my-arg'], {
-    // Capture stdout and stderr from child process. Overrides the
-    // default behavior of streaming child stderr to the parent stderr
+    // 捕获子进程的 stdout 和 stderr。覆盖
+    // 将子进程 stderr 流式传输到父进程 stderr 的默认行为
     stdio: 'pipe',
 
-    // Use utf8 encoding for stdio pipes
+    // 为 stdio 管道使用 utf8 编码
     encoding: 'utf8',
   });
 
   console.log(stdout);
 } catch (err) {
   if (err.code) {
-    // Spawning child process failed
+    // 派生子进程失败
     console.error(err.code);
   } else {
-    // Child was spawned but exited with non-zero exit code
-    // Error contains any stdout and stderr from the child
+    // 子进程已派生但退出码非零
+    // 错误包含来自子进程的任何 stdout 和 stderr
     const { stdout, stderr } = err;
 
     console.error({ stdout, stderr });
@@ -1235,22 +966,22 @@ import { execFileSync } from 'node:child_process';
 
 try {
   const stdout = execFileSync('my-script.sh', ['my-arg'], {
-    // Capture stdout and stderr from child process. Overrides the
-    // default behavior of streaming child stderr to the parent stderr
+    // 捕获子进程的 stdout 和 stderr。覆盖
+    // 将子进程 stderr 流式传输到父进程 stderr 的默认行为
     stdio: 'pipe',
 
-    // Use utf8 encoding for stdio pipes
+    // 为 stdio 管道使用 utf8 编码
     encoding: 'utf8',
   });
 
   console.log(stdout);
 } catch (err) {
   if (err.code) {
-    // Spawning child process failed
+    // 派生子进程失败
     console.error(err.code);
   } else {
-    // Child was spawned but exited with non-zero exit code
-    // Error contains any stdout and stderr from the child
+    // 子进程已派生但退出码非零
+    // 错误包含来自子进程的任何 stdout 和 stderr
     const { stdout, stderr } = err;
 
     console.error({ stdout, stderr });
@@ -1267,64 +998,55 @@ changes:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: The `cwd` option can be a WHATWG `URL` object using
-                 `file:` protocol.
+    description: "`cwd` 选项可以是一个使用`file:` 协议的 WHATWG `URL` 对象。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22409
-    description: The `input` option can now be any `TypedArray` or a
-                 `DataView`.
+    description: "`input` 选项现在可以是任何 `TypedArray` 或`DataView`。"
   - version: v8.8.0
     pr-url: https://github.com/nodejs/node/pull/15380
-    description: The `windowsHide` option is supported now.
+    description: "现在支持 `windowsHide` 选项。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10653
-    description: The `input` option can now be a `Uint8Array`.
+    description: "`input` 选项现在可以是 `Uint8Array`。"
 -->
 
-* `command` {string} The command to run.
+* `command` {string} 要运行的命令。
 * `options` {Object}
-  * `cwd` {string|URL} Current working directory of the child process.
-  * `input` {string|Buffer|TypedArray|DataView} The value which will be passed
-    as stdin to the spawned process. If `stdio[0]` is set to `'pipe'`, Supplying
-    this value will override `stdio[0]`.
-  * `stdio` {string|Array} Child's stdio configuration.
-    See [`child_process.spawn()`][]'s [`stdio`][]. `stderr` by default will
-    be output to the parent process' stderr unless `stdio` is specified.
-    **Default:** `'pipe'`.
-  * `env` {Object} Environment key-value pairs. **Default:** `process.env`.
-  * `shell` {string} Shell to execute the command with. See
-    [Shell requirements][] and [Default Windows shell][]. **Default:**
-    `'/bin/sh'` on Unix, `process.env.ComSpec` on Windows.
-  * `uid` {number} Sets the user identity of the process. (See setuid(2)).
-  * `gid` {number} Sets the group identity of the process. (See setgid(2)).
-  * `timeout` {number} In milliseconds the maximum amount of time the process
-    is allowed to run. **Default:** `undefined`.
-  * `killSignal` {string|integer} The signal value to be used when the spawned
-    process will be killed. **Default:** `'SIGTERM'`.
-  * `maxBuffer` {number} Largest amount of data in bytes allowed on stdout or
-    stderr. If exceeded, the child process is terminated and any output is
-    truncated. See caveat at [`maxBuffer` and Unicode][].
-    **Default:** `1024 * 1024`.
-  * `encoding` {string} The encoding used for all stdio inputs and outputs.
-    **Default:** `'buffer'`.
-  * `windowsHide` {boolean} Hide the subprocess console window that would
-    normally be created on Windows systems. **Default:** `false`.
-* Returns: {Buffer|string} The stdout from the command.
+  * `cwd` {string|URL} 子进程的当前工作目录。
+  * `input` {string|Buffer|TypedArray|DataView} 将作为 stdin 传递给派生进程的值。如果 `stdio[0]` 设置为 `'pipe'`，提供
+    此值将覆盖 `stdio[0]`。
+  * `stdio` {string|Array} 子进程的 stdio 配置。
+    参见 [`child_process.spawn()`][] 的 [`stdio`][]。除非指定了 `stdio`，否则 `stderr` 默认将
+    输出到父进程的 stderr。
+    **默认值：** `'pipe'`。
+  * `env` {Object} 环境键值对。**默认值：** `process.env`。
+  * `shell` {string} 用于执行命令的 Shell。参见
+    [Shell 要求][] 和 [默认 Windows shell][]。**默认值：**
+    在 Unix 上为 `'/bin/sh'`，在 Windows 上为 `process.env.ComSpec`。
+  * `uid` {number} 设置进程的用户身份。（参见 setuid(2)）。
+  * `gid` {number} 设置进程的用户组身份。（参见 setgid(2)）。
+  * `timeout` {number} 进程允许运行的最大时间（毫秒）。**默认值：** `undefined`。
+  * `killSignal` {string|integer} 用于杀死派生进程的信号值。**默认值：** `'SIGTERM'`。
+  * `maxBuffer` {number} stdout 或 stderr 上允许的最大数据量（字节）。如果超过，子进程将被终止且任何输出将被
+    截断。参见 [`maxBuffer` 和 Unicode][] 处的注意事项。
+    **默认值：** `1024 * 1024`。
+  * `encoding` {string} 用于所有 stdio 输入和输出的编码。
+    **默认值：** `'buffer'`。
+  * `windowsHide` {boolean} 隐藏通常在 Windows 系统上创建的子进程控制台窗口。**默认值：** `false`。
+* 返回：{Buffer|string} 命令的 stdout。
 
-The `child_process.execSync()` method is generally identical to
-[`child_process.exec()`][] with the exception that the method will not return
-until the child process has fully closed. When a timeout has been encountered
-and `killSignal` is sent, the method won't return until the process has
-completely exited. If the child process intercepts and handles the `SIGTERM`
-signal and doesn't exit, the parent process will wait until the child process
-has exited.
+`child_process.execSync()` 方法通常与
+[`child_process.exec()`][] 相同，例外情况是该方法直到
+子进程完全关闭才会返回。当遇到超时且
+发送了 `killSignal` 时，该方法直到进程完全退出才会返回。如果子进程拦截并处理 `SIGTERM`
+信号且未退出，父进程将等待直到子进程退出。
 
-If the process times out or has a non-zero exit code, this method will throw.
-The [`Error`][] object will contain the entire result from
-[`child_process.spawnSync()`][].
+如果进程超时或具有非零退出码，此方法将抛出。
+[`Error`][] 对象将包含来自
+[`child_process.spawnSync()`][] 的完整结果。
 
-**Never pass unsanitized user input to this function. Any input containing shell
-metacharacters may be used to trigger arbitrary command execution.**
+**切勿将未经清理的用户输入传递给此函数。任何包含 shell
+元字符的输入都可能被用于触发任意命令执行。**
 
 ### `child_process.spawnSync(command[, args][, options])`
 
@@ -1335,120 +1057,96 @@ changes:
       - v16.4.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/38862
-    description: The `cwd` option can be a WHATWG `URL` object using
-                 `file:` protocol.
+    description: "`cwd` 选项可以是一个使用`file:` 协议的 WHATWG `URL` 对象。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22409
-    description: The `input` option can now be any `TypedArray` or a
-                 `DataView`.
+    description: "`input` 选项现在可以是任何 `TypedArray` 或`DataView`。"
   - version: v8.8.0
     pr-url: https://github.com/nodejs/node/pull/15380
-    description: The `windowsHide` option is supported now.
+    description: "现在支持 `windowsHide` 选项。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10653
-    description: The `input` option can now be a `Uint8Array`.
+    description: "`input` 选项现在可以是 `Uint8Array`。"
   - version:
     - v6.2.1
     - v4.5.0
     pr-url: https://github.com/nodejs/node/pull/6939
-    description: The `encoding` option can now explicitly be set to `buffer`.
+    description: "`encoding` 选项现在可以显式设置为 `buffer`。"
   - version: v5.7.0
     pr-url: https://github.com/nodejs/node/pull/4598
-    description: The `shell` option is supported now.
+    description: "现在支持 `shell` 选项。"
 -->
 
-* `command` {string} The command to run.
-* `args` {string\[]} List of string arguments.
+* `command` {string} 要运行的命令。
+* `args` {string\[]} 字符串参数列表。
 * `options` {Object}
-  * `cwd` {string|URL} Current working directory of the child process.
-  * `input` {string|Buffer|TypedArray|DataView} The value which will be passed
-    as stdin to the spawned process. If `stdio[0]` is set to `'pipe'`, Supplying
-    this value will override `stdio[0]`.
-  * `argv0` {string} Explicitly set the value of `argv[0]` sent to the child
-    process. This will be set to `command` if not specified.
-  * `stdio` {string|Array} Child's stdio configuration.
-    See [`child_process.spawn()`][]'s [`stdio`][]. **Default:** `'pipe'`.
-  * `env` {Object} Environment key-value pairs. **Default:** `process.env`.
-  * `uid` {number} Sets the user identity of the process (see setuid(2)).
-  * `gid` {number} Sets the group identity of the process (see setgid(2)).
-  * `timeout` {number} In milliseconds the maximum amount of time the process
-    is allowed to run. **Default:** `undefined`.
-  * `killSignal` {string|integer} The signal value to be used when the spawned
-    process will be killed. **Default:** `'SIGTERM'`.
-  * `maxBuffer` {number} Largest amount of data in bytes allowed on stdout or
-    stderr. If exceeded, the child process is terminated and any output is
-    truncated. See caveat at [`maxBuffer` and Unicode][].
-    **Default:** `1024 * 1024`.
-  * `encoding` {string} The encoding used for all stdio inputs and outputs.
-    **Default:** `'buffer'`.
-  * `shell` {boolean|string} If `true`, runs `command` inside of a shell. Uses
-    `'/bin/sh'` on Unix, and `process.env.ComSpec` on Windows. A different
-    shell can be specified as a string. See [Shell requirements][] and
-    [Default Windows shell][]. **Default:** `false` (no shell).
-  * `windowsVerbatimArguments` {boolean} No quoting or escaping of arguments is
-    done on Windows. Ignored on Unix. This is set to `true` automatically
-    when `shell` is specified and is CMD. **Default:** `false`.
-  * `windowsHide` {boolean} Hide the subprocess console window that would
-    normally be created on Windows systems. **Default:** `false`.
-* Returns: {Object}
-  * `pid` {number} Pid of the child process.
-  * `output` {Array} Array of results from stdio output.
-  * `stdout` {Buffer|string} The contents of `output[1]`.
-  * `stderr` {Buffer|string} The contents of `output[2]`.
-  * `status` {number|null} The exit code of the subprocess, or `null` if the
-    subprocess terminated due to a signal.
-  * `signal` {string|null} The signal used to kill the subprocess, or `null` if
-    the subprocess did not terminate due to a signal.
-  * `error` {Error} The error object if the child process failed or timed out.
+  * `cwd` {string|URL} 子进程的当前工作目录。
+  * `input` {string|Buffer|TypedArray|DataView} 将作为 stdin 传递给派生进程的值。如果 `stdio[0]` 设置为 `'pipe'`，提供
+    此值将覆盖 `stdio[0]`。
+  * `argv0` {string} 显式设置发送给子
+    进程的 `argv[0]` 的值。如果未指定，这将设置为 `command`。
+  * `stdio` {string|Array} 子进程的 stdio 配置。
+    参见 [`child_process.spawn()`][] 的 [`stdio`][]。**默认值：** `'pipe'`。
+  * `env` {Object} 环境键值对。**默认值：** `process.env`。
+  * `uid` {number} 设置进程的用户身份（参见 setuid(2)）。
+  * `gid` {number} 设置进程的用户组身份（参见 setgid(2)）。
+  * `timeout` {number} 进程允许运行的最大时间（毫秒）。**默认值：** `undefined`。
+  * `killSignal` {string|integer} 用于杀死派生进程的信号值。**默认值：** `'SIGTERM'`。
+  * `maxBuffer` {number} stdout 或 stderr 上允许的最大数据量（字节）。如果超过，子进程将被终止且任何输出将被
+    截断。参见 [`maxBuffer` 和 Unicode][] 处的注意事项。
+    **默认值：** `1024 * 1024`。
+  * `encoding` {string} 用于所有 stdio 输入和输出的编码。
+    **默认值：** `'buffer'`。
+  * `shell` {boolean|string} 如果为 `true`，则在 shell 内部运行 `command`。在 Unix 上使用
+    `'/bin/sh'`，在 Windows 上使用 `process.env.ComSpec`。可以将不同的
+    shell 指定为字符串。参见 [Shell 要求][] 和
+    [默认 Windows shell][]。**默认值：** `false`（无 shell）。
+  * `windowsVerbatimArguments` {boolean} 在 Windows 上不对参数进行引号或转义。在 Unix 上被忽略。当指定 `shell` 且为 CMD 时，此值自动
+    设置为 `true`。**默认值：** `false`。
+  * `windowsHide` {boolean} 隐藏通常在 Windows 系统上创建的子进程控制台窗口。**默认值：** `false`。
+* 返回：{Object}
+  * `pid` {number} 子进程的 Pid。
+  * `output` {Array} 来自 stdio 输出的结果数组。
+  * `stdout` {Buffer|string} `output[1]` 的内容。
+  * `stderr` {Buffer|string} `output[2]` 的内容。
+  * `status` {number|null} 子进程的退出码，如果子进程因信号终止则为 `null`。
+  * `signal` {string|null} 用于杀死子进程的信号，如果子进程不是因信号终止则为 `null`。
+  * `error` {Error} 如果子进程失败或超时，则为错误对象。
 
-The `child_process.spawnSync()` method is generally identical to
-[`child_process.spawn()`][] with the exception that the function will not return
-until the child process has fully closed. When a timeout has been encountered
-and `killSignal` is sent, the method won't return until the process has
-completely exited. If the process intercepts and handles the `SIGTERM` signal
-and doesn't exit, the parent process will wait until the child process has
-exited.
+`child_process.spawnSync()` 方法通常与
+[`child_process.spawn()`][] 相同，例外情况是该函数直到
+子进程完全关闭才会返回。当遇到超时且
+发送了 `killSignal` 时，该方法直到进程完全退出才会返回。如果进程拦截并处理 `SIGTERM` 信号
+且未退出，父进程将等待直到子进程退出。
 
-**If the `shell` option is enabled, do not pass unsanitized user input to this
-function. Any input containing shell metacharacters may be used to trigger
-arbitrary command execution.**
+**如果启用了 `shell` 选项，请勿将未经清理的用户输入传递给此
+函数。任何包含 shell 元字符的输入都可能被用于触发
+任意命令执行。**
 
-## Class: `ChildProcess`
+## 类：`ChildProcess`
 
 <!-- YAML
 added: v2.2.0
 -->
 
-* Extends: {EventEmitter}
+* 继承：{EventEmitter}
 
-Instances of the `ChildProcess` represent spawned child processes.
+`ChildProcess` 的实例代表生成的子进程。
 
-Instances of `ChildProcess` are not intended to be created directly. Rather,
-use the [`child_process.spawn()`][], [`child_process.exec()`][],
-[`child_process.execFile()`][], or [`child_process.fork()`][] methods to create
-instances of `ChildProcess`.
+不建议直接创建 `ChildProcess` 的实例。而是使用 [`child_process.spawn()`][]、[`child_process.exec()`][]、[`child_process.execFile()`][] 或 [`child_process.fork()`][] 方法来创建 `ChildProcess` 实例。
 
-### Event: `'close'`
+### 事件：`'close'`
 
 <!-- YAML
 added: v0.7.7
 -->
 
-* `code` {number} The exit code if the child process exited on its own, or
-  `null` if the child process terminated due to a signal.
-* `signal` {string} The signal by which the child process was terminated, or
-  `null` if the child process did not terminated due to a signal.
+* `code` {number} 如果子进程自行退出，则为退出码，如果子进程因信号而终止，则为 `null`。
+* `signal` {string} 子进程终止所需的信号，如果子进程不是因信号而终止，则为 `null`。
 
-The `'close'` event is emitted after a process has ended _and_ the stdio
-streams of a child process have been closed. This is distinct from the
-[`'exit'`][] event, since multiple processes might share the same stdio
-streams. The `'close'` event will always emit after [`'exit'`][] was
-already emitted, or [`'error'`][] if the child process failed to spawn.
+当进程结束 _且_ 子进程的 stdio 流关闭后，会发出 `'close'` 事件。这与 [`'exit'`][] 事件不同，因为多个进程可能共享相同的 stdio 流。`'close'` 事件总是在 [`'exit'`][] 已发出之后发出，或者如果子进程生成失败则发出 [`'error'`][]。
 
-If the process exited, `code` is the final exit code of the process, otherwise
-`null`. If the process terminated due to receipt of a signal, `signal` is the
-string name of the signal, otherwise `null`. One of the two will always be
-non-`null`.
+如果进程退出，`code` 是进程的最终退出码，否则为 `null`。如果进程因收到信号而终止，`signal` 是信号的字符串名称，否则为 `null`。两者之一将始终为非 `null`。
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -1488,87 +1186,64 @@ const [code] = await once(ls, 'close');
 console.log(`child process close all stdio with code ${code}`);
 ```
 
-### Event: `'disconnect'`
+### 事件：`'disconnect'`
 
 <!-- YAML
 added: v0.7.2
 -->
 
-The `'disconnect'` event is emitted after calling the
-[`subprocess.disconnect()`][] method in parent process or
-[`process.disconnect()`][] in child process. After disconnecting it is no longer
-possible to send or receive messages, and the [`subprocess.connected`][]
-property is `false`.
+在父进程中调用 [`subprocess.disconnect()`][] 方法或在子进程中调用 [`process.disconnect()`][] 后，会发出 `'disconnect'` 事件。断开连接后，不再可能发送或接收消息，且 [`subprocess.connected`][] 属性为 `false`。
 
-### Event: `'error'`
+### 事件：`'error'`
 
-* `err` {Error} The error.
+* `err` {Error} 错误。
 
-The `'error'` event is emitted whenever:
+每当发生以下情况时，会发出 `'error'` 事件：
 
-* The process could not be spawned.
-* The process could not be killed.
-* Sending a message to the child process failed.
-* The child process was aborted via the `signal` option.
+* 无法生成进程。
+* 无法终止进程。
+* 向子进程发送消息失败。
+* 子进程通过 `signal` 选项被中止。
 
-The `'exit'` event may or may not fire after an error has occurred. When
-listening to both the `'exit'` and `'error'` events, guard
-against accidentally invoking handler functions multiple times.
+错误发生后，`'exit'` 事件可能会也可能不会触发。当同时监听 `'exit'` 和 `'error'` 事件时，防止意外多次调用处理函数。
 
-See also [`subprocess.kill()`][] and [`subprocess.send()`][].
+另请参阅 [`subprocess.kill()`][] 和 [`subprocess.send()`][]。
 
-### Event: `'exit'`
+### 事件：`'exit'`
 
 <!-- YAML
 added: v0.1.90
 -->
 
-* `code` {number} The exit code if the child process exited on its own, or
-  `null` if the child process terminated due to a signal.
-* `signal` {string} The signal by which the child process was terminated, or
-  `null` if the child process did not terminated due to a signal.
+* `code` {number} 如果子进程自行退出，则为退出码，如果子进程因信号而终止，则为 `null`。
+* `signal` {string} 子进程终止所需的信号，如果子进程不是因信号而终止，则为 `null`。
 
-The `'exit'` event is emitted after the child process ends. If the process
-exited, `code` is the final exit code of the process, otherwise `null`. If the
-process terminated due to receipt of a signal, `signal` is the string name of
-the signal, otherwise `null`. One of the two will always be non-`null`.
+子进程结束后会发出 `'exit'` 事件。如果进程退出，`code` 是进程的最终退出码，否则为 `null`。如果进程因收到信号而终止，`signal` 是信号的字符串名称，否则为 `null`。两者之一将始终为非 `null`。
 
-When the `'exit'` event is triggered, child process stdio streams might still be
-open.
+触发 `'exit'` 事件时，子进程 stdio 流可能仍然打开。
 
-Node.js establishes signal handlers for `SIGINT` and `SIGTERM` and Node.js
-processes will not terminate immediately due to receipt of those signals.
-Rather, Node.js will perform a sequence of cleanup actions and then will
-re-raise the handled signal.
+Node.js 为 `SIGINT` 和 `SIGTERM` 建立信号处理程序，且 Node.js 进程不会因收到这些信号而立即终止。相反，Node.js 将执行一系列清理操作，然后重新引发已处理的信号。
 
-See waitpid(2).
+参见 waitpid(2)。
 
-When `code` is `null` due to signal termination, you can use
-[`util.convertProcessSignalToExitCode()`][] to convert the signal to a POSIX
-exit code.
+当 `code` 因信号终止而为 `null` 时，你可以使用 [`util.convertProcessSignalToExitCode()`][] 将信号转换为 POSIX 退出码。
 
-### Event: `'message'`
+### 事件：`'message'`
 
 <!-- YAML
 added: v0.5.9
 -->
 
-* `message` {Object} A parsed JSON object or primitive value.
-* `sendHandle` {Handle|undefined} `undefined` or a [`net.Socket`][],
-  [`net.Server`][], or [`dgram.Socket`][] object.
+* `message` {Object} 解析后的 JSON 对象或原始值。
+* `sendHandle` {Handle|undefined} `undefined` 或一个 [`net.Socket`][]、[`net.Server`][] 或 [`dgram.Socket`][] 对象。
 
-The `'message'` event is triggered when a child process uses
-[`process.send()`][] to send messages.
+当子进程使用 [`process.send()`][] 发送消息时，会触发 `'message'` 事件。
 
-The message goes through serialization and parsing. The resulting
-message might not be the same as what is originally sent.
+消息会经过序列化和解析。结果消息可能与最初发送的消息不同。
 
-If the `serialization` option was set to `'advanced'` used when spawning the
-child process, the `message` argument can contain data that JSON is not able
-to represent.
-See [Advanced serialization][] for more details.
+如果生成子进程时 `serialization` 选项设置为 `'advanced'`，`message` 参数可以包含 JSON 无法表示的数据。详见 [高级序列化][] 了解更多详情。
 
-### Event: `'spawn'`
+### 事件：`'spawn'`
 
 <!-- YAML
 added:
@@ -1576,17 +1251,11 @@ added:
   - v14.17.0
 -->
 
-The `'spawn'` event is emitted once the child process has spawned successfully.
-If the child process does not spawn successfully, the `'spawn'` event is not
-emitted and the `'error'` event is emitted instead.
+一旦子进程成功生成，就会发出 `'spawn'` 事件。如果子进程未成功生成，则不会发出 `'spawn'` 事件，而是发出 `'error'` 事件。
 
-If emitted, the `'spawn'` event comes before all other events and before any
-data is received via `stdout` or `stderr`.
+如果发出，`'spawn'` 事件会在所有其他事件之前，以及在通过 `stdout` 或 `stderr` 接收任何数据之前发生。
 
-The `'spawn'` event will fire regardless of whether an error occurs **within**
-the spawned process. For example, if `bash some-command` spawns successfully,
-the `'spawn'` event will fire, though `bash` may fail to spawn `some-command`.
-This caveat also applies when using `{ shell: true }`.
+无论 **内部** 生成的进程是否发生错误，`'spawn'` 事件都会触发。例如，如果 `bash some-command` 成功生成，`'spawn'` 事件将触发，尽管 `bash` 可能无法生成 `some-command`。此注意事项也适用于使用 `{ shell: true }` 时。
 
 ### `subprocess.channel`
 
@@ -1595,13 +1264,12 @@ added: v7.1.0
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/30165
-    description: The object no longer accidentally exposes native C++ bindings.
+    description: 该对象不再意外暴露原生 C++ 绑定。
 -->
 
-* Type: {Object} A pipe representing the IPC channel to the child process.
+* 类型：{Object} 表示到子进程的 IPC 通道的管道。
 
-The `subprocess.channel` property is a reference to the child's IPC channel. If
-no IPC channel exists, this property is `undefined`.
+`subprocess.channel` 属性是对子进程 IPC 通道的引用。如果不存在 IPC 通道，此属性为 `undefined`。
 
 #### `subprocess.channel.ref()`
 
@@ -1609,8 +1277,7 @@ no IPC channel exists, this property is `undefined`.
 added: v7.1.0
 -->
 
-This method makes the IPC channel keep the event loop of the parent process
-running if `.unref()` has been called before.
+如果之前已调用 `.unref()`，此方法会使 IPC 通道保持父进程的事件循环运行。
 
 #### `subprocess.channel.unref()`
 
@@ -1618,8 +1285,7 @@ running if `.unref()` has been called before.
 added: v7.1.0
 -->
 
-This method makes the IPC channel not keep the event loop of the parent process
-running, and lets it finish even while the channel is open.
+此方法使 IPC 通道不保持父进程的事件循环运行，并允许其在通道打开时完成。
 
 ### `subprocess.connected`
 
@@ -1627,11 +1293,9 @@ running, and lets it finish even while the channel is open.
 added: v0.7.2
 -->
 
-* Type: {boolean} Set to `false` after `subprocess.disconnect()` is called.
+* 类型：{boolean} 调用 `subprocess.disconnect()` 后设置为 `false`。
 
-The `subprocess.connected` property indicates whether it is still possible to
-send and receive messages from a child process. When `subprocess.connected` is
-`false`, it is no longer possible to send or receive messages.
+`subprocess.connected` 属性指示是否仍然可以从子进程发送和接收消息。当 `subprocess.connected` 为 `false` 时，不再可能发送或接收消息。
 
 ### `subprocess.disconnect()`
 
@@ -1639,32 +1303,19 @@ send and receive messages from a child process. When `subprocess.connected` is
 added: v0.7.2
 -->
 
-Closes the IPC channel between parent and child processes, allowing the child
-process to exit gracefully once there are no other connections keeping it alive.
-After calling this method the `subprocess.connected` and
-`process.connected` properties in both the parent and child processes
-(respectively) will be set to `false`, and it will be no longer possible
-to pass messages between the processes.
+关闭父进程和子进程之间的 IPC 通道，允许子进程在没有其他连接保持其存活时正常退出。调用此方法后，父进程和子进程中的 `subprocess.connected` 和 `process.connected` 属性（分别）将设置为 `false`，并且不再可能在进程之间传递消息。
 
-The `'disconnect'` event will be emitted when there are no messages in the
-process of being received. This will most often be triggered immediately after
-calling `subprocess.disconnect()`.
+当没有消息正在接收过程中时，将发出 `'disconnect'` 事件。这通常在调用 `subprocess.disconnect()` 后立即触发。
 
-When the child process is a Node.js instance (e.g. spawned using
-[`child_process.fork()`][]), the `process.disconnect()` method can be invoked
-within the child process to close the IPC channel as well.
+当子进程是 Node.js 实例时（例如使用 [`child_process.fork()`][] 生成），可以在子进程中调用 `process.disconnect()` 方法来关闭 IPC 通道。
 
 ### `subprocess.exitCode`
 
-* Type: {integer}
+* 类型：{integer}
 
-The `subprocess.exitCode` property indicates the exit code of the child process.
-If the child process is still running, the field will be `null`.
+`subprocess.exitCode` 属性指示子进程的退出码。如果子进程仍在运行，该字段将为 `null`。
 
-When the child process is terminated by a signal, `subprocess.exitCode` will be
-`null` and [`subprocess.signalCode`][] will be set. To get the corresponding
-POSIX exit code, use
-[`util.convertProcessSignalToExitCode(subprocess.signalCode)`][`util.convertProcessSignalToExitCode()`].
+当子进程被信号终止时，`subprocess.exitCode` 将为 `null` 并且将设置 [`subprocess.signalCode`][]。要获取相应的 POSIX 退出码，请使用 [`util.convertProcessSignalToExitCode(subprocess.signalCode)`][`util.convertProcessSignalToExitCode()`]。
 
 ### `subprocess.kill([signal])`
 
@@ -1673,12 +1324,9 @@ added: v0.1.90
 -->
 
 * `signal` {number|string}
-* Returns: {boolean}
+* 返回：{boolean}
 
-The `subprocess.kill()` method sends a signal to the child process. If no
-argument is given, the process will be sent the `'SIGTERM'` signal. See
-signal(7) for a list of available signals. This function returns `true` if
-kill(2) succeeds, and `false` otherwise.
+`subprocess.kill()` 方法向子进程发送信号。如果未给出参数，进程将被发送 `'SIGTERM'` 信号。参见 signal(7) 获取可用信号列表。如果 kill(2) 成功，此函数返回 `true`，否则返回 `false`。
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -1689,7 +1337,7 @@ grep.on('close', (code, signal) => {
     `child process terminated due to receipt of signal ${signal}`);
 });
 
-// Send SIGHUP to process.
+// 向进程发送 SIGHUP。
 grep.kill('SIGHUP');
 ```
 
@@ -1702,29 +1350,19 @@ grep.on('close', (code, signal) => {
     `child process terminated due to receipt of signal ${signal}`);
 });
 
-// Send SIGHUP to process.
+// 向进程发送 SIGHUP。
 grep.kill('SIGHUP');
 ```
 
-The [`ChildProcess`][] object may emit an [`'error'`][] event if the signal
-cannot be delivered. Sending a signal to a child process that has already exited
-is not an error but may have unforeseen consequences. Specifically, if the
-process identifier (PID) has been reassigned to another process, the signal will
-be delivered to that process instead which can have unexpected results.
+如果无法传递信号，[`ChildProcess`][] 对象可能会发出 [`'error'`][] 事件。向已退出的子进程发送信号不是错误，但可能会产生不可预见的后果。具体来说，如果进程标识符 (PID) 已重新分配给另一个进程，信号将传递给该进程，这可能会产生意想不到的结果。
 
-While the function is called `kill`, the signal delivered to the child process
-may not actually terminate the process.
+虽然函数名为 `kill`，但传递给子进程的信号可能实际上不会终止进程。
 
-See kill(2) for reference.
+参见 kill(2) 参考。
 
-On Windows, where POSIX signals do not exist, the `signal` argument will be
-ignored except for `'SIGKILL'`, `'SIGTERM'`, `'SIGINT'` and `'SIGQUIT'`, and the
-process will always be killed forcefully and abruptly (similar to `'SIGKILL'`).
-See [Signal Events][] for more details.
+在 Windows 上，由于不存在 POSIX 信号，`signal` 参数将被忽略，但 `'SIGKILL'`、`'SIGTERM'`、`'SIGINT'` 和 `'SIGQUIT'` 除外，并且进程将始终被强制且突然地终止（类似于 `'SIGKILL'`）。详见 [信号事件][] 了解更多详情。
 
-On Linux, child processes of child processes will not be terminated
-when attempting to kill their parent. This is likely to happen when running a
-new process in a shell or with the use of the `shell` option of `ChildProcess`:
+在 Linux 上，尝试终止父进程时，子进程的子进程不会被终止。当在 shell 中运行新进程或使用 `ChildProcess` 的 `shell` 选项时，可能会发生这种情况：
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -1742,7 +1380,7 @@ const subprocess = spawn(
 );
 
 setTimeout(() => {
-  subprocess.kill(); // Does not terminate the Node.js process in the shell.
+  subprocess.kill(); // 不会终止 shell 中的 Node.js 进程。
 }, 2000);
 ```
 
@@ -1762,7 +1400,7 @@ const subprocess = spawn(
 );
 
 setTimeout(() => {
-  subprocess.kill(); // Does not terminate the Node.js process in the shell.
+  subprocess.kill(); // 不会终止 shell 中的 Node.js 进程。
 }, 2000);
 ```
 
@@ -1775,10 +1413,10 @@ added:
 changes:
  - version: v24.2.0
    pr-url: https://github.com/nodejs/node/pull/58467
-   description: No longer experimental.
+   description: 不再是实验性的。
 -->
 
-Calls [`subprocess.kill()`][] with `'SIGTERM'`.
+使用 `'SIGTERM'` 调用 [`subprocess.kill()`][]。
 
 ### `subprocess.killed`
 
@@ -1786,12 +1424,9 @@ Calls [`subprocess.kill()`][] with `'SIGTERM'`.
 added: v0.5.10
 -->
 
-* Type: {boolean} Set to `true` after `subprocess.kill()` is used to successfully
-  send a signal to the child process.
+* 类型：{boolean} 在使用 `subprocess.kill()` 成功向子进程发送信号后设置为 `true`。
 
-The `subprocess.killed` property indicates whether the child process
-successfully received a signal from `subprocess.kill()`. The `killed` property
-does not indicate that the child process has been terminated.
+`subprocess.killed` 属性指示子进程是否成功收到来自 `subprocess.kill()` 的信号。`killed` 属性不指示子进程已被终止。
 
 ### `subprocess.pid`
 
@@ -1799,11 +1434,9 @@ does not indicate that the child process has been terminated.
 added: v0.1.90
 -->
 
-* Type: {integer|undefined}
+* 类型：{integer|undefined}
 
-Returns the process identifier (PID) of the child process. If the child process
-fails to spawn due to errors, then the value is `undefined` and `error` is
-emitted.
+返回子进程的进程标识符 (PID)。如果子进程因错误无法生成，则值为 `undefined` 并发出 `error`。
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -1827,9 +1460,7 @@ grep.stdin.end();
 added: v0.7.10
 -->
 
-Calling `subprocess.ref()` after making a call to `subprocess.unref()` will
-restore the removed reference count for the child process, forcing the parent
-process to wait for the child process to exit before exiting itself.
+在调用 `subprocess.unref()` 之后调用 `subprocess.ref()` 将恢复子进程的已移除引用计数，强制父进程在退出之前等待子进程退出。
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -1864,37 +1495,27 @@ added: v0.5.9
 changes:
   - version: v5.8.0
     pr-url: https://github.com/nodejs/node/pull/5283
-    description: The `options` parameter, and the `keepOpen` option
-                 in particular, is supported now.
+    description: "现在支持 `options` 参数，特别是 `keepOpen` 选项。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/3516
-    description: This method returns a boolean for flow control now.
+    description: 此方法现在返回一个用于流控制的布尔值。
   - version: v4.0.0
     pr-url: https://github.com/nodejs/node/pull/2620
-    description: The `callback` parameter is supported now.
+    description: "现在支持 `callback` 参数。"
 -->
 
 * `message` {Object}
-* `sendHandle` {Handle|undefined} `undefined`, or a [`net.Socket`][],
-  [`net.Server`][], or [`dgram.Socket`][] object.
-* `options` {Object} The `options` argument, if present, is an object used to
-  parameterize the sending of certain types of handles. `options` supports
-  the following properties:
-  * `keepOpen` {boolean} A value that can be used when passing instances of
-    `net.Socket`. When `true`, the socket is kept open in the sending process.
-    **Default:** `false`.
+* `sendHandle` {Handle|undefined} `undefined`，或一个 [`net.Socket`][]、[`net.Server`][] 或 [`dgram.Socket`][] 对象。
+* `options` {Object} `options` 参数（如果存在）是一个用于参数化发送某些类型句柄的对象。`options` 支持以下属性：
+  * `keepOpen` {boolean} 传递 `net.Socket` 实例时可使用的值。当为 `true` 时，套接字在发送进程中保持打开。**默认值：** `false`。
 * `callback` {Function}
-* Returns: {boolean}
+* 返回：{boolean}
 
-When an IPC channel has been established between the parent and child processes
-( i.e. when using [`child_process.fork()`][]), the `subprocess.send()` method
-can be used to send messages to the child process. When the child process is a
-Node.js instance, these messages can be received via the [`'message'`][] event.
+当父进程和子进程之间建立了 IPC 通道时（即使用 [`child_process.fork()`][] 时），可以使用 `subprocess.send()` 方法向子进程发送消息。当子进程是 Node.js 实例时，可以通过 [`'message'`][] 事件接收这些消息。
 
-The message goes through serialization and parsing. The resulting
-message might not be the same as what is originally sent.
+消息会经过序列化和解析。结果消息可能与最初发送的消息不同。
 
-For example, in the parent script:
+例如，在父脚本中：
 
 ```cjs
 const { fork } = require('node:child_process');
@@ -1904,7 +1525,7 @@ forkedProcess.on('message', (message) => {
   console.log('PARENT got message:', message);
 });
 
-// Causes the child to print: CHILD got message: { hello: 'world' }
+// 导致子进程打印：CHILD got message: { hello: 'world' }
 forkedProcess.send({ hello: 'world' });
 ```
 
@@ -1916,56 +1537,36 @@ forkedProcess.on('message', (message) => {
   console.log('PARENT got message:', message);
 });
 
-// Causes the child to print: CHILD got message: { hello: 'world' }
+// 导致子进程打印：CHILD got message: { hello: 'world' }
 forkedProcess.send({ hello: 'world' });
 ```
 
-And then the child script, `'sub.js'` might look like this:
+然后子脚本 `'sub.js'` 可能如下所示：
 
 ```js
 process.on('message', (message) => {
   console.log('CHILD got message:', message);
 });
 
-// Causes the parent to print: PARENT got message: { foo: 'bar', baz: null }
+// 导致父进程打印：PARENT got message: { foo: 'bar', baz: null }
 process.send({ foo: 'bar', baz: NaN });
 ```
 
-Child Node.js processes will have a [`process.send()`][] method of their own
-that allows the child process to send messages back to the parent process.
+子 Node.js 进程将拥有自己的 [`process.send()`][] 方法，允许子进程向父进程发送消息。
 
-There is a special case when sending a `{cmd: 'NODE_foo'}` message. Messages
-containing a `NODE_` prefix in the `cmd` property are reserved for use within
-Node.js core and will not be emitted in the child's [`'message'`][]
-event. Rather, such messages are emitted using the
-`'internalMessage'` event and are consumed internally by Node.js.
-Applications should avoid using such messages or listening for
-`'internalMessage'` events as it is subject to change without notice.
+发送 `{cmd: 'NODE_foo'}` 消息时有一个特殊情况。`cmd` 属性中包含 `NODE_` 前缀的消息保留用于 Node.js 核心内部使用，不会在子进程的 [`'message'`][] 事件中发出。相反，此类消息使用 `'internalMessage'` 事件发出，并由 Node.js 内部消耗。应用程序应避免使用此类消息或监听 `'internalMessage'` 事件，因为它可能会在不通知的情况下更改。
 
-The optional `sendHandle` argument that may be passed to `subprocess.send()` is
-for passing a TCP server or socket object to the child process. The child process will
-receive the object as the second argument passed to the callback function
-registered on the [`'message'`][] event. Any data that is received
-and buffered in the socket will not be sent to the child. Sending IPC sockets is
-not supported on Windows.
+传递给 `subprocess.send()` 的可选 `sendHandle` 参数用于将 TCP 服务器或套接字对象传递给子进程。子进程将接收该对象作为传递给注册在 [`'message'`][] 事件上的回调函数的第二个参数。套接字中接收和缓冲的任何数据都不会发送给子进程。Windows 上不支持发送 IPC 套接字。
 
-The optional `callback` is a function that is invoked after the message is
-sent but before the child process may have received it. The function is called with a
-single argument: `null` on success, or an [`Error`][] object on failure.
+可选的 `callback` 是一个在消息发送后但在子进程可能收到之前调用的函数。该函数使用单个参数调用：成功时为 `null`，失败时为 [`Error`][] 对象。
 
-If no `callback` function is provided and the message cannot be sent, an
-`'error'` event will be emitted by the [`ChildProcess`][] object. This can
-happen, for instance, when the child process has already exited.
+如果未提供 `callback` 函数且无法发送消息，[`ChildProcess`][] 对象将发出 `'error'` 事件。例如，当子进程已经退出时，可能会发生这种情况。
 
-`subprocess.send()` will return `false` if the channel has closed or when the
-backlog of unsent messages exceeds a threshold that makes it unwise to send
-more. Otherwise, the method returns `true`. The `callback` function can be
-used to implement flow control.
+如果通道已关闭，或者未发送消息的积压超过阈值使得发送更多消息不明智时，`subprocess.send()` 将返回 `false`。否则，该方法返回 `true`。`callback` 函数可用于实现流控制。
 
-#### Example: sending a server object
+#### 示例：发送服务器对象
 
-The `sendHandle` argument can be used, for instance, to pass the handle of
-a TCP server object to the child process as illustrated in the example below:
+例如，`sendHandle` 参数可用于将 TCP 服务器对象的句柄传递给子进程，如下例所示：
 
 ```cjs
 const { fork } = require('node:child_process');
@@ -1973,7 +1574,7 @@ const { createServer } = require('node:net');
 
 const subprocess = fork('subprocess.js');
 
-// Open up the server object and send the handle.
+// 打开服务器对象并发送句柄。
 const server = createServer();
 server.on('connection', (socket) => {
   socket.end('handled by parent');
@@ -1989,7 +1590,7 @@ import { createServer } from 'node:net';
 
 const subprocess = fork('subprocess.js');
 
-// Open up the server object and send the handle.
+// 打开服务器对象并发送句柄。
 const server = createServer();
 server.on('connection', (socket) => {
   socket.end('handled by parent');
@@ -1999,7 +1600,7 @@ server.listen(1337, () => {
 });
 ```
 
-The child process would then receive the server object as:
+然后子进程将接收服务器对象如下：
 
 ```js
 process.on('message', (m, server) => {
@@ -2011,20 +1612,13 @@ process.on('message', (m, server) => {
 });
 ```
 
-Once the server is now shared between the parent and child, some connections
-can be handled by the parent and some by the child.
+一旦服务器现在在父进程和子进程之间共享，一些连接可以由父进程处理，一些由子进程处理。
 
-While the example above uses a server created using the `node:net` module,
-`node:dgram` module servers use exactly the same workflow with the exceptions of
-listening on a `'message'` event instead of `'connection'` and using
-`server.bind()` instead of `server.listen()`. This is, however, only
-supported on Unix platforms.
+虽然上面的示例使用了使用 `node:net` 模块创建的服务器，但 `node:dgram` 模块服务器使用完全相同的工作流，除了监听 `'message'` 事件而不是 `'connection'` 以及使用 `server.bind()` 而不是 `server.listen()`。然而，这仅在 Unix 平台上受支持。
 
-#### Example: sending a socket object
+#### 示例：发送套接字对象
 
-Similarly, the `sendHandler` argument can be used to pass the handle of a
-socket to the child process. The example below spawns two children that each
-handle connections with "normal" or "special" priority:
+类似地，`sendHandle` 参数可用于将套接字的句柄传递给子进程。下面的示例生成两个子进程，分别处理具有“正常”或“特殊”优先级的连接：
 
 ```cjs
 const { fork } = require('node:child_process');
@@ -2033,17 +1627,16 @@ const { createServer } = require('node:net');
 const normal = fork('subprocess.js', ['normal']);
 const special = fork('subprocess.js', ['special']);
 
-// Open up the server and send sockets to child. Use pauseOnConnect to prevent
-// the sockets from being read before they are sent to the child process.
+// 打开服务器并将套接字发送给子进程。使用 pauseOnConnect 防止套接字在发送给子进程之前被读取。
 const server = createServer({ pauseOnConnect: true });
 server.on('connection', (socket) => {
 
-  // If this is special priority...
+  // 如果这是特殊优先级...
   if (socket.remoteAddress === '74.125.127.100') {
     special.send('socket', socket);
     return;
   }
-  // This is normal priority.
+  // 这是正常优先级。
   normal.send('socket', socket);
 });
 server.listen(1337);
@@ -2056,76 +1649,60 @@ import { createServer } from 'node:net';
 const normal = fork('subprocess.js', ['normal']);
 const special = fork('subprocess.js', ['special']);
 
-// Open up the server and send sockets to child. Use pauseOnConnect to prevent
-// the sockets from being read before they are sent to the child process.
+// 打开服务器并将套接字发送给子进程。使用 pauseOnConnect 防止套接字在发送给子进程之前被读取。
 const server = createServer({ pauseOnConnect: true });
 server.on('connection', (socket) => {
 
-  // If this is special priority...
+  // 如果这是特殊优先级...
   if (socket.remoteAddress === '74.125.127.100') {
     special.send('socket', socket);
     return;
   }
-  // This is normal priority.
+  // 这是正常优先级。
   normal.send('socket', socket);
 });
 server.listen(1337);
 ```
 
-The `subprocess.js` would receive the socket handle as the second argument
-passed to the event callback function:
+`subprocess.js` 将接收套接字句柄作为传递给事件回调函数的第二个参数：
 
 ```js
 process.on('message', (m, socket) => {
   if (m === 'socket') {
     if (socket) {
-      // Check that the client socket exists.
-      // It is possible for the socket to be closed between the time it is
-      // sent and the time it is received in the child process.
+      // 检查客户端套接字是否存在。
+      // 套接字可能在发送时间和子进程接收时间之间关闭。
       socket.end(`Request handled with ${process.argv[2]} priority`);
     }
   }
 });
 ```
 
-Do not use `.maxConnections` on a socket that has been passed to a subprocess.
-The parent cannot track when the socket is destroyed.
+不要在已传递给子进程的套接字上使用 `.maxConnections`。父进程无法跟踪套接字何时被销毁。
 
-Any `'message'` handlers in the subprocess should verify that `socket` exists,
-as the connection may have been closed during the time it takes to send the
-connection to the child.
+子进程中的任何 `'message'` 处理程序都应验证 `socket` 是否存在，因为在将连接发送到子进程所需的时间内，连接可能已关闭。
 
 ### `subprocess.signalCode`
 
-* Type: {string|null}
+* 类型：{string|null}
 
-The `subprocess.signalCode` property indicates the signal received by
-the child process if any, else `null`.
+`subprocess.signalCode` 属性指示子进程收到的信号（如果有），否则为 `null`。
 
-When the child process is terminated by a signal, [`subprocess.exitCode`][] will be `null`.
-To get the corresponding POSIX exit code, use
-[`util.convertProcessSignalToExitCode(subprocess.signalCode)`][`util.convertProcessSignalToExitCode()`].
+当子进程被信号终止时，[`subprocess.exitCode`][] 将为 `null`。要获取相应的 POSIX 退出码，请使用 [`util.convertProcessSignalToExitCode(subprocess.signalCode)`][`util.convertProcessSignalToExitCode()`]。
 
 ### `subprocess.spawnargs`
 
-* Type: {Array}
+* 类型：{Array}
 
-The `subprocess.spawnargs` property represents the full list of command-line
-arguments the child process was launched with.
+`subprocess.spawnargs` 属性表示子进程启动时的命令行参数完整列表。
 
 ### `subprocess.spawnfile`
 
-* Type: {string}
+* 类型：{string}
 
-The `subprocess.spawnfile` property indicates the executable file name of
-the child process that is launched.
+`subprocess.spawnfile` 属性指示启动的子进程的可执行文件名。
 
-For [`child_process.fork()`][], its value will be equal to
-[`process.execPath`][].
-For [`child_process.spawn()`][], its value will be the name of
-the executable file.
-For [`child_process.exec()`][],  its value will be the name of the shell
-in which the child process is launched.
+对于 [`child_process.fork()`][]，其值将等于 [`process.execPath`][]。对于 [`child_process.spawn()`][]，其值将是可执行文件的名称。对于 [`child_process.exec()`][]，其值将是启动子进程的 shell 的名称。
 
 ### `subprocess.stderr`
 
@@ -2133,18 +1710,15 @@ in which the child process is launched.
 added: v0.1.90
 -->
 
-* Type: {stream.Readable|null|undefined}
+* 类型：{stream.Readable|null|undefined}
 
-A `Readable Stream` that represents the child process's `stderr`.
+表示子进程 `stderr` 的 `Readable Stream`。
 
-If the child process was spawned with `stdio[2]` set to anything other than `'pipe'`,
-then this will be `null`.
+如果生成子进程时 `stdio[2]` 设置为 `'pipe'` 以外的任何值，则此项将为 `null`。
 
-`subprocess.stderr` is an alias for `subprocess.stdio[2]`. Both properties will
-refer to the same value.
+`subprocess.stderr` 是 `subprocess.stdio[2]` 的别名。两个属性将引用相同的值。
 
-The `subprocess.stderr` property can be `null` or `undefined`
-if the child process could not be successfully spawned.
+如果无法成功生成子进程，`subprocess.stderr` 属性可以是 `null` 或 `undefined`。
 
 ### `subprocess.stdin`
 
@@ -2152,21 +1726,17 @@ if the child process could not be successfully spawned.
 added: v0.1.90
 -->
 
-* Type: {stream.Writable|null|undefined}
+* 类型：{stream.Writable|null|undefined}
 
-A `Writable Stream` that represents the child process's `stdin`.
+表示子进程 `stdin` 的 `Writable Stream`。
 
-If a child process waits to read all of its input, the child process will not continue
-until this stream has been closed via `end()`.
+如果子进程等待读取所有输入，则子进程将不会继续，直到此流通过 `end()` 关闭。
 
-If the child process was spawned with `stdio[0]` set to anything other than `'pipe'`,
-then this will be `null`.
+如果生成子进程时 `stdio[0]` 设置为 `'pipe'` 以外的任何值，则此项将为 `null`。
 
-`subprocess.stdin` is an alias for `subprocess.stdio[0]`. Both properties will
-refer to the same value.
+`subprocess.stdin` 是 `subprocess.stdio[0]` 的别名。两个属性将引用相同的值。
 
-The `subprocess.stdin` property can be `null` or `undefined`
-if the child process could not be successfully spawned.
+如果无法成功生成子进程，`subprocess.stdin` 属性可以是 `null` 或 `undefined`。
 
 ### `subprocess.stdio`
 
@@ -2174,17 +1744,11 @@ if the child process could not be successfully spawned.
 added: v0.7.10
 -->
 
-* Type: {Array}
+* 类型：{Array}
 
-A sparse array of pipes to the child process, corresponding with positions in
-the [`stdio`][] option passed to [`child_process.spawn()`][] that have been set
-to the value `'pipe'`. `subprocess.stdio[0]`, `subprocess.stdio[1]`, and
-`subprocess.stdio[2]` are also available as `subprocess.stdin`,
-`subprocess.stdout`, and `subprocess.stderr`, respectively.
+到子进程的管道稀疏数组，对应于传递给 [`child_process.spawn()`][] 的 [`stdio`][] 选项中已设置为值 `'pipe'` 的位置。`subprocess.stdio[0]`、`subprocess.stdio[1]` 和 `subprocess.stdio[2]` 也可分别作为 `subprocess.stdin`、`subprocess.stdout` 和 `subprocess.stderr` 使用。
 
-In the following example, only the child's fd `1` (stdout) is configured as a
-pipe, so only the parent's `subprocess.stdio[1]` is a stream, all other values
-in the array are `null`.
+在以下示例中，只有子进程的 fd `1` (stdout) 配置为管道，因此只有父进程的 `subprocess.stdio[1]` 是流，数组中的所有其他值均为 `null`。
 
 ```cjs
 const assert = require('node:assert');
@@ -2193,9 +1757,9 @@ const child_process = require('node:child_process');
 
 const subprocess = child_process.spawn('ls', {
   stdio: [
-    0, // Use parent's stdin for child.
-    'pipe', // Pipe child's stdout to parent.
-    fs.openSync('err.out', 'w'), // Direct child's stderr to a file.
+    0, // 使用父进程的 stdin 作为子进程。
+    'pipe', // 将子进程的 stdout 管道连接到父进程。
+    fs.openSync('err.out', 'w'), // 将子进程的 stderr 定向到文件。
   ],
 });
 
@@ -2216,9 +1780,9 @@ import child_process from 'node:child_process';
 
 const subprocess = child_process.spawn('ls', {
   stdio: [
-    0, // Use parent's stdin for child.
-    'pipe', // Pipe child's stdout to parent.
-    fs.openSync('err.out', 'w'), // Direct child's stderr to a file.
+    0, // 使用父进程的 stdin 作为子进程。
+    'pipe', // 将子进程的 stdout 管道连接到父进程。
+    fs.openSync('err.out', 'w'), // 将子进程的 stderr 定向到文件。
   ],
 });
 
@@ -2232,8 +1796,7 @@ assert.strictEqual(subprocess.stdio[2], null);
 assert.strictEqual(subprocess.stdio[2], subprocess.stderr);
 ```
 
-The `subprocess.stdio` property can be `undefined` if the child process could
-not be successfully spawned.
+如果无法成功生成子进程，`subprocess.stdio` 属性可以是 `undefined`。
 
 ### `subprocess.stdout`
 
@@ -2241,15 +1804,13 @@ not be successfully spawned.
 added: v0.1.90
 -->
 
-* Type: {stream.Readable|null|undefined}
+* 类型：{stream.Readable|null|undefined}
 
-A `Readable Stream` that represents the child process's `stdout`.
+表示子进程 `stdout` 的 `Readable Stream`。
 
-If the child process was spawned with `stdio[1]` set to anything other than `'pipe'`,
-then this will be `null`.
+如果生成子进程时 `stdio[1]` 设置为 `'pipe'` 以外的任何值，则此项将为 `null`。
 
-`subprocess.stdout` is an alias for `subprocess.stdio[1]`. Both properties will
-refer to the same value.
+`subprocess.stdout` 是 `subprocess.stdio[1]` 的别名。两个属性将引用相同的值。
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -2271,8 +1832,7 @@ subprocess.stdout.on('data', (data) => {
 });
 ```
 
-The `subprocess.stdout` property can be `null` or `undefined`
-if the child process could not be successfully spawned.
+如果无法成功生成子进程，`subprocess.stdout` 属性可以是 `null` 或 `undefined`。
 
 ### `subprocess.unref()`
 
@@ -2280,12 +1840,7 @@ if the child process could not be successfully spawned.
 added: v0.7.10
 -->
 
-By default, the parent process will wait for the detached child process to exit.
-To prevent the parent process from waiting for a given `subprocess` to exit, use the
-`subprocess.unref()` method. Doing so will cause the parent's event loop to not
-include the child process in its reference count, allowing the parent to exit
-independently of the child, unless there is an established IPC channel between
-the child and the parent processes.
+默认情况下，父进程将等待分离的子进程退出。要防止父进程等待给定 `subprocess` 退出，请使用 `subprocess.unref()` 方法。这样做会导致父进程的事件循环不在其引用计数中包含子进程，允许父进程独立于子进程退出，除非子进程和父进程之间建立了 IPC 通道。
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -2311,29 +1866,19 @@ const subprocess = spawn(process.argv[0], ['child_program.js'], {
 subprocess.unref();
 ```
 
-## `maxBuffer` and Unicode
+## `maxBuffer` 和 Unicode
 
-The `maxBuffer` option specifies the largest number of bytes allowed on `stdout`
-or `stderr`. If this value is exceeded, then the child process is terminated.
-This impacts output that includes multibyte character encodings such as UTF-8 or
-UTF-16. For instance, `console.log('中文测试')` will send 13 UTF-8 encoded bytes
-to `stdout` although there are only 4 characters.
+`maxBuffer` 选项指定了允许在 `stdout` 或 `stderr` 上输出的最大字节数。如果超过此值，子进程将被终止。这会影响包含多字节字符编码（如 UTF-8 或 UTF-16）的输出。例如，`console.log('中文测试')` 将向 `stdout` 发送 13 个 UTF-8 编码字节，尽管只有 4 个字符。
 
-## Shell requirements
+## Shell 要求
 
-The shell should understand the `-c` switch. If the shell is `'cmd.exe'`, it
-should understand the `/d /s /c` switches and command-line parsing should be
-compatible.
+Shell 应该理解 `-c` 开关。如果 shell 是 `'cmd.exe'`，它应该理解 `/d /s /c` 开关，并且命令行解析应该兼容。
 
-## Default Windows shell
+## 默认 Windows shell
 
-Although Microsoft specifies `%COMSPEC%` must contain the path to
-`'cmd.exe'` in the root environment, child processes are not always subject to
-the same requirement. Thus, in `child_process` functions where a shell can be
-spawned, `'cmd.exe'` is used as a fallback if `process.env.ComSpec` is
-unavailable.
+虽然 Microsoft 指定 `%COMSPEC%` 必须在根环境中包含 `'cmd.exe'` 的路径，但子进程并不总是受相同要求的约束。因此，在可以生成 shell 的 `child_process` 函数中，如果 `process.env.ComSpec` 不可用，则使用 `'cmd.exe'` 作为后备。
 
-## Advanced serialization
+## 高级序列化
 
 <!-- YAML
 added:
@@ -2341,26 +1886,16 @@ added:
  - v12.16.0
 -->
 
-Child processes support a serialization mechanism for IPC that is based on the
-[serialization API of the `node:v8` module][v8.serdes], based on the
-[HTML structured clone algorithm][]. This is generally more powerful and
-supports more built-in JavaScript object types, such as `BigInt`, `Map`
-and `Set`, `ArrayBuffer` and `TypedArray`, `Buffer`, `Error`, `RegExp` etc.
+子进程支持一种基于 [`node:v8` 模块的序列化 API][v8.serdes] 的 IPC 序列化机制，该机制基于 [HTML 结构化克隆算法][]。这通常更强大，并支持更多内置 JavaScript 对象类型，例如 `BigInt`、`Map` 和 `Set`、`ArrayBuffer` 和 `TypedArray`、`Buffer`、`Error`、`RegExp` 等。
 
-However, this format is not a full superset of JSON, and e.g. properties set on
-objects of such built-in types will not be passed on through the serialization
-step. Additionally, performance may not be equivalent to that of JSON, depending
-on the structure of the passed data.
-Therefore, this feature requires opting in by setting the
-`serialization` option to `'advanced'` when calling [`child_process.spawn()`][]
-or [`child_process.fork()`][].
+但是，此格式不是 JSON 的完整超集，例如，在此类内置类型的对象上设置的属性将不会通过序列化步骤传递。此外，根据传递数据的结构，性能可能不如 JSON。因此，此功能需要在调用 [`child_process.spawn()`][] 或 [`child_process.fork()`][] 时将 `serialization` 选项设置为 `'advanced'` 来选择加入。
 
-[Advanced serialization]: #advanced-serialization
+[高级序列化]: #advanced-serialization
 [DEP0190]: deprecations.md#DEP0190
-[Default Windows shell]: #default-windows-shell
-[HTML structured clone algorithm]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
-[Shell requirements]: #shell-requirements
-[Signal Events]: process.md#signal-events
+[默认 Windows shell]: #default-windows-shell
+[HTML 结构化克隆算法]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+[Shell 要求]: #shell-requirements
+[信号事件]: process.md#signal-events
 [`'disconnect'`]: process.md#event-disconnect
 [`'error'`]: #event-error
 [`'exit'`]: #event-exit
@@ -2376,7 +1911,7 @@ or [`child_process.fork()`][].
 [`child_process.spawn()`]: #child_processspawncommand-args-options
 [`child_process.spawnSync()`]: #child_processspawnsynccommand-args-options
 [`dgram.Socket`]: dgram.md#class-dgramsocket
-[`maxBuffer` and Unicode]: #maxbuffer-and-unicode
+[`maxBuffer` 和 Unicode]: #maxbuffer-and-unicode
 [`net.Server`]: net.md#class-netserver
 [`net.Socket`]: net.md#class-netsocket
 [`options.detached`]: #optionsdetached
@@ -2397,5 +1932,5 @@ or [`child_process.fork()`][].
 [`subprocess.stdout`]: #subprocessstdout
 [`util.convertProcessSignalToExitCode()`]: util.md#utilconvertprocesssignaltoexitcodesignalcode
 [`util.promisify()`]: util.md#utilpromisifyoriginal
-[synchronous counterparts]: #synchronous-process-creation
+[同步对应方法]: #synchronous-process-creation
 [v8.serdes]: v8.md#serialization-api
