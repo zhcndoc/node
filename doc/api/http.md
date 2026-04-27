@@ -1895,9 +1895,13 @@ socket 超时逻辑在连接时设置，因此更改此
 
 <!-- YAML
 added: v8.0.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62782
+    description: "`http.Server.keepAliveTimeout` 的默认值从 5 秒更改为 65 秒。"
 -->
 
-* 类型：{number} 超时时间（毫秒）。 **默认值：** `5000`（5 秒）。
+* 类型：{number} 超时时间（毫秒）。 **默认值：** `65000`（65 秒）。
 
 服务器在完成写入最后一个响应后，需要等待额外
 传入数据的不活动毫秒数，之后
@@ -2042,7 +2046,7 @@ changes:
 
 此方法向服务器发出信号，表明所有响应头部和主体都已发送；服务器应认为此消息已完成。每个响应都必须调用 `response.end()` 方法。
 
-如果指定了 `data`，其效果类似于调用 [`response.write(data, encoding)`][] 后跟 `response.end(callback)`。
+如果指定了 `data`，其效果类似于调用 [`response.write(data, encoding)`][] 后跟 [`response.end(callback)`]。
 
 如果指定了 `callback`，它将在响应流完成时调用。
 
@@ -2578,7 +2582,7 @@ const req = http.request({
   res.on('end', () => {
     if (!res.complete)
       console.error(
-        '消息仍在发送时连接被终止');
+        '连接在消息仍在发送时被终止');
   });
 });
 ```

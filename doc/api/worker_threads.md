@@ -45,7 +45,7 @@ export default function parseJSAsync(script) {
     worker.once('error', reject);
     worker.once('exit', (code) => {
       if (code !== 0)
-        reject(new Error(`Worker stopped with exit code ${code}`));
+        reject(new Error(`Worker 停止，退出代码为 ${code}`));
     });
   });
 };
@@ -71,7 +71,7 @@ if (isMainThread) {
       worker.once('error', reject);
       worker.once('exit', (code) => {
         if (code !== 0)
-          reject(new Error(`Worker stopped with exit code ${code}`));
+          reject(new Error(`Worker 停止，退出代码为 ${code}`));
       });
     });
   };
@@ -99,7 +99,7 @@ changes:
     - v17.5.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41272
-    description: No longer experimental.
+    description: 不再是实验性功能。
 -->
 
 * `key` {any} 任何任意的、可克隆的 JavaScript 值，可用作 {Map} 键。
@@ -119,7 +119,7 @@ if (isMainThread) {
   setEnvironmentData('Hello', 'World!');
   const worker = new Worker(new URL(import.meta.url));
 } else {
-  console.log(getEnvironmentData('Hello'));  // 打印 'World!'.
+  console.log(getEnvironmentData('Hello'));  // 打印 'World!'。
 }
 ```
 
@@ -137,7 +137,7 @@ if (isMainThread) {
   setEnvironmentData('Hello', 'World!');
   const worker = new Worker(__filename);
 } else {
-  console.log(getEnvironmentData('Hello'));  // 打印 'World!'.
+  console.log(getEnvironmentData('Hello'));  // 打印 'World!'。
 }
 ```
 
@@ -475,8 +475,8 @@ added:
 如果两个线程是父子关系，请使用 [`require('node:worker_threads').parentPort.postMessage()`][]
 和 [`worker.postMessage()`][] 让线程通信。
 
-下面的示例展示了 `postMessageToThread` 的使用：它创建了 10 个嵌套线程，
-最后一个将尝试与主线程通信。
+下面的示例展示了 `postMessageToThread` 的用法：它创建了 10 个嵌套线程，
+最后一个线程会尝试与主线程通信。
 
 ```mjs
 import process from 'node:process';
@@ -1422,12 +1422,12 @@ if (isMainThread) {
   const subChannel = new MessageChannel();
   worker.postMessage({ hereIsYourPort: subChannel.port1 }, [subChannel.port1]);
   subChannel.port2.on('message', (value) => {
-    console.log('received:', value);
+    console.log('收到：', value);
   });
 } else {
   parentPort.once('message', (value) => {
     assert(value.hereIsYourPort instanceof MessagePort);
-    value.hereIsYourPort.postMessage('the worker is sending this');
+    value.hereIsYourPort.postMessage('worker 正在发送此消息');
     value.hereIsYourPort.close();
   });
 }
@@ -1445,12 +1445,12 @@ if (isMainThread) {
   const subChannel = new MessageChannel();
   worker.postMessage({ hereIsYourPort: subChannel.port1 }, [subChannel.port1]);
   subChannel.port2.on('message', (value) => {
-    console.log('received:', value);
+    console.log('收到：', value);
   });
 } else {
   parentPort.once('message', (value) => {
     assert(value.hereIsYourPort instanceof MessagePort);
-    value.hereIsYourPort.postMessage('the worker is sending this');
+    value.hereIsYourPort.postMessage('worker 正在发送此消息');
     value.hereIsYourPort.close();
   });
 }
@@ -1672,7 +1672,7 @@ changes:
 参见 [`v8.getHeapSnapshot()`][] 以获取更多详情。
 
 如果 Worker 线程不再运行（这可能发生在
-[`'exit'` 事件][] 发出之前），返回的 `Promise` 将立即
+[`'exit' 事件][] 发出之前），返回的 `Promise` 将立即
 被 [`ERR_WORKER_NOT_RUNNING`][] 错误拒绝。
 
 ### `worker.getHeapStatistics()`
@@ -1740,7 +1740,7 @@ if (isMainThread) {
     console.log(worker.performance.eventLoopUtilization());
   }, 100).unref();
 } else {
-  parentPort.on('message', () => console.log('msg')).unref();
+  parentPort.on('message', () => console.log('消息')).unref();
   (function r(n) {
     if (--n < 0) return;
     const t = Date.now();
@@ -1762,7 +1762,7 @@ if (isMainThread) {
     console.log(worker.performance.eventLoopUtilization());
   }, 100).unref();
 } else {
-  parentPort.on('message', () => console.log('msg')).unref();
+  parentPort.on('message', () => console.log('消息')).unref();
   (function r(n) {
     if (--n < 0) return;
     const t = Date.now();
@@ -1820,12 +1820,16 @@ added:
 
 如果 worker 已停止，返回值为一个空对象。
 
-### `worker.startCpuProfile()`
+### `worker.startCpuProfile([options])`
 
 <!-- YAML
 added: v24.8.0
 -->
 
+* `options` {Object}
+  * `sampleInterval` {number} 请求的采样间隔，单位为毫秒。**默认：** `0`。
+  * `maxBufferSize` {integer} 要保留的最大样本数。
+    **默认：** `4294967295`。
 * 返回：{Promise}
 
 启动 CPU 性能分析，然后返回一个 Promise，该 Promise 兑现为一个错误
@@ -1840,7 +1844,7 @@ const worker = new Worker(`
   `, { eval: true });
 
 worker.on('online', async () => {
-  const handle = await worker.startCpuProfile();
+  const handle = await worker.startCpuProfile({ sampleInterval: 1 });
   const profile = await handle.stop();
   console.log(profile);
   worker.terminate();
@@ -1853,7 +1857,7 @@ worker.on('online', async () => {
 const { Worker } = require('node:worker_threads');
 
 const w = new Worker(`
-  const { parentPort } = require('node:worker_threads');
+  const { parentPort } = require('worker_threads');
   parentPort.on('message', () => {});
   `, { eval: true });
 
@@ -1872,17 +1876,17 @@ added:
 -->
 
 * `options` {Object}
-  * `sampleInterval` {number} The average sampling interval in bytes.
-    **Default:** `524288` (512 KiB).
-  * `stackDepth` {integer} The maximum stack depth for samples.
-    **Default:** `16`.
-  * `forceGC` {boolean} Force garbage collection before taking the profile.
-    **Default:** `false`.
-  * `includeObjectsCollectedByMajorGC` {boolean} Include objects collected
-    by major GC. **Default:** `false`.
-  * `includeObjectsCollectedByMinorGC` {boolean} Include objects collected
-    by minor GC. **Default:** `false`.
-* Returns: {Promise}
+  * `sampleInterval` {number} 以字节为单位的平均采样间隔。
+    **默认：** `524288`（512 KiB）。
+  * `stackDepth` {integer} 样本的最大栈深度。
+    **默认：** `16`。
+  * `forceGC` {boolean} 在获取性能分析之前强制进行垃圾回收。
+    **默认：** `false`。
+  * `includeObjectsCollectedByMajorGC` {boolean} 包含由主要 GC 回收的对象。
+    **默认：** `false`。
+  * `includeObjectsCollectedByMinorGC` {boolean} 包含由次要 GC 回收的对象。
+    **默认：** `false`。
+* 返回：{Promise}
 
 启动堆性能分析，然后返回一个 Promise，该 Promise 兑现为一个错误
 或一个 `HeapProfileHandle` 对象。此 API 支持 `await using` 语法。
@@ -1907,7 +1911,7 @@ worker.on('online', async () => {
 import { Worker } from 'node:worker_threads';
 
 const worker = new Worker(`
-  const { parentPort } = require('node:worker_threads');
+  const { parentPort } = require('worker_threads');
   parentPort.on('message', () => {});
   `, { eval: true });
 
@@ -1919,13 +1923,13 @@ worker.on('online', async () => {
 });
 ```
 
-`await using` example.
+`await using` 示例。
 
 ```cjs
 const { Worker } = require('node:worker_threads');
 
 const w = new Worker(`
-  const { parentPort } = require('node:worker_threads');
+  const { parentPort } = require('worker_threads');
   parentPort.on('message', () => {});
   `, { eval: true });
 
@@ -1939,12 +1943,12 @@ w.on('online', async () => {
 import { Worker } from 'node:worker_threads';
 
 const w = new Worker(`
-  const { parentPort } = require('node:worker_threads');
+  const { parentPort } = require('worker_threads');
   parentPort.on('message', () => {});
   `, { eval: true });
 
 w.on('online', async () => {
-  // Stop profile automatically when return and profile will be discarded
+  // 当返回时自动停止性能分析，且性能分析将被丢弃
   await using handle = await w.startHeapProfile();
 });
 ```
@@ -2070,7 +2074,7 @@ import {
 if (isMainThread) {
   new Worker(new URL(import.meta.url));
   for (let n = 0; n < 1e10; n++) {
-    // 循环以模拟工作。
+    // 循环用于模拟工作。
   }
 } else {
   // 此输出将被主线程中的 for 循环阻塞。
@@ -2089,7 +2093,7 @@ const {
 if (isMainThread) {
   new Worker(__filename);
   for (let n = 0; n < 1e10; n++) {
-    // 循环以模拟工作。
+    // 循环用于模拟工作。
   }
 } else {
   // 此输出将被主线程中的 for 循环阻塞。

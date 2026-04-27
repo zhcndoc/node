@@ -326,7 +326,7 @@ changes:
 
 模块编译缓存可以通过 [`module.enableCompileCache()`][] 方法或 [`NODE_COMPILE_CACHE=dir`][] 环境变量启用。启用后，每当 Node.js 编译 CommonJS、ECMAScript 模块或 TypeScript 模块时，它将使用存储在指定目录中的磁盘上 [V8 代码缓存][] 来加速编译。这可能会减慢模块图的首次加载，但如果模块内容不变，后续加载同一模块图可能会获得显著的速度提升。
 
-要清理磁盘上生成的编译缓存，只需删除缓存目录。下次再次使用同一目录进行编译缓存存储时，缓存目录将被重新创建。为了避免过时的缓存填满磁盘，建议使用 [`os.tmpdir()`][] 下的目录。如果通过调用 [`module.enableCompileCache()`][] 启用编译缓存而未指定 `directory`，Node.js 将使用 [`NODE_COMPILE_CACHE=dir`][] 环境变量（如果已设置），否则默认为 `path.join(os.tmpdir(), 'node-compile-cache')`。要定位正在运行的 Node.js 实例使用的编译缓存目录，请使用 [`module.getCompileCacheDir()`][]。
+要清理磁盘上生成的编译缓存，只需删除缓存目录即可。下次使用同一目录进行编译缓存存储时，将重新创建该缓存目录。为避免用过期缓存填满磁盘，建议使用 [`os.tmpdir()`][] 下的目录。如果通过调用 [`module.enableCompileCache()`][] 启用编译缓存而未指定 `directory`，Node.js 将使用 [`NODE_COMPILE_CACHE=dir`][] 环境变量（如果已设置），否则默认为 `path.join(os.tmpdir(), 'node-compile-cache')`。要定位正在运行的 Node.js 实例使用的编译缓存目录，请使用 [`module.getCompileCacheDir()`][]。
 
 启用的模块编译缓存可以通过 [`NODE_DISABLE_COMPILE_CACHE=1`][] 环境变量禁用。当编译缓存导致意外或不需要的行为（例如测试覆盖率不够精确）时，这可能很有用。
 
@@ -386,7 +386,7 @@ changes:
   <tr>
     <td><code>ALREADY_ENABLED</code></td>
     <td>
-      编译缓存之前已启用， either 通过之前对 <code>module.enableCompileCache()</code> 的调用，或通过 <code>NODE_COMPILE_CACHE=dir</code> 环境变量。用于存储编译缓存的目录将在返回对象的 <code>directory</code> 字段中返回。
+      编译缓存之前已启用，或者通过之前对 <code>module.enableCompileCache()</code> 的调用，或者通过 <code>NODE_COMPILE_CACHE=dir</code> 环境变量。用于存储编译缓存的目录将在返回对象的 <code>directory</code> 字段中返回。
     </td>
   </tr>
   <tr>
@@ -1549,11 +1549,11 @@ added:
 -->
 
 * 返回：{Object}
-  * `enabled` {boolean} 是否启用了 source map 支持
-  * `nodeModules` {boolean} 是否对 `node_modules` 中的文件启用了支持。
-  * `generatedCode` {boolean} 是否对来自 `eval` 或 `new Function` 的生成代码启用了支持。
+  * `enabled` {boolean} 是否已启用 source map 支持
+  * `nodeModules` {boolean} 是否已对 `node_modules` 中的文件启用支持。
+  * `generatedCode` {boolean} 是否已对来自 `eval` 或 `new Function` 的生成代码启用支持。
 
-此方法返回是否启用了用于堆栈跟踪的 [source map v3][source map] 支持。
+此方法返回是否已启用用于堆栈跟踪的 [source map v3][source map] 支持。
 
 <!-- Anchors to make sure old links find a target -->
 

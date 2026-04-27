@@ -236,10 +236,10 @@ changes:
       - v25.2.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/59982
-    description: "Add options object with modifyPrototype to conditionallymodify the prototype of the deprecated object."
+    description: "添加带有 modifyPrototype 的 options 对象，以有条件地修改已弃用对象的原型。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/16393
-    description: Deprecation warnings are only emitted once for each code.
+    description: 每个 code 的弃用警告现在只发出一次。
 -->
 
 * `fn` {Function} 正在被弃用的函数。
@@ -2286,7 +2286,7 @@ added:
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/61556
-    description: Add support for hexadecimal colors.
+    description: 添加对十六进制颜色的支持。
   - version:
       - v24.2.0
       - v22.17.0
@@ -2304,13 +2304,12 @@ changes:
     description: 尊重 isTTY 和环境变量，例如 NO_COLOR、NODE_DISABLE_COLORS 和 FORCE_COLOR。
 -->
 
-* `format` {string | Array} A text format or an Array
-  of text formats defined in `util.inspect.colors`, or a hex color in `#RGB`
-  or `#RRGGBB` form.
-* `text` {string} The text to to be formatted.
+* `format` {string | Array} 文本格式或 `util.inspect.colors` 中定义的文本格式数组，或 `#RGB`
+  或 `#RRGGBB` 形式的十六进制颜色。
+* `text` {string} 要格式化的文本。
 * `options` {Object}
-  * `validateStream` {boolean} When true, `stream` is checked to see if it can handle colors. **Default:** `true`.
-  * `stream` {Stream} A stream that will be validated if it can be colored. **Default:** `process.stdout`.
+  * `validateStream` {boolean} 为 `true` 时，会检查 `stream` 是否可以处理颜色。**默认：** `true`。
+  * `stream` {Stream} 将被验证是否可着色的流。**默认：** `process.stdout`。
 
 此函数返回考虑了传入的 `format` 用于在终端中打印的格式化文本。它知道终端的功能，并根据通过 `NO_COLOR`、`NODE_DISABLE_COLORS` 和 `FORCE_COLOR` 环境变量设置的配置行事。
 
@@ -2364,31 +2363,29 @@ console.log(
 
 特殊格式值 `none` 不对文本应用额外样式。
 
-In addition to predefined color names, `util.styleText()` supports hex color
-strings using ANSI TrueColor (24-bit) escape sequences. Hex colors can be
-specified in either 3-digit (`#RGB`) or 6-digit (`#RRGGBB`) format:
+除了预定义的颜色名称外，`util.styleText()` 还支持使用 ANSI TrueColor（24 位）转义序列的十六进制颜色字符串。十六进制颜色可以使用 3 位（`#RGB`）或 6 位（`#RRGGBB`）格式指定：
 
 ```mjs
 import { styleText } from 'node:util';
 
-// 6-digit hex color
+// 6 位十六进制颜色
 console.log(styleText('#ff5733', 'Orange text'));
 
-// 3-digit hex color (shorthand)
+// 3 位十六进制颜色（简写）
 console.log(styleText('#f00', 'Red text'));
 ```
 
 ```cjs
 const { styleText } = require('node:util');
 
-// 6-digit hex color
+// 6 位十六进制颜色
 console.log(styleText('#ff5733', 'Orange text'));
 
-// 3-digit hex color (shorthand)
+// 3 位十六进制颜色（简写）
 console.log(styleText('#f00', 'Red text'));
 ```
 
-The full list of formats can be found in [modifiers][].
+完整的格式列表可以在 [修饰符][] 中找到。
 
 ## 类：`util.TextDecoder`
 
