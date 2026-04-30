@@ -65,7 +65,24 @@ hello world
 
 由于 `null` 作为回调的第一个参数具有特殊含义，如果被包装的函数用一个假值作为原因拒绝了一个 `Promise`，则该值会被包装在一个 `Error` 中，原始值存储在一个名为 `reason` 的字段中。
 
-```js
+```mjs
+import util from 'node:util';
+
+function fn() {
+  return Promise.reject(null);
+}
+const callbackFunction = util.callbackify(fn);
+
+callbackFunction((err, ret) => {
+  // 当 Promise 被 `null` 拒绝时，它会被包装成一个 Error 并且
+  // 原始值存储在 `reason` 中。
+  err && Object.hasOwn(err, 'reason') && err.reason === null;  // true
+});
+```
+
+```cjs
+const util = require('node:util');
+
 function fn() {
   return Promise.reject(null);
 }
@@ -116,7 +133,7 @@ added: v0.11.3
 -->
 
 * `section` {string} 一个字符串，标识为其创建 `debuglog` 函数的应用程序部分。
-* `callback` {Function} 一个回调，在日志函数第一次被调用时 invoked，带有一个函数参数，该参数是一个更优化的日志函数。
+* `callback` {Function} 一个回调，在日志函数第一次被调用时调用，带有一个函数参数，该参数是一个更优化的日志函数。
 * 返回值：{Function} 日志函数
 
 `util.debuglog()` 方法用于创建一个函数，该函数根据 `NODE_DEBUG` 环境变量的存在与否，有条件地将调试消息写入 `stderr`。如果 `section` 名称出现在该环境变量的值中，则返回的函数操作类似于 [`console.error()`][]。否则，返回的函数是无操作。
@@ -2514,7 +2531,7 @@ added: v8.3.0
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22281
-    description: 该类现在可用于全局对象。
+    description: 此类现在可用于全局对象。
 -->
 
 [WHATWG 编码标准][] `TextEncoder` API 的实现。`TextEncoder` 的所有实例仅支持 UTF-8 编码。
@@ -2531,7 +2548,7 @@ const uint8array = encoder.encode('this is some data');
 * `input` {string} 要编码的文本。**默认：** 空字符串。
 * 返回：{Uint8Array}
 
-UTF-8 编码 `input` 字符串并返回一个包含编码字节的 `Uint8Array`。
+对 `input` 字符串进行 UTF-8 编码，并返回一个包含编码字节的 `Uint8Array`。
 
 ### `textEncoder.encodeInto(src, dest)`
 
@@ -2545,7 +2562,7 @@ added: v12.11.0
   * `read` {number} 已读取的 src 的 Unicode 代码单元。
   * `written` {number} 已写入的 dest 的 UTF-8 字节。
 
-将 `src` 字符串 UTF-8 编码到 `dest` Uint8Array 并返回一个对象，其中包含读取的 Unicode 代码单元和写入的 UTF-8 字节。
+将 `src` 字符串以 UTF-8 编码到 `dest` Uint8Array 中，并返回一个对象，其中包含已读取的 Unicode 代码单元和已写入的 UTF-8 字节。
 
 ```js
 const encoder = new TextEncoder();
@@ -2570,7 +2587,7 @@ added:
 
 * `string` {string}
 
-返回替换了任何代理码点（或等效地，任何未配对的代理代码单元）为 Unicode“替换字符”U+FFFD 后的 `string`。
+返回将任何代理码点（或等价地，任何未配对的代理代码单元）替换为 Unicode“替换字符”U+FFFD 后的 `string`。
 
 ## `util.transferableAbortController()`
 
@@ -2581,7 +2598,7 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: 标记 API 为稳定。
+   description: 将 API 标记为稳定。
 -->
 
 创建并返回一个 {AbortController} 实例，其 {AbortSignal} 被标记为可转移，并可与 `structuredClone()` 或 `postMessage()` 一起使用。
@@ -2595,7 +2612,7 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: 标记 API 为稳定。
+   description: 将 API 标记为稳定。
 -->
 
 * `signal` {AbortSignal}
@@ -2722,10 +2739,10 @@ added: v10.0.0
 如果值是 {ArrayBuffer} 视图之一的实例，例如类型化数组对象或 {DataView}，则返回 `true`。等同于 [`ArrayBuffer.isView()`][]。
 
 ```js
-util.types.isArrayBufferView(new Int8Array());  // true
-util.types.isArrayBufferView(Buffer.from('hello world')); // true
-util.types.isArrayBufferView(new DataView(new ArrayBuffer(16)));  // true
-util.types.isArrayBufferView(new ArrayBuffer());  // false
+util.types.isArrayBufferView(new Int8Array());  // 返回 true
+util.types.isArrayBufferView(Buffer.from('hello world')); // 返回 true
+util.types.isArrayBufferView(new DataView(new ArrayBuffer(16)));  // 返回 true
+util.types.isArrayBufferView(new ArrayBuffer());  // 返回 false
 ```
 
 ### `util.types.isArgumentsObject(value)`
@@ -2773,7 +2790,7 @@ added: v10.0.0
 * `value` {any}
 * 返回：{boolean}
 
-如果值是 [异步函数][]，则返回 `true`。
+如果值是[异步函数][]，则返回 `true`。
 这仅报告 JavaScript 引擎所见的内容；
 特别是，如果使用了转译工具，返回值可能与原始源代码不匹配。
 
@@ -3165,7 +3182,7 @@ added: v10.0.0
 * `value` {any}
 * 返回：{boolean}
 
-如果值是 [模块命名空间对象][] 的实例，则返回 `true`。
+如果值是[模块命名空间对象][]的实例，则返回 `true`。
 
 ```mjs
 import * as ns from './a.js';
@@ -3188,7 +3205,7 @@ deprecated: v24.2.0
 * `value` {any}
 * 返回：{boolean}
 
-如果值是由 [内置 `Error` 类型][] 的构造函数返回的，则返回 `true`。
+如果值是由[内置 `Error` 类型][]的构造函数返回的，则返回 `true`。
 
 ```js
 console.log(util.types.isNativeError(new Error()));  // true
@@ -3203,7 +3220,7 @@ class MyError extends Error {}
 console.log(util.types.isNativeError(new MyError()));  // true
 ```
 
-值是原生错误类的 `instanceof` 并不等同于 `isNativeError()` 对该值返回 `true`。`isNativeError()` 对来自不同 [域][] 的错误返回 `true`，而 `instanceof Error` 对这些错误返回 `false`：
+值是原生错误类的 `instanceof` 并不等同于 `isNativeError()` 对该值返回 `true`。`isNativeError()` 对来自不同[域][]的错误返回 `true`，而 `instanceof Error` 对这些错误返回 `false`：
 
 ```mjs
 import { createContext, runInContext } from 'node:vm';

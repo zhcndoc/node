@@ -38,38 +38,38 @@ added: v0.11.12
 import process from 'node:process';
 
 process.on('beforeExit', (code) => {
-  console.log('Process beforeExit event with code: ', code);
+  console.log('进程 beforeExit 事件，代码：', code);
 });
 
 process.on('exit', (code) => {
-  console.log('Process exit event with code: ', code);
+  console.log('进程 exit 事件，代码：', code);
 });
 
-console.log('This message is displayed first.');
+console.log('这条消息会先显示。');
 
 // 输出：
-// 此消息首先显示。
-// Process beforeExit event with code: 0
-// Process exit event with code: 0
+// 这条消息会先显示。
+// 进程 beforeExit 事件，代码：0
+// 进程 exit 事件，代码：0
 ```
 
 ```cjs
 const process = require('node:process');
 
 process.on('beforeExit', (code) => {
-  console.log('Process beforeExit event with code: ', code);
+  console.log('进程 beforeExit 事件，代码：', code);
 });
 
 process.on('exit', (code) => {
-  console.log('Process exit event with code: ', code);
+  console.log('进程 exit 事件，代码：', code);
 });
 
-console.log('This message is displayed first.');
+console.log('这条消息会先显示。');
 
 // 输出：
-// 此消息首先显示。
-// Process beforeExit event with code: 0
-// Process exit event with code: 0
+// 这条消息会先显示。
+// 进程 beforeExit 事件，代码：0
+// 进程 exit 事件，代码：0
 ```
 
 ### 事件：`'disconnect'`
@@ -101,7 +101,7 @@ added: v0.1.7
 import process from 'node:process';
 
 process.on('exit', (code) => {
-  console.log(`About to exit with code: ${code}`);
+  console.log(`即将以代码 ${code} 退出`);
 });
 ```
 
@@ -109,7 +109,7 @@ process.on('exit', (code) => {
 const process = require('node:process');
 
 process.on('exit', (code) => {
-  console.log(`About to exit with code: ${code}`);
+  console.log(`即将以代码 ${code} 退出`);
 });
 ```
 
@@ -120,7 +120,7 @@ import process from 'node:process';
 
 process.on('exit', (code) => {
   setTimeout(() => {
-    console.log('This will not run');
+    console.log('这不会运行');
   }, 0);
 });
 ```
@@ -130,7 +130,7 @@ const process = require('node:process');
 
 process.on('exit', (code) => {
   setTimeout(() => {
-    console.log('This will not run');
+    console.log('这不会运行');
   }, 0);
 });
 ```
@@ -233,18 +233,18 @@ import fs from 'node:fs';
 process.on('uncaughtException', (err, origin) => {
   fs.writeSync(
     process.stderr.fd,
-    `Caught exception: ${err}\n` +
-    `Exception origin: ${origin}\n`,
+    `捕获到异常：${err}\n` +
+    `异常来源：${origin}\n`,
   );
 });
 
 setTimeout(() => {
-  console.log('This will still run.');
+  console.log('这仍然会运行。');
 }, 500);
 
 // 故意引发异常，但不捕获它。
 nonexistentFunc();
-console.log('This will not run.');
+console.log('这不会运行。');
 ```
 
 ```cjs
@@ -254,18 +254,18 @@ const fs = require('node:fs');
 process.on('uncaughtException', (err, origin) => {
   fs.writeSync(
     process.stderr.fd,
-    `Caught exception: ${err}\n` +
-    `Exception origin: ${origin}\n`,
+    `捕获到异常：${err}\n` +
+    `异常来源：${origin}\n`,
   );
 });
 
 setTimeout(() => {
-  console.log('This will still run.');
+  console.log('这仍然会运行。');
 }, 500);
 
 // 故意引发异常，但不捕获它。
 nonexistentFunc();
-console.log('This will not run.');
+console.log('这不会运行。');
 ```
 
 可以通过安装 `'uncaughtExceptionMonitor'` 监听器来监控 `'uncaughtException'` 事件，而无需覆盖退出进程的默认行为。
@@ -343,7 +343,7 @@ changes:
 import process from 'node:process';
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection at:', promise, 'reason:', reason);
+  console.log('未处理的拒绝位置：', promise, '原因：', reason);
   // 应用程序特定的日志记录、抛出错误或其他逻辑在此处
 });
 
@@ -356,7 +356,7 @@ somePromise.then((res) => {
 const process = require('node:process');
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection at:', promise, 'reason:', reason);
+  console.log('未处理的拒绝位置：', promise, '原因：', reason);
   // 应用程序特定的日志记录、抛出错误或其他逻辑在此处
 });
 
@@ -372,7 +372,7 @@ import process from 'node:process';
 
 function SomeResource() {
   // 最初将加载状态设置为被拒绝的 promise
-  this.loaded = Promise.reject(new Error('Resource not yet loaded!'));
+  this.loaded = Promise.reject(new Error('资源尚未加载！'));
 }
 
 const resource = new SomeResource();
@@ -384,7 +384,7 @@ const process = require('node:process');
 
 function SomeResource() {
   // 最初将加载状态设置为被拒绝的 promise
-  this.loaded = Promise.reject(new Error('Resource not yet loaded!'));
+  this.loaded = Promise.reject(new Error('资源尚未加载！'));
 }
 
 const resource = new SomeResource();
@@ -447,11 +447,11 @@ detected. 2 foo listeners added. Use emitter.setMaxListeners() to increase limit
 
 ```console
 $ node --no-warnings
-> const p = process.on('warning', (warning) => console.warn('Do not do that!'));
+> const p = process.on('warning', (warning) => console.warn('不要那样做！'));
 > events.defaultMaxListeners = 1;
 > process.on('foo', () => {});
 > process.on('foo', () => {});
-> Do not do that!
+> 不要那样做！
 ```
 
 `--trace-warnings` 命令行选项可用于让警告的默认控制台输出包含警告的完整堆栈跟踪。
@@ -513,12 +513,12 @@ import process from 'node:process';
 process.stdin.resume();
 
 process.on('SIGINT', () => {
-  console.log('Received SIGINT. Press Control-D to exit.');
+  console.log('收到 SIGINT。按 Control-D 退出。');
 });
 
 // 使用单个函数处理多个信号
 function handle(signal) {
-  console.log(`Received ${signal}`);
+  console.log(`收到 ${signal}`);
 }
 
 process.on('SIGINT', handle);
@@ -532,12 +532,12 @@ const process = require('node:process');
 process.stdin.resume();
 
 process.on('SIGINT', () => {
-  console.log('Received SIGINT. Press Control-D to exit.');
+  console.log('收到 SIGINT。按 Control-D 退出。');
 });
 
 // 使用单个函数处理多个信号
 function handle(signal) {
-  console.log(`Received ${signal}`);
+  console.log(`收到 ${signal}`);
 }
 
 process.on('SIGINT', handle);
@@ -568,7 +568,7 @@ Windows 不支持信号，因此没有通过信号终止的等效方法，但 No
 added: v0.7.0
 -->
 
-`process.abort()` 方法会导致 Node.js 进程立即退出并生成核心文件。
+`process.abort()` 方法会导致 Node.js 进程立即退出并生成核心转储文件。
 
 此功能在 [`Worker`][] 线程中不可用。
 
@@ -590,7 +590,7 @@ added: v25.9.0
 import process from 'node:process';
 
 process.addUncaughtExceptionCaptureCallback((err) => {
-  console.error('Caught exception:', err.message);
+  console.error('捕获到异常：', err.message);
   return true; // 表示异常已处理
 });
 ```
@@ -599,7 +599,7 @@ process.addUncaughtExceptionCaptureCallback((err) => {
 const process = require('node:process');
 
 process.addUncaughtExceptionCaptureCallback((err) => {
-  console.error('Caught exception:', err.message);
+  console.error('捕获到异常：', err.message);
   return true; // 表示异常已处理
 });
 ```
@@ -617,7 +617,7 @@ added: v10.10.0
 `process.allowedNodeEnvironmentFlags` 扩展了 `Set`，但重写了 `Set.prototype.has` 以识别几种不同的可能标志表示形式。在以下情况下，`process.allowedNodeEnvironmentFlags.has()` 将返回 `true`：
 
 * 标志可以省略前导单 (`-`) 或双 (`--`) 破折号；例如，`--inspect-brk` 对应 `inspect-brk`，或 `-r` 对应 `r`。
-* 传递给 V8 的标志（如在 `--v8-options` 中列出的）可以用一个或多个_非前导_ 破折号替换为下划线，反之亦然；例如，`--perf_basic_prof`、`--perf-basic-prof`、`--perf_basic-prof` 等。
+* 传递给 V8 的标志（如在 `--v8-options` 中列出的）可以用一个或多个_非前导_破折号替换为下划线，反之亦然；例如，`--perf_basic_prof`、`--perf-basic-prof`、`--perf_basic-prof` 等。
 * 标志可能包含一个或多个等号 (`=`) 字符；第一个等号及之后的所有字符将被忽略；例如，`--stack-trace-limit=100`。
 * 标志 _必须_ 允许在 [`NODE_OPTIONS`][] 中使用。
 
@@ -1450,6 +1450,13 @@ added: v0.1.100
 added:
   - v23.11.0
   - v22.15.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62878
+    description: A failed `execve(2)` system call now throws an exception
+                 instead of aborting the process. Native `AtExit`
+                 callbacks registered via the embedder API are no longer
+                 invoked before the `execve(2)` call.
 -->
 
 > 稳定性：1 - 实验性
@@ -1464,9 +1471,9 @@ added:
 
 这是通过使用 `execve` POSIX 函数实现的，因此当前进程的任何内存或其他资源都不会被保留，标准输入、标准输出和标准错误文件描述符除外。
 
-当进程交换时，所有其他资源都会被系统丢弃，不会触发任何退出或关闭事件，也不会运行任何清理处理程序。
+成功时，系统在进程交换时会丢弃所有其他资源，而不会触发任何退出或关闭事件，不会运行任何 JavaScript 清理处理程序（例如 `process.on('exit')`），也不会调用通过 embedder API 注册的原生 `AtExit` 回调。需要运行清理逻辑的调用方应在调用 `process.execve()` 之前进行。
 
-此函数永远不会返回，除非发生错误。
+此函数在成功时不会返回。如果底层的 `execve(2)` 系统调用失败，将抛出一个 `Error`，其 `code` 属性设置为对应的 `errno` 字符串（例如，当 `file` 不存在时为 `'ENOENT'`），并将 `syscall` 设置为 `'execve'`，`path` 设置为 `file`。当 `execve(2)` 失败时，当前进程会继续运行且状态不变，因此调用方可以处理错误并采取其他操作。
 
 此函数在 Windows 或 IBM i 上不可用。
 
@@ -1477,7 +1484,7 @@ added: v0.1.13
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/43716
-    description: 仅接受数字类型的代码，或如果是字符串类型，则代表整数。
+    description: 只接受数字类型的代码，或者如果是字符串类型，则表示整数。
 -->
 
 * `code` {integer|string|null|undefined} 退出代码。对于字符串类型，仅允许整数字符串（例如，'1'）。**默认：** `0`。
@@ -1561,7 +1568,7 @@ added: v0.11.8
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/43716
-    description: 仅接受数字类型的代码，或如果是字符串类型，则代表整数。
+    description: 只接受数字类型的代码，或者如果是字符串类型，则表示整数。
 -->
 
 * 类型：{integer|string|null|undefined} 退出代码。对于字符串类型，仅允许整数字符串（例如，'1'）。**默认：** `undefined`。
@@ -2025,13 +2032,13 @@ if (globalThis.process?.getBuiltinModule) {
 added: v2.0.0
 -->
 
-`process.getegid()` 方法返回 Node.js 进程的数字有效组身份。（参见 getegid(2)。）
+`process.getegid()` 方法返回 Node.js 进程的数字有效组 ID。（参见 getegid(2)。）
 
 ```mjs
 import process from 'node:process';
 
 if (process.getegid) {
-  console.log(`Current gid: ${process.getegid()}`);
+  console.log(`当前 gid: ${process.getegid()}`);
 }
 ```
 
@@ -2039,7 +2046,7 @@ if (process.getegid) {
 const process = require('node:process');
 
 if (process.getegid) {
-  console.log(`Current gid: ${process.getegid()}`);
+  console.log(`当前 gid: ${process.getegid()}`);
 }
 ```
 
@@ -2053,13 +2060,13 @@ added: v2.0.0
 
 * 返回值：{Object}
 
-`process.geteuid()` 方法返回进程的数字有效用户身份。（参见 geteuid(2)。）
+`process.geteuid()` 方法返回进程的数字有效用户 ID。（参见 geteuid(2)。）
 
 ```mjs
 import process from 'node:process';
 
 if (process.geteuid) {
-  console.log(`Current uid: ${process.geteuid()}`);
+  console.log(`当前 uid: ${process.geteuid()}`);
 }
 ```
 
@@ -2067,7 +2074,7 @@ if (process.geteuid) {
 const process = require('node:process');
 
 if (process.geteuid) {
-  console.log(`Current uid: ${process.geteuid()}`);
+  console.log(`当前 uid: ${process.geteuid()}`);
 }
 ```
 
@@ -2081,13 +2088,13 @@ added: v0.1.31
 
 * 返回值：{Object}
 
-`process.getgid()` 方法返回进程的数字组身份。（参见 getgid(2)。）
+`process.getgid()` 方法返回进程的数字组 ID。（参见 getgid(2)。）
 
 ```mjs
 import process from 'node:process';
 
 if (process.getgid) {
-  console.log(`Current gid: ${process.getgid()}`);
+  console.log(`当前 gid: ${process.getgid()}`);
 }
 ```
 
@@ -2095,7 +2102,7 @@ if (process.getgid) {
 const process = require('node:process');
 
 if (process.getgid) {
-  console.log(`Current gid: ${process.getgid()}`);
+  console.log(`当前 gid: ${process.getgid()}`);
 }
 ```
 
@@ -2137,13 +2144,13 @@ added: v0.1.28
 
 * 返回值：{integer}
 
-`process.getuid()` 方法返回进程的数字用户身份。（参见 getuid(2)。）
+`process.getuid()` 方法返回进程的数字用户 ID。（参见 getuid(2)。）
 
 ```mjs
 import process from 'node:process';
 
 if (process.getuid) {
-  console.log(`Current uid: ${process.getuid()}`);
+  console.log(`当前 uid: ${process.getuid()}`);
 }
 ```
 
@@ -2151,7 +2158,7 @@ if (process.getuid) {
 const process = require('node:process');
 
 if (process.getuid) {
-  console.log(`Current uid: ${process.getuid()}`);
+  console.log(`当前 uid: ${process.getuid()}`);
 }
 ```
 
@@ -2317,11 +2324,11 @@ added: v0.0.6
 import process, { kill } from 'node:process';
 
 process.on('SIGHUP', () => {
-  console.log('Got SIGHUP signal.');
+  console.log('收到 SIGHUP 信号。');
 });
 
 setTimeout(() => {
-  console.log('Exiting.');
+  console.log('正在退出。');
   process.exit(0);
 }, 100);
 
@@ -2332,11 +2339,11 @@ kill(process.pid, 'SIGHUP');
 const process = require('node:process');
 
 process.on('SIGHUP', () => {
-  console.log('Got SIGHUP signal.');
+  console.log('收到 SIGHUP 信号。');
 });
 
 setTimeout(() => {
-  console.log('Exiting.');
+  console.log('正在退出。');
   process.exit(0);
 }, 100);
 
@@ -2760,13 +2767,13 @@ added: v0.1.15
 ```mjs
 import { pid } from 'node:process';
 
-console.log(`This process is pid ${pid}`);
+console.log(`这个进程的 pid 是 ${pid}`);
 ```
 
 ```cjs
 const { pid } = require('node:process');
 
-console.log(`This process is pid ${pid}`);
+console.log(`这个进程的 pid 是 ${pid}`);
 ```
 
 ## `process.platform`
@@ -2792,13 +2799,13 @@ added: v0.1.16
 ```mjs
 import { platform } from 'node:process';
 
-console.log(`This platform is ${platform}`);
+console.log(`这个平台是 ${platform}`);
 ```
 
 ```cjs
 const { platform } = require('node:process');
 
-console.log(`This platform is ${platform}`);
+console.log(`这个平台是 ${platform}`);
 ```
 
 如果 Node.js 构建于 Android 操作系统上，也可能返回值 `'android'`。然而，Node.js 中的 Android 支持 [是实验性的][Android building]。
@@ -2819,13 +2826,13 @@ added:
 ```mjs
 import { ppid } from 'node:process';
 
-console.log(`The parent process is pid ${ppid}`);
+console.log(`父进程的 pid 是 ${ppid}`);
 ```
 
 ```cjs
 const { ppid } = require('node:process');
 
-console.log(`The parent process is pid ${ppid}`);
+console.log(`父进程的 pid 是 ${ppid}`);
 ```
 
 ## `process.ref(maybeRefable)`
@@ -2913,13 +2920,13 @@ added:
 ```mjs
 import { report } from 'node:process';
 
-console.log(`Reports are compact? ${report.compact}`);
+console.log(`报告是紧凑格式吗？${report.compact}`);
 ```
 
 ```cjs
 const { report } = require('node:process');
 
-console.log(`Reports are compact? ${report.compact}`);
+console.log(`报告是紧凑格式吗？${report.compact}`);
 ```
 
 ### `process.report.directory`
@@ -2941,13 +2948,13 @@ changes:
 ```mjs
 import { report } from 'node:process';
 
-console.log(`Report directory is ${report.directory}`);
+console.log(`报告目录是 ${report.directory}`);
 ```
 
 ```cjs
 const { report } = require('node:process');
 
-console.log(`Report directory is ${report.directory}`);
+console.log(`报告目录是 ${report.directory}`);
 ```
 
 ### `process.report.filename`
@@ -2971,13 +2978,13 @@ changes:
 ```mjs
 import { report } from 'node:process';
 
-console.log(`Report filename is ${report.filename}`);
+console.log(`报告文件名是 ${report.filename}`);
 ```
 
 ```cjs
 const { report } = require('node:process');
 
-console.log(`Report filename is ${report.filename}`);
+console.log(`报告文件名是 ${report.filename}`);
 ```
 
 ### `process.report.getReport([err])`
@@ -3042,13 +3049,13 @@ changes:
 ```mjs
 import { report } from 'node:process';
 
-console.log(`Report on fatal error: ${report.reportOnFatalError}`);
+console.log(`致命错误时生成报告：${report.reportOnFatalError}`);
 ```
 
 ```cjs
 const { report } = require('node:process');
 
-console.log(`Report on fatal error: ${report.reportOnFatalError}`);
+console.log(`致命错误时生成报告：${report.reportOnFatalError}`);
 ```
 
 ### `process.report.reportOnSignal`
@@ -3070,13 +3077,13 @@ changes:
 ```mjs
 import { report } from 'node:process';
 
-console.log(`Report on signal: ${report.reportOnSignal}`);
+console.log(`收到信号时生成报告：${report.reportOnSignal}`);
 ```
 
 ```cjs
 const { report } = require('node:process');
 
-console.log(`Report on signal: ${report.reportOnSignal}`);
+console.log(`收到信号时生成报告：${report.reportOnSignal}`);
 ```
 
 ### `process.report.reportOnUncaughtException`
@@ -3098,13 +3105,13 @@ changes:
 ```mjs
 import { report } from 'node:process';
 
-console.log(`Report on exception: ${report.reportOnUncaughtException}`);
+console.log(`未捕获异常时生成报告：${report.reportOnUncaughtException}`);
 ```
 
 ```cjs
 const { report } = require('node:process');
 
-console.log(`Report on exception: ${report.reportOnUncaughtException}`);
+console.log(`未捕获异常时生成报告：${report.reportOnUncaughtException}`);
 ```
 
 ### `process.report.excludeEnv`
@@ -3138,13 +3145,13 @@ changes:
 ```mjs
 import { report } from 'node:process';
 
-console.log(`Report signal: ${report.signal}`);
+console.log(`报告信号：${report.signal}`);
 ```
 
 ```cjs
 const { report } = require('node:process');
 
-console.log(`Report signal: ${report.signal}`);
+console.log(`报告信号：${report.signal}`);
 ```
 
 ### `process.report.writeReport([filename][, err])`
@@ -3512,7 +3519,7 @@ added: v9.3.0
 changes:
   - version: v25.9.0
     pr-url: https://github.com/nodejs/node/pull/61227
-    description: "Use `process.addUncaughtExceptionCaptureCallback()` toregister multiple callbacks."
+    description: "使用 `process.addUncaughtExceptionCaptureCallback()` 来注册多个回调。"
 -->
 
 * `fn` {Function|null}
@@ -3714,7 +3721,7 @@ added: v6.10.0
 process.traceProcessWarnings = true;
 
 // 发出带有堆栈跟踪的警告
-process.emitWarning('Warning with stack trace');
+process.emitWarning('带有堆栈跟踪的警告');
 
 // 禁用跟踪警告
 process.traceProcessWarnings = false;

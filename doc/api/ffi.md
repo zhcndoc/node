@@ -161,6 +161,19 @@ added: REPLACEME
 * `lib` {DynamicLibrary}：已加载的库句柄。
 * `functions` {Object}：所请求符号的可调用包装器。
 
+返回的对象也实现了显式资源管理协议，因此可以与 [`using`][] 声明一起使用。释放返回的对象会关闭库句柄。
+
+```mjs
+import { dlopen } from 'node:ffi';
+
+{
+  using handle = dlopen('./mylib.so', {
+    add_i32: { parameters: ['i32', 'i32'], result: 'i32' },
+  });
+  console.log(handle.functions.add_i32(20, 22));
+} // 此处会自动调用 handle.lib.close()。
+```
+
 ```mjs
 import { dlopen } from 'node:ffi';
 
@@ -253,7 +266,20 @@ const lib = new DynamicLibrary('./mylib.so');
 
 关闭库句柄。
 
-在库关闭之后：
+`DynamicLibrary` 实现了显式资源管理协议，因此可以使用 [`using`][] 声明来管理库实例。离开包含作用域时会自动调用 `library.close()`。
+
+```mjs
+import { DynamicLibrary } from 'node:ffi';
+
+{
+  using lib = new DynamicLibrary('./mylib.so');
+  // 在此处使用 `lib`；在块结束时会调用 `lib.close()`。
+}
+```
+
+多次调用 `library.close()`（或多次释放该库）不会产生任何效果。
+
+在库关闭后：
 
 * 已解析的函数包装器会变为无效。
 * 进一步的符号与函数解析将抛出异常。
@@ -264,6 +290,14 @@ const lib = new DynamicLibrary('./mylib.so');
 如果原生代码在 `library.close()` 之后或在 `library.unregisterCallback(pointer)` 之后仍持有回调指针，那么调用该指针将产生未定义行为，不被允许且很危险：它可能导致进程崩溃、产生不正确的输出，或破坏内存。原生代码必须在库关闭之前，或在回调被取消注册之前停止使用回调地址。
 
 从库的某个活动回调内部调用 `library.close()` 不受支持且危险。回调必须在库被关闭之前返回。
+
+### `library[Symbol.dispose]()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+调用 `library.close()`。这允许 `DynamicLibrary` 实例与 [`using`][] 声明一起使用，以便在包含作用域退出时自动清理。对于已经关闭的库，这是一个空操作。
 
 ### `library.getFunction(name, signature)`
 
@@ -617,3 +651,4 @@ added: REPLACEME
 [Permission Model]: permissions.md#permission-model
 [`--allow-ffi`]: cli.md#--allow-ffi
 [`ffi.toBuffer(pointer, length, copy)`]: #ffitobufferpointer-length-copy
+[`using`]: https://tc39.es/proposal-explicit-resource-management/#sec-using-declarations

@@ -754,7 +754,7 @@ channels.subscribe({
     // 处理 asyncEnd 消息
   },
   error(message) {
-    //  处理 error 消息
+    // 处理 error 消息
   },
 });
 ```
@@ -1533,7 +1533,7 @@ TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪�
 
 > 稳定性：1 - 实验性
 
-##### 事件：`'module.require.start'`
+##### Event: `'tracing:module.require:start'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `require()` 的参数。模块名称。
@@ -1541,7 +1541,7 @@ TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪�
 
 当执行 `require()` 时发出。参见 [`start` 事件][]。
 
-##### 事件：`'module.require.end'`
+##### Event: `'tracing:module.require:end'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `require()` 的参数。模块名称。
@@ -1549,7 +1549,7 @@ TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪�
 
 当 `require()` 调用返回时发出。参见 [`end` 事件][]。
 
-##### 事件：`'module.require.error'`
+##### Event: `'tracing:module.require:error'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `require()` 的参数。模块名称。
@@ -1558,7 +1558,7 @@ TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪�
 
 当 `require()` 抛出错误时发出。参见 [`error` 事件][]。
 
-##### 事件：`'module.import.asyncStart'`
+##### Event: `'tracing:module.import:asyncStart'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `import()` 的参数。模块名称。
@@ -1566,7 +1566,7 @@ TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪�
 
 当调用 `import()` 时发出。参见 [`asyncStart` 事件][]。
 
-##### 事件：`'module.import.asyncEnd'`
+##### Event: `'tracing:module.import:asyncEnd'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `import()` 的参数。模块名称。
@@ -1574,7 +1574,7 @@ TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪�
 
 当 `import()` 完成时发出。参见 [`asyncEnd` 事件][]。
 
-##### 事件：`'module.import.error'`
+##### Event: `'tracing:module.import:error'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `import()` 的参数。模块名称。
@@ -1663,7 +1663,7 @@ added: v16.18.0
 
 当 [`child_process.spawn()`][] 遇到错误时发出。
 
-##### 事件：`'execve'`
+##### Event: `'process.execve'`
 
 * `execPath` {string}
 * `args` {string\[]}
