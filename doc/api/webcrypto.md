@@ -2,7 +2,9 @@
 
 <!-- YAML
 changes:
-  - version: v25.9.0
+  - version:
+     - v26.0.0
+     - v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62183
     description: TurboSHAKE and KangarooTwelve algorithms
       are now supported.
@@ -1011,7 +1013,9 @@ The algorithms currently supported include:
 <!-- YAML
 added: v15.0.0
 changes:
-  - version: v25.9.0
+  - version:
+     - v26.0.0
+     - v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62183
     description: TurboSHAKE and KangarooTwelve algorithms
       are now supported.
@@ -1283,7 +1287,7 @@ The {CryptoKey} (secret key) generating algorithms supported include:
 <!-- YAML
 added: v15.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: Added JWK format support for ML-KEM key types.
   - version:
@@ -1903,6 +1907,7 @@ the message.
 added: v24.7.0
 changes:
   - version:
+     - v26.0.0
      - v25.9.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61875
@@ -1921,6 +1926,7 @@ added: v24.7.0
 
 <!-- YAML
 added:
+ - v26.0.0
  - v25.9.0
  - v24.15.0
 -->
@@ -2351,13 +2357,17 @@ added: v15.0.0
 ### Class: `KangarooTwelveParams`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 #### `kangarooTwelveParams.customization`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * Type: {ArrayBuffer|TypedArray|DataView|Buffer|undefined}
@@ -2367,7 +2377,9 @@ The optional customization string for KangarooTwelve.
 #### `kangarooTwelveParams.name`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * Type: {string} Must be `'KT128'`[^modern-algos] or `'KT256'`[^modern-algos].
@@ -2375,7 +2387,9 @@ added: v25.9.0
 #### `kangarooTwelveParams.outputLength`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * Type: {number} represents the requested output length in bits.
@@ -2461,6 +2475,7 @@ added: v24.8.0
 added: v24.8.0
 changes:
   - version:
+     - v26.0.0
      - v25.9.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61875
@@ -2479,6 +2494,7 @@ added: v24.8.0
 
 <!-- YAML
 added:
+ - v26.0.0
  - v25.9.0
  - v24.15.0
 -->
@@ -2757,13 +2773,17 @@ The length (in bytes) of the random salt to use.
 ### Class: `TurboShakeParams`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 #### `turboShakeParams.domainSeparation`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * Type: {number|undefined}
@@ -2773,7 +2793,9 @@ The optional domain separation byte (0x01-0x7f). Defaults to `0x1f`.
 #### `turboShakeParams.name`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * Type: {string} Must be `'TurboSHAKE128'`[^modern-algos] or `'TurboSHAKE256'`[^modern-algos].
@@ -2781,7 +2803,9 @@ added: v25.9.0
 #### `turboShakeParams.outputLength`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * Type: {number} represents the requested output length in bits.
