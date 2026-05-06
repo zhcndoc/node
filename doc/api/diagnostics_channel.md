@@ -874,7 +874,7 @@ added:
  - v19.9.0
  - v18.19.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/61766
     description: 自定义 thenable 将不再被包装为原生 Promise。非 thenable 将被返回并带有警告。
 -->
@@ -1677,6 +1677,7 @@ added: v16.18.0
 
 <!-- YAML
 added:
+ - v26.0.0
  - v25.9.0
  - v24.15.0
 -->

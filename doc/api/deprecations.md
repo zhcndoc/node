@@ -37,15 +37,15 @@ Node.js 使用四种弃用方式：
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31164
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v1.6.0
     pr-url: https://github.com/nodejs/node/pull/1156
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -58,13 +58,13 @@ changes:
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12113
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/3078
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -77,15 +77,15 @@ changes:
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31165
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.11.15
     pr-url: https://github.com/nodejs/node-v0.x-archive/pull/8826
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -98,15 +98,15 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17882
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.4.0
     commit: 9c7f89bf56abd37a796fea621ad2e47dd33d2b82
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -119,13 +119,13 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19524
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4682
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：应用程序（仅限非 `node_modules` 代码）
@@ -150,16 +150,16 @@ changes:
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25279
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.11.14
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v0.5.10
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -172,16 +172,16 @@ changes:
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/13702
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/3747
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/3743
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -194,10 +194,10 @@ changes:
 changes:
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6534
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -210,19 +210,19 @@ changes:
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31166
-    description: "End-of-Life (for `digest === null`)."
+    description: "结束生命周期（针对 `digest === null`）。"
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22861
-    description: "Runtime deprecation (for `digest === null`)."
+    description: "运行时弃用（针对 `digest === null`）。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11305
-    description: "End-of-Life (for `digest === undefined`)."
+    description: "结束生命周期（针对 `digest === undefined`）。"
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4047
-    description: "Runtime deprecation (for `digest === undefined`)."
+    description: "运行时弃用（针对 `digest === undefined`）。"
 -->
 
 类型：生命周期结束
@@ -239,15 +239,15 @@ changes:
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/21153
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.11.13
     pr-url: https://github.com/nodejs/node-v0.x-archive/pull/7265
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -260,15 +260,15 @@ changes:
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/21153
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.11.13
     pr-url: https://github.com/nodejs/node-v0.x-archive/pull/7265
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -281,15 +281,15 @@ changes:
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15412
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.11.7
     pr-url: https://github.com/nodejs/node-v0.x-archive/pull/5021
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -302,10 +302,10 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18668
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -318,18 +318,18 @@ changes:
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/9683
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4525
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v0.1.96
     commit: c93e0aaf062081db3ec40ac45b3e2c979d5759d6
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -342,18 +342,18 @@ changes:
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/9683
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4525
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v0.1.96
     commit: c93e0aaf062081db3ec40ac45b3e2c979d5759d6
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -366,13 +366,13 @@ changes:
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31167
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/1838
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -385,10 +385,10 @@ changes:
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15238
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/8908
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -401,10 +401,10 @@ changes:
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35316
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/8217
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -417,15 +417,15 @@ changes:
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26973
-    description: Removed functionality.
+    description: 移除功能。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v1.8.1
     pr-url: https://github.com/nodejs/node/pull/1363
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -438,15 +438,15 @@ changes:
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33647
-    description: Server.connections has been removed.
+    description: "`Server.connections` 已被移除。"
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.9.7
     pr-url: https://github.com/nodejs/node-v0.x-archive/pull/4595
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -459,15 +459,15 @@ changes:
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/27127
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.7.12
     commit: 41421ff9da1288aa241a5e9dcf915b685ade1c23
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -480,10 +480,10 @@ changes:
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31169
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/6739
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -502,15 +502,15 @@ npx codemod@latest @nodejs/tmpDir-to-tmpdir
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25280
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.6.0
     commit: 37bb37d151fb6ee4696730e63ff28bb7a4924f97
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -523,10 +523,10 @@ changes:
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/13434
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7829
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -541,10 +541,10 @@ changes:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v1.0.0
     pr-url: https://github.com/nodejs/node/pull/317
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：运行时
@@ -557,15 +557,15 @@ changes:
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25377
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.11.3
     commit: 896b2aa7074fc886efd7dd0a397d694763cac7ce
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -584,15 +584,15 @@ npx codemod@latest @nodejs/util-print-to-console-log
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25377
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.11.3
     commit: 896b2aa7074fc886efd7dd0a397d694763cac7ce
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -611,15 +611,15 @@ npx codemod@latest @nodejs/util-print-to-console-log
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25377
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.11.3
     commit: 896b2aa7074fc886efd7dd0a397d694763cac7ce
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -638,15 +638,15 @@ npx codemod@latest @nodejs/util-print-to-console-log
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25377
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.11.3
     commit: 896b2aa7074fc886efd7dd0a397d694763cac7ce
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -665,16 +665,16 @@ npx codemod@latest @nodejs/util-print-to-console-log
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58220
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/55175
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5833
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -693,13 +693,13 @@ npx codemod@latest @nodejs/slow-buffer-to-buffer-alloc-unsafe-slow
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58620
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v5.2.0
     pr-url: https://github.com/nodejs/node/pull/3511
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：运行时
@@ -714,10 +714,10 @@ changes:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v1.4.2
     pr-url: https://github.com/nodejs/node/pull/943
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -732,15 +732,15 @@ changes:
      - v25.4.0
      - v24.14.0
     pr-url: https://github.com/nodejs/node/pull/60214
-    description: Deprecation revoked.
+    description: 弃用已撤销。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v3.2.0
     pr-url: https://github.com/nodejs/node/pull/2349
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：已撤销
@@ -755,10 +755,10 @@ changes:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v1.0.0
     pr-url: https://github.com/nodejs/node/pull/166
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -773,9 +773,9 @@ changes:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.4.7
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -790,9 +790,9 @@ changes:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.4.7
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -805,14 +805,14 @@ changes:
 changes:
   - version: v10.6.0
     pr-url: https://github.com/nodejs/node/pull/21498
-    description: Deprecation revoked.
+    description: 弃用已撤销。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.4.7
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：弃用已撤销
@@ -825,14 +825,14 @@ changes:
 changes:
   - version: v10.6.0
     pr-url: https://github.com/nodejs/node/pull/21498
-    description: Deprecation revoked.
+    description: 弃用已撤销。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.4.7
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：弃用已撤销
@@ -847,10 +847,10 @@ changes:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.10.6
     commit: 7bd8a5a2a60b75266f89f9a32877d55294a3881c
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -865,16 +865,16 @@ changes:
     - v23.7.0
     - v22.14.0
     pr-url: https://github.com/nodejs/node/pull/56632
-    description: Application deprecation.
+    description: 应用程序弃用。
   - version: v21.0.0
     pr-url: https://github.com/nodejs/node/pull/47202
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v16.6.0
     pr-url: https://github.com/nodejs/node/pull/38444
-    description: "Added support for `--pending-deprecation`."
+    description: "已添加对 `--pending-deprecation` 的支持。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7941
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：应用程序（仅限非 `node_modules` 代码）
@@ -887,15 +887,15 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/13876
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v3.0.0
     pr-url: https://github.com/nodejs/node/pull/2224
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -908,15 +908,15 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17882
-    description: End-of-Life.
+    description: 结束生命周期。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v0.11.3
     commit: af80e7bc6e6f33c582eb1f7d37c7f5bbe9f910f7
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -929,24 +929,24 @@ changes:
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/57361
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11349
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/6063
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
   - version: v0.11.15
     pr-url:
       - https://github.com/nodejs/node-v0.x-archive/pull/8695
       - https://github.com/nodejs/node-v0.x-archive/pull/8700
-    description: Deprecation revoked.
+    description: 弃用已撤销。
   - version: v0.11.3
     commit: af80e7bc6e6f33c582eb1f7d37c7f5bbe9f910f7
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -959,17 +959,17 @@ changes:
 changes:
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：运行时
@@ -988,20 +988,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1020,20 +1020,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1052,20 +1052,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1088,20 +1088,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1120,20 +1120,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1152,20 +1152,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1184,20 +1184,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1216,20 +1216,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1248,20 +1248,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1280,20 +1280,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1312,20 +1312,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1344,20 +1344,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1376,20 +1376,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1408,20 +1408,20 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
     - v6.12.0
     - v4.8.6
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version:
     - v4.0.0
     - v3.3.1
     pr-url: https://github.com/nodejs/node/pull/2447
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1440,16 +1440,16 @@ npx codemod@latest @nodejs/util-is
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/52744
-    description: End-of-Life deprecation.
+    description: 生命周期结束弃用。
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/6161
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1474,13 +1474,13 @@ npx codemod@latest @nodejs/util-log-to-console-log
 changes:
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50488
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4903
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：运行时
@@ -1500,13 +1500,13 @@ npx codemod@latest @nodejs/util-extend-to-object-assign
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/20735
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10467
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/6749
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1519,10 +1519,10 @@ changes:
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25828
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10970
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1533,15 +1533,15 @@ changes:
 
 <!-- YAML
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/60635
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/59060
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11355
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1556,24 +1556,24 @@ changes:
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/57361
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11349
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v6.12.0
     pr-url: https://github.com/nodejs/node/pull/10116
-    description: A deprecation code has been assigned.
+    description: 已分配弃用代码。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/6063
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
   - version: v0.11.15
     pr-url:
       - https://github.com/nodejs/node-v0.x-archive/pull/8695
       - https://github.com/nodejs/node-v0.x-archive/pull/8700
-    description: Deprecation revoked.
+    description: 弃用已撤销。
   - version: v0.11.3
     commit: af80e7bc6e6f33c582eb1f7d37c7f5bbe9f910f7
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1586,10 +1586,10 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19187
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11599
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1604,13 +1604,13 @@ changes:
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/57551
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/24167
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10941
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1631,7 +1631,7 @@ npx codemod@latest @nodejs/http-outgoingmessage-headers
 changes:
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10941
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -1646,10 +1646,10 @@ changes:
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33648
-    description: "The legacy `node debug` command was removed."
+    description: "传统的 `node debug` 命令已被移除。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11441
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1662,13 +1662,13 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/13295
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/12815
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12243
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1683,10 +1683,10 @@ DebugContext 曾是一个实验性 API。
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/14414
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v8.2.0
     pr-url: https://github.com/nodejs/node/pull/13490
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1701,10 +1701,10 @@ changes:
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/14414
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v8.2.0
     pr-url: https://github.com/nodejs/node/pull/13490
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1719,10 +1719,10 @@ changes:
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/14414
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v8.2.0
     pr-url: https://github.com/nodejs/node/pull/13490
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1738,10 +1738,10 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17141
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/14449
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1756,10 +1756,10 @@ changes:
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33286
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/13687
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1773,10 +1773,10 @@ changes:
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33286
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/14223
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1789,13 +1789,13 @@ changes:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41479
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/14249
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v8.6.0
     pr-url: https://github.com/nodejs/node/pull/14245
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1812,10 +1812,10 @@ changes:
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58473
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/13948
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1830,10 +1830,10 @@ changes:
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33286
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15136
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1846,13 +1846,13 @@ changes:
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/20722
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/16393
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v8.7.0
     pr-url: https://github.com/nodejs/node/pull/15631
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -1865,7 +1865,7 @@ changes:
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/14956
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -1880,10 +1880,10 @@ changes:
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/57567
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15990
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1904,10 +1904,10 @@ npx codemod@latest @nodejs/fs-truncate-fd-deprecation
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33286
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/16242
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1920,10 +1920,10 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19794
-    description: End-of-Life.
+    description: 结束生命周期。
   - version: v9.2.0
     pr-url: https://github.com/nodejs/node/pull/16130
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1938,10 +1938,10 @@ changes:
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25138
-    description: This functionality has been removed.
+    description: 此功能已被移除。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/16392
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1973,12 +1973,12 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17147
-    description: End-of-Life.
+    description: 生命周期结束。
   - version:
     - v9.4.0
     - v8.10.0
     pr-url: https://github.com/nodejs/node/pull/16972
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -1993,12 +1993,12 @@ AsyncHooks 敏感 API 从未被文档化，并且存在各种小问题。
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17147
-    description: End-of-Life.
+    description: 生命周期结束。
   - version:
     - v9.4.0
     - v8.10.0
     pr-url: https://github.com/nodejs/node/pull/16972
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2016,18 +2016,18 @@ changes:
 changes:
   - version: v12.8.0
     pr-url: https://github.com/nodejs/node/pull/28892
-    description: Deprecation revoked.
+    description: 弃用已撤销。
   - version:
       - v9.9.0
       - v8.13.0
     pr-url: https://github.com/nodejs/node/pull/17002
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：弃用撤销
 
 直接导入 assert 不被推荐，因为暴露的函数使用
-松散相等性检查。弃用被撤销，因为使用
+松散相等性检查。弃用已被撤销，因为使用
 `node:assert` 模块并不受劝阻，且弃用引起了开发者的困惑。
 
 ### DEP0090: 无效的 GCM 身份验证标签长度
@@ -2036,10 +2036,10 @@ changes:
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/17825
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18017
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2055,10 +2055,10 @@ v11.0.0 开始，只允许 128、120、112、104、96、64 和 32
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/47182
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18333
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2072,7 +2072,7 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/16878
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -2087,10 +2087,10 @@ changes:
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/55019
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18335
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：运行时
@@ -2110,10 +2110,10 @@ npx codemod@latest @nodejs/crypto-fips-to-getFips
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58532
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18418
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2128,10 +2128,10 @@ changes:
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/56966
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18066
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2145,10 +2145,10 @@ changes:
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/56966
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18066
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2162,7 +2162,7 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17417
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：运行时
@@ -2177,13 +2177,13 @@ changes:
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26530
-    description: End-of-Life.
+    description: 生命周期结束。
   - version:
     - v10.0.0
     - v9.6.0
     - v8.12.0
     pr-url: https://github.com/nodejs/node/pull/18632
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2202,7 +2202,7 @@ AsyncHooks 提供的嵌入 API 暴露了 `.emitBefore()` 和
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18632
-    description: Compile-time deprecation.
+    description: 编译时弃用。
 -->
 
 类型：编译时
@@ -2216,12 +2216,12 @@ changes:
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/55035
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18666
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v0.3.7
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -2242,7 +2242,7 @@ npx codemod@latest @nodejs/process-assert-to-node-assert
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18982
-    description: End-of-Life.
+    description: 生命周期结束。
 -->
 
 类型：生命周期结束
@@ -2255,7 +2255,7 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: End-of-Life.
+    description: 生命周期结束。
 -->
 
 类型：生命周期结束
@@ -2269,10 +2269,10 @@ changes:
 changes:
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/22004
-    description: Superseded by [DEP0111](#DEP0111).
+    description: 被 [DEP0111](#DEP0111) 取代。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18415
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -2288,7 +2288,7 @@ changes:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18990
-    description: "Documentation-only deprecationwith `--pending-deprecation` support."
+    description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -2303,10 +2303,10 @@ changes:
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/19941
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19353
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2321,13 +2321,13 @@ changes:
 changes:
   - version: v22.0.0
     pr-url: https://github.com/nodejs/node/pull/50973
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22089
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19343
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -2345,10 +2345,10 @@ changes:
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/20736
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19403
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2362,13 +2362,13 @@ changes:
 changes:
   - version: v23.0.0
     pr-url: https://github.com/nodejs/node/pull/55020
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/23308
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19414
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -2389,10 +2389,10 @@ npx codemod@latest @nodejs/zlib-bytesread-to-byteswritten
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36853
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/20270
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2408,7 +2408,7 @@ URL 解析器，该解析器需要严格有效的 URL。传递无效 URL 已
 changes:
   - version: v10.6.0
     pr-url: https://github.com/nodejs/node/pull/20300
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -2422,10 +2422,10 @@ changes:
 changes:
   - version: v11.12.0
     pr-url: https://github.com/nodejs/node/pull/26500
-    description: "Added support for `--pending-deprecation`."
+    description: "已添加对 `--pending-deprecation` 的支持。"
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/22004
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -2440,15 +2440,15 @@ changes:
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58474
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22011
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
 
-`node:dgram` 模块以前包含几个从未 meant
+`node:dgram` 模块以前包含几个从未 intended
 在 Node.js 核心之外访问的 API：`Socket.prototype._handle`、
 `Socket.prototype._receiving`、`Socket.prototype._bindState`、
 `Socket.prototype._queue`、`Socket.prototype._reuseAddr`、
@@ -2461,10 +2461,10 @@ changes:
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26249
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22126
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2478,10 +2478,10 @@ changes:
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25338
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22501
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2498,7 +2498,7 @@ changes:
     pr-url:
       - https://github.com/nodejs/node/pull/22519
       - https://github.com/nodejs/node/pull/23017
-    description: "Documentation-only deprecationwith `--pending-deprecation` support."
+    description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -2516,20 +2516,20 @@ changes:
   - version:
       - v24.0.0
     pr-url: https://github.com/nodejs/node/pull/55017
-    description: "DEP0169 covers also `url.format()` and `url.resolve()`."
+    description: "DEP0169 也涵盖了 `url.format()` 和 `url.resolve()`。"
   - version:
       - v19.0.0
       - v18.13.0
     pr-url: https://github.com/nodejs/node/pull/44919
-    description: "DEP0169 deprecates `url.parse()` again."
+    description: "DEP0169 再次弃用了 `url.parse()`。"
   - version:
       - v15.13.0
       - v14.17.0
     pr-url: https://github.com/nodejs/node/pull/37784
-    description: Deprecation revoked. Status changed to "Legacy".
+    description: 弃用已撤销。状态更改为“Legacy”。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22715
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：弃用撤销
@@ -2549,10 +2549,10 @@ npx codemod@latest @nodejs/node-url-to-whatwg-url
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/27011
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22747
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2568,10 +2568,10 @@ changes:
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58619
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/23173
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2584,7 +2584,7 @@ changes:
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/23597
-    description: "Documentation-only deprecationwith `--pending-deprecation` support."
+    description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -2598,10 +2598,10 @@ changes:
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/24862
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/22485
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2618,10 +2618,10 @@ Windows 性能计数器支持已从 Node.js 中移除。
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/57550
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/23760
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2637,10 +2637,10 @@ intended 用于在 Windows 上使用 `node:child_process` 和 `node:cluster` 模
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/57339
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/23820
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2653,10 +2653,10 @@ changes:
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58533
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/23329
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2669,10 +2669,10 @@ changes:
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33286
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26260
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2683,12 +2683,12 @@ changes:
 
 <!-- YAML
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/60657
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26245
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2701,10 +2701,10 @@ changes:
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/56966
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v11.14.0
     pr-url: https://github.com/nodejs/node/pull/26760
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2719,10 +2719,10 @@ changes:
 changes:
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/56966
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v11.14.0
     pr-url: https://github.com/nodejs/node/pull/26760
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2737,10 +2737,10 @@ changes:
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37204
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26823
-    description: Documentation-only.
+    description: 仅文档。
 -->
 
 类型：运行时
@@ -2756,13 +2756,13 @@ Node.js 版本中抛出错误。
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58527
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27949
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v11.14.0
     pr-url: https://github.com/nodejs/node/pull/26982
-    description: Documentation-only.
+    description: 仅文档。
 -->
 
 类型：生命周期结束
@@ -2775,13 +2775,13 @@ changes:
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37201
-    description: End-of-life.
+    description: 生命周期结束。
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27951
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v12.2.0
     pr-url: https://github.com/nodejs/node/pull/27405
-    description: Documentation-only.
+    description: 仅文档。
 -->
 
 类型：生命周期结束
@@ -2800,13 +2800,13 @@ npx codemod@latest @nodejs/create-require-from-path
 changes:
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/29589
-    description: This feature has been removed.
+    description: 此功能已被移除。
   - version: v12.22.0
     pr-url: https://github.com/nodejs/node/pull/37603
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v12.3.0
     pr-url: https://github.com/nodejs/node/pull/27498
-    description: Documentation-only.
+    description: 仅文档。
 -->
 
 类型：生命周期结束
@@ -2821,10 +2821,10 @@ changes:
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58528
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v12.5.0
     pr-url: https://github.com/nodejs/node/pull/28021
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2838,7 +2838,7 @@ changes:
 changes:
   - version: v12.12.0
     pr-url: https://github.com/nodejs/node/pull/29015
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -2852,7 +2852,7 @@ changes:
 changes:
   - version: v12.12.0
     pr-url: https://github.com/nodejs/node/pull/29781
-    description: "Documentation-only deprecationwith `--pending-deprecation` support."
+    description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -2866,10 +2866,10 @@ changes:
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58529
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/29061
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2886,7 +2886,7 @@ changes:
      - v13.4.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/28679
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -2907,10 +2907,10 @@ changes:
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58536
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/28396
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -2940,7 +2940,7 @@ async function openAndClose() {
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/32232
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -2966,7 +2966,7 @@ changes:
     - v14.0.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/32499
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -2984,7 +2984,7 @@ changes:
     - v14.1.0
     - v13.14.0
     pr-url: https://github.com/nodejs/node/pull/32807
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -2997,7 +2997,7 @@ changes:
 changes:
   - version: v14.3.0
     pr-url: https://github.com/nodejs/node/pull/33294
-    description: "Documentation-only deprecationwith `--pending-deprecation` support."
+    description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -3011,7 +3011,7 @@ changes:
 changes:
   - version: v14.3.0
     pr-url: https://github.com/nodejs/node/pull/33294
-    description: "Documentation-only deprecationwith `--pending-deprecation` support."
+    description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -3031,10 +3031,10 @@ npx codemod@latest @nodejs/repl-builtin-modules
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33105
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v14.5.0
     pr-url: https://github.com/nodejs/node/pull/33126
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -3049,7 +3049,7 @@ changes:
     - v14.6.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/32217
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档（支持 [`--pending-deprecation`][]）
@@ -3079,7 +3079,7 @@ const moduleParents = Object.values(require.cache)
 changes:
   - version: v14.6.0
     pr-url: https://github.com/nodejs/node/pull/34088
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -3092,7 +3092,7 @@ changes:
 changes:
   - version: v14.9.0
     pr-url: https://github.com/nodejs/node/pull/34697
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -3106,16 +3106,16 @@ changes:
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58616
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37302
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35562
-    description: Runtime deprecation for permissive behavior.
+    description: 对允许行为的运行时弃用。
   - version: v14.14.0
     pr-url: https://github.com/nodejs/node/pull/35579
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -3139,16 +3139,16 @@ npx codemod@latest @nodejs/rmdir
 changes:
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/40121
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37215
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v15.1.0
     pr-url: https://github.com/nodejs/node/pull/35747
-    description: Runtime deprecation for self-referencing imports.
+    description: 对自引用导入的运行时弃用。
   - version: v14.13.0
     pr-url: https://github.com/nodejs/node/pull/34718
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -3162,7 +3162,7 @@ changes:
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/33768
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
  -->
 
 类型：仅文档
@@ -3175,10 +3175,10 @@ changes:
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/43627
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/36902
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -3193,12 +3193,12 @@ changes:
 changes:
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37206
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
       - v15.8.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/36918
-    description: "Documentation-only deprecationwith `--pending-deprecation` support."
+    description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
 类型：运行时
@@ -3215,10 +3215,10 @@ changes:
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58531
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37136
-    description: Runtime deprecation.
+    description: 运行时弃用。
 -->
 
 类型：生命周期结束
@@ -3234,13 +3234,13 @@ changes:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41431
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/39793
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v16.8.0
     pr-url: https://github.com/nodejs/node/pull/38906
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -3254,13 +3254,13 @@ changes:
 changes:
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58706
-    description: End-of-Life.
+    description: 生命周期结束。
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/45653
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v16.10.0
     pr-url: https://github.com/nodejs/node/pull/39927
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -3279,10 +3279,10 @@ npx codemod@latest @nodejs/crypto-rsa-pss-update
 changes:
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/40117
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version: v16.10.0
     pr-url: https://github.com/nodejs/node/pull/40039
-    description: "Documentation-only deprecationwith `--pending-deprecation` support."
+    description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
 类型：运行时
@@ -3297,7 +3297,7 @@ changes:
     - v17.0.0
     - v16.12.0
     pr-url: https://github.com/nodejs/node/pull/36670
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：仅文档
@@ -3320,12 +3320,12 @@ changes:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/40773
-    description: End-of-life.
+    description: 生命周期结束。
   - version:
       - v17.2.0
       - v16.14.0
     pr-url: https://github.com/nodejs/node/pull/40860
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 类型：生命周期结束
@@ -3805,7 +3805,7 @@ changes:
 
 <!-- YAML
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/61084
     description: 生命周期结束。
   - version: v23.0.0
@@ -3990,7 +3990,7 @@ changes:
 
 <!-- YAML
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/60657
     description: 生命周期结束。
   - version:
@@ -4165,9 +4165,9 @@ import { opendir } from 'node:fs/promises';
 
 <!-- YAML
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62173
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
      - v25.7.0
      - v24.15.0
@@ -4218,9 +4218,9 @@ const server = http2.createSecureServer({
 
 <!-- YAML
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
      - v25.9.0
      - v24.15.0
@@ -4236,9 +4236,9 @@ changes:
 
 <!-- YAML
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
      - v25.9.0
      - v24.15.0
@@ -4254,9 +4254,9 @@ changes:
 
 <!-- YAML
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62401
-    description: Runtime deprecation.
+    description: 运行时弃用。
   - version:
      - v25.9.0
      - v24.15.0

@@ -2,7 +2,9 @@
 
 <!-- YAML
 changes:
-  - version: v25.9.0
+  - version:
+     - v26.0.0
+     - v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62183
     description: 现已支持 TurboSHAKE 和 KangarooTwelve 算法。
   - version: v24.8.0
@@ -92,7 +94,7 @@ const { subtle } = globalThis.crypto;
   }, true, ['sign', 'verify']);
 
   const enc = new TextEncoder();
-  const message = enc.encode('I love cupcakes');
+  const message = enc.encode('我爱纸杯蛋糕');
 
   const digest = await subtle.sign({
     name: 'HMAC',
@@ -490,7 +492,7 @@ const key = await crypto.subtle.deriveKey(
   false,
   ['encrypt', 'decrypt'],
 );
-const plaintext = 'Hello, world!';
+const plaintext = '你好，世界！';
 const iv = crypto.getRandomValues(new Uint8Array(16));
 const encrypted = await crypto.subtle.encrypt(
   { name: encryptionAlg, iv },
@@ -860,10 +862,10 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59539
-    description: AES-OCB algorithm is now supported.
+    description: AES-OCB 算法现已支持。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ChaCha20-Poly1305 algorithm is now supported.
+    description: ChaCha20-Poly1305 算法现已支持。
 -->
 
 * `algorithm` {RsaOaepParams|AesCtrParams|AesCbcParams|AeadParams}
@@ -975,16 +977,17 @@ changes:
 <!-- YAML
 added: v15.0.0
 changes:
-  - version: v25.9.0
+  - version:
+     - v26.0.0
+     - v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62183
-    description: TurboSHAKE and KangarooTwelve algorithms
-      are now supported.
+    description: TurboSHAKE 和 KangarooTwelve 算法现已支持。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHA-3 algorithms are now supported.
+    description: SHA-3 算法现已支持。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHAKE algorithms are now supported.
+    description: SHAKE 算法现已支持。
 -->
 
 * `algorithm` {string|Algorithm|CShakeParams|TurboShakeParams|KangarooTwelveParams}
@@ -1061,10 +1064,10 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59539
-    description: AES-OCB algorithm is now supported.
+    description: AES-OCB 算法现已支持。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ChaCha20-Poly1305 algorithm is now supported.
+    description: ChaCha20-Poly1305 算法现已支持。
 -->
 
 * `algorithm` {RsaOaepParams|AesCtrParams|AesCbcParams|AeadParams}
@@ -1090,27 +1093,27 @@ added: v15.0.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62706
-    description: Added JWK format support for ML-KEM key types.
+    description: 为 ML-KEM 密钥类型添加了 JWK 格式支持。
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59647
-    description: KMAC algorithms are now supported.
+    description: KMAC 算法现已支持。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59569
-    description: ML-KEM algorithms are now supported.
+    description: ML-KEM 算法现已支持。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ChaCha20-Poly1305 algorithm is now supported.
+    description: ChaCha20-Poly1305 算法现已支持。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ML-DSA algorithms are now supported.
+    description: ML-DSA 算法现已支持。
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: "Added `'Ed25519'`, `'Ed448'`, `'X25519'`, and `'X448'`algorithms."
+    description: "添加了 `'Ed25519'`、`'Ed448'`、`'X25519'` 和 `'X448'`算法。"
   - version: v15.9.0
     pr-url: https://github.com/nodejs/node/pull/37203
-    description: "Removed `'NODE-DSA'` JWK export."
+    description: "移除了 `'NODE-DSA'` JWK 导出。"
 -->
 
 * `format` {string} 必须是 `'raw'`、`'pkcs8'`、`'spki'`、`'jwk'`、`'raw-secret'`[^modern-algos]、`'raw-public'`[^modern-algos] 或 `'raw-seed'`[^modern-algos] 之一。
@@ -1230,7 +1233,7 @@ changes:
 <!-- YAML
 added: v15.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: 为 ML-KEM 密钥类型添加了 JWK 格式支持。
   - version:
@@ -1809,6 +1812,7 @@ changes:
 added: v24.7.0
 changes:
   - version:
+     - v26.0.0
      - v25.9.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61875
@@ -1827,6 +1831,7 @@ added: v24.7.0
 
 <!-- YAML
 added:
+ - v26.0.0
  - v25.9.0
  - v24.15.0
 -->
@@ -1884,6 +1889,10 @@ ECDH 密钥派生通过将一方的私钥和另一方的公钥作为输入进行
 
 <!-- YAML
 added: v15.0.0
+changes:
+  - version: v24.7.0
+    pr-url: https://github.com/nodejs/node/pull/59365
+    description: 现在支持 SHA-3 算法。
 -->
 
 #### `ecdsaParams.hash`
@@ -2238,13 +2247,17 @@ added: v15.0.0
 ### 类：`KangarooTwelveParams`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 #### `kangarooTwelveParams.customization`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
@@ -2254,7 +2267,9 @@ KangarooTwelve 的可选自定义字符串。
 #### `kangarooTwelveParams.name`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * 类型：{string} 必须是 `'KT128'`[^modern-algos] 或 `'KT256'`[^modern-algos]。
@@ -2262,7 +2277,9 @@ added: v25.9.0
 #### `kangarooTwelveParams.outputLength`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * 类型：{number} 表示请求的输出长度（位）。
@@ -2346,6 +2363,7 @@ added: v24.8.0
 added: v24.8.0
 changes:
   - version:
+     - v26.0.0
      - v25.9.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61875
@@ -2364,6 +2382,7 @@ added: v24.8.0
 
 <!-- YAML
 added:
+ - v26.0.0
  - v25.9.0
  - v24.15.0
 -->
@@ -2631,13 +2650,17 @@ added: v15.0.0
 ### 类：`TurboShakeParams`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 #### `turboShakeParams.domainSeparation`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * 类型：{number|undefined}
@@ -2647,7 +2670,9 @@ added: v25.9.0
 #### `turboShakeParams.name`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * 类型：{string} 必须是 `'TurboSHAKE128'`[^modern-algos] 或 `'TurboSHAKE256'`[^modern-algos]。
@@ -2655,7 +2680,9 @@ added: v25.9.0
 #### `turboShakeParams.outputLength`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * 类型：{number} 表示请求的输出长度（位）。

@@ -43,7 +43,7 @@ changes:
 ```js
 const ac = new AbortController();
 
-ac.signal.addEventListener('abort', () => console.log('Aborted!'),
+ac.signal.addEventListener('abort', () => console.log('已中止!'),
                            { once: true });
 
 ac.abort();
@@ -634,7 +634,7 @@ changes:
 <!-- YAML
 added: v22.4.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/60351
     description: "在不提供`--localstorage-file` 的情况下访问 `localStorage` 全局现在会抛出 `DOMException`，以符合 Web Storage 规范。"
   - version: v25.0.0
@@ -835,7 +835,7 @@ added: v21.1.0
 由运行时名称和主版本号组成。
 
 ```js
-console.log(`The user-agent is ${navigator.userAgent}`); // Prints "Node.js/21"
+console.log(`The user-agent is ${navigator.userAgent}`); // 打印 "Node.js/21"
 ```
 
 ## `performance`
@@ -940,7 +940,7 @@ DataHandler.prototype.load = async function load(key) {
 ## 类：`QuotaExceededError`
 
 <!-- YAML
-added: REPLACEME
+added: v26.0.0
 -->
 
 WHATWG {QuotaExceededError} 类。继承自 {DOMException}。

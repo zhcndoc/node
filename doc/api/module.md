@@ -160,12 +160,16 @@ added:
   - v20.6.0
   - v18.19.0
 deprecated:
+ - v26.0.0
  - v25.9.0
  - v24.15.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62401
-    description: 运行时弃用 (DEP0205)。
+    description: Runtime deprecation (DEP0205).
+  - version: v25.9.0
+    pr-url: https://github.com/nodejs/node/pull/62395
+    description: 文档级弃用（DEP0205）。请改用 `module.registerHooks()`。
   - version:
     - v23.6.1
     - v22.13.1
@@ -223,7 +227,7 @@ added:
   - v23.2.0
   - v22.13.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/61803
     description: "移除了 `transform` 和 `sourceMap` 选项。"
 -->

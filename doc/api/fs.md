@@ -329,7 +329,9 @@ added: v10.0.0
 #### `filehandle.pull([...transforms][, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 > 稳定性：1 - 实验性
@@ -394,7 +396,9 @@ run().catch(console.error);
 #### `filehandle.pullSync([...transforms][, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 > 稳定性：1 - 实验性
@@ -857,7 +861,9 @@ Promise fulfilled 为一个包含两个属性的对象：
 #### `filehandle.writer([options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 > 稳定性：1 - 实验性
@@ -872,7 +878,7 @@ added: v25.9.0
     * `chunk` {Buffer|TypedArray|DataView|string}
     * `options` {Object}
       * `signal` {AbortSignal} 如果信号已中止，则写入 rejected 并带有 `AbortError` 且不执行 I/O。
-  * `writev(chunks[, options])` {Function} 返回 {Promise\<void>}。通过单个 `writev()` 系统调用使用分散/聚集 I/O。接受混合 `Uint8Array`/字符串数组。
+  * `writev(chunks[, options])` {Function} 返回 {Promise\<void>}。通过单个 `writev()` 系统调用使用散/聚 I/O。接受混合 `Uint8Array`/字符串数组。
     * `chunks` {Array\<Buffer|TypedArray|DataView|string>}
     * `options` {Object}
       * `signal` {AbortSignal} 如果信号已中止，则写入 rejected 并带有 `AbortError` 且不执行 I/O。
@@ -3395,7 +3401,7 @@ changes:
     description: "添加了 `recursive` 选项。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version:
      - v13.1.0
      - v12.16.0
@@ -3428,7 +3434,7 @@ added: v0.0.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.10.0
     pr-url: https://github.com/nodejs/node/pull/22150
     description: "`buffer` 参数现在可以是任何 `TypedArray` 或`DataView`。"
@@ -3744,7 +3750,7 @@ added: v0.1.31
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
     description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
@@ -3782,7 +3788,7 @@ added:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `fd` {integer}
@@ -3852,7 +3858,7 @@ changes:
 1. 在不区分大小写的文件系统上不执行大小写转换。
 
 2. 符号链接的最大数量与平台无关，并且通常
-   (远) 高于原生 realpath(3) 实现支持的數量。
+   (远) 高于原生 realpath(3) 实现支持的数量。
 
 `callback` 获取两个参数 `(err, resolvedPath)`。可以使用 `process.cwd`
 来解析相对路径。
@@ -4049,7 +4055,7 @@ changes:
     pr-url: https://github.com/nodejs/node/pull/20220
     description: "接受额外的 `options` 对象以指定返回的数值是否应为 bigint。"
   - version: v10.0.0
-    pr-url: https://githubjs/node/pull/12562
+    pr-url: https://githubjs/nodejs/node/pull/12562
     description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
@@ -4985,8 +4991,8 @@ changes:
 import { appendFileSync } from 'node:fs';
 
 try {
-  appendFileSync('message.txt', 'data to append');
-  console.log('The "data to append" was appended to file!');
+  appendFileSync('message.txt', '要追加的数据');
+  console.log('“要追加的数据”已追加到文件！');
 } catch (err) {
   /* 处理错误 */
 }
@@ -4997,7 +5003,7 @@ try {
 ```mjs
 import { appendFileSync } from 'node:fs';
 
-appendFileSync('message.txt', 'data to append', 'utf8');
+appendFileSync('message.txt', '要追加的数据', 'utf8');
 ```
 
 `path` 可以指定为已打开用于追加的数字文件描述符（使用 `fs.open()` 或 `fs.openSync()`）。文件描述符不会自动关闭。
@@ -5009,7 +5015,7 @@ let fd;
 
 try {
   fd = openSync('message.txt', 'a');
-  appendFileSync(fd, 'data to append', 'utf8');
+  appendFileSync(fd, '要追加的数据', 'utf8');
 } catch (err) {
   /* 处理错误 */
 } finally {
@@ -5605,7 +5611,7 @@ import { readFileSync } from 'node:fs';
 
 // macOS、Linux 和 Windows
 readFileSync('<directory>');
-// => [Error: EISDIR: illegal operation on a directory, read <directory>]
+// => [Error: EISDIR: illegal operation on a directory, read <directory("")]
 
 //  FreeBSD
 readFileSync('<directory>'); // => <data>

@@ -1145,7 +1145,7 @@ changes:
 <!-- YAML
 added: v1.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/61084
     description: "创建 `decipher` 时未指定 `authTagLength` 选项而使用 128 位以外的 GCM 标签长度不再被允许。"
   - version:
@@ -2075,7 +2075,7 @@ Node.js 使用 `KeyObject` 类来表示对称或非对称密钥，并且每种�
 <!-- YAML
 added: v15.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "将不可提取的 CryptoKey 作为 `key` 传递已弃用。"
 -->
@@ -2199,10 +2199,10 @@ added:
 <!-- YAML
 added: v11.6.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62706
-    description: 为 ML-KEM 和 SLH-DSA 密钥类型添加 JWK 格式支持。
-  - version: REPLACEME
+    description: 为 ML-KEM 和 SLH-DSA 密钥类型添加了 JWK 格式支持。
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62178
     description: 现在在可用种子时，ML-KEM 和 ML-DSA 私钥的 `'pkcs8'` 导出默认使用仅种子格式。
   - version: v24.15.0
@@ -2506,7 +2506,7 @@ added: v0.1.92
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
-    description: The key can also be an ArrayBuffer and CryptoKey.
+    description: key 也可以是 ArrayBuffer 和 CryptoKey。
   - version:
      - v13.2.0
      - v12.16.0
@@ -3156,7 +3156,7 @@ added: v6.3.0
 <!-- YAML
 added: v0.1.94
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "传递 CryptoKey 作为 `key` 已弃用。"
   - version:
@@ -3209,7 +3209,7 @@ changes:
 <!-- YAML
 added: v0.1.94
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "传递 CryptoKey 作为 `key` 已弃用。"
   - version:
@@ -3394,7 +3394,7 @@ input.on('readable', () => {
 <!-- YAML
 added: v0.1.94
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "传递 CryptoKey 作为 `key` 已弃用。"
   - version: v15.0.0
@@ -3474,10 +3474,11 @@ input.on('readable', () => {
 <!-- YAML
 added: v11.6.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62706
-    description: 为 ML-KEM 和 SLH-DSA 密钥类型添加 JWK 格式支持
-  - version: REPLACEME
+    description: Added JWK format support for ML-KEM and SLH-DSA
+                 key types.
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: 将 CryptoKey 作为 `key` 传递已弃用。
   - version: v24.15.0
@@ -3518,10 +3519,11 @@ changes:
 <!-- YAML
 added: v11.6.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62706
-    description: 为 ML-KEM 和 SLH-DSA 密钥类型添加 JWK 格式支持
-  - version: REPLACEME
+    description: Added JWK format support for ML-KEM and SLH-DSA
+                 key types.
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: 将 CryptoKey 作为 `key` 传递已弃用。
   - version: v24.15.0
@@ -4719,7 +4721,7 @@ const {
 
 randomBytes(256, (err, buf) => {
   if (err) throw err;
-  console.log(`${buf.length} bytes of random data: ${buf.toString('hex')}`);
+  console.log(`${buf.length} 字节的随机数据：${buf.toString('hex')}`);
 });
 ```
 
@@ -4731,7 +4733,7 @@ const {
 
 randomBytes(256, (err, buf) => {
   if (err) throw err;
-  console.log(`${buf.length} bytes of random data: ${buf.toString('hex')}`);
+  console.log(`${buf.length} 字节的随机数据：${buf.toString('hex')}`);
 });
 ```
 
@@ -4745,7 +4747,7 @@ const {
 
 const buf = randomBytes(256);
 console.log(
-  `${buf.length} bytes of random data: ${buf.toString('hex')}`);
+  `${buf.length} 字节的随机数据：${buf.toString('hex')}`);
 ```
 
 ```cjs
@@ -4756,7 +4758,7 @@ const {
 
 const buf = randomBytes(256);
 console.log(
-  `${buf.length} bytes of random data: ${buf.toString('hex')}`);
+  `${buf.length} 字节的随机数据：${buf.toString('hex')}`);
 ```
 
 `crypto.randomBytes()` 方法直到有足够可用的熵才会完成。这通常永远不会超过几毫秒。唯一可能生成随机字节阻塞较长时间的情况是在刚启动后，此时整个系统的熵仍然较低。
@@ -5290,7 +5292,7 @@ added: v10.0.0
 <!-- YAML
 added: v12.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62474
     description: 添加对 Ed25519 上下文参数的支持。
   - version: v24.8.0
@@ -5401,7 +5403,7 @@ changes:
 <!-- YAML
 added: v12.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62474
     description: 添加对 Ed25519 上下文参数的支持。
   - version: v24.8.0

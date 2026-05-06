@@ -195,9 +195,9 @@ added: v23.8.0
 
 ### `endpoint.listening`
 
-* Type: {boolean}
+* 类型：{boolean}
 
-True if the endpoint is actively listening for incoming connections. Read only.
+如果端点正在主动监听传入连接，则为 true。只读。
 
 ### `endpoint.setSNIContexts(entries[, options])`
 
@@ -1126,7 +1126,7 @@ added: REPLACEME
 
 * 类型：{string} (客户端) | {string\[]} (服务器)
 
-ALPN (应用层协议协商) 标识符。
+ALPN（应用层协议协商）标识符。
 
 对于 **客户端** 会话，这是指定客户端想要使用的协议的单个字符串（例如 `'h3'`）。
 
@@ -1214,6 +1214,7 @@ added: v23.8.0
 added: v23.8.0
 changes:
   - version:
+     - v26.0.0
      - v25.9.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/62335

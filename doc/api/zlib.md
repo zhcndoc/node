@@ -37,7 +37,7 @@ const destination = createWriteStream('input.txt.gz');
 
 pipeline(source, gzip, destination, (err) => {
   if (err) {
-    console.error('An error occurred:', err);
+    console.error('发生错误：', err);
     process.exitCode = 1;
   }
 });
@@ -58,7 +58,7 @@ const destination = createWriteStream('input.txt.gz');
 
 pipeline(source, gzip, destination, (err) => {
   if (err) {
-    console.error('An error occurred:', err);
+    console.error('发生错误：', err);
     process.exitCode = 1;
   }
 });
@@ -102,7 +102,7 @@ async function do_gzip(input, output) {
 
 do_gzip('input.txt', 'input.txt.gz')
   .catch((err) => {
-    console.error('An error occurred:', err);
+    console.error('发生错误：', err);
     process.exitCode = 1;
   });
 ```
@@ -117,7 +117,7 @@ import { deflate, unzip } from 'node:zlib';
 const input = '.................................';
 deflate(input, (err, buffer) => {
   if (err) {
-    console.error('An error occurred:', err);
+    console.error('发生错误：', err);
     process.exitCode = 1;
   }
   console.log(buffer.toString('base64'));
@@ -126,7 +126,7 @@ deflate(input, (err, buffer) => {
 const buffer = Buffer.from('eJzT0yMAAGTvBe8=', 'base64');
 unzip(buffer, (err, buffer) => {
   if (err) {
-    console.error('An error occurred:', err);
+    console.error('发生错误：', err);
     process.exitCode = 1;
   }
   console.log(buffer.toString());
@@ -147,7 +147,7 @@ const { deflate, unzip } = require('node:zlib');
 const input = '.................................';
 deflate(input, (err, buffer) => {
   if (err) {
-    console.error('An error occurred:', err);
+    console.error('发生错误：', err);
     process.exitCode = 1;
   }
   console.log(buffer.toString('base64'));
@@ -156,7 +156,7 @@ deflate(input, (err, buffer) => {
 const buffer = Buffer.from('eJzT0yMAAGTvBe8=', 'base64');
 unzip(buffer, (err, buffer) => {
   if (err) {
-    console.error('An error occurred:', err);
+    console.error('发生错误：', err);
     process.exitCode = 1;
   }
   console.log(buffer.toString());
@@ -170,7 +170,7 @@ const do_unzip = promisify(unzip);
 do_unzip(buffer)
   .then((buf) => console.log(buf.toString()))
   .catch((err) => {
-    console.error('An error occurred:', err);
+    console.error('发生错误：', err);
     process.exitCode = 1;
   });
 ```
@@ -233,7 +233,7 @@ request.on('response', (response) => {
 
   const onError = (err) => {
     if (err) {
-      console.error('An error occurred:', err);
+      console.error('发生错误：', err);
       process.exitCode = 1;
     }
   };
@@ -275,7 +275,7 @@ request.on('response', (response) => {
 
   const onError = (err) => {
     if (err) {
-      console.error('An error occurred:', err);
+      console.error('发生错误：', err);
       process.exitCode = 1;
     }
   };
@@ -324,7 +324,7 @@ http.createServer((request, response) => {
       // 我们所能做的最好的事情就是立即终止响应
       // 并记录错误。
       response.end();
-      console.error('An error occurred:', err);
+      console.error('发生错误：', err);
     }
   };
 
@@ -372,7 +372,7 @@ http.createServer((request, response) => {
       // 我们所能做的最好的事情就是立即终止响应
       // 并记录错误。
       response.end();
-      console.error('An error occurred:', err);
+      console.error('发生错误：', err);
     }
   };
 
@@ -410,7 +410,7 @@ zlib.unzip(
   { finishFlush: zlib.constants.Z_SYNC_FLUSH },
   (err, buffer) => {
     if (err) {
-      console.error('An error occurred:', err);
+      console.error('发生错误：', err);
       process.exitCode = 1;
     }
     console.log(buffer.toString());
@@ -1675,11 +1675,225 @@ added:
 
 使用 [`ZstdDecompress`][] 解压缩一块数据。
 
+## 可迭代压缩
+
+<!-- YAML
+added: v25.9.0
+-->
+
+> 稳定性：1 - 实验性
+
+`node:zlib/iter` 模块提供了用于 [`node:stream/iter`][] 可迭代流 API 的压缩和解压转换。
+
+此模块仅在启用 `--experimental-stream-iter` CLI 标志时可用。
+
+每种算法都有异步变体（有状态异步生成器，用于 [`pull()`][] 和 [`pipeTo()`][]）以及同步变体（有状态同步生成器，用于 `pullSync()` 和 `pipeToSync()`）。
+
+异步转换会在 libuv 线程池上执行压缩，将 I/O 与 JavaScript 执行重叠。同步转换则直接在主线程上执行压缩。
+
+> 注意：这些转换的默认值针对流式吞吐量进行了调优，与 `node:zlib` 中的默认值不同。特别是，gzip/deflate 默认使用 level 4（而不是 6）和 memLevel 9（而不是 8），Brotli 默认使用 quality 6（而不是 11）。这些选择与常见的 HTTP 服务器配置一致，并且仅以很小的压缩率损失换来显著更快的压缩速度。所有默认值都可以通过选项覆盖。
+
+```mjs
+import { from, pull, bytes, text } from 'node:stream/iter';
+import { compressGzip, decompressGzip } from 'node:zlib/iter';
+
+// 异步往返
+const compressed = await bytes(pull(from('hello'), compressGzip()));
+const original = await text(pull(from(compressed), decompressGzip()));
+console.log(original); // 'hello'
+```
+
+```cjs
+const { from, pull, bytes, text } = require('node:stream/iter');
+const { compressGzip, decompressGzip } = require('node:zlib/iter');
+
+async function run() {
+  const compressed = await bytes(pull(from('hello'), compressGzip()));
+  const original = await text(pull(from(compressed), decompressGzip()));
+  console.log(original); // 'hello'
+}
+
+run().catch(console.error);
+```
+
+```mjs
+import { fromSync, pullSync, textSync } from 'node:stream/iter';
+import { compressGzipSync, decompressGzipSync } from 'node:zlib/iter';
+
+// 同步往返
+const compressed = pullSync(fromSync('hello'), compressGzipSync());
+const original = textSync(pullSync(compressed, decompressGzipSync()));
+console.log(original); // 'hello'
+```
+
+```cjs
+const { fromSync, pullSync, textSync } = require('node:stream/iter');
+const { compressGzipSync, decompressGzipSync } = require('node:zlib/iter');
+
+const compressed = pullSync(fromSync('hello'), compressGzipSync());
+const original = textSync(pullSync(compressed, decompressGzipSync()));
+console.log(original); // 'hello'
+```
+
+### `compressBrotli([options])`
+
+### `compressBrotliSync([options])`
+
+<!-- YAML
+added: v25.9.0
+-->
+
+* `options` {Object}
+  * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
+  * `params` {Object} 键值对象，其中键和值为 `zlib.constants` 条目。最重要的压缩参数有：
+    * `BROTLI_PARAM_MODE` -- `BROTLI_MODE_GENERIC`（默认）、`BROTLI_MODE_TEXT` 或 `BROTLI_MODE_FONT`。
+    * `BROTLI_PARAM_QUALITY` -- 范围从 `BROTLI_MIN_QUALITY` 到 `BROTLI_MAX_QUALITY`。**默认：** `6`（不是 `BROTLI_DEFAULT_QUALITY`，后者是 11）。质量 6 适合流式处理；质量 11 适用于离线/构建时压缩。
+    * `BROTLI_PARAM_SIZE_HINT` -- 预期输入大小。**默认：** `0`（未知）。
+    * `BROTLI_PARAM_LGWIN` -- 窗口大小（log2）。**默认：** `20`（1 MB）。Brotli 库的默认值是 22（4 MB）；降低后的默认值可以在流式工作负载中节省内存，而不会显著影响压缩效果。
+    * `BROTLI_PARAM_LGBLOCK` -- 输入块大小（log2）。
+      请参阅 zlib 文档中的 [Brotli compressor options][] 了解完整列表。
+  * `dictionary` {Buffer|TypedArray|DataView}
+* Returns: {Object} 一个有状态转换。
+
+创建一个 Brotli 压缩转换。输出与 `zlib.brotliDecompress()` 以及 `decompressBrotli()`/`decompressBrotliSync()` 兼容。
+
+### `compressDeflate([options])`
+
+### `compressDeflateSync([options])`
+
+<!-- YAML
+added: v25.9.0
+-->
+
+* `options` {Object}
+  * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
+  * `level` {number} 压缩级别（`0`-`9`）。**默认：** `4`。
+  * `windowBits` {number} **默认：** `Z_DEFAULT_WINDOWBITS`（15）。
+  * `memLevel` {number} **默认：** `9`。
+  * `strategy` {number} **默认：** `Z_DEFAULT_STRATEGY`。
+  * `dictionary` {Buffer|TypedArray|DataView}
+* Returns: {Object} 一个有状态转换。
+
+创建一个 deflate 压缩转换。输出与 `zlib.inflate()` 以及 `decompressDeflate()`/`decompressDeflateSync()` 兼容。
+
+### `compressGzip([options])`
+
+### `compressGzipSync([options])`
+
+<!-- YAML
+added: v25.9.0
+-->
+
+* `options` {Object}
+  * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
+  * `level` {number} 压缩级别（`0`-`9`）。**默认：** `4`。
+  * `windowBits` {number} **默认：** `Z_DEFAULT_WINDOWBITS`（15）。
+  * `memLevel` {number} **默认：** `9`。
+  * `strategy` {number} **默认：** `Z_DEFAULT_STRATEGY`。
+  * `dictionary` {Buffer|TypedArray|DataView}
+* Returns: {Object} 一个有状态转换。
+
+创建一个 gzip 压缩转换。输出与 `zlib.gunzip()` 以及 `decompressGzip()`/`decompressGzipSync()` 兼容。
+
+### `compressZstd([options])`
+
+### `compressZstdSync([options])`
+
+<!-- YAML
+added: v25.9.0
+-->
+
+* `options` {Object}
+  * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
+  * `params` {Object} 键值对象，其中键和值为 `zlib.constants` 条目。最重要的压缩参数有：
+    * `ZSTD_c_compressionLevel` -- **默认：** `ZSTD_CLEVEL_DEFAULT`（3）。
+    * `ZSTD_c_checksumFlag` -- 生成校验和。**默认：** `0`。
+    * `ZSTD_c_strategy` -- 压缩策略。取值包括 `ZSTD_fast`、`ZSTD_dfast`、`ZSTD_greedy`、`ZSTD_lazy`、`ZSTD_lazy2`、`ZSTD_btlazy2`、`ZSTD_btopt`、`ZSTD_btultra`、`ZSTD_btultra2`。
+      请参阅 zlib 文档中的 [Zstd compressor options][] 了解完整列表。
+  * `pledgedSrcSize` {number} 预期未压缩大小（可选提示）。
+  * `dictionary` {Buffer|TypedArray|DataView}
+* Returns: {Object} 一个有状态转换。
+
+创建一个 Zstandard 压缩转换。输出与 `zlib.zstdDecompress()` 以及 `decompressZstd()`/`decompressZstdSync()` 兼容。
+
+### `decompressBrotli([options])`
+
+### `decompressBrotliSync([options])`
+
+<!-- YAML
+added: v25.9.0
+-->
+
+* `options` {Object}
+  * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
+  * `params` {Object} 键值对象，其中键和值为 `zlib.constants` 条目。可用的解压参数：
+    * `BROTLI_DECODER_PARAM_DISABLE_RING_BUFFER_REALLOCATION` -- 影响内部内存分配的布尔标志。
+    * `BROTLI_DECODER_PARAM_LARGE_WINDOW` -- 启用“Large Window Brotli”模式的布尔标志（与 [RFC 7932][] 不兼容）。
+      请参阅 zlib 文档中的 [Brotli decompressor options][] 了解详细信息。
+  * `dictionary` {Buffer|TypedArray|DataView}
+* Returns: {Object} 一个有状态转换。
+
+创建一个 Brotli 解压转换。
+
+### `decompressDeflate([options])`
+
+### `decompressDeflateSync([options])`
+
+<!-- YAML
+added: v25.9.0
+-->
+
+* `options` {Object}
+  * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
+  * `windowBits` {number} **默认：** `Z_DEFAULT_WINDOWBITS`（15）。
+  * `dictionary` {Buffer|TypedArray|DataView}
+* Returns: {Object} 一个有状态转换。
+
+创建一个 deflate 解压转换。
+
+### `decompressGzip([options])`
+
+### `decompressGzipSync([options])`
+
+<!-- YAML
+added: v25.9.0
+-->
+
+* `options` {Object}
+  * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
+  * `windowBits` {number} **默认：** `Z_DEFAULT_WINDOWBITS`（15）。
+  * `dictionary` {Buffer|TypedArray|DataView}
+* Returns: {Object} 一个有状态转换。
+
+创建一个 gzip 解压转换。
+
+### `decompressZstd([options])`
+
+### `decompressZstdSync([options])`
+
+<!-- YAML
+added: v25.9.0
+-->
+
+* `options` {Object}
+  * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
+  * `params` {Object} 键值对象，其中键和值为 `zlib.constants` 条目。可用的解压参数：
+    * `ZSTD_d_windowLogMax` -- 解压器将分配的最大窗口大小（log2）。限制恶意输入导致的内存使用。
+      请参阅 zlib 文档中的 [Zstd decompressor options][] 了解详细信息。
+  * `dictionary` {Buffer|TypedArray|DataView}
+* Returns: {Object} 一个有状态转换。
+
+创建一个 Zstandard 解压转换。
+
+[Brotli compressor options]: #compressor-options
+[Brotli decompressor options]: #decompressor-options
 [Brotli parameters]: #brotli-constants
 [Cyclic redundancy check]: https://en.wikipedia.org/wiki/Cyclic_redundancy_check
 [Memory usage tuning]: #memory-usage-tuning
-[RFC 7932]: https://www.rfc-editor.org/rfc/rfc7932.txt
+[RFC 7932]: https://www.rfc-editor.org/rfc/rfc7932.html
 [Streams API]: stream.md
+[Zstd compressor options]: #compressor-options-1
+[Zstd decompressor options]: #decompressor-options-1
 [Zstd parameters]: #zstd-constants
 [`.flush()`]: #zlibflushkind-callback
 [`Accept-Encoding`]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
@@ -1698,6 +1912,9 @@ added:
 [`ZstdDecompress`]: #class-zlibzstddecompress
 [`buffer.kMaxLength`]: buffer.md#bufferkmaxlength
 [`deflateInit2` and `inflateInit2`]: https://zlib.net/manual.html#Advanced
+[`node:stream/iter`]: stream_iter.md
+[`pipeTo()`]: stream_iter.md#pipetosource-transforms-writer-options
+[`pull()`]: stream_iter.md#pullsource-transforms-options
 [`stream.Transform`]: stream.md#class-streamtransform
 [convenience methods]: #convenience-methods
 [zlib documentation]: https://zlib.net/manual.html#Constants

@@ -224,7 +224,7 @@ changes:
 * `err` {Error} 未捕获的异常。
 * `origin` {string} 指示异常是源自未处理的拒绝还是同步错误。可以是 `'uncaughtException'` 或 `'unhandledRejection'`。当异常发生在基于 `Promise` 的异步上下文中（或者如果 `Promise` 被拒绝）且 [`--unhandled-rejections`][] 标志设置为 `strict` 或 `throw`（这是默认值）且拒绝未被处理时，或者当拒绝发生在命令行入口点的 ES 模块静态加载阶段时，使用后者。
 
-当未捕获的 JavaScript 异常一直冒泡回到事件循环时，会发出 `'uncaughtException'` 事件。默认情况下，Node.js 通过将这些异常的堆栈跟踪打印到 `stderr` 并以代码 1 退出来处理此类异常，覆盖任何先前设置的 [`process.exitCode`][]。为 `'uncaughtException'` 事件添加处理程序会覆盖此默认行为。或者，在 `'uncaughtException'` 处理程序中更改 [`process.exitCode`][]，这将导致进程以提供的退出代码退出。否则，在此类处理程序存在的情况下，进程将以 0 退出。
+当未捕获的 JavaScript 异常一直冒泡回到事件循环时，会发出 `'uncaughtException'` 事件。默认情况下，Node.js 通过将这些异常的堆栈跟踪打印到 `stderr` 并以代码 1 退出出来处理此类异常，覆盖任何先前设置的 [`process.exitCode`][]。为 `'uncaughtException'` 事件添加处理程序会覆盖此默认行为。或者，在 `'uncaughtException'` 处理程序中更改 [`process.exitCode`][]，这将导致进程以提供的退出代码退出。否则，在此类处理程序存在的情况下，进程将以 0 退出。
 
 ```mjs
 import process from 'node:process';
@@ -439,8 +439,8 @@ $ node
 > events.defaultMaxListeners = 1;
 > process.on('foo', () => {});
 > process.on('foo', () => {});
-> (node:38638) MaxListenersExceededWarning: Possible EventEmitter memory leak
-detected. 2 foo listeners added. Use emitter.setMaxListeners() to increase limit
+> (node:38638) MaxListenersExceededWarning: 可能的 EventEmitter 内存泄漏
+检测到。已添加 2 个 foo 监听器。使用 emitter.setMaxListeners() 来增加限制
 ```
 
 相反，以下示例关闭了默认警告输出并向 `'warning'` 事件添加了自定义处理程序：
@@ -575,7 +575,9 @@ added: v0.7.0
 ## `process.addUncaughtExceptionCaptureCallback(fn)`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1072,11 +1074,11 @@ import { emitWarning } from 'node:process';
 // 发出带有代码和附加详情的警告。
 emitWarning('Something happened!', {
   code: 'MY_WARNING',
-  detail: 'This is some additional information',
+  detail: '这是一些附加信息',
 });
 // 发出：
 // (node:56338) [MY_WARNING] Warning: Something happened!
-// This is some additional information
+// 这是一些附加信息
 ```
 
 ```cjs
@@ -1085,11 +1087,11 @@ const { emitWarning } = require('node:process');
 // 发出带有代码和附加详情的警告。
 emitWarning('Something happened!', {
   code: 'MY_WARNING',
-  detail: 'This is some additional information',
+  detail: '这是一些附加信息',
 });
 // 发出：
 // (node:56338) [MY_WARNING] Warning: Something happened!
-// This is some additional information
+// 这是一些附加信息
 ```
 
 在此示例中，`Error` 对象由 `process.emitWarning()` 内部生成并传递给 [`'warning'`][process_warning] 处理程序。
@@ -1102,7 +1104,7 @@ process.on('warning', (warning) => {
   console.warn(warning.message); // 'Something happened!'
   console.warn(warning.code);    // 'MY_WARNING'
   console.warn(warning.stack);   // 堆栈跟踪
-  console.warn(warning.detail);  // 'This is some additional information'
+  console.warn(warning.detail);  // '这是一些附加信息'
 });
 ```
 
@@ -1114,7 +1116,7 @@ process.on('warning', (warning) => {
   console.warn(warning.message); // 'Something happened!'
   console.warn(warning.code);    // 'MY_WARNING'
   console.warn(warning.stack);   // 堆栈跟踪
-  console.warn(warning.detail);  // 'This is some additional information'
+  console.warn(warning.detail);  // '这是一些附加信息'
 });
 ```
 
@@ -1453,10 +1455,7 @@ added:
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62878
-    description: A failed `execve(2)` system call now throws an exception
-                 instead of aborting the process. Native `AtExit`
-                 callbacks registered via the embedder API are no longer
-                 invoked before the `execve(2)` call.
+    description: 失败的 `execve(2)` 系统调用现在会抛出异常，而不是中止进程。通过 embedder API 注册的原生 `AtExit` 回调在 `execve(2)` 调用之前不再被调用。
 -->
 
 > 稳定性：1 - 实验性
@@ -1726,7 +1725,7 @@ added:
  - v23.0.0
  - v22.10.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/61803
     description: "移除了 `transform` 值。"
   - version:
@@ -3301,12 +3300,12 @@ added: v2.0.0
 import process from 'node:process';
 
 if (process.getegid && process.setegid) {
-  console.log(`Current gid: ${process.getegid()}`);
+  console.log(`当前 gid: ${process.getegid()}`);
   try {
     process.setegid(501);
-    console.log(`New gid: ${process.getegid()}`);
+    console.log(`新的 gid: ${process.getegid()}`);
   } catch (err) {
-    console.error(`Failed to set gid: ${err}`);
+    console.error(`设置 gid 失败: ${err}`);
   }
 }
 ```
@@ -3315,12 +3314,12 @@ if (process.getegid && process.setegid) {
 const process = require('node:process');
 
 if (process.getegid && process.setegid) {
-  console.log(`Current gid: ${process.getegid()}`);
+  console.log(`当前 gid: ${process.getegid()}`);
   try {
     process.setegid(501);
-    console.log(`New gid: ${process.getegid()}`);
+    console.log(`新的 gid: ${process.getegid()}`);
   } catch (err) {
-    console.error(`Failed to set gid: ${err}`);
+    console.error(`设置 gid 失败: ${err}`);
   }
 }
 ```
@@ -3342,12 +3341,12 @@ added: v2.0.0
 import process from 'node:process';
 
 if (process.geteuid && process.seteuid) {
-  console.log(`Current uid: ${process.geteuid()}`);
+  console.log(`当前 uid: ${process.geteuid()}`);
   try {
     process.seteuid(501);
-    console.log(`New uid: ${process.geteuid()}`);
+    console.log(`新的 uid: ${process.geteuid()}`);
   } catch (err) {
-    console.error(`Failed to set uid: ${err}`);
+    console.error(`设置 uid 失败: ${err}`);
   }
 }
 ```
@@ -3356,12 +3355,12 @@ if (process.geteuid && process.seteuid) {
 const process = require('node:process');
 
 if (process.geteuid && process.seteuid) {
-  console.log(`Current uid: ${process.geteuid()}`);
+  console.log(`当前 uid: ${process.geteuid()}`);
   try {
     process.seteuid(501);
-    console.log(`New uid: ${process.geteuid()}`);
+    console.log(`新的 uid: ${process.geteuid()}`);
   } catch (err) {
-    console.error(`Failed to set uid: ${err}`);
+    console.error(`设置 uid 失败: ${err}`);
   }
 }
 ```
@@ -3517,7 +3516,9 @@ added:
 <!-- YAML
 added: v9.3.0
 changes:
-  - version: v25.9.0
+  - version:
+     - v26.0.0
+     - v25.9.0
     pr-url: https://github.com/nodejs/node/pull/61227
     description: "使用 `process.addUncaughtExceptionCaptureCallback()` 来注册多个回调。"
 -->
@@ -3736,7 +3737,7 @@ changes:
     - v14.0.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/32499
-    description: "Calling `process.umask()` with no arguments is deprecated."
+    description: "调用不带参数的 `process.umask()` 已被弃用。"
 -->
 
 > 稳定性：0 - 已废弃。不带参数调用 `process.umask()` 会导致进程范围的 umask 被写入两次。这在线程之间引入了竞态条件，并且是一个潜在的安全漏洞。没有安全、跨平台的替代 API。
@@ -3844,10 +3845,10 @@ added: v0.2.0
 changes:
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15785
-    description: "The `v8` property now includes a Node.js specific suffix."
+    description: "现在 `v8` 属性包含 Node.js 特定后缀。"
   - version: v4.2.0
     pr-url: https://github.com/nodejs/node/pull/3102
-    description: "The `icu` property is now supported."
+    description: "现在支持 `icu` 属性。"
 -->
 
 * 类型：{Object}

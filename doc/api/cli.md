@@ -686,7 +686,7 @@ added:
 - v20.15.0
 changes:
   - version:
-    - REPLACEME
+    - v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62132
     description: 当启动时没有足够的虚拟内存可用以分配一个笼时，Node.js 现在会自动禁用陷阱处理程序。
 -->
@@ -984,11 +984,13 @@ node --import amaro/strip --watch-path=src --watch-preserve-output --test-isolat
 
 配置中的优先级如下：
 
-1. NODE\_OPTIONS 和命令行选项
-2. 配置文件
-3. Dotenv NODE\_OPTIONS
+1. NODE\_OPTIONS and command-line options
+2. Dotenv NODE\_OPTIONS
+3. Configuration file
 
-配置文件中的值不会覆盖环境变量和命令行选项中的值，但会覆盖 `--env-file` 标志解析的 `NODE_OPTIONS` env 文件中的值。
+Values in the configuration file will not override the values in the environment
+variables, command-line options, or the `NODE_OPTIONS` env file parsed by the
+`--env-file` flag.
 
 键不能在同一或不同命名空间内重复。
 
@@ -1153,7 +1155,9 @@ added:
 ### `--experimental-stream-iter`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 > 稳定性：1 - 实验性
@@ -2284,7 +2288,7 @@ $ node --run test
 $ node --run test -- --verbose
 ```
 
-####  intentional limitations
+#### intentional limitations
 
 `node --run` 不旨在匹配 `npm run` 或其他包管理器的 `run`
 命令的行为。Node.js 实现故意更有限，以便专注于最常见用例的顶级性能。
@@ -3232,7 +3236,7 @@ changes:
      - v25.4.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/60971
-    description: This feature is no longer experimental.
+    description: 此功能不再是实验性的。
 -->
 
 为 Node.js 实例启用 [模块编译缓存][]。有关详细信息，请参阅 [模块编译缓存][] 的文档。
@@ -3580,8 +3584,7 @@ changes:
      - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/52905
     description:
-      Remove the possibility to use this env var with
-      kDisableNodeOptionsEnv for embedders.
+      删除了将此环境变量与 kDisableNodeOptionsEnv 一起用于嵌入器的可能性。
 -->
 
 将在内置 REPL 的位置加载的 Node.js 模块的路径。将此值覆盖为空字符串 (`''`) 将使用内置 REPL。
@@ -3745,14 +3748,12 @@ changes:
      - v16.2.0
     pr-url: https://github.com/nodejs/node/pull/38642
     description:
-      Changing the TZ variable using process.env.TZ = changes the timezone
-      on Windows as well.
+      使用 process.env.TZ = 更改 TZ 变量也会在 Windows 上更改时区。
   - version:
      - v13.0.0
     pr-url: https://github.com/nodejs/node/pull/20026
     description:
-      Changing the TZ variable using process.env.TZ = changes the timezone
-      on POSIX systems.
+      使用 process.env.TZ = 更改 TZ 变量会在 POSIX 系统上更改时区。
 -->
 
 `TZ` 环境变量用于指定时区配置。
@@ -3809,11 +3810,11 @@ V8 有一套自己的 CLI 选项。任何提供给 `node` 的 V8 CLI 选项都�
 
 <a id="--max-old-space-sizesize-in-megabytes"></a>
 
-### `--max-old-space-size=SIZE` (in MiB)
+### `--max-old-space-size=SIZE` (单位：MiB)
 
 设置 V8 旧内存部分的最大内存大小。当内存消耗接近限制时，V8 将花费更多时间在垃圾回收上，以努力释放未使用的内存。
 
-在具有 2 GiB 内存的机器上，考虑将其设置为 1536 (1.5 GiB)，以便为其他用途留出一些内存并避免交换。
+在具有 2 GiB 内存的机器上，考虑将其设置为 1536（1.5 GiB），以便为其他用途留出一些内存并避免交换。
 
 ```bash
 node --max-old-space-size=1536 index.js
@@ -3823,7 +3824,7 @@ node --max-old-space-size=1536 index.js
 
 <a id="--max-semi-space-sizesize-in-megabytes"></a>
 
-### `--max-semi-space-size=SIZE` (in MiB)
+### `--max-semi-space-size=SIZE` (单位：MiB)
 
 设置 V8 的 [Scavenge 垃圾收集器][] 的最大 [半空间][] 大小，单位为 MiB（兆二进制字节）。
 增加半空间的最大大小可能会提高 Node.js 的吞吐量，但代价是消耗更多内存。

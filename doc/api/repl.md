@@ -170,7 +170,7 @@ REPL 环境中。例如，除非另外声明为
 changes:
   - version: v12.3.0
     pr-url: https://github.com/nodejs/node/pull/27151
-    description: "The `'uncaughtException'` event is from now on triggered if therepl is used as standalone program."
+    description: "一旦 repl 作为独立程序使用，现在会触发 `'uncaughtException'` 事件。"
 -->
 
 REPL 使用 [`domain`][] 模块来捕获该
@@ -201,7 +201,7 @@ REPL 会话的所有未捕获异常。
 changes:
   - version: v9.8.0
     pr-url: https://github.com/nodejs/node/pull/18919
-    description: "Added `_error` support."
+    description: "添加了 `_error` 支持。"
 -->
 
 默认情况下，默认求值器会将最近求值的表达式结果赋值给特殊变量 `_` (下划线)。
@@ -617,7 +617,7 @@ added: v11.10.0
 changes:
   - version: v24.2.0
     pr-url: https://github.com/nodejs/node/pull/58225
-    description: "Updated the `historyConfig` parameter to accept an object with `filePath`, `size`, `removeHistoryDuplicates` and `onHistoryFileLoaded` properties."
+    description: "更新了 `historyConfig` 参数，使其接受包含 `filePath`、`size`、`removeHistoryDuplicates` 和 `onHistoryFileLoaded` 属性的对象。"
 -->
 
 * `historyConfig` {Object|string} 历史文件的路径
@@ -662,32 +662,34 @@ npx codemod@latest @nodejs/repl-builtin-modules
 <!-- YAML
 added: v0.1.91
 changes:
-  - version: v25.9.0
+  - version:
+     - v26.0.0
+     - v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62188
-    description: "The `handleError` parameter has been added."
+    description: "已添加 `handleError` 参数。"
   - version: v24.1.0
     pr-url: https://github.com/nodejs/node/pull/58003
-    description: "Added the possibility to add/edit/remove multilineswhile adding a multiline command."
+    description: "在添加多行命令时，增加了添加/编辑/删除多行的可能性。"
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/57400
-    description: "The multi-line indicator is now '|' instead of '...'. Added support for multi-line history. It is now possible to 'fix' multi-line commands with syntax errors by visiting the history and editing the command. When visiting the multiline history from an old node version, the multiline structure is not preserved."
+    description: "多行指示符现在是 `|`，而不是 `...`。增加了对多行历史记录的支持。现在可以通过访问历史记录并编辑命令来“修复”带有语法错误的多行命令。当从旧版 node 访问多行历史记录时，多行结构不会被保留。"
   - version:
      - v13.4.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/30811
-    description: "The `preview` option is now available."
+    description: "现在可以使用 `preview` 选项。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/26518
-    description: "The `terminal` option now follows the default description inall cases and `useColors` checks `hasColors()` if available."
+    description: "在所有情况下，`terminal` 选项现在都遵循默认描述，且 `useColors` 会在可用时检查 `hasColors()`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19187
-    description: "The `REPL_MAGIC_MODE` `replMode` was removed."
+    description: "移除了 `REPL_MAGIC_MODE` `replMode`。"
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6635
-    description: "The `breakEvalOnSigint` option is supported now."
+    description: "现在支持 `breakEvalOnSigint` 选项。"
   - version: v5.8.0
     pr-url: https://github.com/nodejs/node/pull/5388
-    description: "The `options` parameter is optional now."
+    description: "现在 `options` 参数是可选的。"
 -->
 
 * `options` {Object|string}
@@ -713,7 +715,7 @@ changes:
       `'unhandled'` 值在 `REPLServer` 实例已关闭的情况下是否可取，取决于特定的用例。
 * 返回：{repl.REPLServer}
 
-`repl.start()` 方法创建并启动 [`repl.REPLServer`][] 实例。
+`repl.start()` 方法创建并启动 [`repl.RePLServer`][] 实例。
 
 如果 `options` 是字符串，则它指定输入提示符：
 

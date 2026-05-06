@@ -293,7 +293,7 @@ assert2.deepStrictEqual(foo, bar); // 通过
 <!-- YAML
 added: v0.5.9
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
     description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
 -->
@@ -308,7 +308,7 @@ changes:
 <!-- YAML
 added: v0.1.21
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
     description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v25.0.0
@@ -788,7 +788,7 @@ added:
   - v13.6.0
   - v12.16.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
     description: "message 现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v16.0.0
@@ -1003,7 +1003,7 @@ assert.doesNotThrow(
 <!-- YAML
 added: v0.1.21
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
     description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
   - version:
@@ -1176,7 +1176,7 @@ added:
   - v13.6.0
   - v12.16.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
     description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v16.0.0
@@ -1223,7 +1223,7 @@ assert.match('I will pass', /pass/);
 <!-- YAML
 added: v0.1.21
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
     description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
   - version:
@@ -1344,7 +1344,7 @@ assert.notDeepEqual(obj1, obj4);
 <!-- YAML
 added: v1.2.0
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
     description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v9.0.0
@@ -1401,7 +1401,7 @@ assert.notDeepStrictEqual({ a: 1 }, { a: '1' });
 <!-- YAML
 added: v0.1.21
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
     description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
   - version:
@@ -1461,9 +1461,9 @@ assert.notEqual(1, '1');
 <!-- YAML
 added: v0.1.21
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
+    description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17003
     description: "使用的比较已从严格相等改为 `Object.is()`。"
@@ -1512,9 +1512,9 @@ assert.notStrictEqual(1, '1');
 <!-- YAML
 added: v0.1.21
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
+    description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18319
     description: "`assert.ok()`（无参数）现在将使用预定义的错误消息。"
@@ -1737,7 +1737,7 @@ assert.rejects(
 <!-- YAML
 added: v0.1.21
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
     description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v10.0.0

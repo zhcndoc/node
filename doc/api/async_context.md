@@ -353,7 +353,9 @@ try {
 ### `asyncLocalStorage.withScope(store)`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 > 稳定性：1 - 实验性
@@ -469,7 +471,9 @@ async function fn() {
 ## 类：`RunScope`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 > 稳定性：1 - 实验性
@@ -481,7 +485,9 @@ added: v25.9.0
 ### `scope.dispose()`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 显式结束作用域并恢复之前的存储值。此方法是幂等的：多次调用它与调用一次的效果相同。

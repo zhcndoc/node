@@ -577,7 +577,7 @@ proxy.listen(1337, '127.0.0.1', () => {
   req.end();
 
   req.on('connect', (res, socket, head) => {
-    console.log('got connected!');
+    console.log('已连接！');
 
     // 通过 HTTP 隧道发出请求
     socket.write('GET / HTTP/1.1\r\n' +
@@ -632,7 +632,7 @@ proxy.listen(1337, '127.0.0.1', () => {
   req.end();
 
   req.on('connect', (res, socket, head) => {
-    console.log('got connected!');
+    console.log('已连接！');
 
     // 通过 HTTP 隧道发出请求
     socket.write('GET / HTTP/1.1\r\n' +
@@ -696,7 +696,7 @@ const req = request(options);
 req.end();
 
 req.on('information', (info) => {
-  console.log(`Got information prior to main response: ${info.statusCode}`);
+  console.log(`在主响应之前收到信息：${info.statusCode}`);
 });
 ```
 
@@ -714,7 +714,7 @@ const req = http.request(options);
 req.end();
 
 req.on('information', (info) => {
-  console.log(`Got information prior to main response: ${info.statusCode}`);
+  console.log(`在主响应之前收到信息：${info.statusCode}`);
 });
 ```
 
@@ -801,7 +801,7 @@ server.listen(1337, '127.0.0.1', () => {
   req.end();
 
   req.on('upgrade', (res, stream, upgradeHead) => {
-    console.log('got upgraded!');
+    console.log('已升级！');
     stream.end();
     process.exit(0);
   });
@@ -842,7 +842,7 @@ server.listen(1337, '127.0.0.1', () => {
   req.end();
 
   req.on('upgrade', (res, stream, upgradeHead) => {
-    console.log('got upgraded!');
+    console.log('已升级！');
     stream.end();
     process.exit(0);
   });
@@ -1323,7 +1323,7 @@ req.end();
 req.once('response', (res) => {
   const ip = req.socket.localAddress;
   const port = req.socket.localPort;
-  console.log(`Your IP address is ${ip} and your source port is ${port}.`);
+  console.log(`你的 IP 地址是 ${ip}，源端口是 ${port}。`);
   // 消费响应对象
 });
 ```
@@ -1338,7 +1338,7 @@ req.end();
 req.once('response', (res) => {
   const ip = req.socket.localAddress;
   const port = req.socket.localPort;
-  console.log(`Your IP address is ${ip} and your source port is ${port}.`);
+  console.log(`你的 IP 地址是 ${ip}，源端口是 ${port}。`);
   // 消费响应对象
 });
 ```
@@ -1613,7 +1613,7 @@ added: v0.1.0
 <!-- YAML
 added: v0.1.94
 changes:
-  - version: REPLACEME
+  - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/60016
     description: "请求主体不再以原始（未解析）形式暴露在 socket 参数上。相反，如果收到主体，流参数将是一个双工流，仅在请求主体之后发出 socket 内容，而解析后的请求主体数据将从请求中发出，就像在普通服务器`'request'`事件中一样。"
   - version:
@@ -3359,7 +3359,7 @@ changes:
     description: "现在支持 `requestTimeout`、`headersTimeout`、`keepAliveTimeout` 和`connectionsCheckingInterval` 选项。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42163
-    description: "`noDelay` 选项现在默认为 `true`。"
+    description: "现在支持 `noDelay` 选项。"
   - version:
     - v17.7.0
     - v16.15.0

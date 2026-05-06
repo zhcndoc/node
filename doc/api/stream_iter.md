@@ -361,7 +361,7 @@ if (writer.endSync() < 0) await writer.end();
 writer.fail(err);  // 始终同步，不需要回退
 ```
 
-### `writer.desiredSize`
+#### `writer.desiredSize`
 
 * {number|null}
 
@@ -369,7 +369,7 @@ writer.fail(err);  // 始终同步，不需要回退
 
 该值始终为非负数。
 
-### `writer.end([options])`
+#### `writer.end([options])`
 
 * `options` {Object}
   * `signal` {AbortSignal} 仅取消此操作。该信号仅取消待处理的 `end()` 调用；它不会使 writer 本身失败。
@@ -377,7 +377,7 @@ writer.fail(err);  // 始终同步，不需要回退
 
 信号表明不再写入更多数据。
 
-### `writer.endSync()`
+#### `writer.endSync()`
 
 * 返回：{number} 写入的总字节数，如果 writer 未打开则为 `-1`。
 
@@ -390,13 +390,13 @@ if (result < 0) {
 }
 ```
 
-### `writer.fail(reason)`
+#### `writer.fail(reason)`
 
 * `reason` {any}
 
 将 writer 置于终止错误状态。如果 writer 已关闭或出错，这是无操作。与 `write()` 和 `end()` 不同，`fail()` 无条件同步，因为使 writer 失败是纯状态转换，无需执行异步工作。
 
-### `writer.write(chunk[, options])`
+#### `writer.write(chunk[, options])`
 
 * `chunk` {Uint8Array|string}
 * `options` {Object}
@@ -405,14 +405,14 @@ if (result < 0) {
 
 写入一个块。当缓冲空间可用时，promise 解析。
 
-### `writer.writeSync(chunk)`
+#### `writer.writeSync(chunk)`
 
 * `chunk` {Uint8Array|string}
 * 返回：{boolean} 如果写入被接受则为 `true`，如果缓冲区已满则为 `false`。
 
 同步写入。不阻塞；如果背压处于活动状态则返回 `false`。
 
-### `writer.writev(chunks[, options])`
+#### `writer.writev(chunks[, options])`
 
 * `chunks` {Uint8Array\[]|string\[]}
 * `options` {Object}
@@ -421,7 +421,7 @@ if (result < 0) {
 
 将多个块作为单个批次写入。
 
-### `writer.writevSync(chunks)`
+#### `writer.writevSync(chunks)`
 
 * `chunks` {Uint8Array\[]|string\[]}
 * 返回：{boolean} 如果写入被接受则为 `true`，如果缓冲区已满则为 `false`。
@@ -455,7 +455,9 @@ Stream.from('hello');
 ### `from(input)`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `input` {string|ArrayBuffer|ArrayBufferView|Iterable|AsyncIterable|Object}
@@ -494,7 +496,9 @@ run().catch(console.error);
 ### `fromSync(input)`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `input` {string|ArrayBuffer|ArrayBufferView|Iterable|Object}
@@ -522,7 +526,9 @@ console.log(textSync(fromSync('hello'))); // 'hello'
 ### `pipeTo(source[, ...transforms], writer[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {AsyncIterable|Iterable} 数据源。
@@ -576,7 +582,9 @@ run().catch(console.error);
 ### `pipeToSync(source[, ...transforms], writer[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {Iterable} 同步数据源。
@@ -596,7 +604,9 @@ added: v25.9.0
 ### `pull(source[, ...transforms][, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {AsyncIterable|Iterable} 数据源。
@@ -666,7 +676,9 @@ ac.abort(); // 管道在下一次迭代时抛出 AbortError
 ### `pullSync(source[, ...transforms])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {Iterable} 同步数据源。
@@ -680,7 +692,9 @@ added: v25.9.0
 ### `push([...transforms][, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `...transforms` {Function|Object} 应用于可读侧的可选转换。
@@ -742,7 +756,9 @@ run().catch(console.error);
 ### `duplex([options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `options` {Object}
@@ -819,7 +835,9 @@ run().catch(console.error);
 ### `array(source[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>}
@@ -833,7 +851,9 @@ added: v25.9.0
 ### `arrayBuffer(source[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>}
@@ -847,7 +867,9 @@ added: v25.9.0
 ### `arrayBufferSync(source[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {Iterable\<Uint8Array\[]>}
@@ -860,7 +882,9 @@ added: v25.9.0
 ### `arraySync(source[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {Iterable\<Uint8Array\[]>}
@@ -873,7 +897,9 @@ added: v25.9.0
 ### `bytes(source[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>}
@@ -905,7 +931,9 @@ run().catch(console.error);
 ### `bytesSync(source[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {Iterable\<Uint8Array\[]>}
@@ -918,7 +946,9 @@ added: v25.9.0
 ### `text(source[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>}
@@ -949,7 +979,9 @@ run().catch(console.error);
 ### `textSync(source[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {Iterable\<Uint8Array\[]>}
@@ -965,7 +997,9 @@ added: v25.9.0
 ### `ondrain(drainable)`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `drainable` {Object} 实现可排空协议的对象。
@@ -1018,7 +1052,9 @@ run().catch(console.error);
 ### `merge(...sources[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `...sources` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>} 两个或更多可迭代对象。
@@ -1049,7 +1085,9 @@ run().catch(console.error);
 ### `tap(callback)`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `callback` {Function} `(chunks) => void` 使用每个批次调用。
@@ -1086,7 +1124,9 @@ run().catch(console.error);
 ### `tapSync(callback)`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `callback` {Function}
@@ -1099,7 +1139,9 @@ added: v25.9.0
 ### `broadcast([options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `options` {Object}
@@ -1192,7 +1234,9 @@ run().catch(console.error);
 ### `Broadcast.from(input[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `input` {AsyncIterable|Iterable|Broadcastable}
@@ -1204,7 +1248,9 @@ added: v25.9.0
 ### `share(source[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {AsyncIterable} 要共享的源。
@@ -1281,7 +1327,9 @@ run().catch(console.error);
 ### `Share.from(input[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `input` {AsyncIterable|Shareable}
@@ -1293,7 +1341,9 @@ added: v25.9.0
 ### `shareSync(source[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `source` {Iterable} 要共享的同步源。
@@ -1307,7 +1357,9 @@ added: v25.9.0
 ### `SyncShare.fromSync(input[, options])`
 
 <!-- YAML
-added: v25.9.0
+added:
+ - v26.0.0
+ - v25.9.0
 -->
 
 * `input` {Iterable|SyncShareable}
@@ -1316,7 +1368,10 @@ added: v25.9.0
 
 ## 压缩和解压缩转换
 
-用于 `pull()`、`pullSync()`、`pipeTo()` 和 `pipeToSync()` 的压缩和解压缩转换可通过 [`node:zlib/iter`][] 模块获得。详见 [`node:zlib/iter` 文档][]。
+用于 `pull()`、`pullSync()`、
+`pipeTo()` 和 `pipeToSync()` 的压缩和解压缩转换可通过
+[`node:zlib/iter`][] 模块获得。有关详细信息，请参阅
+[`node:zlib/iter` 文档][`node:zlib/iter`]。
 
 ## 经典流互操作
 
@@ -1934,14 +1989,13 @@ console.log(textSync(stream)); // 'hello world'
 [`bytes()`]: #bytessource-options
 [`from()`]: #frominput
 [`fromSync()`]: #fromsyncinput
-[`node:zlib/iter`]: zlib_iter.md
-[`node:zlib/iter` 文档]: zlib_iter.md
+[`node:zlib/iter`]: zlib.md#iterable-compression
 [`pipeTo()`]: #pipetosource-transforms-writer-options
 [`pull()`]: #pullsource-transforms-options
 [`pullSync()`]: #pullsyncsource-transforms-options
 [`share()`]: #sharesource-options
 [`stream.Readable`]: stream.md#class-streamreadable
-[`stream.Writable`]: stream.md#class-streamwritable
+[`stream.Writable`]: #class-streamwritable
 [`tap()`]: #tapcallback
 [`text()`]: #textsource-options
 [`toAsyncStreamable`]: #streamtoasyncstreamable
