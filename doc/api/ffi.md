@@ -1,9 +1,9 @@
 # FFI
 
-<!--introduced_in=REPLACEME-->
+<!--introduced_in=v26.1.0-->
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性
@@ -121,7 +121,7 @@ const signature = {
 ## `ffi.suffix`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * {string}
@@ -143,7 +143,7 @@ const path = `libsqlite3.${suffix}`;
 ## `ffi.dlopen(path[, definitions])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `path` {string|null} 动态库的路径，或使用 `null` 从当前进程映像中解析符号。
@@ -199,7 +199,7 @@ console.log(functions.add_i32(20, 22));
 ## `ffi.dlclose(handle)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `handle` {DynamicLibrary}
@@ -211,7 +211,7 @@ added: REPLACEME
 ## `ffi.dlsym(handle, symbol)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `handle` {DynamicLibrary}
@@ -225,7 +225,7 @@ added: REPLACEME
 ## 类：`DynamicLibrary`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 表示一个已加载的动态库。
@@ -294,7 +294,7 @@ import { DynamicLibrary } from 'node:ffi';
 ### `library[Symbol.dispose]()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 调用 `library.close()`。这允许 `DynamicLibrary` 实例与 [`using`][] 声明一起使用，以便在包含作用域退出时自动清理。对于已经关闭的库，这是一个空操作。
@@ -476,7 +476,7 @@ console.log(getInt32(ptr, 0));
 ## `ffi.toString(pointer)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `pointer` {bigint}
@@ -499,7 +499,7 @@ const value = toString(ptr);
 ## `ffi.toBuffer(pointer, length[, copy])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `pointer` {bigint}
@@ -526,7 +526,7 @@ added: REPLACEME
 ## `ffi.toArrayBuffer(pointer, length[, copy])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `pointer` {bigint}
@@ -547,7 +547,7 @@ added: REPLACEME
 ## `ffi.exportString(string, pointer, length[, encoding])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `string` {string}
@@ -568,7 +568,7 @@ added: REPLACEME
 ## `ffi.exportBuffer(buffer, pointer, length)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `buffer` {Buffer}
@@ -587,7 +587,7 @@ added: REPLACEME
 ## `ffi.exportArrayBuffer(arrayBuffer, pointer, length)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `arrayBuffer` {ArrayBuffer}
@@ -604,7 +604,7 @@ added: REPLACEME
 ## `ffi.exportArrayBufferView(arrayBufferView, pointer, length)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `arrayBufferView` {ArrayBufferView}
@@ -621,7 +621,7 @@ added: REPLACEME
 ## `ffi.getRawPointer(source)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `source` {Buffer|ArrayBuffer|ArrayBufferView}

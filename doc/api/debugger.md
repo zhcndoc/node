@@ -87,7 +87,7 @@ $
 
 <!-- YAML
 added:
-  - REPLACEME
+  - v26.1.0
 -->
 
 > 稳定性：1 - 实验性
@@ -153,7 +153,7 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
 
 ```json
 {
-  "v": 1, // Probe JSON 结构版本。
+  "v": 1, // 探测 JSON 结构版本。
   "probes": [
     {
       "expr": "rss", // 与 --probe 配对的表达式。
@@ -192,7 +192,7 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
       //      "pending": [0],
       //      "error": {
       //       "code": "probe_timeout",
-      //       "message": "Timed out after 30000ms waiting for probes: app.js:10"
+      //       "message": "等待探测超时，已等待 30000ms：app.js:10"
       //      }
       //    }
       // 4. {
@@ -202,7 +202,7 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
       //       "code": "probe_target_exit",
       //       "exitCode": 1,
       //       "stderr": "[Error: boom]",
-      //       "message": "Target exited with code 1 before probes: app.js:10"
+      //       "message": "在命中探测之前目标以代码 1 退出：app.js:10"
       //      }
       //    }
     }

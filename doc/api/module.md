@@ -160,16 +160,12 @@ added:
   - v20.6.0
   - v18.19.0
 deprecated:
- - v26.0.0
  - v25.9.0
  - v24.15.0
 changes:
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62401
-    description: Runtime deprecation (DEP0205).
-  - version: v25.9.0
-    pr-url: https://github.com/nodejs/node/pull/62395
-    description: 文档级弃用（DEP0205）。请改用 `module.registerHooks()`。
+    description: 运行时弃用（DEP0205）。
   - version:
     - v23.6.1
     - v22.13.1
@@ -530,8 +526,8 @@ Node.js 目前支持两种类型的模块自定义钩子：
 // register-hooks.js
 import { registerHooks } from 'node:module';
 registerHooks({
-  resolve(specifier, context, nextResolve) { /* 实现 */ },
-  load(url, context, nextLoad) { /* 实现 */ },
+  resolve(specifier, context, nextResolve) { /* implement */ },
+  load(url, context, nextLoad) { /* implement */ },
 });
 ```
 
@@ -539,8 +535,8 @@ registerHooks({
 // register-hooks.js
 const { registerHooks } = require('node:module');
 registerHooks({
-  resolve(specifier, context, nextResolve) { /* 实现 */ },
-  load(url, context, nextLoad) { /* 实现 */ },
+  resolve(specifier, context, nextResolve) { /* implement */ },
+  load(url, context, nextLoad) { /* implement */ },
 });
 ```
 
@@ -1441,7 +1437,7 @@ export scream = (str) -> str.toUpperCase()
 }
 ```
 
-这仅用于运行示例。在现实世界的加载器中，`getPackageType()` 必须能够返回一个 Node.js 已知的 `format`，即使 `package.json` 中没有显式类型，否则 `nextLoad` 调用将抛出 `ERR_UNKNOWN_FILE_EXTENSION`（如果为 undefined）或 `ERR_UNKNOWN_MODULE_FORMAT`（如果它不是 [load 钩子][] 文档中列出的已知格式）。
+这仅用于运行示例。在现实世界的加载器中，`getPackageType()` 必须能够返回一个 Node.js 已知的 `format`，即使 `package.json` 中没有显式类型，否则 `nextLoad` 调用将抛出 `ERR_UNKNOWN_FILE_EXTENSION`（如果为 undefined）或 `ERR_UNKNOWN_MODULE_FORMAT`（如果它不是 [load 钩子][] 文档中列出的知格式）。
 
 使用前面的钩子模块，运行
 `node --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register(pathToFileURL("./coffeescript-hooks.mjs"));' ./main.coffee`

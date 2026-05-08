@@ -1400,15 +1400,15 @@ changes:
 
 当 `write` 函数使用空字符串或缓冲区调用时，它什么都不做并等待更多输入。
 
-## 类：`http.Server`
+## Class: `http.Server`
 
 <!-- YAML
 added: v0.1.17
 -->
 
-* 继承自：{net.Server}
+* Inherits from: {net.Server}
 
-### 事件：`'checkContinue'`
+### Event: `'checkContinue'`
 
 <!-- YAML
 added: v0.3.0
@@ -1417,17 +1417,17 @@ added: v0.3.0
 * `request` {http.IncomingMessage}
 * `response` {http.ServerResponse}
 
-每当收到带有 HTTP `Expect: 100-continue` 的请求时发出。
-如果没有监听此事件，服务器将自动响应
-`100 Continue`（视情况而定）。
+Emitted each time a request with an HTTP `Expect: 100-continue` is received.
+If this event is not listened for, the server will automatically respond
+with `100 Continue` as appropriate.
 
-处理此事件涉及调用 [`response.writeContinue()`][]（如果客户端应继续发送请求主体），或者生成适当的
-HTTP 响应（例如 400 Bad Request）（如果客户端不应继续发送请求主体）。
+Handling this event involves calling [`response.writeContinue()`][] if the client should continue sending the request body, or generating the appropriate
+HTTP response (e.g. 400 Bad Request) if the client should not continue sending the request body.
 
-当此事件被发出并处理后，[`'request'`][] 事件将
-不会被发出。
+When this event is emitted and handled, the [`'request'`][] event will
+not be emitted.
 
-### 事件：`'checkExpectation'`
+### Event: `'checkExpectation'`
 
 <!-- YAML
 added: v5.5.0
@@ -1436,47 +1436,46 @@ added: v5.5.0
 * `request` {http.IncomingMessage}
 * `response` {http.ServerResponse}
 
-每当收到带有 HTTP `Expect` 头部的请求时发出，其中
-值不是 `100-continue`。如果没有监听此事件，服务器将
-自动响应 `417 Expectation Failed`（视情况而定）。
+Emitted each time a request with an HTTP `Expect` header is received where the
+value is not `100-continue`. If this event is not listened for, the server will
+automatically respond with `417 Expectation Failed` as appropriate.
 
-当此事件被发出并处理后，[`'request'`][] 事件将
-不会被发出。
+When this event is emitted and handled, the [`'request'`][] event will
+not be emitted.
 
-### 事件：`'clientError'`
+### Event: `'clientError'`
 
 <!-- YAML
 added: v0.1.94
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25605
-    description: "如果发生 HPE_HEADER_OVERFLOW 错误，默认行为将返回 431 Request HeaderFields Too Large。"
+    description: "If an HPE_HEADER_OVERFLOW error occurs, the default behavior will return 431 Request HeaderFields Too Large."
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/17672
-    description: "`rawPacket` 是刚刚解析的当前缓冲区。将此缓冲区添加到 `'clientError'` 事件的错误对象中是为了使开发人员能够记录损坏的数据包。"
+    description: "`rawPacket` is the current buffer that has just been parsed. Adding this buffer to the error object for the `'clientError'` event is to enable developers to log the corrupted packet."
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4557
-    description: "如果附加了 `'clientError'` 的监听器，调用 `socket`上 `.destroy()` 的默认操作将不再发生。"
+    description: "The default action of calling `.destroy()` on the `socket` will no longer occur if a `'clientError'` listener is attached."
 -->
 
 * `exception` {Error}
 * `socket` {stream.Duplex}
 
-如果客户端连接发出 `'error'` 事件，它将被转发到这里。
-此事件的监听器负责关闭/销毁底层
-socket。例如，人们可能希望使用
-自定义 HTTP 响应更优雅地关闭 socket，而不是突然切断连接。在监听器结束之前，socket
-**必须被关闭或销毁**。
+If a client connection emits an `'error'` event, it will be forwarded here.
+The listener of this event is responsible for closing/destroying the underlying
+socket. For instance, one may wish to more gracefully close the socket with a
+custom HTTP response instead of abruptly severing the connection. The socket
+must be closed or destroyed before the handler ends.
 
-除非用户指定了 {net.Socket} 以外的 socket 类型，否则此事件保证传递一个 {net.Socket} 类的实例，
-它是 {stream.Duplex} 的子类。
+Unless the user specified a socket type other than {net.Socket}, this event is guaranteed to pass an instance of the {net.Socket} class,
+which is a subclass of {stream.Duplex}.
 
-默认行为是尝试用 HTTP '400 Bad Request' 关闭 socket，
-或者在 [`HPE_HEADER_OVERFLOW`][] 错误的情况下使用
-HTTP '431 Request Header Fields Too Large'。如果 socket 不可写或当前附加的 [`http.ServerResponse`][] 的
-头部已发送，则立即销毁它。
+The default behavior is to try closing the socket with an HTTP '400 Bad Request',
+or an HTTP '431 Request Header Fields Too Large' in the case of the
+[`HPE_HEADER_OVERFLOW`][] error. If the socket is not writable or the headers of the currently attached [`http.ServerResponse`][] have been sent, it is immediately destroyed.
 
-`socket` 是错误来源的 [`net.Socket`][] 对象。
+`socket` is the [`net.Socket`][] object from which the error originated.
 
 ```mjs
 import http from 'node:http';
@@ -1502,20 +1501,20 @@ server.on('clientError', (err, socket) => {
 server.listen(8000);
 ```
 
-当 `'clientError'` 事件发生时，没有 `request` 或 `response`
-对象，因此任何发送的 HTTP 响应，包括响应头部和负载，
-_必须_ 直接写入 `socket` 对象。必须注意
-确保响应是格式正确的 HTTP 响应消息。
+When the `'clientError'` event occurs, there is no `request` or `response`
+object, so any HTTP response sent, including response headers and payload,
+_must_ be written directly to the `socket` object. Care must be taken to
+ensure the response is a properly formatted HTTP response message.
 
-`err` 是 `Error` 的实例，带有两个额外的列：
+`err` is an instance of `Error` with two additional columns:
 
-* `bytesParsed`：Node.js 可能已正确解析的请求数据包的字节数；
-* `rawPacket`：当前请求的原始数据包。
+* `bytesParsed`: the number of bytes of the request packet that Node.js may have parsed correctly;
+* `rawPacket`: the raw packet of the current request.
 
-在某些情况下，客户端已经收到响应和/或 socket
-已经被销毁，例如 `ECONNRESET` 错误的情况。在
-尝试向 socket 发送数据之前，最好检查它是否仍然
-可写。
+In some cases, the client has already received a response and/or the socket
+has already been destroyed, such as in the case of `ECONNRESET` errors. Before
+attempting to send data to the socket, it is best to check whether it is still
+writable.
 
 ```js
 server.on('clientError', (err, socket) => {
@@ -1527,37 +1526,36 @@ server.on('clientError', (err, socket) => {
 });
 ```
 
-### 事件：`'close'`
+### Event: `'close'`
 
 <!-- YAML
 added: v0.1.4
 -->
 
-当服务器关闭时发出。
+Emitted when the server closes.
 
-### 事件：`'connect'`
+### Event: `'connect'`
 
 <!-- YAML
 added: v0.7.0
 -->
 
-* `request` {http.IncomingMessage} HTTP 请求的参数，与
-  [`'request'`][] 事件中一样
-* `socket` {stream.Duplex} 服务器和客户端之间的网络套接字
-* `head` {Buffer} 隧道流的第一个数据包（可能为空）
+* `request` {http.IncomingMessage} Arguments of the HTTP request, as in the
+  [`'request'`][] event
+* `socket` {stream.Duplex} Network socket between the server and client
+* `head` {Buffer} First packet of the tunnel stream (may be empty)
 
-每当客户端请求 HTTP `CONNECT` 方法时发出。如果没有监听此事件，
-则请求 `CONNECT` 方法的客户端的
-连接将被关闭。
+Emitted each time a client requests the HTTP `CONNECT` method. If this event is not listened for,
+clients requesting the `CONNECT` method will have their connection closed.
 
-除非用户指定了 {net.Socket} 以外的 socket 类型，否则此事件保证传递一个 {net.Socket} 类的实例，
-它是 {stream.Duplex} 的子类。
+Unless the user specified a socket type other than {net.Socket}, this event is guaranteed to pass an instance of the {net.Socket} class,
+which is a subclass of {stream.Duplex}.
 
-发出此事件后，请求的 socket 将没有 `'data'`
-事件监听器，这意味着需要绑定它以便处理
-发送到该服务器上数据的数据。
+After this event is emitted, the request's socket will have no `'data'`
+event listeners, meaning it will need to be bound to process
+data sent to that server.
 
-### 事件：`'connection'`
+### Event: `'connection'`
 
 <!-- YAML
 added: v0.1.0
@@ -1565,22 +1563,22 @@ added: v0.1.0
 
 * `socket` {stream.Duplex}
 
-当建立新的 TCP 流时发出此事件。`socket` 通常
-是 [`net.Socket`][] 类型的对象。通常用户不希望
-访问此事件。特别是，由于协议解析器附加到 socket 的方式，socket 不会发出 `'readable'` 事件。
-`socket` 也可以在 `request.socket` 处访问。
+Emitted when a new TCP stream is established. `socket` is usually
+an object of type [`net.Socket`][]. Users are usually not expected to
+access this event. In particular, due to the way protocol parsers attach to the socket, the socket will not emit a `'readable'` event.
+The `socket` can also be accessed at `request.socket`.
 
-用户也可以显式发出此事件以将连接
-注入到 HTTP 服务器中。在这种情况下，可以传递任何 [`Duplex`][] 流。
+Users may also emit this event explicitly to inject connections
+into the HTTP server. In that case, any [`Duplex`][] stream can be passed.
 
-如果在此处调用 `socket.setTimeout()`，当 socket 服务了一个请求后，超时将被替换为
-`server.keepAliveTimeout`（如果
-`server.keepAliveTimeout` 非零）。
+If `socket.setTimeout()` is called here, the timeout will be replaced with
+`server.keepAliveTimeout` once the socket has served a request, if
+`server.keepAliveTimeout` is non-zero.
 
-除非用户指定了 {net.Socket} 以外的 socket 类型，否则此事件保证传递一个 {net.Socket} 类的实例，
-它是 {stream.Duplex} 的子类。
+Unless the user specified a socket type other than {net.Socket}, this event is guaranteed to pass an instance of the {net.Socket} class,
+which is a subclass of {stream.Duplex}.
 
-### 事件：`'dropRequest'`
+### Event: `'dropRequest'`
 
 <!-- YAML
 added:
@@ -1588,15 +1586,15 @@ added:
   - v16.17.0
 -->
 
-* `request` {http.IncomingMessage} HTTP 请求的参数，与
-  [`'request'`][] 事件中一样
-* `socket` {stream.Duplex} 服务器和客户端之间的网络套接字
+* `request` {http.IncomingMessage} Arguments of the HTTP request, as in the
+  [`'request'`][] event
+* `socket` {stream.Duplex} Network socket between the server and client
 
-当 socket 上的请求数量达到
-`server.maxRequestsPerSocket` 的阈值时，服务器将丢弃新请求
-并发出 `'dropRequest'` 事件，然后向客户端发送 `503`。
+When the number of requests on a socket reaches
+the threshold of `server.maxRequestsPerSocket`, the server will drop new requests
+and emit the `'dropRequest'` event instead, then send `503` to the client.
 
-### 事件：`'request'`
+### Event: `'request'`
 
 <!-- YAML
 added: v0.1.0
@@ -1605,54 +1603,53 @@ added: v0.1.0
 * `request` {http.IncomingMessage}
 * `response` {http.ServerResponse}
 
-每当有请求时发出。每个连接可能有多个请求
-（在 HTTP Keep-Alive 连接的情况下）。
+Emitted each time there is a request. There may be multiple requests
+per connection (in the case of HTTP Keep-Alive connections).
 
-### 事件：`'upgrade'`
+### Event: `'upgrade'`
 
 <!-- YAML
 added: v0.1.94
 changes:
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/60016
-    description: "请求主体不再以原始（未解析）形式暴露在 socket 参数上。相反，如果收到主体，流参数将是一个双工流，仅在请求主体之后发出 socket 内容，而解析后的请求主体数据将从请求中发出，就像在普通服务器`'request'`事件中一样。"
+    description: "The request body is no longer exposed in raw (unparsed) form on the socket parameter. Instead, if a body was received, the stream parameter will be a duplex stream that emits socket content only after the request body, and the parsed request body data will be emitted from the request as it would in a normal server `'request'` event."
   - version:
      - v24.9.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59824
-    description: "是否触发此事件现在可以通过`shouldUpgradeCallback` 控制，如果没有事件处理程序监听，socket 将在升级时被销毁。"
+    description: "Whether this event gets fired can now be controlled by `shouldUpgradeCallback`, and the socket will be destroyed on upgrade if no event handlers are listening."
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19981
-    description: "不再监听此事件不再导致 socket 在客户端发送 Upgrade 头部时被销毁。"
+    description: "Not listening for this event no longer causes the socket to be destroyed when a client sends an Upgrade header."
 -->
 
-* `request` {http.IncomingMessage} HTTP 请求的参数，与
-  [`'request'`][] 事件中一样
-* `stream` {stream.Duplex} 服务器和客户端之间升级后的流
-* `head` {Buffer} 升级后的流的第一个数据包（可能为空）
+* `request` {http.IncomingMessage} Arguments of the HTTP request, as in the
+  [`'request'`][] event
+* `stream` {stream.Duplex} Upgraded stream between the server and client
+* `head` {Buffer} First packet of the upgraded stream (may be empty)
 
-每当客户端的 HTTP 升级请求被接受时发出。默认情况下
-所有 HTTP 升级请求都被忽略（即只发出常规的 `'request'` 事件
-，坚持正常的 HTTP 请求/响应流程），除非你
-监听此事件，在这种情况下它们都被接受（即发出 `'upgrade'`
-事件，未来的通信必须直接通过原始流处理）。你可以使用
-服务器 `shouldUpgradeCallback` 选项更精确地控制此行为。
+Emitted each time a client's HTTP upgrade request is accepted. By default
+all HTTP upgrade requests are ignored (i.e. only the regular `'request'` event
+is emitted, sticking to the normal HTTP request/response flow), unless you
+listen for this event, in which case they are all accepted (i.e. the `'upgrade'`
+event is emitted and the future communication must be handled directly through the raw stream). You can use the
+server `shouldUpgradeCallback` option to more precisely control this behavior.
 
-监听此事件是可选的，客户端不能坚持协议
-更改。
+Listening to this event is optional, and clients cannot insist on a protocol
+change.
 
-如果升级被 `shouldUpgradeCallback` 接受但没有注册事件处理程序
-，则 socket 将被销毁，导致客户端立即连接关闭。
+If the upgrade is accepted by `shouldUpgradeCallback` but no event handler is
+registered, then the socket will be destroyed, causing the client to immediately close the connection.
 
-在传入请求带有主体的罕见情况下，该主体将被
-正常解析，与升级流分开，原始流数据将
-仅在其完成后才开始。为了确保从流读取不会被
-等待请求主体读取所阻塞，流上的任何读取将自动开始请求主体流动。如果你想读取
-请求主体，请确保在开始从升级流读取之前这样做（即你附加了 `'data'` 监听器）。
+In the rare case that a request has a body, that body will be
+parsed normally, separate from the upgrade stream, and the raw stream data will
+begin only after it is complete. To ensure that reading from the stream does not get
+blocked waiting for the request body to be read, any read on the stream will automatically start flowing the request body. If you want to read the
+request body, make sure to do that before starting to read from the upgrade stream (i.e. you attach a `'data'` listener).
 
-流参数通常是请求使用的 {net.Socket} 实例，但在某些情况下（例如带有请求主体），它可能是双工
-流。如果需要，你可以通过 [`request.socket`][] 访问请求底层的原始连接
-，除非用户指定了另一个 socket 类型，否则它保证是 {net.Socket} 的实例。
+The stream parameter is typically an instance of {net.Socket} used by the request, but in some cases (for example with a request body), it may be a duplex
+stream. If necessary, you can access the underlying raw connection of the request through [`request.socket`][] which is guaranteed to be an instance of {net.Socket} unless the user specified another socket type.
 
 ### `server.close([callback])`
 
@@ -1662,16 +1659,16 @@ changes:
   - version:
       - v19.0.0
     pr-url: https://github.com/nodejs/node/pull/43522
-    description: 该方法在返回前关闭空闲连接。
+    description: This method closes idle connections before returning.
 
 -->
 
 * `callback` {Function}
 
-停止服务器接受新连接，并关闭所有
-连接到此服务器但未发送请求或等待
-响应的连接。
-参见 [`net.Server.close()`][]。
+Stops the server from accepting new connections and closes all
+connections connecting to this server that have not sent a request or are awaiting
+a response.
+See [`net.Server.close()`][].
 
 ```js
 const http = require('node:http');
@@ -1684,7 +1681,7 @@ const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
 });
 
 server.listen(8000);
-// 10 秒后关闭服务器
+// Close the server after 10 seconds
 setTimeout(() => {
   server.close(() => {
     console.log('8000 端口的服务器已成功关闭');
@@ -1698,14 +1695,12 @@ setTimeout(() => {
 added: v18.2.0
 -->
 
-关闭所有连接到此服务器的已建立 HTTP(S) 连接，包括
-连接到此服务器正在发送请求或等待响应的活动连接。这 _不会_ 销毁升级到不同
-协议（如 WebSocket 或 HTTP/2）的 socket。
+Closes all established HTTP(S) connections connected to this server, including
+active connections that are connected to this server and are sending requests or awaiting responses. This _does not_ destroy sockets upgraded to a different
+protocol, such as WebSocket or HTTP/2.
 
-> 这是一种强制关闭所有连接的方式，应谨慎使用。
-> 每当与 `server.close` 结合使用时，建议在此调用 _之后_ 调用
-> `server.close`，以避免在此调用和调用 `server.close` 之间
-> 创建新连接的竞争条件。
+> This is a way to force-close all connections and should be used with caution.
+> Whenever combined with `server.close`, it is recommended to call `server.close` _after_ this call, to avoid race conditions where new connections are created between this call and the call to `server.close`.
 
 ```js
 const http = require('node:http');
@@ -1718,12 +1713,12 @@ const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
 });
 
 server.listen(8000);
-// 10 秒后关闭服务器
+// Close the server after 10 seconds
 setTimeout(() => {
   server.close(() => {
     console.log('8000 端口的服务器已成功关闭');
   });
-  // 关闭所有连接，确保服务器成功关闭
+  // Close all connections to ensure the server is closed successfully
   server.closeAllConnections();
 }, 10000);
 ```
@@ -1734,14 +1729,12 @@ setTimeout(() => {
 added: v18.2.0
 -->
 
-关闭所有连接到此服务器但未发送请求
-或等待响应的连接。
+Closes all connections to this server that are not sending a request
+or waiting for a response.
 
-> 从 Node.js 19.0.0 开始，无需结合 `server.close` 调用此方法来回收 `keep-alive` 连接。使用它不会造成任何危害，
-> 并且对于需要支持 19.0.0 之前版本的库和应用程序来说，确保向后兼容性可能很有用。
-> 每当与 `server.close` 结合使用时，建议在此调用 _之后_ 调用
-> `server.close`，以避免在此调用和调用 `server.close` 之间
-> 创建新连接的竞争条件。
+> Since Node.js 19.0.0, it is not necessary to call this method in combination with `server.close` to reclaim `keep-alive` connections. Using it does no harm,
+> and can be useful to ensure backward compatibility for libraries and applications that need to support versions before 19.0.0.
+> Whenever combined with `server.close`, it is recommended to call `server.close` _after_ this call, to avoid race conditions where new connections are created between this call and the call to `server.close`.
 
 ```js
 const http = require('node:http');
@@ -1754,12 +1747,12 @@ const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
 });
 
 server.listen(8000);
-// 10 秒后关闭服务器
+// Close the server after 10 seconds
 setTimeout(() => {
   server.close(() => {
     console.log('8000 端口的服务器已成功关闭');
   });
-  // 关闭空闲连接，例如 keep-alive 连接。一旦剩余的活动连接终止，服务器将关闭
+  // Close idle connections, such as keep-alive connections. Once the remaining active connections terminate, the server will close
   server.closeIdleConnections();
 }, 10000);
 ```
@@ -1775,24 +1768,25 @@ changes:
     - v19.4.0
     - v18.14.0
     pr-url: https://github.com/nodejs/node/pull/45778
-    description: "默认值现在设置为 [`server.requestTimeout`][] 或 `60000` 之间的最小值。"
+    description: "The default value is now set to the minimum of [`server.requestTimeout`][] or `60000`."
 -->
 
-* 类型：{number} **默认值：** [`server.requestTimeout`][] 或 `60000` 之间的最小值。
+* Type: {number} **Default:** the minimum of [`server.requestTimeout`][] or `60000`.
 
-限制解析器等待接收完整 HTTP
-头部的时间量。
+Limits the amount of time the parser will wait to receive the complete HTTP
+headers.
 
-如果超时过期，服务器响应状态 408，而不
-将请求转发给请求监听器，然后关闭连接。
+If the timeout expires, the server responds with status 408 without
+forwarding the request to the request listener and then closes the connection.
 
-必须将其设置为非零值（例如 120 秒），以便在服务器前面没有部署反向代理的情况下保护免受
-潜在的拒绝服务攻击。
+It must be set to a non-zero value (e.g. 120 seconds) to protect against
+potential denial-of-service attacks in case the server is not deployed behind a
+reverse proxy.
 
 ### `server.listen()`
 
-启动 HTTP 服务器监听连接。
-此方法与 [`net.Server`][] 中的 [`server.listen()`][] 相同。
+Starts the HTTP server listening for connections.
+This method is identical to [`server.listen()`][] in [`net.Server`][].
 
 ### `server.listening`
 
@@ -1800,7 +1794,7 @@ changes:
 added: v5.7.0
 -->
 
-* 类型：{boolean} 指示服务器是否正在监听连接。
+* Type: {boolean} Indicates whether or not the server is listening for connections.
 
 ### `server.maxHeadersCount`
 
@@ -1808,9 +1802,9 @@ added: v5.7.0
 added: v0.7.0
 -->
 
-* 类型：{number} **默认值：** `2000`
+* Type: {number} **Default:** `2000`
 
-限制最大传入头部计数。如果设置为 0，将不应用限制。
+Limits the maximum incoming headers count. If set to 0, no limit will be applied.
 
 ### `server.requestTimeout`
 
@@ -1819,18 +1813,19 @@ added: v14.11.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41263
-    description: 默认请求超时从无超时更改为 300 秒（5 分钟）。
+    description: Default request timeout changed from no timeout to 300 seconds (5 minutes).
 -->
 
-* 类型：{number} **默认值：** `300000`
+* Type: {number} **Default:** `300000`
 
-设置从客户端接收整个请求的超时值（毫秒）。
+Sets the timeout value in milliseconds for receiving the entire request from the client.
 
-如果超时过期，服务器响应状态 408，而不
-将请求转发给请求监听器，然后关闭连接。
+If the timeout expires, the server responds with status 408 without
+forwarding the request to the request listener and then closes the connection.
 
-必须将其设置为非零值（例如 120 秒），以便在服务器前面没有部署反向代理的情况下保护免受
-潜在的拒绝服务攻击。
+It must be set to a non-zero value (e.g. 120 seconds) to protect against
+potential denial-of-service attacks in case the server is not deployed behind a
+reverse proxy.
 
 ### `server.setTimeout([msecs][, callback])`
 
@@ -1839,23 +1834,22 @@ added: v0.9.12
 changes:
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27558
-    description: 默认超时从 120 秒更改为 0（无超时）。
+    description: Default timeout changed from 120 seconds to 0 (no timeout).
 -->
 
-* `msecs` {number} **默认值：** 0（无超时）
+* `msecs` {number} **Default:** 0 (no timeout)
 * `callback` {Function}
-* 返回：{http.Server}
+* Returns: {http.Server}
 
-设置 socket 的超时值，如果发生超时，则在
-Server 对象上发出 `'timeout'` 事件，并将
-socket 作为参数传递。
+Sets the timeout value for sockets, and emits a `'timeout'` event on the
+Server object, passing the socket as an argument, if a timeout occurs.
 
-如果 Server 对象上有 `'timeout'` 事件监听器，则它将
-使用超时的 socket 作为参数被调用。
+If there is a `'timeout'` event listener on the Server object, then it will be
+called with the timed out socket as an argument.
 
-默认情况下，服务器不会使 socket 超时。但是，如果将回调
-分配给服务器的 `'timeout'` 事件，则必须显式处理
-超时。
+By default, the server does not timeout sockets. However, if a callback is
+assigned to the server's `'timeout'` event, the timeout must be handled
+explicitly.
 
 ### `server.maxRequestsPerSocket`
 
@@ -1863,14 +1857,13 @@ socket 作为参数传递。
 added: v16.10.0
 -->
 
-* 类型：{number} 每个 socket 的请求数。 **默认值：** 0（无限制）
+* Type: {number} Number of requests per socket. **Default:** 0 (no limit)
 
-关闭 keep alive 连接之前 socket 可以处理的最大请求数。
+The maximum number of requests socket can handle before closing keep alive connection.
 
-值 `0` 将禁用限制。
+A value of `0` will disable the limit.
 
-当达到限制时，它将 `Connection` 头部值设置为 `close`，
-但不会实际关闭连接，达到限制后发送的后续请求将获得 `503 Service Unavailable` 作为响应。
+When the limit is reached it sets the `Connection` header value to `close`, but will not actually close the connection, subsequent requests sent after the limit is reached will get `503 Service Unavailable` as a response.
 
 ### `server.timeout`
 
@@ -1879,17 +1872,17 @@ added: v0.9.12
 changes:
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27558
-    description: 默认超时从 120 秒更改为 0（无超时）。
+    description: Default timeout changed from 120 seconds to 0 (no timeout).
 -->
 
-* 类型：{number} 超时时间（毫秒）。 **默认值：** 0（无超时）
+* Type: {number} Timeout in milliseconds. **Default:** 0 (no timeout)
 
-在 socket 被假定超时之前的不活动毫秒数。
+The number of milliseconds of inactivity before a socket is presumed to have timed out.
 
-值 `0` 将禁用传入连接的超时行为。
+A value of `0` will disable the timeout behavior on incoming connections.
 
-socket 超时逻辑在连接时设置，因此更改此
-值仅影响服务器的新连接，不影响任何现有连接。
+The socket timeout logic is set up on connection, so changing this value only
+affects new connections to the server, not any existing connections.
 
 ### `server.keepAliveTimeout`
 
@@ -1898,28 +1891,28 @@ added: v8.0.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62782
-    description: "`http.Server.keepAliveTimeout` 的默认值从 5 秒更改为 65 秒。"
+    description: "The default value of `http.Server.keepAliveTimeout` has been changed from 5 seconds to 65 seconds."
 -->
 
-* 类型：{number} 超时时间（毫秒）。 **默认值：** `65000`（65 秒）。
+* Type: {number} Timeout in milliseconds. **Default:** `65000` (65 seconds).
 
-服务器在完成写入最后一个响应后，需要等待额外
-传入数据的不活动毫秒数，之后
-socket 将被销毁。
+The number of milliseconds of inactivity a server needs to wait for additional
+incoming data, after it has finished writing the last response, before a
+socket will be destroyed.
 
-此超时值与
-[`server.keepAliveTimeoutBuffer`][] 选项结合以确定实际
-socket 超时，计算方式为：
+This timeout value is used in conjunction with the
+[`server.keepAliveTimeoutBuffer`][] option to determine the actual
+socket timeout, calculated as:
 socketTimeout = keepAliveTimeout + keepAliveTimeoutBuffer
-如果在 keep-alive 超时触发之前服务器收到新数据，它
-将重置常规不活动超时，即 [`server.timeout`][]。
+If the server receives new data before the keep-alive timeout has fired, it
+will reset the regular inactivity timeout, i.e., [`server.timeout`][].
 
-值 `0` 将禁用传入连接的 keep-alive 超时行为。
-值 `0` 使 HTTP 服务器行为类似于 8.0.0 之前的 Node.js 版本，
-后者没有 keep-alive 超时。
+A value of `0` will disable the keep-alive timeout behavior on incoming connections.
+A value of `0` makes the HTTP server behave similarly to Node.js versions before 8.0.0,
+which did not have a keep-alive timeout.
 
-socket 超时逻辑在连接时设置，因此更改此值仅
-影响服务器的新连接，不影响任何现有连接。
+The socket timeout logic is set up on connection, so changing this value only
+affects new connections to the server, not any existing connections.
 
 ### `server.keepAliveTimeoutBuffer`
 
@@ -1929,16 +1922,16 @@ added:
  - v22.19.0
 -->
 
-* 类型：{number} 超时时间（毫秒）。 **默认值：** `1000`（1 秒）。
+* Type: {number} Timeout in milliseconds. **Default:** `1000` (1 second).
 
-添加到
-[`server.keepAliveTimeout`][] 的额外缓冲时间，以延长内部
-socket 超时。
+An additional buffer time added to
+[`server.keepAliveTimeout`][] to extend the internal
+socket timeout.
 
-此缓冲有助于通过略微增加超过广告 keep-alive 超时的
-socket 超时时间来减少连接重置 (`ECONNRESET`) 错误。
+This buffer helps reduce connection reset (`ECONNRESET`) errors by slightly increasing the
+socket timeout over the advertised keep-alive timeout.
 
-此选项仅适用于新的传入连接。
+This option only applies to new incoming connections.
 
 ### `server[Symbol.asyncDispose]()`
 
@@ -1947,11 +1940,11 @@ added: v20.4.0
 changes:
  - version: v24.2.0
    pr-url: https://github.com/nodejs/node/pull/58467
-   description: 不再是实验性的。
+   description: No longer experimental.
 -->
 
-调用 [`server.close()`][] 并返回一个 promise，当
-服务器关闭时该 promise 会被履行。
+Calls [`server.close()`][] and returns a promise that will be fulfilled when the
+server has closed.
 
 ## 类：`http.ServerResponse`
 
@@ -2754,7 +2747,7 @@ added: v0.5.9
 ### `message.signal`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * 类型：{AbortSignal}

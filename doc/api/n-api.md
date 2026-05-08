@@ -1272,8 +1272,8 @@ NAPI_EXTERN napi_status
                                      napi_handle_scope* result);
 ```
 
-* `[in] env`: API 被调用下的环境。
-* `[out] result`: `napi_value` 表示新作用域。
+* `[in] env`：API 被调用下的环境。
+* `[out] result`：`napi_value` 表示新作用域。
 
 如果 API 成功则返回 `napi_ok`。
 
@@ -1292,7 +1292,7 @@ NAPI_EXTERN napi_status
                                       napi_handle_scope scope);
 ```
 
-* `[in] env`: API 被调用下的环境。
+* `[in] env`：API 被调用下的环境。
 * `[in] scope`: `napi_value` 表示要关闭的作用域。
 
 如果 API 成功则返回 `napi_ok`。
@@ -1315,10 +1315,10 @@ napi_status napi_escape_handle(napi_env env,
                                napi_value* result);
 ```
 
-* `[in] env`: API 被调用下的环境。
+* `[in] env`：API 被调用下的环境。
 * `[in] scope`: `napi_value` 表示当前作用域。
 * `[in] escapee`: `napi_value` 表示要逃逸的 JavaScript `Object`。
-* `[out] result`: `napi_value` 表示外部作用域中逃逸的 `Object` 的句柄。
+* `[out] result`：`napi_value` 表示外部作用域中逃逸的 `Object` 的句柄。
 
 如果 API 成功则返回 `napi_ok`。
 
@@ -2080,7 +2080,7 @@ JavaScript `ArrayBuffer` 在 ECMAScript 语言规范的
 #### `node_api_create_external_sharedarraybuffer`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 ```c
@@ -3220,9 +3220,9 @@ napi_status napi_get_value_int64(napi_env env,
                                  int64_t* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript `number` 的 `napi_value`。
-* `[out] result`: 给定 JavaScript `number` 对应的 C `int64` 原始值。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript `number` 的 `napi_value`。
+* `[out] result`：给定 JavaScript `number` 对应的 C `int64` 原始值。
 
 如果 API 成功则返回 `napi_ok`。如果传入非数字 `napi_value`，则返回 `napi_number_expected`。
 
@@ -3716,7 +3716,7 @@ napi_status napi_strict_equals(napi_env env,
                                bool* result)
 ```
 
-* `[in] env`：调用此 API 所处的环境。
+* `[in] env`：调用此 API 时所处的环境。
 * `[in] lhs`：要检查的 JavaScript 值。
 * `[in] rhs`：要对照检查的 JavaScript 值。
 * `[out] result`：两个 `napi_value` 对象是否相等。
@@ -3741,7 +3741,7 @@ napi_status napi_detach_arraybuffer(napi_env env,
                                     napi_value arraybuffer)
 ```
 
-* `[in] env`：调用此 API 所处的环境。
+* `[in] env`：调用此 API 时所处的环境。
 * `[in] arraybuffer`：要分离的 JavaScript `ArrayBuffer`。
 
 如果 API 成功，则返回 `napi_ok`。如果传入的是不可分离的 `ArrayBuffer`，
@@ -3770,7 +3770,7 @@ napi_status napi_is_detached_arraybuffer(napi_env env,
                                          bool* result)
 ```
 
-* `[in] env`：调用此 API 所处的环境。
+* `[in] env`：调用此 API 时所处的环境。
 * `[in] arraybuffer`：要检查的 JavaScript `ArrayBuffer`。
 * `[out] result`：`arraybuffer` 是否已分离。
 
@@ -3796,7 +3796,7 @@ added:
 napi_status node_api_is_sharedarraybuffer(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`：调用此 API 所处的环境。
+* `[in] env`：调用此 API 时所处的环境。
 * `[in] value`：要检查的 JavaScript 值。
 * `[out] result`：给定 `napi_value` 是否表示 `SharedArrayBuffer`。
 
@@ -3821,7 +3821,7 @@ napi_status node_api_create_sharedarraybuffer(napi_env env,
                                              napi_value* result)
 ```
 
-* `[in] env`：调用此 API 所处的环境。
+* `[in] env`：调用此 API 时所处的环境。
 * `[in] byte_length`：要创建的共享数组缓冲区的字节长度。
 * `[out] data`：指向 `SharedArrayBuffer` 底层字节缓冲区的指针。
   可以通过传递 `NULL` 来选择性忽略 `data`。
@@ -3845,7 +3845,7 @@ ECMAScript 语言规范 [SharedArrayBuffer 对象章节][] 中描述。
 
 ## 使用 JavaScript 属性
 
-Node-API 暴露了一组 API 用于获取和设置 JavaScript
+Node-API 暴露了一组 API，用于获取和设置 JavaScript
 对象上的属性。
 
 JavaScript 中的属性表示为键和值的元组。
@@ -5585,7 +5585,7 @@ NAPI_EXTERN napi_status napi_run_script(napi_env env,
                                         napi_value* result);
 ```
 
-* `[in] env`：调用此 API 所处的环境。
+* `[in] env`：调用此 API 时所在的环境。
 * `[in] script`：包含要执行脚本的 JavaScript 字符串。
 * `[out] result`：执行脚本后产生的值。
 
@@ -5613,7 +5613,7 @@ NAPI_EXTERN napi_status napi_get_uv_event_loop(node_api_basic_env env,
                                                struct uv_loop_s** loop);
 ```
 
-* `[in] env`：调用此 API 所处的环境。
+* `[in] env`：调用此 API 时所在的环境。
 * `[out] loop`：当前 libuv 循环实例。
 
 注意：尽管 libuv 只在主版本中[保证 ABI 稳定性](https://github.com/libuv/libuv?tab=readme-ov-file#versioning)，
@@ -5695,7 +5695,7 @@ napi_create_threadsafe_function(napi_env env,
                                 napi_threadsafe_function* result);
 ```
 
-* `[in] env`：调用 API 所处的环境。
+* `[in] env`：调用 API 时所在的环境。
 * `[in] func`：要从另一个线程调用的可选 JavaScript 函数。如果向 `call_js_cb` 传递 `NULL`，则必须提供此项。
 * `[in] async_resource`：与异步工作关联的可选对象，将传递给可能的 `async_hooks` [`init` hooks][]。
 * `[in] async_resource_name`：一个 JavaScript 字符串，用于为 `async_hooks` API 暴露的诊断信息提供的资源类型提供标识符。
@@ -5812,7 +5812,7 @@ NAPI_EXTERN napi_status
 napi_ref_threadsafe_function(node_api_basic_env env, napi_threadsafe_function func);
 ```
 
-* `[in] env`：调用 API 所处的环境。
+* `[in] env`：调用 API 时所在的环境。
 * `[in] func`：要引用的线程安全函数。
 
 此 API 用于表明在主线程上运行的事件循环不应退出，直到 `func` 被销毁。类似于 [`uv_ref`][]，它也是幂等的。
@@ -5833,7 +5833,7 @@ NAPI_EXTERN napi_status
 napi_unref_threadsafe_function(node_api_basic_env env, napi_threadsafe_function func);
 ```
 
-* `[in] env`：调用 API 所处的环境。
+* `[in] env`：调用 API 时所在的环境。
 * `[in] func`：要取消引用的线程安全函数。
 
 此 API 用于表明在主线程上运行的事件循环可以在 `func` 被销毁之前退出。类似于 [`uv_unref`][]，它也是幂等的。
@@ -5858,7 +5858,7 @@ node_api_get_module_file_name(node_api_basic_env env, const char** result);
 
 ```
 
-* `[in] env`：调用此 API 时所处的环境。
+* `[in] env`：调用此 API 时所在的环境。
 * `[out] result`：一个 URL，包含加载插件位置的绝对路径。对于本地文件系统上的文件，它将以 `file://` 开头。该字符串以空字符结尾并由 `env` 拥有，因此不得修改或释放。
 
 如果插件加载过程在加载期间无法确定插件的文件名，则 `result` 可能为空字符串。

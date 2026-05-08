@@ -354,7 +354,6 @@ try {
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -472,7 +471,6 @@ async function fn() {
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -486,7 +484,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 

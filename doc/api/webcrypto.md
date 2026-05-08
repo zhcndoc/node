@@ -3,7 +3,6 @@
 <!-- YAML
 changes:
   - version:
-     - v26.0.0
      - v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62183
     description: 现已支持 TurboSHAKE 和 KangarooTwelve 算法。
@@ -978,7 +977,6 @@ changes:
 added: v15.0.0
 changes:
   - version:
-     - v26.0.0
      - v25.9.0
     pr-url: https://github.com/nodejs/node/pull/62183
     description: TurboSHAKE 和 KangarooTwelve 算法现已支持。
@@ -1091,7 +1089,7 @@ changes:
 <!-- YAML
 added: v15.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: 为 ML-KEM 密钥类型添加了 JWK 格式支持。
   - version: v24.8.0
@@ -1233,7 +1231,7 @@ changes:
 <!-- YAML
 added: v15.0.0
 changes:
-  - version: v26.0.0
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: 为 ML-KEM 密钥类型添加了 JWK 格式支持。
   - version:
@@ -1812,7 +1810,6 @@ changes:
 added: v24.7.0
 changes:
   - version:
-     - v26.0.0
      - v25.9.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61875
@@ -1831,7 +1828,6 @@ added: v24.7.0
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
  - v24.15.0
 -->
@@ -2248,7 +2244,6 @@ added: v15.0.0
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -2256,7 +2251,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -2268,7 +2262,6 @@ KangarooTwelve 的可选自定义字符串。
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -2278,7 +2271,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -2363,7 +2355,6 @@ added: v24.8.0
 added: v24.8.0
 changes:
   - version:
-     - v26.0.0
      - v25.9.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61875
@@ -2382,7 +2373,6 @@ added: v24.8.0
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
  - v24.15.0
 -->
@@ -2651,7 +2641,6 @@ added: v15.0.0
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -2659,7 +2648,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -2671,7 +2659,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -2681,7 +2668,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 

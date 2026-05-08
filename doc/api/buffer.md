@@ -429,7 +429,7 @@ changes:
 * `options` {Object}
   * `endings` {string} `'transparent'` 或 `'native'` 之一。当设置
     为 `'native'` 时，字符串源部分中的行尾将转换为
-    由 `require('node:os').EOL` 指定的平台本原生行尾。
+    由 `require('node:os').EOL` 指定的平台原生行尾。
   * `type` {string} Blob 内容类型。`type` 的目的是传达
     数据的 MIME 媒体类型，但不执行类型格式的验证。
 
@@ -723,7 +723,7 @@ changes:
 
 以此方式创建的 `Buffer` 实例的底层内存_未
 初始化_。新创建的 `Buffer` 的内容是未知的，
-_可能包含敏感数据_。使用 [`Buffer.alloc()`][]  instead 来用零初始化
+_可能包含敏感数据_。使用 [`Buffer.alloc()`][] 来用零初始化
 `Buffer` 实例。
 
 ```mjs
@@ -1973,7 +1973,7 @@ console.log(buf.fill('zz', 'hex'));
 <!-- YAML
 added: v5.3.0
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62390
     description: Added the `end` parameter.
   - version:
@@ -1983,14 +1983,14 @@ changes:
     description: "支持 Uint8Array 作为 `this` 值。"
 -->
 
-* `value` {string|Buffer|Uint8Array|integer} What to search for.
-* `start` {integer} Where to begin searching in `buf`. If negative, then
-  offset is calculated from the end of `buf`. **Default:** `0`.
-* `end` {integer} Where to stop searching in `buf` (exclusive). **Default:**
-  `buf.length`.
-* `encoding` {string} If `value` is a string, this is its encoding.
-  **Default:** `'utf8'`.
-* Returns: {boolean} `true` if `value` was found in `buf`, `false` otherwise.
+* `value` {string|Buffer|Uint8Array|integer} 要搜索的内容。
+* `start` {integer} 在 `buf` 中开始搜索的位置。如果为负，则
+  偏移量从 `buf` 末尾计算。**默认值：** `0`。
+* `end` {integer} 在 `buf` 中停止搜索的位置（不包含）。**默认值：**
+  `buf.length`。
+* `encoding` {string} 如果 `value` 是字符串，这是它的编码。
+  **默认值：** `'utf8'`。
+* 返回：{boolean} 如果在 `buf` 中找到 `value` 则为 `true`，否则为 `false`。
 
 等同于 [`buf.indexOf() !== -1`][`buf.indexOf()`]。
 
@@ -2041,7 +2041,7 @@ console.log(buf.includes('this', 4));
 <!-- YAML
 added: v1.5.0
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62390
     description: Added the `end` parameter.
   - version: v8.0.0
@@ -2054,16 +2054,16 @@ changes:
     description: "当传递 `encoding` 时，`byteOffset` 参数不再必需。"
 -->
 
-* `value` {string|Buffer|Uint8Array|integer} What to search for.
-* `start` {integer} Where to begin searching in `buf`. If negative, then
-  offset is calculated from the end of `buf`. **Default:** `0`.
-* `end` {integer} Where to stop searching in `buf` (exclusive). **Default:**
-  `buf.length`.
-* `encoding` {string} If `value` is a string, this is the encoding used to
-  determine the binary representation of the string that will be searched for in
-  `buf`. **Default:** `'utf8'`.
-* Returns: {integer} The index of the first occurrence of `value` in `buf`, or
-  `-1` if `buf` does not contain `value`.
+* `value` {string|Buffer|Uint8Array|integer} 要搜索的内容。
+* `start` {integer} 在 `buf` 中开始搜索的位置。如果为负，则
+  偏移量从 `buf` 末尾计算。**默认值：** `0`。
+* `end` {integer} 在 `buf` 中停止搜索的位置（不包含）。**默认值：**
+  `buf.length`。
+* `encoding` {string} 如果 `value` 是字符串，这是用于
+  确定要在 `buf` 中搜索的字符串二进制表示形式的编码。
+  **默认值：** `'utf8'`。
+* 返回：{integer} `value` 在 `buf` 中首次出现的索引，若 `buf` 不包含 `value`，则返回
+  `-1`。
 
 如果 `value` 是：
 
@@ -2220,7 +2220,7 @@ for (const key of buf.keys()) {
 <!-- YAML
 added: v6.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62390
     description: Added the `end` parameter.
   - version: v8.0.0
@@ -2228,17 +2228,17 @@ changes:
     description: value 现在可以是 Uint8Array。
 -->
 
-* `value` {string|Buffer|Uint8Array|integer} What to search for.
-* `start` {integer} Where to begin searching in `buf`. If negative, then
-  offset is calculated from the end of `buf`. **Default:**
-  `buf.length - 1`.
-* `end` {integer} Where to stop searching in `buf` (exclusive). **Default:**
-  `buf.length`.
-* `encoding` {string} If `value` is a string, this is the encoding used to
-  determine the binary representation of the string that will be searched for in
-  `buf`. **Default:** `'utf8'`.
-* Returns: {integer} The index of the last occurrence of `value` in `buf`, or
-  `-1` if `buf` does not contain `value`.
+* `value` {string|Buffer|Uint8Array|integer} 要搜索的内容。
+* `start` {integer} 在 `buf` 中开始搜索的位置。如果为负，则
+  偏移量从 `buf` 末尾计算。**默认值：**
+  `buf.length - 1`。
+* `end` {integer} 在 `buf` 中停止搜索的位置（不包含）。**默认值：**
+  `buf.length`。
+* `encoding` {string} 如果 `value` 是字符串，这是用于
+  确定要在 `buf` 中搜索的字符串二进制表示形式的编码。
+  **默认值：** `'utf8'`。
+* 返回：{integer} `value` 在 `buf` 中最后一次出现的索引，若 `buf` 不包含 `value`，则返回
+  `-1`。
 
 与 [`buf.indexOf()`][] 相同，只不过找到的是 `value` 的最后一次出现而不是第一次出现。
 
@@ -2843,8 +2843,8 @@ console.log(buf.readInt32LE(1));
 added: v0.11.15
 changes:
   - version:
-     - v25.5.0
-     - v24.13.1
+    - v25.5.0
+    - v24.13.1
     pr-url: https://github.com/nodejs/node/pull/56578
     description: 支持 Uint8Array 作为 this 值。
   - version: v10.0.0
@@ -2865,7 +2865,7 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78, 0x90, 0xab]);
 
 console.log(buf.readIntBE(0, 6).toString(16));
-// 打印：1234567890ab
+// 输出：1234567890ab
 console.log(buf.readIntBE(1, 6).toString(16));
 // 抛出 ERR_OUT_OF_RANGE。
 console.log(buf.readIntBE(1, 0).toString(16));
@@ -2878,7 +2878,7 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78, 0x90, 0xab]);
 
 console.log(buf.readIntBE(0, 6).toString(16));
-// 打印：1234567890ab
+// 输出：1234567890ab
 console.log(buf.readIntBE(1, 6).toString(16));
 // 抛出 ERR_OUT_OF_RANGE。
 console.log(buf.readIntBE(1, 0).toString(16));
@@ -2913,7 +2913,7 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78, 0x90, 0xab]);
 
 console.log(buf.readIntLE(0, 6).toString(16));
-// 打印：-546f87a9cbee
+// 输出：-546f87a9cbee
 ```
 
 ```cjs
@@ -2922,7 +2922,7 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78, 0x90, 0xab]);
 
 console.log(buf.readIntLE(0, 6).toString(16));
-// 打印：-546f87a9cbee
+// 输出：-546f87a9cbee
 ```
 
 ### `buf.readUInt8([offset])`
@@ -2953,9 +2953,9 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([1, -2]);
 
 console.log(buf.readUInt8(0));
-// 打印：1
+// 输出：1
 console.log(buf.readUInt8(1));
-// 打印：254
+// 输出：254
 console.log(buf.readUInt8(2));
 // 抛出 ERR_OUT_OF_RANGE。
 ```
@@ -2966,9 +2966,9 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([1, -2]);
 
 console.log(buf.readUInt8(0));
-// 打印：1
+// 输出：1
 console.log(buf.readUInt8(1));
-// 打印：254
+// 输出：254
 console.log(buf.readUInt8(2));
 // 抛出 ERR_OUT_OF_RANGE。
 ```
@@ -3001,9 +3001,9 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([0x12, 0x34, 0x56]);
 
 console.log(buf.readUInt16BE(0).toString(16));
-// 打印：1234
+// 输出：1234
 console.log(buf.readUInt16BE(1).toString(16));
-// 打印：3456
+// 输出：3456
 ```
 
 ```cjs
@@ -3012,9 +3012,9 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([0x12, 0x34, 0x56]);
 
 console.log(buf.readUInt16BE(0).toString(16));
-// 打印：1234
+// 输出：1234
 console.log(buf.readUInt16BE(1).toString(16));
-// 打印：3456
+// 输出：3456
 ```
 
 ### `buf.readUInt16LE([offset])`
@@ -3045,9 +3045,9 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([0x12, 0x34, 0x56]);
 
 console.log(buf.readUInt16LE(0).toString(16));
-// 打印：3412
+// 输出：3412
 console.log(buf.readUInt16LE(1).toString(16));
-// 打印：5634
+// 输出：5634
 console.log(buf.readUInt16LE(2).toString(16));
 // 抛出 ERR_OUT_OF_RANGE。
 ```
@@ -3058,9 +3058,9 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([0x12, 0x34, 0x56]);
 
 console.log(buf.readUInt16LE(0).toString(16));
-// 打印：3412
+// 输出：3412
 console.log(buf.readUInt16LE(1).toString(16));
-// 打印：5634
+// 输出：5634
 console.log(buf.readUInt16LE(2).toString(16));
 // 抛出 ERR_OUT_OF_RANGE。
 ```
@@ -3093,7 +3093,7 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78]);
 
 console.log(buf.readUInt32BE(0).toString(16));
-// 打印：12345678
+// 输出：12345678
 ```
 
 ```cjs
@@ -3102,7 +3102,7 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78]);
 
 console.log(buf.readUInt32BE(0).toString(16));
-// 打印：12345678
+// 输出：12345678
 ```
 
 ### `buf.readUInt32LE([offset])`
@@ -3133,7 +3133,7 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78]);
 
 console.log(buf.readUInt32LE(0).toString(16));
-// 打印：78563412
+// 输出：78563412
 console.log(buf.readUInt32LE(1).toString(16));
 // 抛出 ERR_OUT_OF_RANGE。
 ```
@@ -3144,7 +3144,7 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78]);
 
 console.log(buf.readUInt32LE(0).toString(16));
-// 打印：78563412
+// 输出：78563412
 console.log(buf.readUInt32LE(1).toString(16));
 // 抛出 ERR_OUT_OF_RANGE。
 ```
@@ -3183,7 +3183,7 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78, 0x90, 0xab]);
 
 console.log(buf.readUIntBE(0, 6).toString(16));
-// 打印：1234567890ab
+// 输出：1234567890ab
 console.log(buf.readUIntBE(1, 6).toString(16));
 // 抛出 ERR_OUT_OF_RANGE。
 ```
@@ -3194,7 +3194,7 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78, 0x90, 0xab]);
 
 console.log(buf.readUIntBE(0, 6).toString(16));
-// 打印：1234567890ab
+// 输出：1234567890ab
 console.log(buf.readUIntBE(1, 6).toString(16));
 // 抛出 ERR_OUT_OF_RANGE。
 ```
@@ -3233,7 +3233,7 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78, 0x90, 0xab]);
 
 console.log(buf.readUIntLE(0, 6).toString(16));
-// 打印：ab9078563412
+// 输出：ab9078563412
 ```
 
 ```cjs
@@ -3242,7 +3242,7 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([0x12, 0x34, 0x56, 0x78, 0x90, 0xab]);
 
 console.log(buf.readUIntLE(0, 6).toString(16));
-// 打印：ab9078563412
+// 输出：ab9078563412
 ```
 
 ### `buf.subarray([start[, end]])`
@@ -3278,12 +3278,12 @@ for (let i = 0; i < 26; i++) {
 const buf2 = buf1.subarray(0, 3);
 
 console.log(buf2.toString('ascii', 0, buf2.length));
-// 打印：abc
+// 输出：abc
 
 buf1[0] = 33;
 
 console.log(buf2.toString('ascii', 0, buf2.length));
-// 打印：!bc
+// 输出：!bc
 ```
 
 ```cjs
@@ -3301,12 +3301,12 @@ for (let i = 0; i < 26; i++) {
 const buf2 = buf1.subarray(0, 3);
 
 console.log(buf2.toString('ascii', 0, buf2.length));
-// 打印：abc
+// 输出：abc
 
 buf1[0] = 33;
 
 console.log(buf2.toString('ascii', 0, buf2.length));
-// 打印：!bc
+// 输出：!bc
 ```
 
 指定负索引会导致切片相对于 `buf` 的末尾而不是开头生成。
@@ -3317,15 +3317,15 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from('buffer');
 
 console.log(buf.subarray(-6, -1).toString());
-// 打印：buffe
+// 输出：buffe
 // （相当于 buf.subarray(0, 5)。）
 
 console.log(buf.subarray(-6, -2).toString());
-// 打印：buff
+// 输出：buff
 // （相当于 buf.subarray(0, 4)。）
 
 console.log(buf.subarray(-5, -2).toString());
-// 打印：uff
+// 输出：uff
 // （相当于 buf.subarray(1, 4)。）
 ```
 
@@ -3335,15 +3335,15 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from('buffer');
 
 console.log(buf.subarray(-6, -1).toString());
-// 打印：buffe
+// 输出：buffe
 // （相当于 buf.subarray(0, 5)。）
 
 console.log(buf.subarray(-6, -2).toString());
-// 打印：buff
+// 输出：buff
 // （相当于 buf.subarray(0, 4)。）
 
 console.log(buf.subarray(-5, -2).toString());
-// 打印：uff
+// 输出：uff
 // （相当于 buf.subarray(1, 4)。）
 ```
 
@@ -3385,18 +3385,18 @@ const buf = Buffer.from('buffer');
 const copiedBuf = Uint8Array.prototype.slice.call(buf);
 copiedBuf[0]++;
 console.log(copiedBuf.toString());
-// 打印：cuffer
+// 输出：cuffer
 
 console.log(buf.toString());
-// 打印：buffer
+// 输出：buffer
 
 // 使用 buf.slice() 时，原始 buffer 会被修改。
 const notReallyCopiedBuf = buf.slice();
 notReallyCopiedBuf[0]++;
 console.log(notReallyCopiedBuf.toString());
-// 打印：cuffer
+// 输出：cuffer
 console.log(buf.toString());
-// 也打印：cuffer (!)
+// 也输出：cuffer (!)
 ```
 
 ```cjs
@@ -3407,18 +3407,18 @@ const buf = Buffer.from('buffer');
 const copiedBuf = Uint8Array.prototype.slice.call(buf);
 copiedBuf[0]++;
 console.log(copiedBuf.toString());
-// 打印：cuffer
+// 输出：cuffer
 
 console.log(buf.toString());
-// 打印：buffer
+// 输出：buffer
 
 // 使用 buf.slice() 时，原始 buffer 会被修改。
 const notReallyCopiedBuf = buf.slice();
 notReallyCopiedBuf[0]++;
 console.log(notReallyCopiedBuf.toString());
-// 打印：cuffer
+// 输出：cuffer
 console.log(buf.toString());
-// 也打印：cuffer (!)
+// 也输出：cuffer (!)
 ```
 
 ### `buf.swap16()`
@@ -3437,12 +3437,12 @@ import { Buffer } from 'node:buffer';
 const buf1 = Buffer.from([0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8]);
 
 console.log(buf1);
-// 打印：<Buffer 01 02 03 04 05 06 07 08>
+// 输出：<Buffer 01 02 03 04 05 06 07 08>
 
 buf1.swap16();
 
 console.log(buf1);
-// 打印：<Buffer 02 01 04 03 06 05 08 07>
+// 输出：<Buffer 02 01 04 03 06 05 08 07>
 
 const buf2 = Buffer.from([0x1, 0x2, 0x3]);
 
@@ -3456,12 +3456,12 @@ const { Buffer } = require('node:buffer');
 const buf1 = Buffer.from([0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8]);
 
 console.log(buf1);
-// 打印：<Buffer 01 02 03 04 05 06 07 08>
+// 输出：<Buffer 01 02 03 04 05 06 07 08>
 
 buf1.swap16();
 
 console.log(buf1);
-// 打印：<Buffer 02 01 04 03 06 05 08 07>
+// 输出：<Buffer 02 01 04 03 06 05 08 07>
 
 const buf2 = Buffer.from([0x1, 0x2, 0x3]);
 
@@ -3501,12 +3501,12 @@ import { Buffer } from 'node:buffer';
 const buf1 = Buffer.from([0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8]);
 
 console.log(buf1);
-// 打印：<Buffer 01 02 03 04 05 06 07 08>
+// 输出：<Buffer 01 02 03 04 05 06 07 08>
 
 buf1.swap32();
 
 console.log(buf1);
-// 打印：<Buffer 04 03 02 01 08 07 06 05>
+// 输出：<Buffer 04 03 02 01 08 07 06 05>
 
 const buf2 = Buffer.from([0x1, 0x2, 0x3]);
 
@@ -3520,12 +3520,12 @@ const { Buffer } = require('node:buffer');
 const buf1 = Buffer.from([0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8]);
 
 console.log(buf1);
-// 打印：<Buffer 01 02 03 04 05 06 07 08>
+// 输出：<Buffer 01 02 03 04 05 06 07 08>
 
 buf1.swap32();
 
 console.log(buf1);
-// 打印：<Buffer 04 03 02 01 08 07 06 05>
+// 输出：<Buffer 04 03 02 01 08 07 06 05>
 
 const buf2 = Buffer.from([0x1, 0x2, 0x3]);
 
@@ -3549,12 +3549,12 @@ import { Buffer } from 'node:buffer';
 const buf1 = Buffer.from([0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8]);
 
 console.log(buf1);
-// 打印：<Buffer 01 02 03 04 05 06 07 08>
+// 输出：<Buffer 01 02 03 04 05 06 07 08>
 
 buf1.swap64();
 
 console.log(buf1);
-// 打印：<Buffer 08 07 06 05 04 03 02 01>
+// 输出：<Buffer 08 07 06 05 04 03 02 01>
 
 const buf2 = Buffer.from([0x1, 0x2, 0x3]);
 
@@ -3568,12 +3568,12 @@ const { Buffer } = require('node:buffer');
 const buf1 = Buffer.from([0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8]);
 
 console.log(buf1);
-// 打印：<Buffer 01 02 03 04 05 06 07 08>
+// 输出：<Buffer 01 02 03 04 05 06 07 08>
 
 buf1.swap64();
 
 console.log(buf1);
-// 打印：<Buffer 08 07 06 05 04 03 02 01>
+// 输出：<Buffer 08 07 06 05 04 03 02 01>
 
 const buf2 = Buffer.from([0x1, 0x2, 0x3]);
 
@@ -3600,7 +3600,7 @@ const buf = Buffer.from([0x1, 0x2, 0x3, 0x4, 0x5]);
 const json = JSON.stringify(buf);
 
 console.log(json);
-// 打印：{"type":"Buffer","data":[1,2,3,4,5]}
+// 输出：{"type":"Buffer","data":[1,2,3,4,5]}
 
 const copy = JSON.parse(json, (key, value) => {
   return value && value.type === 'Buffer' ?
@@ -3609,7 +3609,7 @@ const copy = JSON.parse(json, (key, value) => {
 });
 
 console.log(copy);
-// 打印：<Buffer 01 02 03 04 05>
+// 输出：<Buffer 01 02 03 04 05>
 ```
 
 ```cjs
@@ -3619,7 +3619,7 @@ const buf = Buffer.from([0x1, 0x2, 0x3, 0x4, 0x5]);
 const json = JSON.stringify(buf);
 
 console.log(json);
-// 打印：{"type":"Buffer","data":[1,2,3,4,5]}
+// 输出：{"type":"Buffer","data":[1,2,3,4,5]}
 
 const copy = JSON.parse(json, (key, value) => {
   return value && value.type === 'Buffer' ?
@@ -3628,7 +3628,7 @@ const copy = JSON.parse(json, (key, value) => {
 });
 
 console.log(copy);
-// 打印：<Buffer 01 02 03 04 05>
+// 输出：<Buffer 01 02 03 04 05>
 ```
 
 ### `buf.toString([encoding[, start[, end]]])`
@@ -3665,18 +3665,18 @@ for (let i = 0; i < 26; i++) {
 }
 
 console.log(buf1.toString('utf8'));
-// 打印：abcdefghijklmnopqrstuvwxyz
+// 输出：abcdefghijklmnopqrstuvwxyz
 console.log(buf1.toString('utf8', 0, 5));
-// 打印：abcde
+// 输出：abcde
 
 const buf2 = Buffer.from('tést');
 
 console.log(buf2.toString('hex'));
-// 打印：74c3a97374
+// 输出：74c3a97374
 console.log(buf2.toString('utf8', 0, 3));
-// 打印：té
+// 输出：té
 console.log(buf2.toString(undefined, 0, 3));
-// 打印：té
+// 输出：té
 ```
 
 ```cjs
@@ -3690,18 +3690,18 @@ for (let i = 0; i < 26; i++) {
 }
 
 console.log(buf1.toString('utf8'));
-// 打印：abcdefghijklmnopqrstuvwxyz
+// 输出：abcdefghijklmnopqrstuvwxyz
 console.log(buf1.toString('utf8', 0, 5));
-// 打印：abcde
+// 输出：abcde
 
 const buf2 = Buffer.from('tést');
 
 console.log(buf2.toString('hex'));
-// 打印：74c3a97374
+// 输出：74c3a97374
 console.log(buf2.toString('utf8', 0, 3));
-// 打印：té
+// 输出：té
 console.log(buf2.toString(undefined, 0, 3));
-// 打印：té
+// 输出：té
 ```
 
 ### `buf.values()`
@@ -4111,11 +4111,11 @@ added: v0.11.15
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
 -->
 
 * `value` {number} 要写入 `buf` 的数字。
-* `offset` {integer} 开始写入之前要跳过的字节数。必须
+* `offset` {integer} 开始写入前要跳过的字节数。必须
   满足 `0 <= offset <= buf.length - 4`。**默认值：** `0`。
 * 返回：{integer} `offset` 加上已写入的字节数。
 
@@ -4150,7 +4150,7 @@ added: v0.5.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4194,7 +4194,7 @@ added: v0.5.5
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4237,7 +4237,7 @@ added: v0.5.5
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4280,7 +4280,7 @@ added: v0.5.5
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4323,7 +4323,7 @@ added: v0.5.5
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4366,7 +4366,7 @@ added: v0.11.15
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetand `byteLength` to `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 和 `byteLength` 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4409,7 +4409,7 @@ added: v0.11.15
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetand `byteLength` to `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 和 `byteLength` 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4454,10 +4454,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: "This function is also available as `buf.writeUint8()`."
+    description: 此函数也可使用 `buf.writeUint8()`。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4508,10 +4508,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: "This function is also available as `buf.writeUint16BE()`."
+    description: 此函数也可使用 `buf.writeUint16BE()`。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4558,10 +4558,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: "This function is also available as `buf.writeUint16LE()`."
+    description: 此函数也可使用 `buf.writeUint16LE()`。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4608,10 +4608,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: "This function is also available as `buf.writeUint32BE()`."
+    description: 此函数也可使用 `buf.writeUint32BE()`。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4656,10 +4656,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: "This function is also available as `buf.writeUint32LE()`."
+    description: 此函数也可使用 `buf.writeUint32LE()`。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetto `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4704,10 +4704,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: "This function is also available as `buf.writeUintBE()`."
+    description: 此函数也可使用 `buf.writeUintBE()`。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetand `byteLength` to `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 和 `byteLength` 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。
@@ -4754,10 +4754,10 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: "This function is also available as `buf.writeUintLE()`."
+    description: 此函数也可使用 `buf.writeUintLE()`。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: "Removed `noAssert` and no implicit coercion of the offsetand `byteLength` to `uint32` anymore."
+    description: 已移除 `noAssert`，且不再隐式将 offset 和 `byteLength` 强制转换为 `uint32`。
 -->
 
 * `value` {integer} 要写入 `buf` 的数字。

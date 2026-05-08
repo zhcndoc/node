@@ -265,7 +265,7 @@ const channelsByCollection = diagnostics_channel.tracingChannel({
 #### `diagnostics_channel.boundedChannel(nameOrChannels)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性
@@ -620,7 +620,7 @@ channel.runStores({ some: 'message' }, () => {
 #### `channel.withStoreScope(data)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性
@@ -673,7 +673,7 @@ ch.bindStore(store, (message) => {
 ### 类：`RunStoresScope`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1039,7 +1039,7 @@ if (channels.hasSubscribers) {
 ### 类：`BoundedChannel`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1051,7 +1051,7 @@ added: REPLACEME
 #### `boundedChannel.hasSubscribers`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * 返回：{boolean} 如果任何独立通道有订阅者则为 `true`，否则为 `false`。
@@ -1081,7 +1081,7 @@ if (wc.hasSubscribers) {
 #### `boundedChannel.subscribe(handlers)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `handlers` {Object} 通道订阅者集合
@@ -1123,7 +1123,7 @@ wc.subscribe({
 #### `boundedChannel.unsubscribe(handlers)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `handlers` {Object} 通道订阅者集合
@@ -1164,7 +1164,7 @@ wc.unsubscribe(handlers);
 #### `boundedChannel.run(context, fn[, thisArg[, ...args]])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `context` {Object} 用于关联事件的共享对象
@@ -1200,7 +1200,7 @@ const result = wc.run({ operationId: '123' }, () => {
 #### `boundedChannel.withScope([context])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `context` {Object} 用于关联事件的共享对象
@@ -1243,7 +1243,7 @@ const context = { operationId: '123' };
 ### 类：`BoundedChannelScope`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1677,7 +1677,6 @@ added: v16.18.0
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
  - v24.15.0
 -->

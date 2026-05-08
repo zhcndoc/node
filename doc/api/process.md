@@ -576,7 +576,6 @@ added: v0.7.0
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1453,7 +1452,7 @@ added:
   - v23.11.0
   - v22.15.0
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62878
     description: 失败的 `execve(2)` 系统调用现在会抛出异常，而不是中止进程。通过 embedder API 注册的原生 `AtExit` 回调在 `execve(2)` 调用之前不再被调用。
 -->
@@ -3517,7 +3516,6 @@ added:
 added: v9.3.0
 changes:
   - version:
-     - v26.0.0
      - v25.9.0
     pr-url: https://github.com/nodejs/node/pull/61227
     description: "使用 `process.addUncaughtExceptionCaptureCallback()` 来注册多个回调。"
@@ -3718,13 +3716,13 @@ added: v6.10.0
 `process.traceProcessWarnings` 属性指示当前 Node.js 进程是否设置了 `--trace-warnings` 标志。此属性允许对警告的跟踪进行编程控制，从而在运行时启用或禁用警告的堆栈跟踪。
 
 ```js
-// 启用跟踪警告
+// 启用警告跟踪
 process.traceProcessWarnings = true;
 
 // 发出带有堆栈跟踪的警告
 process.emitWarning('带有堆栈跟踪的警告');
 
-// 禁用跟踪警告
+// 禁用警告跟踪
 process.traceProcessWarnings = false;
 ```
 

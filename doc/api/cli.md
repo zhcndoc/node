@@ -104,10 +104,10 @@ Error: Cannot load native addon because loading addons is disabled.
     at Module.load (node:internal/modules/cjs/loader:1091:32)
     at Module._load (node:internal/modules/cjs/loader:938:12)
     at Module.require (node:internal/modules/cjs/loader:1115:19)
-    at require (node:internal/modules/helpers:130:18)
+    at require (node:internal/modules/helpers:130:16)
     at Object.<anonymous> (/home/index.js:1:15)
     at Module._compile (node:internal/modules/cjs/loader:1233:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1287:10)
+    at Module._extensions..node:internal/modules/cjs/loader:1287:10)
     at Module.load (node:internal/modules/cjs/loader:1091:32)
     at Module._load (node:internal/modules/cjs/loader:938:12) {
   code: 'ERR_DLOPEN_DISABLED'
@@ -159,10 +159,10 @@ Error: Access to this API has been restricted
 ### `--allow-ffi`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
-> Stability: 1.1 - Active development
+> 稳定性：1.1 - 积极开发中
 
 当使用 [Permission Model][] 时，进程默认将无法使用 FFI
 API。尝试使用 FFI API 将抛出一个 `ERR_ACCESS_DENIED`
@@ -910,11 +910,9 @@ added:
 如果存在，Node.js 将在指定路径查找配置文件。
 如果未指定路径，Node.js 将在当前工作目录中查找 `node.config.json` 文件。
 要指定自定义路径，请使用 `--experimental-config-file=path` 形式。
-不支持使用空格分隔的 `--experimental-config-file path` 形式。
-别名 `--experimental-default-config-file` 等同于
-`--experimental-config-file`，不带参数。
-Node.js 将读取配置文件并应用设置。配置文件应为一个 JSON 文件，具有以下结构。`$schema` 中的 `vX.Y.Z`
-必须替换为你正在使用的 Node.js 版本。
+不支持空格分隔的 `--experimental-config-file path` 形式。
+别名 `--experimental-default-config-file` 等同于不带参数的 `--experimental-config-file`。
+Node.js 将读取配置文件并应用设置。配置文件应为具有以下结构的 JSON 文件。`$schema` 中的 `vX.Y.Z` 必须替换为您正在使用的 Node.js 版本，或者为该主版本最新版本使用 `latest-vX.x`。
 
 ```json
 {
@@ -941,7 +939,39 @@ Node.js 将读取配置文件并应用设置。配置文件应为一个 JSON 文
 
 * 命名空间字段（如 `test`、`watch` 和 `permission`）包含特定于该子系统的配置。
 
-当配置文件中存在命名空间时，Node.js 会自动启用相应的标志（例如，`--test`、`--watch`、`--permission`）。这允许您配置子系统特定的选项，而无需在命令行上显式传递标志。
+配置文件可以使用 `nodeVersion` 目标指向特定的 Node.js 主版本：
+
+```json
+{
+  "nodeVersion": 25,
+  "nodeOptions": {
+    "watch-path": "src"
+  }
+}
+```
+
+要在同一文件中保留多个特定版本的配置，请使用 `configs` 数组。Node.js 将使用 `nodeVersion` 与当前 Node.js 主版本匹配的第一个条目：
+
+```json
+{
+  "$schema": "https://nodejs.org/dist/latest-v26.x/docs/node-config-schema.json",
+  "configs": [
+    {
+      "nodeVersion": 25,
+      "config": {
+        "$schema": "https://nodejs.org/dist/latest-v25.x/docs/node-config-schema.json",
+        "nodeOptions": {
+          "watch-path": "src"
+        }
+      }
+    }
+  ]
+}
+```
+
+使用 `configs` 时，顶层只能包含 `$schema` 和 `configs`。每个 `configs` 项必须定义一个整数 `nodeVersion` 和一个对象 `config`。单个顶层配置不需要 `nodeVersion`，但如果存在，则必须与当前 Node.js 主版本匹配。
+
+当配置文件中存在命名空间时，Node.js 会自动启用相应标志（例如 `--test`、`--watch`、`--permission`）。这允许您在不显式在命令行中传递该标志的情况下配置特定子系统的选项。
 
 例如：
 
@@ -988,9 +1018,7 @@ node --import amaro/strip --watch-path=src --watch-preserve-output --test-isolat
 2. Dotenv NODE\_OPTIONS
 3. Configuration file
 
-Values in the configuration file will not override the values in the environment
-variables, command-line options, or the `NODE_OPTIONS` env file parsed by the
-`--env-file` flag.
+配置文件中的值不会覆盖环境变量、命令行选项或由 `--env-file` 标志解析的 `NODE_OPTIONS` env 文件中的值。
 
 键不能在同一或不同命名空间内重复。
 
@@ -1009,10 +1037,7 @@ added:
 > 稳定性：1.0 - 早期开发
 
 此标志是 `--experimental-config-file` 不带参数的别名。
-如果存在，Node.js 将在
-当前工作目录中查找
-`node.config.json` 文件并将其作为
-配置文件加载。
+如果存在，Node.js 将在当前工作目录中查找 `node.config.json` 文件并将其作为配置文件加载。
 
 ### `--experimental-eventsource`
 
@@ -1027,10 +1052,10 @@ added:
 ### `--experimental-ffi`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
 启用实验性的 [`node:ffi`][] 模块。
 
@@ -1156,7 +1181,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1960,14 +1984,13 @@ changes:
 为当前进程启用权限模型。启用时，
 以下权限受到限制：
 
-* File System - manageable through
-  [`--allow-fs-read`][], [`--allow-fs-write`][] flags
-* Network - manageable through [`--allow-net`][] flag
-* Child Process - manageable through [`--allow-child-process`][] flag
-* Worker Threads - manageable through [`--allow-worker`][] flag
-* WASI - manageable through [`--allow-wasi`][] flag
-* Addons - manageable through [`--allow-addons`][] flag
-* FFI - manageable through [`--allow-ffi`](#--allow-ffi) flag
+* File System - 可通过 [`--allow-fs-read`][], [`--allow-fs-write`][] 标志管理
+* Network - 可通过 [`--allow-net`][] 标志管理
+* Child Process - 可通过 [`--allow-child-process`][] 标志管理
+* Worker Threads - 可通过 [`--allow-worker`][] 标志管理
+* WASI - 可通过 [`--allow-wasi`][] 标志管理
+* Addons - 可通过 [`--allow-addons`][] 标志管理
+* FFI - 可通过 [`--allow-ffi`](#--allow-ffi) 标志管理
 
 ### `--permission-audit`
 
@@ -2269,168 +2292,7 @@ changes:
 文件以从中运行命令。
 
 `--run` 将 `./node_modules/.bin`  prepend 到当前目录的每个祖先的
-`PATH`，以便从存在多个 `node_modules` 目录的不同文件夹执行二进制文件，如果
-`ancestor-folder/node_modules/.bin` 是一个目录。
-
-`--run` 在包含相关 `package.json` 的目录中执行命令。
-
-例如，以下命令将运行当前文件夹中
-`package.json` 的 `test` 脚本：
-
-```console
-$ node --run test
-```
-
-您也可以向命令传递参数。`--` 之后的任何参数将
-附加到脚本：
-
-```console
-$ node --run test -- --verbose
-```
-
-#### intentional limitations
-
-`node --run` 不旨在匹配 `npm run` 或其他包管理器的 `run`
-命令的行为。Node.js 实现故意更有限，以便专注于最常见用例的顶级性能。
-其他 `run` 实现的一些故意排除的功能是：
-
-* 运行指定脚本之外的 `pre` 或 `post` 脚本。
-* 定义特定于包管理器的环境变量。
-
-#### 环境变量
-
-使用 `--run` 运行脚本时设置以下环境变量：
-
-* `NODE_RUN_SCRIPT_NAME`：正在运行的脚本的名称。例如，如果
-  `--run` 用于运行 `test`，则此变量的值将为 `test`。
-* `NODE_RUN_PACKAGE_JSON_PATH`：正在处理的 `package.json` 的路径。
-
-### `--secure-heap-min=n`
-
-<!-- YAML
-added: v15.6.0
--->
-
-当使用 `--secure-heap` 时，`--secure-heap-min` 标志指定
-来自安全堆的最小分配。最小值为 `2`。
-最大值为 `--secure-heap` 或 `2147483647` 中的较小者。
-给定的值必须是 2 的幂。
-
-### `--secure-heap=n`
-
-<!-- YAML
-added: v15.6.0
--->
-
-初始化 `n` 字节的 OpenSSL 安全堆。初始化时，
-安全堆用于 OpenSSL 内选定类型的分配，
-在密钥生成和其他操作期间。例如，这有助于
-防止敏感信息因指针溢出
-或下溢而泄漏。
-
-安全堆是固定大小的，不能在运行时调整大小，所以，
-如果使用，选择足够大的堆以覆盖所有
-应用程序用途很重要。
-
-给定的堆大小必须是 2 的幂。任何小于 2 的值
-将禁用安全堆。
-
-安全堆默认禁用。
-
-安全堆在 Windows 上不可用。
-
-更多信息请参阅 [`CRYPTO_secure_malloc_init`][]。
-
-### `--snapshot-blob=path`
-
-<!-- YAML
-added: v18.8.0
--->
-
-> 稳定性：1 - 实验性
-
-与 `--build-snapshot` 一起使用时，`--snapshot-blob` 指定
-生成的快照 blob 写入的路径。如果未指定，则
-生成的 blob 写入当前工作目录中的 `snapshot.blob`。
-
-不与 `--build-snapshot` 一起使用时，`--snapshot-blob` 指定
-用于恢复应用程序状态的 blob 的路径。
-
-加载快照时，Node.js 检查：
-
-1. 运行中的 Node.js 二进制文件的版本、架构和平台
-   与生成快照的二进制文件完全相同。
-2. V8 标志和 CPU 功能与生成快照的二进制文件兼容。
-
-如果它们不匹配，Node.js 拒绝加载快照并以
-状态码 1 退出。
-
-### `--test`
-
-<!-- YAML
-added:
-  - v18.1.0
-  - v16.17.0
-changes:
-  - version: v20.0.0
-    pr-url: https://github.com/nodejs/node/pull/46983
-    description: 测试运行器现已稳定。
-  - version:
-      - v19.2.0
-      - v18.13.0
-    pr-url: https://github.com/nodejs/node/pull/45214
-    description: 测试运行器现在支持在监视模式下运行。
--->
-
-启动 Node.js 命令行测试运行器。此标志不能与
-`--watch-path`、`--check`、`--eval`、`--interactive` 或检查器组合。
-有关更多详细信息，请参阅 [从命令行运行测试][] 文档。
-
-### `--test-concurrency`
-
-<!-- YAML
-added:
-  - v21.0.0
-  - v20.10.0
-  - v18.19.0
--->
-
-测试运行器 CLI 将并发执行的最大测试文件数。如果 `--test-isolation` 设置为 `'none'`，则忽略此标志并且
-并发数为 1。否则，并发数默认为
-`os.availableParallelism() - 1`。
-
-### `--test-coverage-branches=threshold`
-
-<!-- YAML
-added: v22.8.0
--->
-
-> 稳定性：1 - 实验性
-
-要求最低百分比的覆盖分支。如果代码覆盖率未达到
-指定的阈值，进程将以代码 `1` 退出。
-
-### `--test-coverage-exclude`
-
-<!-- YAML
-added:
-  - v22.5.0
--->
-
-> 稳定性：1 - 实验性
-
-使用 glob 模式从代码覆盖率中排除特定文件，该模式可以匹配
-绝对和相对文件路径。
-
-可以多次指定此选项以排除多个 glob 模式。
-
-如果同时提供 `--test-coverage-exclude` 和 `--test-coverage-include`，
-文件必须满足**两者**标准才能包含在覆盖率报告中。
-
-默认情况下，所有匹配的测试文件都从覆盖率报告中排除。
-指定此选项将覆盖默认行为。
-
-### `--test-coverage-functions=threshold`
+PATH， 'utility perhaps? noqa'
 
 <!-- YAML
 added: v22.8.0
@@ -2542,7 +2404,7 @@ changes:
 ### `--test-random-seed`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 设置用于随机化测试执行顺序的种子。这适用于测试
@@ -2556,7 +2418,7 @@ added: REPLACEME
 ### `--test-randomize`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 随机化测试执行顺序。这适用于测试文件执行顺序

@@ -38,46 +38,46 @@ const test = require('node:test');
 以下示例说明了如何使用 `test` 模块编写测试。
 
 ```js
-test('synchronous passing test', (t) => {
+test('同步通过测试', (t) => {
   // 此测试通过，因为它没有抛出异常。
   assert.strictEqual(1, 1);
 });
 
-test('synchronous failing test', (t) => {
+test('同步失败测试', (t) => {
   // 此测试失败，因为它抛出了异常。
   assert.strictEqual(1, 2);
 });
 
-test('asynchronous passing test', async (t) => {
+test('异步通过测试', async (t) => {
   // 此测试通过，因为 async 函数返回的 Promise 已结算且未被拒绝。
   assert.strictEqual(1, 1);
 });
 
-test('asynchronous failing test', async (t) => {
+test('异步失败测试', async (t) => {
   // 此测试失败，因为 async 函数返回的 Promise 被拒绝。
   assert.strictEqual(1, 2);
 });
 
-test('failing test using Promises', (t) => {
+test('使用 Promise 的失败测试', (t) => {
   // Promise 也可以直接使用。
   return new Promise((resolve, reject) => {
     setImmediate(() => {
-      reject(new Error('this will cause the test to fail'));
+      reject(new Error('这将导致测试失败'));
     });
   });
 });
 
-test('callback passing test', (t, done) => {
+test('回调通过测试', (t, done) => {
   // done() 是回调函数。当 setImmediate() 运行时，它调用
   // done() 不带参数。
   setImmediate(done);
 });
 
-test('callback failing test', (t, done) => {
+test('回调失败测试', (t, done) => {
   // 当 setImmediate() 运行时，done() 被传入一个 Error 对象且
   // 测试失败。
   setImmediate(() => {
-    done(new Error('callback failure'));
+    done(new Error('回调失败'));
   });
 });
 ```
@@ -94,12 +94,12 @@ test('callback failing test', (t, done) => {
 带有两个子测试的顶级测试。
 
 ```js
-test('top level test', async (t) => {
-  await t.test('subtest 1', (t) => {
+test('顶级测试', async (t) => {
+  await t.test('子测试 1', (t) => {
     assert.strictEqual(1, 1);
   });
 
-  await t.test('subtest 2', (t) => {
+  await t.test('子测试 2', (t) => {
     assert.strictEqual(2, 2);
   });
 });
@@ -162,17 +162,17 @@ node --test-rerun-failures /path/to/state/file
 [`test()`][] 的别名。
 
 ```js
-describe('A thing', () => {
-  it('should work', () => {
+describe('某事物', () => {
+  it('应该工作', () => {
     assert.strictEqual(1, 1);
   });
 
-  it('should be ok', () => {
+  it('应该没问题', () => {
     assert.strictEqual(2, 2);
   });
 
-  describe('a nested thing', () => {
-    it('should work', () => {
+  describe('嵌套事物', () => {
+    it('应该工作', () => {
       assert.strictEqual(3, 3);
     });
   });
@@ -264,15 +264,15 @@ added:
 测试被标记为 `expectFailure`，它们会通过。
 
 ```js
-it.expectFailure('should do the thing', () => {
+it.expectFailure('应该做这件事', () => {
   assert.strictEqual(doTheThing(), true);
 });
 
-it('should do the thing', { expectFailure: true }, () => {
+it('应该做这件事', { expectFailure: true }, () => {
   assert.strictEqual(doTheThing(), true);
 });
 
-it('should do the thing', { expectFailure: 'feature not implemented' }, () => {
+it('应该做这件事', { expectFailure: '功能尚未实现' }, () => {
   assert.strictEqual(doTheThing(), true);
 });
 ```
@@ -285,13 +285,13 @@ it('should do the thing', { expectFailure: 'feature not implemented' }, () => {
 因为失败不匹配特定的 **预期** 失败。
 
 ```js
-it('fails because regex does not match', {
+it('由于正则表达式不匹配而失败', {
   expectFailure: /expected message/,
 }, () => {
   throw new Error('different message');
 });
 
-it('fails because object matcher does not match', {
+it('由于对象匹配器不匹配而失败', {
   expectFailure: { code: 'ERR_EXPECTED' },
 }, () => {
   const err = new Error('boom');
@@ -303,9 +303,9 @@ it('fails because object matcher does not match', {
 要为 `expectFailure` 提供原因和特定错误，请使用 `{ label, match }`。
 
 ```js
-it('should fail with specific error and reason', {
+it('应以特定错误和原因失败', {
   expectFailure: {
-    label: 'reason for failure',
+    label: '失败原因',
     match: /error message/,
   },
 }, () => {
@@ -320,11 +320,11 @@ it('should fail with specific error and reason', {
 这些测试将被跳过（且不运行）：
 
 ```js
-it.expectFailure('should do the thing', { skip: true }, () => {
+it.expectFailure('应该做这件事', { skip: true }, () => {
   assert.strictEqual(doTheThing(), true);
 });
 
-it.skip('should do the thing', { expectFailure: true }, () => {
+it.skip('应该做这件事', { expectFailure: true }, () => {
   assert.strictEqual(doTheThing(), true);
 });
 ```
@@ -332,11 +332,11 @@ it.skip('should do the thing', { expectFailure: true }, () => {
 这些测试将被标记为 "todo"（静默错误）：
 
 ```js
-it.expectFailure('should do the thing', { todo: true }, () => {
+it.expectFailure('应该做这件事', { todo: true }, () => {
   assert.strictEqual(doTheThing(), true);
 });
 
-it.todo('should do the thing', { expectFailure: true }, () => {
+it.todo('应该做这件事', { expectFailure: true }, () => {
   assert.strictEqual(doTheThing(), true);
 });
 ```
@@ -353,49 +353,49 @@ it.todo('should do the thing', { expectFailure: true }, () => {
 ```js
 // 假设 Node.js 是使用 --test-only 命令行选项运行的。
 // 套件的 'only' 选项已设置，因此运行这些测试。
-test('this test is run', { only: true }, async (t) => {
+test('此测试会运行', { only: true }, async (t) => {
   // 在此测试内，默认运行所有子测试。
-  await t.test('running subtest');
+  await t.test('运行子测试');
 
   // 可以更新测试上下文以运行带有 'only' 选项的子测试。
   t.runOnly(true);
-  await t.test('this subtest is now skipped');
-  await t.test('this subtest is run', { only: true });
+  await t.test('此子测试现在被跳过');
+  await t.test('此子测试会运行', { only: true });
 
   // 将上下文切换回以执行所有测试。
   t.runOnly(false);
-  await t.test('this subtest is now run');
+  await t.test('此子测试现在会运行');
 
   // 显式不运行这些测试。
-  await t.test('skipped subtest 3', { only: false });
-  await t.test('skipped subtest 4', { skip: true });
+  await t.test('跳过的子测试 3', { only: false });
+  await t.test('跳过的子测试 4', { skip: true });
 });
 
 // 未设置 'only' 选项，因此跳过此测试。
-test('this test is not run', () => {
+test('此测试不会运行', () => {
   // 此代码未运行。
   throw new Error('fail');
 });
 
-describe('a suite', () => {
+describe('一个套件', () => {
   // 已设置 'only' 选项，因此运行此测试。
-  it('this test is run', { only: true }, () => {
+  it('此测试会运行', { only: true }, () => {
     // 此代码已运行。
   });
 
-  it('this test is not run', () => {
+  it('此测试不会运行', () => {
     // 此代码未运行。
     throw new Error('fail');
   });
 });
 
-describe.only('a suite', () => {
+describe.only('一个套件', () => {
   // 已设置 'only' 选项，因此运行此测试。
-  it('this test is run', () => {
+  it('此测试会运行', () => {
     // 此代码已运行。
   });
 
-  it('this test is run', () => {
+  it('此测试会运行', () => {
     // 此代码已运行。
   });
 });
@@ -449,9 +449,9 @@ describe('test 2', (t) => {
 第二个 `setImmediate()` 创建一个 `uncaughtException` 事件。源自已完成测试的 `uncaughtException` 和 `unhandledRejection` 事件会被 `test` 模块标记为失败，并由 {TestsStream} 在顶层报告为诊断警告。
 
 ```js
-test('a test that creates asynchronous activity', (t) => {
+test('一个创建异步活动的测试', (t) => {
   setImmediate(() => {
-    t.test('subtest that is created too late', (t) => {
+    t.test('太晚创建的子测试', (t) => {
       throw new Error('error1');
     });
   });
@@ -572,7 +572,7 @@ node --test "**/*.test.js" "**/*.spec.js"
 ### 随机化测试执行顺序
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1.0 - 早期开发
@@ -688,7 +688,7 @@ if (anAlwaysFalseCondition) {
   // 此分支中的代码永远不会被执行，但这些行会被忽略以用于
   // 覆盖率目的。'disable' 注释之后的所有行都会被忽略
   // 直到遇到相应的 'enable' 注释。
-  console.log('this is never executed');
+  console.log('这段代码永远不会被执行');
 }
 /* node:coverage enable */
 ```
@@ -697,11 +697,11 @@ if (anAlwaysFalseCondition) {
 
 ```js
 /* node:coverage ignore next */
-if (anAlwaysFalseCondition) { console.log('this is never executed'); }
+if (anAlwaysFalseCondition) { console.log('这段代码永远不会被执行'); }
 
 /* node:coverage ignore next 3 */
 if (anAlwaysFalseCondition) {
-  console.log('this is never executed');
+  console.log('这段代码永远不会被执行');
 }
 ```
 
@@ -1588,13 +1588,13 @@ added:
   - v20.13.0
 -->
 
-* `name` {string} The name of the suite, as displayed when reporting test results. **Default:** `fn`'s `name` property, or `'<anonymous>'` if `fn` has no name.
-* `options` {Object} Optional configuration options for the suite.
-  Supports the same options as `test([name][, options][, fn])`.
-* `fn` {Function|AsyncFunction} The suite function that declares nested tests and suites. The first argument to this function is a [`SuiteContext`][] object. **Default:** A no-op function.
-* Returns: {Promise} Fulfilled immediately with `undefined`.
+* `name` {string} 套件的名称，在报告测试结果时显示。**默认：** `fn` 的 `name` 属性；如果 `fn` 没有名称，则为 `'<anonymous>'`。
+* `options` {Object} 套件的可选配置项。
+  支持与 `test([name][, options][, fn])` 相同的选项。
+* `fn` {Function|AsyncFunction} 声明嵌套测试和套件的套件函数。该函数的第一个参数是一个 [`SuiteContext`][] 对象。**默认：** 无操作函数。
+* 返回值：{Promise} 立即以 `undefined` 兑现。
 
-The `suite()` function is imported from the `node:test` module.
+`suite()` 函数从 `node:test` 模块导入。
 
 ## `suite.skip([name][, options][, fn])`
 
@@ -1604,7 +1604,7 @@ added:
   - v20.13.0
 -->
 
-A shorthand for skipping suites. This is the same as [`suite([name], { skip: true }[, fn])`][suite options].
+用于跳过套件的简写。这与 [`suite([name], { skip: true }[, fn])`][suite options] 相同。
 
 ## `suite.todo([name][, options][, fn])`
 
@@ -1614,7 +1614,7 @@ added:
   - v20.13.0
 -->
 
-A shorthand for marking a suite as `TODO`. This is the same as [`suite([name], { todo: true }[, fn])`][suite options].
+用于将套件标记为 `TODO` 的简写。这与 [`suite([name], { todo: true }[, fn])`][suite options] 相同。
 
 ## `suite.only([name][, options][, fn])`
 
@@ -1624,7 +1624,7 @@ added:
   - v20.13.0
 -->
 
-A shorthand for marking a suite as `only`. This is the same as [`suite([name], { only: true }[, fn])`][suite options].
+用于将套件标记为 `only` 的简写。这与 [`suite([name], { only: true }[, fn])`][suite options] 相同。
 
 ## `test([name][, options][, fn])`
 
@@ -1650,50 +1650,50 @@ changes:
     description: "Added `timeout` option."
 -->
 
-* `name` {string} The name of the test, as displayed when reporting test results. **Default:** `fn`'s `name` property, or `'<anonymous>'` if `fn` has no name.
-* `options` {Object} Configuration options for the test. Supports the following properties:
-  * `concurrency` {number|boolean} If a number is provided, that many tests will run asynchronously (they are still managed by the single-threaded event loop).
-    If `true`, all scheduled asynchronous tests will run concurrently within the thread. If `false`, only one test runs at a time.
-    If unspecified, subtests inherit this value from their parent.
-    **Default:** `false`.
-  * `expectFailure` {boolean|string|RegExp|Function|Object|Error} If truthy, the test is expected to fail. If a non-empty string is provided, that string is displayed
-    in the test results as the reason the test is expected to fail. If a {RegExp|Function|Object|Error}
-    is provided directly (without wrapping in `{ match: … }`), then the test passes only when the thrown error matches, following
-    the behavior of [`assert.throws`][]. To provide both a reason and validation, pass an object containing
-    `label` (string) and `match` (RegExp, Function, Object, or Error).
-    **Default:** `false`.
-  * `only` {boolean} If truthy and the test context is configured to run `only` tests, then this test will be run. Otherwise, the test will be skipped.
-    **Default:** `false`.
-  * `signal` {AbortSignal} Allows aborting an in-progress test.
-  * `skip` {boolean|string} If truthy, the test is skipped. If a string is provided, that string is displayed in the test results as the reason
-    the test is skipped. **Default:** `false`.
-  * `todo` {boolean|string} If truthy, the test is marked as `TODO`. If a string is provided, that string is displayed in the test results as the reason
-    the test is `TODO`. **Default:** `false`.
-  * `timeout` {number} The number of milliseconds after which the test will fail.
-    If unspecified, subtests inherit this value from their parent.
-    **Default:** `Infinity`.
-  * `plan` {number} The number of assertions and subtests expected to run in the test.
-    If the number of assertions run within the test does not match the number specified in the plan, the test will fail.
-    **Default:** `undefined`.
-* `fn` {Function|AsyncFunction} The function under test. The first argument to this function is a [`TestContext`][] object. If the test uses a callback,
-  the callback function is passed as the second argument. **Default:** A no-op function.
-* Returns: {Promise} Fulfilled with `undefined` once the test is complete, or immediately if the test runs in a suite.
+* `name` {string} 测试的名称，在报告测试结果时显示。**默认：** `fn` 的 `name` 属性；如果 `fn` 没有名称，则为 `'<anonymous>'`。
+* `options` {Object} 测试的配置项。支持以下属性：
+  * `concurrency` {number|boolean} 如果提供的是数字，则会异步运行这么多个测试（它们仍由单线程事件循环管理）。
+    如果为 `true`，所有已调度的异步测试都将在该线程内并发运行。如果为 `false`，则一次只运行一个测试。
+    如果未指定，子测试会从其父级继承此值。
+    **默认：** `false`。
+  * `expectFailure` {boolean|string|RegExp|Function|Object|Error} 如果为真值，则期望该测试失败。如果提供的是非空字符串，则该字符串会在测试结果中显示
+    作为预期失败的原因。如果直接提供的是 `{RegExp|Function|Object|Error}`
+    （而不是包装在 `{ match: … }` 中），那么只有当抛出的错误匹配时，测试才会通过，遵循
+    [`assert.throws`][] 的行为。若要同时提供原因和校验，请传入一个包含
+    `label`（字符串）和 `match`（RegExp、Function、Object 或 Error）的对象。
+    **默认：** `false`。
+  * `only` {boolean} 如果为真值，且测试上下文配置为运行 `only` 测试，则该测试将被运行。否则，测试将被跳过。
+    **默认：** `false`。
+  * `signal` {AbortSignal} 允许中止正在进行中的测试。
+  * `skip` {boolean|string} 如果为真值，则跳过该测试。如果提供的是字符串，则该字符串会在测试结果中显示
+    作为该测试被跳过的原因。**默认：** `false`。
+  * `todo` {boolean|string} 如果为真值，则该测试会被标记为 `TODO`。如果提供的是字符串，则该字符串会在测试结果中显示
+    作为该测试为 `TODO` 的原因。**默认：** `false`。
+  * `timeout` {number} 测试在多少毫秒后失败。
+    如果未指定，子测试会从其父级继承此值。
+    **默认：** `Infinity`。
+  * `plan` {number} 预期在测试中运行的断言和子测试数量。
+    如果测试中运行的断言数量与计划中指定的数量不匹配，测试将失败。
+    **默认：** `undefined`。
+* `fn` {Function|AsyncFunction} 被测试的函数。该函数的第一个参数是一个 [`TestContext`][] 对象。如果测试使用回调，
+  则回调函数作为第二个参数传入。**默认：** 无操作函数。
+* 返回值：{Promise} 测试完成后以 `undefined` 兑现；如果测试在套件中运行，则立即兑现。
 
-The `test()` function is a value imported from the `test` module. Each invocation of this function causes a test to be reported to the {TestsStream}.
+`test()` 函数是从 `test` 模块导入的一个值。每次调用此函数都会向 {TestsStream} 报告一个测试。
 
-The `TestContext` object passed to the `fn` argument can be used to perform actions related to the current test. Examples include skipping tests, adding
-additional diagnostic information, or creating subtests.
+传递给 `fn` 参数的 `TestContext` 对象可用于执行与当前测试相关的操作。示例包括跳过测试、添加
+额外的诊断信息，或创建子测试。
 
-`test()` returns a `Promise` that fulfills once the test completes.
-If `test()` is called within a suite, it fulfills immediately.
-The return value of top-level tests can usually be discarded.
-However, the return value of subtests should be used to prevent the parent test
-from finishing early and canceling the subtest, as in the following example.
+`test()` 返回一个在测试完成后兑现的 `Promise`。
+如果在套件内调用 `test()`，它会立即兑现。
+顶层测试的返回值通常可以忽略。
+但是，子测试的返回值应当使用，以防止父测试
+过早结束并取消子测试，如以下示例所示。
 
 ```js
 test('top level test', async (t) => {
-  // If the 'await' on the next line is removed, the setTimeout() in the following subtest will cause
-  // it to outlive its parent test. Once the parent test completes, it will cancel any unfinished subtests.
+  // 如果删除下一行中的 'await'，则下面子测试中的 setTimeout() 将会导致
+  // 它的存活时间超过其父测试。一旦父测试完成，它将取消任何未完成的子测试。
   await t.test('longer running subtest', async (t) => {
     return new Promise((resolve, reject) => {
       setTimeout(resolve, 1000);
@@ -1702,40 +1702,40 @@ test('top level test', async (t) => {
 });
 ```
 
-The `timeout` option can be used to fail a test if it takes longer than `timeout` milliseconds to complete. However, it is not
-a reliable mechanism for canceling a test, because a running test may block the application thread,
-thus preventing the scheduled cancellation.
+`timeout` 选项可用于在测试执行时间超过 `timeout` 毫秒时使其失败。但是，这不是
+一种可靠的取消测试机制，因为正在运行的测试可能会阻塞应用程序线程，
+从而阻止计划中的取消。
 
 ## `test.skip([name][, options][, fn])`
 
-A shorthand for skipping tests,
-this is the same as [`test([name], { skip: true }[, fn])`][it options].
+用于跳过测试的简写，
+这与 [`test([name], { skip: true }[, fn])`][it options] 相同。
 
 ## `test.todo([name][, options][, fn])`
 
-A shorthand for marking a test as `TODO`,
-this is the same as [`test([name], { todo: true }[, fn])`][it options].
+用于将测试标记为 `TODO` 的简写，
+这与 [`test([name], { todo: true }[, fn])`][it options] 相同。
 
 ## `test.only([name][, options][, fn])`
 
-A shorthand for marking a test as `only`,
-this is the same as [`test([name], { only: true }[, fn])`][it options].
+用于将测试标记为 `only` 的简写，
+这与 [`test([name], { only: true }[, fn])`][it options] 相同。
 
 ## `describe([name][, options][, fn])`
 
-An alias for [`suite()`][].
+[`suite()`][] 的别名。
 
-The `describe()` function is imported from the `node:test` module.
+`describe()` 函数从 `node:test` 模块导入。
 
 ## `describe.skip([name][, options][, fn])`
 
-A shorthand for skipping suites. This is the same as
-[`describe([name], { skip: true }[, fn])`][describe options].
+用于跳过套件的简写。这与
+[`describe([name], { skip: true }[, fn])`][describe options] 相同。
 
 ## `describe.todo([name][, options][, fn])`
 
-A shorthand for marking a suite as `TODO`. This is the same as
-[`describe([name], { todo: true }[, fn])`][describe options].
+用于将套件标记为 `TODO` 的简写。这与
+[`describe([name], { todo: true }[, fn])`][describe options] 相同。
 
 ## `describe.only([name][, options][, fn])`
 
@@ -1745,8 +1745,8 @@ added:
   - v18.15.0
 -->
 
-A shorthand for marking a suite as `only`. This is the same as
-[`describe([name], { only: true }[, fn])`][describe options].
+用于将套件标记为 `only` 的简写。这与
+[`describe([name], { only: true }[, fn])`][describe options] 相同。
 
 ## `it([name][, options][, fn])`
 
@@ -1759,22 +1759,22 @@ changes:
     - v19.8.0
     - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46889
-    description: "Calling `it()` is now equivalent to calling `test()`."
+    description: "调用 `it()` 现在等同于调用 `test()`。"
 -->
 
-An alias for [`test()`][].
+[`test()`][] 的别名。
 
-The `it()` function is imported from the `node:test` module.
+`it()` 函数从 `node:test` 模块导入。
 
 ## `it.skip([name][, options][, fn])`
 
-A shorthand for skipping tests,
-this is the same as [`it([name], { skip: true }[, fn])`][it options].
+用于跳过测试的简写，
+这与 [`it([name], { skip: true }[, fn])`][it options] 相同。
 
 ## `it.todo([name][, options][, fn])`
 
-A shorthand for marking a test as `TODO`,
-this is the same as [`it([name], { todo: true }[, fn])`][it options].
+用于将测试标记为 `TODO` 的简写，
+这与 [`it([name], { todo: true }[, fn])`][it options] 相同。
 
 ## `it.only([name][, options][, fn])`
 
@@ -1784,8 +1784,8 @@ added:
   - v18.15.0
 -->
 
-A shorthand for marking a test as `only`,
-this is the same as [`it([name], { only: true }[, fn])`][it options].
+用于将测试标记为 `only` 的简写，
+这与 [`it([name], { only: true }[, fn])`][it options] 相同。
 
 ## `before([fn][, options])`
 
@@ -1795,22 +1795,22 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} The hook function.
-  If the hook uses a callback,
-  the callback function is passed as the second argument. **Default:** A no-op function.
-* `options` {Object} Configuration options for the hook. Supports the following properties:
-  * `signal` {AbortSignal} Allows aborting an in-progress hook.
-  * `timeout` {number} The number of milliseconds after which the hook will fail.
-    If unspecified, subtests inherit this value from their parent.
-    **Default:** `Infinity`.
+* `fn` {Function|AsyncFunction} 钩子函数。
+  如果钩子使用回调，
+  则回调函数作为第二个参数传入。**默认：** 无操作函数。
+* `options` {Object} 钩子的配置项。支持以下属性：
+  * `signal` {AbortSignal} 允许中止正在进行中的钩子。
+  * `timeout` {number} 钩子在多少毫秒后失败。
+    如果未指定，子测试会从其父级继承此值。
+    **默认：** `Infinity`。
 
-This function creates a hook that runs before executing a suite.
+此函数创建一个在执行套件之前运行的钩子。
 
 ```js
 describe('tests', async () => {
-  before(() => console.log('about to run some test'));
+  before(() => console.log('即将运行一些测试'));
   it('is a subtest', () => {
-    // Some relevant assertions here
+    // 这里有一些相关断言
   });
 });
 ```
@@ -1823,28 +1823,28 @@ added:
  - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} The hook function.
-  If the hook uses a callback,
-  the callback function is passed as the second argument. **Default:** A no-op function.
-* `options` {Object} Configuration options for the hook. Supports the following properties:
-  * `signal` {AbortSignal} Allows aborting an in-progress hook.
-  * `timeout` {number} The number of milliseconds after which the hook will fail.
-    If unspecified, subtests inherit this value from their parent.
-    **Default:** `Infinity`.
+* `fn` {Function|AsyncFunction} 钩子函数。
+  如果钩子使用回调，
+  则回调函数作为第二个参数传入。**默认：** 无操作函数。
+* `options` {Object} 钩子的配置项。支持以下属性：
+  * `signal` {AbortSignal} 允许中止正在进行中的钩子。
+  * `timeout` {number} 钩子在多少毫秒后失败。
+    如果未指定，子测试会从其父级继承此值。
+    **默认：** `Infinity`。
 
-This function creates a hook that runs after executing a suite.
+此函数创建一个在执行套件之后运行的钩子。
 
 ```js
 describe('tests', async () => {
-  after(() => console.log('finished running tests'));
+  after(() => console.log('测试运行结束'));
   it('is a subtest', () => {
-    // Some relevant assertions here
+    // 这里有一些相关断言
   });
 });
 ```
 
-**Note:** The `after` hook is guaranteed to run,
-even if tests within the suite fail.
+**注意：** `after` 钩子保证会运行，
+即使套件内的测试失败也是如此。
 
 ## `beforeEach([fn][, options])`
 
@@ -1854,22 +1854,22 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} The hook function.
-  If the hook uses a callback,
-  the callback function is passed as the second argument. **Default:** A no-op function.
-* `options` {Object} Configuration options for the hook. Supports the following properties:
-  * `signal` {AbortSignal} Allows aborting an in-progress hook.
-  * `timeout` {number} The number of milliseconds after which the hook will fail.
-    If unspecified, subtests inherit this value from their parent.
-    **Default:** `Infinity`.
+* `fn` {Function|AsyncFunction} 钩子函数。
+  如果钩子使用回调，
+  则回调函数作为第二个参数传入。**默认：** 无操作函数。
+* `options` {Object} 钩子的配置项。支持以下属性：
+  * `signal` {AbortSignal} 允许中止正在进行中的钩子。
+  * `timeout` {number} 钩子在多少毫秒后失败。
+    如果未指定，子测试会从其父级继承此值。
+    **默认：** `Infinity`。
 
-This function creates a hook that runs before each test in the current suite.
+此函数创建一个在当前套件中每个测试之前运行的钩子。
 
 ```js
 describe('tests', async () => {
-  beforeEach(() => console.log('about to run a test'));
+  beforeEach(() => console.log('即将运行一个测试'));
   it('is a subtest', () => {
-    // Some relevant assertions here
+    // 这里有一些相关断言
   });
 });
 ```
@@ -1882,23 +1882,23 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} The hook function.
-  If the hook uses a callback,
-  the callback function is passed as the second argument. **Default:** A no-op function.
-* `options` {Object} Configuration options for the hook. Supports the following properties:
-  * `signal` {AbortSignal} Allows aborting an in-progress hook.
-  * `timeout` {number} The number of milliseconds after which the hook will fail.
-    If unspecified, subtests inherit this value from their parent.
-    **Default:** `Infinity`.
+* `fn` {Function|AsyncFunction} 钩子函数。
+  如果钩子使用回调，
+  则回调函数作为第二个参数传入。**默认值：** 一个空操作函数。
+* `options` {Object} 钩子的配置选项。支持以下属性：
+  * `signal` {AbortSignal} 允许中止正在进行的钩子。
+  * `timeout` {number} 钩子失败前的毫秒数。
+    如果未指定，子测试会从其父级继承此值。
+    **默认值：** `Infinity`。
 
-This function creates a hook that runs after each test in the current suite.
-The `afterEach()` hook runs even if tests fail.
+此函数创建一个在当前测试套件中每个测试之后运行的钩子。
+即使测试失败，`afterEach()` 钩子也会运行。
 
 ```js
 describe('tests', async () => {
-  afterEach(() => console.log('finished running a test'));
-  it('is a subtest', () => {
-    // Some relevant assertions here
+  afterEach(() => console.log('测试运行完成'));
+  it('是一个子测试', () => {
+    // 相关断言写在这里
   });
 });
 ```
@@ -1911,9 +1911,9 @@ added:
   - v22.14.0
 -->
 
-An object whose methods are used to configure assertions available on `TestContext` objects in the current process. By default, methods from `node:assert` and snapshot testing functions are available.
+一个对象，其方法用于配置当前进程中 `TestContext` 对象可用的断言。默认情况下，`node:assert` 中的方法和快照测试函数可用。
 
-The same configuration can be applied to all files by placing common configuration code in a module that is preloaded using `--require` or `--import`.
+可以通过将通用配置代码放入通过 `--require` 或 `--import` 预加载的模块中，将相同的配置应用于所有文件。
 
 ### `assert.register(name, fn)`
 
@@ -1923,7 +1923,7 @@ added:
   - v22.14.0
 -->
 
-Defines a new assertion function with the given name and function. If an assertion with the same name already exists, it is replaced.
+使用给定的名称和函数定义一个新的断言函数。如果同名断言已存在，则会被替换。
 
 ## `snapshot`
 
@@ -1931,7 +1931,7 @@ Defines a new assertion function with the given name and function. If an asserti
 added: v22.3.0
 -->
 
-An object whose methods are used to configure the default snapshot settings in the current process. The same configuration can be applied to all files by placing common configuration code in a module that is preloaded using `--require` or `--import`.
+一个对象，其方法用于配置当前进程中的默认快照设置。可以通过将通用配置代码放入通过 `--require` 或 `--import` 预加载的模块中，将相同的配置应用于所有文件。
 
 ### `snapshot.setDefaultSnapshotSerializers(serializers)`
 
@@ -1939,9 +1939,9 @@ An object whose methods are used to configure the default snapshot settings in t
 added: v22.3.0
 -->
 
-* `serializers` {Array} An array of synchronous functions used as the default serializers for snapshot testing.
+* `serializers` {Array} 作为快照测试默认序列化器使用的同步函数数组。
 
-This function is used to customize the default serialization mechanism used by the test runner. By default, the test runner serializes values by calling `JSON.stringify(value, null, 2)` on the provided value. `JSON.stringify()` does have limitations in terms of circular structures and supported data types. If a more robust serialization mechanism is needed, this function should be used.
+此函数用于自定义测试运行器使用的默认序列化机制。默认情况下，测试运行器通过对提供的值调用 `JSON.stringify(value, null, 2)` 来序列化值。`JSON.stringify()` 在循环结构和支持的数据类型方面确实存在限制。如果需要更强大的序列化机制，应使用此函数。
 
 ### `snapshot.setResolveSnapshotPath(fn)`
 
@@ -1949,10 +1949,10 @@ This function is used to customize the default serialization mechanism used by t
 added: v22.3.0
 -->
 
-* `fn` {Function} A function used to calculate the location of snapshot files.
-  This function receives the path to the test file as its only argument. If the test is not associated with a file, such as in a REPL, the input is undefined. `fn()` must return a string specifying the location of the snapshot file.
+* `fn` {Function} 用于计算快照文件位置的函数。
+  此函数接收测试文件的路径作为唯一参数。如果测试未关联文件，例如在 REPL 中，则输入为 undefined。`fn()` 必须返回一个指定快照文件位置的字符串。
 
-This function is used to customize the location of the snapshot files used for snapshot testing. By default, snapshot files are named the same as the entry point file, with a `.snapshot` file extension.
+此函数用于自定义快照测试所使用的快照文件位置。默认情况下，快照文件的名称与入口文件相同，扩展名为 `.snapshot`。
 
 ## Class: `MockFunctionContext`
 
@@ -1962,7 +1962,7 @@ added:
   - v18.13.0
 -->
 
-The `MockFunctionContext` class is used to inspect or manipulate the behavior of a mock created via the [`MockTracker`][] API.
+`MockFunctionContext` 类用于检查或操纵通过 [`MockTracker`][] API 创建的 mock 的行为。
 
 ### `ctx.calls`
 
@@ -1974,15 +1974,15 @@ added:
 
 * Type: {Array}
 
-A getter that returns a copy of the internal array used to track calls to the mock. Each entry in the array is an object with the following properties.
+一个 getter，返回用于跟踪对 mock 调用的内部数组副本。数组中的每个条目都是一个具有以下属性的对象。
 
-* `arguments` {Array} An array of the arguments passed to the mock function.
-* `error` {any} If the mocked function threw an error, this property contains the thrown value. **Default:** `undefined`.
-* `result` {any} The value returned by the mocked function.
-* `stack` {Error} An `Error` object whose stack can be used to determine the call site of the mocked function call.
-* `target` {Function|undefined} If the mocked function is a constructor, this field contains the class being constructed. Otherwise, it will be
-  `undefined`.
-* `this` {any} The `this` value of the mocked function.
+* `arguments` {Array} 传递给 mock 函数的参数数组。
+* `error` {any} 如果被 mock 的函数抛出了错误，则此属性包含抛出的值。**默认值：** `undefined`。
+* `result` {any} 被 mock 函数返回的值。
+* `stack` {Error} 一个 `Error` 对象，其堆栈可用于确定被 mock 函数调用的调用站点。
+* `target` {Function|undefined} 如果被 mock 的函数是构造函数，则此字段包含正在构造的类。否则，它将是
+  `undefined`。
+* `this` {any} 被 mock 函数的 `this` 值。
 
 ### `ctx.callCount()`
 
@@ -1992,9 +1992,9 @@ added:
   - v18.13.0
 -->
 
-* Returns: {integer} The number of times this mock was called.
+* 返回：{integer} 此 mock 被调用的次数。
 
-This function returns the number of times this mock was called. This function is more efficient than checking `ctx.calls.length`, because `ctx.calls` is a getter that creates a copy of the internal call-tracking array.
+此函数返回此 mock 被调用的次数。此函数比检查 `ctx.calls.length` 更高效，因为 `ctx.calls` 是一个会创建内部调用跟踪数组副本的 getter。
 
 ### `ctx.mockImplementation(implementation)`
 
@@ -2004,14 +2004,14 @@ added:
   - v18.13.0
 -->
 
-* `implementation` {Function|AsyncFunction} The function to use as the new implementation of the mock.
+* `implementation` {Function|AsyncFunction} 用作 mock 新实现的函数。
 
-This function is used to change the behavior of an existing mock.
+此函数用于更改现有 mock 的行为。
 
-The following example uses `t.mock.fn()` to create a mock function, calls the mock function, and then changes the mock implementation to a different function.
+以下示例使用 `t.mock.fn()` 创建一个 mock 函数，调用该 mock 函数，然后将 mock 实现更改为另一个函数。
 
 ```js
-test('changes a mock behavior', (t) => {
+test('更改 mock 行为', (t) => {
   let cnt = 0;
 
   function addOne() {
@@ -2041,17 +2041,17 @@ added:
   - v18.13.0
 -->
 
-* `implementation` {Function|AsyncFunction} The function to use as the mock implementation for the call number specified by `onCall`.
-* `onCall` {integer} The call number that will use `implementation`. If
-  the specified call has already occurred, an exception is thrown.
-  **Default:** The number of the next call.
+* `implementation` {Function|AsyncFunction} 用作由 `onCall` 指定的调用编号的 mock 实现的函数。
+* `onCall` {integer} 将使用 `implementation` 的调用编号。如果
+  指定的调用已经发生，则抛出异常。
+  **默认值：** 下一次调用的编号。
 
-This function is used to change the behavior of an existing mock for a single call. Once the `onCall` call occurs, the mock reverts to the behavior it would have had if `mockImplementationOnce()` had not been called.
+此函数用于仅更改现有 mock 单次调用的行为。一旦 `onCall` 指定的调用发生，mock 将恢复为如果未调用 `mockImplementationOnce()` 时本应具有的行为。
 
-The following example uses `t.mock.fn()` to create a mock function, calls the mock function, changes the mock implementation for the next call to a different function, and then reverts to its previous behavior.
+以下示例使用 `t.mock.fn()` 创建一个 mock 函数，调用该 mock 函数，将下一次调用的 mock 实现更改为另一个函数，然后恢复其之前的行为。
 
 ```js
-test('changes a mock behavior once', (t) => {
+test('只更改一次 mock 行为', (t) => {
   let cnt = 0;
 
   function addOne() {
@@ -2081,7 +2081,7 @@ added:
   - v18.13.0
 -->
 
-Resets the call history of the mock function.
+重置 mock 函数的调用历史。
 
 ### `ctx.restore()`
 
@@ -2091,7 +2091,7 @@ added:
   - v18.13.0
 -->
 
-Resets the mock function implementation to its original behavior. The mock can still be used after calling this function.
+将 mock 函数实现重置为其原始行为。调用此函数后仍可继续使用 mock。
 
 ## 类：`MockModuleContext`
 
@@ -2141,7 +2141,7 @@ added:
 
 此函数返回属性被访问的次数。
 此函数比检查 `ctx.accesses.length` 更高效，因为
-`ctx.accesses` 是一个创建内部访问跟踪数组副本的 getter。
+`ctx.accesses` 是一个会创建内部访问跟踪数组副本的 getter。
 
 ### `ctx.mockImplementation(value)`
 
@@ -2220,7 +2220,7 @@ added:
 前两次调用将计数器加二而不是加一。
 
 ```js
-test('mocks a counting function', (t) => {
+test('模拟一个计数函数', (t) => {
   let cnt = 0;
 
   function addOne() {
@@ -2280,7 +2280,7 @@ added:
 示例演示了如何在现有对象方法上创建模拟。
 
 ```js
-test('spies on an object method', (t) => {
+test('监听一个对象方法', (t) => {
   const number = {
     value: 5,
     subtract(a) {
@@ -2361,9 +2361,9 @@ Node.js 内置模块的导出。模拟之前对原始模块的任何引用都不
 以下示例演示了如何为模块创建模拟。
 
 ```js
-test('mocks a builtin module in both module systems', async (t) => {
-  // 创建一个 'node:readline' 的模拟，带有一个名为 'foo' 的命名导出，该导出
-  // 在原始的 'node:readline' 模块中不存在。
+test('模拟内置模块在两种模块系统中的行为', async (t) => {
+  // 为 'node:readline' 创建一个模拟，带有一个名为 'foo' 的命名导出，
+  // 该导出在原始的 'node:readline' 模块中不存在。
   const mock = t.mock.module('node:readline', {
     exports: { foo: () => 42 },
   });
@@ -2410,7 +2410,7 @@ added:
 包括它被读取（getter）或写入（setter）的次数，并在模拟后恢复原始值。
 
 ```js
-test('mocks a property value', (t) => {
+test('模拟一个属性值', (t) => {
   const obj = { foo: 42 };
   const prop = t.mock.property(obj, 'foo', 100);
 
@@ -2962,7 +2962,7 @@ test('runAll functions following the given order', (context) => {
 
 **注意：** `runAll()` 函数是专门为
 在计时器模拟上下文中触发计时器而设计的。
-它对实时系统系统时钟或模拟环境之外的实际计时器没有任何影响。
+它对实时系统时钟或模拟环境之外的实际计时器没有任何影响。
 
 ### `timers.setTime(milliseconds)`
 
@@ -3345,7 +3345,7 @@ added:
 ## `getTestContext()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * 返回值：{TestContext|SuiteContext|undefined}
@@ -3376,7 +3376,7 @@ describe('example suite', () => {
 ## 测试埋点与 OpenTelemetry
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 测试运行器通过 Node.js
@@ -3459,7 +3459,7 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47586
-    description: "The `before` function was added to TestContext."
+    description: "`before` 函数已添加到 TestContext。"
 -->
 
 `TestContext` 的实例会传递给每个测试函数，以便与测试运行器交互。但是，`TestContext` 构造函数并未作为 API 的一部分暴露。
@@ -3496,9 +3496,9 @@ added:
 
 ```js
 test('top level test', async (t) => {
-  t.beforeEach((t) => t.diagnostic(`about to run ${t.name}`));
+  t.beforeEach((t) => t.diagnostic(`即将运行 ${t.name}`));
   await t.test(
-    'This is a subtest',
+    '这是一个子测试',
     (t) => {
       // 此处进行相关的断言
     },
@@ -3523,7 +3523,7 @@ added:
 
 ```js
 test('top level test', async (t) => {
-  t.after((t) => t.diagnostic(`finished running ${t.name}`));
+  t.after((t) => t.diagnostic(`已完成运行 ${t.name}`));
   // 此处进行相关的断言
 });
 ```
@@ -3545,9 +3545,9 @@ added:
 
 ```js
 test('top level test', async (t) => {
-  t.afterEach((t) => t.diagnostic(`finished running ${t.name}`));
+  t.afterEach((t) => t.diagnostic(`已完成运行 ${t.name}`));
   await t.test(
-    'This is a subtest',
+    '这是一个子测试',
     (t) => {
       // 此处进行相关的断言
     },
@@ -3588,7 +3588,7 @@ added:
 此函数将 `value` 序列化并将其写入由 `path` 指定的文件。
 
 ```js
-test('snapshot test with default serialization', (t) => {
+test('使用默认序列化的快照测试', (t) => {
   t.assert.fileSnapshot({ value1: 1, value2: 2 }, './snapshots/snapshot.json');
 });
 ```
@@ -3614,11 +3614,11 @@ added v22.3.0
 此函数实现快照测试的断言。
 
 ```js
-test('snapshot test with default serialization', (t) => {
+test('使用默认序列化的快照测试', (t) => {
   t.assert.snapshot({ value1: 1, value2: 2 });
 });
 
-test('snapshot test with custom serialization', (t) => {
+test('使用自定义序列化的快照测试', (t) => {
   t.assert.snapshot({ value3: 3, value4: 4 }, {
     serializers: [(value) => JSON.stringify(value)],
   });
@@ -3639,7 +3639,7 @@ added:
 
 ```js
 test('top level test', (t) => {
-  t.diagnostic('A diagnostic message');
+  t.diagnostic('一条诊断消息');
 });
 ```
 
@@ -3727,7 +3727,7 @@ import { process } from 'node:process';
 
 test('database operations', async (t) => {
   // 可通过 context 获取 Worker ID
-  console.log(`Running in worker ${t.workerId}`);
+  console.log(`正在 worker ${t.workerId} 中运行`);
 
   // 或通过环境变量（在导入时可用）
   const workerId = process.env.NODE_TEST_WORKER_ID;
@@ -3746,12 +3746,12 @@ changes:
     - v23.9.0
     - v22.15.0
     pr-url: https://github.com/nodejs/node/pull/56765
-    description: "Add the `options` parameter."
+    description: "添加 `options` 参数。"
   - version:
     - v23.4.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/55895
-    description: This function is no longer experimental.
+    description: 此函数不再是实验性功能。
 -->
 
 * `count` {number} 预期运行的断言和子测试的数量。
@@ -3799,11 +3799,11 @@ test('planning with streams', (t, done) => {
 
 ```js
 test('plan with wait: 2000 waits for async assertions', (t) => {
-  t.plan(1, { wait: 2000 }); // 等待最多 2 秒以便断言完成。
+  t.plan(1, { wait: 2000 }); // 最多等待 2 秒以便断言完成。
 
   const asyncActivity = () => {
     setTimeout(() => {
-      t.assert.ok(true, 'Async assertion completed within the wait time');
+      t.assert.ok(true, '异步断言在等待时间内完成');
     }, 1000); // 在 1 秒后完成，在 2 秒的等待时间内。
   };
 
@@ -3869,7 +3869,7 @@ added:
 ```js
 test('top level test', (t) => {
   // 如果测试包含额外逻辑，也请确保在此处返回。
-  t.skip('this is skipped');
+  t.skip('此处被跳过');
 });
 ```
 
@@ -3888,7 +3888,7 @@ added:
 ```js
 test('top level test', (t) => {
   // 此测试被标记为 `TODO`
-  t.todo('this is a todo');
+  t.todo('这是一个待办事项');
 });
 ```
 
@@ -3903,12 +3903,12 @@ changes:
     - v18.8.0
     - v16.18.0
     pr-url: https://github.com/nodejs/node/pull/43554
-    description: "Add a `signal` option."
+    description: "添加 `signal` 选项。"
   - version:
     - v18.7.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43505
-    description: "Add a `timeout` option."
+    description: "添加 `timeout` 选项。"
 -->
 
 * `name` {string} 子测试的名称，在报告测试结果时显示。**默认值：** `fn` 的 `name` 属性，如果 `fn` 没有名称，则为 `'<anonymous>'`。
@@ -3928,7 +3928,7 @@ changes:
 ```js
 test('top level test', async (t) => {
   await t.test(
-    'This is a subtest',
+    '这是一个子测试',
     { only: false, skip: false, concurrency: 1, todo: false, plan: 1 },
     (t) => {
       t.assert.ok('some relevant assertion here');
@@ -4006,7 +4006,7 @@ added:
 ### `context.passed`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * 类型：{boolean}
@@ -4016,7 +4016,7 @@ added: REPLACEME
 ### `context.attempt`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * 类型：{number}
@@ -4026,7 +4026,7 @@ added: REPLACEME
 ### `context.diagnostic(message)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `message` {string} 要输出的诊断消息。

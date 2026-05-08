@@ -2301,7 +2301,7 @@ added:
   - v21.7.0
   - v20.12.0
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/61556
     description: 添加对十六进制颜色的支持。
   - version:
@@ -2845,7 +2845,7 @@ added: v10.0.0
 
 ```js
 util.types.isBigUint64Array(new BigInt64Array());   // 返回 false
-util.types.isBigUint64Array(new BigUint64Array());  // 返回 true
+util.types.isBigUint64Array(new BigUint64Array());   // 返回 true
 ```
 
 ### `util.types.isBooleanObject(value)`
@@ -3523,8 +3523,8 @@ util.types.isWeakSet(new WeakSet());  // 返回 true
 ### `util._extend(target, source)`
 
 <!-- YAML
-added: v0.7.5
-deprecated: v6.0.0
+添加于: v0.7.5
+已弃用: v6.0.0
 -->
 
 > 稳定性：0 - 已弃用：请改用 [`Object.assign()`][]。
@@ -3545,8 +3545,8 @@ npx codemod@latest @nodejs/util-extend-to-object-assign
 ### `util.isArray(object)`
 
 <!-- YAML
-added: v0.6.0
-deprecated: v4.0.0
+添加于: v0.6.0
+已弃用: v4.0.0
 -->
 
 > 稳定性：0 - 已弃用：请改用 [`Array.isArray()`][]。

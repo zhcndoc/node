@@ -2,7 +2,7 @@
 
 <!--introduced_in=v7.7.0-->
 
-<!-- type=misc -->
+<!-- type:misc -->
 
 Node.js API 可能因以下任何原因被弃用：
 
@@ -2196,7 +2196,7 @@ AsyncHooks 提供的嵌入 API 暴露了 `.emitBefore()` 和
 更方便的替代方案。参见
 <https://github.com/nodejs/node/pull/18513>。
 
-### DEP0099:  unaware 异步上下文的 `node::MakeCallback` C++ API
+### DEP0099: 未感知异步上下文的 `node::MakeCallback` C++ API
 
 <!-- YAML
 changes:
@@ -4270,6 +4270,19 @@ changes:
 
 `module.register()` API 提供离线异步钩子用于自定义 ES 模块；`module.registerHooks()` API 提供类似的同步、线程内钩子，并适用于所有类型的模块。
 支持异步钩子已被证明是复杂的，涉及 worker 线程协调，并且存在无法解决的问题。详见 [异步自定义钩子的注意事项][]。请尽快迁移到 `module.registerHooks()`，因为 `module.register()` 将在未来的 Node.js 版本中被移除。
+
+### DEP0206: 在已完成最终化的 `Hmac` 实例上调用 `digest()`
+
+<!-- YAML
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63121
+    description: 仅文档弃用。
+-->
+
+类型：仅文档
+
+多次调用 `hmac.digest()` 会返回一个空缓冲区，而不是抛出错误。此行为与 `hash.digest()` 不一致，并可能导致隐蔽的错误。在已完成最终化的 `Hmac` 实例上调用 `hmac.digest()` 将在未来版本中抛出错误。
 
 [DEP0142]: #dep0142-repl_builtinlibs
 [NIST SP 800-38D]: https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf

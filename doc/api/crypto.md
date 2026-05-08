@@ -853,7 +853,7 @@ const {
 } = await import('node:crypto');
 
 const algorithm = 'aes-192-cbc';
-const password = 'Password used to generate key';
+const password = '用于生成密钥的密码';
 // 密钥长度取决于算法。在这种情况下，对于 aes192，它是
 // 24 字节（192 位）。
 // 请改用异步的 `crypto.scrypt()`。
@@ -890,7 +890,7 @@ const {
 const { Buffer } = require('node:buffer');
 
 const algorithm = 'aes-192-cbc';
-const password = 'Password used to generate key';
+const password = '用于生成密钥的密码';
 // 密钥长度取决于算法。在这种情况下，对于 aes192，它是
 // 24 字节（192 位）。
 // 请改用异步的 `crypto.scrypt()`。
@@ -929,7 +929,7 @@ const {
 } = await import('node:crypto');
 
 const algorithm = 'aes-192-cbc';
-const password = 'Password used to generate key';
+const password = '用于生成密钥的密码';
 // 密钥长度取决于算法。在这种情况下，对于 aes192，它是
 // 24 字节（192 位）。
 // 请改用异步的 `crypto.scrypt()`。
@@ -966,7 +966,7 @@ const {
 const { Buffer } = require('node:buffer');
 
 const algorithm = 'aes-192-cbc';
-const password = 'Password used to generate key';
+const password = '用于生成密钥的密码';
 // 密钥长度取决于算法。在这种情况下，对于 aes192，它是
 // 24 字节（192 位）。
 // 请改用异步的 `crypto.scrypt()`。
@@ -1009,7 +1009,7 @@ const {
 } = await import('node:crypto');
 
 const algorithm = 'aes-192-cbc';
-const password = 'Password used to generate key';
+const password = '用于生成密钥的密码';
 // 请改用异步的 `crypto.scrypt()`。
 const key = scryptSync(password, 'salt', 24);
 // IV 通常与密文一起传递。
@@ -1035,7 +1035,7 @@ const {
 const { Buffer } = require('node:buffer');
 
 const algorithm = 'aes-192-cbc';
-const password = 'Password used to generate key';
+const password = '用于生成密钥的密码';
 // 请改用异步的 `crypto.scrypt()`。
 const key = scryptSync(password, 'salt', 24);
 // IV 通常与密文一起传递。
@@ -1059,7 +1059,7 @@ const {
 } = await import('node:crypto');
 
 const algorithm = 'aes-192-cbc';
-const password = 'Password used to generate key';
+const password = '用于生成密钥的密码';
 // 请改用异步的 `crypto.scrypt()`。
 const key = scryptSync(password, 'salt', 24);
 // IV 通常与密文一起传递。
@@ -1084,7 +1084,7 @@ const {
 const { Buffer } = require('node:buffer');
 
 const algorithm = 'aes-192-cbc';
-const password = 'Password used to generate key';
+const password = '用于生成密钥的密码';
 // 请改用异步的 `crypto.scrypt()`。
 const key = scryptSync(password, 'salt', 24);
 // IV 通常与密文一起传递。
@@ -2199,7 +2199,7 @@ added:
 <!-- YAML
 added: v11.6.0
 changes:
-  - version: v26.0.0
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: 为 ML-KEM 和 SLH-DSA 密钥类型添加了 JWK 格式支持。
   - version: v26.0.0
@@ -3474,7 +3474,7 @@ input.on('readable', () => {
 <!-- YAML
 added: v11.6.0
 changes:
-  - version: v26.0.0
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: Added JWK format support for ML-KEM and SLH-DSA
                  key types.
@@ -3519,7 +3519,7 @@ changes:
 <!-- YAML
 added: v11.6.0
 changes:
-  - version: v26.0.0
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: Added JWK format support for ML-KEM and SLH-DSA
                  key types.
@@ -3655,7 +3655,7 @@ added:
  - v13.9.0
  - v12.17.0
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62527
     description: 除了 KeyObject 实例外，还接受密钥数据。
   - version: v23.11.0
@@ -5079,7 +5079,7 @@ added:
 ### `crypto.randomUUIDv7([options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * `options` {Object}

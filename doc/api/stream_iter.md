@@ -171,7 +171,7 @@ API 支持两种模型：
 推送流使用两部分缓冲系统。可以将其想象为一个桶（槽位）通过软管（待处理写入）填充，并有一个浮阀在桶满时关闭：
 
 ```text
-                          highWaterMark (e.g., 3)
+                          highWaterMark (例如，3)
                                  |
     Producer                     v
        |                    +---------+
@@ -456,7 +456,6 @@ Stream.from('hello');
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -497,7 +496,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -527,7 +525,6 @@ console.log(textSync(fromSync('hello'))); // 'hello'
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -583,7 +580,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -605,7 +601,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -677,7 +672,6 @@ ac.abort(); // 管道在下一次迭代时抛出 AbortError
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -693,7 +687,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -757,7 +750,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -836,7 +828,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -852,7 +843,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -868,7 +858,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -883,7 +872,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -898,7 +886,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -932,7 +919,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -947,7 +933,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -980,7 +965,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -998,7 +982,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1053,7 +1036,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1086,7 +1068,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1125,7 +1106,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1140,7 +1120,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1235,7 +1214,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1249,7 +1227,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1328,7 +1305,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1342,7 +1318,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1358,7 +1333,6 @@ added:
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1386,7 +1360,7 @@ API 之间架起了桥梁。
 ### `fromReadable(readable)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1440,7 +1414,7 @@ run();
 ### `fromWritable(writable[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1498,13 +1472,13 @@ async function run() {
   await pipeTo(from('hello world'),
                fromWritable(writable, { backpressure: 'block' }));
 }
-run();
+run().catch(console.error);
 ```
 
 ### `toReadable(source[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1544,7 +1518,7 @@ readable.pipe(createWriteStream('output.gz'));
 ### `toReadableSync(source[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1579,7 +1553,7 @@ console.log(readable.read().toString()); // 'hello world'
 ### `toWritable(writer)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性

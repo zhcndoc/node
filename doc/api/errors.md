@@ -196,8 +196,8 @@ added: v16.9.0
 此属性允许错误链接。当序列化 `Error` 对象时，如果设置了 [`util.inspect()`][]，则会递归序列化 `error.cause`。
 
 ```js
-const cause = new Error('The remote HTTP server responded with a 500 status');
-const symptom = new Error('The message failed to send', { cause });
+const cause = new Error('远程 HTTP 服务器响应了 500 状态');
+const symptom = new Error('消息发送失败', { cause });
 
 console.log(symptom);
 // 打印：
@@ -2493,6 +2493,32 @@ added:
 
 打开 QUIC 流失败。
 
+<a id="ERR_QUIC_STREAM_ABORTED"></a>
+
+### `ERR_QUIC_STREAM_ABORTED`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+用于抛出 `QuicError` 的 Node.js 错误代码，以使用显式应用程序或传输错误代码中止 QUIC 流
+或会话。
+
+<a id="ERR_QUIC_STREAM_RESET"></a>
+
+### `ERR_QUIC_STREAM_RESET`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+QUIC 流被对端重置。错误包含
+对端提供的重置代码。
+
 <a id="ERR_QUIC_TRANSPORT_ERROR"></a>
 
 ### `ERR_QUIC_TRANSPORT_ERROR`
@@ -2556,7 +2582,7 @@ changes:
 ### `ERR_REQUIRE_ESM_RACE_CONDITION`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 > 稳定性：1 - 实验性。
@@ -4112,6 +4138,7 @@ CRL nextUpdate 字段包含无效时间。
 [`MessagePort`]: worker_threads.md#class-messageport
 [`Object.getPrototypeOf`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getPrototypeOf
 [`Object.setPrototypeOf`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
+[`QuicError`]: quic.md#class-quicerror
 [`REPL`]: repl.md
 [`ServerResponse`]: http.md#class-httpserverresponse
 [`Writable`]: stream.md#class-streamwritable

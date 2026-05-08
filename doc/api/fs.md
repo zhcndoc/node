@@ -330,7 +330,6 @@ added: v10.0.0
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -397,7 +396,6 @@ run().catch(console.error);
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -668,7 +666,7 @@ added:
 <!-- YAML
 added: v10.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/57775
     description: 现在接受额外的 `signal` 属性以允许中止操作。
   - version: v10.5.0
@@ -862,7 +860,6 @@ Promise fulfilled 为一个包含两个属性的对象：
 
 <!-- YAML
 added:
- - v26.0.0
  - v25.9.0
 -->
 
@@ -1124,7 +1121,7 @@ changes:
 <!-- YAML
 added: v22.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62695
     description: 添加对 `followSymlinks` 选项的支持。
   - version:
@@ -2936,7 +2933,7 @@ changes:
 <!-- YAML
 added: v22.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62695
     description: 添加对 `followSymlinks` 选项的支持。
   - version:
@@ -3799,18 +3796,13 @@ changes:
   * `bytesRead` {integer}
   * `buffers` {ArrayBufferView\[]}
 
-从 `fd` 指定的文件读取并使用 `readv()` 写入到 `ArrayBufferView`s
-数组。
+从 `fd` 指定的文件读取，并使用 `readv()` 写入到 `ArrayBufferView` 数组中。
 
-`position` 是从文件开头的数据
-应读取的偏移量。如果 `typeof position !== 'number'`，数据将从
-当前位置读取。
+`position` 是从文件开头算起的数据应读取的偏移量。如果 `typeof position !== 'number'`，数据将从当前位置读取。
 
-回调将被给予三个参数：`err`、`bytesRead` 和
-`buffers`。`bytesRead` 是从文件读取的字节数。
+回调将被赋予三个参数：`err`、`bytesRead` 和 `buffers`。`bytesRead` 是从文件读取的字节数。
 
-如果此方法作为其 [`util.promisify()`][] 版本调用，它返回
-一个带有 `bytesRead` 和 `buffers` 属性的 `Object` 的 promise。
+如果此方法作为其 [`util.promisify()`][] 版本调用，它返回一个带有 `bytesRead` 和 `buffers` 属性的 `Object` 的 promise。
 
 ### `fs.realpath(path[, options], callback)`
 
@@ -3847,34 +3839,25 @@ changes:
   * `err` {Error}
   * `resolvedPath` {string|Buffer}
 
-通过解析 `.`, `..`, 和
-符号链接异步计算规范路径名。
+通过解析 `.`, `..` 和符号链接异步计算规范路径名。
 
-规范路径名不一定是唯一的。硬链接和绑定挂载可以
-通过许多路径名公开文件系统实体。
+规范路径名不一定是唯一的。硬链接和绑定挂载可以通过许多路径名公开文件系统实体。
 
 此函数行为类似 realpath(3)，有一些例外：
 
 1. 在不区分大小写的文件系统上不执行大小写转换。
 
-2. 符号链接的最大数量与平台无关，并且通常
-   (远) 高于原生 realpath(3) 实现支持的数量。
+2. 符号链接的最大数量与平台无关，并且通常（远）高于原生 realpath(3) 实现支持的数量。
 
-`callback` 获取两个参数 `(err, resolvedPath)`。可以使用 `process.cwd`
-来解析相对路径。
+`callback` 获取两个参数 `(err, resolvedPath)`。可以使用 `process.cwd` 来解析相对路径。
 
 仅支持可以转换为 UTF8 字符串的路径。
 
-可选的 `options` 参数可以是一个指定编码的字符串，或者是一个
-带有 `encoding` 属性的对象，指定要用于
-传递给回调的路径的字符编码。如果 `encoding` 设置为 `'buffer'`，
-返回的路径将作为 {Buffer} 对象传递。
+可选的 `options` 参数可以是一个指定编码的字符串，或者是一个带有 `encoding` 属性的对象，指定要用于传递给回调的路径的字符编码。如果 `encoding` 设置为 `'buffer'`，返回的路径将作为 {Buffer} 对象传递。
 
-如果 `path` 解析为 socket 或 pipe，函数将返回该对象的
-系统相关名称。
+如果 `path` 解析为 socket 或 pipe，函数将返回该对象的系统相关名称。
 
-不存在的路径导致 ENOENT 错误。
-`error.path` 是绝对文件路径。
+不存在的路径导致 ENOENT 错误。`error.path` 是绝对文件路径。
 
 ### `fs.realpath.native(path[, options], callback)`
 
@@ -3899,14 +3882,9 @@ changes:
 
 仅支持可以转换为 UTF8 字符串的路径。
 
-可选的 `options` 参数可以是一个指定编码的字符串，或者是一个
-带有 `encoding` 属性的对象，指定要用于
-传递给回调的路径的字符编码。如果 `encoding` 设置为 `'buffer'`，
-返回的路径将作为 {Buffer} 对象传递。
+可选的 `options` 参数可以是一个指定编码的字符串，或者是一个带有 `encoding` 属性的对象，指定要用于传递给回调的路径的字符编码。如果 `encoding` 设置为 `'buffer'`，返回的路径将作为 {Buffer} 对象传递。
 
-在 Linux 上，当 Node.js 链接到 musl libc 时，procfs 文件系统必须
-挂载在 `/proc` 上以便此函数工作。Glibc 没有
-此限制。
+在 Linux 上，当 Node.js 链接到 musl libc 时，procfs 文件系统必须挂载在 `/proc` 上以便此函数工作。Glibc 没有此限制。
 
 ### `fs.rename(oldPath, newPath, callback)`
 
@@ -3932,13 +3910,9 @@ changes:
 * `callback` {Function}
   * `err` {Error}
 
-异步将 `oldPath` 处的文件重命名为提供的
-`newPath` 路径名。如果 `newPath` 已存在，它将被
-覆盖。如果 `newPath` 处有一个目录，则将
-引发错误。除了可能的异常外，没有参数被
-给予完成回调。
+异步将 `oldPath` 处的文件重命名为提供的 `newPath` 路径名。如果 `newPath` 已存在，它将被覆盖。如果 `newPath` 处有一个目录，则将引发错误。除了可能的异常外，没有参数被给予完成回调。
 
-另参见：rename(2)。
+另请参见：rename(2)。
 
 ```mjs
 import { rename } from 'node:fs';
@@ -3992,21 +3966,15 @@ changes:
 -->
 
 * `path` {string|Buffer|URL}
-* `options` {Object} 目前没有暴露选项。过去有
-  `recursive`、`maxBusyTries` 和 `emfileWait` 的选项，但它们已
-  弃用并移除。`options` 参数仍被接受以
-  向后兼容，但它未被使用。
+* `options` {Object} 目前没有暴露选项。过去有 `recursive`、`maxBusyTries` 和 `emfileWait` 的选项，但它们已弃用并移除。`options` 参数仍被接受以向后兼容，但它未被使用。
 * `callback` {Function}
   * `err` {Error}
 
-异步 rmdir(2)。除了可能的异常外，没有参数被给予
-完成回调。
+异步 rmdir(2)。除了可能的异常外，没有参数被给予完成回调。
 
-在文件（不是目录）上使用 `fs.rmdir()` 在
-Windows 上导致 `ENOENT` 错误，在 POSIX 上导致 `ENOTDIR` 错误。
+在文件（不是目录）上使用 `fs.rmdir()` 在 Windows 上导致 `ENOENT` 错误，在 POSIX 上导致 `ENOTDIR` 错误。
 
-要获得类似 `rm -rf` Unix 命令的行为，使用 [`fs.rm()`][]
-并带有选项 `{ recursive: true, force: true }`。
+要获得类似 `rm -rf` Unix 命令的行为，使用 [`fs.rm()`][] 并带有选项 `{ recursive: true, force: true }`。
 
 ### `fs.rm(path[, options], callback)`
 
@@ -4023,22 +3991,13 @@ changes:
 * `path` {string|Buffer|URL}
 * `options` {Object}
   * `force` {boolean} 当为 `true` 时，如果 `path` 不存在，异常将被忽略。**默认值：** `false`。
-  * `maxRetries` {integer} 如果遇到 `EBUSY`、`EMFILE`、`ENFILE`、`ENOTEMPTY` 或
-    `EPERM` 错误，Node.js 将重试操作，每次尝试线性
-    后退等待 `retryDelay` 毫秒。此选项
-    表示重试次数。如果 `recursive`
-    选项不为 `true`，则忽略此选项。**默认值：** `0`。
-  * `recursive` {boolean} 如果为 `true`，执行递归移除。在
-    递归模式下，操作失败时会重试。**默认值：** `false`。
-  * `retryDelay` {integer} 重试之间等待的毫秒数。如果 `recursive`
-    选项不为 `true`，则忽略此选项。
-    **默认值：** `100`。
+  * `maxRetries` {integer} 如果遇到 `EBUSY`、`EMFILE`、`ENFILE`、`ENOTEMPTY` 或 `EPERM` 错误，Node.js 将重试操作，每次尝试线性后退等待 `retryDelay` 毫秒。此选项表示重试次数。如果 `recursive` 选项不为 `true`，则忽略此选项。**默认值：** `0`。
+  * `recursive` {boolean} 如果为 `true`，执行递归移除。在递归模式下，操作失败时会重试。**默认值：** `false`。
+  * `retryDelay` {integer} 重试之间等待的毫秒数。如果 `recursive` 选项不为 `true`，则忽略此选项。**默认值：** `100`。
 * `callback` {Function}
   * `err` {Error}
 
-异步移除文件和目录（基于标准 POSIX `rm`
-实用程序建模）。除了可能的异常外，没有参数被给予
-完成回调。
+异步移除文件和目录（基于标准 POSIX `rm` 实用程序建模）。除了可能的异常外，没有参数被给予完成回调。
 
 ### `fs.stat(path[, options], callback)`
 
@@ -4067,31 +4026,21 @@ changes:
 
 * `path` {string|Buffer|URL}
 * `options` {Object}
-  * `bigint` {boolean} 返回的
-    {fs.Stats} 对象中的数值是否应为 `bigint`。**默认值：** `false`。
-  * `throwIfNoEntry` {boolean} 如果没有文件系统条目存在，是否抛出异常，
-    而不是返回 `undefined`。
-    **默认值：** `true`。
+  * `bigint` {boolean} 返回的 {fs.Stats} 对象中的数值是否应为 `bigint`。**默认值：** `false`。
+  * `throwIfNoEntry` {boolean} 如果没有文件系统条目存在，是否抛出异常，而不是返回 `undefined`。**默认值：** `true`。
 * `callback` {Function}
   * `err` {Error}
   * `stats` {fs.Stats}
 
-异步 stat(2)。回调获取两个参数 `(err, stats)`，其中
-`stats` 是一个 {fs.Stats} 对象。
+异步 stat(2)。回调获取两个参数 `(err, stats)`，其中 `stats` 是一个 {fs.Stats} 对象。
 
 在错误的情况下，`err.code` 将是 [常见系统错误][] 之一。
 
-[`fs.stat()`][] 跟随符号链接。使用 [`fs.lstat()`][] 查看
-链接本身。
+[`fs.stat()`][] 跟随符号链接。使用 [`fs.lstat()`][] 查看链接本身。
 
-不建议在调用
-`fs.open()`、`fs.readFile()` 或 `fs.writeFile()` 之前使用 `fs.stat()` 检查
-文件是否存在。
-相反，用户代码应直接打开/读取/写入文件并处理
-如果文件不可用时引发的错误。
+不建议在调用 `fs.open()`、`fs.readFile()` 或 `fs.writeFile()` 之前使用 `fs.stat()` 检查文件是否存在。相反，用户代码应直接打开/读取/写入文件并处理如果文件不可用时引发的错误。
 
-要检查文件是否存在而不随后操作它，推荐
-[`fs.access()`][]。
+要检查文件是否存在而不随后操作它，推荐 [`fs.access()`][]。
 
 例如，给定以下目录结构：
 
@@ -4173,15 +4122,12 @@ added:
 
 * `path` {string|Buffer|URL}
 * `options` {Object}
-  * `bigint` {boolean} 返回的
-    {fs.StatFs} 对象中的数值是否应为 `bigint`。**默认值：** `false`。
+  * `bigint` {boolean} 返回的 {fs.StatFs} 对象中的数值是否应为 `bigint`。**默认值：** `false`。
 * `callback` {Function}
   * `err` {Error}
   * `stats` {fs.StatFs}
 
-异步 statfs(2)。返回有关包含
-`path` 的挂载文件系统的信息。回调获取两个参数 `(err, stats)`，其中 `stats`
-是一个 {fs.StatFs} 对象。
+异步 statfs(2)。返回有关包含 `path` 的挂载文件系统的信息。回调获取两个参数 `(err, stats)`，其中 `stats` 是一个 {fs.StatFs} 对象。
 
 在错误的情况下，`err.code` 将是 [常见系统错误][] 之一。
 
@@ -4207,18 +4153,11 @@ changes:
 * `callback` {Function}
   * `err` {Error}
 
-创建称为 `path` 的链接指向 `target`。除了可能的
-异常外，没有参数被给予完成回调。
+创建称为 `path` 的链接指向 `target`。除了可能的异常外，没有参数被给予完成回调。
 
 有关更多详细信息，请参阅 POSIX symlink(2) 文档。
 
-`type` 参数仅在 Windows 上可用，在其他平台上被忽略。
-它可以设置为 `'dir'`、`'file'` 或 `'junction'`。如果 `type` 参数是
-`null`，Node.js 将自动检测 `target` 类型并使用 `'file'` 或 `'dir'`。
-如果 `target` 不存在，将使用 `'file'`。Windows 连接点
-要求目标路径为绝对路径。当使用 `'junction'` 时，
-`target` 参数将自动规范化为绝对路径。NTFS 卷上的连接点
-只能指向目录。
+`type` 参数仅在 Windows 上可用，在其他平台上被忽略。它可以设置为 `'dir'`、`'file'` 或 `'junction'`。如果 `type` 参数是 `null`，Node.js 将自动检测 `target` 类型并使用 `'file'` 或 `'dir'`。如果 `target` 不存在，将使用 `'file'`。Windows 连接点要求目标路径为绝对路径。当使用 `'junction'` 时，`target` 参数将自动规范化为绝对路径。NTFS 卷上的连接点只能指向目录。
 
 相对目标是相对于链接的父目录。
 
@@ -4228,8 +4167,7 @@ import { symlink } from 'node:fs';
 symlink('./mew', './mewtwo', callback);
 ```
 
-上面的示例创建一个符号链接 `mewtwo` 指向同一
-目录中的 `mew`：
+上面的示例创建一个符号链接 `mewtwo` 指向同一目录中的 `mew`：
 
 ```bash
 $ tree .
@@ -4262,9 +4200,7 @@ changes:
 * `callback` {Function}
   * `err` {Error|AggregateError}
 
-截断文件。除了可能的异常外，没有参数被
-给予完成回调。文件描述符也可以作为
-第一个参数传递。在这种情况下，调用 `fs.ftruncate()`。
+截断文件。除了可能的异常外，没有参数被给予完成回调。文件描述符也可以作为第一个参数传递。在这种情况下，调用 `fs.ftruncate()`。
 
 ```mjs
 import { truncate } from 'node:fs';
@@ -4284,8 +4220,7 @@ truncate('path/file.txt', (err) => {
 });
 ```
 
-传递文件描述符已弃用，并可能导致在未来抛出
-错误。
+传递文件描述符已弃用，并可能导致在未来抛出错误。
 
 有关更多详细信息，请参阅 POSIX truncate(2) 文档。
 
@@ -4312,8 +4247,7 @@ changes:
 * `callback` {Function}
   * `err` {Error}
 
-异步移除文件或符号链接。除了可能的
-异常外，没有参数被给予完成回调。
+异步移除文件或符号链接。除了可能的异常外，没有参数被给予完成回调。
 
 ```mjs
 import { unlink } from 'node:fs';
@@ -4324,8 +4258,7 @@ unlink('path/file.txt', (err) => {
 });
 ```
 
-`fs.unlink()` 不适用于目录，无论是否为空。要移除
-目录，使用 [`fs.rmdir()`][]。
+`fs.unlink()` 不适用于目录，无论是否为空。要移除目录，使用 [`fs.rmdir()`][]。
 
 有关更多详细信息，请参阅 POSIX unlink(2) 文档。
 
@@ -4336,19 +4269,13 @@ added: v0.1.31
 -->
 
 * `filename` {string|Buffer|URL}
-* `listener` {Function} 可选，之前使用
-  `fs.watchFile()` 附加的监听器
+* `listener` {Function} 可选，之前使用 `fs.watchFile()` 附加的监听器
 
-停止监视 `filename` 的更改。如果指定了 `listener`，仅移除
-该特定监听器。否则，_所有_ 监听器被移除，
-有效地停止监视 `filename`。
+停止监视 `filename` 的更改。如果指定了 `listener`，仅移除该特定监听器。否则，_所有_ 监听器被移除，有效地停止监视 `filename`。
 
-使用未被监视的 filename 调用 `fs.unwatchFile()` 是
-无操作，不是错误。
+使用未被监视的 filename 调用 `fs.unwatchFile()` 是无操作，不是错误。
 
-使用 [`fs.watch()`][] 比 `fs.watchFile()` 和
-`fs.unwatchFile()` 更高效。可能时应使用 `fs.watch()` 代替 `fs.watchFile()`
-和 `fs.unwatchFile()`。
+使用 [`fs.watch()`][] 比 `fs.watchFile()` 和 `fs.unwatchFile()` 更高效。可能时应使用 `fs.watch()` 代替 `fs.watchFile()` 和 `fs.unwatchFile()`。
 
 ### `fs.utimes(path, atime, mtime, callback)`
 
@@ -4385,19 +4312,17 @@ changes:
 
 `atime` 和 `mtime` 参数遵循以下规则：
 
-* 值可以是表示 Unix 纪元时间（秒）的数字、
-  `Date`，或数字字符串如 `'123456789.0'`。
-* 如果值无法转换为数字，或是 `NaN`、`Infinity` 或
-  `-Infinity`，将抛出 `Error`。
+* 值可以是表示 Unix 纪元时间（秒）的数字、`Date`，或数字字符串如 `'123456789.0'`。
+* 如果值无法转换为数字，或是 `NaN`、`Infinity` 或 `-Infinity`，将抛出 `Error`。
 
 ### `fs.watch(filename[, options][, listener])`
 
 <!-- YAML
 added: v0.5.10
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/61870
-    description: Added `throwIfNoEntry` option.
+    description: 添加了 `throwIfNoEntry` 选项。
   - version: v19.1.0
     pr-url: https://github.com/nodejs/node/pull/45098
     description: 为 Linux、AIX 和 IBMi 添加了递归支持。
@@ -4416,106 +4341,70 @@ changes:
 
 * `filename` {string|Buffer|URL}
 * `options` {string|Object}
-  * `persistent` {boolean} Indicates whether the process should continue to run
-    as long as files are being watched. **Default:** `true`.
-  * `recursive` {boolean} Indicates whether all subdirectories should be
-    watched, or only the current directory. This applies when a directory is
-    specified, and only on supported platforms (See [caveats][]). **Default:**
-    `false`.
-  * `encoding` {string} Specifies the character encoding to be used for the
-    filename passed to the listener. **Default:** `'utf8'`.
-  * `signal` {AbortSignal} allows closing the watcher with an AbortSignal.
-  * `throwIfNoEntry` {boolean} Indicates whether an exception should be thrown when the
-    path does not exist. **Default:** `true`.
-  * `ignore` {string|RegExp|Function|Array} Pattern(s) to ignore. Strings are
-    glob patterns (using [`minimatch`][]), RegExp patterns are tested against
-    the filename, and functions receive the filename and return `true` to
-    ignore. **Default:** `undefined`.
-* `listener` {Function|undefined} **Default:** `undefined`
+  * `persistent` {boolean} 表示只要文件被监视，进程就应继续运行。**默认值：** `true`。
+  * `recursive` {boolean} 表示是否应监视所有子目录，还是仅监视当前目录。这适用于指定目录时，并且仅在受支持的平台上有效（参见 [caveats][]）。**默认值：** `false`。
+  * `encoding` {string} 指定传递给监听器的文件名所使用的字符编码。**默认值：** `'utf8'`。
+  * `signal` {AbortSignal} 允许使用 AbortSignal 关闭 watcher。
+  * `throwIfNoEntry` {boolean} 表示当路径不存在时是否应抛出异常。**默认值：** `true`。
+  * `ignore` {string|RegExp|Function|Array} 要忽略的模式。字符串是 glob 模式（使用 [`minimatch`][]），RegExp 模式会针对文件名测试，而函数会接收文件名并返回 `true` 以忽略。**默认值：** `undefined`。
+* `listener` {Function|undefined} **默认值：** `undefined`
   * `eventType` {string}
   * `filename` {string|Buffer|null}
 * 返回：{fs.FSWatcher}
 
-监视 `filename` 的更改，其中 `filename` 是文件或
-目录。
+监视 `filename` 的更改，其中 `filename` 是文件或目录。
 
-第二个参数是可选的。如果 `options` 作为字符串提供，它
-指定 `encoding`。否则 `options` 应作为对象传递。
+第二个参数是可选的。如果 `options` 作为字符串提供，它指定 `encoding`。否则 `options` 应作为对象传递。
 
-监听器回调获取两个参数 `(eventType, filename)`。`eventType`
-是 `'rename'` 或 `'change'`，`filename` 是触发
-事件的文件名。
+监听器回调获取两个参数 `(eventType, filename)`。`eventType` 是 `'rename'` 或 `'change'`，`filename` 是触发事件的文件名。
 
-在大多数平台上，每当文件名出现在目录中或
-从目录中消失时，都会发出 `'rename'` 事件。
+在大多数平台上，每当文件名出现在目录中或从目录中消失时，都会发出 `'rename'` 事件。
 
-监听器回调附加到由
-{fs.FSWatcher} 触发的 `'change'` 事件，但这与
-`eventType` 的 `'change'` 值不同。
+监听器回调附加到由 {fs.FSWatcher} 触发的 `'change'` 事件，但这与 `eventType` 的 `'change'` 值不同。
 
-如果传入了 `signal`，中止对应的 AbortController 将关闭
-返回的 {fs.FSWatcher}。
+如果传入了 `signal`，中止对应的 AbortController 将关闭返回的 {fs.FSWatcher}。
 
 #### 注意事项
 
 <!--type=misc-->
 
-`fs.watch` API  Across 平台并非 100% 一致，并且
-在某些情况下不可用。
+`fs.watch` API 跨平台并非 100% 一致，并且在某些情况下不可用。
 
-在 Windows 上，如果被监视的目录被移动或
-重命名，不会发出任何事件。当被监视的目录被删除时，会报告 `EPERM` 错误。
+在 Windows 上，如果被监视的目录被移动或重命名，不会发出任何事件。当被监视的目录被删除时，会报告 `EPERM` 错误。
 
-`fs.watch` API 不提供任何针对
-文件系统恶意操作的保护。例如，在 Windows 上，它是
-通过监视目录中的变化而不是特定文件来实现的。这
-允许替换文件，并且 fs 会报告具有相同文件名的新文件的变化。
+`fs.watch` API 不提供任何针对文件系统恶意操作的保护。例如，在 Windows 上，它是通过监视目录中的变化而不是特定文件来实现的。这允许替换文件，并且 fs 会报告具有相同文件名的新文件的变化。
 
 ##### 可用性
 
 <!--type=misc-->
 
-此功能依赖于底层操作系统提供某种方式
-来通知文件系统的变化。
+此功能依赖于底层操作系统提供某种方式来通知文件系统的变化。
 
 * 在 Linux 系统上，这使用 [`inotify(7)`][]。
 * 在 BSD 系统上，这使用 [`kqueue(2)`][]。
-* 在 macOS 上，这使用 [`kqueue(2)`][] 监视文件，使用 [`FSEvents`][] 监视
-  目录。
+* 在 macOS 上，这使用 [`kqueue(2)`][] 监视文件，使用 [`FSEvents`][] 监视目录。
 * 在 SunOS 系统上（包括 Solaris 和 SmartOS），这使用 [`event ports`][]。
 * 在 Windows 系统上，此功能依赖于 [`ReadDirectoryChangesW`][]。
 * 在 AIX 系统上，此功能依赖于 [`AHAFS`][]，必须启用它。
 * 在 IBM i 系统上，不支持此功能。
 
-如果由于某种原因底层功能不可用，则
-`fs.watch()` 将无法运行并可能抛出异常。
-例如，在网络文件系统（NFS、SMB 等）或使用虚拟化软件（如 Vagrant 或 Docker）时的主机文件系统上，监视文件或目录可能不可靠，在某些
-情况下甚至不可能。
+如果由于某种原因底层功能不可用，则 `fs.watch()` 将无法运行并可能抛出异常。例如，在网络文件系统（NFS、SMB 等）或使用虚拟化软件（如 Vagrant 或 Docker）时的主机文件系统上，监视文件或目录可能不可靠，在某些情况下甚至不可能。
 
-仍然可以使用 `fs.watchFile()`，它使用 stat 轮询，但
-这种方法较慢且可靠性较低。
+仍然可以使用 `fs.watchFile()`，它使用 stat 轮询，但这种方法较慢且可靠性较低。
 
 ##### Inodes
 
 <!--type=misc-->
 
-在 Linux 和 macOS 系统上，`fs.watch()` 将路径解析为 [inode][] 并
-监视该 inode。如果被监视的路径被删除并重新创建，它将被分配
-一个新的 inode。监视器将为删除发出事件，但将继续
-监视 _原始_ inode。新 inode 的事件将不会发出。
-这是预期行为。
+在 Linux 和 macOS 系统上，`fs.watch()` 将路径解析为 [inode][] 并监视该 inode。如果被监视的路径被删除并重新创建，它将被分配一个新的 inode。监视器将为删除发出事件，但将继续监视 _原始_ inode。新 inode 的事件将不会发出。这是预期行为。
 
-AIX 文件在文件生命周期内保留相同的 inode。在 AIX 上保存并关闭被
-监视的文件将导致两个通知（一个用于添加新
-内容，一个用于截断）。
+AIX 文件在文件生命周期内保留相同的 inode。在 AIX 上保存并关闭被监视的文件将导致两个通知（一个用于添加新内容，一个用于截断）。
 
 ##### filename 参数
 
 <!--type=misc-->
 
-在回调中提供 `filename` 参数仅在 Linux、
-macOS、Windows 和 AIX 上受支持。即使在受支持的平台上，`filename` 也不总是
-保证提供。因此，不要假设回调中总是提供 `filename` 参数，如果它为 `null`，请准备一些回退逻辑。
+在回调中提供 `filename` 参数仅在 Linux、macOS、Windows 和 AIX 上受支持。即使在受支持的平台上，`filename` 也不总是保证提供。因此，不要假设回调中总是提供 `filename` 参数，如果它为 `null`，请准备一些回退逻辑。
 
 ```mjs
 import { watch } from 'node:fs';
@@ -4554,13 +4443,9 @@ changes:
 
 监视 `filename` 的变化。每次访问文件时都会调用回调 `listener`。
 
-`options` 参数可以省略。如果提供，它应该是一个对象。该
-`options` 对象可能包含一个名为 `persistent` 的布尔值，指示
-只要文件被监视，进程是否应继续运行。
-`options` 对象可以指定一个 `interval` 属性，指示目标应该被轮询的频率（以毫秒为单位）。
+`options` 参数可以省略。如果提供，它应该是一个对象。该 `options` 对象可能包含一个名为 `persistent` 的布尔值，指示只要文件被监视，进程是否应继续运行。`options` 对象可以指定一个 `interval` 属性，指示目标应该被轮询的频率（以毫秒为单位）。
 
-`listener` 接收两个参数：当前 stat 对象和上一个
-stat 对象：
+`listener` 接收两个参数：当前 stat 对象和上一个 stat 对象：
 
 ```mjs
 import { watchFile } from 'node:fs';
@@ -4571,25 +4456,15 @@ watchFile('message.text', (curr, prev) => {
 });
 ```
 
-这些 stat 对象是 `fs.Stat` 的实例。如果 `bigint` 选项为 `true`，
-则这些对象中的数值指定为 `BigInt`。
+这些 stat 对象是 `fs.Stat` 的实例。如果 `bigint` 选项为 `true`，则这些对象中的数值指定为 `BigInt`。
 
-要在文件被修改而不仅仅是被访问时收到通知，需要
-比较 `curr.mtimeMs` 和 `prev.mtimeMs`。
+要在文件被修改而不仅仅是被访问时收到通知，需要比较 `curr.mtimeMs` 和 `prev.mtimeMs`。
 
-当 `fs.watchFile` 操作导致 `ENOENT` 错误时，它
-将调用监听器一次，所有字段为零（对于日期，则为
-Unix 纪元）。如果文件稍后创建，监听器将再次被调用，
-并传入最新的 stat 对象。这是自
-v0.10 以来的功能变化。
+当 `fs.watchFile` 操作导致 `ENOENT` 错误时，它将调用监听器一次，所有字段为零（对于日期，则为 Unix 纪元）。如果文件稍后创建，监听器将再次被调用，并传入最新的 stat 对象。这是自 v0.10 以来的功能变化。
 
-使用 [`fs.watch()`][] 比 `fs.watchFile` 和
-`fs.unwatchFile` 更高效。当可能时，应使用 `fs.watch` 代替 `fs.watchFile` 和
-`fs.unwatchFile`。
+使用 [`fs.watch()`][] 比 `fs.watchFile` 和 `fs.unwatchFile` 更高效。当可能时，应使用 `fs.watch` 代替 `fs.watchFile` 和 `fs.unwatchFile`。
 
-当被 `fs.watchFile()` 监视的文件消失并重新出现时，
-第二个回调事件（文件重新出现）中 `previous` 的内容
-将与第一个回调事件（其消失）中 `previous` 的内容相同。
+当被 `fs.watchFile()` 监视的文件消失并重新出现时，第二个回调事件（文件重新出现）中 `previous` 的内容将与第一个回调事件（其消失）中 `previous` 的内容相同。
 
 这种情况发生在：
 
@@ -4636,23 +4511,17 @@ changes:
 
 将 `buffer` 写入由 `fd` 指定的文件。
 
-`offset` 确定要写入的缓冲区部分，`length` 是
-一个整数，指定要写入的字节数。
+`offset` 确定要写入的缓冲区部分，`length` 是一个整数，指定要写入的字节数。
 
-`position` 指的是数据应写入的文件开头的偏移量。如果 `typeof position !== 'number'`，数据将写入
-当前位置。参见 pwrite(2)。
+`position` 指的是数据应写入的文件开头的偏移量。如果 `typeof position !== 'number'`，数据将写入当前位置。参见 pwrite(2)。
 
-回调将获得三个参数 `(err, bytesWritten, buffer)`，其中
-`bytesWritten` 指定从 `buffer` 写入了多少 _字节_。
+回调将获得三个参数 `(err, bytesWritten, buffer)`，其中 `bytesWritten` 指定从 `buffer` 写入了多少 _字节_。
 
-如果此方法作为其 [`util.promisify()`][] 版本被调用，它返回
-一个包含 `bytesWritten` 和 `buffer` 属性的 `Object` 的 promise。
+如果此方法作为其 [`util.promisify()`][] 版本被调用，它返回一个包含 `bytesWritten` 和 `buffer` 属性的 `Object` 的 promise。
 
 在不等待回调的情况下多次在同一文件上使用 `fs.write()` 是不安全的。对于此场景，推荐使用 [`fs.createWriteStream()`][]。
 
-在 Linux 上，当文件以追加模式打开时，位置写入不起作用。
-内核忽略位置参数，并始终将数据追加到
-文件末尾。
+在 Linux 上，当文件以追加模式打开时，位置写入不起作用。内核忽略位置参数，并始终将数据追加到文件末尾。
 
 ### `fs.write(fd, buffer[, options], callback)`
 
@@ -4675,9 +4544,7 @@ added:
 
 将 `buffer` 写入由 `fd` 指定的文件。
 
-与上面的 `fs.write` 函数类似，此版本接受一个
-可选的 `options` 对象。如果未指定 `options` 对象，它将
-默认使用上述值。
+与上面的 `fs.write` 函数类似，此版本接受一个可选的 `options` 对象。如果未指定 `options` 对象，它将默认使用上述值。
 
 ### `fs.write(fd, string[, position[, encoding]], callback)`
 
@@ -4716,29 +4583,19 @@ changes:
   * `written` {integer}
   * `string` {string}
 
-将 `string` 写入由 `fd` 指定的文件。如果 `string` 不是字符串，
-将抛出异常。
+将 `string` 写入由 `fd` 指定的文件。如果 `string` 不是字符串，将抛出异常。
 
-`position` 指的是数据应写入的文件开头的偏移量。如果 `typeof position !== 'number'`，数据将写入
-当前位置。参见 pwrite(2)。
+`position` 指的是数据应写入的文件开头的偏移量。如果 `typeof position !== 'number'`，数据将写入当前位置。参见 pwrite(2)。
 
 `encoding` 是预期的字符串编码。
 
-回调将接收参数 `(err, written, string)`，其中 `written`
-指定传入的字符串需要写入多少 _字节_。写入的字节
-数不一定与写入的字符串字符数相同。参见
-[`Buffer.byteLength`][]。
+回调将接收参数 `(err, written, string)`，其中 `written` 指定传入的字符串需要写入多少 _字节_。写入的字节数不一定与写入的字符串字符数相同。参见 [`Buffer.byteLength`][]。
 
 在不等待回调的情况下多次在同一文件上使用 `fs.write()` 是不安全的。对于此场景，推荐使用 [`fs.createWriteStream()`][]。
 
-在 Linux 上，当文件以追加模式打开时，位置写入不起作用。
-内核忽略位置参数，并始终将数据追加到
-文件末尾。
+在 Linux 上，当文件以追加模式打开时，位置写入不起作用。内核忽略位置参数，并始终将数据追加到文件末尾。
 
-在 Windows 上，如果文件描述符连接到控制台（例如 `fd == 1`
-或 `stdout`），默认情况下包含非 ASCII 字符的字符串将无法正确渲染，无论使用何种编码。
-可以通过使用 `chcp 65001` 命令更改活动代码页来配置控制台以正确渲染 UTF-8。有关更多
-详细信息，请参阅 [chcp][] 文档。
+在 Windows 上，如果文件描述符连接到控制台（例如 `fd == 1` 或 `stdout`），默认情况下包含非 ASCII 字符的字符串将无法正确渲染，无论使用何种编码。可以通过使用 `chcp 65001` 命令更改活动代码页来配置控制台以正确渲染 UTF-8。有关更多详细信息，请参阅 [chcp][] 文档。
 
 ### `fs.writeFile(file, data[, options], callback)`
 
@@ -4796,19 +4653,14 @@ changes:
   * `encoding` {string|null} **默认值：** `'utf8'`
   * `mode` {integer} **默认值：** `0o666`
   * `flag` {string} 参见 [文件系统 `flags` 的支持][]。 **默认值：** `'w'`。
-  * `flush` {boolean} 如果所有数据都成功写入文件，并且
-    `flush` 为 `true`，则使用 `fs.fsync()` 刷新数据。
-    **默认值：** `false`。
+  * `flush` {boolean} 如果所有数据都成功写入文件，并且 `flush` 为 `true`，则使用 `fs.fsync()` 刷新数据。**默认值：** `false`。
   * `signal` {AbortSignal} 允许中止正在进行的 writeFile
 * `callback` {Function}
   * `err` {Error|AggregateError}
 
-当 `file` 是文件名时，异步将数据写入文件，如果文件已存在则替换该
-文件。`data` 可以是字符串或缓冲区。
+当 `file` 是文件名时，异步将数据写入文件，如果文件已存在则替换该文件。`data` 可以是字符串或缓冲区。
 
-当 `file` 是文件描述符时，行为类似于直接调用
-`fs.write()`（推荐使用）。参见下面关于使用
-文件描述符的说明。
+当 `file` 是文件描述符时，行为类似于直接调用 `fs.write()`（推荐使用）。参见下面关于使用文件描述符的说明。
 
 如果 `data` 是缓冲区，则忽略 `encoding` 选项。
 
@@ -4835,13 +4687,9 @@ writeFile('message.txt', 'Hello Node.js', 'utf8', callback);
 
 在不等待回调的情况下多次在同一文件上使用 `fs.writeFile()` 是不安全的。对于此场景，推荐使用 [`fs.createWriteStream()`][]。
 
-与 `fs.readFile` 类似 - `fs.writeFile` 是一个便利方法，
-它在内部执行多次 `write` 调用以写入传递给它的缓冲区。
-对于性能敏感的代码，考虑使用 [`fs.createWriteStream()`][]。
+与 `fs.readFile` 类似 - `fs.writeFile` 是一个便利方法，它在内部执行多次 `write` 调用以写入传递给它的缓冲区。对于性能敏感的代码，考虑使用 [`fs.createWriteStream()`][]。
 
-可以使用 {AbortSignal} 来取消 `fs.writeFile()`。
-取消是“尽最大努力”，可能仍会有少量数据
-被写入。
+可以使用 {AbortSignal} 来取消 `fs.writeFile()`。取消是“尽最大努力”，可能仍会有少量数据被写入。
 
 ```mjs
 import { writeFile } from 'node:fs';
@@ -4857,13 +4705,11 @@ writeFile('message.txt', data, { signal }, (err) => {
 controller.abort();
 ```
 
-中止正在进行的请求不会中止单个操作系统
-请求，而是中止 `fs.writeFile` 执行的内部缓冲。
+中止正在进行的请求不会中止单个操作系统请求，而是中止 `fs.writeFile` 执行的内部缓冲。
 
 #### 将 `fs.writeFile()` 与文件描述符一起使用
 
-当 `file` 是文件描述符时，行为几乎与直接
-调用 `fs.write()` 相同，例如：
+当 `file` 是文件描述符时，行为几乎与直接调用 `fs.write()` 相同，例如：
 
 ```mjs
 import { write } from 'node:fs';
@@ -4872,22 +4718,11 @@ import { Buffer } from 'node:buffer';
 write(fd, Buffer.from(data, options.encoding), callback);
 ```
 
-与直接调用 `fs.write()` 的区别在于，在某些不寻常
-的情况下，`fs.write()` 可能只写入缓冲区的一部分，需要
-重试以写入剩余数据，而 `fs.writeFile()` 会重试直到
-数据完全写入（或发生错误）。
+与直接调用 `fs.write()` 的区别在于，在某些不寻常的情况下，`fs.write()` 可能只写入缓冲区的一部分，需要重试以写入剩余数据，而 `fs.writeFile()` 会重试直到数据完全写入（或发生错误）。
 
-这一点的影响是一个常见的混淆来源。在
-文件描述符的情况下，文件不会被替换！数据不一定
-写入文件的开头，文件的原始数据可能保留
-在新写入数据之前和/或之后。
+这一点的影响是一个常见的混淆来源。在文件描述符的情况下，文件不会被替换！数据不一定写入文件的开头，文件的原始数据可能保留在新写入数据之前和/或之后。
 
-例如，如果连续调用两次 `fs.writeFile()`，第一次写入
-字符串 `'Hello'`，然后写入字符串 `', World'`，文件将包含
-`'Hello, World'`，并且可能包含文件的一些原始数据（取决于
-原始文件的大小和文件描述符的位置）。如果
-使用的是文件名而不是描述符，文件将保证
-只包含 `', World'`。
+例如，如果连续调用两次 `fs.writeFile()`，第一次写入字符串 `'Hello'`，然后写入字符串 `', World'`，文件将包含 `'Hello, World'`，并且可能包含文件的一些原始数据（取决于原始文件的大小和文件描述符的位置）。如果使用的是文件名而不是描述符，文件将保证只包含 `', World'`。
 
 ### `fs.writev(fd, buffers[, position], callback)`
 
@@ -4907,23 +4742,17 @@ changes:
   * `bytesWritten` {integer}
   * `buffers` {ArrayBufferView\[]}
 
-使用
-`writev()` 将 `ArrayBufferView` 数组写入由 `fd` 指定的文件。
+使用 `writev()` 将 `ArrayBufferView` 数组写入由 `fd` 指定的文件。
 
-`position` 是数据应写入的文件开头的偏移量。如果 `typeof position !== 'number'`，数据将写入
-当前位置。
+`position` 是数据应写入的文件开头的偏移量。如果 `typeof position !== 'number'`，数据将写入当前位置。
 
-回调将获得三个参数：`err`、`bytesWritten` 和
-`buffers`。`bytesWritten` 是从 `buffers` 写入的字节数。
+回调将获得三个参数：`err`、`bytesWritten` 和 `buffers`。`bytesWritten` 是从 `buffers` 写入的字节数。
 
-如果此方法被 [`util.promisify()`][]，它返回一个包含
-`bytesWritten` 和 `buffers` 属性的 `Object` 的 promise。
+如果此方法被 [`util.promisify()`][]，它返回一个包含 `bytesWritten` 和 `buffers` 属性的 `Object` 的 promise。
 
 在不等待回调的情况下多次在同一文件上使用 `fs.writev()` 是不安全的。对于此场景，使用 [`fs.createWriteStream()`][]。
 
-在 Linux 上，当文件以追加模式打开时，位置写入不起作用。
-内核忽略位置参数，并始终将数据追加到
-文件末尾。
+在 Linux 上，当文件以追加模式打开时，位置写入不起作用。内核忽略位置参数，并始终将数据追加到文件末尾。
 
 ## 同步 API
 
@@ -5272,7 +5101,7 @@ changes:
 <!-- YAML
 added: v22.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62695
     description: 为 `followSymlinks` 选项添加支持。
   - version:
@@ -5611,7 +5440,7 @@ import { readFileSync } from 'node:fs';
 
 // macOS、Linux 和 Windows
 readFileSync('<directory>');
-// => [Error: EISDIR: illegal operation on a directory, read <directory("")]
+// => [Error: EISDIR: illegal operation on a directory, read <directory")]
 
 //  FreeBSD
 readFileSync('<directory>'); // => <data>
@@ -7062,7 +6891,7 @@ added:
 #### `statfs.frsize`
 
 <!-- YAML
-added: REPLACEME
+added: v26.1.0
 -->
 
 * 类型：{number|bigint}
@@ -8075,7 +7904,7 @@ fs.open('<directory>', 'a+', (err, fd) => {
 [`fs.lstat()`]: #fslstatpath-options-callback
 [`fs.lutimes()`]: #fslutimespath-atime-mtime-callback
 [`fs.mkdir()`]: #fsmkdirpath-options-callback
-[`fs.mkdtemp()`]: #fsmkdtempprefix-options-callback
+[`fs.mkdtemp()`]: #fsmk dtempprefix-options-callback
 [`fs.open()`]: #fsopenpath-flags-mode-callback
 [`fs.opendir()`]: #fsopendirpath-options-callback
 [`fs.opendirSync()`]: #fsopendirsyncpath-options
