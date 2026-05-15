@@ -13,8 +13,6 @@ import worker_threads from 'node:worker_threads';
 ```
 
 ```cjs
-'use strict';
-
 const worker_threads = require('node:worker_threads');
 ```
 
@@ -45,15 +43,13 @@ export default function parseJSAsync(script) {
     worker.once('error', reject);
     worker.once('exit', (code) => {
       if (code !== 0)
-        reject(new Error(`Worker 停止，退出代码为 ${code}`));
+        reject(new Error(`Worker 已停止，退出代码为 ${code}`));
     });
   });
 };
 ```
 
 ```cjs
-'use strict';
-
 const {
   Worker,
   isMainThread,
@@ -71,7 +67,7 @@ if (isMainThread) {
       worker.once('error', reject);
       worker.once('exit', (code) => {
         if (code !== 0)
-          reject(new Error(`Worker 停止，退出代码为 ${code}`));
+          reject(new Error(`Worker 已停止，退出代码为 ${code}`));
       });
     });
   };
@@ -124,8 +120,6 @@ if (isMainThread) {
 ```
 
 ```cjs
-'use strict';
-
 const {
   Worker,
   isMainThread,
@@ -165,8 +159,6 @@ console.log(isInternalThread);  // true
 
 ```cjs
 // loader.js
-'use strict';
-
 const { isInternalThread } = require('node:worker_threads');
 console.log(isInternalThread);  // true
 ```
@@ -179,8 +171,6 @@ console.log(isInternalThread);  // false
 
 ```cjs
 // main.js
-'use strict';
-
 const { isInternalThread } = require('node:worker_threads');
 console.log(isInternalThread);  // false
 ```
@@ -208,8 +198,6 @@ if (isMainThread) {
 ```
 
 ```cjs
-'use strict';
-
 const { Worker, isMainThread } = require('node:worker_threads');
 
 if (isMainThread) {
@@ -264,8 +252,6 @@ console.log(typedArray2);
 ```
 
 ```cjs
-'use strict';
-
 const { MessageChannel, markAsUntransferable } = require('node:worker_threads');
 
 const pooledBuffer = new ArrayBuffer(8);
@@ -314,8 +300,6 @@ isMarkedAsUntransferable(pooledBuffer);  // 返回 true。
 ```
 
 ```cjs
-'use strict';
-
 const { markAsUntransferable, isMarkedAsUntransferable } = require('node:worker_threads');
 
 const pooledBuffer = new ArrayBuffer(8);
@@ -357,8 +341,6 @@ try {
 ```
 
 ```cjs
-'use strict';
-
 const { markAsUncloneable } = require('node:worker_threads');
 
 const anyObject = { foo: 'bar' };
@@ -423,8 +405,6 @@ if (isMainThread) {
 ```
 
 ```cjs
-'use strict';
-
 const { Worker, isMainThread, parentPort } = require('node:worker_threads');
 
 if (isMainThread) {
@@ -515,9 +495,6 @@ channel.onmessage = channel.close;
 ```
 
 ```cjs
-'use strict';
-
-const process = require('node:process');
 const {
   postMessageToThread,
   threadId,
@@ -582,8 +559,6 @@ console.log(receiveMessageOnPort(port2));
 ```
 
 ```cjs
-'use strict';
-
 const { MessageChannel, receiveMessageOnPort } = require('node:worker_threads');
 const { port1, port2 } = new MessageChannel();
 port1.postMessage({ hello: 'world' });
@@ -638,8 +613,6 @@ new Worker('process.env.SET_IN_WORKER = "foo"', { eval: true, env: SHARE_ENV })
 ```
 
 ```cjs
-'use strict';
-
 const { Worker, SHARE_ENV } = require('node:worker_threads');
 new Worker('process.env.SET_IN_WORKER = "foo"', { eval: true, env: SHARE_ENV })
   .once('exit', () => {
@@ -715,8 +688,6 @@ if (isMainThread) {
 ```
 
 ```cjs
-'use strict';
-
 const { Worker, isMainThread, workerData } = require('node:worker_threads');
 
 if (isMainThread) {
@@ -780,8 +751,6 @@ import { locks } from 'node:worker_threads';
 ```
 
 ```cjs
-'use strict';
-
 const { locks } = require('node:worker_threads');
 ```
 
@@ -817,8 +786,6 @@ await locks.request('my_resource', async (lock) => {
 ```
 
 ```cjs
-'use strict';
-
 const { locks } = require('node:worker_threads');
 
 locks.request('my_resource', async (lock) => {
@@ -851,8 +818,6 @@ for (const pending of snapshot.pending) {
 ```
 
 ```cjs
-'use strict';
-
 const { locks } = require('node:worker_threads');
 
 locks.query().then((snapshot) => {
@@ -901,8 +866,6 @@ if (isMainThread) {
 ```
 
 ```cjs
-'use strict';
-
 const {
   isMainThread,
   BroadcastChannel,
@@ -1000,8 +963,6 @@ port2.postMessage({ foo: 'bar' });
 ```
 
 ```cjs
-'use strict';
-
 const { MessageChannel } = require('node:worker_threads');
 
 const { port1, port2 } = new MessageChannel();
@@ -1050,8 +1011,6 @@ port1.close();
 ```
 
 ```cjs
-'use strict';
-
 const { MessageChannel } = require('node:worker_threads');
 const { port1, port2 } = new MessageChannel();
 
@@ -1173,8 +1132,6 @@ port2.postMessage(circularData);
 ```
 
 ```cjs
-'use strict';
-
 const { MessageChannel } = require('node:worker_threads');
 const { port1, port2 } = new MessageChannel();
 
@@ -1216,8 +1173,6 @@ port2.postMessage({ port: otherChannel.port1 }, [ otherChannel.port1 ]);
 ```
 
 ```cjs
-'use strict';
-
 const { MessageChannel } = require('node:worker_threads');
 const { port1, port2 } = new MessageChannel();
 
@@ -1274,8 +1229,6 @@ console.log(u2.length);  // 打印 0
 
 因为对象克隆使用 [HTML 结构化克隆算法][]，所以不可枚举的属性、属性访问器和对象原型不会被保留。特别是，{Buffer} 对象在接收端将被读取为普通的 {Uint8Array}，JavaScript 类的实例将被克隆为普通的 JavaScript 对象。
 
-<!-- eslint-disable no-unused-private-class-members -->
-
 ```js
 const b = Symbol('b');
 
@@ -1286,7 +1239,7 @@ class Foo {
     this.c = 3;
   }
 
-  get d() { return 4; }
+  get d() { return this.#a + 3; }
 }
 
 const { port1, port2 } = new MessageChannel();
@@ -1434,8 +1387,6 @@ if (isMainThread) {
 ```
 
 ```cjs
-'use strict';
-
 const assert = require('node:assert');
 const {
   Worker, MessageChannel, MessagePort, isMainThread, parentPort,
@@ -1751,8 +1702,6 @@ if (isMainThread) {
 ```
 
 ```cjs
-'use strict';
-
 const { Worker, isMainThread, parentPort } = require('node:worker_threads');
 
 if (isMainThread) {
@@ -2042,7 +1991,7 @@ added: v10.5.0
 活动的句柄。如果 worker 已经 `unref()` 过，再次调用
 `unref()` 没有效果。
 
-### `worker[Symbol.asyncDispose]()`
+### `worker[Symbol.asyncDispose]()` 
 
 <!-- YAML
 added:
@@ -2074,7 +2023,7 @@ import {
 if (isMainThread) {
   new Worker(new URL(import.meta.url));
   for (let n = 0; n < 1e10; n++) {
-    // 循环用于模拟工作。
+    // 此循环用于模拟工作。
   }
 } else {
   // 此输出将被主线程中的 for 循环阻塞。
@@ -2083,8 +2032,6 @@ if (isMainThread) {
 ```
 
 ```cjs
-'use strict';
-
 const {
   Worker,
   isMainThread,
@@ -2093,7 +2040,7 @@ const {
 if (isMainThread) {
   new Worker(__filename);
   for (let n = 0; n < 1e10; n++) {
-    // 循环用于模拟工作。
+    // 此循环用于模拟工作。
   }
 } else {
   // 此输出将被主线程中的 for 循环阻塞。

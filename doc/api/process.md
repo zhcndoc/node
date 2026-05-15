@@ -12,6 +12,8 @@
 import process from 'node:process';
 ```
 
+<!-- eslint-disable no-restricted-syntax -->
+
 ```cjs
 const process = require('node:process');
 ```
@@ -54,8 +56,6 @@ console.log('这条消息会先显示。');
 ```
 
 ```cjs
-const process = require('node:process');
-
 process.on('beforeExit', (code) => {
   console.log('进程 beforeExit 事件，代码：', code);
 });
@@ -106,8 +106,6 @@ process.on('exit', (code) => {
 ```
 
 ```cjs
-const process = require('node:process');
-
 process.on('exit', (code) => {
   console.log(`即将以代码 ${code} 退出`);
 });
@@ -126,8 +124,6 @@ process.on('exit', (code) => {
 ```
 
 ```cjs
-const process = require('node:process');
-
 process.on('exit', (code) => {
   setTimeout(() => {
     console.log('这不会运行');
@@ -183,8 +179,6 @@ process.on('rejectionHandled', (promise) => {
 ```
 
 ```cjs
-const process = require('node:process');
-
 const unhandledRejections = new Map();
 process.on('unhandledRejection', (reason, promise) => {
   unhandledRejections.set(promise, reason);
@@ -248,7 +242,6 @@ console.log('这不会运行。');
 ```
 
 ```cjs
-const process = require('node:process');
 const fs = require('node:fs');
 
 process.on('uncaughtException', (err, origin) => {
@@ -310,8 +303,6 @@ nonexistentFunc();
 ```
 
 ```cjs
-const process = require('node:process');
-
 process.on('uncaughtExceptionMonitor', (err, origin) => {
   MyMonitoringTool.logSync(err, origin);
 });
@@ -353,8 +344,6 @@ somePromise.then((res) => {
 ```
 
 ```cjs
-const process = require('node:process');
-
 process.on('unhandledRejection', (reason, promise) => {
   console.log('未处理的拒绝位置：', promise, '原因：', reason);
   // 应用程序特定的日志记录、抛出错误或其他逻辑在此处
@@ -380,8 +369,6 @@ const resource = new SomeResource();
 ```
 
 ```cjs
-const process = require('node:process');
-
 function SomeResource() {
   // 最初将加载状态设置为被拒绝的 promise
   this.loaded = Promise.reject(new Error('资源尚未加载！'));
@@ -421,8 +408,6 @@ process.on('warning', (warning) => {
 ```
 
 ```cjs
-const process = require('node:process');
-
 process.on('warning', (warning) => {
   console.warn(warning.name);    // 打印警告名称
   console.warn(warning.message); // 打印警告消息
@@ -526,8 +511,6 @@ process.on('SIGTERM', handle);
 ```
 
 ```cjs
-const process = require('node:process');
-
 // 开始从 stdin 读取，以便进程不会退出。
 process.stdin.resume();
 
@@ -597,8 +580,6 @@ process.addUncaughtExceptionCaptureCallback((err) => {
 ```
 
 ```cjs
-const process = require('node:process');
-
 process.addUncaughtExceptionCaptureCallback((err) => {
   console.error('捕获到异常：', err.message);
   return true; // 表示异常已处理
@@ -845,30 +826,28 @@ changes:
 
 可能输出的示例如下：
 
-<!-- eslint-skip -->
-
-```js
+```json
 {
-  target_defaults:
-   { cflags: [],
-     default_configuration: 'Release',
-     defines: [],
-     include_dirs: [],
-     libraries: [] },
-  variables:
+  "target_defaults":
+   { "cflags": [],
+     "default_configuration": "Release",
+     "defines": [],
+     "include_dirs": [],
+     "libraries": [] },
+  "variables":
    {
-     host_arch: 'x64',
-     napi_build_version: 5,
-     node_install_npm: 'true',
-     node_prefix: '',
-     node_shared_cares: 'false',
-     node_shared_http_parser: 'false',
-     node_shared_libuv: 'false',
-     node_shared_zlib: 'false',
-     node_use_openssl: 'true',
-     node_shared_openssl: 'false',
-     target_arch: 'x64',
-     v8_use_snapshot: 1
+     "host_arch": "x64",
+     "napi_build_version": 5,
+     "node_install_npm": "true",
+     "node_prefix": "",
+     "node_shared_cares": "false",
+     "node_shared_http_parser": "false",
+     "node_shared_libuv": "false",
+     "node_shared_zlib": "false",
+     "node_use_openssl": "true",
+     "node_shared_openssl": "false",
+     "target_arch": "x64",
+     "v8_use_snapshot": 1
    }
 }
 ```
@@ -992,8 +971,6 @@ process.debugPort = 5858;
 ```
 
 ```cjs
-const process = require('node:process');
-
 process.debugPort = 5858;
 ```
 
@@ -1108,8 +1085,6 @@ process.on('warning', (warning) => {
 ```
 
 ```cjs
-const process = require('node:process');
-
 process.on('warning', (warning) => {
   console.warn(warning.name);    // 'Warning'
   console.warn(warning.message); // 'Something happened!'
@@ -1194,8 +1169,6 @@ process.on('warning', (warning) => {
 ```
 
 ```cjs
-const process = require('node:process');
-
 process.on('warning', (warning) => {
   console.warn(warning.name);
   console.warn(warning.message);
@@ -1295,20 +1268,18 @@ changes:
 
 该对象的示例如下：
 
-<!-- eslint-skip -->
-
-```js
+```json
 {
-  TERM: 'xterm-256color',
-  SHELL: '/usr/local/bin/bash',
-  USER: 'maciej',
-  PATH: '~/.bin/:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin',
-  PWD: '/Users/maciej',
-  EDITOR: 'vim',
-  SHLVL: '1',
-  HOME: '/Users/maciej',
-  LOGNAME: 'maciej',
-  _: '/usr/local/bin/node'
+  "TERM": "xterm-256color",
+  "SHELL": "/usr/local/bin/bash",
+  "USER": "maciej",
+  "PATH": "~/.bin/:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin",
+  "PWD": "/Users/maciej",
+  "EDITOR": "vim",
+  "SHLVL": "1",
+  "HOME": "/Users/maciej",
+  "LOGNAME": "maciej",
+  "_": "/usr/local/bin/node"
 }
 ```
 
@@ -1421,10 +1392,8 @@ node --icu-data-dir=./foo --require ./bar.js script.js --version
 
 以及 `process.argv`：
 
-<!-- eslint-disable @stylistic/js/semi -->
-
-```js
-['/usr/local/bin/node', 'script.js', '--version']
+```json
+["/usr/local/bin/node", "script.js", "--version"]
 ```
 
 有关此属性的工作线程详细行为，请参阅 [`Worker` 构造函数][]。
@@ -1439,10 +1408,8 @@ added: v0.1.100
 
 `process.execPath` 属性返回启动 Node.js 进程的可执行文件的绝对路径名。符号链接（如果有）将被解析。
 
-<!-- eslint-disable @stylistic/js/semi -->
-
-```js
-'/usr/local/bin/node'
+```json
+"/usr/local/bin/node"
 ```
 
 ## `process.execve(file[, args[, env]])`
@@ -1546,9 +1513,8 @@ if (someConditionNotMet()) {
 ```
 
 ```cjs
-const process = require('node:process');
-
-// 如何正确设置退出代码同时让进程优雅退出。
+// How to properly set the exit code while letting
+// the process exit gracefully.
 if (someConditionNotMet()) {
   printUsageToStdout();
   process.exitCode = 1;
@@ -2041,8 +2007,6 @@ if (process.getegid) {
 ```
 
 ```cjs
-const process = require('node:process');
-
 if (process.getegid) {
   console.log(`当前 gid: ${process.getegid()}`);
 }
@@ -2069,8 +2033,6 @@ if (process.geteuid) {
 ```
 
 ```cjs
-const process = require('node:process');
-
 if (process.geteuid) {
   console.log(`当前 uid: ${process.geteuid()}`);
 }
@@ -2097,8 +2059,6 @@ if (process.getgid) {
 ```
 
 ```cjs
-const process = require('node:process');
-
 if (process.getgid) {
   console.log(`当前 gid: ${process.getgid()}`);
 }
@@ -2125,8 +2085,6 @@ if (process.getgroups) {
 ```
 
 ```cjs
-const process = require('node:process');
-
 if (process.getgroups) {
   console.log(process.getgroups()); // [ 16, 21, 297 ]
 }
@@ -2153,8 +2111,6 @@ if (process.getuid) {
 ```
 
 ```cjs
-const process = require('node:process');
-
 if (process.getuid) {
   console.log(`当前 uid: ${process.getuid()}`);
 }
@@ -2202,7 +2158,7 @@ setTimeout(() => {
   const diff = hrtime(time);
   // [ 1, 552 ]
 
-  console.log(`Benchmark took ${diff[0] * NS_PER_SEC + diff[1]} nanoseconds`);
+  console.log(`基准测试耗时 ${diff[0] * NS_PER_SEC + diff[1]} 纳秒`);
   // 基准测试耗时 1000000552 纳秒
 }, 1000);
 ```
@@ -2218,7 +2174,7 @@ setTimeout(() => {
   const diff = hrtime(time);
   // [ 1, 552 ]
 
-  console.log(`Benchmark took ${diff[0] * NS_PER_SEC + diff[1]} nanoseconds`);
+  console.log(`基准测试耗时 ${diff[0] * NS_PER_SEC + diff[1]} 纳秒`);
   // 基准测试耗时 1000000552 纳秒
 }, 1000);
 ```
@@ -2245,7 +2201,7 @@ setTimeout(() => {
   const end = hrtime.bigint();
   // 191052633396993n
 
-  console.log(`Benchmark took ${end - start} nanoseconds`);
+  console.log(`基准测试耗时 ${end - start} 纳秒`);
   // 基准测试耗时 1154389282 纳秒
 }, 1000);
 ```
@@ -2260,7 +2216,7 @@ setTimeout(() => {
   const end = hrtime.bigint();
   // 191052633396993n
 
-  console.log(`Benchmark took ${end - start} nanoseconds`);
+  console.log(`基准测试耗时 ${end - start} 纳秒`);
   // 基准测试耗时 1154389282 纳秒
 }, 1000);
 ```
@@ -2334,8 +2290,6 @@ kill(process.pid, 'SIGHUP');
 ```
 
 ```cjs
-const process = require('node:process');
-
 process.on('SIGHUP', () => {
   console.log('收到 SIGHUP 信号。');
 });
@@ -2708,7 +2662,7 @@ added: v0.8.0
 
 * 类型：{boolean}
 
-`process.noDeprecation` 属性指示当前 Node.js 进程是否设置了 `--no-deprecation` 标志。有关此标志行为的更多信息，请参阅 [`'warning'` 事件][process_warning] 和 [`emitWarning()` 方法][process_emit_warning] 的文档。
+`process.noDeprecation` 属性表示当前 Node.js 进程是否设置了 `--no-deprecation` 标志。有关此标志行为的更多信息，请参阅 [`'warning'` 事件][process_warning] 和 [`emitWarning()` 方法][process_emit_warning] 的文档。
 
 ## `process.permission`
 
@@ -2873,15 +2827,13 @@ changes:
   * `'Hydrogen'` 对应始于 18.12.0 的 18.x LTS 系列。
     对于其他 LTS 版本代号，请参阅 [Node.js 变更日志存档](https://github.com/nodejs/node/blob/HEAD/doc/changelogs/CHANGELOG_ARCHIVE.md)
 
-<!-- eslint-skip -->
-
-```js
+```json
 {
-  name: 'node',
-  lts: 'Hydrogen',
-  sourceUrl: 'https://nodejs.org/download/release/v18.12.0/node-v18.12.0.tar.gz',
-  headersUrl: 'https://nodejs.org/download/release/v18.12.0/node-v18.12.0-headers.tar.gz',
-  libUrl: 'https://nodejs.org/download/release/v18.12.0/win-x64/node.lib'
+  "name": "node",
+  "lts": "Hydrogen",
+  "sourceUrl": "https://nodejs.org/download/release/v18.12.0/node-v18.12.0.tar.gz",
+  "headersUrl": "https://nodejs.org/download/release/v18.12.0/node-v18.12.0-headers.tar.gz",
+  "libUrl": "https://nodejs.org/download/release/v18.12.0/win-x64/node.lib"
 }
 ```
 
@@ -3310,8 +3262,6 @@ if (process.getegid && process.setegid) {
 ```
 
 ```cjs
-const process = require('node:process');
-
 if (process.getegid && process.setegid) {
   console.log(`当前 gid: ${process.getegid()}`);
   try {
@@ -3351,8 +3301,6 @@ if (process.geteuid && process.seteuid) {
 ```
 
 ```cjs
-const process = require('node:process');
-
 if (process.geteuid && process.seteuid) {
   console.log(`当前 uid: ${process.geteuid()}`);
   try {
@@ -3392,8 +3340,6 @@ if (process.getgid && process.setgid) {
 ```
 
 ```cjs
-const process = require('node:process');
-
 if (process.getgid && process.setgid) {
   console.log(`Current gid: ${process.getgid()}`);
   try {
@@ -3434,8 +3380,6 @@ if (process.getgroups && process.setgroups) {
 ```
 
 ```cjs
-const process = require('node:process');
-
 if (process.getgroups && process.setgroups) {
   try {
     process.setgroups([501]);
@@ -3474,8 +3418,6 @@ if (process.getuid && process.setuid) {
 ```
 
 ```cjs
-const process = require('node:process');
-
 if (process.getuid && process.setuid) {
   console.log(`Current uid: ${process.getuid()}`);
   try {

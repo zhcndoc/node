@@ -49,9 +49,7 @@ try {
 }
 ```
 
-<!--eslint-enable no-global-assign -->
-
-使用词法 ESM `import` 关键字时，只有在尝试加载模块**之前**注册了 `process.on('uncaughtException')` 的处理程序（例如，使用预加载模块），才能捕获错误。
+当使用词法 ESM `import` 关键字时，只有在加载模块之前注册了 `process.on('uncaughtException')` 的处理程序，才能捕获该错误（例如，使用预加载模块）。
 
 使用 ESM 时，如果代码可能在未启用加密支持的 Node.js 构建上运行，请考虑使用 [`import()`][] 函数而不是词法 `import` 关键字：
 

@@ -437,7 +437,6 @@ if (common.isDebug) {
 
 ```js
 // Flags: --expose-internals --no-warnings --allow-natives-syntax
-'use strict';
 const common = require('../common');
 
 const { internalBinding } = require('internal/test/binding');

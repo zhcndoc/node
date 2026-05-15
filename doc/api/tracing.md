@@ -84,7 +84,7 @@ node --trace-event-categories v8 --trace-event-file-pattern '${pid}-${rotation}.
 
 ```js
 process.on('SIGINT', function onSigint() {
-  console.info('Received SIGINT.');
+  console.info('收到 SIGINT。');
   process.exit(130);  // 或者取决于操作系统和信号的适用退出代码
 });
 ```
@@ -284,8 +284,6 @@ collect();
 ```
 
 ```cjs
-'use strict';
-
 const { Session } = require('node:inspector');
 const session = new Session();
 session.connect();

@@ -26,14 +26,15 @@ const ffi = require('node:ffi');
 
 在启用 FFI 支持的构建中，该模块仅在 `node:` 方案下可用，并且需要通过 `--experimental-ffi` 标志进行启用。
 
-当前打包的 libffi 支持目标包括：
+通过捆绑的 `libffi` 在 `libffi` 提供兼容的静态后端的平台上，可以使用 `node:ffi` 支持构建 Node.js；或者在使用共享 `libffi` 的情况下通过 `--shared-ffi` 配置标志启用。
+非官方的 GN 构建不支持 `node:ffi`。
 
-* macOS：`arm64` 和 `x64`
-* Windows：`arm64` 和 `x64`
-* FreeBSD：`arm`、`arm64` 和 `x64`
-* Linux：`arm`、`arm64` 和 `x64`
+捆绑的 libffi 不支持以下目标平台：
 
-其他目标需要使用 `--shared-ffi` 构建 Node.js，使其与共享版 libffi 链接。非官方的 GN 构建不支持 `node:ffi`。
+* `s390x`。
+* `mips`、`mipsel` 和 `mips64el` 在 FreeBSD、Linux 和
+  OpenBSD 之外的目标平台上。
+* `ppc64` 在 Android、CloudABI、iOS、OpenHarmony、OS/400、Solaris 和 Windows 上。
 
 在使用[权限模型][]时，除非提供 [`--allow-ffi`][] 标志，否则将限制 FFI API。
 

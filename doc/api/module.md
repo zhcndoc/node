@@ -22,7 +22,7 @@ added:
 changes:
   - version: v23.5.0
     pr-url: https://github.com/nodejs/node/pull/56185
-    description: 该列表现在也包含仅前缀模块。
+    description: 此列表现在也包含仅前缀模块。
 -->
 
 * 类型：{string\[]}
@@ -526,8 +526,8 @@ Node.js 目前支持两种类型的模块自定义钩子：
 // register-hooks.js
 import { registerHooks } from 'node:module';
 registerHooks({
-  resolve(specifier, context, nextResolve) { /* implement */ },
-  load(url, context, nextLoad) { /* implement */ },
+  resolve(specifier, context, nextResolve) { /* 实现 */ },
+  load(url, context, nextLoad) { /* 实现 */ },
 });
 ```
 
@@ -535,8 +535,8 @@ registerHooks({
 // register-hooks.js
 const { registerHooks } = require('node:module');
 registerHooks({
-  resolve(specifier, context, nextResolve) { /* implement */ },
-  load(url, context, nextLoad) { /* implement */ },
+  resolve(specifier, context, nextResolve) { /* 实现 */ },
+  load(url, context, nextLoad) { /* 实现 */ },
 });
 ```
 
@@ -830,7 +830,7 @@ function load(url, context, nextLoad) {
   };
 }
 
-registerHooks({ resolve });
+registerHooks({ load });
 ```
 
 在更高级的场景中，这也可用于将不支持的源转换为支持的源（参见下面的 [示例](#examples)）。
@@ -916,20 +916,16 @@ export async function load(url, context, nextLoad) {
 
 与同步钩子不同，异步钩子不会为调用 `register()` 的文件中加载的这些模块运行：
 
-<!-- eslint-disable no-restricted-globals -->
-
 ```mjs
 // register-hooks.js
 import { register, createRequire } from 'node:module';
 register('./hooks.mjs', import.meta.url);
 
-// 异步钩子不影响通过 module.createRequire() 创建的自定义 require()
-// 函数加载的模块。
-const userRequire = createRequire(__filename);
+// Asynchronous hooks does not affect modules loaded via custom require()
+// functions created by module.createRequire().
+const userRequire = createRequire(import.meta.filename);
 userRequire('./my-app-2.cjs');  // 钩子不会影响这个
 ```
-
-<!-- eslint-enable no-restricted-globals -->
 
 ```cjs
 // register-hooks.js

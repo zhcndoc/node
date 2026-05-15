@@ -179,14 +179,12 @@ added: v0.11.3
 
 返回当前配置用于 DNS 解析的 IP 地址字符串数组，格式符合 [RFC 5952][]。如果使用自定义端口，字符串将包含端口部分。
 
-<!-- eslint-disable @stylistic/js/semi-->
-
-```js
+```json
 [
-  '8.8.8.8',
-  '2001:4860:4860::8888',
-  '8.8.8.8:1053',
-  '[2001:4860:4860::8888]:1053',
+  "8.8.8.8",
+  "2001:4860:4860::8888",
+  "8.8.8.8:1053",
+  "[2001:4860:4860::8888]:1053",
 ]
 ```
 
@@ -346,7 +344,7 @@ added: v0.1.27
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "传递无效回调给 `callback` 参数现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string} 要解析的主机名。
@@ -382,7 +380,7 @@ added: v0.1.16
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "传递无效回调给 `callback` 参数现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
   - version: v7.2.0
     pr-url: https://github.com/nodejs/node/pull/9296
     description: "此方法现在支持传递 `options`，特别是 `options.ttl`。"
@@ -407,7 +405,7 @@ added: v0.1.16
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "传递无效回调给 `callback` 参数现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
   - version: v7.2.0
     pr-url: https://github.com/nodejs/node/pull/9296
     description: "此方法现在支持传递 `options`，特别是 `options.ttl`。"
@@ -431,7 +429,7 @@ changes:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "传递无效回调给 `callback` 参数现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -458,8 +456,6 @@ changes:
 
 以下是传递给回调的 `ret` 对象示例：
 
-<!-- eslint-disable @stylistic/js/semi -->
-
 ```js
 [ { type: 'A', address: '127.0.0.1', ttl: 299 },
   { type: 'CNAME', value: 'example.com' },
@@ -473,7 +469,7 @@ changes:
     refresh: 900,
     retry: 900,
     expire: 1800,
-    minttl: 60 } ]
+    minttl: 60 } ];
 ```
 
 DNS 服务器运营商可以选择不响应 `ANY` 查询。最好调用单独的方法，如 [`dns.resolve4()`][]、[`dns.resolveMx()`][] 等。更多详情，请参阅 [RFC 8482][]。
@@ -485,7 +481,7 @@ added: v0.3.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "传递无效回调给 `callback` 参数现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -504,7 +500,7 @@ added:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "传递无效回调给 `callback` 参数现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -524,7 +520,7 @@ added: v0.1.27
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "传递无效回调给 `callback` 参数现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -543,7 +539,7 @@ added: v0.9.12
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "传递无效回调给 `callback` 参数现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -562,17 +558,15 @@ changes:
 * `order`
 * `preference`
 
-<!-- eslint-skip -->
-
 ```js
-{
+({
   flags: 's',
   service: 'SIP+D2U',
   regexp: '',
   replacement: '_sip._udp.example.com',
   order: 30,
-  preference: 100
-}
+  preference: 100,
+});
 ```
 
 ## `dns.resolveNs(hostname, callback)`
@@ -582,7 +576,7 @@ added: v0.1.90
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "传递无效回调给 `callback` 参数现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -601,7 +595,7 @@ added: v6.0.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "传递无效回调给 `callback` 参数现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -619,7 +613,7 @@ added: v0.11.10
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "传递无效回调给 `callback` 参数现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `hostname` {string}
@@ -638,18 +632,16 @@ changes:
 * `expire`
 * `minttl`
 
-<!-- eslint-skip -->
-
 ```js
-{
+({
   nsname: 'ns.example.com',
   hostmaster: 'root.example.com',
   serial: 2013101809,
   refresh: 10000,
   retry: 2400,
   expire: 604800,
-  minttl: 3600
-}
+  minttl: 3600,
+});
 ```
 
 ## `dns.resolveSrv(hostname, callback)`
@@ -675,15 +667,13 @@ changes:
 * `port`
 * `name`
 
-<!-- eslint-skip -->
-
 ```js
-{
+({
   priority: 10,
   weight: 5,
   port: 21223,
-  name: 'service.example.com'
-}
+  name: 'service.example.com',
+});
 ```
 
 ## `dns.resolveTlsa(hostname, callback)`
@@ -711,15 +701,13 @@ added:
 * `match`
 * `data`
 
-<!-- eslint-skip -->
-
 ```js
-{
+({
   certUsage: 3,
   selector: 1,
   match: 1,
-  data: [ArrayBuffer]
-}
+  data: [ArrayBuffer],
+});
 ```
 
 ## `dns.resolveTxt(hostname, callback)`
@@ -943,14 +931,12 @@ added: v10.6.0
 当前配置用于 DNS 解析。如果使用了自定义端口，字符串将包含端口
 部分。
 
-<!-- eslint-disable @stylistic/js/semi-->
-
-```js
+```json
 [
-  '8.8.8.8',
-  '2001:4860:4860::8888',
-  '8.8.8.8:1053',
-  '[2001:4860:4860::8888]:1053',
+  "8.8.8.8",
+  "2001:4860:4860::8888",
+  "8.8.8.8:1053",
+  "[2001:4860:4860::8888]:1053"
 ]
 ```
 
@@ -993,7 +979,7 @@ changes:
     使用 [`dns.setDefaultResultOrder()`][] 或
     [`--dns-result-order`][] 配置。
 
-将主机名（例如 `'nodejs.org'`）解析为找到的第一个 A (IPv4) 或
+将主机名（例如 `'nodejs.org'）解析为找到的第一个 A (IPv4) 或
 AAAA (IPv6) 记录。所有 `option` 属性都是可选的。如果 `options` 是
 整数，则它必须是 `4` 或 `6` – 如果未提供 `options`，则
 返回找到的 IPv4 或 IPv6 地址，或两者。
@@ -1184,8 +1170,6 @@ added: v10.6.0
 
 以下是结果对象的示例：
 
-<!-- eslint-disable @stylistic/js/semi -->
-
 ```js
 [ { type: 'A', address: '127.0.0.1', ttl: 299 },
   { type: 'CNAME', value: 'example.com' },
@@ -1199,7 +1183,7 @@ added: v10.6.0
     refresh: 900,
     retry: 900,
     expire: 1800,
-    minttl: 60 } ]
+    minttl: 60 } ];
 ```
 
 ### `dnsPromises.resolveCaa(hostname)`
@@ -1261,17 +1245,15 @@ added: v10.6.0
 * `order`
 * `preference`
 
-<!-- eslint-skip -->
-
 ```js
-{
+({
   flags: 's',
   service: 'SIP+D2U',
   regexp: '',
   replacement: '_sip._udp.example.com',
   order: 30,
-  preference: 100
-}
+  preference: 100,
+});
 ```
 
 ### `dnsPromises.resolveNs(hostname)`
@@ -1316,18 +1298,16 @@ added: v10.6.0
 * `expire`
 * `minttl`
 
-<!-- eslint-skip -->
-
 ```js
-{
+({
   nsname: 'ns.example.com',
   hostmaster: 'root.example.com',
   serial: 2013101809,
   refresh: 10000,
   retry: 2400,
   expire: 604800,
-  minttl: 3600
-}
+  minttl: 3600,
+});
 ```
 
 ### `dnsPromises.resolveSrv(hostname)`
@@ -1346,15 +1326,13 @@ added: v10.6.0
 * `port`
 * `name`
 
-<!-- eslint-skip -->
-
 ```js
-{
+({
   priority: 10,
   weight: 5,
   port: 21223,
-  name: 'service.example.com'
-}
+  name: 'service.example.com',
+});
 ```
 
 ### `dnsPromises.resolveTlsa(hostname)`
@@ -1375,15 +1353,13 @@ added:
 * `match`
 * `data`
 
-<!-- eslint-skip -->
-
 ```js
-{
+({
   certUsage: 3,
   selector: 1,
   match: 1,
-  data: [ArrayBuffer]
-}
+  data: [ArrayBuffer],
+});
 ```
 
 ### `dnsPromises.resolveTxt(hostname)`

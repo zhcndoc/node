@@ -2461,12 +2461,12 @@ changes:
      - v25.7.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/59917
-    description: Added the `strictSingleValueFields` option.
+    description: 添加了 `strictSingleValueFields` 选项。
   - version:
      - v25.7.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61713
-    description: "添加了 http1Options 选项。Http1IncomingMessage和 Http1ServerResponse 选项现已弃用。"
+    description: 添加了 http1Options 选项。Http1IncomingMessage和 Http1ServerResponse 选项现已弃用。
   - version:
       - v23.0.0
       - v22.10.0
@@ -2661,7 +2661,7 @@ changes:
      - v25.7.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/59917
-    description: Added the `strictSingleValueFields` option.
+    description: 添加了 `strictSingleValueFields` 选项。
   - version:
      - v25.7.0
      - v24.15.0
@@ -2731,6 +2731,8 @@ changes:
   * `maxSendHeaderBlockLength` {number} 设置序列化、压缩的头块的最大允许大小。
     尝试发送超过此限制的头将导致发出 `'frameError'` 事件
     并且流被关闭和销毁。
+    虽然这将整个头块的最大允许大小设置为，
+    `nghttp2`（内部 http2 库）对每个解压缩的键/值对的限制为 `65536`。
   * `paddingStrategy` {number} 用于确定 `HEADERS` 和 `DATA` 帧
     填充量的策略。**默认值：**
     `http2.constants.PADDING_STRATEGY_NONE`。值可以是以下之一：
@@ -2755,9 +2757,9 @@ changes:
   * `settings` {HTTP/2 设置对象} 连接时发送给远程对等方的初始设置。
   * `streamResetBurst` {number} 和 `streamResetRate` {number} 设置传入流重置（RST\_STREAM 帧）的速率
     限制。必须设置这两个设置才能生效，默认值分别为 1000 和 33。
-  * `remoteCustomSettings` {Array} 整数值数组确定设置类型，
-    这些类型包含在接收到的 remoteSettings 的 `customSettings` 属性中。
-    请参阅 `Http2Settings` 对象的 `customSettings` 属性以获取更多信息，
+  * `remoteCustomSettings` {Array} 整数值数组确定设置类型，这些类型包含在接收到的
+    remoteSettings 的 `CustomSettings` 属性中。
+    请参阅 `Http2Settings` 对象的 `CustomSettings` 属性以获取更多信息，
     了解允许的设置类型。
   * `...options` {Object} 可以提供任何 [`tls.createServer()`][] 选项。
     对于服务器，通常需要身份选项（`pfx` 或 `key`/`cert`）。
@@ -3777,10 +3779,8 @@ Accept: text/plain
 
 那么 `request.url` 将是：
 
-<!-- eslint-disable @stylistic/js/semi -->
-
-```js
-'/status?name=ryan'
+```json
+"/status?name=ryan"
 ```
 
 要将 url 解析为其部分，可以使用 `new URL()`：
@@ -4307,7 +4307,7 @@ import { PerformanceObserver } from 'node:perf_hooks';
 
 const obs = new PerformanceObserver((items) => {
   const entry = items.getEntries()[0];
-  console.log(entry.entryType);  // 打印 'http2'
+  console.log(entry.entryType);  // 输出 'http2'
   if (entry.name === 'Http2Session') {
     // 条目包含有关 Http2Session 的统计信息
   } else if (entry.name === 'Http2Stream') {
@@ -4322,7 +4322,7 @@ const { PerformanceObserver } = require('node:perf_hooks');
 
 const obs = new PerformanceObserver((items) => {
   const entry = items.getEntries()[0];
-  console.log(entry.entryType);  // 打印 'http2'
+  console.log(entry.entryType);  // 输出 'http2'
   if (entry.name === 'Http2Session') {
     // 条目包含有关 Http2Session 的统计信息
   } else if (entry.name === 'Http2Stream') {

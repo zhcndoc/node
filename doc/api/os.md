@@ -86,8 +86,6 @@ added: v0.3.3
   * `idle` {number} CPU 在空闲模式下花费的毫秒数。
   * `irq` {number} CPU 在中断请求模式下花费的毫秒数。
 
-<!-- eslint-disable @stylistic/js/semi -->
-
 ```js
 [
   {
@@ -134,7 +132,7 @@ added: v0.3.3
       irq: 20,
     },
   },
-]
+];
 ```
 
 `nice` 值仅限 POSIX。在 Windows 上，所有处理器的 `nice` 值始终为 0。
@@ -248,10 +246,10 @@ added: v0.6.0
 changes:
   - version: v18.4.0
     pr-url: https://github.com/nodejs/node/pull/43054
-    description: "The `family` property now returns a string instead of a number."
+    description: "the `family` 属性现在返回字符串而不是数字。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41431
-    description: "The `family` property now returns a number instead of a string."
+    description: "the `family` 属性现在返回数字而不是字符串。"
 -->
 
 * 返回值：{Object}
@@ -270,46 +268,44 @@ changes:
 * `scopeid` {number} 数字 IPv6 范围 ID（仅当 `family` 为 `IPv6` 时指定）
 * `cidr` {string} 分配的 IPv4 或 IPv6 地址，带有 CIDR 表示法的路由前缀。如果 `netmask` 无效，则此属性设置为 `null`。
 
-<!-- eslint-skip -->
-
-```js
+```json
 {
-  lo: [
+  "lo:": [
     {
-      address: '127.0.0.1',
-      netmask: '255.0.0.0',
-      family: 'IPv4',
-      mac: '00:00:00:00:00:00',
-      internal: true,
-      cidr: '127.0.0.1/8'
+      "address:": "127.0.0.1",
+      "netmask:": "255.0.0.0",
+      "family:": "IPv4",
+      "mac:": "00:00:00:00:00:00",
+      "internal:": true,
+      "cidr:": "127.0.0.1/8"
     },
     {
-      address: '::1',
-      netmask: 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff',
-      family: 'IPv6',
-      mac: '00:00:00:00:00:00',
-      scopeid: 0,
-      internal: true,
-      cidr: '::1/128'
+      "address:": "::1",
+      "netmask:": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+      "family:": "IPv6",
+      "mac:": "00:00:00:00:00:00",
+      "scopeid:": 0,
+      "internal:": true,
+      "cidr:": "::1/128"
     }
   ],
-  eth0: [
+  "eth0:": [
     {
-      address: '192.168.1.108',
-      netmask: '255.255.255.0',
-      family: 'IPv4',
-      mac: '01:02:03:0a:0b:0c',
-      internal: false,
-      cidr: '192.168.1.108/24'
+      "address:": "192.168.1.108",
+      "netmask:": "255.255.255.0",
+      "family:": "IPv4",
+      "mac:": "01:02:03:0a:0b:0c",
+      "internal:": false,
+      "cidr:": "192.168.1.108/24"
     },
     {
-      address: 'fe80::a00:27ff:fe4e:66a1',
-      netmask: 'ffff:ffff:ffff:ffff::',
-      family: 'IPv6',
-      mac: '01:02:03:0a:0b:0c',
-      scopeid: 1,
-      internal: false,
-      cidr: 'fe80::a00:27ff:fe4e:66a1/64'
+      "address:": "fe80::a00:27ff:fe4e:66a1",
+      "netmask:": "ffff:ffff:ffff:ffff::",
+      "family:": "IPv6",
+      "mac:": "01:02:03:0a:0b:0c",
+      "scopeid:": 1,
+      "internal:": false,
+      "cidr:": "fe80::a00:27ff:fe4e:66a1/64"
     }
   ]
 }
@@ -363,7 +359,7 @@ added: v0.9.9
 changes:
   - version: v2.0.0
     pr-url: https://github.com/nodejs/node/pull/747
-    description: "This function is now cross-platform consistent and no longerreturns a path with a trailing slash on any platform."
+    description: "此函数现在在各平台之间保持一致，并且不再会在任何平台上返回带有尾随斜杠的路径。"
 -->
 
 * 返回值：{string}

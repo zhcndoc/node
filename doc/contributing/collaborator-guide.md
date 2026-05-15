@@ -7,7 +7,7 @@
   * [关闭问题与拉取请求](#closing-issues-and-pull-requests)
   * [作者就绪的拉取请求](#author-ready-pull-requests)
   * [处理自己的拉取请求](#handling-own-pull-requests)
-  * [安全问题](#managing-security-issues)
+  * [安全问题的管理](#managing-security-issues)
 * [接受修改](#accepting-modifications)
   * [代码审查](#code-reviews)
   * [寻求共识](#consensus-seeking)
@@ -76,7 +76,7 @@
 
 只要该拉取请求准备好合并，请尽快合并。这能让其他协作者将注意力
 放到其他拉取请求上。如果你的拉取请求尚未准备好合并，但已是 [作者就绪](#author-ready-pull-requests)，请添加
-`author ready` 标签。如果你希望由自己来合并该拉取请求，请使用“assign yourself”链接进行自我指派。
+`author ready` 标签。如果你希望由自己来合并该拉取请求，请使用“指派给自己”链接进行自我指派。
 
 ### 安全问题的管理
 
@@ -108,23 +108,25 @@ TSC 成员以及其他协作者提出的修改。在合并到代码库之前，�
 理想情况下，依赖项的拉取请求应由自动化生成。特别注意那些尚未自动生成的依赖项拉取请求，并遵循
 [维护依赖](https://github.com/nodejs/node/blob/main/doc/contributing/maintaining/maintaining-dependencies.md#updating-dependencies) 中的指导。
 
-在某些情况下，可能需要通过 @-mention 将某个 GitHub 团队召集到拉取请求中进行审查。
-参见 [在问题跟踪器中需要抄送谁](#who-to-cc-in-the-issue-tracker)。
+超过 5000 行变更的拉取请求有额外要求。
+请参阅 [大型拉取请求][] 指南。
+
+在某些情况下，可能需要通过 @-mention 召唤某个 GitHub 团队来审查拉取请求。
+请参阅 [在问题跟踪器中需要抄送谁](#who-to-cc-in-the-issue-tracker)。
 
 如果你是第一个批准一个尚无 CI 的拉取请求的协作者，请 [先启动一个](#testing-and-ci)。如果在上一次 CI 运行之后，拉取请求创建者推送了新代码，也请启动新的 CI。
 
 ### 寻求共识
 
 当拉取请求满足所需的 [批准](#code-reviews)、[CI](#testing-and-ci)、[等待时间](#waiting-for-approvals) 且不存在
-[outstanding objections](#objections) 时，该拉取请求可以合并。[破坏性变更](#breaking-changes)
+[未解决异议](#objections) 时，该拉取请求可以合并。[破坏性变更](#breaking-changes)
 除了满足其他要求外，还必须接受 [TSC 审查](#involving-the-tsc)。如果一个拉取请求满足所有要求，但未满足
 [等待时间](#waiting-for-approvals)，请添加
 [`author ready`](#author-ready-pull-requests) 标签。
 
 #### 异议
 
-协作者可以通过使用 GitHub 的“Request
-Changes”功能对拉取请求提出异议。仅凭不同意评论本身不构成异议；在任何相关问题中提出的不同意评论也不构成异议。对某项变更进行拦截式异议必须在拉取请求中明确提出，该变更需要在拉取请求里被具体提议。任何拉取请求异议都必须包含对该异议的明确理由，并且提出异议的协作者必须在后续讨论中保持回应，以便就拉取请求的方向达成共识。如有可能，请在异议之外提供一组可执行的步骤。
+协作者可以通过使用 GitHub 的“请求更改”功能对拉取请求提出异议。仅凭不同意评论本身不构成异议；在任何相关问题中提出的不同意评论也不构成异议。对某项变更进行拦截式异议必须在拉取请求中明确提出，该变更需要在拉取请求里被具体提议。任何拉取请求异议都必须包含对该异议的明确理由，并且提出异议的协作者必须在后续讨论中保持回应，以便就拉取请求的方向达成共识。如有可能，请在异议之外提供一组可执行的步骤。
 
 如果其他人认为该异议不清楚，另一位协作者可以要求提出异议的协作者解释其异议，或提供可执行的步骤来解决该异议。如果在协作者请求澄清后，提出异议的协作者在七天内仍无回应，协作者可以驳回该异议。
 
@@ -159,7 +161,7 @@ Changes”功能对拉取请求提出异议。仅凭不同意评论本身不构�
 
 当有两位协作者批准该快速通道请求时，该拉取请求就可以走快速通道。要合并，该拉取请求本身仍需两位协作者批准，并且 CI 必须通过。
 
-协作者可以请求对他们未创建的拉取请求进行快速通道。在这种情况下，只有请求本身也同样算作一次快速通道批准。无论如何，请对该评论进行 upvote，以避免任何疑虑。
+协作者可以请求对他们未创建的拉取请求进行快速通道。在这种情况下，只有请求本身也同样算作一次快速通道批准。无论如何，请对该评论进行赞成投票，以避免任何疑虑。
 
 ### 测试与 CI
 
@@ -196,9 +198,9 @@ Changes”功能对拉取请求提出异议。仅凭不同意评论本身不构�
 
 </details>
 
-如果 GitHub Actions CI 失败与该拉取请求中的变更无关，请尝试在“Checks”选项卡右侧的“🔄 Re-run all jobs”按钮。
+如果 GitHub Actions CI 失败与该拉取请求中的变更无关，请尝试在“检查”选项卡右侧的“🔄 重新运行所有任务”按钮。
 
-如果 Jenkins CI 失败与该拉取请求中的变更无关，请尝试“Resume Build”。它位于相关 `node-test-pull-request` 任务的左侧导航中。（不要被诱惑去在更低层级的 `node-test-commit` 任务上执行，因为它不会把更新后的结果回报给 PR。）它会保留当前任务中所有绿色结果，但会重新运行其余所有内容。如果自最初失败的 CI 已超过七天，请按“Retry”开始一次全新的 CI，因为 Windows 和 ARM 平台的已编译二进制只会保留七天。
+如果 Jenkins CI 失败与该拉取请求中的变更无关，请尝试“恢复构建”。它位于相关 `node-test-pull-request` 任务的左侧导航中。（不要被诱惑去在更低层级的 `node-test-commit` 任务上执行，因为它不会把更新后的结果回报给 PR。）它会保留当前任务中所有绿色结果，但会重新运行其余所有内容。如果自最初失败的 CI 已超过七天，请按“重试”开始一次全新的 CI，因为 Windows 和 ARM 平台的已编译二进制只会保留七天。
 
 如果在最新一次 Jenkins CI 运行之后，新的提交被推送到拉取请求分支，则需要再次进行一次新的 CI 运行。可以通过向拉取请求添加 `request-ci` 标签来开始新的运行。
 
@@ -222,7 +224,7 @@ Changes”功能对拉取请求提出异议。仅凭不同意评论本身不构�
 
 #### 启动一个 Jenkins CI 任务
 
-在 CI Job 页面中，点击左侧的“Build with Parameters”。
+在 CI 任务页面中，点击左侧的“使用参数构建”。
 
 你通常只需要在表单中输入以下一个或两个选项：
 
@@ -231,7 +233,7 @@ Changes”功能对拉取请求提出异议。仅凭不同意评论本身不构�
   对于拉取请求，它会类似 `refs/pull/PR_NUMBER/head`（例如拉取请求 #42 -> `refs/pull/42/head`）。
 * `REBASE_ONTO`: 将其更改为 `origin/main`，以便将该拉取请求 rebase 到 `main` 上。对于那些已经打开一段时间的拉取请求，这尤其重要。
 
-查看左侧“Build History”下的任务列表，并复制你刚刚启动的那一个任务的链接（它会在最上方；但仍要点进去确认页面上写的是诸如“Started 5 seconds ago”（右上角）以及“Started by user ...”。
+查看左侧“构建历史”下的任务列表，并复制你刚刚启动的那一个任务的链接（它会在最上方；但仍要点进去确认页面上写的是诸如“已开始 5 秒前”（右上角）以及“由用户 ... 启动”。
 
 把该任务的 URL 复制/粘贴到拉取请求的评论中。
 [`node-test-pull-request`](https://ci.nodejs.org/job/node-test-pull-request/)
@@ -355,18 +357,18 @@ Node-API 提供一个 ABI 稳定的 API，保证未来 Node.js 版本仍可用�
 
 Node.js 使用三种 [弃用（Deprecation）][] 级别。对于所有被弃用的 API，API 文档必须明确说明弃用状态。
 
-* 仅文档弃用（Documentation-Only Deprecation）
+* 仅文档弃用（仅在文档中标记弃用）
   * 在 API 文档中会出现弃用通知。
   * 不会有任何功能性变更。
   * 默认情况下，在运行时不会为这种弃用发出警告。
   * 可能会在运行时因为 [`--pending-deprecation`][] 标志或
     `NODE_PENDING_DEPRECATION` 环境变量而产生运行时警告。
 
-* 运行时弃用（Runtime Deprecation）
+* 运行时弃用
   * 在第一次使用被弃用的 API 时于运行时发出警告。
   * 如果与 [`--throw-deprecation`][] 标志一起使用，将抛出运行时错误。
 
-* 终止生命周期（End-of-Life）
+* 终止生命周期
   * 该 API 不再遵循语义化版本规则。
   * 包括完全移除这类 API 在内的向后不兼容变更，随时都可能发生。
 
@@ -811,6 +813,7 @@ git push upstream main
 [git-node]: https://github.com/nodejs/node-core-utils/blob/HEAD/docs/git-node.md
 [git-node-metadata]: https://github.com/nodejs/node-core-utils/blob/HEAD/docs/git-node.md#git-node-metadata
 [git-username]: https://help.github.com/articles/setting-your-username-in-git/
+[large pull requests]: large-pull-requests.md
 [macos]: https://github.com/orgs/nodejs/teams/platform-macos
 [node-core-utils-credentials]: https://github.com/nodejs/node-core-utils#setting-up-credentials
 [node-core-utils-issues]: https://github.com/nodejs/node-core-utils/issues

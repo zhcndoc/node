@@ -4,7 +4,7 @@
 
 > 稳定性：1 - 实验性
 
-<strong class="critical">`node:wasi` 模块目前不提供某些 WASI 运行时提供的全面文件系统安全属性。未来可能会也可能不会实现了对安全文件系统沙箱的完整支持。与此同时，不要依赖它来运行不受信任的代码。</strong>
+<strong class="critical">`node:wasi` 模块目前不提供某些 WASI 运行时所提供的完整文件系统安全属性。未来可能会，也可能不会，实现对安全文件系统沙箱的完整支持。与此同时，不要依赖它来运行不受信任的代码。</strong>
 
 <!-- source_link=lib/wasi.js -->
 
@@ -33,7 +33,6 @@ wasi.start(instance);
 ```
 
 ```cjs
-'use strict';
 const { readFile } = require('node:fs/promises');
 const { WASI } = require('node:wasi');
 const { argv, env } = require('node:process');

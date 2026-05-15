@@ -1225,6 +1225,23 @@ changes:
 
 如果与 [Permission Model][] 一起使用，此功能需要 `--allow-worker`。
 
+### `--experimental-test-tag-filter=<tag>`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> Stability: 1.0 - Early development
+
+Run only tests whose tag set contains `<tag>`. Tests declare tags via the
+`tags` option on `test()`, `it()`, `suite()`, or `describe()`; tags
+inherit from suites to nested tests by union. Filtering is
+case-insensitive.
+
+The flag may be specified more than once; tests must contain **every**
+filter value to run. See [Test tags][] for details on declaring and
+inheriting tags.
+
 ### `--experimental-vm-modules`
 
 <!-- YAML
@@ -3747,9 +3764,10 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [ScriptCoverage]: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-ScriptCoverage
 [ShadowRealm]: https://github.com/tc39/proposal-shadowrealm
 [Source Map]: https://tc39.es/ecma426/
-[TypeScript 类型剥离]: typescript.md#type-stripping
-[Node.js 的 V8 Inspector 集成]: debugger.md#v8-inspector-integration-for-nodejs
-[V8 JavaScript 代码覆盖率]: https://v8project.blogspot.com/2017/12/javascript-code-coverage.html
+[Test tags]: test.md#test-tags
+[TypeScript type-stripping]: typescript.md#type-stripping
+[V8 Inspector integration for Node.js]: debugger.md#v8-inspector-integration-for-nodejs
+[V8 JavaScript code coverage]: https://v8project.blogspot.com/2017/12/javascript-code-coverage.html
 [`"type"`]: packages.md#type
 [`--allow-addons`]: #--allow-addons
 [`--allow-child-process`]: #--allow-child-process

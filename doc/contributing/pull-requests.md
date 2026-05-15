@@ -2,15 +2,15 @@
 
 * [依赖项](#dependencies)
 * [设置本地环境](#setting-up-your-local-environment)
-  * [步骤 1：Fork](#step-1-fork)
+  * [步骤 1：分叉](#step-1-fork)
   * [步骤 2：分支](#step-2-branch)
 * [进行更改的流程](#the-process-of-making-changes)
   * [步骤 3：编写代码](#step-3-code)
   * [步骤 4：提交](#step-4-commit)
     * [提交信息指南](#commit-message-guidelines)
-  * [步骤 5：Rebase](#step-5-rebase)
+  * [步骤 5：变基](#step-5-rebase)
   * [步骤 6：测试](#step-6-test)
-  * [步骤 7：Push](#step-7-push)
+  * [步骤 7：推送](#step-7-push)
   * [步骤 8：打开拉取请求](#step-8-opening-the-pull-request)
   * [步骤 9：讨论并更新](#step-9-discuss-and-update)
     * [批准与请求修改的工作流](#approval-and-request-changes-workflow)
@@ -57,9 +57,9 @@ Node.js 还有一个非官方 IRC 频道：
 
 当你已经安装了 `git`，并确认拥有所有必要的依赖项后，就可以创建 fork 了。
 
-### 步骤 1：Fork
+### 步骤 1：分叉
 
-在 [GitHub 上](https://github.com/nodejs/node) Fork 该项目，并将你的 fork 克隆到本地。
+在 [GitHub 上](https://github.com/nodejs/node) 分叉该项目，并将你的 fork 克隆到本地。
 
 ```bash
 git clone git@github.com:username/node.git
@@ -151,8 +151,7 @@ git commit
 
 4. 如果你的补丁修复了一个开放 issue，可以在日志末尾添加对它的引用。使用 `Fixes:` 前缀和完整 issue URL。其他引用使用 `Refs:`。
 
-   当拉取请求合并时，只要这些 trailer 包含在拉取请求的描述中，`Fixes:` 和 `Refs:` 会自动添加到你的提交信息中。
-   如果拉取请求分多个提交合并，默认会将描述中找到的 trailer 添加到每个提交中。
+   `Fixes:` 和 `Refs:` 结尾项会在拉取请求合并时自动添加到你的提交信息中，只要它们包含在拉取请求的描述里即可。若拉取请求分成多个提交合并，默认会把描述中的这些结尾项添加到每个提交中。
 
    示例：
 
@@ -181,7 +180,7 @@ Signed-off-by: J. Random User <j.random.user@example.com>
 如果你是首次为 Node.js 贡献，请尽力遵守这些指南，但如果哪里做错了也不用担心。
 现有贡献者会帮助你把事情安排妥当，而最终合并该拉取请求的贡献者会确保一切都符合项目指南。
 
-### 步骤 5：Rebase
+### 步骤 5：变基
 
 作为最佳实践，一旦你提交了更改，最好使用 `git rebase`（而不是 `git merge`）来使你的工作与主仓库同步。
 
@@ -215,7 +214,7 @@ vcbuild test
 
 对于某些配置，运行所有测试可能需要很长时间（一个小时或更久）。如需运行测试套件的子集，请参见构建指南中的 [运行测试][] 部分。
 
-### 步骤 7：Push
+### 步骤 7：推送
 
 一旦你确认提交已经准备就绪，测试和 lint 都已通过，就可以开始通过将你的工作分支推送到 GitHub 上的 fork 来打开拉取请求。
 
@@ -227,7 +226,9 @@ git push origin my-branch
 
 在 GitHub 中打开新的拉取请求时，会显示一个 [拉取请求模板][]。请尽力填写其中的细节，但如果不确定该填什么，也可以跳过部分内容。
 
-打开后，拉取请求通常会在几天内得到审查。
+如果你的拉取请求变更行数超过 5000 行，请参阅 [大型拉取请求][] 指南以了解额外要求。
+
+拉取请求打开后，通常会在几天内得到审查。
 
 如果你想在还未准备好合并时就为你的拟议更改获取反馈，请在 GitHub 界面中使用 `Convert to draft` 选项。
 不要使用 `wip` 标签，因为它可能无法阻止 PR 在你准备好之前被合并。
@@ -284,15 +285,15 @@ git push --force-with-lease origin my-branch
 如果你查看你发起拉取请求所针对的分支，你应该能看到一个带有你名字的提交。
 恭喜，并感谢你的贡献！
 
-## 审阅拉取请求
+## 审查拉取请求
 
-所有选择对 Pull Request 进行审阅并提供反馈的 Node.js 贡献者，都有责任同时对项目和提交贡献的个人负责。审阅和反馈必须有帮助、富有洞见，并且着眼于改进贡献，而不是单纯阻止它。不要指望仅仅因为你说了“不”却不给出解释，就能阻止一个拉取请求继续推进。要愿意改变自己的看法。要愿意与贡献者合作，让拉取请求变得更好。
+所有选择对拉取请求进行审查并提供反馈的 Node.js 贡献者，都有责任同时对项目和提交贡献的个人负责。审查和反馈必须有帮助、富有洞见，并且着眼于改进贡献，而不是单纯阻止它。不要指望仅仅因为你说了“不”却不给出解释，就能阻止一个拉取请求继续推进。要愿意改变自己的看法。要愿意与贡献者合作，让拉取请求变得更好。
 
-对贡献者或任何其他审阅者表现出轻蔑或不尊重的审阅，严重违背了 [行为准则][]。
+对贡献者或任何其他审查者表现出轻蔑或不尊重的审查，严重违背了 [行为准则][]。
 
-在审阅拉取请求时，首要目标是让代码库变得更好，并让提交请求的人获得成功。即使一个拉取请求最终没有合并，提交者也应该在这次经历中感到自己的努力没有被浪费，也没有被轻视。来自新贡献者的每一个拉取请求，都是社区成长的机会。
+在审查拉取请求时，首要目标是让代码库变得更好，并让提交请求的人获得成功。即使一个拉取请求最终没有合并，提交者也应该在这次经历中感到自己的努力没有被浪费，也没有被轻视。来自新贡献者的每一个拉取请求，都是社区成长的机会。
 
-### 分阶段审阅
+### 分阶段审查
 
 不要让新贡献者感到不堪重负。
 
@@ -316,9 +317,9 @@ git push --force-with-lease origin my-branch
 
 如果你的评论已经被处理，但在新的提交后没有被自动折叠，或者它们被证明有误，请使用适当的原因将其 [隐藏][hiding-a-comment]，以保持对话流程简洁且相关。
 
-### 关注代码背后的人
+### 注意代码背后的人
 
-请注意，你在反馈中 _如何_ 传达请求和审阅意见，可能会对拉取请求的成功产生重大影响。是的，我们也许会合并某个让 Node.js 变得更好的变更，但这个人可能再也不想和 Node.js 有任何关系了。目标不只是拥有好的代码。
+请注意，你在反馈中 _如何_ 传达请求和审查意见，可能会对拉取请求的成功产生重大影响。是的，我们也许会合并某个让 Node.js 变得更好的变更，但这个人可能再也不想和 Node.js 有任何关系了。目标不只是拥有好的代码。
 
 ### 尊重评论的最低等待时间
 
@@ -326,7 +327,7 @@ git push --force-with-lease origin my-branch
 
 对于非平凡变更，拉取请求必须至少开放 48 小时。
 
-有时变更需要更长时间才能审阅，或者需要该领域专家进行更专业的审阅。拿不准时，不要催促。
+有时变更需要更长时间才能审查，或者需要该领域专家进行更专业的审查。拿不准时，不要催促。
 
 通常仅限于小的格式调整或文档修复的琐碎变更，可以在最短 48 小时窗口内合并。
 
@@ -340,7 +341,7 @@ git push --force-with-lease origin my-branch
 
 任何 Node.js 核心协作者（即在 `nodejs/node` 仓库中拥有提交权限的任何 GitHub 用户）都有权批准其他任何贡献者的工作。协作者不得批准自己的拉取请求。
 
-协作者可以通过 GitHub 的 Approval Workflow（更推荐）或留下 `LGTM`（“Looks Good To Me”）评论来表示他们已经审阅并批准了拉取请求中的变更。
+协作者可以通过 GitHub 的 Approval Workflow（更推荐）或留下 `LGTM`（“Looks Good To Me”）评论来表示他们已经审查并批准了拉取请求中的变更。
 
 在明确使用 GitHub Approval Workflow 的“Changes requested”组件时，请体现同理心。也就是说，不要让反馈显得粗鲁或唐突，并尽可能提供具体的改进建议。如果你不确定某项变更应如何改进，就直接说明。
 
@@ -388,7 +389,7 @@ Node.js 一直以来都将执行速度作为优化目标。如果某项变更能
 
 ### 为你的拉取请求获取批准
 
-拉取请求可以通过说 LGTM（即 “Looks Good To Me”）或使用 GitHub 的 Approve 按钮来批准。在过程中可以使用 GitHub 的拉取请求审阅功能。更多信息请查看 [官方文档](https://help.github.com/articles/reviewing-changes-in-pull-requests/)。
+拉取请求可以通过说 LGTM（即“看起来不错”）或使用 GitHub 的 Approve 按钮来批准。在过程中可以使用 GitHub 的拉取请求审阅功能。更多信息请查看 [官方文档](https://help.github.com/articles/reviewing-changes-in-pull-requests/)。
 
 在你将新更改推送到分支后，即使 GitHub 显示“已批准”，你也需要再次为这些新更改获取批准，因为审阅者之前已经按过按钮了。
 
@@ -412,18 +413,19 @@ Node.js 一直以来都将执行速度作为优化目标。如果某项变更能
 你可以在 [nodejs/core-validate-commit][] 仓库中找到受支持子系统的完整列表。
 对于任何特定 issue 或拉取请求，可能适用不止一个子系统。
 
-[Building guide]: ../../BUILDING.md
-[CI (Continuous Integration) test run]: #continuous-integration-testing
-[Code of Conduct]: https://github.com/nodejs/admin/blob/HEAD/CODE_OF_CONDUCT.md
-[Developer Certificate of Origin]: ../../CONTRIBUTING.md#developers-certificate-of-origin-11
-[Onboarding guide]: ../../onboarding.md
-[approved]: #getting-approvals-for-your-pull-request
-[benchmark results]: writing-and-running-benchmarks.md
-[collaborator guide]: collaborator-guide.md
-[guide for writing tests in Node.js]: writing-tests.md
-[hiding-a-comment]: https://help.github.com/articles/managing-disruptive-comments/#hiding-a-comment
+[构建指南]: ../../BUILDING.md
+[CI（持续集成）测试运行]: #continuous-integration-testing
+[行为准则]: https://github.com/nodejs/admin/blob/HEAD/CODE_OF_CONDUCT.md
+[开发者原创证书]: ../../CONTRIBUTING.md#developers-certificate-of-origin-11
+[入门指南]: ../../onboarding.md
+[已批准]: #getting-approvals-for-your-pull-request
+[基准测试结果]: writing-and-running-benchmarks.md
+[协作者指南]: collaborator-guide.md
+[Node.js 编写测试指南]: writing-tests.md
+[隐藏评论]: https://help.github.com/articles/managing-disruptive-comments/#hiding-a-comment
 [https://ci.nodejs.org/]: https://ci.nodejs.org/
-[maintaining dependencies]: ./maintaining/maintaining-dependencies.md
+[大型拉取请求]: large-pull-requests.md
+[维护依赖项]: ./maintaining/maintaining-dependencies.md
 [nodejs/core-validate-commit]: https://github.com/nodejs/core-validate-commit/blob/main/lib/rules/subsystem.js
-[pull request template]: https://raw.githubusercontent.com/nodejs/node/HEAD/.github/PULL_REQUEST_TEMPLATE.md
-[running tests]: ../../BUILDING.md#running-tests
+[拉取请求模板]: https://raw.githubusercontent.com/nodejs/node/HEAD/.github/PULL_REQUEST_TEMPLATE.md
+[运行测试]: ../../BUILDING.md#running-tests

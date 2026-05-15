@@ -456,7 +456,7 @@ $ cat compare-pr-5134.csv | sed '1p;/encoding='"'"ascii"'"'/!d' | Rscript benchm
 ...
 ```
 
-![compare tool boxplot](doc_img/compare-boxplot.png)
+![compare 工具箱线图](doc_img/compare-boxplot.png)
 
 ### 比较参数
 
@@ -533,11 +533,11 @@ chunkLen     encoding      rate confidence.interval
     1024         utf8 2025551.2            81770.69
 ```
 
-![compare tool boxplot](doc_img/scatter-plot.png)
+![compare 工具散点图](doc_img/scatter-plot.png)
 
 ### 在 CI 上运行基准测试
 
-要通过在 CI 上运行基准测试来查看拉取请求的性能影响，请查看 [How to: Running core benchmarks on Node.js CI][benchmark-ci]。
+要通过在 CI 上运行基准测试来查看拉取请求的性能影响，请查看 [How to: 在 Node.js CI 上运行 core 基准测试][benchmark-ci]。
 
 ## 创建基准测试
 
@@ -622,7 +622,6 @@ chunkLen     encoding      rate confidence.interval
 通常，如果代码不只是声明，建议将其放在 `main` 函数内部。
 
 ```js
-'use strict';
 const common = require('../common.js');
 const { Buffer } = require('node:buffer');
 
@@ -674,8 +673,6 @@ function main(conf) {
 对 HTTP 服务器进行基准测试。
 
 ```js
-'use strict';
-
 const common = require('../common.js');
 
 const bench = common.createBenchmark(main, {

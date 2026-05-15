@@ -8,7 +8,15 @@
 
 Node.js 包含一个命令行调试工具。Node.js 调试器客户端不是一个功能齐全的调试器，但可以进行简单的单步执行和检查。
 
-要使用它，请使用 `inspect` 参数启动 Node.js，后跟要调试的脚本路径。
+调试器支持两种操作模式：[交互模式][] 和 [非交互式探测模式][]。
+
+## 交互模式
+
+```console
+$ node inspect [--port=<port>] [<node-option> ...] [<script> [<script-args>] | <host>:<port> | -p <pid>]
+```
+
+要使用它，请使用 `inspect` 参数启动 Node.js，然后跟上要调试的脚本路径。
 
 ```console
 $ node inspect myscript.js
@@ -79,9 +87,124 @@ debug> .exit
 $
 ```
 
-`repl` 命令允许远程评估代码。`next` 命令单步执行到下一行。输入 `help` 查看其他可用命令。
+`repl` 命令允许远程求值代码。`next` 命令单步执行到下一行。输入 `help` 查看其他可用命令。
 
 在不输入命令的情况下按 `enter` 键将重复上一条调试器命令。
+
+### 观察器
+
+在调试时可以观察表达式和变量值。每次断点触发时，观察器列表中的每个表达式都会在当前上下文中求值，并在断点源码列表之前立即显示。
+
+要开始观察一个表达式，请输入 `watch('my_expression')`。`watchers` 命令会打印当前有效的观察器。要移除某个观察器，请输入 `unwatch('my_expression')`。
+
+## 命令参考
+
+### 单步执行
+
+* `cont`, `c`: 继续执行
+* `next`, `n`: 单步到下一行
+* `step`, `s`: 单步进入
+* `out`, `o`: 单步跳出
+* `pause`: 暂停正在运行的代码（类似于开发者工具中的暂停按钮）
+
+#### 断点
+
+* `setBreakpoint()`, `sb()`: 在当前行设置断点
+* `setBreakpoint(line)`, `sb(line)`: 在指定行设置断点
+* `setBreakpoint('fn()')`, `sb(...)`: 在函数体的第一条语句处设置断点
+* `setBreakpoint('script.js', 1)`, `sb(...)`: 在 `script.js` 第一行设置断点
+* `setBreakpoint('script.js', 1, 'num < 4')`, `sb(...)`: 在 `script.js` 第一行设置条件断点，仅当 `num < 4` 求值为 `true` 时才会中断
+* `clearBreakpoint('script.js', 1)`, `cb(...)`: 清除 `script.js` 第 1 行的断点
+
+也可以在尚未加载的文件（模块）中设置断点：
+
+```console
+$ node inspect main.js
+< Debugger listening on ws://127.0.0.1:9229/48a5b28a-550c-471b-b5e1-d13dd7165df9
+< For help, see: https://nodejs.org/learn/getting-started/debugging
+<
+connecting to 127.0.0.1:9229 ... ok
+< Debugger attached.
+<
+Break on start in main.js:1
+> 1 const mod = require('./mod.js');
+  2 mod.hello();
+  3 mod.hello();
+debug> setBreakpoint('mod.js', 22)
+Warning: script 'mod.js' was not loaded yet.
+debug> c
+break in mod.js:22
+ 20 // USE OR OTHER DEALINGS IN THE SOFTWARE.
+ 21
+>22 exports.hello = function() {
+ 23   return 'hello from module';
+ 24 };
+debug>
+```
+
+也可以设置一个条件断点，仅在给定表达式求值为 `true` 时才会中断：
+
+```console
+$ node inspect main.js
+< Debugger listening on ws://127.0.0.1:9229/ce24daa8-3816-44d4-b8ab-8273c8a66d35
+< For help, see: https://nodejs.org/learn/getting-started/debugging
+<
+connecting to 127.0.0.1:9229 ... ok
+< Debugger attached.
+Break on start in main.js:7
+  5 }
+  6
+> 7 addOne(10);
+  8 addOne(-1);
+  9
+debug> setBreakpoint('main.js', 4, 'num < 0')
+  1 'use strict';
+  2
+  3 function addOne(num) {
+> 4   return num + 1;
+  5 }
+  6
+  7 addOne(10);
+  8 addOne(-1);
+  9
+debug> cont
+break in main.js:4
+  2
+  3 function addOne(num) {
+> 4   return num + 1;
+  5 }
+  6
+debug> exec('num')
+-1
+debug>
+```
+
+#### 信息
+
+* `backtrace`, `bt`: 打印当前执行帧的回溯
+* `list(5)`: 以 5 行上下文列出脚本源代码（前后各 5 行）
+* `watch(expr)`: 将表达式添加到观察列表
+* `unwatch(expr)`: 从观察列表中移除表达式
+* `unwatch(index)`: 从观察列表中移除指定索引处的表达式
+* `watchers`: 列出所有观察器及其值（每次断点都会自动列出）
+* `repl`: 打开调试器的 repl，在调试脚本上下文中求值
+* `exec expr`, `p expr`: 在调试脚本上下文中执行表达式并打印其值
+* `profile`: 开始 CPU 性能分析会话
+* `profileEnd`: 停止当前 CPU 性能分析会话
+* `profiles`: 列出所有已完成的 CPU 性能分析会话
+* `profiles[n].save(filepath = 'node.cpuprofile')`: 将 CPU 性能分析会话保存为 JSON 到磁盘
+* `takeHeapSnapshot(filepath = 'node.heapsnapshot')`: 采集堆快照并保存为 JSON 到磁盘
+
+#### 执行控制
+
+* `run`: 运行脚本（调试器启动时会自动运行）
+* `restart`: 重启脚本
+* `kill`: 终止脚本
+
+#### 其他
+
+* `scripts`: 列出所有已加载的脚本
+* `version`: 显示 V8 的版本
 
 ## 探测模式
 
@@ -92,33 +215,46 @@ added:
 
 > 稳定性：1 - 实验性
 
-`node inspect` 通过 `--probe` 标志支持一种用于检查应用程序运行时值的非交互式探测模式。探测模式会启动应用程序，设置一个或多个源代码断点，在命中匹配断点时计算一个表达式，并在会话结束时（无论是正常完成还是超时）打印一份最终报告。这使开发者无需修改应用程序代码并在之后清理，就能进行类似 `printf` 的调试，同时也支持供工具使用的结构化输出。
+`node inspect` 通过 `--probe` 标志支持一种非交互式探测模式，用于检查应用中的运行时值。
+
+目前，探测模式仅支持从命令行指定的入口脚本启动一个新进程。
+
+探测模式会设置一个或多个源码断点；每当执行到断点时，就会求值指定表达式，并在会话结束时（正常完成、出错或超时）打印一份所有已求值表达式的最终报告。这样开发者就可以进行类似 printf 的调试，而无需修改应用代码并在事后清理。它还支持结构化 JSON 输出，便于工具使用。
 
 ```console
-$ node inspect [--json] [--preview] [--timeout=<ms>] [--port=<port>] \
-    --probe app.js:10 --expr 'x' \
-    [--probe app.js:20 --expr 'y' ...] \
-    [--] [<node-option> ...] <script.js> [args...]
+$ node inspect --probe <file>:<line>[:<col>] --expr <expr>
+              [--probe <file>:<line>[:<col>] --expr <expr> ...]
+              [--json] [--preview] [--timeout=<ms>] [--port=<port>]
+              [--] [<node-option> ...] <script> [<script-args> ...]
 ```
 
-* `--probe <file>:<line>[:<col>]`：要探测的源位置。行号和列号从 1 开始。
-* `--timeout=<ms>`：整个探测会话的全局墙钟时间截止期限。默认值为 `30000`。这可用于探测一个可由外部终止的长时间运行应用程序。
-* `--json`：如果使用，将打印结构化 JSON 报告，而不是默认的文本报告。
-* `--preview`：如果使用，非原始值将在输出中包含对象类 JSON 探测值的 CDP 属性预览。
-* `--port=<port>`：为 `--inspect-brk` 启动路径选择本地 inspector 端口。探测模式默认为 `0`，这会请求一个随机端口。
+* `--probe <file>:<line>[:<col>]`: 探测点的源码位置。当执行到该位置时，会对所提供的表达式求值并打印到输出中。行号和列号从 1 开始。若省略列号，默认值为 1。
+* `--expr <expr>`: 每当执行到前一个 `--probe` 指定的位置时，要计算的 JavaScript 表达式。
+  必须紧跟其所属的 `--probe`。
+* `--timeout=<ms>`: 整个探测会话的全局墙钟时间截止期限。
+  默认值为 `30000`。可用于探测可由外部终止的长时间运行应用。
+* `--json`: 若使用，则输出结构化 JSON 报告，而不是默认的文本报告。
+* `--preview`: 若使用，非原始值会为类对象的 JSON 探测值包含 CDP 属性预览。
+* `--port=<port>`: 选择探测会话监听的本地 inspector 端口。默认值为 `0`，表示请求一个随机端口。
 * `--` 是可选的，除非子进程需要自己的 Node.js 标志。
 
 关于 `--probe` 和 `--expr` 参数还有以下附加规则：
 
-* `--probe <file>:<line>[:<col>]` 和 `--expr <expr>` 必须严格成对出现。每个 `--probe` 后面必须紧跟且仅能跟一个 `--expr`。
-* `--timeout`、`--json`、`--preview` 和 `--port` 是整个探测会话的全局探测选项。它们可以出现在每个探测对之前或之间，但不能出现在 `--probe` 与其匹配的 `--expr` 之间。
+* `--probe <file>:<line>[:<col>]` 和 `--expr <expr>` 是严格配对的。每个 `--probe` 后面必须立即跟一个且仅一个 `--expr`。
+* `--timeout`、`--json`、`--preview` 和 `--port` 是整个探测会话的全局探测选项。它们可以出现在探测对之前或之间，但不能出现在 `--probe` 和其匹配的 `--expr` 之间。
+* 如果需要将额外的 Node.js 执行参数传递给子脚本，必须使用 `--` 将探测选项与子脚本的 Node.js 选项分隔开。
 
-如果单个探测需要计算多个值，
-请在 `--expr` 中计算一个结构化值，例如 `--expr "{ foo, bar }"`
-或 `--expr "[foo, bar]"`，并使用 `--preview` 为
-输出中的任何对象类值包含属性预览。
+示例：
 
-探测模式只会将最终探测报告打印到 stdout，并且会静默子进程的 stdout/stderr。如果子进程在探测会话开始后以错误退出，最终报告会记录一个终止性的 `error` 事件，其中包含退出码和捕获到的子进程 stderr。无效参数以及致命的启动或连接失败仍可能向 stderr 打印诊断信息，而不会给出最终探测结果。
+```console
+$ node inspect --probe app.js:10 --expr "user"
+               --probe src/utils.js:5:15 --expr "config.options"
+               --json --preview -- --no-warnings app.js --arg-for-app=foo
+```
+
+### 探测输出格式
+
+当探测会话结束时，探测进程会打印一份包含所有探测命中与结果的最终报告。
 
 考虑以下脚本：
 
@@ -131,7 +267,7 @@ for (let i = 0; i < 2; i++) {
 }
 ```
 
-如果未使用 `--json`，输出将以人类可读的文本格式打印：
+不使用 `--json` 时，默认输出为人类可读的文本格式：
 
 ```console
 $ node inspect --probe cli.js:5 --expr 'rss' cli.js
@@ -210,120 +346,87 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
 }
 ```
 
-## 监视器
+### 被探测进程的输出和退出码
 
-在调试时可以监视表达式和变量值。在每个断点处，监视列表中的每个表达式将在当前上下文中评估，并立即显示在断点源代码列表之前。
+探测模式只会将最终探测报告打印到 stdout，并会静默子进程的 stdout/stderr。当探测会话结束时，`node inspect` 通常以 `0` 退出码退出，并向 stdout 打印最终报告。如果子进程在探测会话结束前以非零退出码退出，最终报告会记录一个终止 `error` 事件，以及退出码和捕获到的子进程 stderr。在这种情况下，探测进程本身仍会以 `0` 退出码退出。
 
-要开始监视表达式，输入 `watch('my_expression')`。命令 `watchers` 将打印活动的监视器。要移除监视器，输入 `unwatch('my_expression')`。
+无效参数以及致命的启动或连接失败，可能会导致探测进程以非零退出码退出，并向 stderr 打印错误消息，而不会输出最终探测报告。
 
-## 命令参考
+### 在同一执行点探测多个表达式
 
-### 单步执行
+当多个 `--probe`/`--expr` 对共享同一个 `--probe` 时，这些表达式会在同一次暂停中按其在命令行中出现的顺序求值。
 
-* `cont`, `c`: 继续执行
-* `next`, `n`: 单步跳过
-* `step`, `s`: 单步进入
-* `out`, `o`: 单步退出
-* `pause`: 暂停运行代码（类似于开发者工具中的暂停按钮）
-
-### 断点
-
-* `setBreakpoint()`, `sb()`: 在当前行设置断点
-* `setBreakpoint(line)`, `sb(line)`: 在指定行设置断点
-* `setBreakpoint('fn()')`, `sb(...)`: 在函数体的第一条语句上设置断点
-* `setBreakpoint('script.js', 1)`, `sb(...)`: 在 `script.js` 的第一行设置断点
-* `setBreakpoint('script.js', 1, 'num < 4')`, `sb(...)`: 在 `script.js` 的第一行设置条件断点，仅当 `num < 4` 评估为 `true` 时中断
-* `clearBreakpoint('script.js', 1)`, `cb(...)`: 清除 `script.js` 第 1 行的断点
-
-也可以在尚未加载的文件（模块）中设置断点：
-
-```console
-$ node inspect main.js
-< Debugger listening on ws://127.0.0.1:9229/48a5b28a-550c-471b-b5e1-d13dd7165df9
-< For help, see: https://nodejs.org/learn/getting-started/debugging
-<
-connecting to 127.0.0.1:9229 ... ok
-< Debugger attached.
-<
-Break on start in main.js:1
-> 1 const mod = require('./mod.js');
-  2 mod.hello();
-  3 mod.hello();
-debug> setBreakpoint('mod.js', 22)
-Warning: script 'mod.js' was not loaded yet.
-debug> c
-break in mod.js:22
- 20 // 软件中的其他交易或使用。
- 21
->22 exports.hello = function() {
- 23   return 'hello from module';
- 24 };
-debug>
+```js
+// app.js
+const x = { x: 42 };       // 第 2 行
+const y = { y: 35 };       // 第 3 行
+const z = { ...x, ...y };  // 第 4 行
 ```
 
-也可以设置一个条件断点，仅当给定表达式评估为 `true` 时才中断：
-
 ```console
-$ node inspect main.js
-< Debugger listening on ws://127.0.0.1:9229/ce24daa8-3816-44d4-b8ab-8273c8a66d35
-< For help, see: https://nodejs.org/learn/getting-started/debugging
-<
-connecting to 127.0.0.1:9229 ... ok
-< Debugger attached.
-Break on start in main.js:7
-  5 }
-  6
-> 7 addOne(10);
-  8 addOne(-1);
-  9
-debug> setBreakpoint('main.js', 4, 'num < 0')
-  1 'use strict';
-  2
-  3 function addOne(num) {
-> 4   return num + 1;
-  5 }
-  6
-  7 addOne(10);
-  8 addOne(-1);
-  9
-debug> cont
-break in main.js:4
-  2
-  3 function addOne(num) {
-> 4   return num + 1;
-  5 }
-  6
-debug> exec('num')
--1
-debug>
+$ node inspect --probe app.js:4 --expr 'x' --probe app.js:4 --expr 'y' -- app.js
 ```
 
-### 信息
+打印
 
-* `backtrace`, `bt`: 打印当前执行帧的回溯
-* `list(5)`: 列出脚本源代码，带有 5 行上下文（前后各 5 行）
-* `watch(expr)`: 将表达式添加到监视列表
-* `unwatch(expr)`: 从监视列表中移除表达式
-* `unwatch(index)`: 从监视列表中移除特定索引处的表达式
-* `watchers`: 列出所有监视器及其值（每个断点处自动列出）
-* `repl`: 打开调试器的 repl 以在调试脚本的上下文中进行评估
-* `exec expr`, `p expr`: 在调试脚本的上下文中执行表达式并打印其值
-* `profile`: 启动 CPU 性能分析会话
-* `profileEnd`: 停止当前 CPU 性能分析会话
-* `profiles`: 列出所有已完成的 CPU 性能分析会话
-* `profiles[n].save(filepath = 'node.cpuprofile')`: 将 CPU 性能分析会话保存为 JSON 到磁盘
-* `takeHeapSnapshot(filepath = 'node.heapsnapshot')`: 获取堆快照并保存为 JSON 到磁盘
+```text
+Hit 1 at app.js:4
+  x = {x: 42}
+Hit 1 at app.js:4
+  y = {y: 35}
+Completed
+```
 
-### 执行控制
+```console
+$ node inspect --probe app.js:4 --expr 'x' --probe app.js:4 --expr 'y' --json --preview -- app.js
+```
 
-* `run`: 运行脚本（调试器启动时自动运行）
-* `restart`: 重启脚本
-* `kill`: 终止脚本
+打印
 
-### 其他
+```json
+{"v":1,"probes":[{"expr":"x","target":["app.js",4]},{"expr":"y","target":["app.js",4]}],"results":[{"probe":0,"event":"hit","hit":1,"result":{"type":"object","description":"Object","preview":{"type":"object","description":"Object","overflow":false,"properties":[{"name":"x","type":"number","value":"42"}]}}},{"probe":1,"event":"hit","hit":1,"result":{"type":"object","description":"Object","preview":{"type":"object","description":"Object","overflow":false,"properties":[{"name":"y","type":"number","value":"35"}]}}},{"event":"completed"}]}
+```
 
-* `scripts`: 列出所有已加载的脚本
-* `version`: 显示 V8 的版本
+### 选择探测位置
+
+当执行到探测位置时，表达式会在该位置的词法作用域中求值。避免在 `let` 或 `const` 声明处对其声明位置进行探测，因为这会在变量的暂时性死区（TDZ）中访问该变量，从而导致 `ReferenceError`。
+
+```js
+// app.js
+const x = 42;        // 第 2 行
+console.log(x);      // 第 3 行
+```
+
+```console
+$ node inspect --probe app.js:1 --expr 'x' app.js
+Hit 1 at app.js:1
+  [error] x = ReferenceError: Cannot access 'x' from debugger
+  ...
+Completed
+```
+
+应改为在变量已经初始化的位置进行探测：
+
+```console
+$ node inspect --probe app.js:3 --expr 'x' app.js
+Hit 1 at app.js:3
+  x = 42
+Completed
+```
+
+探测路径会像原生调试器通常匹配断点那样，按 basename 与已加载脚本的 URL 匹配。给定：
+
+```text
+project/
+  - src/utils.js
+  - lib/utils.js
+```
+
+`--probe utils.js:10` 会绑定到 _两个_ 文件，并且每个匹配都会产生一次命中。要消除歧义，请指定一个更完整、只会匹配目标文件的路径：
+
+```console
+$ node inspect --probe src/utils.js:10 --expr 'x' main.js   # 仅匹配 src/utils.js
+```
 
 ## 高级用法
 
@@ -352,3 +455,5 @@ For help, see: https://nodejs.org/learn/getting-started/debugging
 
 [Chrome DevTools 协议]: https://chromedevtools.github.io/devtools-protocol/
 [`debugger`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger
+[interactive mode]: #interactive-mode
+[non-interactive probe mode]: #probe-mode

@@ -54,7 +54,7 @@ if (status != napi_ok) {
 
 最终结果是插件只使用导出的 C API。即使插件是用 C++ 编写的，它仍然可以获得 C Node-API 提供的 ABI 稳定性的好处。
 
-当使用 `node-addon-api` 而不是 C API 时，请从 `node-addon-api` 的 API [文档][] 开始。
+当使用 `node-addon-api` 而不是 C API 时，请从 `node-addon-api` 的 API [文档][]开始。
 
 [Node-API 资源](https://nodejs.github.io/node-addon-examples/) 为刚刚开始使用 Node-API 和 `node-addon-api` 的开发者提供了极好的指导和建议。额外的媒体资源可以在 [Node-API 媒体][] 页面上找到。
 
@@ -2277,6 +2277,10 @@ JavaScript `symbol` 类型在 ECMAScript
 <!-- YAML
 added: v8.0.0
 napiVersion: 1
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62710
+    description: Added support for `SharedArrayBuffer`.
 -->
 
 ```c
@@ -2288,23 +2292,20 @@ napi_status napi_create_typedarray(napi_env env,
                                    napi_value* result)
 ```
 
-* `[in] env`：调用 API 的环境。
-* `[in] type`：`TypedArray` 内元素的标量数据类型。
+* `[in] env`：调用该 API 所处的环境。
+* `[in] type`：`TypedArray` 中元素的标量数据类型。
 * `[in] length`：`TypedArray` 中的元素数量。
-* `[in] arraybuffer`：typed array 底层的 `ArrayBuffer`。
-* `[in] byte_offset`：`ArrayBuffer` 内的字节偏移，从该处
-  开始投影 `TypedArray`。
+* `[in] arraybuffer`：`TypedArray` 所依赖的 `ArrayBuffer` 或 `SharedArrayBuffer`。
+* `[in] byte_offset`：在 `ArrayBuffer` 或 `SharedArrayBuffer` 中开始投影 `TypedArray` 的字节偏移。
 * `[out] result`：表示 JavaScript `TypedArray` 的 `napi_value`。
 
 如果 API 成功则返回 `napi_ok`。
 
-此 API 在现有
-`ArrayBuffer` 上创建 JavaScript `TypedArray` 对象。`TypedArray` 对象提供对
-底层数据缓冲区的类数组视图，其中每个元素具有相同的底层二进制标量
-数据类型。
+此 API 在现有 `ArrayBuffer` 或 `SharedArrayBuffer` 上创建 JavaScript `TypedArray` 对象。`TypedArray` 对象提供对底层数据缓冲区的类数组视图，其中每个元素都具有相同的底层二进制标量数据类型。
 
-要求 `(length * size_of_element) + byte_offset` 应
-<= 传入数组的字节大小。如果不是，则抛出 `RangeError` 异常。
+要求 `(length * size_of_element) + byte_offset` 小于或等于传入的 `ArrayBuffer` 或 `SharedArrayBuffer` 的字节大小。否则，将抛出 `RangeError` 异常。
+
+对于大于 1 的元素大小，`byte_offset` 必须是元素大小的倍数。否则，将抛出 `RangeError` 异常。
 
 JavaScript `TypedArray` 对象在 ECMAScript 语言规范的
 [TypedArray 对象部分][Section TypedArray objects] 中描述。
@@ -2967,20 +2968,13 @@ napi_status napi_get_typedarray_info(napi_env env,
                                      size_t* byte_offset)
 ```
 
-* `[in] env`：调用 API 的环境。
-* `[in] typedarray`：`napi_value` 表示要查询其属性的 `TypedArray`。
-* `[out] type`：`TypedArray` 内元素的标量数据类型。
-* `[out] length`：`TypedArray` 中的元素数量。
-* `[out] data`：`TypedArray` 底层的數據缓冲区，根据
-  `byte_offset` 值调整，以便它指向
-  `TypedArray` 中的第一个元素。如果数组的长度为 `0`，这可能是 `NULL` 或
-  任何其他指针值。
-* `[out] arraybuffer`：`TypedArray` 底层的 `ArrayBuffer`。
-* `[out] byte_offset`：第一个数组元素所在的底层原生数组
-  内的字节偏移。data
-  参数的值已经过调整，以便 data 指向数组
-  中的第一个元素。因此，原生数组的第一个字节将位于
-  `data - byte_offset`。
+* `[in] env`: API 调用所在的环境。
+* `[in] typedarray`: 表示要查询其属性的 `TypedArray` 的 `napi_value`。
+* `[out] type`: `TypedArray` 中元素的标量数据类型。
+* `[out] length`: `TypedArray` 中的元素数量。
+* `[out] data`: 底层数据缓冲区，已根据 `byte_offset` 值进行调整，以便指向 `TypedArray` 中的第一个元素。如果数组长度为 `0`，则此值可能为 `NULL` 或任何其他指针值。
+* `[out] arraybuffer`: `TypedArray` 底层的 `ArrayBuffer` 或 `SharedArrayBuffer`。
+* `[out] byte_offset`: 底层原生数组中的字节偏移，第一个元素位于该处。`data` 参数的值已经过调整，因此 data 指向数组中的第一个元素。因此，原生数组的第一个字节位于 `data - byte_offset`。
 
 如果 API 成功则返回 `napi_ok`。
 
@@ -3011,7 +3005,7 @@ napi_status napi_get_dataview_info(napi_env env,
 * `[in] dataview`：`napi_value` 表示要查询其属性的 `DataView`。
 * `[out] byte_length`：`DataView` 中的字节数。
 * `[out] data`：`DataView` 底层的数据缓冲区。
-  如果 byte\_length 为 `0`，这可能是 `NULL` 或任何其他指针值。
+  如果 byte_length 为 `0`，这可能是 `NULL` 或任何其他指针值。
 * `[out] arraybuffer`：`DataView` 底层的 `ArrayBuffer`。
 * `[out] byte_offset`：数据缓冲区内的字节偏移，从该处
   开始投影 `DataView`。
@@ -3360,8 +3354,8 @@ napiVersion: 1
 napi_status napi_get_global(napi_env env, napi_value* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[out] result`: 代表 JavaScript `global` 对象的 `napi_value`。
+* `[in] env`：调用 API 所处的环境。
+* `[out] result`：代表 JavaScript `global` 对象的 `napi_value`。
 
 如果 API 成功则返回 `napi_ok`。
 
@@ -3378,8 +3372,8 @@ napiVersion: 1
 napi_status napi_get_null(napi_env env, napi_value* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[out] result`: 代表 JavaScript `null` 对象的 `napi_value`。
+* `[in] env`：调用 API 所处的环境。
+* `[out] result`：代表 JavaScript `null` 对象的 `napi_value`。
 
 如果 API 成功则返回 `napi_ok`。
 
@@ -3396,14 +3390,12 @@ napiVersion: 1
 napi_status napi_get_undefined(napi_env env, napi_value* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[out] result`: 代表 JavaScript Undefined 值的 `napi_value`。
+* `[in] env`：调用 API 所处的环境。
+* `[out] result`：代表 JavaScript Undefined 值的 `napi_value`。
 
 如果 API 成功则返回 `napi_ok`。
 
 此 API 返回 Undefined 值。
-
-```
 
 ## 使用 JavaScript 值和抽象操作
 
@@ -5568,9 +5560,9 @@ napi_status napi_is_promise(napi_env env,
 * `[in] value`：要检查的值
 * `[out] is_promise`：标志，指示 `promise` 是否为原生 promise 对象（即由底层引擎创建的 promise 对象）。
 
-## 脚本执行
+## Script Execution
 
-Node-API 提供了一个 API，用于使用底层 JavaScript 引擎执行包含 JavaScript 的字符串。
+Node-API provides an API for executing strings containing JavaScript using the underlying JavaScript engine.
 
 ### `napi_run_script`
 
@@ -5585,19 +5577,19 @@ NAPI_EXTERN napi_status napi_run_script(napi_env env,
                                         napi_value* result);
 ```
 
-* `[in] env`：调用此 API 时所在的环境。
-* `[in] script`：包含要执行脚本的 JavaScript 字符串。
-* `[out] result`：执行脚本后产生的值。
+* `[in] env`：The environment in which the API is called.
+* `[in] script`：A JavaScript string containing the script to execute.
+* `[out] result`：The value produced after executing the script.
 
-此函数执行一段 JavaScript 代码字符串并返回其结果，但有以下注意事项：
+This function executes a JavaScript code string and returns its result, with the following caveats:
 
-* 与 `eval` 不同，此函数不允许脚本访问当前词法作用域，因此也不允许访问 [模块作用域][]，这意味着 `require` 等伪全局变量将不可用。
-* 脚本可以访问 [全局作用域][]。脚本中的函数和 `var` 声明将被添加到 [`global`][] 对象。使用 `let` 和 `const` 进行的变量声明将在全局可见，但不会添加到 [`global`][] 对象。
-* 脚本中 `this` 的值是 [`global`][]。
+* Unlike `eval`, this function does not allow the script to access the current lexical scope, and therefore does not allow access to [module scope][]. This means pseudo-global variables such as `require` will not be available.
+* The script can access the [global scope][]. Functions and `var` declarations in the script will be added to the [`global`][] object. Variable declarations using `let` and `const` will be visible globally, but will not be added to the [`global`][] object.
+* The value of `this` in the script is [`global`][].
 
-## libuv 事件循环
+## libuv Event Loop
 
-Node-API 提供了一个函数，用于获取与特定 `napi_env` 关联的当前事件循环。
+Node-API provides a function for obtaining the current event loop associated with a specific `napi_env`.
 
 ### `napi_get_uv_event_loop`
 
@@ -5613,59 +5605,59 @@ NAPI_EXTERN napi_status napi_get_uv_event_loop(node_api_basic_env env,
                                                struct uv_loop_s** loop);
 ```
 
-* `[in] env`：调用此 API 时所在的环境。
-* `[out] loop`：当前 libuv 循环实例。
+* `[in] env`：The environment in which the API is called.
+* `[out] loop`：The current libuv loop instance.
 
-注意：尽管 libuv 只在主版本中[保证 ABI 稳定性](https://github.com/libuv/libuv?tab=readme-ov-file#versioning)，
-但使用它可能会导致一个无法跨
-Node.js 主版本工作的插件。
+Note: Although libuv only guarantees ABI stability in the major version [ABI stability](https://github.com/libuv/libuv?tab=readme-ov-file#versioning),
+using it may result in an addon that does not work across
+Node.js major versions.
 
-[线程安全函数](#asynchronous-thread-safe-function-calls)
-对于许多用例来说，是一种 ABI 稳定的替代方案，可用于从另一个线程调用
-JavaScript 线程。
+[Thread-safe functions](#asynchronous-thread-safe-function-calls)
+are, for many use cases, an ABI-stable alternative for calling the
+JavaScript thread from another thread.
 
-## 异步线程安全函数调用
+## Asynchronous Thread-Safe Function Calls
 
-JavaScript 函数通常只能从原生插件的主线程调用。如果插件创建了额外的线程，那么需要 `napi_env`、`napi_value` 或 `napi_ref` 的 Node-API 函数不得从这些线程中调用。
+JavaScript functions can usually only be called from the main thread of a native addon. If an addon creates additional threads, Node-API functions requiring `napi_env`, `napi_value`, or `napi_ref` must not be called from those threads.
 
-当插件拥有额外线程且需要基于这些线程完成的处理来调用 JavaScript 函数时，这些线程必须与插件的主线程通信，以便主线程可以代表它们调用 JavaScript 函数。线程安全函数 API 提供了一种简单的方法来实现这一点。
+When an addon has additional threads and needs to call a JavaScript function based on work done on those threads, those threads must communicate with the addon's main thread so that the main thread can call the JavaScript function on their behalf. The thread-safe function API provides a simple way to achieve this.
 
-这些 API 提供了 `napi_threadsafe_function` 类型以及用于创建、销毁和调用该类型对象的 API。
-`napi_create_threadsafe_function()` 创建一个对 `napi_value` 的持久引用，该 `napi_value` 持有可以从多个线程调用的 JavaScript 函数。调用是异步发生的。这意味着用于调用 JavaScript 回调的值将被放入队列中，并且对于队列中的每个值，最终都会调用该 JavaScript 函数。
+These APIs provide the `napi_threadsafe_function` type and APIs for creating, destroying, and calling objects of that type.
+`napi_create_threadsafe_function()` creates a persistent reference to a `napi_value` that holds a JavaScript function that can be called from multiple threads. Calls happen asynchronously. This means that the values used to call the JavaScript callback are queued, and for each value in the queue, the JavaScript function will eventually be called.
 
-在创建 `napi_threadsafe_function` 时，可以提供 `napi_finalize` 回调。当线程安全函数即将被销毁时，此回调将在主线程上被调用。它接收构造期间提供的上下文和终结数据，并提供在线程之后清理的机会，例如通过调用 `uv_thread_join()`。**除了主循环线程外，在终结回调完成后，任何线程都不应再使用该线程安全函数。**
+When creating a `napi_threadsafe_function`, a `napi_finalize` callback can be provided. This callback will be invoked on the main thread when the thread-safe function is about to be destroyed. It receives the context and finalize data provided during construction, and provides an opportunity to clean up after threads, for example by calling `uv_thread_join()`. **After the finalize callback completes, no thread other than the main loop thread should use the thread-safe function anymore.**
 
-在调用 `napi_create_threadsafe_function()` 期间给出的 `context` 可以通过调用 `napi_get_threadsafe_function_context()` 从任何线程检索。
+The `context` given during the call to `napi_create_threadsafe_function()` can be retrieved from any thread by calling `napi_get_threadsafe_function_context()`.
 
-### 调用线程安全函数
+### Calling a Thread-Safe Function
 
-`napi_call_threadsafe_function()` 可用于启动对 JavaScript 的调用。`napi_call_threadsafe_function()` 接受一个参数来控制 API 的行为是否阻塞。如果设置为 `napi_tsfn_nonblocking`，API 表现为非阻塞，如果队列已满则返回 `napi_queue_full`，防止数据成功添加到队列。如果设置为 `napi_tsfn_blocking`，API 会阻塞直到队列中有可用空间。如果创建线程安全函数时最大队列大小为 0，则 `napi_call_threadsafe_function()` 永远不会阻塞。
+`napi_call_threadsafe_function()` can be used to initiate a call into JavaScript. `napi_call_threadsafe_function()` accepts an argument to control whether the API behaves in a blocking manner. If set to `napi_tsfn_nonblocking`, the API behaves as non-blocking and returns `napi_queue_full` if the queue is full, preventing the data from being successfully added to the queue. If set to `napi_tsfn_blocking`, the API blocks until space is available in the queue. If the maximum queue size is 0 when the thread-safe function is created, `napi_call_threadsafe_function()` will never block.
 
-不应从 JavaScript 线程使用 `napi_tsfn_blocking` 调用 `napi_call_threadsafe_function()`，因为如果队列已满，它可能导致 JavaScript 线程死锁。
+`napi_call_threadsafe_function()` should not be called with `napi_tsfn_blocking` from the JavaScript thread, because it may deadlock the JavaScript thread if the queue is full.
 
-实际对 JavaScript 的调用由通过 `call_js_cb` 参数给出的回调控制。对于每次成功调用 `napi_call_threadsafe_function()` 放入队列的值，`call_js_cb` 会在主线程上被调用一次。如果没有给出这样的回调，将使用默认回调，并且生成的 JavaScript 调用将没有参数。`call_js_cb` 回调在其参数中接收要调用的 JavaScript 函数作为 `napi_value`，以及创建 `napi_threadsafe_function` 时使用的 `void*` 上下文指针，和由其中一个辅助线程创建的下一个数据指针。然后回调可以使用诸如 `napi_call_function()` 之类的 API 调用进入 JavaScript。
+The actual call into JavaScript is controlled by the callback given through the `call_js_cb` parameter. For each value successfully queued by a `napi_call_threadsafe_function()` call, `call_js_cb` is invoked once on the main thread. If no such callback is given, a default callback is used and the resulting JavaScript call will have no arguments. The `call_js_cb` callback receives, in its arguments, the JavaScript function to be called as a `napi_value`, as well as the `void*` context pointer used when creating the `napi_threadsafe_function`, and the next data pointer created by one of the helper threads. The callback can then use APIs such as `napi_call_function()` to call into JavaScript.
 
-该回调也可能被调用，且 `env` 和 `call_js_cb` 均设置为 `NULL`，以表明不再可能调用 JavaScript，而队列中仍有可能需要释放的项目。当 Node.js 进程退出而仍有活动的线程安全函数时，通常会发生这种情况。
+This callback may also be invoked, with `env` and `call_js_cb` both set to `NULL`, to indicate that it is no longer possible to call JavaScript, while there may still be items in the queue that need to be freed. This typically occurs when the Node.js process exits while there are still active thread-safe functions.
 
-不需要通过 `napi_make_callback()` 调用 JavaScript，因为 Node-API 在适合回调的上下文中运行 `call_js_cb`。
+There is no need to call JavaScript through `napi_make_callback()` because Node-API runs `call_js_cb` in a context appropriate for callbacks.
 
-事件循环的每个 tick 中可能会调用零个或多个排队项。应用程序不应依赖于特定的行为，除了随着时间推移，回调的调用会有进展并且事件会被调用。
+Zero or more queued items may be processed in each tick of the event loop. Applications should not rely on specific behavior beyond the fact that over time, callback invocation will make progress and events will be invoked.
 
-### 线程安全函数的引用计数
+### Reference Counting of Thread-Safe Functions
 
-在线程安全函数对象存在期间，可以向 `napi_threadsafe_function` 对象添加或移除线程。因此，除了在创建时指定初始线程数外，还可以调用 `napi_acquire_threadsafe_function` 来表示新线程将开始使用该线程安全函数。类似地，可以调用 `napi_release_threadsafe_function` 来表示现有线程将停止使用该线程安全函数。
+While a thread-safe function object exists, threads can be added to or removed from the `napi_threadsafe_function` object. Therefore, in addition to the initial thread count specified at creation time, `napi_acquire_threadsafe_function` can be called to indicate that a new thread will begin using the thread-safe function. Similarly, `napi_release_threadsafe_function` can be called to indicate that an existing thread will stop using the thread-safe function.
 
-`napi_threadsafe_function` 对象将在每个使用该对象的线程都调用了 `napi_release_threadsafe_function()` 或在响应 `napi_call_threadsafe_function` 调用时收到 `napi_closing` 返回状态时被销毁。在 `napi_threadsafe_function` 被销毁之前，队列会被清空。`napi_release_threadsafe_function()` 应该是与给定 `napi_threadsafe_function` 结合使用的最后一个 API 调用，因为在调用完成后，无法保证 `napi_threadsafe_function` 仍然被分配。出于同样的原因，在响应 `napi_call_threadsafe_function` 调用收到 `napi_closing` 返回值后，不要使用线程安全函数。与 `napi_threadsafe_function` 关联的数据可以在传递给 `napi_create_threadsafe_function()` 的 `napi_finalize` 回调中释放。`napi_create_threadsafe_function` 的参数 `initial_thread_count` 标记线程安全函数的初始获取次数，而不是在创建时多次调用 `napi_acquire_threadsafe_function`。
+The `napi_threadsafe_function` object will be destroyed once every thread using that object has called `napi_release_threadsafe_function()` or has received a `napi_closing` return status in response to a `napi_call_threadsafe_function` call. Before the `napi_threadsafe_function` is destroyed, the queue will be emptied. `napi_release_threadsafe_function()` should be the last API call used in conjunction with a given `napi_threadsafe_function`, because after the call completes, there is no guarantee that the `napi_threadsafe_function` is still allocated. For the same reason, do not use the thread-safe function after receiving a `napi_closing` return value in response to a `napi_call_threadsafe_function` call. Data associated with the `napi_threadsafe_function` can be released in the `napi_finalize` callback passed to `napi_create_threadsafe_function()`. The `initial_thread_count` argument of `napi_create_threadsafe_function` marks the initial number of acquisitions of the thread-safe function, not multiple calls to `napi_acquire_threadsafe_function` at creation time.
 
-一旦使用 `napi_threadsafe_function` 的线程数达到零，就不能再通过调用 `napi_acquire_threadsafe_function()` 开始使用它。实际上，所有与其关联的后续 API 调用，除了 `napi_release_threadsafe_function()`，都将返回错误值 `napi_closing`。
+Once the number of threads using a `napi_threadsafe_function` reaches zero, it can no longer be started by calling `napi_acquire_threadsafe_function()`. Effectively, all subsequent API calls associated with it, except `napi_release_threadsafe_function()`, will return the error value `napi_closing`.
 
-可以通过向 `napi_release_threadsafe_function()` 提供 `napi_tsfn_abort` 值来“中止”线程安全函数。这将导致所有与该线程安全函数关联的后续 API（`napi_release_threadsafe_function()` 除外）返回 `napi_closing`，即使其引用计数尚未达到零。特别是，`napi_call_threadsafe_function()` 将返回 `napi_closing`，从而通知线程不再可能对该线程安全函数进行异步调用。这可用作终止线程的标准。**在从 `napi_call_threadsafe_function()` 收到 `napi_closing` 返回值后，线程不得再使用该线程安全函数，因为不再保证它被分配。**
+A thread-safe function can be “aborted” by supplying the `napi_tsfn_abort` value to `napi_release_threadsafe_function()`. This will cause all subsequent APIs associated with that thread-safe function, except `napi_release_threadsafe_function()`, to return `napi_closing`, even if its reference count has not yet reached zero. In particular, `napi_call_threadsafe_function()` will return `napi_closing`, notifying threads that asynchronous calls into the thread-safe function are no longer possible. This can be used as a standard way to terminate threads. **After receiving `napi_closing` from `napi_call_threadsafe_function()`, threads must not use the thread-safe function again, because there is no longer a guarantee that it is allocated.**
 
-### 决定是否保持进程运行
+### Deciding Whether to Keep the Process Running
 
-类似于 libuv 句柄，线程安全函数可以被“引用”和“取消引用”。“被引用”的线程安全函数会导致创建它的事件循环保持活动状态，直到线程安全函数被销毁。相反，“未引用”的线程安全函数不会阻止事件循环退出。API `napi_ref_threadsafe_function` 和 `napi_unref_threadsafe_function` 为此目的而存在。
+Similar to libuv handles, thread-safe functions can be “referenced” and “unreferenced”. A “referenced” thread-safe function causes the event loop that created it to stay active until the thread-safe function is destroyed. Conversely, an “unreferenced” thread-safe function does not prevent the event loop from exiting. The APIs `napi_ref_threadsafe_function` and `napi_unref_threadsafe_function` exist for this purpose.
 
-`napi_unref_threadsafe_function` 不会标记线程安全函数为可销毁，`napi_ref_threadsafe_function` 也不会阻止其被销毁。
+`napi_unref_threadsafe_function` does not mark the thread-safe function as destructible, and `napi_ref_threadsafe_function` does not prevent it from being destroyed.
 
 ### `napi_create_threadsafe_function`
 
@@ -5677,7 +5669,7 @@ changes:
      - v12.6.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/27791
-    description: "使用自定义 `call_js_cb` 时，`func` 参数变为可选。"
+    description: "When using a custom `call_js_cb`, the `func` parameter becomes optional."
 -->
 
 ```c
@@ -5695,23 +5687,23 @@ napi_create_threadsafe_function(napi_env env,
                                 napi_threadsafe_function* result);
 ```
 
-* `[in] env`：调用 API 时所在的环境。
-* `[in] func`：要从另一个线程调用的可选 JavaScript 函数。如果向 `call_js_cb` 传递 `NULL`，则必须提供此项。
-* `[in] async_resource`：与异步工作关联的可选对象，将传递给可能的 `async_hooks` [`init` hooks][]。
-* `[in] async_resource_name`：一个 JavaScript 字符串，用于为 `async_hooks` API 暴露的诊断信息提供的资源类型提供标识符。
-* `[in] max_queue_size`：队列的最大大小。`0` 表示无限制。
-* `[in] initial_thread_count`：初始获取次数，即初始线程数，包括主线程，将使用此函数。
-* `[in] thread_finalize_data`：传递给 `thread_finalize_cb` 的可选数据。
-* `[in] thread_finalize_cb`：当 `napi_threadsafe_function` 被销毁时调用的可选函数。
-* `[in] context`：附加到结果 `napi_threadsafe_function` 的可选数据。
-* `[in] call_js_cb`：可选回调，响应不同线程上的调用而在主线程上调用 JavaScript 函数。如果未给出，JavaScript 函数将被调用且无参数，其 `this` 值为 `undefined`。[`napi_threadsafe_function_call_js`][] 提供了更多细节。
-* `[out] result`：异步线程安全 JavaScript 函数。
+* `[in] env`：The environment in which the API is called.
+* `[in] func`：An optional JavaScript function to be called from another thread. If `NULL` is passed to `call_js_cb`, this must be provided.
+* `[in] async_resource`：An optional object associated with the asynchronous work, which will be passed to any possible `async_hooks` [`init` hooks][].
+* `[in] async_resource_name`：A JavaScript string used as an identifier for the resource type provided in diagnostic information exposed by the `async_hooks` API.
+* `[in] max_queue_size`：The maximum size of the queue. `0` means unbounded.
+* `[in] initial_thread_count`：The initial acquisition count, that is, the initial number of threads, including the main thread, that will use this function.
+* `[in] thread_finalize_data`：Optional data passed to `thread_finalize_cb`.
+* `[in] thread_finalize_cb`：An optional function called when the `napi_threadsafe_function` is destroyed.
+* `[in] context`：Optional data attached to the resulting `napi_threadsafe_function`.
+* `[in] call_js_cb`：An optional callback that, in response to calls on different threads, invokes the JavaScript function on the main thread. If not provided, the JavaScript function will be called with no arguments, and its `this` value will be `undefined`. [`napi_threadsafe_function_call_js`][] provides more details.
+* `[out] result`：The asynchronous thread-safe JavaScript function.
 
-**变更历史：**
+**Change History:**
 
-* 版本 10（`NAPI_VERSION` 定义为 `10` 或更高）：
+* Version 10 (`NAPI_VERSION` defined as `10` or higher):
 
-  在 `call_js_cb` 中抛出的未捕获异常将通过 [`'uncaughtException'`][] 事件处理，而不是被忽略。
+  Uncaught exceptions thrown in `call_js_cb` are handled via the [`'uncaughtException'`][] event rather than being ignored.
 
 ### `napi_get_threadsafe_function_context`
 
@@ -5726,10 +5718,10 @@ napi_get_threadsafe_function_context(napi_threadsafe_function func,
                                      void** result);
 ```
 
-* `[in] func`：要检索其上下文的线程安全函数。
-* `[out] result`：存储上下文的位置。
+* `[in] func`：The thread-safe function whose context is to be retrieved.
+* `[out] result`：The location in which to store the context.
 
-此 API 可以从使用 `func` 的任何线程调用。
+This API can be called from any thread using `func`.
 
 ### `napi_call_threadsafe_function`
 
@@ -5739,10 +5731,10 @@ napiVersion: 4
 changes:
   - version: v14.5.0
     pr-url: https://github.com/nodejs/node/pull/33453
-    description: "对 `napi_would_deadlock` 的支持已被回退。"
+    description: "Support for `napi_would_deadlock` has been rolled back."
   - version: v14.1.0
     pr-url: https://github.com/nodejs/node/pull/32689
-    description: "当从主线程或工作线程使用 `napi_tsfn_blocking` 调用且队列已满时，返回 `napi_would_deadlock`。"
+    description: "Returns `napi_would_deadlock` when called with `napi_tsfn_blocking` from the main thread or a worker thread and the queue is full."
 -->
 
 ```c
@@ -5752,15 +5744,15 @@ napi_call_threadsafe_function(napi_threadsafe_function func,
                               napi_threadsafe_function_call_mode is_blocking);
 ```
 
-* `[in] func`：要调用的异步线程安全 JavaScript 函数。
-* `[in] data`：通过创建线程安全 JavaScript 函数期间提供的回调 `call_js_cb` 发送到 JavaScript 的数据。
-* `[in] is_blocking`：标志，其值可以是 `napi_tsfn_blocking` 表示如果队列已满调用应阻塞，或 `napi_tsfn_nonblocking` 表示每当队列已满调用应立即返回状态 `napi_queue_full`。
+* `[in] func`：The asynchronous thread-safe JavaScript function to call.
+* `[in] data`：Data to send to JavaScript through the callback `call_js_cb` provided during creation of the thread-safe JavaScript function.
+* `[in] is_blocking`：A flag whose value can be `napi_tsfn_blocking`, indicating the call should block if the queue is full, or `napi_tsfn_nonblocking`, indicating the call should immediately return status `napi_queue_full` whenever the queue is full.
 
-不应从 JavaScript 线程使用 `napi_tsfn_blocking` 调用此 API，因为如果队列已满，它可能导致 JavaScript 线程死锁。
+`napi_call_threadsafe_function()` should not be called with `napi_tsfn_blocking` from the JavaScript thread, because it may deadlock the JavaScript thread if the queue is full.
 
-如果从任何线程调用 `napi_release_threadsafe_function()` 时将 `abort` 设置为 `napi_tsfn_abort`，此 API 将返回 `napi_closing`。仅当 API 返回 `napi_ok` 时，值才会被添加到队列。
+If `abort` is set to `napi_tsfn_abort` when calling `napi_release_threadsafe_function()` from any thread, this API will return `napi_closing`. Only if the API returns `napi_ok` will the value be added to the queue.
 
-此 API 可以从使用 `func` 的任何线程调用。
+This API can be called from any thread using `func`.
 
 ### `napi_acquire_threadsafe_function`
 
@@ -5774,11 +5766,11 @@ NAPI_EXTERN napi_status
 napi_acquire_threadsafe_function(napi_threadsafe_function func);
 ```
 
-* `[in] func`：要开始使用的异步线程安全 JavaScript 函数。
+* `[in] func`：The asynchronous thread-safe JavaScript function to start using.
 
-线程在将 `func` 传递给任何其他线程安全函数 API 之前应调用此 API，以表明它将使用 `func`。这可以防止当所有其他线程停止使用它时 `func` 被销毁。
+A thread should call this API before passing `func` to any other thread-safe function API to indicate that it will use `func`. This prevents `func` from being destroyed when all other threads stop using it.
 
-此 API 可以从将开始使用 `func` 的任何线程调用。
+This API can be called from any thread that will start using `func`.
 
 ### `napi_release_threadsafe_function`
 
@@ -5793,12 +5785,12 @@ napi_release_threadsafe_function(napi_threadsafe_function func,
                                  napi_threadsafe_function_release_mode mode);
 ```
 
-* `[in] func`：要递减其引用计数的异步线程安全 JavaScript 函数。
-* `[in] mode`：标志，其值可以是 `napi_tsfn_release` 表示当前线程将不再调用线程安全函数，或 `napi_tsfn_abort` 表示除了当前线程外，其他线程也不应再调用线程安全函数。如果设置为 `napi_tsfn_abort`，进一步调用 `napi_call_threadsafe_function()` 将返回 `napi_closing`，并且不会再将值放入队列。
+* `[in] func`：The asynchronous thread-safe JavaScript function whose reference count is to be decremented.
+* `[in] mode`：A flag whose value can be `napi_tsfn_release`, indicating that the current thread will no longer call the thread-safe function, or `napi_tsfn_abort`, indicating that no threads other than the current thread should call the thread-safe function anymore. If set to `napi_tsfn_abort`, further calls to `napi_call_threadsafe_function()` will return `napi_closing`, and values will no longer be queued.
 
-当线程停止使用 `func` 时应调用此 API。在调用此 API 后将 `func` 传递给任何线程安全 API 会导致未定义的结果，因为 `func` 可能已被销毁。
+This API should be called when a thread stops using `func`. Passing `func` to any thread-safe API after calling this API results in undefined behavior, because `func` may already have been destroyed.
 
-此 API 可以从将停止使用 `func` 的任何线程调用。
+This API can be called from any thread that will stop using `func`.
 
 ### `napi_ref_threadsafe_function`
 
@@ -5812,14 +5804,14 @@ NAPI_EXTERN napi_status
 napi_ref_threadsafe_function(node_api_basic_env env, napi_threadsafe_function func);
 ```
 
-* `[in] env`：调用 API 时所在的环境。
-* `[in] func`：要引用的线程安全函数。
+* `[in] env`：The environment in which the API is called.
+* `[in] func`：The thread-safe function to reference.
 
-此 API 用于表明在主线程上运行的事件循环不应退出，直到 `func` 被销毁。类似于 [`uv_ref`][]，它也是幂等的。
+This API is used to indicate that the event loop running on the main thread should not exit until `func` is destroyed. Similar to [`uv_ref`][], it is idempotent.
 
-`napi_unref_threadsafe_function` 不会标记线程安全函数为可销毁，`napi_ref_threadsafe_function` 也不会阻止其被销毁。`napi_acquire_threadsafe_function` 和 `napi_release_threadsafe_function` 可用于此目的。
+`napi_unref_threadsafe_function` does not mark the thread-safe function as destructible, and `napi_ref_threadsafe_function` does not prevent it from being destroyed. `napi_acquire_threadsafe_function` and `napi_release_threadsafe_function` can be used for that purpose.
 
-此 API 只能从主线程调用。
+This API can only be called from the main thread.
 
 ### `napi_unref_threadsafe_function`
 
@@ -5833,14 +5825,14 @@ NAPI_EXTERN napi_status
 napi_unref_threadsafe_function(node_api_basic_env env, napi_threadsafe_function func);
 ```
 
-* `[in] env`：调用 API 时所在的环境。
-* `[in] func`：要取消引用的线程安全函数。
+* `[in] env`：The environment in which the API is called.
+* `[in] func`：The thread-safe function to unreference.
 
-此 API 用于表明在主线程上运行的事件循环可以在 `func` 被销毁之前退出。类似于 [`uv_unref`][]，它也是幂等的。
+This API is used to indicate that the event loop running on the main thread may exit before `func` is destroyed. Similar to [`uv_unref`][], it is idempotent.
 
-此 API 只能从主线程调用。
+This API can only be called from the main thread.
 
-## 杂项工具
+## Miscellaneous Utilities
 
 ### `node_api_get_module_file_name`
 
@@ -5858,10 +5850,10 @@ node_api_get_module_file_name(node_api_basic_env env, const char** result);
 
 ```
 
-* `[in] env`：调用此 API 时所在的环境。
-* `[out] result`：一个 URL，包含加载插件位置的绝对路径。对于本地文件系统上的文件，它将以 `file://` 开头。该字符串以空字符结尾并由 `env` 拥有，因此不得修改或释放。
+* `[in] env`：The environment in which the API is called.
+* `[out] result`：A URL containing the absolute path to the location where the addon was loaded from. For files on the local filesystem, it will begin with `file://`. The string is null-terminated and owned by `env`, and therefore must not be modified or freed.
 
-如果插件加载过程在加载期间无法确定插件的文件名，则 `result` 可能为空字符串。
+If the addon loading process cannot determine the filename of the addon during loading, `result` may be an empty string.
 
 [ABI 稳定性]: https://nodejs.org/en/docs/guides/abi-stability/
 [AppVeyor]: https://www.appveyor.com

@@ -17,7 +17,7 @@ Node.js 核心中的大多数测试都是 JavaScript 程序，它们会执行 No
 
 ## 测试目录结构
 
-有关现有测试及其位置的概览，请参见 [directory structure overview][]。
+有关现有测试及其位置的概览，请参见 [目录结构概览][]。
 
 ## 如何编写一个好的测试
 
@@ -32,7 +32,6 @@ Node.js 核心中的大多数测试都是 JavaScript 程序，它们会执行 No
 让我们分析一下 Node.js 测试套件中的这个基础测试：
 
 ```js
-'use strict';                                                          // 1
 const common = require('../common');                                   // 2
 const fixtures = require('../common/fixtures');                        // 3
 
@@ -60,7 +59,6 @@ server.listen(0, () => {                                               // 14
 ### **第 1-3 行**
 
 ```js
-'use strict';
 const common = require('../common');
 const fixtures = require('../common/fixtures');
 ```
@@ -136,14 +134,13 @@ const timer = setTimeout(fail, common.platformTimeout(4000));
 
 ### _common_ API
 
-尽可能多地使用 `common` 模块中的辅助工具。有关这些辅助工具的完整细节，请参阅 [common file documentation](https://github.com/nodejs/node/tree/HEAD/test/common)。
+尽可能多地使用 `common` 模块中的辅助工具。有关这些辅助工具的完整细节，请参阅 [common 文件文档](https://github.com/nodejs/node/tree/HEAD/test/common)。
 
 #### common.mustCall
 
 一个有趣的情况是 `common.mustCall`。使用 `common.mustCall` 可以避免使用额外变量以及相应的断言。让我们用测试套件中的一个真实测试来解释这一点。
 
 ```js
-'use strict';
 require('../common');
 const assert = require('node:assert');
 const http = require('node:http');
@@ -177,7 +174,6 @@ const server = http.createServer((req, res) => {
 这个测试可以通过使用 `common.mustCall` 大大简化，如下所示：
 
 ```js
-'use strict';
 const common = require('../common');
 const http = require('node:http');
 
@@ -197,9 +193,9 @@ const server = http.createServer(common.mustCall((req, res) => {
 
 **注意：** 许多函数会在回调的第一个参数中传入 `err` 值。对于这些函数，不应直接传入 `common.mustCall()`，因为 `common.mustCall()` 会忽略错误。应改用 `common.mustSucceed()`。
 
-#### Countdown 模块
+#### 倒计时模块
 
-common [Countdown module](https://github.com/nodejs/node/tree/HEAD/test/common#countdown-module) 为需要在完成指定数量的任务后执行某个特定操作的测试提供了一种简单的倒计数机制（例如，在特定数量的请求后关闭 HTTP 服务器）。
+common [倒计时模块](https://github.com/nodejs/node/tree/HEAD/test/common#countdown-module) 为需要在完成指定数量的任务后执行某个特定操作的测试提供了一种简单的倒计数机制（例如，在特定数量的请求后关闭 HTTP 服务器）。
 
 ```js
 const Countdown = require('../common/countdown');
@@ -212,9 +208,9 @@ countdown.dec();
 countdown.dec(); // 倒计数回调现在将被调用。
 ```
 
-#### 测试 promises
+#### 测试 Promise
 
-编写涉及 promises 的测试时，通常最好将 `onFulfilled` 处理器包裹起来，否则如果 promise 从未 resolve，测试可能会成功结束（pending promises 不会保持事件循环存活）。在 `unhandledRejection` 事件的情况下，Node.js 会自动崩溃——因此测试会失败。
+编写涉及 Promise 的测试时，通常最好将 `onFulfilled` 处理器包裹起来，否则如果 promise 从未 resolve，测试可能会成功结束（处于 pending 状态的 promise 不会保持事件循环存活）。在 `unhandledRejection` 事件的情况下，Node.js 会自动崩溃——因此测试会失败。
 
 ```js
 const common = require('../common');
@@ -233,9 +229,7 @@ fs.readFile('test-file').then(
 某些测试需要在启动 Node.js 时设置特定的命令行标志。为此，请在测试前言部分添加一个 `// Flags:` 注释，后面跟上这些标志。例如，如果测试需要允许引入某些 `internal/*` 模块，可以添加 `--expose-internals` 标志。一个需要 `internal/freelist` 的测试可以这样开始：
 
 ```js
-'use strict';
-
-// 标志：--expose-internals
+// Flags: --expose-internals
 
 require('../common');
 const assert = require('node:assert');
@@ -294,7 +288,7 @@ assert.throws(
 
 ### ES.Next 特性
 
-出于性能考虑，我们在 `lib` 目录中的 JavaScript 代码里只使用 ES.Next 特性的一个选定子集。然而，在编写测试时，为了便于回移植，建议使用那些可以在 [all maintained branches][] 中直接使用而无需标志的 ES.Next 特性。[node.green][] 列出了各个版本中可用的特性，例如：
+出于性能考虑，我们在 `lib` 目录中的 JavaScript 代码里只使用 ES.Next 特性的一个选定子集。然而，在编写测试时，为了便于回移植，建议使用那些可以在 [所有受维护分支][] 中直接使用而无需标志的 ES.Next 特性。[node.green][] 列出了各个版本中可用的特性，例如：
 
 * 使用 `let` 和 `const` 代替 `var`
 * 使用模板字面量代替字符串拼接
@@ -413,8 +407,8 @@ Node.js `main` 分支的夜间覆盖率报告可在
 [ASCII]: https://man7.org/linux/man-pages/man7/ascii.7.html
 [Google Test]: https://github.com/google/googletest
 [构建指南中的测试覆盖率部分]: https://github.com/nodejs/node/blob/HEAD/BUILDING.md#running-coverage
-[`common` module]: https://github.com/nodejs/node/blob/HEAD/test/common/README.md
-[all maintained branches]: https://github.com/nodejs/lts
-[directory structure overview]: https://github.com/nodejs/node/blob/HEAD/test/README.md#test-directories
+[`common` 模块]: https://github.com/nodejs/node/blob/HEAD/test/common/README.md
+[所有受维护分支]: https://github.com/nodejs/lts
+[目录结构概览]: https://github.com/nodejs/node/blob/HEAD/test/README.md#test-directories
 [node.green]: https://node.green/
 [测试夹具]: https://github.com/google/googletest/blob/HEAD/docs/primer.md#test-fixtures-using-the-same-data-configuration-for-multiple-tests-same-data-multiple-tests

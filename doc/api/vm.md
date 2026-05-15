@@ -629,7 +629,7 @@ changes:
     - v20.10.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/50141
-    description: "The option `extra.assert` is renamed to `extra.attributes`. Theformer name is still provided for backward compatibility."
+    description: "选项 `extra.assert` 已重命名为 `extra.attributes`。旧名称仍然为了向后兼容而提供。"
 -->
 
 * `linker` {Function}
@@ -928,9 +928,7 @@ import foo from 'foo';
 import source Foo from 'foo';
 ```
 
-<!-- eslint-enable no-duplicate-imports -->
-
-`modules` 数组必须包含对同一实例的两个引用，因为这两个模块请求是相同的，但处于两个阶段。
+modules 数组必须包含对同一个实例的两个引用，因为这两个模块请求是相同的，但处于两个阶段中。
 
 如果模块没有依赖项，`modules` 数组可以为空。
 
@@ -964,9 +962,7 @@ import withAttrs from '../with-attrs.ts' with { arbitraryAttr: 'attr-val' };
 import source Module from 'wasm-mod.wasm';
 ```
 
-<!-- eslint-enable no-duplicate-imports -->
-
-`sourceTextModule.moduleRequests` 的值将为：
+`sourceTextModule.moduleRequests` 的值将是：
 
 ```js
 [
@@ -1028,7 +1024,7 @@ const syntheticModule = new SyntheticModule(['default'], function() {
   await syntheticModule.link(() => {});
   await syntheticModule.evaluate();
 
-  console.log('Default export:', syntheticModule.namespace.default);
+  console.log('默认导出：', syntheticModule.namespace.default);
 })();
 ```
 
@@ -1046,7 +1042,7 @@ const syntheticModule = new SyntheticModule(['default'], function() {
   await syntheticModule.link(() => {});
   await syntheticModule.evaluate();
 
-  console.log('Default export:', syntheticModule.namespace.default);
+  console.log('默认导出：', syntheticModule.namespace.default);
 })();
 ```
 
@@ -1136,28 +1132,28 @@ changes:
     - v21.7.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/51244
-    description: "Added support for`vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`."
+    description: "添加了对 `vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER` 的支持。"
   - version:
     - v19.6.0
     - v18.15.0
     pr-url: https://github.com/nodejs/node/pull/46320
-    description: "The return value now includes `cachedDataRejected` with the same semantics as the `vm.Script` version if the `cachedData` option was passed."
+    description: "如果传入了 `cachedData` 选项，返回值现在包含 `cachedDataRejected`，其语义与 `vm.Script` 版本相同。"
   - version:
     - v17.0.0
     - v16.12.0
     pr-url: https://github.com/nodejs/node/pull/40249
-    description: "Added support for import attributes to the`importModuleDynamically` parameter."
+    description: "为 `importModuleDynamically` 参数添加了导入属性支持。"
   - version: v15.9.0
     pr-url: https://github.com/nodejs/node/pull/35431
-    description: "Added `importModuleDynamically` option again."
+    description: "再次添加了 `importModuleDynamically` 选项。"
   - version: v14.3.0
     pr-url: https://github.com/nodejs/node/pull/33364
-    description: "Removal of `importModuleDynamically` due to compatibilityissues."
+    description: "由于兼容性问题移除了 `importModuleDynamically`。"
   - version:
     - v14.1.0
     - v13.14.0
     pr-url: https://github.com/nodejs/node/pull/32985
-    description: "The `importModuleDynamically` option is now supported."
+    description: "现在支持 `importModuleDynamically` 选项。"
 -->
 
 * `code` {string} 要编译的函数体。

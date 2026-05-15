@@ -48,7 +48,6 @@ const {
   createReadStream,
   createWriteStream,
 } = require('node:fs');
-const process = require('node:process');
 const { createGzip } = require('node:zlib');
 const { pipeline } = require('node:stream');
 
@@ -89,7 +88,6 @@ const {
   createReadStream,
   createWriteStream,
 } = require('node:fs');
-const process = require('node:process');
 const { createGzip } = require('node:zlib');
 const { pipeline } = require('node:stream/promises');
 
@@ -429,10 +427,8 @@ zlib.unzip(
 
 deflate 的内存需求（单位：字节）：
 
-<!-- eslint-disable @stylistic/js/semi -->
-
 ```js
-(1 << (windowBits + 2)) + (1 << (memLevel + 9))
+(1 << (windowBits + 2)) + (1 << (memLevel + 9));
 ```
 
 即：`windowBits` = 15 时为 128K + `memLevel` = 8 时为 128K

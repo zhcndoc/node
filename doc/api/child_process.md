@@ -441,7 +441,6 @@ changes:
 
 ```cjs
 const { fork } = require('node:child_process');
-const process = require('node:process');
 
 if (process.argv[2] === 'child') {
   setTimeout(() => {
@@ -676,7 +675,7 @@ const { spawn } = require('node:child_process');
 const subprocess = spawn('bad_command');
 
 subprocess.on('error', (err) => {
-  console.error('Failed to start subprocess.');
+  console.error('无法启动子进程。');
 });
 ```
 
@@ -685,7 +684,7 @@ import { spawn } from 'node:child_process';
 const subprocess = spawn('bad_command');
 
 subprocess.on('error', (err) => {
-  console.error('Failed to start subprocess.');
+  console.error('无法启动子进程。');
 });
 ```
 
@@ -735,7 +734,6 @@ added: v0.7.10
 
 ```cjs
 const { spawn } = require('node:child_process');
-const process = require('node:process');
 
 const subprocess = spawn(process.argv[0], ['child_program.js'], {
   detached: true,
@@ -775,7 +773,7 @@ subprocess.unref();
 
 ```mjs
 import { openSync } from 'node:fs';
-import { spawn } = 'node:child_process';
+import { spawn } from 'node:child_process';
 const out = openSync('./out.log', 'a');
 const err = openSync('./out.log', 'a');
 
@@ -827,7 +825,6 @@ changes:
 
 ```cjs
 const { spawn } = require('node:child_process');
-const process = require('node:process');
 
 // 子进程将使用父进程的 stdio。
 spawn('prg', [], { stdio: 'inherit' });
@@ -1464,7 +1461,6 @@ added: v0.7.10
 
 ```cjs
 const { spawn } = require('node:child_process');
-const process = require('node:process');
 
 const subprocess = spawn(process.argv[0], ['child_program.js'], {
   detached: true,
@@ -1844,7 +1840,6 @@ added: v0.7.10
 
 ```cjs
 const { spawn } = require('node:child_process');
-const process = require('node:process');
 
 const subprocess = spawn(process.argv[0], ['child_program.js'], {
   detached: true,

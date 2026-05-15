@@ -202,9 +202,7 @@ added: v8.3.0
 
 维护一个特定于 `label` 的内部计数器，并向 `stdout` 输出使用给定 `label` 调用 `console.count()` 的次数。
 
-<!-- eslint-skip -->
-
-```js
+```console
 > console.count()
 default: 1
 undefined
@@ -236,9 +234,7 @@ added: v8.3.0
 
 重置特定于 `label` 的内部计数器。
 
-<!-- eslint-skip -->
-
-```js
+```console
 > console.count('abc');
 abc: 1
 undefined

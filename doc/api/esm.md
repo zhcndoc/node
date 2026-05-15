@@ -105,7 +105,7 @@ export { addTwo };
 // app.mjs
 import { addTwo } from './addTwo.mjs';
 
-// 打印：6
+// 输出：6
 console.log(addTwo(4));
 ```
 
@@ -550,8 +550,6 @@ console.log(cjs === cjsSugar);
 当使用 `import * as m from 'cjs'` 或动态导入时，可以直接观察到此
 模块命名空间奇特对象：
 
-<!-- eslint-skip -->
-
 ```js
 import * as m from 'cjs';
 console.log(m);
@@ -899,7 +897,7 @@ spawn(execPath, [
 
 ### 解析算法
 
-加载 ES 模块标识符的算法通过下面的 **ESM\_RESOLVE** 方法给出。它返回相对于 parentURL 的模块标识符的解析 URL。
+加载 ES 模块标识符的算法通过下面的 **ESM_RESOLVE** 方法给出。它返回相对于 parentURL 的模块标识符的解析 URL。
 
 解析算法确定模块加载的完整解析 URL 及其建议的模块格式。解析算法不确定解析的 URL 协议是否可以加载，或文件扩展名是否被允许，相反，这些验证由 Node.js 在加载阶段应用
 （例如，如果它被要求加载一个协议不是 `file:`、`data:` 或 `node:` 的 URL。
@@ -907,7 +905,7 @@ spawn(execPath, [
 该算法还尝试根据扩展名确定文件的格式（参见下面的 `ESM_FILE_FORMAT` 算法）。如果它无法识别文件扩展名（例如，如果它不是 `.mjs`、`.cjs` 或 `.json`），则返回 `undefined` 格式，
 这将在加载阶段抛出。
 
-确定解析 URL 的模块格式的算法由 **ESM\_FILE\_FORMAT** 提供，它返回任何文件的唯一模块格式。对于 ECMAScript 模块，返回 _"module"_ 格式，而 _"commonjs"_ 格式用于指示通过传统 CommonJS 加载器加载。其他格式如 _"addon"_ 可以在未来更新中扩展。
+确定解析 URL 的模块格式的算法由 **ESM_FILE_FORMAT** 提供，它返回任何文件的唯一模块格式。对于 ECMAScript 模块，返回 _"module"_ 格式，而 _"commonjs"_ 格式用于指示通过传统 CommonJS 加载器加载。其他格式如 _"addon"_ 可以在未来更新中扩展。
 
 在以下算法中，除非另有说明，所有子程序错误都将作为这些顶层例程的错误传播。
 
@@ -926,7 +924,7 @@ _defaultConditions_ 是条件环境名称数组，
 
 ### 解析算法规范
 
-**ESM\_RESOLVE**(_specifier_, _parentURL_)
+**ESM_RESOLVE**(_specifier_, _parentURL_)
 
 > 1. 令 _resolved_ 为 **undefined**。
 > 2. 如果 _specifier_ 是有效 URL，则
@@ -934,10 +932,10 @@ _defaultConditions_ 是条件环境名称数组，
 > 3. 否则，如果 _specifier_ 始于 _"/"_、_"./"_ 或 _"../"_，则
 >    1. 将 _resolved_ 设置为 _specifier_ 相对于 _parentURL_ 的 URL 解析。
 > 4. 否则，如果 _specifier_ 始于 _"#"_, 则
->    1. 将 _resolved_ 设置为 **PACKAGE\_IMPORTS\_RESOLVE**(_specifier_, _parentURL_, _defaultConditions_) 的结果。
+>    1. 将 _resolved_ 设置为 **PACKAGE_IMPORTS_RESOLVE**(_specifier_, _parentURL_, _defaultConditions_) 的结果。
 > 5. 否则，
 >    1. 注意：_specifier_ 现在是一个裸标识符。
->    2. 将 _resolved_ 设置为 **PACKAGE\_RESOLVE**(_specifier_, _parentURL_) 的结果。
+>    2. 将 _resolved_ 设置为 **PACKAGE_RESOLVE**(_specifier_, _parentURL_) 的结果。
 > 6. 令 _format_ 为 **undefined**。
 > 7. 如果 _resolved_ 是 _"file:"_ URL，则
 >    1. 如果 _resolved_ 包含任何 _"/"_ 或 _"\\"_ 的百分号编码（分别为 _"%2F"_ 和 _"%5C"_），则
@@ -947,12 +945,12 @@ _defaultConditions_ 是条件环境名称数组，
 >    3. 如果 _resolved_ 处的文件不存在，则
 >       1. 抛出 _模块未找到_ 错误。
 >    4. 将 _resolved_ 设置为 _resolved_ 的真实路径，保持相同的 URL 查询字符串和片段组件。
->    5. 将 _format_ 设置为 **ESM\_FILE\_FORMAT**(_resolved_) 的结果。
+>    5. 将 _format_ 设置为 **ESM_FILE_FORMAT**(_resolved_) 的结果。
 > 8. 否则，
 >    1. 将 _format_ 设置为与 URL _resolved_ 关联的内容类型的模块格式。
 > 9. 返回 _format_ 和 _resolved_ 到加载阶段
 
-**PACKAGE\_RESOLVE**(_packageSpecifier_, _parentURL_)
+**PACKAGE_RESOLVE**(_packageSpecifier_, _parentURL_)
 
 > 1. 令 _packageName_ 为 **undefined**。
 > 2. 如果 _packageSpecifier_ 是空字符串，则
@@ -968,16 +966,16 @@ _defaultConditions_ 是条件环境名称数组，
 > 6. 如果 _packageName_ 始于 _"."_ 或包含 _"\\"_ 或 _"%"_，则
 >    1. 抛出 _无效模块标识符_ 错误。
 > 7. 令 _packageSubpath_ 为 _"."_ 拼接 _packageSpecifier_ 从 _packageName_ 长度位置开始的子串。
-> 8. 令 _selfUrl_ 为 **PACKAGE\_SELF\_RESOLVE**(_packageName_, _packageSubpath_, _parentURL_) 的结果。
+> 8. 令 _selfUrl_ 为 **PACKAGE_SELF_RESOLVE**(_packageName_, _packageSubpath_, _parentURL_) 的结果。
 > 9. 如果 _selfUrl_ 不为 **undefined**，返回 _selfUrl_。
 > 10. 当 _parentURL_ 不是文件系统根目录时，
->     1. 令 _packageURL_ 为 _"node\_modules/"_ 拼接 _packageName_ 相对于 _parentURL_ 的 URL 解析。
+>     1. 令 _packageURL_ 为 _"node_modules/"_ 拼接 _packageName_ 相对于 _parentURL_ 的 URL 解析。
 >     2. 将 _parentURL_ 设置为 _parentURL_ 的父文件夹 URL。
 >     3. 如果 _packageURL_ 处的文件夹不存在，则
 >        1. 继续下一个循环迭代。
->     4. 令 _pjson_ 为 **READ\_PACKAGE\_JSON**(_packageURL_) 的结果。
+>     4. 令 _pjson_ 为 **READ_PACKAGE_JSON**(_packageURL_) 的结果。
 >     5. 如果 _pjson_ 不为 **null** 且 _pjson_._exports_ 不为 **null** 或 **undefined**，则
->        1. 返回 **PACKAGE\_EXPORTS\_RESOLVE**(_packageURL_, _packageSubpath_, _pjson.exports_, _defaultConditions_) 的结果。
+>        1. 返回 **PACKAGE_EXPORTS_RESOLVE**(_packageURL_, _packageSubpath_, _pjson.exports_, _defaultConditions_) 的结果。
 >     6. 否则，如果 _packageSubpath_ 等于 _"."_，则
 >        1. 如果 _pjson.main_ 是字符串，则
 >           1. 返回 _packageURL_ 中 _main_ 的 URL 解析。
@@ -985,19 +983,19 @@ _defaultConditions_ 是条件环境名称数组，
 >        1. 返回 _packageURL_ 中 _packageSubpath_ 的 URL 解析。
 > 11. 抛出 _模块未找到_ 错误。
 
-**PACKAGE\_SELF\_RESOLVE**(_packageName_, _packageSubpath_, _parentURL_)
+**PACKAGE_SELF_RESOLVE**(_packageName_, _packageSubpath_, _parentURL_)
 
-> 1. 令 _packageURL_ 为 **LOOKUP\_PACKAGE\_SCOPE**(_parentURL_) 的结果。
+> 1. 令 _packageURL_ 为 **LOOKUP_PACKAGE_SCOPE**(_parentURL_) 的结果。
 > 2. 如果 _packageURL_ 为 **null**，则
 >    1. 返回 **undefined**。
-> 3. 令 _pjson_ 为 **READ\_PACKAGE\_JSON**(_packageURL_) 的结果。
+> 3. 令 _pjson_ 为 **READ_PACKAGE_JSON**(_packageURL_) 的结果。
 > 4. 如果 _pjson_ 为 **null** 或 _pjson_._exports_ 为 **null** 或 **undefined**，则
 >    1. 返回 **undefined**。
 > 5. 如果 _pjson.name_ 等于 _packageName_，则
->    1. 返回 **PACKAGE\_EXPORTS\_RESOLVE**(_packageURL_, _packageSubpath_, _pjson.exports_, _defaultConditions_) 的结果。
+>    1. 返回 **PACKAGE_EXPORTS_RESOLVE**(_packageURL_, _packageSubpath_, _pjson.exports_, _defaultConditions_) 的结果。
 > 6. 否则，返回 **undefined**。
 
-**PACKAGE\_EXPORTS\_RESOLVE**(_packageURL_, _subpath_, _exports_, _conditions_)
+**PACKAGE_EXPORTS_RESOLVE**(_packageURL_, _subpath_, _exports_, _conditions_)
 
 注意：此函数由 CommonJS 解析算法直接调用。
 
@@ -1009,37 +1007,37 @@ _defaultConditions_ 是条件环境名称数组，
 >    3. 否则如果 _exports_ 是包含 _"."_ 属性的对象，则
 >       1. 将 _mainExport_ 设置为 _exports_\[_"."_]。
 >    4. 如果 _mainExport_ 不为 **undefined**，则
->       1. 令 _resolved_ 为 **PACKAGE\_TARGET\_RESOLVE**(_packageURL_, _mainExport_, **null**, **false**, _conditions_) 的结果。
+>       1. 令 _resolved_ 为 **PACKAGE_TARGET_RESOLVE**(_packageURL_, _mainExport_, **null**, **false**, _conditions_) 的结果。
 >       2. 如果 _resolved_ 不为 **null** 或 **undefined**，返回 _resolved_。
 > 3. 否则，如果 _exports_ 是对象且 _exports_ 的所有键都始于 _"."_，则
 >    1. 断言：_subpath_ 始于 _"./"_。
->    2. 令 _resolved_ 为 **PACKAGE\_IMPORTS\_EXPORTS\_RESOLVE**(_subpath_, _exports_, _packageURL_, **false**, _conditions_) 的结果。
+>    2. 令 _resolved_ 为 **PACKAGE_IMPORTS_EXPORTS_RESOLVE**(_subpath_, _exports_, _packageURL_, **false**, _conditions_) 的结果。
 >    3. 如果 _resolved_ 不为 **null** 或 **undefined**，返回 _resolved_。
 > 4. 抛出 _包路径未导出_ 错误。
 
-**PACKAGE\_IMPORTS\_RESOLVE**(_specifier_, _parentURL_, _conditions_)
+**PACKAGE_IMPORTS_RESOLVE**(_specifier_, _parentURL_, _conditions_)
 
 注意：此函数由 CommonJS 解析算法直接调用。
 
 > 1. 断言：_specifier_ 始于 _"#"_.
 > 2. 如果 _specifier_ 完全等于 _"#"_, 则
 >    1. 抛出 _无效模块标识符_ 错误。
-> 3. 令 _packageURL_ 为 **LOOKUP\_PACKAGE\_SCOPE**(_parentURL_) 的结果。
+> 3. 令 _packageURL_ 为 **LOOKUP_PACKAGE_SCOPE**(_parentURL_) 的结果。
 > 4. 如果 _packageURL_ 不为 **null**，则
->    1. 令 _pjson_ 为 **READ\_PACKAGE\_JSON**(_packageURL_) 的结果。
+>    1. 令 _pjson_ 为 **READ_PACKAGE_JSON**(_packageURL_) 的结果。
 >    2. 如果 _pjson.imports_ 是非空对象，则
->       1. 令 _resolved_ 为 **PACKAGE\_IMPORTS\_EXPORTS\_RESOLVE**(_specifier_, _pjson.imports_, _packageURL_, **true**, _conditions_) 的结果。
+>       1. 令 _resolved_ 为 **PACKAGE_IMPORTS_EXPORTS_RESOLVE**(_specifier_, _pjson.imports_, _packageURL_, **true**, _conditions_) 的结果。
 >       2. 如果 _resolved_ 不为 **null** 或 **undefined**，返回 _resolved_。
 > 5. 抛出 _包导入未定义_ 错误。
 
-**PACKAGE\_IMPORTS\_EXPORTS\_RESOLVE**(_matchKey_, _matchObj_, _packageURL_, _isImports_, _conditions_)
+**PACKAGE_IMPORTS_EXPORTS_RESOLVE**(_matchKey_, _matchObj_, _packageURL_, _isImports_, _conditions_)
 
 > 1. 如果 _matchKey_ 终于 _"/"_，则
 >    1. 抛出 _无效模块标识符_ 错误。
 > 2. 如果 _matchKey_ 是 _matchObj_ 的键且不包含 _"\*"_, 则
 >    1. 令 _target_ 为 _matchObj_\[_matchKey_] 的值。
->    2. 返回 **PACKAGE\_TARGET\_RESOLVE**(_packageURL_, _target_, **null**, _isImports_, _conditions_) 的结果。
-> 3. 令 _expansionKeys_ 为 _matchObj_ 的键列表，仅包含单个 _"\*"_, 按排序函数 **PATTERN\_KEY\_COMPARE** 排序，该函数按特异性降序排列。
+>    2. 返回 **PACKAGE_TARGET_RESOLVE**(_packageURL_, _target_, **null**, _isImports_, _conditions_) 的结果。
+> 3. 令 _expansionKeys_ 为 _matchObj_ 的键列表，仅包含单个 _"\*"_, 按排序函数 **PATTERN_KEY_COMPARE** 排序，该函数按特异性降序排列。
 > 4. 对于 _expansionKeys_ 中的每个键 _expansionKey_，执行
 >    1. 令 _patternBase_ 为 _expansionKey_ 的子串，直到但不包括第一个 _"\*"_ 字符。
 >    2. 如果 _matchKey_ 始于但不等于 _patternBase_，则
@@ -1047,10 +1045,10 @@ _defaultConditions_ 是条件环境名称数组，
 >       2. 如果 _patternTrailer_ 长度为零，或如果 _matchKey_ 终于 _patternTrailer_ 且 _matchKey_ 的长度大于或等于 _expansionKey_ 的长度，则
 >          1. 令 _target_ 为 _matchObj_\[_expansionKey_] 的值。
 >          2. 令 _patternMatch_ 为 _matchKey_ 的子串，始于 _patternBase_ 长度的索引，直到 _matchKey_ 长度减去 _patternTrailer_ 长度。
->          3. 返回 **PACKAGE\_TARGET\_RESOLVE**(_packageURL_, _target_, _patternMatch_, _isImports_, _conditions_) 的结果。
+>          3. 返回 **PACKAGE_TARGET_RESOLVE**(_packageURL_, _target_, _patternMatch_, _isImports_, _conditions_) 的结果。
 > 5. 返回 **null**。
 
-**PATTERN\_KEY\_COMPARE**(_keyA_, _keyB_)
+**PATTERN_KEY_COMPARE**(_keyA_, _keyB_)
 
 > 1. 断言：_keyA_ 仅包含单个 _"\*"_.
 > 2. 断言：_keyB_ 仅包含单个 _"\*"_.
@@ -1062,42 +1060,42 @@ _defaultConditions_ 是条件环境名称数组，
 > 8. 如果 _keyB_ 的长度大于 _keyA_ 的长度，返回 1。
 > 9. 返回 0。
 
-**PACKAGE\_TARGET\_RESOLVE**(_packageURL_, _target_, _patternMatch_, _isImports_, _conditions_)
+**PACKAGE_TARGET_RESOLVE**(_packageURL_, _target_, _patternMatch_, _isImports_, _conditions_)
 
 > 1. 如果 _target_ 是字符串，则
 >    1. 如果 _target_ 不始于 _"./"_，则
 >       1. 如果 _isImports_ 为 **false**，或如果 _target_ 始于 _"../"_ 或 _"/"_，或如果 _target_ 是有效 URL，则
 >          1. 抛出 _无效包目标_ 错误。
 >       2. 如果 _patternMatch_ 是字符串，则
->          1. 返回 **PACKAGE\_RESOLVE**(_target_ 的每个 _"\*"_ 实例被 _patternMatch_ 替换，_packageURL_ + _"/"_)。
->       3. 返回 **PACKAGE\_RESOLVE**(_target_, _packageURL_ + _"/"_)。
->    2. 如果 _target_ 按 _"/"_ 或 _"\\"_ 分割后在第一个 _"."_ 段之后包含任何 _""_、_ "."_、_ ".."_ 或 _"node\_modules"_ 段，不区分大小写且包括百分号编码变体，抛出 _无效包目标_ 错误。
+>          1. 返回 **PACKAGE_RESOLVE**(_target_ 的每个 _"\*"_ 实例被 _patternMatch_ 替换，_packageURL_ + _"/"_)。
+>       3. 返回 **PACKAGE_RESOLVE**(_target_, _packageURL_ + _"/"_)。
+>    2. 如果 _target_ 按 _"/"_ 或 _"\\"_ 分割后在第一个 _"."_ 段之后包含任何 _""_、_ "."_、_ ".."_ 或 _"node_modules"_ 段，不区分大小写且包括百分号编码变体，抛出 _无效包目标_ 错误。
 >    3. 令 _resolvedTarget_ 为 _packageURL_ 和 _target_ 拼接的 URL 解析。
 >    4. 断言：_packageURL_ 包含于 _resolvedTarget_。
 >    5. 如果 _patternMatch_ 为 **null**，则
 >       1. 返回 _resolvedTarget_。
->    6. 如果 _patternMatch_ 按 _"/"_ 或 _"\\"_ 分割后包含任何 _""_、_ "."_、_ ".."_ 或 _"node\_modules"_ 段，不区分大小写且包括百分号编码变体，抛出 _无效模块标识符_ 错误。
+>    6. 如果 _patternMatch_ 按 _"/"_ 或 _"\\"_ 分割后包含任何 _""_、_ "."_、_ ".."_ 或 _"node_modules"_ 段，不区分大小写且包括百分号编码变体，抛出 _无效模块标识符_ 错误。
 >    7. 返回 _resolvedTarget_ 的 URL 解析，其中每个 _"\*"_ 实例被 _patternMatch_ 替换。
 > 2. 否则，如果 _target_ 是非空对象，则
 >    1. 如果 _target_ 包含任何索引属性键，如 ECMA-262 [6.1.7 数组索引][] 中定义，抛出 _无效包配置_ 错误。
 >    2. 对于 _target_ 的每个属性 _p_，按对象插入顺序，
 >       1. 如果 _p_ 等于 _"default"_ 或 _conditions_ 包含 _p_ 的条目，则
 >          1. 令 _targetValue_ 为 _target_ 中 _p_ 属性的值。
->          2. 令 _resolved_ 为 **PACKAGE\_TARGET\_RESOLVE**(_packageURL_, _targetValue_, _patternMatch_, _isImports_, _conditions_) 的结果。
+>          2. 令 _resolved_ 为 **PACKAGE_TARGET_RESOLVE**(_packageURL_, _targetValue_, _patternMatch_, _isImports_, _conditions_) 的结果。
 >          3. 如果 _resolved_ 等于 **undefined**，继续循环。
 >          4. 返回 _resolved_。
 >    3. 返回 **undefined**。
 > 3. 否则，如果 _target_ 是数组，则
 >    1. 如果 \_target.length 为零，返回 **null**。
 >    2. 对于 _target_ 中的每个项 _targetValue_，执行
->       1. 令 _resolved_ 为 **PACKAGE\_TARGET\_RESOLVE**(_packageURL_, _targetValue_, _patternMatch_, _isImports_, _conditions_) 的结果，在任何 _无效包目标_ 错误上继续循环。
+>       1. 令 _resolved_ 为 **PACKAGE_TARGET_RESOLVE**(_packageURL_, _targetValue_, _patternMatch_, _isImports_, _conditions_) 的结果，在任何 _无效包目标_ 错误上继续循环。
 >       2. 如果 _resolved_ 为 **undefined**，继续循环。
 >       3. 返回 _resolved_。
 >    3. 返回或抛出最后一个回退解析 **null** 返回或错误。
 > 4. 否则，如果 _target_ 为 _null_，返回 **null**。
 > 5. 否则抛出 _无效包目标_ 错误。
 
-**ESM\_FILE\_FORMAT**(_url_)
+**ESM_FILE_FORMAT**(_url_)
 
 > 1. 断言：_url_ 对应于现有文件。
 > 2. 如果 _url_ 终于 _".mjs"_，则
@@ -1110,15 +1108,15 @@ _defaultConditions_ 是条件环境名称数组，
 >    1. 返回 _"wasm"_。
 > 6. 如果 `--experimental-addon-modules` 启用且 _url_ 终于 _".node"_，则
 >    1. 返回 _"addon"_。
-> 7. 令 _packageURL_ 为 **LOOKUP\_PACKAGE\_SCOPE**(_url_) 的结果。
-> 8. 令 _pjson_ 为 **READ\_PACKAGE\_JSON**(_packageURL_) 的结果。
+> 7. 令 _packageURL_ 为 **LOOKUP_PACKAGE_SCOPE**(_url_) 的结果。
+> 8. 令 _pjson_ 为 **READ_PACKAGE_JSON**(_packageURL_) 的结果。
 > 9. 令 _packageType_ 为 **null**。
 > 10. 如果 _pjson?.type_ 为 _"module"_ 或 _"commonjs"_，则
 >     1. 将 _packageType_ 设置为 _pjson.type_。
 > 11. 如果 _url_ 终于 _".js"_，则
 >     1. 如果 _packageType_ 不为 **null**，则
 >        1. 返回 _packageType_。
->     2. 如果 **DETECT\_MODULE\_SYNTAX**(_source_) 的结果为 true，则
+>     2. 如果 **DETECT_MODULE_SYNTAX**(_source_) 的结果为 true，则
 >        1. 返回 _"module"_。
 >     3. 返回 _"commonjs"_。
 > 12. 如果 _url_ 没有任何扩展名，则
@@ -1126,23 +1124,23 @@ _defaultConditions_ 是条件环境名称数组，
 >        1. 返回 _"wasm"_。
 >     2. 如果 _packageType_ 不为 **null**，则
 >        1. 返回 _packageType_。
->     3. 如果 **DETECT\_MODULE\_SYNTAX**(_source_) 的结果为 true，则
+>     3. 如果 **DETECT_MODULE_SYNTAX**(_source_) 的结果为 true，则
 >        1. 返回 _"module"_。
 >     4. 返回 _"commonjs"_。
 > 13. 返回 **undefined**（将在加载阶段抛出）。
 
-**LOOKUP\_PACKAGE\_SCOPE**(_url_)
+**LOOKUP_PACKAGE_SCOPE**(_url_)
 
 > 1. 令 _scopeURL_ 为 _url_。
 > 2. 当 _scopeURL_ 不是文件系统根目录时，
 >    1. 将 _scopeURL_ 设置为 _scopeURL_ 的父 URL。
->    2. 如果 _scopeURL_ 终于 _"node\_modules"_ 路径段，返回 **null**。
+>    2. 如果 _scopeURL_ 终于 _"node_modules"_ 路径段，返回 **null**。
 >    3. 令 _pjsonURL_ 为 _"package.json"_ 在 _scopeURL_ 内的解析。
 >    4. 如果 _pjsonURL_ 处的文件存在，则
 >       1. 返回 _scopeURL_。
 > 3. 返回 **null**。
 
-**READ\_PACKAGE\_JSON**(_packageURL_)
+**READ_PACKAGE_JSON**(_packageURL_)
 
 > 1. 令 _pjsonURL_ 为 _"package.json"_ 在 _packageURL_ 内的解析。
 > 2. 如果 _pjsonURL_ 处的文件不存在，则
@@ -1151,7 +1149,7 @@ _defaultConditions_ 是条件环境名称数组，
 >    1. 抛出 _无效包配置_ 错误。
 > 4. 返回 _pjsonURL_ 处文件的解析 JSON 源。
 
-**DETECT\_MODULE\_SYNTAX**(_source_)
+**DETECT_MODULE_SYNTAX**(_source_)
 
 > 1. 将 _source_ 解析为 ECMAScript 模块。
 > 2. 如果解析成功，则

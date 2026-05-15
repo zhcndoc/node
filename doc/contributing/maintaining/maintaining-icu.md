@@ -114,8 +114,6 @@ make test-ci
 
 同时运行
 
-<!-- eslint-disable strict -->
-
 ```js
 new Intl.DateTimeFormat('es', { month: 'long' }).format(new Date(9E8));
 ```
@@ -140,8 +138,6 @@ make
 ```
 
 * 测试这个新默认生成的 Node.js
-
-<!-- eslint-disable strict -->
 
 ```js
 process.versions.icu;

@@ -1531,7 +1531,7 @@ changes:
 
 请注意，在 `repl` 中，错误消息将与文件中抛出的错误消息不同！详见下文。
 
-<!-- eslint-skip -->
+<!-- eslint-disable no-restricted-syntax -->
 
 ```mjs
 import assert from 'node:assert/strict';
@@ -1568,7 +1568,7 @@ assert.ok(0);
 //   assert.ok(0)
 ```
 
-<!-- eslint-skip -->
+<!-- eslint-disable no-restricted-syntax -->
 
 ```cjs
 const assert = require('node:assert/strict');

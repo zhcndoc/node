@@ -9,6 +9,7 @@
 </tr>
 <tr>
 <td>
+<a href="#22.22.3">22.22.3</a><br/>
 <a href="#22.22.2">22.22.2</a><br/>
 <a href="#22.22.1">22.22.1</a><br/>
 <a href="#22.22.0">22.22.0</a><br/>
@@ -73,6 +74,97 @@
   * [0.10.x](CHANGELOG_V010.md)
   * [io.js](CHANGELOG_IOJS.md)
   * [归档](CHANGELOG_ARCHIVE.md)
+
+<a id="22.22.3"></a>
+
+## 2026-05-13, 版本 22.22.3 'Jod' (LTS), @marco-ippolito
+
+### 提交
+
+* \[[`4f780905c5`](https://github.com/nodejs/node/commit/4f780905c5)] - **crypto**: 修复 `BIO_meth_new()` 失败时可能出现的空指针解引用 (Nora Dossche) [#61788](https://github.com/nodejs/node/pull/61788)
+* \[[`4a09efb947`](https://github.com/nodejs/node/commit/4a09efb947)] - **crypto**: 将根证书更新到 NSS 3.121 (Node.js GitHub Bot) [#62485](https://github.com/nodejs/node/pull/62485)
+* \[[`e4c0d99839`](https://github.com/nodejs/node/commit/e4c0d99839)] - **deps**: 将时区数据更新到 2026a (Node.js GitHub Bot) [#62164](https://github.com/nodejs/node/pull/62164)
+* \[[`0226c8dd7a`](https://github.com/nodejs/node/commit/0226c8dd7a)] - **deps**: 将 simdjson 更新到 4.5.0 (Node.js GitHub Bot) [#62382](https://github.com/nodejs/node/pull/62382)
+* \[[`e742ab748c`](https://github.com/nodejs/node/commit/e742ab748c)] - **deps**: 将 sqlite 更新到 3.51.3 (Node.js GitHub Bot) [#62256](https://github.com/nodejs/node/pull/62256)
+* \[[`73cac0571a`](https://github.com/nodejs/node/commit/73cac0571a)] - **deps**: 将 amaro 更新到 1.1.8 (Node.js GitHub Bot) [#62151](https://github.com/nodejs/node/pull/62151)
+* \[[`ae5c162b93`](https://github.com/nodejs/node/commit/ae5c162b93)] - **deps**: 将 amaro 更新到 1.1.7 (Node.js GitHub Bot) [#61730](https://github.com/nodejs/node/pull/61730)
+* \[[`b819cb9977`](https://github.com/nodejs/node/commit/b819cb9977)] - **deps**: 将 amaro 更新到 1.1.6 (Node.js GitHub Bot) [#61603](https://github.com/nodejs/node/pull/61603)
+* \[[`bbcce09dc7`](https://github.com/nodejs/node/commit/bbcce09dc7)] - **deps**: 将 sqlite 更新到 3.52.0 (Node.js GitHub Bot) [#62150](https://github.com/nodejs/node/pull/62150)
+* \[[`22ff2d81ce`](https://github.com/nodejs/node/commit/22ff2d81ce)] - **deps**: 将 simdjson 更新到 4.3.1 (Node.js GitHub Bot) [#61930](https://github.com/nodejs/node/pull/61930)
+* \[[`f49b51d75c`](https://github.com/nodejs/node/commit/f49b51d75c)] - **deps**: 将 acorn-walk 更新到 8.3.5 (Node.js GitHub Bot) [#61928](https://github.com/nodejs/node/pull/61928)
+* \[[`1a5cec0d49`](https://github.com/nodejs/node/commit/1a5cec0d49)] - **deps**: 将 acorn 更新到 8.16.0 (Node.js GitHub Bot) [#61925](https://github.com/nodejs/node/pull/61925)
+* \[[`d339497688`](https://github.com/nodejs/node/commit/d339497688)] - **deps**: 将 nbytes 更新到 0.1.3 (Node.js GitHub Bot) [#61879](https://github.com/nodejs/node/pull/61879)
+* \[[`3ff8ffd459`](https://github.com/nodejs/node/commit/3ff8ffd459)] - **deps**: 移除过时的 OpenSSL 架构配置 (René) [#61834](https://github.com/nodejs/node/pull/61834)
+* \[[`b8ddbc1e9a`](https://github.com/nodejs/node/commit/b8ddbc1e9a)] - **deps**: 将 llhttp 更新到 9.3.1 (Node.js GitHub Bot) [#61827](https://github.com/nodejs/node/pull/61827)
+* \[[`ffda97afd4`](https://github.com/nodejs/node/commit/ffda97afd4)] - **deps**: 将 googletest 更新到 2461743991f9aa53e9a3625eafcbacd81a3c74cd (Node.js GitHub Bot) [#62484](https://github.com/nodejs/node/pull/62484)
+* \[[`79aa32cf4f`](https://github.com/nodejs/node/commit/79aa32cf4f)] - **deps**: 将 googletest 更新到 73a63ea05dc8ca29ec1d2c1d66481dd0de1950f1 (Node.js GitHub Bot) [#61927](https://github.com/nodejs/node/pull/61927)
+* \[[`b6957e13b6`](https://github.com/nodejs/node/commit/b6957e13b6)] - **deps**: 更新 openssl-3.5.6 的架构文件 (Node.js GitHub Bot) [#62629](https://github.com/nodejs/node/pull/62629)
+* \[[`3a27669063`](https://github.com/nodejs/node/commit/3a27669063)] - **deps**: 将 openssl 源码升级到 openssl-3.5.6 (Node.js GitHub Bot) [#62629](https://github.com/nodejs/node/pull/62629)
+* \[[`d568a1bb53`](https://github.com/nodejs/node/commit/d568a1bb53)] - **deps**: 将 npm 升级到 10.9.8 (npm team) [#62463](https://github.com/nodejs/node/pull/62463)
+* \[[`ec11f3c1d5`](https://github.com/nodejs/node/commit/ec11f3c1d5)] - **deps**: V8: 回移植 85b390089e51 (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`08609712ed`](https://github.com/nodejs/node/commit/08609712ed)] - **deps**: V8: 回移植 1b27e4674f11 (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`dcc60d5ab2`](https://github.com/nodejs/node/commit/dcc60d5ab2)] - **deps**: V8: 回移植 9997fc013952 (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`1d1f4451fb`](https://github.com/nodejs/node/commit/1d1f4451fb)] - **deps**: V8: 反向挑选 b96e40d5ac85 (Clemens Backes) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`2268567237`](https://github.com/nodejs/node/commit/2268567237)] - **deps**: V8: 反向挑选 7cb6188cf913 (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`92804cdbea`](https://github.com/nodejs/node/commit/92804cdbea)] - **deps**: V8: 反向挑选 e7ccf0af1bdd (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`eae2c27a40`](https://github.com/nodejs/node/commit/eae2c27a40)] - **deps**: V8: 反向挑选 8e214ec3ec8c (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`a1799a49bb`](https://github.com/nodejs/node/commit/a1799a49bb)] - **deps**: V8: 回移植 63b8849d73ae (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`a2df2d8731`](https://github.com/nodejs/node/commit/a2df2d8731)] - **deps**: V8: 回移植 323942700cfe (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`e3d65c7dca`](https://github.com/nodejs/node/commit/e3d65c7dca)] - **deps**: V8: 回移植 89dc6eab605c (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`5e7db133de`](https://github.com/nodejs/node/commit/5e7db133de)] - **deps**: V8: 回移植 910cb91733dc (Jakob Kummerow) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`d0c24a28af`](https://github.com/nodejs/node/commit/d0c24a28af)] - **deps**: V8: 反向挑选 b8f91e510e0f (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`d358687824`](https://github.com/nodejs/node/commit/d358687824)] - **deps**: V8: 反向挑选 cf03d55db2a0 (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`67c8b2c349`](https://github.com/nodejs/node/commit/67c8b2c349)] - **deps**: V8: 反向挑选 692f3d526a38 (Sébastien Doeraene) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`71e5a59ffd`](https://github.com/nodejs/node/commit/71e5a59ffd)] - **deps**: V8: 反向挑选 c734674e03f9 (Manos Koukoutos) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`f0dbe81c7b`](https://github.com/nodejs/node/commit/f0dbe81c7b)] - **deps**: V8: 反向挑选 b2f3aea23a01 (Thibaud Michaud) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`d333f480c3`](https://github.com/nodejs/node/commit/d333f480c3)] - **deps**: V8: 反向挑选 5f1342c20b59 (Matthias Liedtke) [#62783](https://github.com/nodejs/node/pull/62783)
+* \[[`db722725bb`](https://github.com/nodejs/node/commit/db722725bb)] - **deps**: 在 `update-undici.sh` 中使用 npm undici\@six 标签 (Matteo Collina) [#63012](https://github.com/nodejs/node/pull/63012)
+* \[[`9b57979d9c`](https://github.com/nodejs/node/commit/9b57979d9c)] - **doc**: 将 Rafael 添加到最后一个安全发布负责人 (Rafael Gonzaga) [#62423](https://github.com/nodejs/node/pull/62423)
+* \[[`d8075585bf`](https://github.com/nodejs/node/commit/d8075585bf)] - **doc**: 在提及 vulnerabilities.json 时添加路径 (Rafael Gonzaga) [#62355](https://github.com/nodejs/node/pull/62355)
+* \[[`6ec9a70204`](https://github.com/nodejs/node/commit/6ec9a70204)] - **doc**: 澄清 fs.ReadStream 和 fs.WriteStream 不能直接构造 (Kit Dallege) [#62208](https://github.com/nodejs/node/pull/62208)
+* \[[`1fc86fcb6e`](https://github.com/nodejs/node/commit/1fc86fcb6e)] - **doc**: 为 `mock.module` 添加关于自定义钩子的说明（及注意事项）(Jacob Smith) [#62075](https://github.com/nodejs/node/pull/62075)
+* \[[`491be80bd9`](https://github.com/nodejs/node/commit/491be80bd9)] - **doc**: 将 efekrskl 添加为 triager (Efe) [#61876](https://github.com/nodejs/node/pull/61876)
+* \[[`18558293a3`](https://github.com/nodejs/node/commit/18558293a3)] - **doc**: 修复 module.stripTypeScriptTypes 的缩进 (René) [#61992](https://github.com/nodejs/node/pull/61992)
+* \[[`8e20976522`](https://github.com/nodejs/node/commit/8e20976522)] - **doc**: 明确提及 Slack 句柄 (Rafael Gonzaga) [#61986](https://github.com/nodejs/node/pull/61986)
+* \[[`70b8e6b4fb`](https://github.com/nodejs/node/commit/70b8e6b4fb)] - **doc**: 重命名无效的 `function` 参数 (René) [#61942](https://github.com/nodejs/node/pull/61942)
+* \[[`4045c76f6c`](https://github.com/nodejs/node/commit/4045c76f6c)] - **doc**: 澄清功能请求 issue 的状态 (Antoine du Hamel) [#61505](https://github.com/nodejs/node/pull/61505)
+* \[[`c54652f2aa`](https://github.com/nodejs/node/commit/c54652f2aa)] - **doc**: 删除 `typescript.md` 中对 `module` 的错误提及 (Rob Palmer) [#61839](https://github.com/nodejs/node/pull/61839)
+* \[[`9fad6cedf5`](https://github.com/nodejs/node/commit/9fad6cedf5)] - **doc**: 澄清 `events.once()` 的异步注意事项 (René) [#61572](https://github.com/nodejs/node/pull/61572)
+* \[[`2f1e5733fe`](https://github.com/nodejs/node/commit/2f1e5733fe)] - **doc**: 更新 Juan 的安全负责人信息 (Juan José) [#61754](https://github.com/nodejs/node/pull/61754)
+* \[[`a64bdb5068`](https://github.com/nodejs/node/commit/a64bdb5068)] - **doc**: 修复 response.sendDate 中对 Date 头要求的过度表述 (Kit Dallege) [#62206](https://github.com/nodejs/node/pull/62206)
+* \[[`02797de923`](https://github.com/nodejs/node/commit/02797de923)] - **doc**: 修复一个小的 environment_variables 拼写错误 (chris) [#62279](https://github.com/nodejs/node/pull/62279)
+* \[[`f22ebdc809`](https://github.com/nodejs/node/commit/f22ebdc809)] - **doc**: 修复 DETECT_MODULE_SYNTAX 中一个小的逻辑错误 (René) [#62025](https://github.com/nodejs/node/pull/62025)
+* \[[`9f4508062a`](https://github.com/nodejs/node/commit/9f4508062a)] - **doc**: 修复 `process.md` 中方法被记为属性的问题 (Antoine du Hamel) [#61765](https://github.com/nodejs/node/pull/61765)
+* \[[`3ea39ff135`](https://github.com/nodejs/node/commit/3ea39ff135)] - **doc**: 修复由于堆叠上下文导致 <600px 时下拉菜单被遮挡的问题 (Jeff) [#61735](https://github.com/nodejs/node/pull/61735)
+* \[[`c22445079b`](https://github.com/nodejs/node/commit/c22445079b)] - **doc**: 修复 process message event 中的间距 (Aviv Keller) [#61756](https://github.com/nodejs/node/pull/61756)
+* \[[`32831b5223`](https://github.com/nodejs/node/commit/32831b5223)] - **doc**: 修复 net.md 的损坏链接 (YuSheng Chen) [#61673](https://github.com/nodejs/node/pull/61673)
+* \[[`005508d509`](https://github.com/nodejs/node/commit/005508d509)] - **doc**: 移除过时的 Boxstarter 自动安装 (Mike McCready) [#61785](https://github.com/nodejs/node/pull/61785)
+* \[[`45b3506eb8`](https://github.com/nodejs/node/commit/45b3506eb8)] - **doc,src,test**: 修复失效的 inspector help URL (semimikoh) [#62745](https://github.com/nodejs/node/pull/62745)
+* \[[`37c2fd6f7d`](https://github.com/nodejs/node/commit/37c2fd6f7d)] - **esm**: 修复 `finalizeResolution` 中的路径规范化 (Antoine du Hamel) [#62080](https://github.com/nodejs/node/pull/62080)
+* \[[`1769d74613`](https://github.com/nodejs/node/commit/1769d74613)] - **esm**: 为导入的 CJS 中的 require(esm) 填充单独的缓存 (Joyee Cheung) [#59679](https://github.com/nodejs/node/pull/59679)
+* \[[`ee02966ffc`](https://github.com/nodejs/node/commit/ee02966ffc)] - **http**: 修复 `requestOnFinish` 中 keep-alive socket 复用竞态 (Martin Slota) [#61710](https://github.com/nodejs/node/pull/61710)
+* \[[`2fdb5ce6cc`](https://github.com/nodejs/node/commit/2fdb5ce6cc)] - **http2**: 修复 `respondWithFile` 中的 FileHandle 泄漏 (sangwook) [#61707](https://github.com/nodejs/node/pull/61707)
+* \[[`aa2c1eca04`](https://github.com/nodejs/node/commit/aa2c1eca04)] - **lib**: 修复动态导入中的 source map URL 解析 (Chengzhong Wu) [#61990](https://github.com/nodejs/node/pull/61990)
+* \[[`785b00cbeb`](https://github.com/nodejs/node/commit/785b00cbeb)] - **meta**: 将发布版本传递给 release worker (flakey5) [#62777](https://github.com/nodejs/node/pull/62777)
+* \[[`447fb9a0b5`](https://github.com/nodejs/node/commit/447fb9a0b5)] - **meta**: 将 sccache 守护进程持久化到构建工作流结束 (René) [#61639](https://github.com/nodejs/node/pull/61639)
+* \[[`5065a0acb3`](https://github.com/nodejs/node/commit/5065a0acb3)] - **module**: 对导入的 cjs 不要两次调用 resolve 钩子 (Joyee Cheung) [#61529](https://github.com/nodejs/node/pull/61529)
+* \[[`9a2e21305d`](https://github.com/nodejs/node/commit/9a2e21305d)] - **module**: 在未启用跟踪时不要包装 module._load (Joyee Cheung) [#61479](https://github.com/nodejs/node/pull/61479)
+* \[[`b9240bc063`](https://github.com/nodejs/node/commit/b9240bc063)] - **module**: 修复带有 node: 前缀的 require 的同步 resolve 钩子 (Joyee Cheung) [#61088](https://github.com/nodejs/node/pull/61088)
+* \[[`2e91b28aaf`](https://github.com/nodejs/node/commit/2e91b28aaf)] - **module**: 在同步钩子中处理来自异步加载器钩子的空 source (Joyee Cheung) [#59929](https://github.com/nodejs/node/pull/59929)
+* \[[`39147c154e`](https://github.com/nodejs/node/commit/39147c154e)] - **module**: 在导入 cts 时使用同步 cjs (Marco Ippolito) [#60072](https://github.com/nodejs/node/pull/60072)
+* \[[`12a2462b2c`](https://github.com/nodejs/node/commit/12a2462b2c)] - **module**: 仅将直接 require 的 ESM 放入 require.cache (Joyee Cheung) [#59874](https://github.com/nodejs/node/pull/59874)
+* \[[`cf39566277`](https://github.com/nodejs/node/commit/cf39566277)] - **src**: 修复 JSUdpWrap 中的 flags 参数偏移 (Weixie Cui) [#61948](https://github.com/nodejs/node/pull/61948)
+* \[[`578a9a9230`](https://github.com/nodejs/node/commit/578a9a9230)] - **src**: 在 EncodeInto 中将 WriteUtf8 容量限制为 INT_MAX (semimikoh) [#62621](https://github.com/nodejs/node/pull/62621)
+* \[[`57c3035fec`](https://github.com/nodejs/node/commit/57c3035fec)] - **stream**: 修复 decoded fromList 块边界检查 (Thomas Watson) [#61884](https://github.com/nodejs/node/pull/61884)
+* \[[`57fb008bb8`](https://github.com/nodejs/node/commit/57fb008bb8)] - **test**: 更新 tls junk data 错误预期 (Filip Skokan) [#62629](https://github.com/nodejs/node/pull/62629)
+* \[[`363f9a9d18`](https://github.com/nodejs/node/commit/363f9a9d18)] - **test**: 在 `--shared-ada` 构建上跳过 `test-url` (Antoine du Hamel) [#62019](https://github.com/nodejs/node/pull/62019)
+* \[[`daaead342b`](https://github.com/nodejs/node/commit/daaead342b)] - **test**: 简化 encodeInto 大缓冲区回归测试 (semimikoh) [#62621](https://github.com/nodejs/node/pull/62621)
+* \[[`ecfa766b41`](https://github.com/nodejs/node/commit/ecfa766b41)] - **tools**: 修复 auto-start-ci (Antoine du Hamel) [#61900](https://github.com/nodejs/node/pull/61900)
+* \[[`17c0a610af`](https://github.com/nodejs/node/commit/17c0a610af)] - **tools**: 修复 `lint-release-proposal` GHA 中提交 trailer 的解析 (Antoine du Hamel) [#62077](https://github.com/nodejs/node/pull/62077)
+* \[[`89ad7dc63b`](https://github.com/nodejs/node/commit/89ad7dc63b)] - **tools**: 强制在 release proposals 上移除 `lts-watch-*` 标签 (Antoine du Hamel) [#61672](https://github.com/nodejs/node/pull/61672)
+* \[[`5f9bb8ef0c`](https://github.com/nodejs/node/commit/5f9bb8ef0c)] - **tools**: 将 tools GHA 工作流回退到 ubuntu-latest (Richard Lau) [#62024](https://github.com/nodejs/node/pull/62024)
+* \[[`977ef80ac1`](https://github.com/nodejs/node/commit/977ef80ac1)] - **url**: 通过 `pathToFileURL()` 中格式错误的 UNC 主机名导致进程崩溃 (Nicola Del Gobbo) [#62574](https://github.com/nodejs/node/pull/62574)
+* \[[`ad8f518a81`](https://github.com/nodejs/node/commit/ad8f518a81)] - **zlib**: 修复在写入期间调用 `reset()` 时的 use-after-free (Matteo Collina) [#62325](https://github.com/nodejs/node/pull/62325)
 
 <a id="22.22.2"></a>
 
@@ -496,7 +588,7 @@
 * \[[`6badf4e6f4`](https://github.com/nodejs/node/commit/6badf4e6f4)] - **deps**: 将 c-ares 更新到 v1.34.6 (Node.js GitHub Bot) [#60997](https://github.com/nodejs/node/pull/60997)
 * \[[`37509c3ff0`](https://github.com/nodejs/node/commit/37509c3ff0)] - **deps**: 将 undici 更新到 6.23.0 (Matteo Collina) [nodejs-private/node-private#791](https://github.com/nodejs-private/node-private/pull/791)
 * \[[`eb8e41f8db`](https://github.com/nodejs/node/commit/eb8e41f8db)] - **(CVE-2025-59465)** **lib**: 添加 TLSSocket 默认错误处理器 (RafaelGSS) [nodejs-private/node-private#797](https://github.com/nodejs-private/node-private/pull/797)
-* \[[`ebbf942a83`](https://github.com/nodejs/node/commit/ebbf942a83)] - **(CVE-2025-55132)** **lib**: 在启用权限模型时禁用 futimes (RafaelGSS) [nodejs-private/node-private#748](https://github.com/nodejs-private/node-private/pull/748)
+* \[[`ebbf942a83`](https://github.com/nodejs/node/commit/ebbf942a83)] - **(CVE-2025-55132)** **lib**: 在启用权限模型时禁用 futimes (RafaelGSS) [nodejs-private/node-private#748](https://github.com/nodejs/node-private/node-private/pull/748)
 * \[[`6b4849583a`](https://github.com/nodejs/node/commit/6b4849583a)] - **(CVE-2025-55130)** **lib,permission**: symlink API 需要完整的读写权限 (RafaelGSS) [nodejs-private/node-private#760](https://github.com/nodejs-private/node-private/pull/760)
 * \[[`ddadc31f09`](https://github.com/nodejs/node/commit/ddadc31f09)] - **(CVE-2025-59466)** **src**: 在 async_hooks 中重新抛出堆栈溢出异常 (Matteo Collina) [nodejs-private/node-private#773](https://github.com/nodejs-private/node-private/pull/773)
 * \[[`d4d9f3915f`](https://github.com/nodejs/node/commit/d4d9f3915f)] - **(CVE-2025-55131)** **src,lib**: 重构不安全的缓冲区创建，移除零填充切换 (Сковорода Никита Андреевич) [nodejs-private/node-private#759](https://github.com/nodejs-private/node-private/pull/759)
@@ -616,7 +708,7 @@
 * \[[`99ea08dc43`](https://github.com/nodejs/node/commit/99ea08dc43)] - **repl**: 在包装输入前添加 isValidParentheses 检查 (Xuguang Mei) [#59607](https://github.com/nodejs/node/pull/59607)
 * \[[`e4a4f63019`](https://github.com/nodejs/node/commit/e4a4f63019)] - **sqlite**: 修复带有 worker 的 session 扩展回调崩溃问题 (Bart Louwers) [#59848](https://github.com/nodejs/node/pull/59848)
 * \[[`42c5544b97`](https://github.com/nodejs/node/commit/42c5544b97)] - **src**: 断言 max-old-space-size-percentage 的内存计算 (Asaf Federman) [#59460](https://github.com/nodejs/node/pull/59460)
-* \[[`686ac49b82`](https://github.com/nodejs/node/commit/686ac49b82)] - **(SEMVER-MINOR)** **src**: 为 --max-old-space-size 添加百分比支持 (Asaf Federman) [#59082](https://github.com/nodejs/node/pull/59082)
+* \[[`686ac49b82`](https://github.com/nodejs/node/commit/686ac49b82)] - **(SEMVER-MINOR)** **src**: 为 `--max-old-space-size` 添加百分比支持 (Asaf Federman) [#59082](https://github.com/nodejs/node/pull/59082)
 * \[[`84701ff668`](https://github.com/nodejs/node/commit/84701ff668)] - **src**: 在实例化后清除所有已链接模块缓存 (Chengzhong Wu) [#59117](https://github.com/nodejs/node/pull/59117)
 * \[[`8e182e561f`](https://github.com/nodejs/node/commit/8e182e561f)] - **src**: 移除不必要的 `Environment::GetCurrent()` 调用 (Moonki Choi) [#59814](https://github.com/nodejs/node/pull/59814)
 * \[[`c9cde35c4d`](https://github.com/nodejs/node/commit/c9cde35c4d)] - **src**: 通过将 is_callable 变为 concept 来简化它 (Tobias Nießen) [#58169](https://github.com/nodejs/node/pull/58169)
@@ -1761,7 +1853,7 @@ Node.js 权限模型现在默认允许对入口文件的读取访问。这使得
 * \[[`7af0440073`](https://github.com/nodejs/node/commit/7af0440073)] - **assert**: 提高 myers diff 性能 (Giovanni Bucci) [#57279](https://github.com/nodejs/node/pull/57279)
 * \[[`01cf5fb871`](https://github.com/nodejs/node/commit/01cf5fb871)] - **(SEMVER-MINOR)** **assert,util**: 提高性能 (Ruben Bridgewater) [#57370](https://github.com/nodejs/node/pull/57370)
 * \[[`a58842cee4`](https://github.com/nodejs/node/commit/a58842cee4)] - **(SEMVER-MINOR)** **benchmark**: 调整 assert 运行时间 (Ruben Bridgewater) [#57370](https://github.com/nodejs/node/pull/57370)
-* \[[`b20b3697aa`](https://github.com/nodejs/node/commit/b20b3697aa)] - **(SEMVER-MINOR)** **benchmark**: 默认跳过运行部分 assert 基准测试 (Ruben Bridgewater) [#57370](https://github.com/nodejs/node/pull/57370)
+* \[[`b20b3697aa`](https://github.com/nodejs/node/commit/b20b3697aa)] - **(SEMVER-MINOR)** **benchmark**: 默认跳过部分 assert 基准测试 (Ruben Bridgewater) [#57370](https://github.com/nodejs/node/pull/57370)
 * \[[`ec5570fd1e`](https://github.com/nodejs/node/commit/ec5570fd1e)] - **(SEMVER-MINOR)** **benchmark**: 添加 assert partialDeepStrictEqual 基准测试 (Ruben Bridgewater) [#57370](https://github.com/nodejs/node/pull/57370)
 * \[[`b991bf4ca6`](https://github.com/nodejs/node/commit/b991bf4ca6)] - **benchmark**: 为 bench-openSync 添加预热 (Elves Vieira) [#57051](https://github.com/nodejs/node/pull/57051)
 * \[[`4a455bc806`](https://github.com/nodejs/node/commit/4a455bc806)] - **build**: 修复 update-wpt 工作流 (Jonas) [#57468](https://github.com/nodejs/node/pull/57468)
@@ -2014,14 +2106,14 @@ Node.js 权限模型现在默认允许对入口文件的读取访问。这使得
 * \[[`e41b1735f1`](https://github.com/nodejs/node/commit/e41b1735f1)] - **stream**: 修复 WritableStream 中的 sizeAlgorithm 校验 (Daeyeon Jeong) [#57280](https://github.com/nodejs/node/pull/57280)
 * \[[`3bc877dc5c`](https://github.com/nodejs/node/commit/3bc877dc5c)] - **test**: 为 buffer.indexOf 添加更多数字用例 (Meghan Denny) [#57200](https://github.com/nodejs/node/pull/57200)
 * \[[`cac9a4e832`](https://github.com/nodejs/node/commit/cac9a4e832)] - **test**: 为 OpenSSL 3.5 更新 parallel/test-tls-dhe (Richard Lau) [#57477](https://github.com/nodejs/node/pull/57477)
-* \[[`3082ab3a64`](https://github.com/nodejs/node/commit/3082ab3a64)] - **test**: module syntax 应该抛错 (Marco Ippolito) [#57121](https://github.com/nodejs/node/pull/57121)
+* \[[`3082ab3a64`](https://github.com/nodejs/node/commit/3082ab3a64)] - **test**: module 语法应该抛错 (Marco Ippolito) [#57121](https://github.com/nodejs/node/pull/57121)
 * \[[`9b0dfc9a44`](https://github.com/nodejs/node/commit/9b0dfc9a44)] - **test**: 更新 amaro v0.3.2 的快照 (Marco Ippolito) [#56916](https://github.com/nodejs/node/pull/56916)
-* \[[`2defc35ea8`](https://github.com/nodejs/node/commit/2defc35ea8)] - **test**: test runner 运行计划 (Pietro Marchini) [#57304](https://github.com/nodejs/node/pull/57304)
+* \[[`2defc35ea8`](https://github.com/nodejs/node/commit/2defc35ea8)] - **test**: 测试运行器运行计划 (Pietro Marchini) [#57304](https://github.com/nodejs/node/pull/57304)
 * \[[`ccb3df70be`](https://github.com/nodejs/node/commit/ccb3df70be)] - **test**: 将 WebCryptoAPI 的 WPT 更新到 edd42c005c (Node.js GitHub Bot) [#57365](https://github.com/nodejs/node/pull/57365)
 * \[[`528103c5d0`](https://github.com/nodejs/node/commit/528103c5d0)] - **test**: 简化 test-tls-connect-abort-controller.js (Yagiz Nizipli) [#57338](https://github.com/nodejs/node/pull/57338)
 * \[[`17e21e6eb5`](https://github.com/nodejs/node/commit/17e21e6eb5)] - **test**: 在 `test-esm-import-meta` 中使用 `assert.match` (Antoine du Hamel) [#57290](https://github.com/nodejs/node/pull/57290)
 * \[[`77bbee5184`](https://github.com/nodejs/node/commit/77bbee5184)] - **test**: 更新 compression wpt (Yagiz Nizipli) [#56960](https://github.com/nodejs/node/pull/56960)
-* \[[`4fe88f8f53`](https://github.com/nodejs/node/commit/4fe88f8f53)] - _**Revert**_ "**test**: temporary remove resource check from fs read-write" (Rafael Gonzaga) [#56906](https://github.com/nodejs/node/pull/56906)
+* \[[`4fe88f8f53`](https://github.com/nodejs/node/commit/4fe88f8f53)] - _**回退**_ "**test**: 临时移除 fs read-write 的资源检查" (Rafael Gonzaga) [#56906](https://github.com/nodejs/node/pull/56906)
 * \[[`766efc7758`](https://github.com/nodejs/node/commit/766efc7758)] - **test**: 在 net、tls 中添加更多 common.mustNotCall (Meghan Denny) [#57246](https://github.com/nodejs/node/pull/57246)
 * \[[`562e635e11`](https://github.com/nodejs/node/commit/562e635e11)] - **test**: 交换 assert.strictEqual() 参数 (Luigi Pinca) [#57217](https://github.com/nodejs/node/pull/57217)
 * \[[`64fdfd5622`](https://github.com/nodejs/node/commit/64fdfd5622)] - **test**: 在 buffer-bigint64 中断言 write 返回值 (Meghan Denny) [#57212](https://github.com/nodejs/node/pull/57212)
@@ -2048,7 +2140,7 @@ Node.js 权限模型现在默认允许对入口文件的读取访问。这使得
 * \[[`31f98d7ccd`](https://github.com/nodejs/node/commit/31f98d7ccd)] - **test**: 搜索 cctest 文件 (Chengzhong Wu) [#56791](https://github.com/nodejs/node/pull/56791)
 * \[[`267f17d5f6`](https://github.com/nodejs/node/commit/267f17d5f6)] - **test**: 将 test_encoding_binding.cc 转换为 JS 测试 (Chengzhong Wu) [#56791](https://github.com/nodejs/node/pull/56791)
 * \[[`a875d7bdd1`](https://github.com/nodejs/node/commit/a875d7bdd1)] - **test**: test-crypto-prime.js 不需要 internals (Meghan Denny) [#56675](https://github.com/nodejs/node/pull/56675)
-* \[[`85482d69c6`](https://github.com/nodejs/node/commit/85482d69c6)] - **test**: 暂时移除 fs read-write 的资源检查 (Rafael Gonzaga) [#56789](https://github.com/nodejs/node/pull/56789)
+* \[[`85482d69c6`](https://github.com/nodejs/node/commit/85482d69c6)] - **test**: 临时移除 fs read-write 的资源检查 (Rafael Gonzaga) [#56789](https://github.com/nodejs/node/pull/56789)
 * \[[`ec63d72f16`](https://github.com/nodejs/node/commit/ec63d72f16)] - **test**: 将 windows 上的 test-without-async-context-frame 标记为 flaky (James M Snell) [#56753](https://github.com/nodejs/node/pull/56753)
 * \[[`f16acc8521`](https://github.com/nodejs/node/commit/f16acc8521)] - **test**: 移除不必要的代码 (Luigi Pinca) [#56784](https://github.com/nodejs/node/pull/56784)
 * \[[`0573c19a97`](https://github.com/nodejs/node/commit/0573c19a97)] - **test**: 将 `test-esm-loader-hooks-inspect-wait` 标记为 flaky (Richard Lau) [#56803](https://github.com/nodejs/node/pull/56803)
@@ -2181,7 +2273,7 @@ Node.js 权限模型现在默认允许对入口文件的读取访问。这使得
 * \[[`928540d792`](https://github.com/nodejs/node/commit/928540d792)] - **doc**: 修复拼写错误 (Nathan Baulch) [#55066](https://github.com/nodejs/node/pull/55066)
 * \[[`e69d35f03b`](https://github.com/nodejs/node/commit/e69d35f03b)] - **doc**: 为 Permission Model 添加历史信息 (Antoine du Hamel) [#56707](https://github.com/nodejs/node/pull/56707)
 * \[[`c6fd867ab5`](https://github.com/nodejs/node/commit/c6fd867ab5)] - **esm**: 修复 esm/loader 中指向 `ModuleJobBase` 的 jsdoc 类型引用 (Jacob Smith) [#56499](https://github.com/nodejs/node/pull/56499)
-* \[[`9cf9046bd7`](https://github.com/nodejs/node/commit/9cf9046bd7)] - _**Revert**_ "**events**: 为 validate 添加 hasEventListener 工具函数" (origranot) [#56282](https://github.com/nodejs/node/pull/56282)
+* \[[`9cf9046bd7`](https://github.com/nodejs/node/commit/9cf9046bd7)] - _**回退**_ "**events**: 为 validate 添加 hasEventListener 工具函数" (origranot) [#56282](https://github.com/nodejs/node/pull/56282)
 * \[[`b7fe54fc88`](https://github.com/nodejs/node/commit/b7fe54fc88)] - **(SEMVER-MINOR)** **fs**: 允许 globs 中的 `exclude` 选项接受 glob 模式 (Daeyeon Jeong) [#56489](https://github.com/nodejs/node/pull/56489)
 * \[[`6ca27c2a59`](https://github.com/nodejs/node/commit/6ca27c2a59)] - **http2**: 当 HTTP2 主机是 IP 地址时省略服务器名 (islandryu) [#56530](https://github.com/nodejs/node/pull/56530)
 * \[[`9f1fa199bf`](https://github.com/nodejs/node/commit/9f1fa199bf)] - **inspector**: 更新 inspector_protocol (Chengzhong Wu) [#56649](https://github.com/nodejs/node/pull/56649)
@@ -2328,7 +2420,7 @@ Node.js 权限模型现在默认允许对入口文件的读取访问。这使得
 
 ## 2025-01-21，版本 22.13.1 'Jod'（LTS），@RafaelGSS
 
-这是一个安全发布。
+这是一次安全发布。
 
 ### 重要变更
 
@@ -2370,7 +2462,7 @@ Node.js 权限模型现在默认允许对入口文件的读取访问。这使得
 * \[[`05d6227a88`](https://github.com/nodejs/node/commit/05d6227a88)] - **(SEMVER-MINOR)** **assert**: 添加 partialDeepStrictEqual（Giovanni Bucci）[#54630](https://github.com/nodejs/node/pull/54630)
 * \[[`a933103499`](https://github.com/nodejs/node/commit/a933103499)] - **(SEMVER-MINOR)** **cli**: 实现 --trace-env 和 --trace-env-\[js|native]-stack（Joyee Cheung）[#55604](https://github.com/nodejs/node/pull/55604)
 * \[[`ba9d5397de`](https://github.com/nodejs/node/commit/ba9d5397de)] - **(SEMVER-MINOR)** **dgram**: 支持 udp 中的 blocklist（theanarkh）[#56087](https://github.com/nodejs/node/pull/56087)
-* \[[`f6d0c01303`](https://github.com/nodejs/node/commit/f6d0c01303)] - **doc**: 稳定化 util.styleText（Rafael Gonzaga）[#56265](https://github.com/nodejs/node/pull/56265)
+* \[[`f6d0c01303`](https://github.com/nodejs/node/commit/f6d0c01303)] - **doc**: 将 util.styleText 稳定化（Rafael Gonzaga）[#56265](https://github.com/nodejs/node/pull/56265)
 * \[[`34c68827af`](https://github.com/nodejs/node/commit/34c68827af)] - **doc**: 将 typescript 支持移至积极开发中（Marco Ippolito）[#55536](https://github.com/nodejs/node/pull/55536)
 * \[[`dd14b80350`](https://github.com/nodejs/node/commit/dd14b80350)] - **doc**: 将 LJHarb 添加到协作者中（Jordan Harband）[#56132](https://github.com/nodejs/node/pull/56132)
 * \[[`5263086169`](https://github.com/nodejs/node/commit/5263086169)] - **(SEMVER-MINOR)** **doc**: 添加 report 版本和历史记录部分（Chengzhong Wu）[#56130](https://github.com/nodejs/node/pull/56130)
@@ -2434,7 +2526,7 @@ Node.js 权限模型现在默认允许对入口文件的读取访问。这使得
 * \[[`ba9d5397de`](https://github.com/nodejs/node/commit/ba9d5397de)] - **(SEMVER-MINOR)** **dgram**: 支持 udp 中的 blocklist（theanarkh）[#56087](https://github.com/nodejs/node/pull/56087)
 * \[[`7ddbf94849`](https://github.com/nodejs/node/commit/7ddbf94849)] - **dgram**: 检查 udp 缓冲区大小以避免 fd 泄漏（theanarkh）[#56084](https://github.com/nodejs/node/pull/56084)
 * \[[`360d68de0f`](https://github.com/nodejs/node/commit/360d68de0f)] - **doc**: 修复浅色模式下的颜色对比度问题（Rich Trott）[#56272](https://github.com/nodejs/node/pull/56272)
-* \[[`f6d0c01303`](https://github.com/nodejs/node/commit/f6d0c01303)] - **doc**: 稳定化 util.styleText（Rafael Gonzaga）[#56265](https://github.com/nodejs/node/pull/56265)
+* \[[`f6d0c01303`](https://github.com/nodejs/node/commit/f6d0c01303)] - **doc**: 将 util.styleText 稳定化（Rafael Gonzaga）[#56265](https://github.com/nodejs/node/pull/56265)
 * \[[`9436c3c949`](https://github.com/nodejs/node/commit/9436c3c949)] - **doc**: 澄清 util.aborted 的资源使用（Kunal Kumar）[#55780](https://github.com/nodejs/node/pull/55780)
 * \[[`b1cec2cef9`](https://github.com/nodejs/node/commit/b1cec2cef9)] - **doc**: 为 node:repl 添加 esm 示例（Alfredo González）[#55432](https://github.com/nodejs/node/pull/55432)
 * \[[`d6a84cf781`](https://github.com/nodejs/node/commit/d6a84cf781)] - **doc**: 为 node:readline 添加 esm 示例（Alfredo González）[#55335](https://github.com/nodejs/node/pull/55335)
@@ -3147,7 +3239,7 @@ Node.js 22.x 的官方二进制文件目前包含 OpenSSL 3.0.x（更具体地�
 * \[[`942ad54e08`](https://github.com/nodejs/node/commit/942ad54e08)] - **src**: 将更多密钥处理移至 ncrypto (James M Snell) [#55108](https://github.com/nodejs/node/pull/55108)
 * \[[`0bb5584288`](https://github.com/nodejs/node/commit/0bb5584288)] - **src**: 为 fast api callback 方法添加 receiver (Carlos Espa) [#54408](https://github.com/nodejs/node/pull/54408)
 * \[[`706e9611f0`](https://github.com/nodejs/node/commit/706e9611f0)] - **src**: 修复拼写错误 (Nathan Baulch) [#55064](https://github.com/nodejs/node/pull/55064)
-* \[[`a96d5d1bcc`](https://github.com/nodejs/node/commit/a96d5d1bcc)] - **src**: 进一步迁移为使用 Maybe\<void> (James M Snell) [#54831](https://github.com/nodejs/node/pull/54831)
+* \[[`a96d5d1bcc`](https://github.com/nodejs/node/commit/a96d5d1bcc)] - **src**: 进一步迁移为使用 Maybe<void> (James M Snell) [#54831](https://github.com/nodejs/node/pull/54831)
 * \[[`ee0a98b5a2`](https://github.com/nodejs/node/commit/ee0a98b5a2)] - **src**: 将本地错误消息解码为 UTF-8 (Joyee Cheung) [#55024](https://github.com/nodejs/node/pull/55024)
 * \[[`1fc8edecf8`](https://github.com/nodejs/node/commit/1fc8edecf8)] - **src**: 更新 clang-tidy 并聚焦现代化 (Yagiz Nizipli) [#53757](https://github.com/nodejs/node/pull/53757)
 * \[[`3a1485a1a3`](https://github.com/nodejs/node/commit/3a1485a1a3)] - **src**: 将 evp 相关内容移至 ncrypto (James M Snell) [#54911](https://github.com/nodejs/node/pull/54911)
@@ -3297,7 +3389,7 @@ anotherFunction();
 也会越来越难以为其回移补丁。因此，默认在 v22 中禁用它，
 以减少用户的变动和困扰。
 
-感谢 Joyee Cheung 通过 [#54384](https://github.com/nodejs/node/pull/54384) 使其生效
+感谢 Joyee Cheung 通过 [#54384](https://github.com/nodejs/node/pull/54384) 使其生效。
 
 ### 将 X509\_V\_FLAG\_PARTIAL\_CHAIN 暴露给 tls.createSecureContext
 
@@ -3305,7 +3397,7 @@ anotherFunction();
 `tls.createSecureContext({ allowPartialTrustChain: true })`
 将信任 CA 证书列表中的中间（非自签名）证书视为受信任。
 
-感谢 Anna Henningsen 通过 [#54790](https://github.com/nodejs/node/pull/54790) 使其生效
+感谢 Anna Henningsen 通过 [#54790](https://github.com/nodejs/node/pull/54790) 使其生效。
 
 ### 其他值得注意的变更
 
@@ -3530,8 +3622,8 @@ $ node --experimental-test-coverage --test-coverage-lines=80 --test-coverage-bra
 
 * \[[`1f2cc2fa47`](https://github.com/nodejs/node/commit/1f2cc2fa47)] - **(SEMVER-MINOR)** **src,lib**: 添加 performance.uvMetricsInfo (Rafael Gonzaga) [#54413](https://github.com/nodejs/node/pull/54413)
 * \[[`1e01bdc0d0`](https://github.com/nodejs/node/commit/1e01bdc0d0)] - **(SEMVER-MINOR)** **net**: 从 server.listen 中排除 ipv6 回环地址 (Giovanni Bucci) [#54264](https://github.com/nodejs/node/pull/54264)
-* \[[`97fa075c2e`](https://github.com/nodejs/node/commit/97fa075c2e)] - **(SEMVER-MINOR)** **test\_runner**: 支持在进程内运行测试 (Colin Ihrig) [#53927](https://github.com/nodejs/node/pull/53927)
-* \[[`858b583c88`](https://github.com/nodejs/node/commit/858b583c88)] - **(SEMVER-MINOR)** **test\_runner**: 推迟继承 hooks 直到 run() (Colin Ihrig) [#53927](https://github.com/nodejs/node/pull/53927)
+* \[[`97fa075c2e`](https://github.com/nodejs/node/commit/97fa075c2e)] - **(SEMVER-MINOR)** **test_runner**: 支持在进程内运行测试 (Colin Ihrig) [#53927](https://github.com/nodejs/node/pull/53927)
+* \[[`858b583c88`](https://github.com/nodejs/node/commit/858b583c88)] - **(SEMVER-MINOR)** **test_runner**: 推迟继承 hooks 直到 run() (Colin Ihrig) [#53927](https://github.com/nodejs/node/pull/53927)
 
 ### 提交
 
@@ -3629,7 +3721,7 @@ $ node --experimental-test-coverage --test-coverage-lines=80 --test-coverage-bra
 
 ## 2024-08-22，版本 22.7.0（当前），@RafaelGSS
 
-### 支持实验性 transform types
+### 支持实验性转换类型
 
 使用新的标志 `--experimental-transform-types`，可以将仅 TypeScript 语法转换为 JavaScript 代码。
 
@@ -3651,7 +3743,7 @@ $ node --experimental-test-coverage --test-coverage-lines=80 --test-coverage-bra
 
 ### Buffer 的性能改进
 
-Node.js Buffers 的性能已通过多个 PR 得到优化，`Buffer.copy` 和 `Buffer.write` 方法有了显著改进。这些方法在代码库中被广泛使用，应该能整体带来不错的提升。
+Node.js 的 Buffer 已通过多个 PR 得到优化，`Buffer.copy` 和 `Buffer.write` 方法有了显著改进。这些方法在代码库中被广泛使用，应该能整体带来不错的提升。
 
 感谢 Robert Nagy 在 [#54311](https://github.com/nodejs/node/pull/54311),
 [#54324](https://github.com/nodejs/node/pull/54324) 和 [#54087](https://github.com/nodejs/node/pull/54087) 中完成了这项工作。
@@ -3711,15 +3803,15 @@ Node.js Buffers 的性能已通过多个 PR 得到优化，`Buffer.copy` 和 `Bu
 * \[[`aa6e770ea5`](https://github.com/nodejs/node/commit/aa6e770ea5)] - **doc**：修正性能条目类型（Jason Zhang）[#54263](https://github.com/nodejs/node/pull/54263)
 * \[[`4b099ce1bd`](https://github.com/nodejs/node/commit/4b099ce1bd)] - **doc**：修正文档 sea 中方法名的拼写错误（Eliyah Sundström）[#54027](https://github.com/nodejs/node/pull/54027)
 * \[[`8a8d1d2281`](https://github.com/nodejs/node/commit/8a8d1d2281)] - **doc**：将 process.nextTick 标记为 legacy（Marco Ippolito）[#51280](https://github.com/nodejs/node/pull/51280)
-* \[[`6f4b5d998e`](https://github.com/nodejs/node/commit/6f4b5d998e)] - **doc**：为 node:http2 添加 esm 示例（Alfredo González）[#54292](https://github.com/nodejs/node/pull/54292)
+* \[[`6f4b5d998e`](https://github.com/nodejs/node/commit/6f4b5d998e)] - **doc**：为 node:http2 添加 ESM 示例（Alfredo González）[#54292](https://github.com/nodejs/node/pull/54292)
 * \[[`1535469c12`](https://github.com/nodejs/node/commit/1535469c12)] - **doc**：明确提及 node:fs 模块限制（Rafael Gonzaga）[#54269](https://github.com/nodejs/node/pull/54269)
 * \[[`26c37f7910`](https://github.com/nodejs/node/commit/26c37f7910)] - **doc**：移除基于模块的权限文档（Rafael Gonzaga）[#54266](https://github.com/nodejs/node/pull/54266)
 * \[[`971b9f31f5`](https://github.com/nodejs/node/commit/971b9f31f5)] - **doc**：更新 `buffer.constants.MAX_LENGTH` 的大小（Samuli Asmala）[#54207](https://github.com/nodejs/node/pull/54207)
 * \[[`3106149965`](https://github.com/nodejs/node/commit/3106149965)] - **doc**：警告 Windows 构建 bug（Jason Zhang）[#54217](https://github.com/nodejs/node/pull/54217)
 * \[[`55f8ac3e89`](https://github.com/nodejs/node/commit/55f8ac3e89)] - **doc**：使 `tracingChannel.traceCallback` 中某些参数可选（Deokjin Kim）[#54068](https://github.com/nodejs/node/pull/54068)
-* \[[`e3e2f22cab`](https://github.com/nodejs/node/commit/e3e2f22cab)] - **doc**：为 node:dns 添加 esm 示例（Alfredo González）[#54172](https://github.com/nodejs/node/pull/54172)
+* \[[`e3e2f22cab`](https://github.com/nodejs/node/commit/e3e2f22cab)] - **doc**：为 node:dns 添加 ESM 示例（Alfredo González）[#54172](https://github.com/nodejs/node/pull/54172)
 * \[[`0429b1eb9d`](https://github.com/nodejs/node/commit/0429b1eb9d)] - **doc**：添加 KevinEady 作为 triager（Chengzhong Wu）[#54179](https://github.com/nodejs/node/pull/54179)
-* \[[`4bfa7d8e54`](https://github.com/nodejs/node/commit/4bfa7d8e54)] - **doc**：为 node:console 添加 esm 示例（Alfredo González）[#54108](https://github.com/nodejs/node/pull/54108)
+* \[[`4bfa7d8e54`](https://github.com/nodejs/node/commit/4bfa7d8e54)] - **doc**：为 node:console 添加 ESM 示例（Alfredo González）[#54108](https://github.com/nodejs/node/pull/54108)
 * \[[`2f5309fc22`](https://github.com/nodejs/node/commit/2f5309fc22)] - **doc**：修正 sea 资源示例（Sadzurami）[#54192](https://github.com/nodejs/node/pull/54192)
 * \[[`88aef5a39d`](https://github.com/nodejs/node/commit/88aef5a39d)] - **doc**：添加安全负责人公司链接（Aviv Keller）[#52981](https://github.com/nodejs/node/pull/52981)
 * \[[`5175903c23`](https://github.com/nodejs/node/commit/5175903c23)] - **doc**：将 `onread` 选项从 `socket.connect()` 移至 `new net.socket()`（sendoru）[#54194](https://github.com/nodejs/node/pull/54194)
@@ -3754,7 +3846,7 @@ Node.js Buffers 的性能已通过多个 PR 得到优化，`Buffer.copy` 和 `Bu
 * \[[`b733854eac`](https://github.com/nodejs/node/commit/b733854eac)] - **meta**：将 `actions/setup-node` 从 4.0.2 升级到 4.0.3（dependabot\[bot]）[#54170](https://github.com/nodejs/node/pull/54170)
 * \[[`6a9f168cc6`](https://github.com/nodejs/node/commit/6a9f168cc6)] - **meta**：将 `github/codeql-action` 从 3.25.11 升级到 3.25.15（dependabot\[bot]）[#54168](https://github.com/nodejs/node/pull/54168)
 * \[[`9bbd85e4fe`](https://github.com/nodejs/node/commit/9bbd85e4fe)] - **meta**：将 `ossf/scorecard-action` 从 2.3.3 升级到 2.4.0（dependabot\[bot]）[#54171](https://github.com/nodejs/node/pull/54171)
-* \[[`33633eebd9`](https://github.com/nodejs/node/commit/33633eebd9)] - **meta**：将 typescript 团队添加到 codeowners（Marco Ippolito）[#54101](https://github.com/nodejs/node/pull/54101)
+* \[[`33633eebd9`](https://github.com/nodejs/node/commit/33633eebd9)] - **meta**：将 TypeScript 团队添加到 codeowners（Marco Ippolito）[#54101](https://github.com/nodejs/node/pull/54101)
 * \[[`240d9296c1`](https://github.com/nodejs/node/commit/240d9296c1)] - **(SEMVER-MINOR)** **module**：添加 --experimental-transform-types 标志（Marco Ippolito）[#54283](https://github.com/nodejs/node/pull/54283)
 * \[[`66dcb2a571`](https://github.com/nodejs/node/commit/66dcb2a571)] - **(SEMVER-MINOR)** **module**：取消 detect-module 标记（Geoffrey Booth）[#53619](https://github.com/nodejs/node/pull/53619)
 * \[[`100225fbe1`](https://github.com/nodejs/node/commit/100225fbe1)] - **module**：在没有源代码时不要尝试去除类型（Antoine du Hamel）[#54287](https://github.com/nodejs/node/pull/54287)
@@ -4053,7 +4145,7 @@ $ node --inspect-wait --experimental-network-inspection index.js
 * \[[`362875bda0`](https://github.com/nodejs/node/commit/362875bda0)] - **doc**: 将 Rafael 添加到最后一个安全发布中（Rafael Gonzaga） [#53769](https://github.com/nodejs/node/pull/53769)
 * \[[`a1a5ad848d`](https://github.com/nodejs/node/commit/a1a5ad848d)] - **doc**: 在示例中使用 mock.callCount()（Sébastien Règne） [#53754](https://github.com/nodejs/node/pull/53754)
 * \[[`bb960c5471`](https://github.com/nodejs/node/commit/bb960c5471)] - **doc**: 澄清更新中明文的真实性（Tobias Nießen） [#53784](https://github.com/nodejs/node/pull/53784)
-* \[[`5dd3018eb4`](https://github.com/nodejs/node/commit/5dd3018eb4)] - **doc**: 添加支持我链接选项（Michael Dawson） [#53312](https://github.com/nodejs/node/pull/53312)
+* \[[`5dd3018eb4`](https://github.com/nodejs/node/commit/5dd3018eb4)] - **doc**: 添加“支持我”链接选项（Michael Dawson） [#53312](https://github.com/nodejs/node/pull/53312)
 * \[[`0f95ad3d7d`](https://github.com/nodejs/node/commit/0f95ad3d7d)] - **doc**: 在 TLS 文档中添加 OpenSSL 安全级别（Afanasii Kurakin） [#53647](https://github.com/nodejs/node/pull/53647)
 * \[[`2d92ec2831`](https://github.com/nodejs/node/commit/2d92ec2831)] - **doc**: 将 `scroll-padding-top` 更新为 4rem（Cloyd Lau） [#53662](https://github.com/nodejs/node/pull/53662)
 * \[[`933359a786`](https://github.com/nodejs/node/commit/933359a786)] - **doc**: 在 pm 中提及 v8.setFlagsFromString（Rafael Gonzaga） [#53731](https://github.com/nodejs/node/pull/53731)
@@ -4419,7 +4511,7 @@ $ node --inspect-wait --experimental-network-inspection index.js
 * \[[`b7f5662dee`](https://github.com/nodejs/node/commit/b7f5662dee)] - **meta**：将 codecov/codecov-action 从 4.3.1 升级到 4.4.1（dependabot\[bot]） [#53244](https://github.com/nodejs/node/pull/53244)
 * \[[`e079967eb4`](https://github.com/nodejs/node/commit/e079967eb4)] - **meta**：从 devcontainer 中移除 `initializeCommand`（Aviv Keller） [#53137](https://github.com/nodejs/node/pull/53137)
 * \[[`3afeced572`](https://github.com/nodejs/node/commit/3afeced572)] - **meta**：将一个或多个协作者移至 emeritus（Node.js GitHub Bot） [#53065](https://github.com/nodejs/node/pull/53065)
-* \[[`4b9cdea8a6`](https://github.com/nodejs/node/commit/4b9cdea8a6)] - _**Revert**_ "**module**：为所有 worker 使用单一 hooks 线程"（Matteo Collina） [#53183](https://github.com/nodejs/node/pull/53183)
+* \[[`4b9cdea8a6`](https://github.com/nodejs/node/commit/4b9cdea8a6)] - _**回退**_ "**module**：为所有 worker 使用单一 hooks 线程"（Matteo Collina） [#53183](https://github.com/nodejs/node/pull/53183)
 * \[[`b5c30e2f5e`](https://github.com/nodejs/node/commit/b5c30e2f5e)] - **(SEMVER-MINOR)** **module**：打印 cjs 模块的加载时间（Vinicius Lourenço） [#52213](https://github.com/nodejs/node/pull/52213)
 * \[[`4cdb05a7a2`](https://github.com/nodejs/node/commit/4cdb05a7a2)] - **module**：不为 Worker eval 设置 CJS 变量（Antoine du Hamel） [#53050](https://github.com/nodejs/node/pull/53050)
 * \[[`a0766bdf0e`](https://github.com/nodejs/node/commit/a0766bdf0e)] - **(SEMVER-MINOR)** **net**：添加新的 net.server.listen 跟踪通道（Paolo Insogna） [#53136](https://github.com/nodejs/node/pull/53136)
@@ -4444,7 +4536,7 @@ $ node --inspect-wait --experimental-network-inspection index.js
 * \[[`a656cf6bc8`](https://github.com/nodejs/node/commit/a656cf6bc8)] - **stream**：修复 writable 的内存使用回退（Orgad Shaneh） [#53188](https://github.com/nodejs/node/pull/53188)
 * \[[`0e85a84fdc`](https://github.com/nodejs/node/commit/0e85a84fdc)] - **test**：修复在未编译引擎支持时的测试（Richard Lau） [#53232](https://github.com/nodejs/node/pull/53232)
 * \[[`cebbd83e47`](https://github.com/nodejs/node/commit/cebbd83e47)] - **test**：为 OpenSSL >= 3.2 更新 TLS trace 测试（Richard Lau） [#53229](https://github.com/nodejs/node/pull/53229)
-* \[[`45c1eb19f1`](https://github.com/nodejs/node/commit/45c1eb19f1)] - _**Revert**_ "**test**：跳过 v8-updates/test-linux-perf-logger"（Luke Albao） [#52869](https://github.com/nodejs/node/pull/52869)
+* \[[`45c1eb19f1`](https://github.com/nodejs/node/commit/45c1eb19f1)] - _**回退**_ "**test**：跳过 v8-updates/test-linux-perf-logger"（Luke Albao） [#52869](https://github.com/nodejs/node/pull/52869)
 * \[[`c1138db3c1`](https://github.com/nodejs/node/commit/c1138db3c1)] - **test**：取消跳过 v8-updates/test-linux-perf-logger（Luke Albao） [#52869](https://github.com/nodejs/node/pull/52869)
 * \[[`65b64cf0f1`](https://github.com/nodejs/node/commit/65b64cf0f1)] - **test**：修复 Windows 原生测试套件（Stefan Stojanovic） [#53173](https://github.com/nodejs/node/pull/53173)
 * \[[`9a47792cd1`](https://github.com/nodejs/node/commit/9a47792cd1)] - **test**：当 `ps` 不可用时跳过 `test-setproctitle`（Antoine du Hamel） [#53104](https://github.com/nodejs/node/pull/53104)
@@ -4469,7 +4561,7 @@ $ node --inspect-wait --experimental-network-inspection index.js
 * \[[`6409b1fe65`](https://github.com/nodejs/node/commit/6409b1fe65)] - **tools**：将 gyp-next 更新到 0.18.1（Node.js GitHub Bot） [#53251](https://github.com/nodejs/node/pull/53251)
 * \[[`86e80dcb9b`](https://github.com/nodejs/node/commit/86e80dcb9b)] - **tools**：将 webcrypto 移入 no-restricted-properties（Zihong Qu） [#53023](https://github.com/nodejs/node/pull/53023)
 * \[[`6022346f0e`](https://github.com/nodejs/node/commit/6022346f0e)] - **tools**：更新 Type Error 的错误消息（Aviv Keller） [#53047](https://github.com/nodejs/node/pull/53047)
-* \[[`c1b3e0ed6f`](https://github.com/nodejs/node/commit/c1b3e0ed6f)] - _**Revert**_ "**tools**：向 nci-ci 添加 --certify-safe"（Antoine du Hamel） [#53098](https://github.com/nodejs/node/pull/53098)
+* \[[`c1b3e0ed6f`](https://github.com/nodejs/node/commit/c1b3e0ed6f)] - _**回退**_ "**tools**：向 nci-ci 添加 --certify-safe"（Antoine du Hamel） [#53098](https://github.com/nodejs/node/pull/53098)
 * \[[`9f764a873c`](https://github.com/nodejs/node/commit/9f764a873c)] - **tools**：更新 ESLint 到 v9 并使用 flat config（Michaël Zasso） [#52780](https://github.com/nodejs/node/pull/52780)
 * \[[`2859f4c027`](https://github.com/nodejs/node/commit/2859f4c027)] - **watch**：修复变量命名（jakecastelli） [#53101](https://github.com/nodejs/node/pull/53101)
 
@@ -4611,10 +4703,10 @@ $ node --inspect-wait --experimental-network-inspection index.js
 * \[[`30a4248b48`](https://github.com/nodejs/node/commit/30a4248b48)] - **test**: 为 --run 添加环境变量测试（Yagiz Nizipli） [#52811](https://github.com/nodejs/node/pull/52811)
 * \[[`edb4ed3bc9`](https://github.com/nodejs/node/commit/edb4ed3bc9)] - **test**: 删除 test-crypto-timing-safe-equal-benchmarks（Rafael Gonzaga） [#52751](https://github.com/nodejs/node/pull/52751)
 * \[[`944ae598b5`](https://github.com/nodejs/node/commit/944ae598b5)] - **test, crypto**: 在 assert 中使用正确的对象（响马） [#51820](https://github.com/nodejs/node/pull/51820)
-* \[[`a814e720fa`](https://github.com/nodejs/node/commit/a814e720fa)] - **test\_runner**: 修复 watch 模式竞态条件（Moshe Atlow） [#52954](https://github.com/nodejs/node/pull/52954)
-* \[[`2f59529dc5`](https://github.com/nodejs/node/commit/2f59529dc5)] - **(SEMVER-MINOR)** **test\_runner**: 支持测试计划（Colin Ihrig） [#52860](https://github.com/nodejs/node/pull/52860)
-* \[[`3267b3c063`](https://github.com/nodejs/node/commit/3267b3c063)] - **test\_runner**: 使用 dot reporter 显示失败测试的堆栈跟踪（Mihir Bhansali） [#52655](https://github.com/nodejs/node/pull/52655)
-* \[[`b96868b4e7`](https://github.com/nodejs/node/commit/b96868b4e7)] - **test\_runner**: 第二次执行时保留 hook promise（Moshe Atlow） [#52791](https://github.com/nodejs/node/pull/52791)
+* \[[`a814e720fa`](https://github.com/nodejs/node/commit/a814e720fa)] - **test_runner**: 修复 watch 模式竞态条件（Moshe Atlow） [#52954](https://github.com/nodejs/node/pull/52954)
+* \[[`2f59529dc5`](https://github.com/nodejs/node/commit/2f59529dc5)] - **(SEMVER-MINOR)** **test_runner**: 支持测试计划（Colin Ihrig） [#52860](https://github.com/nodejs/node/pull/52860)
+* \[[`3267b3c063`](https://github.com/nodejs/node/commit/3267b3c063)] - **test_runner**: 使用 dot reporter 显示失败测试的堆栈跟踪（Mihir Bhansali） [#52655](https://github.com/nodejs/node/pull/52655)
+* \[[`b96868b4e7`](https://github.com/nodejs/node/commit/b96868b4e7)] - **test_runner**: 第二次执行时保留 hook promise（Moshe Atlow） [#52791](https://github.com/nodejs/node/pull/52791)
 * \[[`74341ba3c9`](https://github.com/nodejs/node/commit/74341ba3c9)] - **tools**: 修复 v8-update 工作流（Michaël Zasso） [#52957](https://github.com/nodejs/node/pull/52957)
 * \[[`afe39ed0df`](https://github.com/nodejs/node/commit/afe39ed0df)] - **tools**: 为 nci-ci 添加 --certify-safe（Matteo Collina） [#52940](https://github.com/nodejs/node/pull/52940)
 * \[[`bb97e1ccdd`](https://github.com/nodejs/node/commit/bb97e1ccdd)] - **tools**: 修复文档更新动作（Marco Ippolito） [#52890](https://github.com/nodejs/node/pull/52890)
@@ -4769,7 +4861,7 @@ $ node --inspect-wait --experimental-network-inspection index.js
 
 <a id="22.0.0"></a>
 
-## 2024-04-24, Version 22.0.0 (Current), @RafaelGSS and @marco-ippolito
+## 2024-04-24，版本 22.0.0（当前），@RafaelGSS 和 @marco-ippolito
 
 我们很高兴宣布 Node.js 22 正式发布！
 亮点包括 require() 加载 ESM 图谱、WebSocket 客户端、V8 JavaScript 引擎更新等！
@@ -4789,7 +4881,7 @@ $ node --inspect-wait --experimental-network-inspection index.js
 * \[[`151d365ad1`](https://github.com/nodejs/node/commit/151d365ad1)] - **(SEMVER-MINOR)** **fs**: 暴露 glob 和 globSync (Moshe Atlow) [#51912](https://github.com/nodejs/node/pull/51912)
 * \[[`5f7fad2605`](https://github.com/nodejs/node/commit/5f7fad2605)] - **(SEMVER-MINOR)** **module**: 支持 require() 同步 ESM 图谱 (Joyee Cheung) [#51977](https://github.com/nodejs/node/pull/51977)
 
-### Semver-Major Commits
+### 语义化版本主版本提交
 
 * \[[`2b1e7c2fcb`](https://github.com/nodejs/node/commit/2b1e7c2fcb)] - **(SEMVER-MAJOR)** **build**: 在 Windows 上使用 C++20 支持进行编译 (StefanStojanovic) [#52465](https://github.com/nodejs/node/pull/52465)
 * \[[`12d00f1479`](https://github.com/nodejs/node/commit/12d00f1479)] - **(SEMVER-MAJOR)** **build**: 将 embedder 字符串重置为 "-node.0" (Michaël Zasso) [#52465](https://github.com/nodejs/node/pull/52465)
@@ -4899,7 +4991,7 @@ $ node --inspect-wait --experimental-network-inspection index.js
 * \[[`22d8062e42`](https://github.com/nodejs/node/commit/22d8062e42)] - **(SEMVER-MAJOR)** **util**: 在运行时弃用 util._extend (Marco Ippolito) [#50488](https://github.com/nodejs/node/pull/50488)
 * \[[`1a5acd0638`](https://github.com/nodejs/node/commit/1a5acd0638)] - **(SEMVER-MAJOR)** **v8**: 在受支持的架构上启用 maglev (Keyhan Vakil) [#51360](https://github.com/nodejs/node/pull/51360)
 
-### Semver-Minor Commits
+### 语义化版本次版本提交
 
 * \[[`128c60d906`](https://github.com/nodejs/node/commit/128c60d906)] - **(SEMVER-MINOR)** **cli**: 实现 `node --run <script-in-package-json>` (Yagiz Nizipli) [#52190](https://github.com/nodejs/node/pull/52190)
 * \[[`f69946b905`](https://github.com/nodejs/node/commit/f69946b905)] - **(SEMVER-MINOR)** **deps**: 将 simdutf 更新到 5.0.0 (Daniel Lemire) [#52138](https://github.com/nodejs/node/pull/52138)
@@ -4920,7 +5012,7 @@ $ node --inspect-wait --experimental-network-inspection index.js
 * \[[`7f2d61f82a`](https://github.com/nodejs/node/commit/7f2d61f82a)] - **(SEMVER-MINOR)** **v8**: 实现用于内存泄漏回归测试的 v8.queryObjects() (Joyee Cheung) [#51927](https://github.com/nodejs/node/pull/51927)
 * \[[`d1d5da22e4`](https://github.com/nodejs/node/commit/d1d5da22e4)] - **(SEMVER-MINOR)** **vm**: 加强模块类型检查 (Chengzhong Wu) [#52162](https://github.com/nodejs/node/pull/52162)
 
-### Semver-Patch Commits
+### 语义化版本补丁提交
 
 * \[[`a760dadec3`](https://github.com/nodejs/node/commit/a760dadec3)] - **benchmark**: 添加 AbortSignal.abort 基准测试 (Raz Luvaton) [#52408](https://github.com/nodejs/node/pull/52408)
 * \[[`47c934e464`](https://github.com/nodejs/node/commit/47c934e464)] - **benchmark**: 有条件地使用带 taskset 的 spawn 进行 CPU 绑定 (Ali Hassan) [#52253](https://github.com/nodejs/node/pull/52253)
@@ -5027,11 +5119,11 @@ $ node --inspect-wait --experimental-network-inspection index.js
 * \[[`95efdaf01a`](https://github.com/nodejs/node/commit/95efdaf01a)] - **meta**: 将 codecov/codecov-action 从 4.1.0 升级到 4.1.1 (dependabot[bot]) [#52308](https://github.com/nodejs/node/pull/52308)
 * \[[`24c1a8e739`](https://github.com/nodejs/node/commit/24c1a8e739)] - **meta**: 将一个或多个协作者调整为 emeritus (Node.js GitHub Bot) [#52300](https://github.com/nodejs/node/pull/52300)
 * \[[`60dcfad91e`](https://github.com/nodejs/node/commit/60dcfad91e)] - **meta**: 将 Codecov 上传 token 传递给 codecov action (Michaël Zasso) [#51982](https://github.com/nodejs/node/pull/51982)
-* \[[`db1746182b`](https://github.com/nodejs/node/commit/db1746182b)] - **module**: 禁止在循环中从 require(esm) 形成 CJS <-> ESM 边 (Joyee Cheung) [#52264](https://github.com/nodejs/node/pull/52264)
+* \[[`db1746182b`](https://github.com/nodejs/node/commit/db1746182b)] - **module**: 禁止在循环中从 require(esm) 形成 CJS <-> ESM 边界 (Joyee Cheung) [#52264](https://github.com/nodejs/node/pull/52264)
 * \[[`d6b57f6629`](https://github.com/nodejs/node/commit/d6b57f6629)] - **module**: 为内置加载器集中处理 SourceTextModule 编译 (Joyee Cheung) [#52291](https://github.com/nodejs/node/pull/52291)
 * \[[`f4a0a3b04b`](https://github.com/nodejs/node/commit/f4a0a3b04b)] - **module**: 在无类型包中检测到时发出警告 (Geoffrey Booth) [#52168](https://github.com/nodejs/node/pull/52168)
 * \[[`8bc745944e`](https://github.com/nodejs/node/commit/8bc745944e)] - **module**: 消除 cjs 入口检测带来的性能开销 (Geoffrey Booth) [#52093](https://github.com/nodejs/node/pull/52093)
-* \[[`63d04d4d80`](https://github.com/nodejs/node/commit/63d04d4d80)] - **module**: 修复 detect-module 对仅 cjs 错误不重试为 esm 的问题 (Geoffrey Booth) [#52024](https://github.com/nodejs/node/pull/52024)
+* \[[`63d04d4d80`](https://github.com/nodejs/node/commit/63d04d4d80)] - **module**: 修复 detect-module 对仅 CJS 错误不重试为 ESM 的问题 (Geoffrey Booth) [#52024](https://github.com/nodejs/node/pull/52024)
 * \[[`575ced8139`](https://github.com/nodejs/node/commit/575ced8139)] - **module**: 在入口点打印未完成的顶层 await 的位置 (Joyee Cheung) [#51999](https://github.com/nodejs/node/pull/51999)
 * \[[`075c95f61f`](https://github.com/nodejs/node/commit/075c95f61f)] - **module**: 重构 ESM loader 初始化和入口点处理 (Joyee Cheung) [#51999](https://github.com/nodejs/node/pull/51999)
 * \[[`45f0dd0192`](https://github.com/nodejs/node/commit/45f0dd0192)] - **module,win**: 修复长路径解析 (Stefan Stojanovic) [#51097](https://github.com/nodejs/node/pull/51097)
@@ -5096,7 +5188,7 @@ $ node --inspect-wait --experimental-network-inspection index.js
 * \[[`468cb99ba4`](https://github.com/nodejs/node/commit/468cb99ba4)] - **tools**: 将 Ruff 更新到 v0.3.4 (Michaël Zasso) [#52302](https://github.com/nodejs/node/pull/52302)
 * \[[`67b9dda003`](https://github.com/nodejs/node/commit/67b9dda003)] - **tools**: 在 ubuntu-latest 上运行 test-ubsan (Michaël Zasso) [#52375](https://github.com/nodejs/node/pull/52375)
 * \[[`f1f32d89e0`](https://github.com/nodejs/node/commit/f1f32d89e0)] - **tools**: 将 lint-md-dependencies 更新到 rollup\@4.13.2 (Node.js GitHub Bot) [#52286](https://github.com/nodejs/node/pull/52286)
-* \[[`d7aa8fc9da`](https://github.com/nodejs/node/commit/d7aa8fc9da)] - _**Revert**_ "**tools**: 仅在源代码变更时运行 `build-windows` 工作流" (Michaël Zasso) [#52320](https://github.com/nodejs/node/pull/52320)
+* \[[`d7aa8fc9da`](https://github.com/nodejs/node/commit/d7aa8fc9da)] - _**回滚**_ "**tools**: 仅在源代码变更时运行 `build-windows` 工作流" (Michaël Zasso) [#52320](https://github.com/nodejs/node/pull/52320)
 * \[[`a3b1fc3f27`](https://github.com/nodejs/node/commit/a3b1fc3f27)] - **tools**: 在 GitHub Actions 工作流中使用 Python 3.12 (Michaël Zasso) [#52301](https://github.com/nodejs/node/pull/52301)
 * \[[`021cf91208`](https://github.com/nodejs/node/commit/021cf91208)] - **tools**: 允许本地更新 llhttp (Paolo Insogna) [#52085](https://github.com/nodejs/node/pull/52085)
 * \[[`4d8602046e`](https://github.com/nodejs/node/commit/4d8602046e)] - **tools**: 在 Windows 上安装 npm PowerShell 脚本 (Luke Karrys) [#52009](https://github.com/nodejs/node/pull/52009)

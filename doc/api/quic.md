@@ -177,6 +177,24 @@ QUIC 支持 0-RTT 早期数据，允许之前曾连接到服务器的客户端�
 
 [`QuicError`][] 类携带一个显式的数值 QUIC 错误码（[`error.errorCode`][]），以及常规的 `message` 和 `code` 属性。当将 `QuicError` 传递给 [`stream.destroy()`][] 或 [`writer.fail()`][] 时，其 `errorCode` 会用于发送给对等方的 `RESET_STREAM` 或 `STOP_SENDING` 帧。任何其他错误类型都会回退为所协商协议的通用内部错误码。
 
+### Permission model
+
+When using the [Permission Model][], the `--allow-net` flag must be passed to
+allow QUIC network operations. Without it, calling [`quic.connect()`][] or
+[`quic.listen()`][] will throw an `ERR_ACCESS_DENIED` error.
+
+```console
+$ node --permission --allow-fs-read=* --experimental-quic index.mjs
+Error: Access to this API has been restricted. Use --allow-net to manage permissions.
+  code: 'ERR_ACCESS_DENIED',
+  permission: 'Net',
+}
+```
+
+Creating a [`QuicEndpoint`][] instance without connecting or listening
+is permitted even without `--allow-net`, since no network I/O occurs until
+[`quic.connect()`][] or [`quic.listen()`][] is called.
+
 ## `quic.connect(address[, options])`
 
 <!-- YAML
@@ -969,7 +987,7 @@ added: v23.8.0
 
 与会话关联的本地和远程套接字地址。只读。
 
-### `session.sendDatagram(datagram[, encoding])`
+### `session.sendDatagram([datagram, encoding])`
 
 <!-- YAML
 added: v23.8.0
@@ -3464,6 +3482,7 @@ added: REPLACEME
 [回调错误处理]: #callback-error-handling
 [JSON-SEQ]: https://www.rfc-editor.org/rfc/rfc7464
 [NSS Key Log Format]: https://udn.realityripple.com/docs/Mozilla/Projects/NSS/Key_Log_Format
+[Permission Model]: permissions.md#permission-model
 [RFC 8999]: https://www.rfc-editor.org/rfc/rfc8999
 [RFC 9000]: https://www.rfc-editor.org/rfc/rfc9000
 [RFC 9001]: https://www.rfc-editor.org/rfc/rfc9001
@@ -3483,6 +3502,7 @@ added: REPLACEME
 [RFC 9443]: https://www.rfc-editor.org/rfc/rfc9443
 [`PerformanceEntry`]: perf_hooks.md#class-performanceentry
 [`PerformanceObserver`]: perf_hooks.md#class-performanceobserver
+[`QuicEndpoint`]: #class-quicendpoint
 [`QuicError`]: #class-quicerror
 [`application.enableConnectProtocol`]: #sessionoptionsapplication
 [`application.enableDatagrams`]: #sessionoptionsapplication

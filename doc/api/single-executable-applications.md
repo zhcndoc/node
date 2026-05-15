@@ -562,8 +562,8 @@ fs.rmSync(addonPath);
 单可执行支持仅在以下平台的 CI 上定期测试：
 
 * Windows
-* macOS
-* Linux（Node.js 支持的所有发行版，Alpine 除外；以及 Node.js 支持的所有架构，s390x 除外）
+* macOS (仅 arm64；x64 目前不受支持，并在测试中被跳过)
+* Linux（除 Alpine 外所有 [Node.js 支持的平台][] 发行版，以及除 s390x 外所有 [Node.js 支持的平台][] 架构）
 
 这是由于缺乏更好的工具来生成单可执行文件，以便在其他平台上测试此功能。
 
@@ -572,7 +572,7 @@ fs.rmSync(addonPath);
 [CommonJS]: modules.md#modules-commonjs-modules
 [ECMAScript Modules]: esm.md#modules-ecmascript-modules
 [ELF]: https://en.wikipedia.org/wiki/Executable_and_Linkable_Format
-[生成单可执行准备 blob]: #1-generating-single-executable-preparation-blobs
+[生成单可执行准备 blob]: #1-%E7%94%9F%E6%88%90%E5%8D%95%E5%8F%AF%E6%89%A7%E8%A1%8C%E5%87%86%E5%A4%87blob
 [Mach-O]: https://en.wikipedia.org/wiki/Mach-O
 [PE]: https://en.wikipedia.org/wiki/Portable_Executable
 [Windows SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/

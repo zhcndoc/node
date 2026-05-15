@@ -45,17 +45,15 @@ E('EXAMPLE_KEY2', (a, b) => `${a} ${b}`, RangeError);
 
 通过提供额外参数，可以创建多个派生类。其他类将作为主类的属性暴露出来：
 
-<!-- eslint-disable no-unreachable -->
-
 ```js
 E('EXAMPLE_KEY', 'Error message', TypeError, RangeError);
 
-// In another module
+// 在另一个模块中
+const assert = require('node:assert');
 const { EXAMPLE_KEY } = require('internal/errors').codes;
-// TypeError
-throw new EXAMPLE_KEY();
-// RangeError
-throw new EXAMPLE_KEY.RangeError();
+
+assert.throws(() => { throw new EXAMPLE_KEY(); }, { name: 'TypeError' });
+assert.throws(() => { throw new EXAMPLE_KEY.RangeError(); }, { name: 'RangeError' });
 ```
 
 ## 记录新错误

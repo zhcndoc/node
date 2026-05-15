@@ -1257,7 +1257,7 @@ const zlib = require('node:zlib');
 // 使用 pipeline API 轻松地将一系列流管道在一起
 // 并在 pipeline 完全完成时得到通知。
 
-// 一个高效 gzip 可能巨大的 tar 文件的 pipeline：
+// 一个高效 gzip 可能巨大 tar 文件的 pipeline：
 
 pipeline(
   fs.createReadStream('archive.tar'),
@@ -1900,184 +1900,6 @@ added:
 * `value` {integer} highWaterMark 值
 
 设置流使用的默认 highWaterMark。
-```
-
-## 流实现者的 API
-
-<!--type=misc-->
-
-`node:stream` 模块 API 旨在使得使用 JavaScript 的原型继承模型轻松实现流成为可能。
-
-首先，流开发者会声明一个新的 JavaScript 类，该类扩展四个基本流类之一（`stream.Writable`、`stream.Readable`、`stream.Duplex` 或 `stream.Transform`），并确保他们调用适当的父类构造函数：
-
-<!-- eslint-disable no-useless-constructor -->
-
-```js
-const { Writable } = require('node:stream');
-
-class MyWritable extends Writable {
-  constructor({ highWaterMark, ...options }) {
-    super({ highWaterMark });
-    // ...
-  }
-}
-```
-
-在扩展流时，请记住用户在转发给基础构造函数之前可以且应该提供哪些选项。例如，如果实现在 `autoDestroy` 和 `emitClose` 选项方面做出了假设，则不允许用户覆盖这些选项。明确说明转发了哪些选项，而不是隐式地转发所有选项。
-
-然后，新的流类必须实现一个或多个特定方法，具体取决于所创建的流类型，如下表所示：
-
-| 用例                                      | 类           | 要实现的方法                                                                                             |
-| --------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------ |
-| 仅读取                                  | [`Readable`][]  | [`_read()`][stream-_read]                                                                                          |
-| 仅写入                                  | [`Writable`][]  | [`_write()`][stream-_write], [`_writev()`][stream-_writev], [`_final()`][stream-_final]                            |
-| 读取和写入                           | [`Duplex`][]    | [`_read()`][stream-_read], [`_write()`][stream-_write], [`_writev()`][stream-_writev], [`_final()`][stream-_final] |
-| 对写入的数据进行操作，然后读取结果 | [`Transform`][] | [`_transform()`][stream-_transform], [`_flush()`][stream-_flush], [`_final()`][stream-_final]                      |
-
-流的实现代码 _绝不_ 应调用流供使用者使用的“公共”方法（如 [流使用者 API][] 部分所述）。这样做可能会导致使用该流的应用程序代码产生不良反应。
-
-避免覆盖公共方法，例如 `write()`、`end()`、`cork()`、`uncork()`、`read()` 和 `destroy()`，或通过 `.emit()` 发出内部事件，例如 `'error'`、`'data'`、`'end'`、`'finish'` 和 `'close'`。这样做可能会破坏当前和未来的流不变量，导致与其他流、流实用程序和用户期望的行为和/或兼容性问题。
-
-### 简化构造
-
-<!-- YAML
-added: v1.2.0
--->
-
-对于许多简单的情况，可以不依赖继承来创建流。这可以通过直接创建 `stream.Writable`、`stream.Readable`、`stream.Duplex` 或 `stream.Transform` 对象的实例并将适当的方法作为构造函数选项传递来完成。
-
-```js
-const { Writable } = require('node:stream');
-
-const myWritable = new Writable({
-  construct(callback) {
-    // 初始化状态并加载资源...
-  },
-  write(chunk, encoding, callback) {
-    // ...
-  },
-  destroy() {
-    // 释放资源...
-  },
-});
-```
-
-### 实现可写流
-
-`stream.Writable` 类被扩展以实现 [`Writable`][] 流。
-
-自定义 `Writable` 流 _必须_ 调用 `new stream.Writable([options])` 构造函数并实现 `writable._write()` 和/或 `writable._writev()` 方法。
-
-#### `new stream.Writable([options])`
-
-<!-- YAML
-changes:
-  - version: v22.0.0
-    pr-url: https://github.com/nodejs/node/pull/52037
-    description: 提高默认 highWaterMark。
-  - version: v15.5.0
-    pr-url: https://github.com/nodejs/node/pull/36431
-    description: 支持传入 AbortSignal。
-  - version: v14.0.0
-    pr-url: https://github.com/nodejs/node/pull/30623
-    description: "将 `autoDestroy` 选项默认值改为 `true`。"
-  - version:
-     - v11.2.0
-     - v10.16.0
-    pr-url: https://github.com/nodejs/node/pull/22795
-    description: "添加 `autoDestroy` 选项以便在发出 `'finish'` 或错误时自动 `destroy()` 流。"
-  - version: v10.0.0
-    pr-url: https://github.com/nodejs/node/pull/18438
-    description: "添加 `emitClose` 选项以指定是否在销毁时发出 `'close'`。"
--->
-
-* `options` {Object}
-  * `highWaterMark` {number} [`stream.write()`][stream-write] 开始返回 `false` 时的缓冲区级别。**默认：** `65536` (64 KiB)，对于 `objectMode` 流为 `16`。
-  * `decodeStrings` {boolean} 是否在传递给 [`stream._write()`][stream-_write] 之前将传递给 [`stream.write()`][stream-write] 的 `string` 编码为 `Buffer`（使用 [`stream.write()`][stream-write] 调用中指定的编码）。其他类型的数据不会转换（即 `Buffer` 不会解码为 `string`）。设置为 false 将防止 `string` 被转换。**默认：** `true`。
-  * `defaultEncoding` {string} 当没有将编码作为参数传递给 [`stream.write()`][stream-write] 时使用的默认编码。**默认：** `'utf8'`。
-  * `objectMode` {boolean} [`stream.write(anyObj)`][stream-write] 是否是有效操作。设置后，如果流实现支持，则可以写入除 string、{Buffer}、{TypedArray} 或 {DataView} 之外的 JavaScript 值。**默认：** `false`。
-  * `emitClose` {boolean} 流在销毁后是否应发出 `'close'`。**默认：** `true`。
-  * `write` {Function} [`stream._write()`][stream-_write] 方法的实现。
-  * `writev` {Function} [`stream._writev()`][stream-_writev] 方法的实现。
-  * `destroy` {Function} [`stream._destroy()`][writable-_destroy] 方法的实现。
-  * `final` {Function} [`stream._final()`][stream-_final] 方法的实现。
-  * `construct` {Function} [`stream._construct()`][writable-_construct] 方法的实现。
-  * `autoDestroy` {boolean} 此流在结束后是否应自动调用 `.destroy()`。**默认：** `true`。
-  * `signal` {AbortSignal} 表示可能取消的信号。
-
-<!-- eslint-disable no-useless-constructor -->
-
-```js
-const { Writable } = require('node:stream');
-
-class MyWritable extends Writable {
-  constructor(options) {
-    // 调用 stream.Writable() 构造函数。
-    super(options);
-    // ...
-  }
-}
-```
-
-或者，当使用 ES6 之前的构造函数风格时：
-
-```js
-const { Writable } = require('node:stream');
-const util = require('node:util');
-
-function MyWritable(options) {
-  if (!(this instanceof MyWritable))
-    return new MyWritable(options);
-  Writable.call(this, options);
-}
-util.inherits(MyWritable, Writable);
-```
-
-或者，使用简化构造函数方法：
-
-```js
-const { Writable } = require('node:stream');
-
-const myWritable = new Writable({
-  write(chunk, encoding, callback) {
-    // ...
-  },
-  writev(chunks, callback) {
-    // ...
-  },
-});
-```
-
-对传入的 `AbortSignal` 对应的 `AbortController` 调用 `abort` 的行为将与在可写流上调用 `.destroy(new AbortError())` 相同。
-
-```js
-const { Writable } = require('node:stream');
-
-const controller = new AbortController();
-const myWritable = new Writable({
-  write(chunk, encoding, callback) {
-    // ...
-  },
-  writev(chunks, callback) {
-    // ...
-  },
-  signal: controller.signal,
-});
-// 稍后，中止操作以关闭流
-controller.abort();
-```
-
-#### `writable._construct(callback)`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* `callback` {Function} 当流完成初始化时调用此函数（可选带错误参数）。
-
-`_construct()` 方法不得直接调用。它可以由子类实现，如果是这样，将仅由内部 `Writable` 类方法调用。
-
-这个可选函数将在流构造函数返回后的一个 tick 中被调用，延迟任何 `_write()`、`_final()` 和 `_destroy()` 调用直到 `callback` 被调用。这对于在流可以使用之前初始化状态或异步初始化资源很有用。
 
 ```js
 const { Writable } = require('node:stream');
@@ -2898,7 +2720,7 @@ pipeline(iterator, writable, (err, value) => {
   if (err) {
     console.error(err);
   } else {
-    console.log(value, 'value returned');
+    console.log(value, '返回的值');
   }
 }).on('close', () => {
   ac.abort();
@@ -2907,7 +2729,7 @@ pipeline(iterator, writable, (err, value) => {
 // Promise 模式
 pipelinePromise(iterator, writable)
   .then((value) => {
-    console.log(value, 'value returned');
+    console.log(value, '返回的值');
   })
   .catch((err) => {
     console.error(err);

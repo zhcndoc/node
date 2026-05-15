@@ -142,7 +142,7 @@ changes:
 
 * 返回：{PerformanceEntry\[]}
 
-返回按 `performanceEntry.startTime`  chronological order 排列的 `PerformanceEntry` 对象列表。如果你只关心特定类型或具有特定名称的性能条目，请参阅 `performance.getEntriesByType()` 和 `performance.getEntriesByName()`。
+返回按 `performanceEntry.startTime` 时间顺序排列的 `PerformanceEntry` 对象列表。如果你只关心特定类型或具有特定名称的性能条目，请参阅 `performance.getEntriesByType()` 和 `performance.getEntriesByName()`。
 
 ### `performance.getEntriesByName(name[, type])`
 
@@ -158,7 +158,7 @@ changes:
 * `type` {string}
 * 返回：{PerformanceEntry\[]}
 
-返回按 `performanceEntry.startTime`  chronological order 排列的 `PerformanceEntry` 对象列表，其 `performanceEntry.name` 等于 `name`，并且可选地，其 `performanceEntry.entryType` 等于 `type`。
+返回按 `performanceEntry.startTime` 时间顺序排列的 `PerformanceEntry` 对象列表，其 `performanceEntry.name` 等于 `name`，并且可选地，其 `performanceEntry.entryType` 等于 `type`。
 
 ### `performance.getEntriesByType(type)`
 
@@ -173,7 +173,7 @@ changes:
 * `type` {string}
 * 返回：{PerformanceEntry\[]}
 
-返回按 `performanceEntry.startTime`  chronological order 排列的 `PerformanceEntry` 对象列表，其 `performanceEntry.entryType` 等于 `type`。
+返回按 `performanceEntry.startTime` 时间顺序排列的 `PerformanceEntry` 对象列表，其 `performanceEntry.entryType` 等于 `type`。
 
 ### `performance.mark(name[, options])`
 
@@ -1459,7 +1459,6 @@ setImmediate(() => {
 ```
 
 ```cjs
-'use strict';
 const { eventLoopUtilization } = require('node:perf_hooks');
 const { spawnSync } = require('node:child_process');
 
@@ -1481,7 +1480,7 @@ added: v11.10.0
 -->
 
 * `options` {Object}
-  * `resolution` {number} 采样率（毫秒）。必须大于零。**默认值：** `10`。
+  * `resolution` {number} 采样分辨率（毫秒）。必须大于零。**默认值：** `10`。
 * 返回：{IntervalHistogram}
 
 _此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
@@ -1884,7 +1883,6 @@ setTimeout(() => {}, 1000);
 ```
 
 ```cjs
-'use strict';
 const async_hooks = require('node:async_hooks');
 const {
   performance,
@@ -1926,8 +1924,6 @@ setTimeout(() => {}, 1000);
 
 以下示例测量加载依赖项的 `require()` 操作的持续时间：
 
-<!-- eslint-disable no-global-assign -->
-
 ```mjs
 import { performance, PerformanceObserver } from 'node:perf_hooks';
 
@@ -1953,7 +1949,6 @@ await timedImport('some-module');
 <!-- eslint-disable no-global-assign -->
 
 ```cjs
-'use strict';
 const {
   performance,
   PerformanceObserver,
@@ -2006,7 +2001,6 @@ createServer((req, res) => {
 ```
 
 ```cjs
-'use strict';
 const { PerformanceObserver } = require('node:perf_hooks');
 const http = require('node:http');
 
@@ -2048,7 +2042,6 @@ createServer((socket) => {
 ```
 
 ```cjs
-'use strict';
 const { PerformanceObserver } = require('node:perf_hooks');
 const net = require('node:net');
 const obs = new PerformanceObserver((items) => {
@@ -2082,7 +2075,6 @@ promises.resolve('localhost');
 ```
 
 ```cjs
-'use strict';
 const { PerformanceObserver } = require('node:perf_hooks');
 const dns = require('node:dns');
 const obs = new PerformanceObserver((items) => {

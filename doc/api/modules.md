@@ -13,7 +13,7 @@ Node.js 也支持 [ECMAScript 模块][] 标准，以便在浏览器和其他 Jav
 
 ```js
 const circle = require('./circle.js');
-console.log(`The area of a circle of radius 4 is ${circle.area(4)}`);
+console.log(`半径为 4 的圆的面积是 ${circle.area(4)}`);
 ```
 
 在第一行，`foo.js` 加载了与 `foo.js` 位于同一目录的模块 `circle.js`。
@@ -40,7 +40,7 @@ exports.circumference = (r) => 2 * PI * r;
 ```js
 const Square = require('./square.js');
 const mySquare = new Square(2);
-console.log(`The area of mySquare is ${mySquare.area()}`);
+console.log(`mySquare 的面积是 ${mySquare.area()}`);
 ```
 
 `square` 模块定义在 `square.js` 中：
@@ -201,8 +201,6 @@ console.log(point);
 `require()` 返回的结果是 [模块命名空间对象][]，它将默认导出放在 `.default` 属性中，类似于 `import()` 返回的结果。
 要自定义 `require(esm)` 直接返回的内容，ES 模块可以使用字符串名称 `"module.exports"` 导出所需的值。
 
-<!-- eslint-disable @stylistic/js/semi -->
-
 ```mjs
 // point.mjs
 export default class Point {
@@ -211,7 +209,7 @@ export default class Point {
 
 // `distance` 对此模块的 CommonJS 使用者来说会丢失，除非它作为静态属性添加到 `Point`。
 export function distance(a, b) { return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2); }
-export { Point as 'module.exports' }
+export { Point as 'module.exports' };
 ```
 
 <!-- eslint-disable node-core/no-duplicate-requires -->
@@ -227,8 +225,6 @@ console.log(distance); // undefined
 
 注意在上面的示例中，当使用 `module.exports` 导出名称时，命名导出将对 CommonJS 使用者丢失。为了允许 CommonJS 使用者继续访问命名导出，模块可以确保默认导出是一个对象，并将命名导出作为属性附加到它上面。例如，对于上面的示例，`distance` 可以作为静态方法附加到默认导出（即 `Point` 类）上。
 
-<!-- eslint-disable @stylistic/js/semi -->
-
 ```mjs
 export function distance(a, b) { return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2); }
 
@@ -237,7 +233,7 @@ export default class Point {
   static distance = distance;
 }
 
-export { Point as 'module.exports' }
+export { Point as 'module.exports' };
 ```
 
 <!-- eslint-disable node-core/no-duplicate-requires -->
@@ -411,7 +407,7 @@ changes:
       - v16.0.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37246
-    description: "Added `node:` import support to `require(...)`."
+    description: "为 `require(...)` 添加了 `node:` 导入支持。"
 -->
 
 Node.js 有几个编译到二进制文件中的模块。这些模块在本文档的其他部分有更详细的描述。
@@ -728,7 +724,8 @@ assert.strictEqual(require('node:fs'), realFs);
 
 <!-- YAML
 added: v0.3.0
-deprecated: v0.10.6
+deprecated:
+  - v0.10.6
 -->
 
 > 稳定性：0 - 已弃用
@@ -791,7 +788,7 @@ added: v0.3.0
 changes:
   - version: v8.9.0
     pr-url: https://github.com/nodejs/node/pull/16397
-    description: "The `paths` option is now supported."
+    description: "现在支持 `paths` 选项。"
 -->
 
 * `request` {string} 要解析的模块路径。

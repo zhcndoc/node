@@ -274,25 +274,25 @@ try {
 `Symbol.asyncDispose` 方法应返回一个解析为
 `undefined` 的 `Promise`。
 
-<!-- eslint-skip -->
+<!-- eslint-disable no-useless-return -->
 
 ```js
-[Symbol.dispose]() {
-  return void this.dispose();
-  // 或
-  this.dispose();
-  // 或
-  return;
-  // 或
-  // 无返回值
-}
+class MyIterable {
+  [Symbol.dispose]() {
+    this.dispose();
+    // 或者
+    return;
+    // 或者
+    // 无需 return
+  }
 
-async [Symbol.asyncDispose]() {
-  await this.dispose();
-  // 或
-  return;
-  // 或
-  // 无返回值
+  async [Symbol.asyncDispose]() {
+    await this.dispose();
+    // 或者
+
+    // 或者
+    // 无需 return
+  }
 }
 ```
 
@@ -305,21 +305,21 @@ async [Symbol.asyncDispose]() {
 
 例如：
 
-<!-- eslint-skip -->
+<!-- eslint-disable no-unreachable,no-redeclare -->
 
 ```js
-// 可以这样做：
-function dispose() { ... }
+// 这样做：
+function dispose() { /* ... */ }
 return {
   dispose,
-  [Symbol.dispose]() { this.dispose(); }
+  [Symbol.dispose]() { this.dispose(); },
 };
 
 // 而不是这样：
-function dispose() { ... }
+function dispose() { /* ... */ }
 return {
   dispose,
-  [Symbol.dispose]: dispose
+  [Symbol.dispose]: dispose,
 };
 ```
 

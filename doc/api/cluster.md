@@ -19,7 +19,7 @@ import process from 'node:process';
 const numCPUs = availableParallelism();
 
 if (cluster.isPrimary) {
-  console.log(`Primary ${process.pid} is running`);
+  console.log(`主进程 ${process.pid} 正在运行`);
 
   // 派生工作进程。
   for (let i = 0; i < numCPUs; i++) {
@@ -27,17 +27,17 @@ if (cluster.isPrimary) {
   }
 
   cluster.on('exit', (worker, code, signal) => {
-    console.log(`worker ${worker.process.pid} died`);
+    console.log(`工作进程 ${worker.process.pid} 已退出`);
   });
 } else {
   // 工作进程可以共享任何 TCP 连接
   // 在这种情况下，它是一个 HTTP 服务器
   http.createServer((req, res) => {
     res.writeHead(200);
-    res.end('hello world\n');
+    res.end('你好，世界\n');
   }).listen(8000);
 
-  console.log(`Worker ${process.pid} started`);
+  console.log(`工作进程 ${process.pid} 已启动`);
 }
 ```
 
@@ -45,10 +45,9 @@ if (cluster.isPrimary) {
 const cluster = require('node:cluster');
 const http = require('node:http');
 const numCPUs = require('node:os').availableParallelism();
-const process = require('node:process');
 
 if (cluster.isPrimary) {
-  console.log(`Primary ${process.pid} is running`);
+  console.log(`主进程 ${process.pid} 正在运行`);
 
   // 派生工作进程。
   for (let i = 0; i < numCPUs; i++) {
@@ -56,17 +55,17 @@ if (cluster.isPrimary) {
   }
 
   cluster.on('exit', (worker, code, signal) => {
-    console.log(`worker ${worker.process.pid} died`);
+    console.log(`工作进程 ${worker.process.pid} 已退出`);
   });
 } else {
   // 工作进程可以共享任何 TCP 连接
   // 在这种情况下，它是一个 HTTP 服务器
   http.createServer((req, res) => {
     res.writeHead(200);
-    res.end('hello world\n');
+    res.end('你好，世界\n');
   }).listen(8000);
 
-  console.log(`Worker ${process.pid} started`);
+  console.log(`工作进程 ${process.pid} 已启动`);
 }
 ```
 
@@ -74,11 +73,11 @@ if (cluster.isPrimary) {
 
 ```console
 $ node server.js
-Primary 3596 is running
-Worker 4324 started
-Worker 4520 started
-Worker 6056 started
-Worker 5644 started
+主进程 3596 正在运行
+工作进程 4324 已启动
+工作进程 4520 已启动
+工作进程 6056 已启动
+工作进程 5644 已启动
 ```
 
 在 Windows 上，尚无法在工作进程中设置命名管道服务器。
@@ -161,11 +160,11 @@ if (cluster.isPrimary) {
   const worker = cluster.fork();
   worker.on('exit', (code, signal) => {
     if (signal) {
-      console.log(`worker was killed by signal: ${signal}`);
+      console.log(`工作进程被信号杀死：${signal}`);
     } else if (code !== 0) {
-      console.log(`worker exited with error code: ${code}`);
+      console.log(`工作进程以错误代码退出：${code}`);
     } else {
-      console.log('worker success!');
+      console.log('工作进程成功！');
     }
   });
 }
@@ -178,11 +177,11 @@ if (cluster.isPrimary) {
   const worker = cluster.fork();
   worker.on('exit', (code, signal) => {
     if (signal) {
-      console.log(`worker was killed by signal: ${signal}`);
+      console.log(`工作进程被信号杀死：${signal}`);
     } else if (code !== 0) {
-      console.log(`worker exited with error code: ${code}`);
+      console.log(`工作进程以错误代码退出：${code}`);
     } else {
-      console.log('worker success!');
+      console.log('工作进程成功！');
     }
   });
 }
@@ -277,7 +276,6 @@ if (cluster.isPrimary) {
 const cluster = require('node:cluster');
 const http = require('node:http');
 const numCPUs = require('node:os').availableParallelism();
-const process = require('node:process');
 
 if (cluster.isPrimary) {
 
@@ -339,7 +337,7 @@ added: v0.7.7
 changes:
   - version: v7.3.0
     pr-url: https://github.com/nodejs/node/pull/10019
-    description: "This method now returns a reference to `worker`."
+    description: "此方法现在返回对 `worker` 的引用。"
 -->
 
 * 返回：{cluster.Worker} 对 `worker` 的引用。
@@ -406,7 +404,7 @@ added: v6.0.0
 ```js
 cluster.on('exit', (worker, code, signal) => {
   if (worker.exitedAfterDisconnect === true) {
-    console.log('Oh, it was just voluntary – no need to worry');
+    console.log('哦，那只是主动退出——不用担心');
   }
 });
 
@@ -451,7 +449,7 @@ import process from 'node:process';
 const numCPUs = availableParallelism();
 
 if (cluster.isPrimary) {
-  console.log(`Primary ${process.pid} is running`);
+  console.log(`主进程 ${process.pid} 正在运行`);
 
   // 派生工作进程。
   for (let i = 0; i < numCPUs; i++) {
@@ -459,17 +457,17 @@ if (cluster.isPrimary) {
   }
 
   cluster.on('fork', (worker) => {
-    console.log('worker is dead:', worker.isDead());
+    console.log('工作进程已死亡：', worker.isDead());
   });
 
   cluster.on('exit', (worker, code, signal) => {
-    console.log('worker is dead:', worker.isDead());
+    console.log('工作进程已死亡：', worker.isDead());
   });
 } else {
   // 工作进程可以共享任何 TCP 连接。在这种情况下，它是一个 HTTP 服务器。
   http.createServer((req, res) => {
     res.writeHead(200);
-    res.end(`Current process\n ${process.pid}`);
+    res.end(`当前进程\n ${process.pid}`);
     process.kill(process.pid);
   }).listen(8000);
 }
@@ -479,10 +477,9 @@ if (cluster.isPrimary) {
 const cluster = require('node:cluster');
 const http = require('node:http');
 const numCPUs = require('node:os').availableParallelism();
-const process = require('node:process');
 
 if (cluster.isPrimary) {
-  console.log(`Primary ${process.pid} is running`);
+  console.log(`主进程 ${process.pid} 正在运行`);
 
   // 派生工作进程。
   for (let i = 0; i < numCPUs; i++) {
@@ -490,17 +487,17 @@ if (cluster.isPrimary) {
   }
 
   cluster.on('fork', (worker) => {
-    console.log('worker is dead:', worker.isDead());
+    console.log('工作进程已死亡：', worker.isDead());
   });
 
   cluster.on('exit', (worker, code, signal) => {
-    console.log('worker is dead:', worker.isDead());
+    console.log('工作进程已死亡：', worker.isDead());
   });
 } else {
   // 工作进程可以共享任何 TCP 连接。在这种情况下，它是一个 HTTP 服务器。
   http.createServer((req, res) => {
     res.writeHead(200);
-    res.end(`Current process\n ${process.pid}`);
+    res.end(`当前进程\n ${process.pid}`);
     process.kill(process.pid);
   }).listen(8000);
 }
@@ -532,7 +529,7 @@ added: v0.7.0
 
 所有工作进程都是使用 [`child_process.fork()`][] 创建的，此函数返回的对象存储为 `.process`。在工作进程中，存储全局 `process`。
 
-参见：[Child Process 模块][]。
+参见：[子进程模块][]。
 
 如果 `'disconnect'` 事件发生在 `process` 上且 `.exitedAfterDisconnect` 不为 `true`，工作进程将调用 `process.exit(0)`。这防止了意外断开连接。
 
@@ -543,7 +540,7 @@ added: v0.7.0
 changes:
   - version: v4.0.0
     pr-url: https://github.com/nodejs/node/pull/2620
-    description: "The `callback` parameter is supported now."
+    description: "现在支持 `callback` 参数。"
 -->
 
 * `message` {Object}
@@ -587,7 +584,7 @@ added: v0.7.9
 
 ```js
 cluster.on('disconnect', (worker) => {
-  console.log(`The worker #${worker.id} has disconnected`);
+  console.log(`工作进程 #${worker.id} 已断开连接`);
 });
 ```
 
@@ -607,7 +604,7 @@ added: v0.7.9
 
 ```js
 cluster.on('exit', (worker, code, signal) => {
-  console.log('worker %d died (%s). restarting...',
+  console.log('工作进程 %d 已死亡（%s）。正在重启...',
               worker.process.pid, signal || code);
   cluster.fork();
 });
@@ -629,7 +626,7 @@ added: v0.7.0
 ```js
 const timeouts = [];
 function errorMsg() {
-  console.error('Something must be wrong with the connection ...');
+  console.error('连接肯定有问题 ...');
 }
 
 cluster.on('fork', (worker) => {
@@ -660,7 +657,7 @@ added: v0.7.0
 ```js
 cluster.on('listening', (worker, address) => {
   console.log(
-    `A worker is now connected to ${address.address}:${address.port}`);
+    `工作进程现在已连接到 ${address.address}:${address.port}`);
 });
 ```
 
@@ -703,7 +700,7 @@ added: v0.7.0
 
 ```js
 cluster.on('online', (worker) => {
-  console.log('Yay, the worker responded after it was forked');
+  console.log('太棒了，工作进程在被 fork 后做出了响应');
 });
 ```
 
@@ -951,7 +948,7 @@ worker 在断开连接_并_退出后从 `cluster.workers` 中移除。这两个�
 import cluster from 'node:cluster';
 
 for (const worker of Object.values(cluster.workers)) {
-  worker.send('big announcement to all workers');
+  worker.send('发送给所有工作进程的重要通知');
 }
 ```
 
@@ -959,7 +956,7 @@ for (const worker of Object.values(cluster.workers)) {
 const cluster = require('node:cluster');
 
 for (const worker of Object.values(cluster.workers)) {
-  worker.send('big announcement to all workers');
+  worker.send('发送给所有工作进程的重要通知');
 }
 ```
 
