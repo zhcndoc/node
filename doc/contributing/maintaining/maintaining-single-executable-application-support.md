@@ -1,75 +1,59 @@
-# Maintaining Single Executable Applications support
+# 维护单文件可执行应用支持
 
-Support for [single executable applications][] is one of the key technical
-priorities identified for the success of Node.js.
+对 [single executable applications][] 的支持，是 Node.js 成功所确定的关键技术优先事项之一。
 
-## High level strategy
+## 高层策略
 
-From the [Next-10 discussions][] there are 2 approaches the project believes are
-important to support:
+从 [Next-10 discussions][] 来看，项目认为有 2 种重要的支持方式：
 
-### Compile with Node.js into executable
+### 使用 Node.js 编译为可执行文件
 
-This is the approach followed by [boxednode][].
+这是 [boxednode][] 采用的方法。
 
-No additional code within the Node.js project is needed to support the
-option of compiling a bundled application along with Node.js into a single
-executable application.
+Node.js 项目内部不需要额外代码来支持将打包后的应用与 Node.js 一起编译成一个单文件可执行应用。
 
-### Bundle into existing Node.js executable
+### 打包到现有的 Node.js 可执行文件中
 
-This is the approach followed by [pkg][].
+这是 [pkg][] 采用的方法。
 
-The project does not plan to provide the complete solution but instead the key
-elements which are required in the Node.js executable in order to enable
-bundling with the pre-built Node.js binaries. This includes:
+项目并不打算提供完整解决方案，而是提供 Node.js 可执行文件中所需的关键元素，以便能够与预构建的 Node.js 二进制文件进行打包。这包括：
 
-* Looking for a segment within the executable that holds bundled code.
-* Running the bundled code when such a segment is found.
+* 在可执行文件中查找一个保存打包代码的段。
+* 在找到该段时运行打包代码。
 
-It is left up to external tools/solutions to:
+其余部分留给外部工具/解决方案来完成：
 
-* Bundle code into a single script.
-* Generate a command line with appropriate options.
-* Add a segment to an existing Node.js executable which contains
-  the command line and appropriate headers.
-* Re-generate or removing signatures on the resulting executable
-* Provide a virtual file system, and hooking it in if needed to
-  support native modules or reading file contents.
+* 将代码打包成单个脚本。
+* 生成带有适当选项的命令行。
+* 向现有的 Node.js 可执行文件中添加一个段，其中包含命令行和适当的头信息。
+* 对生成的可执行文件重新生成或移除签名
+* 提供一个虚拟文件系统，并在需要时将其挂接，以支持原生模块或读取文件内容。
 
-However, the project also maintains a separate tool, [postject][], for injecting
-arbitrary read-only resources into the binary such as those needed for bundling
-the application into the runtime.
+不过，项目还维护了一个单独的工具 [postject][]，用于向二进制文件中注入任意只读资源，例如将应用打包进运行时所需的资源。
 
-## Planning
+## 规划
 
-Planning for this feature takes place in the [single-executable repository][].
+该功能的规划在 [single-executable repository][] 中进行。
 
-## Upcoming features
+## 即将推出的功能
 
-Currently, only running a single embedded CommonJS file is supported but support
-for the following features are in the list of work we'd like to get to:
+目前仅支持运行单个嵌入的 CommonJS 文件，但以下功能也在我们希望实现的工作列表中：
 
-* Running an embedded ESM file.
-* Running an archive of multiple files.
-* Embedding [Node.js CLI options][] into the binary.
-* [XCOFF][] executable format.
-* Run tests on Alpine Linux.
-* Run tests on s390x Linux.
-* Run tests on ppc64 Linux.
+* 运行嵌入的 ESM 文件。
+* 运行包含多个文件的归档。
+* 将 [Node.js CLI options][] 嵌入到二进制文件中。
+* [XCOFF][] 可执行文件格式。
+* 在 Alpine Linux 上运行测试。
+* 在 s390x Linux 上运行测试。
+* 在 ppc64 Linux 上运行测试。
 
-## Disabling single executable application support
+## 禁用单文件可执行应用支持
 
-To disable single executable application support, build Node.js with the
-`--disable-single-executable-application` configuration option.
+要禁用单文件可执行应用支持，请使用 `--disable-single-executable-application` 配置选项构建 Node.js。
 
-## Implementation
+## 实现
 
-When built with single executable application support, the Node.js process uses
-[`postject-api.h`][] to check if the `NODE_SEA_BLOB` section exists in the
-binary. If it is found, it passes the buffer to
-[`single_executable_application.js`][], which executes the contents of the
-embedded script.
+在启用了单文件可执行应用支持进行构建时，Node.js 进程会使用 [`postject-api.h`][] 检查二进制文件中是否存在 `NODE_SEA_BLOB` 段。如果找到，它会将缓冲区传递给 [`single_executable_application.js`][]，后者会执行嵌入脚本的内容。
 
 [Next-10 discussions]: https://github.com/nodejs/next-10/blob/main/meetings/summit-nov-2021.md#single-executable-applications
 [Node.js CLI options]: https://nodejs.org/api/cli.html

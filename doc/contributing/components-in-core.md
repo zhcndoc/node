@@ -1,58 +1,42 @@
-# To be or not to be in core
+# 是否纳入 core
 
-This document explains things to consider when deciding whether a component
-should be in core or not.
+本文档说明了在决定一个组件是否应纳入 core 时需要考虑的事项。
 
-A component may be included in core as a dependency, a module, or integrated
-into the code base. The same arguments for including/not including in core
-generally apply in all of these cases.
+一个组件可以作为依赖、模块，或集成到代码库中被纳入 core。关于是否纳入 core 的相同论点通常适用于所有这些情况。
 
-## Strong arguments for including a component in core
+## 将组件纳入 core 的强有力理由
 
-1. The component provides functionality that is standardized (such as a
-   [Web API][]) and overlaps with existing functionality.
-2. The component can only be implemented in core.
-3. The component can only be implemented in a performant way in core.
-4. Developer experience is significantly improved if the component is in core.
-5. The component provides functionality that can be expected to solve at
-   least one common use case Node.js users face.
-6. The component requires native bindings. Inclusion in core enables
-   utility across operating systems and architectures without requiring
-   users to have a native compilation toolchain.
-7. Part or all of the component will also be re-used or duplicated in core.
+1. 该组件提供的是标准化功能（例如 [Web API][]），并且与现有功能重叠。
+2. 该组件只能在 core 中实现。
+3. 该组件只有在 core 中才能以高性能方式实现。
+4. 如果该组件位于 core 中，开发者体验会显著改善。
+5. 该组件提供的功能可望解决 Node.js 用户面临的至少一种常见使用场景。
+6. 该组件需要原生绑定。将其纳入 core 可以在不要求用户具备原生编译工具链的情况下，在各种操作系统和架构上实现可用性。
+7. 该组件的部分或全部内容也会在 core 中被复用或重复实现。
 
-## Strong arguments against including a component in core
+## 反对将组件纳入 core 的强有力理由
 
-1. None of the arguments listed in the previous section apply.
-2. The component has a license that prohibits Node.js from including it in core
-   without also changing its own license.
-3. There is already similar functionality in core and adding the component will
-   provide a second API to do the same thing.
-4. A component (or/and the standard it is based on) is deprecated and there is
-   a non-deprecated alternative.
-5. The component is evolving quickly and inclusion in core will require frequent
-   API changes.
+1. 上一节列出的论点都不适用。
+2. 该组件的许可证禁止 Node.js 将其纳入 core，除非同时更改其自身的许可证。
+3. core 中已经有类似功能，添加该组件将提供第二个用于完成同一件事的 API。
+4. 某个组件（和/或其所基于的标准）已被弃用，并且存在一个未弃用的替代方案。
+5. 该组件演进迅速，将其纳入 core 将需要频繁的 API 变更。
 
-## Benefits and challenges
+## 优势与挑战
 
-When it is unclear whether a component should be included in core, it might be
-helpful to consider these additional factors.
+当不清楚某个组件是否应纳入 core 时，考虑以下附加因素可能会有所帮助。
 
-### Benefits
+### 优势
 
-1. The component will receive more frequent testing with Node.js CI and CITGM.
-2. The component will be integrated into the LTS workflow.
-3. Documentation will be integrated with core.
-4. There is no dependency on npm.
+1. 该组件将通过 Node.js CI 和 CITGM 接受更频繁的测试。
+2. 该组件将纳入 LTS 工作流。
+3. 文档将与 core 集成。
+4. 不依赖 npm。
 
-### Challenges
+### 挑战
 
-1. Inclusion in core, rather than as an ecosystem module, is likely to reduce
-   code merging velocity. The Node.js process for code review and merging is
-   more time-consuming than that of most separate modules.
-2. By being bound to the Node.js release cycle, it is harder and slower to
-   publish patches.
-3. Less flexibility for users. They can't update the component
-   when they choose without also updating Node.js.
+1. 将其纳入 core，而不是作为生态系统模块，可能会降低代码合并速度。Node.js 的代码审查和合并流程比大多数独立模块更耗时。
+2. 由于受 Node.js 发布周期约束，发布补丁会更困难、也更慢。
+3. 用户的灵活性更低。他们不能在不同时更新 Node.js 的情况下，按自己的选择更新该组件。
 
 [Web API]: https://developer.mozilla.org/en-US/docs/Web/API

@@ -1,90 +1,90 @@
-# How to write and run benchmarks in Node.js core
+# 如何在 Node.js core 中编写并运行基准测试
 
-## Table of contents
+## 目录
 
-* [Prerequisites](#prerequisites)
-  * [HTTP benchmark requirements](#http-benchmark-requirements)
-  * [HTTPS benchmark requirements](#https-benchmark-requirements)
-  * [HTTP/2 benchmark requirements](#http2-benchmark-requirements)
-  * [Benchmark analysis requirements](#benchmark-analysis-requirements)
-* [Running benchmarks](#running-benchmarks)
-  * [Running individual benchmarks](#running-individual-benchmarks)
-  * [Calibrating the number of iterations with calibrate-n.js](#calibrating-the-number-of-iterations-with-calibrate-njs)
-  * [Running all benchmarks](#running-all-benchmarks)
-  * [Specifying CPU Cores for Benchmarks with run.js](#specifying-cpu-cores-for-benchmarks-with-runjs)
-  * [Filtering benchmarks](#filtering-benchmarks)
-  * [Comparing Node.js versions](#comparing-nodejs-versions)
-  * [Comparing parameters](#comparing-parameters)
-  * [Running benchmarks on the CI](#running-benchmarks-on-the-ci)
-* [Creating a benchmark](#creating-a-benchmark)
-  * [Basics of a benchmark](#basics-of-a-benchmark)
-  * [Creating an HTTP benchmark](#creating-an-http-benchmark)
+* [前置条件](#prerequisites)
+  * [HTTP 基准测试要求](#http-benchmark-requirements)
+  * [HTTPS 基准测试要求](#https-benchmark-requirements)
+  * [HTTP/2 基准测试要求](#http2-benchmark-requirements)
+  * [基准分析要求](#benchmark-analysis-requirements)
+* [运行基准测试](#running-benchmarks)
+  * [运行单个基准测试](#running-individual-benchmarks)
+  * [使用 calibrate-n.js 校准迭代次数](#calibrating-the-number-of-iterations-with-calibrate-njs)
+  * [运行所有基准测试](#running-all-benchmarks)
+  * [使用 run.js 指定基准测试的 CPU 核心](#specifying-cpu-cores-for-benchmarks-with-runjs)
+  * [过滤基准测试](#filtering-benchmarks)
+  * [比较 Node.js 版本](#comparing-nodejs-versions)
+  * [比较参数](#comparing-parameters)
+  * [在 CI 上运行基准测试](#running-benchmarks-on-the-ci)
+* [创建基准测试](#creating-a-benchmark)
+  * [基准测试基础](#basics-of-a-benchmark)
+  * [创建 HTTP 基准测试](#creating-an-http-benchmark)
 
-## Prerequisites
+## 前置条件
 
-Basic Unix tools are required for some benchmarks.
-[Git for Windows][git-for-windows] includes Git Bash and the necessary tools,
-which need to be included in the global Windows `PATH`.
+某些基准测试需要基本的 Unix 工具。
+[Git for Windows][git-for-windows] 包含 Git Bash 和必要的工具，
+这些工具需要包含在全局 Windows `PATH` 中。
 
-If you are using Nix, all the required tools are already listed in the
-`benchmarkTools` argument of the `shell.nix` file, so you can skip those
-prerequisites.
+如果你使用的是 Nix，所需工具都已经列在
+`shell.nix` 文件的 `benchmarkTools` 参数中，因此可以跳过这些
+前置条件。
 
-### HTTP benchmark requirements
+### HTTP 基准测试要求
 
-Most of the HTTP benchmarks require a benchmarker to be installed. This can be
-either [`wrk`][wrk] or [`autocannon`][autocannon].
+大多数 HTTP 基准测试都需要安装一个基准压测工具。它可以是
+[`wrk`][wrk] 或 [`autocannon`][autocannon]。
 
-`Autocannon` is a Node.js script that can be installed using
-`npm install -g autocannon`. It will use the Node.js executable that is in the
-path. In order to compare two HTTP benchmark runs, make sure that the
-Node.js version in the path is not altered.
+`Autocannon` 是一个 Node.js 脚本，可以通过
+`npm install -g autocannon` 安装。它会使用 `path` 中的
+Node.js 可执行文件。为了比较两次 HTTP 基准测试运行结果，请确保
+`path` 中的 Node.js 版本没有被更改。
 
-`wrk` may be available through one of the available package managers. If not,
-it can be easily built [from source][wrk] via `make`.
+`wrk` 可能可以通过某个可用的包管理器安装。如果不行，
+也可以很容易地通过 [从源码构建][wrk] 使用 `make` 来编译。
 
-By default, `wrk` will be used as the benchmarker. If it is not available,
-`autocannon` will be used in its place. When creating an HTTP benchmark, the
-benchmarker to be used should be specified by providing it as an argument:
+默认情况下会使用 `wrk` 作为基准压测工具。如果它不可用，
+则会改用 `autocannon`。在创建 HTTP 基准测试时，
+应通过参数显式指定所使用的基准压测工具：
 
 ```bash
 node benchmark/run.js --set benchmarker=autocannon http
 node benchmark/http/simple.js benchmarker=autocannon
 ```
 
-#### HTTPS benchmark requirements
+#### HTTPS 基准测试要求
 
-To run the `https` benchmarks, one of `autocannon` or `wrk` benchmarkers must
-be used.
+要运行 `https` 基准测试，必须使用 `autocannon` 或 `wrk`
+作为基准压测工具之一。
 
 ```bash
 node benchmark/https/simple.js benchmarker=autocannon
 ```
 
-#### HTTP/2 benchmark requirements
+#### HTTP/2 基准测试要求
 
-To run the `http2` benchmarks, the `h2load` benchmarker must be used. The
-`h2load` tool is a component of the `nghttp2` project and may be installed
-from [nghttp2.org][] or built from source.
+要运行 `http2` 基准测试，必须使用 `h2load` 基准压测工具。
+`h2load` 工具是 `nghttp2` 项目的一个组件，可以从
+[nghttp2.org][] 安装，或者从源码构建。
 
 ```bash
 node benchmark/http2/simple.js benchmarker=h2load
 ```
 
-### Benchmark analysis requirements
+### 基准分析要求
 
-To analyze the results statistically, you can use either the
-[node-benchmark-compare][] tool or the R script `benchmark/compare.R`.
+要对结果进行统计分析，你可以使用
+[node-benchmark-compare][] 工具或 R 脚本 `benchmark/compare.R`。
 
-[node-benchmark-compare][] is a Node.js script that can be installed with
-`npm install -g node-benchmark-compare`.
+[node-benchmark-compare][] 是一个 Node.js 脚本，可以通过
+`npm install -g node-benchmark-compare` 安装。
 
-To draw comparison plots when analyzing the results, `R` must be installed.
-Use one of the available package managers or download it from
-<https://www.r-project.org/>.
+要在分析结果时绘制对比图，需要安装 `R`。
+可以使用可用的包管理器安装，或者从
+<https://www.r-project.org/> 下载。
 
-The R packages `ggplot2` and `plyr` are also used and can be installed using
-the R REPL.
+还会用到 R 包 `ggplot2` 和 `plyr`，可以在
+R REPL 中安装。
 
 ```console
 $ R
@@ -92,36 +92,34 @@ install.packages("ggplot2")
 install.packages("plyr")
 ```
 
-If a message states that a CRAN mirror must be selected first, specify a mirror
-with the `repo` parameter.
+如果提示需要先选择 CRAN 镜像，请使用 `repo`
+参数指定镜像。
 
 ```r
 install.packages("ggplot2", repo="http://cran.us.r-project.org")
 ```
 
-Of course, use an appropriate mirror based on location.
-A list of mirrors is [located here](https://cran.r-project.org/mirrors.html).
+当然，请根据所在地使用合适的镜像。
+镜像列表可 [在此处找到](https://cran.r-project.org/mirrors.html)。
 
-## Running benchmarks
+## 运行基准测试
 
-### Setting CPU Frequency scaling governor to "performance"
+### 将 CPU 频率调节器设置为 "performance"
 
-It is recommended to set the CPU frequency to `performance` before running
-benchmarks. This increases the likelihood of each benchmark achieving peak performance
-according to the hardware. Therefore, run:
+建议在运行基准测试之前将 CPU 频率设置为 `performance`。
+这会提高每个基准测试根据硬件达到峰值性能的可能性。
+因此，请运行：
 
 ```console
 $ ./benchmark/cpu.sh fast
 ```
 
-### Running individual benchmarks
+### 运行单个基准测试
 
-This can be useful for debugging a benchmark or doing a quick performance
-measure. But it does not provide the statistical information to make any
-conclusions about the performance.
+这对于调试基准测试或进行快速性能测量很有用。但它不提供
+用于得出性能结论的统计信息。
 
-Individual benchmarks can be executed by simply executing the benchmark script
-with node.
+可以直接使用 node 执行单个基准测试脚本。
 
 ```console
 $ node benchmark/buffers/buffer-tostring.js
@@ -136,14 +134,13 @@ buffers/buffer-tostring.js n=10000000 len=64 arg=false: 8718280.70650129
 buffers/buffer-tostring.js n=10000000 len=1024 arg=false: 4103857.0726124765
 ```
 
-Each line represents a single benchmark with parameters specified as
-`${variable}=${value}`. Each configuration combination is executed in a separate
-process. This ensures that benchmark results aren't affected by the execution
-order due to V8 optimizations. **The last number is the rate of operations
-measured in ops/sec (higher is better).**
+每一行代表一个单独的基准测试，参数以
+`${variable}=${value}` 的形式指定。每种配置组合都会在单独的
+进程中执行。这样可以确保基准测试结果不会因为 V8 优化带来的
+执行顺序而受到影响。**最后一个数字是以 ops/sec
+衡量的操作速率（越高越好）。**
 
-Furthermore a subset of the configurations can be specified, by setting them in
-the process arguments:
+此外，也可以通过在进程参数中设置它们来指定配置的子集：
 
 ```console
 $ node benchmark/buffers/buffer-tostring.js len=1024
@@ -152,12 +149,11 @@ buffers/buffer-tostring.js n=10000000 len=1024 arg=true: 3498295.68561504
 buffers/buffer-tostring.js n=10000000 len=1024 arg=false: 3783071.1678948295
 ```
 
-### Calibrating the number of iterations with calibrate-n.js
+### 使用 calibrate-n.js 校准迭代次数
 
-Before running benchmarks, it's often useful to determine the optimal number of iterations (`n`)
-that provides statistically stable results. The `calibrate-n.js` tool helps find this value by
-running a benchmark multiple times with increasing `n` values until the coefficient of variation (CV)
-falls below a target threshold.
+在运行基准测试之前，通常有必要确定能提供统计稳定结果的最佳迭代次数 (`n`)。
+`calibrate-n.js` 工具通过以逐渐增大的 `n` 值多次运行基准测试，直到变异系数 (CV)
+低于目标阈值，从而帮助找到这个值。
 
 ```console
 $ node benchmark/calibrate-n.js benchmark/buffers/buffer-compare.js
@@ -182,22 +178,21 @@ Configuration:
 - Increase factor: 10x
 ```
 
-The tool accepts several options:
+该工具接受以下选项：
 
-* `--runs=N`: Number of runs for each n value (default: 30)
-* `--cv-threshold=N`: Target coefficient of variation threshold (default: 0.05)
-* `--max-increases=N`: Maximum number of n increases to try (default: 6)
-* `--start-n=N`: Initial n value to start with (default: 10)
-* `--increase=N`: Factor by which to increase n (default: 10)
+* `--runs=N`：每个 n 值的运行次数（默认：30）
+* `--cv-threshold=N`：目标变异系数阈值（默认：0.05）
+* `--max-increases=N`：要尝试的最大 n 增加次数（默认：6）
+* `--start-n=N`：起始 n 值（默认：10）
+* `--increase=N`：每次增加 n 的倍数（默认：10）
 
-Once you've determined a stable `n` value, you can use it when running your benchmarks.
+一旦确定了稳定的 `n` 值，就可以在运行基准测试时使用它。
 
-### Running all benchmarks
+### 运行所有基准测试
 
-Similar to running individual benchmarks, a group of benchmarks can be executed
-by using the `run.js` tool. To see how to use this script,
-run `node benchmark/run.js`. Again this does not provide the statistical
-information to make any conclusions.
+与运行单个基准测试类似，可以使用 `run.js` 工具执行一组基准测试。
+要查看如何使用此脚本，请运行 `node benchmark/run.js`。同样，这并不提供
+用于得出结论的统计信息。
 
 ```console
 $ node benchmark/run.js assert
@@ -218,54 +213,51 @@ assert/deepequal-object.js method="notDeepEqual" strict=0 size=100 n=5000: 9,734
 ...
 ```
 
-It is possible to execute more groups by adding extra process arguments.
+可以通过添加额外的进程参数来执行更多分组。
 
 ```bash
 node benchmark/run.js assert async_hooks
 ```
 
-It's also possible to execute the benchmark more than once using the
-`--runs` flag.
+也可以使用 `--runs` 标志多次执行基准测试。
 
 ```bash
 node benchmark/run.js --runs 10 assert async_hooks
 ```
 
-This command will run the benchmark files in `benchmark/assert` and `benchmark/async_hooks`
-10 times each.
+该命令将把 `benchmark/assert` 和 `benchmark/async_hooks` 中的基准测试文件
+各运行 10 次。
 
-#### Specifying CPU Cores for Benchmarks with run.js
+#### 使用 run.js 指定基准测试的 CPU 核心
 
-When using `run.js` to execute a group of benchmarks,
-you can specify on which CPU cores the
-benchmarks should execute
-by using the `--set CPUSET=value` option.
-This controls the CPU core
-affinity for the benchmark process,
-potentially reducing
-interference from other processes and allowing
-for performance
-testing under specific hardware configurations.
+当使用 `run.js` 执行一组基准测试时，
+你可以使用 `--set CPUSET=value` 选项指定
+基准测试应运行在哪些 CPU 核心上。
+这会控制基准测试进程的 CPU 核心
+亲和性，从而有可能减少
+来自其他进程的干扰，并允许
+在特定硬件配置下进行
+性能测试。
 
-The `CPUSET` option utilizes the `taskset` command's format
-for setting CPU affinity, where `value` can be a single core
-number or a range of cores.
+`CPUSET` 选项使用 `taskset` 命令的格式
+来设置 CPU 亲和性，其中 `value` 可以是单个核心
+编号或一个核心范围。
 
-Examples:
+示例：
 
-* `node benchmark/run.js --set CPUSET=0` ... runs benchmarks on CPU core 0.
+* `node benchmark/run.js --set CPUSET=0` ... 在 CPU 核心 0 上运行基准测试。
 * `node benchmark/run.js --set CPUSET=0-2` ...
-  specifies that benchmarks should run on CPU cores 0 to 2.
+  指定基准测试应在 CPU 核心 0 到 2 上运行。
 
-Note: This option is only applicable when using `run.js`.
-Ensure the `taskset` command is available on your system
-and the specified `CPUSET` format matches its requirements.
+注意：此选项仅适用于使用 `run.js` 时。
+请确保系统上可用 `taskset` 命令，
+并且指定的 `CPUSET` 格式符合其要求。
 
-#### Filtering benchmarks
+#### 过滤基准测试
 
-`benchmark/run.js` and `benchmark/compare.js` have `--filter pattern` and
-`--exclude pattern` options, which can be used to run a subset of benchmarks or
-to exclude specific benchmarks from the execution, respectively.
+`benchmark/run.js` 和 `benchmark/compare.js` 提供了 `--filter pattern` 和
+`--exclude pattern` 选项，可分别用于运行基准测试的子集或
+排除特定基准测试。
 
 ```console
 $ node benchmark/run.js --filter "deepequal-b" assert
@@ -287,7 +279,7 @@ assert/deepequal-object.js method="notDeepEqual" strict=0 size=100 n=5000: 9,734
 ...
 ```
 
-`--filter` and `--exclude` can be repeated to provide multiple patterns.
+`--filter` 和 `--exclude` 可以重复使用，以提供多个模式。
 
 ```console
 $ node benchmark/run.js --filter "deepequal-b" --filter "deepequal-m" assert
@@ -314,8 +306,8 @@ assert/deepequal-prims-and-objs-big-array-set.js method="deepEqual_Set" strict=0
 ...
 ```
 
-If `--filter` and `--exclude` are used together, `--filter` is applied first,
-and `--exclude` is applied on the result of `--filter`:
+如果 `--filter` 和 `--exclude` 同时使用，`--filter` 会先应用，
+然后在 `--filter` 的结果上应用 `--exclude`：
 
 ```console
 $ node benchmark/run.js --filter "bench-" process
@@ -342,37 +334,37 @@ process/bench-env.js operation="query" n=1000000: 3,625,787.2150573144
 process/bench-env.js operation="delete" n=1000000: 1,521,131.5742806569
 ```
 
-#### Grouping benchmarks
+#### 基准测试分组
 
-Benchmarks can also have groups, giving the developer greater flexibility in differentiating between test cases
-and also helping reduce the time to run the combination of benchmark parameters.
+基准测试也可以包含分组，使开发者在区分测试用例时拥有更大的灵活性，
+同时也有助于缩短组合基准参数的运行时间。
 
-By default, all groups are executed when running the benchmark.
-However, it is possible to specify individual groups by setting the
-`NODE_RUN_BENCHMARK_GROUPS` environment variable when running `compare.js`:
+默认情况下，运行基准测试时会执行所有分组。
+不过，在运行 `compare.js` 时，可以通过设置
+`NODE_RUN_BENCHMARK_GROUPS` 环境变量来指定单独的分组：
 
 ```bash
 NODE_RUN_BENCHMARK_GROUPS=fewHeaders,manyHeaders node http/headers.js
 ```
 
-### Comparing Node.js versions
+### 比较 Node.js 版本
 
-To compare the effect of a new Node.js version use the `compare.js` tool. This
-will run each benchmark multiple times, making it possible to calculate
-statistics on the performance measures. To see how to use this script,
-run `node benchmark/compare.js`.
+要比较新 Node.js 版本带来的影响，请使用 `compare.js` 工具。它会
+将每个基准测试运行多次，从而可以计算
+性能指标的统计信息。要查看如何使用此脚本，
+请运行 `node benchmark/compare.js`。
 
-As an example on how to check for a possible performance improvement, the
-[#5134](https://github.com/nodejs/node/pull/5134) pull request will be used as
-an example. This pull request _claims_ to improve the performance of the
-`node:string_decoder` module.
+举例来说，为了检查某个潜在的性能改进，
+将使用 [#5134](https://github.com/nodejs/node/pull/5134) 拉取请求作为
+示例。这个拉取请求声称可以提升
+`node:string_decoder` 模块的性能。
 
-First build two versions of Node.js, one from the `main` branch (here called
-`./node-main`) and another with the pull request applied (here called
-`./node-pr-5134`).
+首先构建两个 Node.js 版本，一个来自 `main` 分支（这里称为
+`./node-main`），另一个应用了该拉取请求（这里称为
+`./node-pr-5134`）。
 
-To run multiple compiled versions in parallel you need to copy the output of the
-build: `cp ./out/Release/node ./node-main`. Check out the following example:
+要并行运行多个已编译版本，你需要复制构建输出：
+`cp ./out/Release/node ./node-main`。请参考以下示例：
 
 ```bash
 git checkout main
@@ -384,41 +376,41 @@ git checkout pr-5134
 cp ./out/Release/node ./node-pr-5134
 ```
 
-The `compare.js` tool will then produce a csv file with the benchmark results.
+然后 `compare.js` 工具会生成一个包含基准测试结果的 csv 文件。
 
 ```bash
 node benchmark/compare.js --old ./node-main --new ./node-pr-5134 string_decoder > compare-pr-5134.csv
 ```
 
-_Tips: there are some useful options of `benchmark/compare.js`. For example,
-if you want to compare the benchmark of a single script instead of a whole
-module, you can use the `--filter` option:_
+_提示：`benchmark/compare.js` 有一些有用的选项。例如，
+如果你想比较单个脚本的基准测试而不是整个
+模块，可以使用 `--filter` 选项：_
 
 ```console
-  --new      ./new-node-binary  new node binary (required)
-  --old      ./old-node-binary  old node binary (required)
-  --runs     30                 number of samples
-  --filter   pattern            string to filter benchmark scripts
-  --exclude  pattern            excludes scripts matching <pattern> (can be
-                                repeated)
-  --set      variable=value     set benchmark variable (can be repeated)
-  --no-progress                 don't show benchmark progress indicator
+  --new      ./new-node-binary  新的 node 二进制文件（必需）
+  --old      ./old-node-binary  旧的 node 二进制文件（必需）
+  --runs     30                 样本数量
+  --filter   pattern            用于过滤基准测试脚本的字符串
+  --exclude  pattern            排除匹配 <pattern> 的脚本（可
+                                重复）
+  --set      variable=value     设置基准变量（可重复）
+  --no-progress                 不显示基准测试进度指示器
 
-    Examples:
-    --set CPUSET=0            Runs benchmarks on CPU core 0.
-    --set CPUSET=0-2          Specifies that benchmarks should run on CPU cores 0 to 2.
+    示例：
+    --set CPUSET=0            在 CPU 核心 0 上运行基准测试。
+    --set CPUSET=0-2          指定基准测试应在 CPU 核心 0 到 2 上运行。
 
-  Note: The CPUSET format should match the specifications of the 'taskset' command
+  注意：CPUSET 格式应符合 'taskset' 命令的规范
 ```
 
-For analyzing the benchmark results, use [node-benchmark-compare][] or the R
-scripts:
+要分析基准测试结果，请使用 [node-benchmark-compare][] 或 R
+脚本：
 
 * `benchmark/compare.R`
 * `benchmark/bar.R`
 
 ```console
-$ node-benchmark-compare compare-pr-5134.csv # or cat compare-pr-5134.csv | Rscript benchmark/compare.R
+$ node-benchmark-compare compare-pr-5134.csv # 或 cat compare-pr-5134.csv | Rscript benchmark/compare.R
 
                                                                                              confidence improvement accuracy (*)    (**)   (***)
  string_decoder/string-decoder.js n=2500000 chunkLen=16 inLen=128 encoding='ascii'                  ***     -3.76 %       ±1.36%  ±1.82%  ±2.40%
@@ -428,35 +420,30 @@ $ node-benchmark-compare compare-pr-5134.csv # or cat compare-pr-5134.csv | Rscr
 ...
 ```
 
-In the output, _improvement_ is the relative improvement of the new version,
-hopefully this is positive. _confidence_ tells if there is enough
-statistical evidence to validate the _improvement_. If there is enough evidence
-then there will be at least one star (`*`), more stars is just better. **However
-if there are no stars, then don't make any conclusions based on the
-_improvement_.** Sometimes this is fine, for example if no improvements are
-expected, then there shouldn't be any stars.
+在输出中，_improvement_ 是新版本的相对改进幅度，
+理想情况下它应为正值。_confidence_ 表示是否有足够的
+统计证据来验证 _improvement_。如果证据足够，
+那么至少会有一个星号 (`*`)，星号越多越好。**然而
+如果没有星号，就不要根据
+_improvement_ 得出任何结论。**有时这是没问题的，例如如果没有预期
+改进，那么就不应该有星号。
 
-**A word of caution:** Statistics is not a foolproof tool. If a benchmark shows
-a statistical significant difference, there is a 5% risk that this
-difference doesn't actually exist. For a single benchmark this is not an
-issue. But when considering 20 benchmarks it's normal that one of them
-will show significance, when it shouldn't. A possible solution is to instead
-consider at least two stars (`**`) as the threshold, in that case the risk
-is 1%. If three stars (`***`) is considered the risk is 0.1%. However this
-may require more runs to obtain (can be set with `--runs`).
+**注意：统计并不是万无一失的工具。** 如果某个基准测试显示
+统计上显著的差异，那么这种差异实际上不存在的概率有 5%。
+对于单个基准测试来说这不是问题。但当考虑 20 个基准测试时，
+其中一个出现显著性结果是正常的，即使它本不该如此。
+一种可能的解决方案是将至少两个星号（`**`）作为阈值，在这种情况下
+风险是 1%。如果将三个星号（`***`）作为阈值，风险则为 0.1%。
+不过这可能需要更多运行次数才能得到结果（可通过 `--runs` 设置）。
 
-_For the statistically minded, the script performs an [independent/unpaired
-2-group t-test][t-test], with the null hypothesis that the performance is the
-same for both versions. The confidence field will show a star if the p-value
-is less than `0.05`._
+_对于统计学爱好者而言，该脚本执行的是 [独立/非配对的双组 t 检验][t-test]，其零假设为两个版本的性能相同。若 p 值小于 `0.05`，confidence 字段将显示一个星号。_
 
-The `compare.R` tool can additionally produce a box plot by using the
-`--plot filename` option. In this case there are 48 different benchmark
-combinations, and there may be a need to filter the csv file. This can be done
-while benchmarking using the `--set` parameter (e.g. `--set encoding=ascii`) or
-by filtering results afterwards using tools such as `sed` or `grep`. In the
-`sed` case be sure to keep the first line since that contains the header
-information.
+`compare.R` 工具还可以通过使用
+`--plot filename` 选项生成箱线图。在这种情况下，会有 48 种不同的基准测试
+组合，因此可能需要过滤 csv 文件。可以在
+基准测试时使用 `--set` 参数完成（例如 `--set encoding=ascii`），或者
+在之后使用 `sed` 或 `grep` 等工具过滤结果。在 `sed` 的情况下，请
+确保保留第一行，因为那一行包含头部信息。
 
 ```console
 $ cat compare-pr-5134.csv | sed '1p;/encoding='"'"ascii"'"'/!d' | Rscript benchmark/compare.R --plot compare-plot.png
@@ -471,22 +458,20 @@ $ cat compare-pr-5134.csv | sed '1p;/encoding='"'"ascii"'"'/!d' | Rscript benchm
 
 ![compare tool boxplot](doc_img/compare-boxplot.png)
 
-### Comparing parameters
+### 比较参数
 
-It can be useful to compare the performance for different parameters, for
-example to analyze the time complexity.
+比较不同参数下的性能可能很有用，例如用于分析时间复杂度。
 
-To do this use the `scatter.js` tool, this will run a benchmark multiple times
-and generate a csv with the results. To see how to use this script,
-run `node benchmark/scatter.js`.
+为此请使用 `scatter.js` 工具，它会多次运行基准测试并
+生成包含结果的 csv。要查看如何使用此脚本，
+请运行 `node benchmark/scatter.js`。
 
 ```bash
 node benchmark/scatter.js benchmark/string_decoder/string-decoder.js > scatter.csv
 ```
 
-After generating the csv, a comparison table can be created using the
-`scatter.R` tool. Even more useful it creates an actual scatter plot when using
-the `--plot filename` option.
+生成 csv 后，可以使用 `scatter.R` 工具创建比较表。
+更有用的是，在使用 `--plot filename` 选项时它会生成实际的散点图。
 
 ```console
 $ cat scatter.csv | Rscript benchmark/scatter.R --xaxis chunkLen --category encoding --plot scatter-plot.png --log
@@ -516,12 +501,11 @@ chunkLen     encoding      rate confidence.interval
     1024         utf8 1824266.6           359628.52
 ```
 
-Because the scatter plot can only show two variables (in this case _chunkLen_
-and _encoding_) the rest is aggregated. Sometimes aggregating is a problem, this
-can be solved by filtering. This can be done while benchmarking using the
-`--set` parameter (e.g. `--set encoding=ascii`) or by filtering results
-afterwards using tools such as `sed` or `grep`. In the `sed` case be
-sure to keep the first line since that contains the header information.
+因为散点图只能展示两个变量（此处是 _chunkLen_
+和 _encoding_），其余数据会被聚合。有时聚合会成为问题，这
+可以通过过滤来解决。可以在基准测试时使用
+`--set` 参数完成（例如 `--set encoding=ascii`），或者在之后使用
+`sed` 或 `grep` 等工具过滤结果。在 `sed` 的情况下，请务必保留第一行，因为它包含头部信息。
 
 ```console
 $ cat scatter.csv | sed -E '1p;/([^,]+, ){3}128,/!d' | Rscript benchmark/scatter.R --xaxis chunkLen --category encoding --plot scatter-plot.png --log
@@ -551,32 +535,30 @@ chunkLen     encoding      rate confidence.interval
 
 ![compare tool boxplot](doc_img/scatter-plot.png)
 
-### Running benchmarks on the CI
+### 在 CI 上运行基准测试
 
-To see the performance impact of a pull request by running benchmarks on
-the CI, check out [How to: Running core benchmarks on Node.js CI][benchmark-ci].
+要通过在 CI 上运行基准测试来查看拉取请求的性能影响，请查看 [How to: Running core benchmarks on Node.js CI][benchmark-ci]。
 
-## Creating a benchmark
+## 创建基准测试
 
-### Basics of a benchmark
+### 基准测试基础
 
-All benchmarks use the `require('../common.js')` module. This contains the
-`createBenchmark(main, configs[, options])` method which will setup the
-benchmark.
+所有基准测试都使用 `require('../common.js')` 模块。该模块包含
+`createBenchmark(main, configs[, options])` 方法，用于设置
+基准测试。
 
-The arguments of `createBenchmark` are:
+`createBenchmark` 的参数如下：
 
-* `main` {Function} The benchmark function,
-  where the code running operations and controlling timers should go
-* `configs` {Object} The benchmark parameters. `createBenchmark` will run all
-  possible combinations of these parameters, unless specified otherwise.
-  Each configuration is a property with an array of possible values.
-  The configuration values can only be strings or numbers.
-* `options` {Object} The benchmark options. Supported options:
-  * `flags` {Array} Contains node-specific command line flags to pass to
-    the child process.
+* `main` {Function} 基准测试函数，
+  其中应包含运行操作和控制计时器的代码
+* `configs` {Object} 基准测试参数。`createBenchmark` 将运行这些参数的所有
+  可能组合，除非另有说明。
+  每个配置都是一个属性，其值为可能值的数组。
+  配置值只能是字符串或数字。
+* `options` {Object} 基准测试选项。支持的选项：
+  * `flags` {Array} 包含要传递给子进程的、Node 特定的命令行标志。
 
-  * `byGroups` {Boolean} option for processing `configs` by groups:
+  * `byGroups` {Boolean} 用于按组处理 `configs` 的选项：
     ```js
     const bench = common.createBenchmark(main, {
       groupA: {
@@ -592,21 +574,18 @@ The arguments of `createBenchmark` are:
     }, { byGroups: true });
     ```
 
-  * `combinationFilter` {Function} Has a single parameter which is an object
-    containing a combination of benchmark parameters. It should return `true`
-    or `false` to indicate whether the combination should be included or not.
+  * `combinationFilter` {Function} 只有一个参数，该参数是一个对象，
+    其中包含一组基准测试参数。它应返回 `true`
+    或 `false`，以指示该组合是否应被包含。
 
-  * `setup` {Function} A function that will be run once in the root process
-    before the benchmark combinations are executed in child processes.
-    It can be used to setup any global state required by the benchmark. Note
-    that the JavaScript heap state will not be shared with the benchmark processes,
-    so don't try to access any variables created in the `setup` function from
-    the `main` function, for example.
-    The argument passed into it is an array of all the combinations of
-    configurations that will be executed.
-    If tear down is necessary, register a listener for the `exit` event on
-    `process` inside the `setup` function. In the example below, that's done
-    by `tmpdir.refresh()`.
+  * `setup` {Function} 一个函数，会在根进程中执行一次，
+    在基准测试组合在子进程中执行之前运行。
+    它可用于设置基准测试所需的任何全局状态。请注意，
+    JavaScript 堆状态不会与基准测试进程共享，
+    因此例如不要尝试从 `main` 函数中访问在 `setup` 函数里创建的任何变量。
+    传给它的参数是所有将要执行的配置组合组成的数组。
+    如果需要清理，请在 `setup` 函数内部为 `process` 的 `exit` 事件注册监听器。
+    在下面的示例中，这是通过 `tmpdir.refresh()` 完成的。
 
     ```js
     const tmpdir = require('../../test/common/tmpdir');
@@ -622,28 +601,25 @@ The arguments of `createBenchmark` are:
     });
     ```
 
-`createBenchmark` returns a `bench` object, which is used for timing
-the runtime of the benchmark. Run `bench.start()` after the initialization
-and `bench.end(n)` when the benchmark is done. `n` is the number of operations
-performed in the benchmark.
+`createBenchmark` 会返回一个 `bench` 对象，用于计量
+基准测试的运行时间。在初始化完成后调用 `bench.start()`，
+基准测试完成时调用 `bench.end(n)`。`n` 是基准测试中执行的操作次数。
 
-The benchmark script will be run twice:
+基准测试脚本会运行两次：
 
-The first pass will configure the benchmark with the combination of
-parameters specified in `configs`, and WILL NOT run the `main` function.
-In this pass, no flags except the ones directly passed via commands
-when running the benchmarks will be used.
+第一次运行会使用 `configs` 中指定的参数组合来配置基准测试，
+但不会运行 `main` 函数。
+在这次运行中，不会使用任何标志，除了运行基准测试时通过命令
+直接传入的标志。
 
-In the second pass, the `main` function will be run, and the process
-will be launched with:
+第二次运行会执行 `main` 函数，并且进程将以以下方式启动：
 
-* The flags passed into `createBenchmark` (the third argument)
-* The flags in the command passed when the benchmark was run
+* 传入 `createBenchmark` 的标志（第三个参数）
+* 运行基准测试时命令中传入的标志
 
-Beware that any code outside the `main` function will be run twice
-in different processes. This could be troublesome if the code
-outside the `main` function has side effects. In general, prefer putting
-the code inside the `main` function if it's more than just declaration.
+请注意，`main` 函数外部的任何代码都会在不同的进程中运行两次。
+如果 `main` 函数外部的代码有副作用，这可能会带来麻烦。
+通常，如果代码不只是声明，建议将其放在 `main` 函数内部。
 
 ```js
 'use strict';
@@ -651,34 +627,34 @@ const common = require('../common.js');
 const { Buffer } = require('node:buffer');
 
 const configs = {
-  // Number of operations, specified here so they show up in the report.
-  // Most benchmarks just use one value for all runs.
+  // 操作次数，放在这里是为了让它们显示在报告中。
+  // 大多数基准测试在所有运行中只使用一个值。
   n: [1024],
-  type: ['fast', 'slow'],  // Custom configurations
-  size: [16, 128, 1024],  // Custom configurations
+  type: ['fast', 'slow'],  // 自定义配置
+  size: [16, 128, 1024],  // 自定义配置
 };
 
 const options = {
-  // Add --expose-internals in order to require internal modules in main
+  // 添加 --expose-internals 以便在 main 中要求内部模块
   flags: ['--zero-fill-buffers'],
 };
 
-// `main` and `configs` are required, `options` is optional.
+// `main` 和 `configs` 是必需的，`options` 是可选的。
 const bench = common.createBenchmark(main, configs, options);
 
-// Any code outside main will be run twice,
-// in different processes, with different command line arguments.
+// `main` 之外的任何代码都会运行两次，
+// 在不同的进程中，使用不同的命令行参数。
 
 function main(conf) {
-  // Only flags that have been passed to createBenchmark
-  // earlier when main is run will be in effect.
-  // In order to benchmark the internal modules, require them here. For example:
+  // 只有已经通过 createBenchmark 传入的标志
+  // 在 main 运行时才会生效。
+  // 为了对内部模块进行基准测试，请在这里 require 它们。例如：
   // const URL = require('internal/url').URL
 
-  // Start the timer
+  // 开始计时器
   bench.start();
 
-  // Do operations here
+  // 在这里执行操作
 
   for (let i = 0; i < conf.n; i++) {
     conf.type === 'fast' ?
@@ -686,16 +662,16 @@ function main(conf) {
       Buffer.allocUnsafeSlow(conf.size);
   }
 
-  // End the timer, pass in the number of operations
+  // 结束计时器，传入操作次数
   bench.end(conf.n);
 }
 ```
 
-### Creating an HTTP benchmark
+### 创建 HTTP 基准测试
 
-The `bench` object returned by `createBenchmark` implements
-`http(options, callback)` method. It can be used to run external tool to
-benchmark HTTP servers.
+`createBenchmark` 返回的 `bench` 对象实现了
+`http(options, callback)` 方法。它可用于运行外部工具来
+对 HTTP 服务器进行基准测试。
 
 ```js
 'use strict';
@@ -726,13 +702,13 @@ function main(conf) {
 }
 ```
 
-Supported options keys are:
+支持的选项键如下：
 
-* `port` - defaults to `common.PORT`
-* `path` - defaults to `/`
-* `connections` - number of concurrent connections to use, defaults to 100
-* `duration` - duration of the benchmark in seconds, defaults to 10
-* `benchmarker` - benchmarker to use, defaults to the first available http
+* `port` - 默认值为 `common.PORT`
+* `path` - 默认值为 `/`
+* `connections` - 要使用的并发连接数，默认值为 100
+* `duration` - 基准测试持续时间（秒），默认值为 10
+* `benchmarker` - 要使用的 benchmarker，默认值为第一个可用的 http
   benchmarker
 
 [autocannon]: https://github.com/mcollina/autocannon

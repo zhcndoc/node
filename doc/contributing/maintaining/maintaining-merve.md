@@ -1,32 +1,23 @@
-# Maintaining merve
+# 维护 merve
 
-The [merve](https://github.com/nodejs/node/tree/HEAD/deps/merve)
-dependency is used within the Node.js ESM implementation to detect the
-named exports of a CommonJS module.
+[merve](https://github.com/nodejs/node/tree/HEAD/deps/merve) 依赖在 Node.js 的 ESM 实现中用于检测 CommonJS 模块的命名导出。
 
-It is used within
-[`node:internal/modules/esm/translators`](https://github.com/nodejs/node/blob/HEAD/lib/internal/modules/esm/translators.js)
-where it is exposed via an internal binding.
+它在 [`node:internal/modules/esm/translators`](https://github.com/nodejs/node/blob/HEAD/lib/internal/modules/esm/translators.js) 中使用，并通过一个内部绑定暴露。
 
-## Updating merve
+## 更新 merve
 
-The `tools/dep_updaters/update-merve.sh` script automates the update of the
-merve dependency. It fetches the latest release from GitHub and updates the
-files in the `deps/merve` directory.
+`tools/dep_updaters/update-merve.sh` 脚本自动化了 merve 依赖的更新。它会从 GitHub 获取最新发布版本，并更新 `deps/merve` 目录中的文件。
 
-To update merve manually:
+要手动更新 merve：
 
-* Check the [merve releases][] for a new version.
-* Download the latest single-header release.
-* Replace the files in `deps/merve` (preserving `merve.gyp`).
-* Update the link to merve in the list at the end of
-  [doc/api/esm.md](../../api/esm.md)
-  to point to the updated version.
-* Create a PR adding the files in the deps/merve that were modified.
+* 查看 [merve releases][] 是否有新版本。
+* 下载最新的单头文件发布版本。
+* 替换 `deps/merve` 中的文件（保留 `merve.gyp`）。
+* 更新 [doc/api/esm.md](../../api/esm.md) 末尾列表中指向 merve 的链接，使其指向更新后的版本。
+* 创建一个 PR，添加 `deps/merve` 中被修改的文件。
 
-If updates are needed to merve for Node.js, first PR those updates into
-[anonrig/merve][],
-request a release and then pull in the updated version once available.
+如果需要为 Node.js 对 merve 进行更新，首先将这些更新提交到 [anonrig/merve][]，
+请求发布一个新版本，然后在可用后拉取更新后的版本。
 
 [anonrig/merve]: https://github.com/anonrig/merve
 [merve releases]: https://github.com/anonrig/merve/releases

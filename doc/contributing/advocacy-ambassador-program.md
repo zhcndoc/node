@@ -1,239 +1,162 @@
-# Advocacy Ambassador program
+# 宣传大使计划
 
-Node.js aims to support and encourage developers and developer
-advocates to promote Node.js as a project and to help communicate
-key messages to their constituencies.
+Node.js 旨在支持并鼓励开发者和开发者倡导者将 Node.js 作为一个项目来推广，并帮助向其所代表的群体传达关键信息。
 
-The ambassador program does that by:
+大使计划通过以下方式实现这一目标：
 
-* Maintaining an up-to-date set of messages that the Node.js maintainers would like ambassadors
-  to promote. These will be documented in the nodejs/ambassadors repository.
-* Maintaining an up-to-date set of topics on which additional content
-  would benefit the community. These will be documented in the
-  nodejs/ambassadors repository.
-* Providing a space for collaborators to share new topics/features they
-  are working on when they would be happy for ambassadors to help share and get
-  early feedback.
-* Helping ambassadors promote content that aligns with the
-  messages and topics defined.
-* Advocating for ambassadors to be part of the OpenJS speakers bureau, even if the
-  ambassador is not otherwise an active member of the project itself.
-* Each ambassador could add a maximum of three links to resources to learn Node.js
-  on a dedicated page on the main Node.js website. At least one of those must be a
-  free resource. The Node.js TSC members could ask for coupon codes to verify the
-  material if they so decide.
+* 维护一套最新的信息，供 Node.js 维护者希望大使们推广。这些内容会记录在 nodejs/ambassadors 仓库中。
+* 维护一套最新的话题，围绕这些话题补充内容会有助于社区发展。这些内容会记录在 nodejs/ambassadors 仓库中。
+* 为协作者提供一个空间，让他们分享正在开发的新话题/特性，只要他们愿意让大使帮助传播并尽早收集反馈。
+* 帮助大使推广与既定信息和话题一致的内容。
+* 倡导大使成为 OpenJS 演讲者名册的一部分，即使该大使本身并不是项目的活跃成员。
+* 每位大使可在 Node.js 主网站的专门页面上最多添加三个学习 Node.js 资源链接。其中至少一个必须是免费资源。Node.js TSC 成员可以在他们认为合适时要求提供优惠码，以验证相关材料。
 
-## Ambassadors nominations
+## 大使提名
 
-Any member of the Node.js organization may nominate an ambassador.
-The Technical Steering Committee (TSC) will review/approve ambassadors.
+Node.js 组织的任何成员都可以提名一位大使。
+技术指导委员会（TSC）将审核/批准大使。
 
-In the initial phase of the program:
+在计划的初始阶段：
 
-* There will be a maximum of 4 ambassadors.
-* The term will be for the calendar year. After a year, ambassadors automatically
-  drop out of the ambassador list and must be re-nominated.
-* Ambassadors will be documented on the nodejs/ambassadors `README.md`.
+* 大使人数最多为 4 名。
+* 任期为一个日历年。一年后，大使会自动从大使名单中移除，必须重新提名。
+* 大使信息会记录在 nodejs/ambassadors 的 `README.md` 中。
 
-The TSC may remove an ambassador for any reason,
-including promoting content misaligned with the project.
+TSC 可因任何原因移除某位大使，包括推广与项目不一致的内容。
 
-Members of the Node.js organization can nominate ambassadors by opening
-a discussion issue with the nomination in
-[nodejs/collaborators](https://github.com/nodejs/collaborators/)
-titled `Nomination X to be an Ambassador`, where X is the name of the person
-being nominated.
-If there is no objection within 14 days, the nomination is approved.
+Node.js 组织成员可以通过在 [nodejs/collaborators](https://github.com/nodejs/collaborators/) 中创建一个讨论 issue，并将提名内容作为标题 `Nomination X to be an Ambassador` 来提名大使，其中 X 是被提名人的姓名。
+如果 14 天内没有异议，则提名获得批准。
 
-## Onboarding
+## 入职
 
-To onboard an ambassador, a member of the TSC will:
+要让一位大使完成入职，TSC 成员将会：
 
-* \[ ] Add the ambassador to the nodejs/ambassadors team.
-* \[ ] Add the ambassador to the nodejs/ambassadors `README.md`.
-* \[ ] Add the ambassador to the OpenJS Slack channel.
+* \[ ] 将该大使加入 nodejs/ambassadors 团队。
+* \[ ] 将该大使加入 nodejs/ambassadors `README.md`。
+* \[ ] 将该大使加入 OpenJS Slack 频道。
 
-## Reviewing content
+## 内容审核
 
-Ambassadors are asked to share links to new content before asking
-for the content to be promoted. The goal is to provide the opportunity
-for collaborators to help improve content as opposed to a detailed
-nitpick review.
+我们要求大使在请求推广内容之前，先分享新内容的链接。目标是为协作者提供改进内容的机会，而不是进行细致的挑错式审查。
 
-This is done by opening an issue in the nodejs/ambassadors
-repository, which limits access to members of the Node.js
-organization. The issue may include the link to existing published
-content or a draft of the content itself.
+这通过在 nodejs/ambassadors 仓库中创建 issue 来完成，这样访问权限仅限于 Node.js 组织成员。该 issue 可以包含已发布内容的链接，或内容本身的草稿。
 
-Interested members of the Node.js organization may comment
-in the issue and the ambassadors are expected to
-consider those suggestions and update the content when they feel it
-is appropriate.
+感兴趣的 Node.js 组织成员可以在 issue 中发表评论，大使应当考虑这些建议，并在他们认为合适时更新内容。
 
-Explicit approval is not required in the issue (i.e. if there is no
-input, that's OK), but review comments should be addressed before
-requesting promotion.
+issue 中不要求明确批准（即使没有任何反馈，也没关系），但在请求推广之前应先处理审查意见。
 
-## Expectations on Ambassadors
+## 对大使的期望
 
-Ambassadors are expected to engage both within the project and externally
-in a manner that is consistent with the project's
-[Code of Conduct](https://github.com/nodejs/admin/blob/main/CODE_OF_CONDUCT.md)
-as well as the additional expectations outlined in
-[Member Expectations](https://github.com/nodejs/admin/blob/main/MemberExpectations.md).
+我们期望大使在项目内部和外部的行为都应符合项目的[行为准则](https://github.com/nodejs/admin/blob/main/CODE_OF_CONDUCT.md)以及[成员期望](https://github.com/nodejs/admin/blob/main/MemberExpectations.md)中列出的额外要求。
 
-## Promoting content
+## 推广内容
 
-We trust ambassadors to only request promotion of content that lines
-up with the messages and topics outlined, that this content does not overly
-market their employer or product/business, and that they have followed the review
-process. An ambassador can request promotion of content in the following ways:
+我们信任大使只会请求推广与上述信息和话题相符的内容，且这些内容不会过度宣传其雇主或产品/业务，并且他们已经遵循了审查流程。大使可以通过以下方式请求推广内容：
 
-* Requesting that a post be reposted by the Node.js account on a social media platform.
-* @-mentioning the nodejs/ambassadors team to ask other ambassadors to repost.
-* Posting a link to the content in the "what's new" issue in nodejs/ambassadors
-  so that it goes out on the news feed.
+* 请求在社交媒体平台上由 Node.js 账号转发一篇帖子。
+* 在 nodejs/ambassadors 中 @ 提及 nodejs/ambassadors 团队，邀请其他大使转发。
+* 在 nodejs/ambassadors 的“what's new” issue 中发布内容链接，以便它进入新闻流。
 
-For accounts managed by foundation staff, the staff will repost the social
-media post without any need for validation based on the request coming from
-an ambassador. For accounts managed by the project with an approval process,
-(for example bluesky) documentation for the approval process will indicate
-that repost requests from ambassadors should generally be approved. These
-requests can be made through the existing social channel in the OpenJS Slack.
-For that reason and for communication purposes and collaboration opportunities,
-ambassadors should be members of the
-[OpenJS Slack](https://slack-invite.openjsf.org/).
+对于由基金会工作人员管理的账号，工作人员会根据大使的请求直接转发社交媒体帖子，无需进行任何验证。对于由项目管理且带有审批流程的账号，
+（例如 bluesky），审批流程文档会说明：来自大使的转发请求通常应当被批准。这些请求可以通过 OpenJS Slack 中现有的社交渠道提交。
+因此，为了沟通和协作机会，大使应当是
+[OpenJS Slack](https://slack-invite.openjsf.org/) 的成员。
 
-## Messages and topics to promote
+## 需要推广的信息和话题
 
-### How to add messages or topics to promote
+### 如何添加要推广的信息或话题
 
-Messages or topics that ambassadors are asked to promote are added to this
-document in the [Current messages for promotion](#current-messages-for-promotion)
-section through the standard PR process except that they should be open
-for 7 days before landing and should include and at mention to the
-nodejs/TSC for awareness. They should be removed through the same process
-when no longer relevant.
+要求大使推广的信息或话题会通过标准 PR 流程添加到本文档的 [当前推广信息](#current-messages-for-promotion) 部分，但它们在合并前应至少开放 7 天，并且应包含对 nodejs/TSC 的 @ 提及以便知悉。它们在不再相关时应通过同样的流程移除。
 
-### Current messages for promotion
+### 当前推广信息
 
-#### Sample message (Leave this one at the top)
+#### 示例信息（请保留在顶部）
 
-##### Goal
+##### 目标
 
-The goal is to raise awareness of XYZ in the JavaScript ecosystem.
+目标是提高 JavaScript 生态系统中对 XYZ 的认知。
 
-##### Related Links
+##### 相关链接
 
-List of links with more information about the topic to provide background
-or the information to be shared.
+提供更多关于该话题背景或待分享信息的链接列表。
 
-##### Project contacts
+##### 项目联系人
 
-Add a list of GitHub handles for those within the project that
-have volunteered to be contacted when necessary by ambassadors
-to get more info about the message to be promoted.
+添加一份 GitHub 账号列表，列出项目中愿意在需要时被大使联系以获取更多关于待推广信息的人。
 
-#### Node.js is a great choice for a JavaScript runtime
+#### Node.js 是 JavaScript 运行时的绝佳选择
 
-##### Goal
+##### 目标
 
-Highlight the benefits of choosing Node.js as your backend JavaScript runtime. Focus on what is great
-about Node.js without drawing comparisons to alternatives. We don't want to say negative things about
-other options, only highlight what is great about Node.js as a choice.
+强调选择 Node.js 作为后端 JavaScript 运行时的优势。重点说明 Node.js 的优点，不要与替代方案进行比较。我们不想贬低其他选项，只强调作为一种选择时，Node.js 有多么出色。
 
-Some of the things to highlight include:
+需要强调的一些内容包括：
 
-* How widely it is used (you never get fired for choosing Node.js).
-* The openness of the project. It is part of the OpenJS Foundation and it's governance is set up to avoid
-  any one company from dominating the project. Decisions are made by the collaborators (of which there are quite
-  a few) versus a small number of people.
-* It has predictable and stable releases and has delivered on the release schedule since 2015.
-* It was a well defined security release process and manages security releases well.
-* As the defacto standard, it has the highest likelihood of being supported for a given package on npm.
-* It is not dependent on any one company for its continued existence reducing risk of using it.
-* The large number of platforms supported.
-* Asynchronous non-blocking i/o architecture drives high transactional throughput, making it ideal for web workloads.
-* Single threaded programming model enables very low resource consumption, making it ideal for containerised workloads.
-* Highly vibrant ecosystem with enterprise support from many vendors.
+* 它的使用范围非常广（选择 Node.js 从不会让你后悔）。
+* 项目的开放性。它是 OpenJS Foundation 的一部分，其治理结构旨在避免任何一家公司的主导。决策由协作者（人数相当多）共同作出，而不是少数几个人。
+* 它具有可预测且稳定的发布节奏，并且自 2015 年以来一直按发布计划交付。
+* 它拥有明确的安全发布流程，并且安全发布管理良好。
+* 作为事实标准，它在 npm 上对某个给定包获得支持的可能性最高。
+* 它不依赖任何一家公司继续存在，从而降低了使用风险。
+* 支持的平台数量众多。
+* 异步、非阻塞 I/O 架构带来较高的事务吞吐量，使其非常适合 Web 工作负载。
+* 单线程编程模型使资源消耗极低，非常适合容器化工作负载。
+* 生态系统高度活跃，并且有来自许多供应商的企业支持。
 
-##### Related Links
+##### 相关链接
 
 * <https://github.com/nodejs/release>
 * <https://github.com/nodejs/node/blob/main/doc/contributing/security-release-process.md>
 * <https://github.com/nodejs/TSC/blob/main/TSC-Charter.md>
 * <https://github.com/mhdawson/presentations/blob/main/2024/NodeConfEU_2024-Node.js_whats_next.pdf>
-  for slide  usage and topping recent surveys.
+  用于幻灯片使用和最新调查结果。
 
-##### Project contacts
+##### 项目联系人
 
 * @mhdawson
 
-#### How things get done in the Node.js project
+#### Node.js 项目中事情是如何推进的
 
-##### Goal
+##### 目标
 
-Help people understand that no people are paid to answer their issues or
-implement their pull requests. Things get done based on what volunteers work on
-and the best way to get something fixed/changed is to submit a Pull request.
+帮助人们理解：没有人是受雇来回答他们的问题或实现他们的拉取请求的。事情的推进取决于志愿者在做什么，而解决/修改某件事的最佳方式是提交一个 Pull Request。
 
-Some of the things to highlight include:
+需要强调的一些内容包括：
 
-* Nobody is paid specifically to answer issues, fix bugs or implement new features.
-* No company owns/supports Node.js. Most contributions are from individuals
-  as opposed to organizations. When an individual becomes a collaborator
-  the access and privileges are granted to the individual, their employer does
-  not gain any additional rights in the project.
-* The governance of the project is specifically designed to prevent one or
-  a small number of companies from dominating the project.
-* Decisions are made by the active collaborators, there is no single person
-  who makes a decision for the project on their own. This can slow down
-  decision making but most often results in better outcomes.
-* The project is open and receptive to contributions. If you need something PR
-  in a fix or feature.
-* Maintainers are people just like you, with many priorities and end goals. We
-  all have the same goal of moving the Node.js project forward but at the same
-  time we all have other responsibilities that affect how much time we have
-  available to do so.
-* People are volunteering their time to review your PRs and answer questions in
-  the issues you open. Be mindfull of your asks for their time and acknowledge
-  the gift of their time. Too many issues/PRs in a short period of time may
-  overwhelm maintainers leading to less progress versus more, try to pace your
-  issues and PRs so that you don't have too many open at the same time. The
-  same goes for comments in discussions, try to avoid overwhelming a discussion
-  with too many responses, even too much useful data can overwhelm a discussion
-  leading to lower engagement.
-* While volunteers work to do the right thing for the community, the project
-  does not owe anybody anything and does not tolerate abusive or
-  demanding language in issues, discussions or PRs. A respectful dialog will
-  maximize the chances of the outcome you desire.
-* If you depend on timely support or an SLA, contract with a company that provides
-  paid support and will prioritize your issues.
+* 没有人会被专门付费来回答 issue、修复 bug 或实现新功能。
+* 没有任何一家公司拥有/支持 Node.js。大多数贡献来自个人，而不是组织。当某个人成为协作者时，获得访问权限和特权的是这个人本人，而不是其雇主；雇主不会因此在项目中获得任何额外权利。
+* 项目的治理机制经过专门设计，以防止某一家或少数几家公司主导项目。
+* 决策由活跃协作者共同作出，没有单独某一个人可以独自为项目做决定。这可能会减慢决策速度，但通常会带来更好的结果。
+* 项目是开放且欢迎贡献的。如果你需要某件事被合并为修复或功能，请提交 PR。
+* 维护者也是和你一样的人，他们有许多优先事项和最终目标。我们都有让 Node.js 项目向前发展的共同目标，但与此同时，我们都有其他职责，会影响我们可用于此事的时间。
+* 参与者正在自愿投入时间审查你的 PR 并回答你在 issue 中提出的问题。请注意你对他们时间的要求，并认可他们付出的时间礼物。在短时间内过多的 issue/PR 可能会让维护者不堪重负，反而导致进展变慢而不是加快；请合理安排 issue 和 PR 的节奏，避免同时打开过多。讨论中的评论也是如此，尽量避免用过多回复淹没讨论，即使是过多有用的信息也可能让讨论过载，从而降低参与度。
+* 虽然志愿者在努力为社区做正确的事，但项目并不欠任何人什么，也不容忍 issue、discussion 或 PR 中的冒犯性或强硬要求式语言。尊重的对话将最大化你期望结果的可能性。
+* 如果你依赖及时支持或 SLA，请与提供付费支持并会优先处理你问题的公司签约。
 
-##### Related Links
+##### 相关链接
 
 * <https://github.com/nodejs/TSC/blob/main/TSC-Charter.md#section-3-establishment-of-the-tsc>
 
-##### Project contacts
+##### 项目联系人
 
 * @mcollina
 * @mhdawson
 * @marco-ippolito
 
-You can find their contact email in the [`README.md`](../../README.md#tsc-technical-steering-committee)
+你可以在 [`README.md`](../../README.md#tsc-technical-steering-committee) 中找到他们的联系邮箱
 
 #### Node.js Type Stripping
 
-##### Goal
+##### 目标
 
-The goal is to raise awareness of the Node.js TypeScript Type stripping in the JavaScript ecosystem.
-Some of the things to highlight include:
+目标是提高 JavaScript 生态系统中对 Node.js TypeScript Type stripping 的认知。
+需要强调的一些内容包括：
 
-* The benefits and limitations of the current implementation.
-* The `tsconfig.json` configuration options to use in combination for type checking.
-* Updates on the implementation advancements.
+* 当前实现的优点和局限性。
+* 用于与类型检查结合使用的 `tsconfig.json` 配置选项。
+* 实现进展方面的更新。
 
-##### Related Links
+##### 相关链接
 
 <!-- lint disable prohibited-strings remark-lint-->
 
@@ -245,35 +168,35 @@ Some of the things to highlight include:
 
 <!-- lint enable prohibited-strings remark-lint-->
 
-##### Project contacts
+##### 项目联系人
 
 * @marco-ippolito
 
-#### Do I still need this dependency for my Node.js app?
+#### 我的 Node.js 应用还需要这个依赖吗？
 
-##### Goal
+##### 目标
 
-Advancements over time in Node.js are improving the out of the box experience.
-New versions are released all the time across Active LTS and Current development lines.
-It's easy to miss something between the release notes and our busy work schedules.
+随着时间推移，Node.js 的进步正在改善开箱即用的体验。
+Active LTS 和 Current 开发线都会持续发布新版本。
+在发布说明和我们繁忙的工作安排之间，很容易遗漏一些内容。
 
-Each of these on its own is respectable, but together they make a more cohesive narrative.
-This also shows a [healthy ecosystem at work](https://brianmuenzenmeyer.com/posts/2024-do-i-need-this-node-dependency/#oss-pace-layers),
-with projects learning from one another and their users.
+单独来看，这些更新都值得重视，但放在一起则构成了一个更连贯的叙事。
+这也展示了一个[健康生态系统正在发挥作用](https://brianmuenzenmeyer.com/posts/2024-do-i-need-this-node-dependency/#oss-pace-layers)，
+项目相互学习，也从用户那里学习。
 
-"Recent" new or newish features, ordered by availability:
+按可用性排序，以下是“最近”出现的新增或较新的功能：
 
-| Feature                                                                                               | Introduced                                             | Release Status                                                     |
-| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------ |
-| [testing source code](https://nodejs.org/api/test.html)                                               | [16.17.0](https://nodejs.org/en/blog/release/v16.17.0) | Stable as of 20.0.0                                                |
-| [watching source code](https://nodejs.org/api/cli.html#--watch)                                       | [16.19.0](https://nodejs.org/en/blog/release/v16.19.0) | Stable as of 20.13.0                                               |
-| [parsing arguments](https://nodejs.org/api/util.html#utilparseargsconfig)                             | [18.3.0](https://nodejs.org/en/blog/release/v18.3.0)   | Stable as of 20.0.0                                                |
-| [reading environment](https://nodejs.org/api/cli.html#--env-filefile)                                 | [20.6.0](https://nodejs.org/en/blog/release/v20.6.0)   | Active Development                                                 |
-| [styling output](https://nodejs.org/docs/latest-v22.x/api/util.html#utilstyletextformat-text-options) | [20.12.0](https://nodejs.org/en/blog/release/v20.12.0) | Stable, as of [22.13.0](https://github.com/nodejs/node/pull/56329) |
-| [run scripts](https://nodejs.org/docs/latest/api/cli.html#--run)                                      | [22.0.0](https://nodejs.org/en/blog/release/v22.0.0)   | Stable, as of 22.0.0                                               |
-| [run TypeScript](https://nodejs.org/api/cli.html#--strip-types)                                       | [22.6.0](https://nodejs.org/en/blog/release/v22.6.0)   | Stable, as of REPLACEME                                            |
+| 功能                                                                                                  | 引入于                                               | 发布状态                                                      |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------ |
+| [测试源码](https://nodejs.org/api/test.html)                                                           | [16.17.0](https://nodejs.org/en/blog/release/v16.17.0) | 自 20.0.0 起稳定                                               |
+| [监视源码](https://nodejs.org/api/cli.html#--watch)                                                     | [16.19.0](https://nodejs.org/en/blog/release/v16.19.0) | 自 20.13.0 起稳定                                              |
+| [解析参数](https://nodejs.org/api/util.html#utilparseargsconfig)                                        | [18.3.0](https://nodejs.org/en/blog/release/v18.3.0)   | 自 20.0.0 起稳定                                               |
+| [读取环境变量](https://nodejs.org/api/cli.html#--env-filefile)                                          | [20.6.0](https://nodejs.org/en/blog/release/v20.6.0)   | Active Development                                          |
+| [输出样式化](https://nodejs.org/docs/latest-v22.x/api/util.html#utilstyletextformat-text-options)       | [20.12.0](https://nodejs.org/en/blog/release/v20.12.0) | 稳定，自 [22.13.0](https://github.com/nodejs/node/pull/56329) 起 |
+| [运行脚本](https://nodejs.org/docs/latest/api/cli.html#--run)                                            | [22.0.0](https://nodejs.org/en/blog/release/v22.0.0)   | 稳定，自 22.0.0 起                                                |
+| [运行 TypeScript](https://nodejs.org/api/cli.html#--strip-types)                                        | [22.6.0](https://nodejs.org/en/blog/release/v22.6.0)   | 稳定，自 REPLACEME 起                                           |
 
-##### Related Links
+##### 相关链接
 
 <!-- lint disable prohibited-strings remark-lint-->
 
@@ -288,6 +211,6 @@ with projects learning from one another and their users.
 
 <!-- lint enable prohibited-strings remark-lint-->
 
-##### Project contacts
+##### 项目联系人
 
 * @bmuenzenmeyer

@@ -180,8 +180,8 @@ C++ 测试和模拟框架。
 
 ### libffi
 
-The [libffi](https://github.com/libffi/libffi) dependency is a portable foreign
-function interface library used by `node:ffi`.
+[libffi](https://github.com/libffi/libffi) 依赖项是一个可移植的外来
+函数接口库，由 `node:ffi` 使用。
 
 ### libuv
 

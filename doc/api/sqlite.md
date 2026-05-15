@@ -245,7 +245,7 @@ added: v22.5.0
 
 关闭数据库连接。如果数据库未打开，则会抛出异常。此方法是对 [`sqlite3_close_v2()`][] 的封装。
 
-### `database.loadExtension(path)`
+### `database.loadExtension(path[, entryPoint])`
 
 <!-- YAML
 added:
@@ -254,8 +254,32 @@ added:
 -->
 
 * `path` {string} 要加载的共享库路径。
+* `entryPoint` {string} 扩展入口点函数的名称。省略时，SQLite 会从共享库文件名推导入口点；当推导出的名称不匹配时，请显式传入此参数。
 
 将共享库加载到数据库连接中。此方法是对 [`sqlite3_load_extension()`][] 的封装。构造 `DatabaseSync` 实例时必须启用 `allowExtension` 选项。
+
+```mjs
+import { DatabaseSync } from 'node:sqlite';
+const database = new DatabaseSync(':memory:', { allowExtension: true });
+
+// 使用从文件名推导出的入口点进行加载。
+database.loadExtension('./decimal.dylib');
+
+// 当推导出的名称不匹配时覆盖入口点。
+database.loadExtension('./base64.dylib', 'sqlite3_base64_init');
+```
+
+```cjs
+'use strict';
+const { DatabaseSync } = require('node:sqlite');
+const database = new DatabaseSync(':memory:', { allowExtension: true });
+
+// 使用从文件名推导出的入口点进行加载。
+database.loadExtension('./decimal.dylib');
+
+// 当推导出的名称不匹配时覆盖入口点。
+database.loadExtension('./base64.dylib', 'sqlite3_base64_init');
+```
 
 ### `database.enableLoadExtension(allow)`
 

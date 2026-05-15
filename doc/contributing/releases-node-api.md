@@ -1,43 +1,42 @@
-# Node.js Node-API version release process
+# Node.js Node-API 版本发布流程
 
-This document describes the technical aspects of the Node.js Node-API version
-release process.
+本文档描述了 Node.js Node-API 版本发布流程的技术细节。
 
-## Table of contents
+## 目录
 
-* [How to create a release](#how-to-create-a-release)
-  * [0. Pre-release steps](#0-pre-release-steps)
-  * [1. Update the main branch](#1-update-the-main-branch)
-  * [2. Create a new branch for the release](#2-create-a-new-branch-for-the-release)
-  * [3. Update `NODE_API_SUPPORTED_VERSION_MAX`](#3-update-node_api_supported_version_max)
-  * [4. Define `addon_context_register_func`](#4-define-addon_context_register_func)
-  * [5. Update version guards](#5-update-version-guards)
-  * [6. Update version matrix document](#6-update-version-matrix-document)
-  * [7. Create release commit](#7-create-release-commit)
-  * [8. Propose release on GitHub](#8-propose-release-on-github)
-  * [9. Ensure that the release branch is stable](#9-ensure-that-the-release-branch-is-stable)
-  * [10. Land the release](#10-land-the-release)
-  * [11. Backport the release](#11-backport-the-release)
+* [如何创建一次发布](#how-to-create-a-release)
+  * [0. 预发布步骤](#0-pre-release-steps)
+  * [1. 更新主分支](#1-update-the-main-branch)
+  * [2. 为发布创建一个新分支](#2-create-a-new-branch-for-the-release)
+  * [3. 更新 `NODE_API_SUPPORTED_VERSION_MAX`](#3-update-node_api_supported_version_max)
+  * [4. 定义 `addon_context_register_func`](#4-define-addon_context_register_func)
+  * [5. 更新版本保护](#5-update-version-guards)
+  * [6. 更新版本矩阵文档](#6-update-version-matrix-document)
+  * [7. 创建发布提交](#7-create-release-commit)
+  * [8. 在 GitHub 上提议发布](#8-propose-release-on-github)
+  * [9. 确保发布分支稳定](#9-ensure-that-the-release-branch-is-stable)
+  * [10. 合并发布](#10-land-the-release)
+  * [11. 回移植发布](#11-backport-the-release)
 
-## How to create a release
+## 如何创建一次发布
 
-Notes:
+说明：
 
-* Version strings are listed below as _"vx"_ or _"x"_. Substitute for
-  the release version.
-* Examples will use the integer release version `10`.
+* 版本字符串在下文中以 _"vx"_ 或 _"x"_ 的形式列出。请替换为
+  发布版本。
+* 示例将使用整数发布版本 `10`。
 
-### 0. Pre-release steps
+### 0. 预发布步骤
 
-Before preparing a Node.js Node-API version release, the Node-API Working Group
-must be notified at least one business day in advance of the expected release.
+在准备 Node.js Node-API 版本发布之前，必须至少提前一个工作日通知
+Node-API 工作组预期的发布。
 
-Node-API Working Group can be contacted best by opening up an issue on the
-[abi-stable-node issue tracker][].
+联系 Node-API 工作组的最佳方式是在
+[abi-stable-node issue tracker][] 上创建一个 issue。
 
-### 1. Update the main Branch
+### 1. 更新主分支
 
-Checkout the staging branch locally.
+在本地检出暂存分支。
 
 ```bash
 git remote update
@@ -45,44 +44,40 @@ git checkout main
 git reset --hard upstream/main
 ```
 
-If the staging branch is not up to date relative to `main`, bring the
-appropriate PRs and commits into it.
+如果暂存分支相对于 `main` 不是最新的，请将相应的 PR 和提交合并进去。
 
-### 2. Create a new branch for the release
+### 2. 为发布创建一个新分支
 
-Create a new branch named `node-api-x-proposal`, off the main branch.
+从主分支创建一个名为 `node-api-x-proposal` 的新分支。
 
 ```bash
 git checkout -b node-api-10-proposal upstream/main
 ```
 
-### 3. Update `NODE_API_SUPPORTED_VERSION_MAX`
+### 3. 更新 `NODE_API_SUPPORTED_VERSION_MAX`
 
-Set the version for the proposed release using the following macros, which are
-already defined in `src/node_version.h`:
+使用以下宏设置拟议发布的版本，这些宏已在 `src/node_version.h` 中定义：
 
 ```c
 #define NODE_API_SUPPORTED_VERSION_MAX x
 ```
 
-> Note: Do not update the `NAPI_VERSION` defined in `src/js_native_api.h`. It
-> is a fixed constant baseline version of Node-API.
+> 注意：不要更新 `src/js_native_api.h` 中定义的 `NAPI_VERSION`。它
+> 是 Node-API 的固定常量基线版本。
 
-### 4. Define `addon_context_register_func`
+### 4. 定义 `addon_context_register_func`
 
-For each new version of Node-API an `else if` case must be added to
-`get_node_api_context_register_func` in `src/node_api.cc` and the numeric
-literal used in the `static_assert` statement in that function must be updated
-to the new Node-API version.
+对于每个新的 Node-API 版本，都必须在
+`src/node_api.cc` 中的 `get_node_api_context_register_func` 添加一个 `else if` 分支，并且该函数中
+`static_assert` 语句使用的数字字面量必须更新为新的 Node-API 版本。
 
-### 5. Update version guards
+### 5. 更新版本保护
 
-#### Step 1. Update define version guards
+#### 步骤 1. 更新 define 版本保护
 
-If this release includes new Node-APIs that were first released in this
-version, the relevant commits should already include the `NAPI_EXPERIMENTAL`
-define guards on the declaration of the new Node-API. Check for these guards
-with:
+如果此发布包含首次在该版本中发布的新 Node-API，那么相关提交应已在
+新 Node-API 的声明上包含 `NAPI_EXPERIMENTAL`
+define 保护。使用以下命令检查这些保护：
 
 ```bash
 grep                           \
@@ -92,7 +87,7 @@ grep                           \
   src/node_api{_types,}.h
 ```
 
-and update the define version guards with the release version:
+并将 define 版本保护更新为发布版本：
 
 ```diff
 - #ifdef NAPI_EXPERIMENTAL
@@ -105,13 +100,13 @@ and update the define version guards with the release version:
 + #endif  // NAPI_VERSION >= 11
 ```
 
-Remove any feature flags of the form `NODE_API_EXPERIMENTAL_HAS_<FEATURE>`.
+移除任何形如 `NODE_API_EXPERIMENTAL_HAS_<FEATURE>` 的功能标志。
 
-Remove any additional `NODE_API_EXPERIMENTAL_*` guards along with
-`NAPI_EXPERIMENTAL`.
+移除任何额外的 `NODE_API_EXPERIMENTAL_*` 保护以及
+`NAPI_EXPERIMENTAL`。
 
-Also, update the Node-API version value of the `napi_get_version` test in
-`test/js-native-api/test_general/test.js` with the release version `x`:
+另外，将 `test/js-native-api/test_general/test.js` 中 `napi_get_version` 测试的 Node-API 版本值
+更新为发布版本 `x`：
 
 ```diff
   // Test version management functions
@@ -119,23 +114,21 @@ Also, update the Node-API version value of the `napi_get_version` test in
 + assert.strictEqual(test_general.testGetVersion(), 10);
 ```
 
-#### Step 2. Update runtime version guards
+#### 步骤 2. 更新运行时版本保护
 
-If this release includes runtime behavior version guards, the relevant commits
-should already include the `NAPI_VERSION_EXPERIMENTAL` guard for the change.
-Check for these guards with:
+如果此发布包含运行时行为版本保护，则相关提交应已包含该变更的
+`NAPI_VERSION_EXPERIMENTAL` 保护。使用以下命令检查这些保护：
 
 ```bash
 grep -nH NAPI_VERSION_EXPERIMENTAL src/js_native_api_v8* src/node_api.cc
 ```
 
-and substitute this guard version with the release version `x`.
+并将此保护版本替换为发布版本 `x`。
 
-#### Step 3. Update test version guards
+#### 步骤 3. 更新测试版本保护
 
-If this release includes add-on tests for the new Node-APIs, the relevant
-commits should already include `NAPI_EXPERIMENTAL` definition for the tests.
-Check for these definitions with:
+如果此发布包含用于新 Node-API 的插件测试，则相关提交应已为测试包含
+`NAPI_EXPERIMENTAL` 定义。使用以下命令检查这些定义：
 
 ```bash
 grep                                    \
@@ -145,26 +138,23 @@ grep                                    \
   test/js-native-api/*/{*.{h,c},binding.gyp}
 ```
 
-and substitute the `NAPI_EXPERIMENTAL` with the release version
-`NAPI_VERSION x`;
+并将 `NAPI_EXPERIMENTAL` 替换为发布版本
+`NAPI_VERSION x`；
 
 ```diff
 - #define NAPI_EXPERIMENTAL
 + #define NAPI_VERSION 10
 ```
 
-Remove any `NODE_API_EXPERIMENTAL_*` flags.
+移除任何 `NODE_API_EXPERIMENTAL_*` 标志。
 
-#### Step 4. Update document
+#### 步骤 4. 更新文档
 
-If this release includes new Node-APIs that were first released in this
-version and are necessary to document, the relevant commits should already
-have documented the new Node-API.
+如果此发布包含首次在该版本中发布且需要记录的新 Node-API，那么相关提交应已记录了新的 Node-API。
 
-For all Node-API functions and types with define guards updated in Step 1,
-in `doc/api/n-api.md`, add the `napiVersion: x` metadata to the Node-API types
-and functions that are released in the version, and remove the experimental
-stability banner:
+对于在步骤 1 中更新了 define 保护的所有 Node-API 函数和类型，
+在 `doc/api/n-api.md` 中，为在该版本中发布的 Node-API 类型
+和函数添加 `napiVersion: x` 元数据，并移除实验性稳定性横幅：
 
 ```diff
   #### node_api_function
@@ -177,21 +167,19 @@ stability banner:
 - > Stability: 1 - Experimental
 ```
 
-#### Step 5. Update change history
+#### 步骤 5. 更新变更历史
 
-If this release includes new Node-APIs runtime version guards that were first
-released in this version and are necessary to document, the relevant commits
-should already have documented the new behavior in a "Change History" section.
+如果此发布包含首次在该版本中发布且需要记录的新 Node-API 运行时版本保护，
+相关提交应已在 "Change History" 部分记录了新的行为。
 
-For all runtime version guards updated in Step 2, check for these definitions
-with:
+对于在步骤 2 中更新的所有运行时版本保护，使用以下命令检查这些定义：
 
 ```bash
 grep -nH NAPI_EXPERIMENTAL doc/api/n-api.md
 ```
 
-In `doc/api/n-api.md`, update the `experimental` change history item to be the
-released version `x`:
+在 `doc/api/n-api.md` 中，将 `experimental` 变更历史条目更新为
+已发布版本 `x`：
 
 ```diff
   Change History:
@@ -200,10 +188,10 @@ released version `x`:
 + * version 10:
 ```
 
-### 6. Update version matrix document
+### 6. 更新版本矩阵文档
 
-Add a new row in the [version matrix][] for
-the new version:
+在 [version matrix][] 中为
+新版本添加一行：
 
 ```text
 <tr>
@@ -212,46 +200,43 @@ the new version:
 </tr>
 ```
 
-In this case, use `REPLACEME` as a placeholder for the Node.js version to be released.
-It will be updated in a Node.js version release.
+在这种情况下，使用 `REPLACEME` 作为待发布 Node.js 版本的占位符。
+它会在 Node.js 版本发布中更新。
 
-### 7. Create release commit
+### 7. 创建发布提交
 
-When committing these to git, use the following message format:
+将这些内容提交到 git 时，请使用以下提交信息格式：
 
 ```text
 node-api: define version x
 ```
 
-### 8. Propose release on GitHub
+### 8. 在 GitHub 上提议发布
 
-Create a pull request targeting the `main` branch. These PRs should be left
-open for at least 24 hours, and can be updated as new commits land.
+创建一个以 `main` 分支为目标的 pull request。这些 PR 应至少保持打开
+24 小时，并且可以在新的提交落地时更新。
 
-If you need any additional information about any of the commits, this PR is a
-good place to @-mention the relevant contributors.
+如果你需要关于任何提交的更多信息，这个 PR 是一个很好的地方来
+@-提及相关贡献者。
 
-Tag the PR with the `notable-change` label, and @-mention the GitHub team
-@nodejs/node-api and @nodejs/node-api-implementer.
+为该 PR 添加 `notable-change` 标签，并 @-提及 GitHub 团队
+@nodejs/node-api 和 @nodejs/node-api-implementer。
 
-### 9. Ensure that the release branch is stable
+### 9. 确保发布分支稳定
 
-Run a **[`node-test-pull-request`](https://ci.nodejs.org/job/node-test-pull-request/)**
-test run to ensure that the build is stable and the HEAD commit is ready for
-release.
+运行一次 **[`node-test-pull-request`](https://ci.nodejs.org/job/node-test-pull-request/)**
+测试，以确保构建稳定并且 HEAD 提交已准备好发布。
 
-### 10. Land the release
+### 10. 合并发布
 
-See the steps documented in [Collaborator Guide - Landing a PR][] to land the
-PR.
+请参见 [Collaborator Guide - Landing a PR][] 中记录的步骤来合并该
+PR。
 
-### 11. Backport the release
+### 11. 回移植发布
 
-Consider backporting the release to all LTS versions following the steps
-documented in the [backporting guide][].
+考虑按照 [backporting guide][] 中记录的步骤将发布回移植到所有 LTS 版本。
 
-Additionally, update the [version matrix][] for the backported version if
-necessary.
+此外，如有必要，更新回移植版本的 [version matrix][]。
 
 [Collaborator Guide - Landing a PR]: ./collaborator-guide.md#landing-pull-requests
 [abi-stable-node issue tracker]: https://github.com/nodejs/abi-stable-node/issues

@@ -1,31 +1,19 @@
-# Node.js Distribution Policy
+# Node.js 分发策略
 
-This document describes some policies around what is and is not included in the
-Node.js distribution.
+本文档描述了有关 Node.js 分发内容中包含和不包含哪些内容的一些策略。
 
-## Inclusion
+## 包含内容
 
-The Node.js distribution includes some external software that the Node.js
-project does not maintain. The choice to include a particular piece of software
-should not imply anything about that software relative to its competitors; in
-some cases, software was added when it had no competitors. While the Node.js
-project supports and encourages competition in the JavaScript ecosystem, as a
-policy, the Node.js project does not include multiple dependencies or tools that
-serve the same purpose.
+Node.js 分发版包含了一些由 Node.js 项目不维护的外部软件。选择包含某个特定软件并不意味着它相对于其竞争对手具有任何特殊地位；在某些情况下，某些软件是在没有竞争对手时被添加进来的。虽然 Node.js 项目支持并鼓励 JavaScript 生态系统中的竞争，但作为一项策略，Node.js 项目不会包含多个用途相同的依赖或工具。
 
-The following user-accessible external tools or libraries are the ones chosen
-for their particular purposes:
+以下面向用户可访问的外部工具或库是基于其特定用途而选定的：
 
-* JavaScript engine: V8
-* Package manager: `npm`
-* Package manager version manager: Corepack
+* JavaScript 引擎：V8
+* 包管理器：`npm`
+* 包管理器版本管理器：Corepack
 
-Being user-accessible, removal or replacement of these projects could happen
-only as a semver-major change, unless the related feature or project is
-documented as experimental. In addition, Node.js includes external projects as
-internal dependencies. These may be replaced or removed at any time, provided
-that doing so is not a breaking change.
+由于它们对用户可访问，因此只有在 semver-major 变更中，才可能移除或替换这些项目，除非相关特性或项目被文档标注为实验性。此外，Node.js 还将外部项目作为内部依赖包含在内。只要这样做不会造成破坏性变更，这些依赖可随时被替换或移除。
 
-## History
+## 历史
 
-* [corepack](https://github.com/nodejs/corepack) was added in Node.js 14.9.0 and 16.9.0. It is no longer distributed as of Node.js 25.0.0.
+* [corepack](https://github.com/nodejs/corepack) 于 Node.js 14.9.0 和 16.9.0 中添加。自 Node.js 25.0.0 起，它不再随发行版分发。

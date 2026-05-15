@@ -1,32 +1,32 @@
-# How to write documentation for the Node.js project
+# 如何为 Node.js 项目编写文档
 
-This document refers to the Node.js API documentation that gets deployed to [nodejs.org/en/docs][]
-and consists in a general reference on how to write and update such documentation.
+本文档涉及发布到 [nodejs.org/en/docs][] 的 Node.js API 文档，
+并作为如何编写和更新此类文档的一般参考。
 
-## Style Guide
+## 风格指南
 
-For a style guide on how to write or update the Node.js documentation refer to the [doc/README][] document.
+有关如何编写或更新 Node.js 文档的风格指南，请参阅 [doc/README][] 文档。
 
-## Building
+## 构建
 
-There are a few different commands that you can use to build and view the documentation locally,
-the simplest one being:
+你可以使用几个不同的命令在本地构建并查看文档，
+最简单的是：
 
 ```bash
 make docserve
 ```
 
-This command builds the documentation, spins up a local server and provides you with a URL to
-it that you can navigate to in order to view the built documentation.
+此命令会构建文档，启动一个本地服务器，并为你提供一个 URL，
+你可以访问该 URL 来查看已构建的文档。
 
-For more build options refer to the [documentation building][building-the-documentation] documentation.
+有关更多构建选项，请参阅 [documentation building][building-the-documentation] 文档。
 
-And for more details about the tooling used to build the documentation refer to
-the [API Documentation Tooling][] document.
+有关构建文档所使用工具的更多详细信息，请参阅
+[API Documentation Tooling][] 文档。
 
-## Linting and Formatting
+## 检查与格式化
 
-To make sure that your changes pass linting run the following command:
+为确保你的更改通过 lint 检查，请运行以下命令：
 
 ```bash
 make lint-md

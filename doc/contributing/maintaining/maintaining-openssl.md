@@ -1,17 +1,17 @@
-# Maintaining OpenSSL
+# 维护 OpenSSL
 
-OpenSSL is automatically updated by the [update-openssl-action][].
-There is also a script in `tools/dep_updaters` that can be used to update it.
-This document describes how to manually update `deps/openssl/`.
+OpenSSL 会由 [update-openssl-action][] 自动更新。
+在 `tools/dep_updaters` 中还有一个脚本可用于更新它。
+本文档描述了如何手动更新 `deps/openssl/`。
 
-## Requirements
+## 要求
 
-* Linux environment.
-* `perl` Only Perl version 5 is tested.
-* `nasm` (<https://www.nasm.us/>) Version 2.11 or higher is needed.
-* GNU `as` in binutils. Version 2.26 or higher is needed.
+* Linux 环境。
+* `perl` 仅测试了 Perl 5 版本。
+* `nasm`（<https://www.nasm.us/>）需要 2.11 或更高版本。
+* GNU `as`，来自 binutils。需要 2.26 或更高版本。
 
-## 0. Check requirements
+## 0. 检查要求
 
 ```console
 % perl -v
@@ -28,12 +28,11 @@ Copyright (C) 2015 Free Software Foundation, Inc.
 NASM version 2.11.08
 ```
 
-## 1. Obtain and extract new OpenSSL sources
+## 1. 获取并解压新的 OpenSSL 源码
 
-Get a new source from <https://github.com/openssl/openssl/tree/openssl-3.0.16>
-and copy all files into `deps/openssl/openssl`. Then add all files and commit
-them. (The link above, and the branch, will change with each new OpenSSL
-release).
+从 <https://github.com/openssl/openssl/tree/openssl-3.0.16> 获取新的源码，
+并将所有文件复制到 `deps/openssl/openssl` 中。然后添加所有文件并提交它们。
+（上面的链接和分支会随着每个新的 OpenSSL 版本发布而变化）。
 
 ```bash
 git clone https://github.com/openssl/openssl
@@ -47,9 +46,9 @@ git commit openssl
 ```
 
 ```text
-deps: upgrade openssl sources to openssl-3.0.16
+deps: 将 openssl 源码升级到 openssl-3.0.16
 
-This updates all sources in deps/openssl/openssl by:
+通过以下方式更新 deps/openssl/openssl 中的所有源码：
     $ git clone git@github.com:openssl/openssl.git
     $ cd openssl
     $ git checkout openssl-3.0.16
@@ -61,52 +60,42 @@ This updates all sources in deps/openssl/openssl by:
     $ git commit openssl
 ```
 
-## 2. Execute `make` in `deps/openssl/config` directory
+## 2. 在 `deps/openssl/config` 目录中执行 `make`
 
-Use `make` to regenerate all platform dependent files in
-`deps/openssl/config/archs/`:
+使用 `make` 重新生成 `deps/openssl/config/archs/` 中所有与平台相关的文件：
 
 ```bash
-# On non-Linux machines
+# 在非 Linux 机器上
 make gen-openssl
 
-# On Linux machines
+# 在 Linux 机器上
 make -C deps/openssl/config clean
 make -C deps/openssl/config
 ```
 
-Fix up 32-bit Windows assembler directives. This will allow the commits to be
-cherry-picked to older release lines that still provide binaries on 32-bit Windows.
+修正 32 位 Windows 汇编器指令。这将允许这些提交被 cherry-pick 到仍然在 32 位 Windows 上提供二进制文件的较旧发布分支。
 
 ```bash
 make -C deps/openssl/config clean
-# Edit deps/openssl/openssl/crypto/perlasm/x86asm.pl changing
-# #ifdef to %ifdef to make it compatible to nasm on 32-bit Windows.
-# See: https://github.com/nodejs/node/pull/43603#issuecomment-1170670844
-# Reference: https://github.com/openssl/openssl/issues/18459
+# 编辑 deps/openssl/openssl/crypto/perlasm/x86asm.pl，将
+# #ifdef 改为 %ifdef，以使其与 32 位 Windows 上的 nasm 兼容。
+# 参见：https://github.com/nodejs/node/pull/43603#issuecomment-1170670844
+# 参考：https://github.com/openssl/openssl/issues/18459
 ```
 
-## 3. Check diffs
+## 3. 检查差异
 
-Check diffs to ensure updates are right. Even if there are no updates in openssl
-sources, `buildinf.h` files will be updated because they have timestamp
-data in them.
+检查差异以确保更新正确。即使 openssl 源码没有更新，`buildinf.h` 文件也会被更新，因为其中包含时间戳数据。
 
 ```bash
 git diff -- deps/openssl
 ```
 
-_Note_: On Windows, OpenSSL Configure generates a `makefile` that can be
-used for the `nmake` command. The `make` command in step 2 (above) uses
-`Makefile_VC-WIN64A` and `Makefile_VC-WIN32` that are manually
-created. When source files or build options are updated in Windows,
-it needs to change these two Makefiles by hand. If you are not sure,
-please ask @shigeki for details.
+_注意_：在 Windows 上，OpenSSL Configure 会生成一个可用于 `nmake` 命令的 `makefile`。上面第 2 步中的 `make` 命令使用的是手动创建的 `Makefile_VC-WIN64A` 和 `Makefile_VC-WIN32`。当 Windows 中的源文件或构建选项更新时，需要手动修改这两个 Makefile。如果你不确定，请向 @shigeki 询问详情。
 
-## 4. Commit and make test
+## 4. 提交并进行测试
 
-Update all architecture dependent files. Do not forget to git add or remove
-files if they are changed before committing:
+更新所有依赖架构的文件。提交前不要忘记在文件发生变更时执行 git add 或删除文件：
 
 ```bash
 git add deps/openssl/config/archs
@@ -114,20 +103,18 @@ git add deps/openssl/openssl
 git commit
 ```
 
-The commit message can be written as (with the openssl version set
-to the relevant value):
+提交信息可以写成如下形式（其中 openssl 版本设置为相应的值）：
 
 ```text
-deps: update archs files for openssl-3.0.16
+deps: 为 openssl-3.0.16 更新 archs 文件
 
-After an OpenSSL source update, all the config files need to be
-regenerated and committed by:
+在 OpenSSL 源码更新后，所有配置文件都需要通过以下方式重新生成并提交：
     $ make -C deps/openssl/config
     $ git add deps/openssl/config/archs
     $ git add deps/openssl/openssl
     $ git commit
 ```
 
-Finally, build Node.js and run the tests.
+最后，构建 Node.js 并运行测试。
 
 [update-openssl-action]: ../../../.github/workflows/update-openssl.yml

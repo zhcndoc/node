@@ -417,7 +417,7 @@ Node.js 使用三种 [弃用（Deprecation）][] 级别。对于所有被弃用�
 5. 在合并到主分支之前，将所有必要的 [metadata][git-node-metadata] 添加到提交信息中。如果你不确定如何正确格式化提交信息，请以提交日志作为参考。参见 [此提交][commit-example] 作为示例。
 
 对于来自首次贡献者的拉取请求，要
-[welcoming](#welcoming-first-time-contributors)。另外，也要确认他们的 git 设置符合他们的偏好。
+[欢迎他们](#welcoming-first-time-contributors)。另外，也要确认他们的 git 设置符合他们的偏好。
 
 如果一个拉取请求包含超过一个提交，它可以通过压缩成一个提交来合并，或者通过将所有提交进行变基（rebase）来合并，或两者混合来完成。一般来说，协作者应通过压缩来合并拉取请求。如果一个拉取请求包含不止一个相互独立的子系统提交，协作者可以将其作为多个提交来合并。
 
@@ -696,11 +696,11 @@ git push upstream main
 * `confirmed-bug`：你已验证的 bug
 * `discuss`：需要更大范围讨论的事项
 * `fast-track`：需要更快落地的 PR —— 见
-  [Waiting for approvals](#waiting-for-approvals)
+  [等待审批](#waiting-for-approvals)
 * `feature request`：任何请求新功能的 issue
 * `good first issue`：适合新手修复的 issue
 * `meta`：治理、政策、流程等
-* `request-ci`：当此标签被添加到 PR 时，CI 将会自动启动。参见 [Starting a Jenkins CI job](#starting-a-jenkins-ci-job)
+* `request-ci`：当此标签被添加到 PR 时，CI 将会自动启动。参见 [启动 Jenkins CI 作业](#starting-a-jenkins-ci-job)
 * `tsc-agenda`：带有此标签的开放 issue 和 pull request 将被加入技术指导委员会（TSC）会议议程
 
 ***

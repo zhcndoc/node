@@ -1,20 +1,18 @@
-# Using global symbols
+# 使用全局符号
 
-ES6 introduced a new type: `Symbol`. This new type is _immutable_, and
-it is often used for metaprogramming purposes, as it can be used as
-property keys like string. There are two types of
-symbols, local and global.
-Symbol-keyed properties of an object are not included in the output of
-`JSON.stringify()`, but the `util.inspect()` function includes them by
-default.
+ES6 引入了一种新类型：`Symbol`。这种新类型是 _不可变_ 的，且
+它经常用于元编程，因为它可以像字符串一样用作
+属性键。符号分为两种类型：本地符号和全局符号。
+对象中以 Symbol 为键的属性不会包含在
+`JSON.stringify()` 的输出中，但 `util.inspect()` 函数默认会
+包含它们。
 
-Learn more about symbols at
-<https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Symbol>.
+在 <https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Symbol> 了解更多关于符号的信息。
 
 ## `Symbol(string)`
 
-Symbols created via `Symbol(string)` are local to the caller function.
-For this reason, we often use them to simulate private fields, like so:
+通过 `Symbol(string)` 创建的符号仅对调用者函数局部可见。
+因此，我们经常用它们来模拟私有字段，例如：
 
 ```js
 const kField = Symbol('kField');
@@ -30,7 +28,7 @@ class MyObject {
 module.exports.MyObject = MyObject;
 ```
 
-Symbols are not fully private, as the data could be accessed anyway:
+符号并不是完全私有的，因为数据仍然可以被访问：
 
 ```js
 for (const s of Object.getOwnPropertySymbols(obj)) {
@@ -41,31 +39,29 @@ for (const s of Object.getOwnPropertySymbols(obj)) {
 }
 ```
 
-Local symbols make it harder for developers to monkey patch/access
-private fields, as they require more work than a property prefixed
-with an `_`. Monkey patching private API that were not designed to be
-monkey-patchable make maintaining and evolving Node.js harder, as private
-properties are not documented and can change within a patch release.
-Some extremely popular modules in the ecosystem monkey patch some
-internals, making it impossible for us to update and improve those
-areas without causing issues for a significant amount of users.
+本地符号会让开发者更难进行 monkey patch/访问
+私有字段，因为与前缀为 `_` 的属性相比，它们需要更多工作。对未被设计为
+可 monkey patch 的私有 API 进行 monkey patch，会让维护和演进 Node.js 更加困难，因为私有
+属性没有文档说明，并且可能在补丁版本中发生变化。
+生态系统中一些极其流行的模块会 monkey patch 某些
+内部实现，这使得我们无法在不影响大量用户的情况下更新和改进这些
+区域。
 
 ## `Symbol.for(string)`
 
-Symbols created with `Symbol.for(string)` are global and unique to the
-same V8 Isolate. On the first call to `Symbol.for(string)` a symbol is
-stored in a global registry and easily retrieved for every call of
-`Symbol.for(string)`. However, this might cause problems when two module
-authors use the same symbol
-for different reasons.
+使用 `Symbol.for(string)` 创建的符号是全局的，并且在
+相同的 V8 Isolate 中唯一。首次调用 `Symbol.for(string)` 时，会将一个符号
+存储到全局注册表中，并可在每次调用
+`Symbol.for(string)` 时轻松检索。然而，当两个模块
+作者出于不同原因使用同一个符号时，这可能会导致问题。
 
 ```js
 const s = Symbol.for('hello');
 console.log(s === Symbol.for('hello')); // true
 ```
 
-In the Node.js runtime we prefix all our global symbols with `nodejs.`,
-e.g. `Symbol.for('nodejs.hello')`.
+在 Node.js 运行时中，我们会为所有全局符号添加 `nodejs.` 前缀，
+例如：`Symbol.for('nodejs.hello')`。
 
-Global symbols should be preferred when a developer-facing interface is
-needed to allow behavior customization, i.e., metaprogramming.
+当需要一个面向开发者的接口来允许自定义行为时，应优先使用全局符号，也就是
+元编程。

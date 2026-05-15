@@ -883,14 +883,27 @@ GPG 将提示您输入密码。签名文件将命名为 SHASUMS256.txt.sig。
 
 当您推广新构建时，会自动触发一个构建，因此在几分钟内 nodejs.org 将会列出您的新版本作为最新发布，并且会创建一个博客文章草稿 PR。
 
-如果 _未创建_ 草稿 PR，则可以使用 [`scripts:release-post`][] 脚本作为替代：
+This is driven by the [`post-release.yml`][] workflow in the `nodejs/node`
+repository, which triggers the [`create-release-post.yml`][] workflow on
+`nodejs/nodejs.org`. The same workflow also triggers a redirect update in the
+[`nodejs/release-cloudflare-worker`](https://github.com/nodejs/release-cloudflare-worker)
+repository. Both steps must complete for the release to be fully available on
+the website.
 
-```bash
-# 在 nodejs/nodejs.org 的 apps/site 文件夹中
-node --run scripts:release-post x.y.z
-```
+In the event that [`post-release.yml`][] fails, the **first step should be to
+re-run the failed action** rather than manually triggering workflows in other
+repositories. Skipping steps in the process can result in the blog post being
+published without the release documents being available, or without the
+Cloudflare redirects being updated.
 
-该脚本将使用推广的构建和变更日志来生成帖子。
+If the failed action continues to fail after re-running, you can manually
+trigger both of the following:
+
+1. The [`create-release-post.yml`][] workflow on the `nodejs/nodejs.org`
+   repository.
+2. The release worker update on the
+   [`nodejs/release-cloudflare-worker`](https://github.com/nodejs/release-cloudflare-worker)
+   repository.
 
 * 如果您想说一些重要的话，可以在主标题下方添加一个简短的说明，否则文本应准备好发布。
 
@@ -1150,7 +1163,7 @@ node:events:491
       ^
 
 Error: read ECONNRESET
-    at TLSWrap.onStreamRead (node:internal/stream_base_commons:217:20)
+    at TLSWrap.onStreamRead (node:internal/stream_base_commons:217:10)
 Emitted 'error' event on DestroyableTransform instance at:
     at ClientRequest.<anonymous> (/usr/lib/node_modules/nodejs-dist-indexer/node_modules/hyperquest/index.js:14:19)
     at ClientRequest.emit (node:events:513:28)
@@ -1175,8 +1188,9 @@ Emitted 'error' event on DestroyableTransform instance at:
 [CI lockdown procedure]: https://github.com/nodejs/build/blob/HEAD/doc/jenkins-guide.md#restricting-access-for-security-releases
 [Node.js Snap management repository]: https://github.com/nodejs/snap
 [Snap]: https://snapcraft.io/node
+[`create-release-post.yml`]: https://github.com/nodejs/nodejs.org/actions/workflows/create-release-post.yml
 [`create-release-proposal`]: https://github.com/nodejs/node/actions/workflows/create-release-proposal.yml
-[`scripts:release-post`]: https://github.com/nodejs/nodejs.org/blob/HEAD/apps/site/scripts/release-post/index.mjs
+[`post-release.yml`]: https://github.com/nodejs/node/actions/workflows/post-release.yml
 [build-infra team]: https://github.com/orgs/nodejs/teams/build-infra
 [expected assets]: https://github.com/nodejs/build/tree/HEAD/ansible/www-standalone/tools/promote/expected_assets
 [nodejs.org repository]: https://github.com/nodejs/nodejs.org

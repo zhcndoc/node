@@ -2914,6 +2914,12 @@ TLS 套接字必须已连接并安全建立。确保在继续之前发出 'secur
 
 尝试在禁用了重新协商的套接字实例上重新协商 TLS。
 
+<a id="ERR_TLS_RENEGOTIATION_UNSUPPORTED"></a>
+
+### `ERR_TLS_RENEGOTIATION_UNSUPPORTED`
+
+尝试重新协商 TLS，但 TLS 实现不支持由调用方发起的重新协商。
+
 <a id="ERR_TLS_REQUIRED_SERVER_NAME"></a>
 
 ### `ERR_TLS_REQUIRED_SERVER_NAME`

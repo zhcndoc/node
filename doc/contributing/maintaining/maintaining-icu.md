@@ -1,31 +1,25 @@
-# Maintaining ICU in Node.js
+# 在 Node.js 中维护 ICU
 
-## Background
+## 背景
 
-International Components for Unicode ([ICU4C][ICU]) is used both by V8
-and also by Node.js directly to provide internationalization
-functionality. To quote from icu-project.org:
+Unicode 国际组件（[ICU4C][ICU]）既被 V8 使用，也被 Node.js 直接使用，以提供国际化功能。引自 icu-project.org：
 
-> ICU is a mature, widely used set of C/C++ and Java libraries providing
-> Unicode and Globalization support for software applications. ICU is
-> widely portable and gives applications the same results on all platforms
-> and between C/C++ and Java software.
+> ICU 是一套成熟、被广泛使用的 C/C++ 和 Java 库，为软件应用程序提供 Unicode 和全球化支持。ICU 具有很强的可移植性，并能让应用程序在所有平台以及 C/C++ 和 Java 软件之间获得相同的结果。
 
-If Node.js is configured to use its built-in ICU,
-it uses a strict subset of ICU which is in
-[deps/icu-small](https://github.com/nodejs/node/tree/HEAD/deps/icu-small).
-A good description of the different ways Node.js can be built with ICU
-support is in [api/intl.html](https://nodejs.org/api/intl.html).
+如果 Node.js 配置为使用其内置 ICU，
+它会使用 ICU 的一个严格子集，位于
+[deps/icu-small](https://github.com/nodejs/node/tree/HEAD/deps/icu-small) 中。
+关于 Node.js 可通过不同方式构建并支持 ICU 的详细说明，见 [api/intl.html](https://nodejs.org/api/intl.html)。
 
-## Data dependencies
+## 数据依赖
 
-ICU consumes and includes:
+ICU 消耗并包含：
 
-* Extracted locale data from [CLDR][]
-* Extracted [Unicode][] data.
-* Time zone ([tz][]) data
+* 来自 [CLDR][] 的提取区域数据
+* 提取的 [Unicode][] 数据。
+* 时区（[tz][]）数据
 
-The current versions of these items can be viewed for node with `node -p process.versions`:
+这些项目的当前版本可以通过 `node -p process.versions` 查看：
 
 ```console
 $ node -p process.versions
@@ -39,75 +33,64 @@ $ node -p process.versions
 }
 ```
 
-### Time zone data
+### 时区数据
 
-Time zone data files are updated independently of ICU CLDR data.  ICU and its
-main data files do not need to be upgraded in order to apply time zone data file
-fixes.
+时区数据文件的更新独立于 ICU CLDR 数据。要应用时区数据文件修复，无需升级 ICU 及其主数据文件。
 
-The [IANA tzdata][tz] project releases new versions and announces them on the
-[`tz-announce`](https://mm.icann.org/pipermail/tz-announce/) mailing list.
+[IANA tzdata][tz] 项目会发布新版本，并通过
+[`tz-announce`](https://mm.icann.org/pipermail/tz-announce/) 邮件列表进行公告。
 
-The Unicode project takes new releases and publishes
-[updated time zone data files](https://github.com/unicode-org/icu-data/tree/HEAD/tzdata/icunew)
-in the icu/icu-data repository.
+Unicode 项目会接收新的发布并在 icu/icu-data 仓库中发布
+[更新的时区数据文件](https://github.com/unicode-org/icu-data/tree/HEAD/tzdata/icunew)。
 
-All modern versions of Node.js use the version 44 ABI of the time zone data
-files.
+Node.js 的所有现代版本都使用时区数据文件的 44 版 ABI。
 
-#### Example: updating the ICU `.dat` file
+#### 示例：更新 ICU `.dat` 文件
 
-* Decompress `deps/icu-small/source/data/in/icudt##l.dat.bz2`, where `##` is
-  the ICU major version number.
-* Clone the icu/icu-data repository and copy the latest `tzdata` release `le`
-  files into the `source/data/in` directory.
-* Follow the upstream [ICU instructions](https://unicode-org.github.io/icu/userguide/datetime/timezone/)
-  to patch the ICU `.dat` file:
+* 解压 `deps/icu-small/source/data/in/icudt##l.dat.bz2`，其中 `##` 是
+  ICU 主版本号。
+* 克隆 icu/icu-data 仓库，并将最新的 `tzdata` 发布版 `le`
+  文件复制到 `source/data/in` 目录。
+* 按照上游 [ICU 说明](https://unicode-org.github.io/icu/userguide/datetime/timezone/)
+  修补 ICU `.dat` 文件：
   > `for i in zoneinfo64.res windowsZones.res timezoneTypes.res metaZones.res;
   > do icupkg -a $i icudt*l.dat`
-* Optionally, verify that there is only one of the above files listed when using
-  `icupkg -l`.
-* Optionally, extract each file using `icupkg -x` and verify the `shasum`
-  matches the desired value.
-* Compress the `.dat` file with the same filename as in the first step.
-* Build, test, verifying `process.versions.tz` matches the desired version.
-* Create a new minor version release.
+* 可选地，在使用 `icupkg -l` 时，验证上述文件列表中只包含一个文件。
+* 可选地，使用 `icupkg -x` 提取每个文件，并验证 `shasum`
+  与期望值匹配。
+* 使用与第一步相同的文件名压缩 `.dat` 文件。
+* 构建、测试，并验证 `process.versions.tz` 匹配目标版本。
+* 创建一个新的次要版本发布。
 
-## Release schedule
+## 发布计划
 
-ICU typically has >1 release a year, particularly coinciding with a major
-release of [Unicode][]. The current release schedule is available on the [ICU][]
-website on the left sidebar.
+ICU 通常每年发布 >1 次，尤其会与 [Unicode][] 的主要发布同步。当前发布计划可在 [ICU][]
+网站左侧边栏中查看。
 
-### V8 depends on ICU
+### V8 依赖 ICU
 
-V8 will aggressively upgrade to a new ICU version, due to requirements for
-features/bugfixes needed for [Ecma402][] support. The minimum required version
-of ICU is specified within the V8 source tree. If the ICU version is too old,
-V8 will not compile.
+由于 [Ecma402][] 支持所需的特性/修复要求，V8 会积极升级到新的 ICU 版本。所需的最低 ICU 版本在 V8 源码树中指定。如果 ICU 版本过旧，
+V8 将无法编译。
 
 ```c
 // deps/v8/src/objects/intl-objects.h
 #define V8_MINIMUM_ICU_VERSION 65
 ```
 
-V8 in Node.js depends on the ICU version supplied by Node.js.
+Node.js 中的 V8 依赖于 Node.js 提供的 ICU 版本。
 
-The file `tools/icu/icu_versions.json` contains the current minimum
-version of ICU that Node.js is known to work with. This should be
-_at least_ the same version as V8, so that users will find out
-earlier that their ICU is too old.  A test case validates this when
-Node.js is built.
+文件 `tools/icu/icu_versions.json` 包含 Node.js 当前已知可工作的 ICU 最低版本。这个版本应该
+至少与 V8 的版本相同，这样用户就能更早发现自己的 ICU 版本过旧。Node.js 构建时会通过一个测试用例来验证这一点。
 
-## How to upgrade ICU
+## 如何升级 ICU
 
-> The script `tools/dep_updaters/update-icu.sh` automates
-> this process.
+> 脚本 `tools/dep_updaters/update-icu.sh` 会自动完成
+> 这个过程。
 
-* Make sure your Node.js workspace is clean (`git status`
-  should be sufficient).
-* Configure Node.js with the specific [ICU version](http://site.icu-project.org/download)
-  you want to upgrade to, for example:
+* 确保你的 Node.js 工作区是干净的（`git status`
+  应该足够）。
+* 使用你想升级到的特定 [ICU 版本](http://site.icu-project.org/download)
+  配置 Node.js，例如：
 
 ```bash
 ./configure \
@@ -116,21 +99,20 @@ Node.js is built.
 make
 ```
 
-> _Note_ in theory, the equivalent `vcbuild.bat` commands should work also,
-> but the commands below are makefile-centric.
+> _注意_，理论上，相应的 `vcbuild.bat` 命令也应该可用，
+> 但下面的命令以 makefile 为中心。
 
-* If there are ICU version-specific changes needed, you may need to make changes
-  in `tools/icu/icu-generic.gyp` or add patch files to `tools/icu/patches`.
-  * Specifically, look for the lists in `sources!` in the `tools/icu/icu-generic.gyp` for
-    files to exclude.
+* 如果需要针对 ICU 版本的特定更改，你可能需要在
+  `tools/icu/icu-generic.gyp` 中做修改，或者向 `tools/icu/patches` 添加补丁文件。
+  * 具体来说，请查看 `tools/icu/icu-generic.gyp` 中 `sources!` 里的列表，找出需要排除的文件。
 
-* Verify the Node.js build works:
+* 验证 Node.js 构建是否正常：
 
 ```bash
 make test-ci
 ```
 
-Also running
+同时运行
 
 <!-- eslint-disable strict -->
 
@@ -138,18 +120,18 @@ Also running
 new Intl.DateTimeFormat('es', { month: 'long' }).format(new Date(9E8));
 ```
 
-…Should return `enero` not `January`.
+……应该返回 `enero` 而不是 `January`。
 
-* Now, run the shrink tool to update `deps/icu-small` from `deps/icu`
+* 现在，运行 shrink 工具以从 `deps/icu` 更新 `deps/icu-small`
 
-> :warning: Do not modify any source code in `deps/icu-small` !
-> See section below about floating patches to ICU.
+> :warning: 不要修改 `deps/icu-small` 中的任何源代码！
+> 参见下面关于 ICU 浮动补丁的部分。
 
 ```bash
 python tools/icu/shrink-icu-src.py
 ```
 
-* Now, do a clean rebuild of Node.js to test:
+* 现在，重新完整构建一次 Node.js 进行测试：
 
 ```bash
 make -k distclean
@@ -157,7 +139,7 @@ make -k distclean
 make
 ```
 
-* Test this newly default-generated Node.js
+* 测试这个新默认生成的 Node.js
 
 <!-- eslint-disable strict -->
 
@@ -166,102 +148,98 @@ process.versions.icu;
 new Intl.DateTimeFormat('es', { month: 'long' }).format(new Date(9E8));
 ```
 
-(This should print your updated ICU version number, and also `enero` again.)
+（这应该会打印你更新后的 ICU 版本号，并再次输出 `enero`。）
 
-You are ready to check in (`git add`) the updated `deps/icu-small`.
+你现在可以提交（`git add`）更新后的 `deps/icu-small` 了。
 
-> :warning: Do not modify any source code in `deps/icu-small` !
-> See section below about floating patches to ICU.
+> :warning: 不要修改 `deps/icu-small` 中的任何源代码！
+> 参见下面关于 ICU 浮动补丁的部分。
 
-* Now, rebuild the Node.js license.
+* 现在，重新构建 Node.js 许可证。
 
 ```bash
-# clean up - remove deps/icu
+# 清理 - 删除 deps/icu
 make clean
 tools/license-builder.sh
 ```
 
-* Update the URL and hash for the full ICU file in `tools/icu/current_ver.dep`.
-  It should match the ICU URL used in the first step.  When this is done, the
-  following should build with small ICU.
+* 更新 `tools/icu/current_ver.dep` 中完整 ICU 文件的 URL 和哈希。
+  它应与第一步中使用的 ICU URL 一致。完成后，
+  下面的命令应能使用 small ICU 构建。
 
 ```bash
-# clean up
+# 清理
 rm -rf out deps/icu deps/icu4c*
 ./configure --with-intl=small-icu --download=all
 make
 make test-ci
 ```
 
-* Commit the change to the `deps/icu-small`, `tools/icu/current_ver.dep`
-  and `LICENSE` files.
+* 提交对 `deps/icu-small`、`tools/icu/current_ver.dep`
+  和 `LICENSE` 文件的更改。
 
-## Floating patches to ICU
+## ICU 的浮动补丁
 
-Floating patches are applied at `configure` time. The "patch" files
-are used instead of the original source files. The patch files are
-complete `.cpp` files replacing the original contents.
+浮动补丁在 `configure` 时应用。“patch” 文件
+会替代原始源文件使用。补丁文件是完整的 `.cpp` 文件，用于替换原始内容。
 
-Patches are tied to a specific ICU version. They won't apply to a
-future ICU version.  We assume that you filed a bug against [ICU][] and
-upstreamed the fix, so the patch won't be needed in a later ICU
-version.
+补丁与特定 ICU 版本绑定。它们不会应用到
+未来的 ICU 版本。我们假设你已经针对 [ICU][] 提交了 bug，
+并且已经将修复上游合并，因此在后续 ICU
+版本中就不再需要该补丁。
 
-### Example
+### 示例
 
-For example, to patch `source/tools/toolutil/pkg_genc.cpp` for
-ICU version 63:
+例如，要为 ICU 版本 63 修补 `source/tools/toolutil/pkg_genc.cpp`：
 
 ```bash
-# go to your Node.js source directory
+# 转到你的 Node.js 源码目录
 cd <node>
 
-# create the floating patch directory
+# 创建浮动补丁目录
 mkdir -p tools/icu/patches/63
 
-# create the subdirectory for the file(s) to patch:
+# 为要修补的文件创建子目录：
 mkdir -p tools/icu/patches/63/source/tools/toolutil/
 
-# copy the file to patch
+# 复制要修补的文件
 cp deps/icu-small/source/tools/toolutil/pkg_genc.cpp \
 tools/icu/patches/63/source/tools/toolutil/pkg_genc.cpp
 
-# Make any changes to this file:
+# 对此文件进行任何修改：
 (edit tools/icu/patches/63/source/tools/toolutil/pkg_genc.cpp )
 
-# test
+# 测试
 make clean && ./configure && make
 ```
 
-You should see a message such as:
+你应该会看到类似这样的消息：
 
 ```console
 INFO: Using floating patch "tools/icu/patches/63/source/tools/toolutil/pkg_genc.cpp" from "tools/icu"
 ```
 
-### Clean up
+### 清理
 
-Any patches older than the minimum version given in `tools/icu/icu_versions.json`
-ought to be deleted, because they will never be used.
+任何早于 `tools/icu/icu_versions.json` 中给定最小版本的补丁
+都应该删除，因为它们将永远不会被使用。
 
-### Why not just modify the ICU source directly?
+### 为什么不直接修改 ICU 源码？
 
-Especially given the V8 dependencies above, there may be times when a floating
-patch to ICU is required.  Though it seems expedient to simply change a file in
-`deps/icu-small`, this is not the right approach for the following reasons:
+尤其考虑到上面提到的 V8 依赖，有时确实需要对 ICU 使用浮动
+补丁。虽然直接修改 `deps/icu-small` 中的文件看起来更省事，
+但这并不是正确的方法，原因如下：
 
-1. **Repeatability.** Given the complexity of merging in a new ICU version,
-   following the steps above in the prior section of this document ought to be
-   repeatable without concern for overriding a patch.
+1. **可重复性。** 考虑到合并新 ICU 版本的复杂性，
+   按照本文前一节中的步骤操作，应该可以在不担心覆盖补丁的情况下
+   重复执行。
 
-2. **Verifiability.** Given the number of files modified in an ICU PR,
-   a floating patch could easily be missed or dropped altogether next time
-   something is landed.
+2. **可验证性。** 考虑到一个 ICU PR 中会修改大量文件，
+   下一次某些内容落地时，浮动补丁很容易被遗漏或完全丢失。
 
-3. **Compatibility.** There are a number of ways that ICU can be loaded into
-   Node.js (see the top level README.md). Only modifying `icu-small` would cause
-   the patch not to be landed in case the user specifies the ICU source code
-   another way.
+3. **兼容性。** 将 ICU 加载到 Node.js 中有多种方式
+   （见顶部的 README.md）。如果只修改 `icu-small`，当用户以其他方式指定 ICU 源码时，
+   该补丁就不会被应用。
 
 [CLDR]: http://cldr.unicode.org/
 [Ecma402]: https://github.com/tc39/ecma402

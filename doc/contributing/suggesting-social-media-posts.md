@@ -1,5 +1,4 @@
-# Suggesting Social Media Posts
+# 建议社交媒体帖子
 
-Node.js social media is managed by OpenJS Foundation staff. The processes are
-documented in
-[Node.js Social Amplification Request Guidelines](https://docs.google.com/document/d/1yrYZJ2twrbpUuScbo3rmN_v-Jfv6d2tO74nCT6PcpxI).
+Node.js 社交媒体由 OpenJS Foundation 工作人员管理。相关流程记录在
+[Node.js 社交媒体扩散请求指南](https://docs.google.com/document/d/1yrYZJ2twrbpUuScbo3rmN_v-Jfv6d2tO74nCT6PcpxI)中。

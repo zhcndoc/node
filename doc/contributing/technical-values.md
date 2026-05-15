@@ -1,84 +1,69 @@
-# Technical values and their priorities
+# 技术价值观及其优先级
 
-The project uses these technical values to establish priorities and guide
-collaboration.
+本项目使用这些技术价值观来确立优先级并指导协作。
 
-These are the shared values as of this writing and will
-evolve. We hope they are useful to people new
-to the project in order to better understand which contributions
-will be aligned with the current direction and as thinking
-points when trading off between conflicting goals.
+这些是截至本文撰写时的共同价值观，并且会不断演变。我们希望它们能帮助项目的新成员更好地理解哪些贡献与当前方向一致，并在不同目标之间取舍时作为思考依据。
 
-The factors influencing every discussion/decision are
-different and priority 1 does not always trump priority 2
-and so on.
+影响每次讨论/决策的因素各不相同，优先级 1 并不总是高于优先级 2，依此类推。
 
-## Values and priority level
+## 价值观和优先级级别
 
-* Priority 1 - Developer experience
-* Priority 2 - Stability
-* Priority 3 - Operational qualities
-* Priority 4 - Node.js maintainer experience
-* Priority 5 - Up to date technology and APIs
+* 优先级 1 - 开发者体验
+* 优先级 2 - 稳定性
+* 优先级 3 - 运维特性
+* 优先级 4 - Node.js 维护者体验
+* 优先级 5 - 最新技术和 API
 
-## Value descriptions
+## 价值观说明
 
-### 1 - Developer experience
+### 1 - 开发者体验
 
-We value ensuring that developers are productive and enjoy developing
-with Node.js. Some key elements of this include:
+我们重视确保开发者能够高效工作，并享受使用 Node.js 进行开发。其中一些关键要素包括：
 
-* Approachability (both technical and community)
-* Great documentation
-* Bundling friction-reducing APIs and components, even though
-  they could be provided externally
-* Compatibility and interoperability with browsers and other JavaScript
-  environments so that as much code as possible runs as is both in Node.js and
-  in the other environments
-* Enabling/supporting external packages to ensure overall developer experience
+* 易于上手（技术层面和社区层面）
+* 出色的文档
+* 内置能够减少摩擦的 API 和组件，即使这些也可以由外部提供
+* 与浏览器和其他 JavaScript 环境的兼容性和互操作性，以便尽可能多的代码能够在 Node.js 以及其他环境中按原样运行
+* 赋能/支持外部包，以确保整体开发者体验
 
-### 2 - Stability
+### 2 - 稳定性
 
-Whenever possible, we seek to ensure that working code continues to work. To
-keep the trust of developers and users, we value stability.
-Some key elements of this include:
+在可能的情况下，我们努力确保可工作的代码继续保持可用。为了保持开发者和用户的信任，我们重视稳定性。
+其中一些关键要素包括：
 
-* Backward compatibility
-* Stable releases on a predictable schedule
-* A strong safety net, including testing how changes
-  in Node.js affect popular packages
-* Careful consideration of what goes into Long Term Support (LTS) releases
+* 向后兼容性
+* 按可预测的时间表发布稳定版本
+* 强有力的安全保障，包括测试 Node.js 中的变更如何影响热门包
+* 谨慎考虑哪些内容会进入长期支持（LTS）版本
 
-### 3 - Operational qualities
+### 3 - 运维特性
 
-We value keeping Node.js safe, performant, and lightweight.
-We value enabling the ability to investigate and debug problems in
-development and production. Some key elements of this include:
+我们重视让 Node.js 保持安全、高性能且轻量。
+我们重视能够在开发和生产环境中调查和调试问题的能力。其中一些关键要素包括：
 
-* High throughput (speed)
-* Fast startup
-* Small binary size
-* Small memory footprint
-* High-quality debugging tools
-* Robust diagnostic tools (profilers, etc.)
-* Responsible security practices
+* 高吞吐量（速度）
+* 快速启动
+* 小体积二进制文件
+* 小内存占用
+* 高质量的调试工具
+* 强大的诊断工具（分析器等）
+* 负责任的安全实践
 
-### 4 - Node.js maintainer experience
+### 4 - Node.js 维护者体验
 
-We value the productivity and happiness of the Node.js maintainers.
-Some key elements of this include:
+我们重视 Node.js 维护者的效率和幸福感。
+其中一些关键要素包括：
 
-* Approachability of the codebase
-* Good internal documentation and guides
-* Low-friction policies and processes
-* Good CI and tooling to make maintainers productive
+* 代码库易于上手
+* 良好的内部文档和指南
+* 低摩擦的政策和流程
+* 良好的 CI 和工具，以提高维护者的生产力
 
-### 5 - Up to date technology and APIs
+### 5 - 最新技术和 API
 
-We value providing developers with modern APIs and technologies
-following existing standards whenever possible.
-Some key elements of this include:
+我们重视在可能的情况下，按照现有标准为开发者提供现代化的 API 和技术。
+其中一些关键要素包括：
 
-* Participating in standards work and organizations
-* Web API compatibility
-* Supporting and exposing new technologies and standards through early adoption
+* 参与标准制定工作和组织
+* Web API 兼容性
+* 通过及早采用来支持并暴露新技术和标准

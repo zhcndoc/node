@@ -1,45 +1,45 @@
-# Node.js Core Development Flags
+# Node.js 核心开发标志
 
-These flags are specifically designed for use in Node.js core development and are not intended for general
-application usage.
+这些标志专门用于 Node.js 核心开发，不适用于通用
+应用程序使用。
 
 > \[!NOTE]
-> These APIs are not bound by semantic versioning rules, and they can be altered or removed in any version of Node.js
+> 这些 API 不受语义化版本控制规则约束，并且可以在任何版本的 Node.js 中被更改或移除
 
-## Command Line Interface (CLI)
+## 命令行接口（CLI）
 
-### Flags
+### 标志
 
 #### `--debug-arraybuffer-allocations`
 
-Enables debugging of `ArrayBuffer` allocations.
+启用 `ArrayBuffer` 分配的调试。
 
 #### `--experimental-quic`
 
-Enable QUIC Protocol (under development)
+启用 QUIC 协议（开发中）
 
 #### `--expose-internals`
 
-Allows the usage of `internal/*` modules, granting access to internal Node.js functionality.
+允许使用 `internal/*` 模块，从而可以访问 Node.js 内部功能。
 
 #### `--inspect-brk-node[=[host:]port]`
 
-Pauses execution at the start of Node.js application code, waiting for a debugger to connect on the specified
-`host` and `port`. This is useful for debugging application startup issues. If `host` and `port` are not
-provided, it defaults to `127.0.0.1:9229`.
+在 Node.js 应用代码开始时暂停执行，等待调试器连接到指定的
+`host` 和 `port`。这对于调试应用启动问题很有用。如果未提供 `host` 和 `port`，
+则默认为 `127.0.0.1:9229`。
 
 #### `--node-snapshot`
 
-Enables the use of Node.js snapshots, potentially improving startup performance.
+启用 Node.js 快照的使用，可能会提升启动性能。
 
 #### `--test-udp-no-try-send`
 
-Used for testing UDP functionality without attempting to send data.
+用于在不尝试发送数据的情况下测试 UDP 功能。
 
 #### `--trace-promises`
 
-Enables tracing of promises for debugging and performance analysis.
+启用 promise 的跟踪，用于调试和性能分析。
 
 #### `--verify-base-objects`
 
-Allows verification of base objects for debugging purposes.
+允许出于调试目的验证基础对象。

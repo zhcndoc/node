@@ -1,47 +1,35 @@
-# Investigating memory leaks with Valgrind
+# 使用 Valgrind 调查内存泄漏
 
-A Node.js process may run out of memory due to excessive consumption of
-native memory. Native Memory is memory which is not managed by the
-V8 Garbage collector and is allocated either by the Node.js runtime, its
-dependencies or native [addons](https://nodejs.org/docs/latest/api/n-api.html).
+由于过度消耗本地内存，Node.js 进程可能会耗尽内存。本地内存是指不受 V8 垃圾回收器管理的内存，它由 Node.js 运行时、其依赖项或本地 [addons](https://nodejs.org/docs/latest/api/n-api.html) 分配。
 
-This guide provides information on how to use Valgrind to investigate these
-issues on Linux platforms.
+本指南提供了如何在 Linux 平台上使用 Valgrind 调查这些问题的信息。
 
 ## Valgrind
 
-[Valgrind](https://valgrind.org/docs/manual/quick-start.html) is a
-tool available on Linux distributions which can be used to investigate
-memory usage including identifying memory leaks (memory which is
-allocated and not freed) and other memory related problems
-like double freeing memory.
+[Valgrind](https://valgrind.org/docs/manual/quick-start.html) 是 Linux 发行版中可用的一个工具，可用于调查内存使用情况，包括识别内存泄漏（已分配但未释放的内存）以及其他与内存相关的问题，例如重复释放内存。
 
-To use Valgrind:
+使用 Valgrind 时：
 
-* Be patient, running under Valgrind slows execution significantly
-  due to the checks being performed.
-* Reduce your test case to the smallest reproduce. Due to the slowdown it is
-  important to run the minimum test case in order to be able to do it in
-  a reasonable time.
+* 要有耐心，在 Valgrind 下运行会由于执行的检查而显著减慢速度。
+* 将测试用例缩减到最小可复现版本。由于速度变慢，运行最小测试用例非常重要，这样才能在合理时间内完成。
 
-## Installation
+## 安装
 
-It is an optional package in most cases and must be installed explicitly.
-For example on Debian/Ubuntu:
+在大多数情况下，它是可选软件包，必须显式安装。例如在 Debian/Ubuntu 上：
 
 ```bash
 apt-get install valgrind
 ```
 
-## Invocation
+## 调用方式
 
-The simplest invocation of Valgrind is:
+Valgrind 最简单的调用方式是：
 
 ```bash
 valgrind node test.js
 ```
 
-with the output being:
+输出如下：
 
 ```console
 user1@minikube1:~/valgrind/node-addon-examples/1_hello_world/napi$ valgrind node test.js
@@ -86,23 +74,13 @@ user1@minikube1:~/valgrind/node-addon-examples/1_hello_world/napi$ valgrind node
 ==28993== Use --track-origins=yes to see where uninitialised values come
 ```
 
-This reports that Node.js is not _completely_ clean as there is some memory
-that was allocated but not freed when the process shut down. It is often
-impractical/not worth being completely clean in this respect. Modern
-operating systems will clean up the memory of the process after the
-shutdown while attempting to free all memory to get a clean
-report may have a negative impact on the code complexity and
-shutdown times. Node.js does a pretty good job only leaving on
-the order of 6 KB that are not freed on shutdown.
+这表明 Node.js 并不是 _完全_ 干净的，因为进程关闭时仍有一些已分配但未释放的内存。通常在这方面做到完全干净是不切实际的/不值得。现代操作系统会在进程关闭后清理其内存，而为了获得干净的报告而尝试释放所有内存，可能会对代码复杂度和关闭时间产生负面影响。Node.js 做得相当不错，在关闭时只留下大约 6 KB 未释放。
 
-## An obvious memory leak
+## 一个明显的内存泄漏
 
-Leaks can be introduced in native addons and the following is a simple
-example leak based on the "Hello world" addon from
-[node-addon-examples](https://github.com/nodejs/node-addon-examples).
+泄漏可能会在本地 addon 中引入，下面是一个基于 [node-addon-examples](https://github.com/nodejs/node-addon-examples) 中“Hello world” addon 的简单泄漏示例。
 
-In this example, a loop which allocates approximately 1 MiB of memory and never
-frees it has been added:
+在这个示例中，添加了一个循环，它会分配约 1 MiB 的内存但从不释放：
 
 ```cpp
 void* malloc_holder = nullptr;
@@ -112,7 +90,7 @@ napi_value Method(napi_env env, napi_callback_info info) {
   status = napi_create_string_utf8(env, "world", 5, &world);
   assert(status == napi_ok);
 
-  // NEW LEAK HERE
+  // 新的泄漏在这里
   for (int i=0; i < 1024; i++) {
     malloc_holder = malloc(1024);
   }
@@ -121,19 +99,9 @@ napi_value Method(napi_env env, napi_callback_info info) {
 }
 ```
 
-When trying to create a memory leak you need to ensure that
-the compiler has not optimized out the code that creates
-the leak. For example, by assigning the result of the allocation
-to either a global variable or a variable that will be read
-afterwards the compiler will not optimize it out along with
-the malloc and Valgrind will properly report the memory leak.
-If `malloc_holder` in the example above is made into a
-local variable then the compiler may freely remove
-it along with the allocations (since it is not used)
-and Valgrind will not find any leaks since they
-will no longer exist in the code being run.
+在尝试制造内存泄漏时，需要确保编译器没有优化掉创建泄漏的代码。例如，如果将分配结果赋值给全局变量，或者赋值给之后会被读取的变量，编译器就不会连同 malloc 一起把它优化掉，Valgrind 也会正确报告内存泄漏。如果将上面示例中的 `malloc_holder` 改成局部变量，那么编译器可能会连同这些分配一起自由地移除它（因为它没有被使用），Valgrind 也就不会找到任何泄漏，因为它们在运行的代码中已经不存在了。
 
-Running Valgrind on this code shows the following:
+在这段代码上运行 Valgrind 会显示如下内容：
 
 ```console
 user1@minikube1:~/valgrind/node-addon-examples/1_hello_world/napi$ valgrind node hello.js
@@ -182,10 +150,7 @@ world
 ==1504== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ```
 
-Valgrind is reporting a problem as it shows 996,604 bytes as
-definitely lost and the question is how to find where that memory was
-allocated. The next step is to rerun as suggested in the
-output with `--leak-check=full`:
+Valgrind 报告了一个问题，因为它显示 996,604 字节为 definitely lost，问题在于如何找到这些内存是在哪里分配的。下一步是按照输出中的建议重新运行，使用 `--leak-check=full`：
 
 ```bash
 user1@minikube1:~/valgrind/node-addon-examples/1_hello_world/napi$ valgrind --leak-check=full node hello.js
@@ -291,7 +256,7 @@ world
 ==4174== ERROR SUMMARY: 5 errors from 5 contexts (suppressed: 0 from 0)
 ```
 
-This is the most interesting part of the report:
+这部分报告最有意思：
 
 ```console
 ==4174== 997,000 bytes in 997 blocks are definitely lost in loss record 35 of 35
@@ -309,25 +274,20 @@ This is the most interesting part of the report:
 ==4174==    by 0x12F68A3: ??? (in /home/user1/valgrind/node-v12.14.1-linux-x64/bin/node)
 ```
 
-From the stack trace we can tell that the leak came from a native addon:
+从堆栈跟踪中可以看出，泄漏来自一个本地 addon：
 
 ```console
 ==4174==    by 0x9794979: Method(napi_env__*, napi_callback_info__*) (in /home/user1/valgrind/node-addon-examples/1_hello_world/napi/build/Release/hello.node)
 ```
 
-What we can't tell is where in the native addon the memory is being
-allocated. This is because by default the addon is compiled without
-the debug symbols which Valgrind needs to be able to provide more
-information.
+但我们无法看出本地 addon 中究竟是哪一处在分配这段内存。这是因为默认情况下该 addon 编译时没有包含 Valgrind 需要的调试符号，因此无法提供更多信息。
 
-It is possible to hide leaks related to Node.js itself in future Valgrind runs
-using the suppression feature of Valgrind.
+可以使用 Valgrind 的 suppression 功能，在未来的 Valgrind 运行中隐藏与 Node.js 本身相关的泄漏。
 
-## Generating a Valgrind suppression file
+## 生成 Valgrind 抑制文件
 
-Valgrind uses suppression files to hide issues found from the summary. Generate
-a log file with embedded suppressions using the `--gen-suppressions` and
-`--log-file` flags:
+Valgrind 使用抑制文件来隐藏在摘要中发现的问题。使用 `--gen-suppressions` 和
+`--log-file` 标志生成一个带有内嵌抑制信息的日志文件：
 
 ```bash
 valgrind --leak-check=full \
@@ -336,16 +296,14 @@ valgrind --leak-check=full \
    node hello.js
 ```
 
-Valgrind will save the output to the log file specified. After each heap in the
-summary, Valgrind will include a suppression record: a structure that Valgrind
-can use to ignore specific memory issues. Suppression records can be saved to a
-suppression file which Valgrind can use in subsequent executions to hide various
-memory errors. This is an example of the suppression records from the previous
-call:
+Valgrind 会将输出保存到指定的日志文件中。在摘要中的每个堆之后，
+Valgrind 都会包含一条抑制记录：一种 Valgrind 可用于忽略特定内存问题的结构。
+抑制记录可以保存到抑制文件中，Valgrind 随后可在后续执行中使用该文件来隐藏各种
+内存错误。以下是前一次调用中抑制记录的示例：
 
 ```text
 {
-   <insert_a_suppression_name_here>
+   <在此处插入一个抑制名称>
    Memcheck:Value8
    obj:/home/kevin/.nvm/versions/node/v12.14.1/bin/node
    obj:/home/kevin/.nvm/versions/node/v12.14.1/bin/node
@@ -361,7 +319,7 @@ call:
    fun:_ZN2v88Function4CallENS_5LocalINS_7ContextEEENS1_INS_5ValueEEEiPS5_
 }
 {
-   <insert_a_suppression_name_here>
+   <在此处插入一个抑制名称>
    Memcheck:Leak
    match-leak-kinds: definite
    fun:_Znwm
@@ -379,7 +337,7 @@ call:
    fun:_dlerror_run
 }
 {
-   <insert_a_suppression_name_here>
+   <在此处插入一个抑制名称>
    Memcheck:Leak
    match-leak-kinds: possible
    fun:calloc
@@ -396,8 +354,8 @@ call:
 }
 ```
 
-Create a file (e.g. `node-12.14.1.supp`) with the contents of the suppression
-records, and run Valgrind with the suppression file previously created:
+创建一个文件（例如 `node-12.14.1.supp`）并写入这些抑制
+记录的内容，然后使用之前创建的抑制文件运行 Valgrind：
 
 ```bash
 valgrind --leak-check=full \
@@ -405,8 +363,8 @@ valgrind --leak-check=full \
    node hello.js
 ```
 
-Now, the Valgrind leak summary for suppressed issues are only mentioned as
-`suppressed` in the leak summary:
+现在，Valgrind 对被抑制问题的泄漏摘要中只会将其标记为
+`suppressed`：
 
 ```console
 ==12471== HEAP SUMMARY:
@@ -423,34 +381,31 @@ Now, the Valgrind leak summary for suppressed issues are only mentioned as
 ==12471==         suppressed: 368 bytes in 2 blocks
 ```
 
-## Enabling debug symbols to get more information
+## 启用调试符号以获取更多信息
 
-Leaks may be either in addons or Node.js itself. The sections which
-follow cover the steps needed to enable debug symbols to get more info.
+内存泄漏可能位于 addon 中，也可能位于 Node.js 本身。以下各节
+介绍了启用调试符号以获取更多信息所需的步骤。
 
-### Native addons
+### 原生 addons
 
-To enable debug symbols for all of your addons that are compiled on
-install use:
+要为安装时编译的所有 addons 启用调试符号，请使用：
 
 ```bash
 npm install --debug
 ```
 
-Any options which are not consumed by npm are passed on to node-gyp and this
-results in the addons being compiled with the debug option.
+凡是 npm 未消费的选项都会传递给 node-gyp，因此
+这些 addons 会以 debug 选项进行编译。
 
-If the native addon contains pre-built binaries you will need to force
-a rebuild.
+如果原生 addon 包含预构建二进制文件，你需要强制重新构建。
 
 ```bash
 npm install --debug
 npm rebuild
 ```
 
-The next step is to run Valgrind after the rebuild. This time the information
-for the leaking location includes the name of the source file and the
-line number:
+下一步是在重新构建后运行 Valgrind。这一次，泄漏位置的
+信息会包含源文件名和行号：
 
 ```console
 ==18481== 997,000 bytes in 997 blocks are definitely lost in loss record 35 of 35
@@ -468,7 +423,7 @@ line number:
 ==18481==    by 0x12F68A3: ??? (in /home/user1/valgrind/node-v12.14.1-linux-x64/bin/node)
 ```
 
-This new output shows us exactly where the leak is occurring in the file `hello.cc`:
+这个新输出让我们准确看到泄漏发生在 `hello.cc` 文件中的位置：
 
 ```cpp
   6 void* malloc_holder = nullptr;
@@ -478,17 +433,17 @@ This new output shows us exactly where the leak is occurring in the file `hello.
  10   status = napi_create_string_utf8(env, "world", 5, &world);
  11   assert(status == napi_ok);
  12   for (int i=0; i< 1000; i++) {
- 13     malloc_holder = malloc(1000);  // <<<<<< This is where we are allocating the memory that is not freed
+ 13     malloc_holder = malloc(1000);  // <<<<<< 这里是我们分配未被释放的内存的地方
  14   }
  15   return world;
  16 }
 ```
 
-### Node.js binary
+### Node.js 二进制文件
 
-If the leak is not in an addon and is instead in the Node.js binary itself,
-you may need to compile node yourself and turn on debug symbols. Looking at
-this entry reported by Valgrind, with a release binary we see:
+如果泄漏不在 addon 中，而是在 Node.js 二进制文件本身中，
+你可能需要自己编译 node 并开启调试符号。查看
+Valgrind 报告的这个条目，在使用发布版二进制文件时我们看到：
 
 ```console
  ==4174== 304 bytes in 1 blocks are possibly lost in loss record 27 of 35
@@ -505,37 +460,36 @@ this entry reported by Valgrind, with a release binary we see:
 ==4174==    by 0x5BBFB96: (below main) (libc-start.c:310)
 ```
 
-This gives us some information of where to look (`node::inspector::Agent::Start`)
-but not where in that function. We get more information than you might expect
-(or see by default with addons) because the Node.js binary exports many of
-its symbols using `-rdynamic` so that they can be used by addons. If the stack
-gives you enough information to track down where the leak is, that's great,
-otherwise the next step is to compile a debug build of Node.js.
+这给了我们一些可以查找的线索（`node::inspector::Agent::Start`）
+但还不能定位到该函数内部的具体位置。我们得到的信息比你可能预期的更多
+（或者比 addon 的默认情况更多），因为 Node.js 二进制文件使用 `-rdynamic`
+导出了许多符号，以便 addons 可以使用它们。如果堆栈
+信息已经足够让你追查到泄漏位置，那很好；
+否则下一步就是编译一个 Node.js 的调试版本。
 
-To get additional information with Valgrind:
+要在 Valgrind 中获取更多信息：
 
-* Check out the Node.js source corresponding to the release that you
-  want to debug. For example:
+* 获取与你要调试的发布版本对应的 Node.js 源码。例如：
 
 ```bash
 git clone https://github.com/nodejs/node.git
 git checkout v12.14.1
 ```
 
-* Compile with debug enabled (for additional info see
-  [building a debug build](https://github.com/nodejs/node/blob/v12.14.1/BUILDING.md#building-a-debug-build)).
-  For example, on \*nix:
+* 使用启用 debug 的方式编译（更多信息请参见
+  [构建调试版本](https://github.com/nodejs/node/blob/v12.14.1/BUILDING.md#building-a-debug-build)）。
+  例如，在 \*nix 上：
 
 ```bash
 ./configure --debug
 make -j4
 ```
 
-* Make sure to run with your compiled debug version of Node.js. Having used
-  `./configure --debug`, two binaries will have been built when `make` was run.
-  You must use the one which is in `out/Debug`.
+* 确保运行的是你编译出的 Node.js 调试版本。使用
+  `./configure --debug` 后，在执行 `make` 时会生成两个二进制文件。
+  你必须使用位于 `out/Debug` 中的那个。
 
-Running Valgrind using the debug build of Node.js shows:
+使用 Node.js 的调试构建运行 Valgrind 会显示：
 
 ```console
 ==44112== 592 bytes in 1 blocks are possibly lost in loss record 26 of 27
@@ -551,8 +505,8 @@ Running Valgrind using the debug build of Node.js shows:
 ==44112==    by 0x22D8BBF: main (node_main.cc:126)
 ```
 
-Now we can see the specific file name and line in the Node.js code which
-caused the allocation (inspector\_agent.cc:140).
+现在我们可以看到导致分配的 Node.js 代码中的具体文件名和行号
+（inspector\_agent.cc:140）。
 
-We can examine that line (and its surrounding code) to
-find a solution for the memory leak.
+我们可以检查那一行（以及其周围代码），以
+找到内存泄漏的解决方案。

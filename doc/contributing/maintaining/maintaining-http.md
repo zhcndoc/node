@@ -1,90 +1,80 @@
-# Maintaining HTTP
+# 维护 HTTP
 
-Support for HTTP is a key priority in terms of ensuring the continued success of
-Node.js as captured in the project's
-[technical priorities](https://github.com/nodejs/node/blob/HEAD/doc/contributing/technical-priorities.md).
+在确保 Node.js 持续成功方面，HTTP 支持是一项关键优先事项，正如项目的
+[技术优先级](https://github.com/nodejs/node/blob/HEAD/doc/contributing/technical-priorities.md)中所述。
 
-The current high level strategy is based on the discussion in the
+当前的总体策略基于 2022 年 1 月 27 日举行的关于现代 HTTP 的
 [Next-10](https://github.com/nodejs/next-10)
-[mini-summit](https://github.com/nodejs/next-10/blob/main/meetings/summit-jan-2022.md)
-on modern HTTP which was held on Jan 27 2022.
+[迷你峰会](https://github.com/nodejs/next-10/blob/main/meetings/summit-jan-2022.md)
+中的讨论。
 
-## High level strategy
+## 总体策略
 
-The key elements of our strategy for future HTTP APIs are:
+我们未来 HTTP API 策略的关键要素是：
 
-* APIs should be HTTP protocol independent (support HTTP1, HTTP2, etc.).
-* APIs should be transport protocol independent (TCP, QUIC, etc.).
-* APIs should provide good defaults that perform well.
-* Client/server APIs should be consistent and allow easy integration.
-* Common requirements like piping out from client API to server APIs should be
-  easy.
-* For both the Client and Server there is a need for multiple APIs, with each
-  targeting a different level of abstraction.
+* API 应当与 HTTP 协议无关（支持 HTTP1、HTTP2 等）。
+* API 应当与传输协议无关（TCP、QUIC 等）。
+* API 应当提供性能良好的默认行为。
+* 客户端/服务器 API 应当保持一致并便于集成。
+* 像从客户端 API 通过管道传输到服务器 API 之类的常见需求应该
+  很容易实现。
+* 对于客户端和服务器，都需要多个 API，每个 API
+  针对不同的抽象层级。
 
-Unfortunately our existing HTTP APIs (
+不幸的是，我们现有的 HTTP API（
 [HTTP](https://nodejs.org/docs/latest/api/http.html),
-[HTTPS](https://nodejs.org/docs/latest/api/https.html), and
-[HTTP2](https://nodejs.org/docs/latest/api/http2.html))
-do not align with our high level strategy. While these APIs
-are widely used and we do not plan to deprecate or remove them,
-they are not the focus of active development or performance improvements.
-Bug fixes however are still important for all of these APIs.
+[HTTPS](https://nodejs.org/docs/latest/api/https.html), 以及
+[HTTP2](https://nodejs.org/docs/latest/api/http2.html)）
+并不符合我们的总体策略。虽然这些 API
+被广泛使用，我们也不打算弃用或移除它们，
+但它们并不是当前活跃开发或性能改进的重点。
+不过，这些 API 的 bug 修复仍然很重要。
 
-With respect to the HTTP protocols themselves, our current assessment in
-terms of priority within existing or new APIs is:
+就 HTTP 协议本身而言，基于现有或新 API 的优先级，我们目前的评估是：
 
-* HTTP 2 is in “maintenance mode” for both protocol and APIs.
-* HTTP 1 is a stable protocol, but innovation is still possible with the APIs.
-* HTTP 3 is an important protocol and we need to add support for it.
+* HTTP 2 在协议和 API 层面都处于“维护模式”。
+* HTTP 1 是一个稳定的协议，但 API 仍然可以继续创新。
+* HTTP 3 是一个重要的协议，我们需要为其添加支持。
 
-The current strategy is to build out 2 new client APIs and 2 new Server APIs
-in line with the high level strategy above.
+当前的策略是构建 2 个新的客户端 API 和 2 个新的服务器 API，
+以符合上述总体策略。
 
-While transport-level APIs are important (e.g. socket level), the HTTP APIs
-should not be tied to a specific transport-level API. Therefore,
-transport-level APIs are out of the scope of our HTTP strategy/maintenance
-information.
+虽然传输层 API 很重要（例如 socket 层），但 HTTP API
+不应绑定到特定的传输层 API。因此，传输层 API 不在我们的 HTTP 策略/维护
+信息的范围内。
 
-### Client APIs
+### 客户端 API
 
-For client APIs we want a high-level API and a low-level API when
-more control is required. The current plan is for the following APIs:
+对于客户端 API，我们希望在需要更多控制时同时提供一个高层 API 和一个低层 API。当前计划如下：
 
-* High-level API -
-  [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
-  based API built on top of [undici](https://www.npmjs.com/package/undici).
-* Low-level API - a subset of the APIs exposed by
-  [undici](https://www.npmjs.com/package/undici). The exact shape and
-  set of these APIs is still to be worked out. The current plan is to
-  pull undici into Node.js core without exposing its APIs in the Node.js
-  API so that it can initially be used to support the higher level
-  Fetch-based API. As this gets worked out we will discuss which
-  APIs to expose in the Node.js API surface.
+* 高层 API -
+  基于 [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+  的 API，构建于 [undici](https://www.npmjs.com/package/undici) 之上。
+* 低层 API - [undici](https://www.npmjs.com/package/undici) 暴露的 API 子集。  
+  这些 API 的具体形态和集合仍有待确定。当前计划是将 undici 引入 Node.js
+  core，但不在 Node.js API 中暴露其 API，这样它最初可以用于支持更高层的
+  基于 Fetch 的 API。随着这一方案逐步明确，我们将讨论在 Node.js
+  API 表面中暴露哪些 API。
 
-### Server APIs
+### 服务器 API
 
-For the server APIs we do not yet have a clear path, other than wanting
-to align them with the APIs built for the client.
+对于服务器 API，除了希望它们与为客户端构建的 API 保持一致之外，我们目前还没有明确的路径。
 
-### HTTP, HTTPS
+### HTTP、HTTPS
 
-The low-level implementation of the
 [HTTP](https://nodejs.org/docs/latest/api/http.html)
-and [HTTPS](https://nodejs.org/docs/latest/api/https.html) APIs
-are maintained in the [llhttp](https://github.com/nodejs/llhttp)
-repository. Updates are pulled into Node.js under
-[deps/llhttp](https://github.com/nodejs/node/tree/HEAD/deps/llhttp).
+和 [HTTPS](https://nodejs.org/docs/latest/api/https.html) API 的底层实现
+维护在 [llhttp](https://github.com/nodejs/llhttp)
+仓库中。更新会按需引入到 Node.js 的
+[deps/llhttp](https://github.com/nodejs/node/tree/HEAD/deps/llhttp) 下。
 
 ### HTTP2
 
-The low-level implementation of
 [HTTP2](https://nodejs.org/docs/latest/api/http2.html)
-is based on [nghttp2](https://nghttp2.org/). Updates are pulled into Node.js
-under [deps/nghttp2](https://github.com/nodejs/node/tree/HEAD/deps/nghttp2)
-as needed.
+的底层实现基于 [nghttp2](https://nghttp2.org/)。
+更新会按需引入到 Node.js 的
+[deps/nghttp2](https://github.com/nodejs/node/tree/HEAD/deps/nghttp2) 下。
 
-The low-level implementation is made available in the Node.js API through
-JavaScript code in the [lib](https://github.com/nodejs/node/tree/HEAD/lib)
-directory and C++ code in the
-[src](https://github.com/nodejs/node/tree/HEAD/src) directory
+底层实现通过 [lib](https://github.com/nodejs/node/tree/HEAD/lib)
+目录中的 JavaScript 代码以及
+[src](https://github.com/nodejs/node/tree/HEAD/src) 目录中的 C++ 代码在 Node.js API 中提供。

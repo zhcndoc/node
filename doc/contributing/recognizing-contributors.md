@@ -1,77 +1,43 @@
-# Recognizing Contributors
+# 认可贡献者
 
-The project looks to recognize and thank contributors for their contributions
-as one of the ways we can help them continue to contribute to the project.
+该项目希望通过认可和感谢贡献者的贡献，作为帮助他们继续为项目做出贡献的方式之一。
 
-This document captures some of the processes we have in place to do that.
+本文档记录了我们为实现这一目标而采取的一些流程。
 
-Some of the benefits we hope to achieve through these programs include:
+我们希望通过这些计划实现的一些收益包括：
 
-* Ensuring people know that the project appreciates their work
-* Encouraging people to repeat/grow their contributions
-* Helping people demonstrate to their managers the value of the
-  contributions they are making, which in terms helps their manager support
-  their employer investing in the project (unfortunately this is
-  something that matters)
-* Highlighting the new features in Node.js and showing that they are
-  being added by individuals like those mentioned. This should encourage
-  other people to get involved and make similar contributions.
-* Highlighting those leading efforts/initiatives and they are being
-  done by individuals or teams like those mentioned. This should
-  encourage other people to get involved and make similar contributions
+* 确保人们知道项目感谢他们的工作
+* 鼓励人们重复/扩大他们的贡献
+* 帮助人们向他们的经理展示其所做贡献的价值，从而帮助他们的经理支持雇主对项目的投入（不幸的是，这一点很重要）
+* 突出 Node.js 中的新特性，并展示这些特性是由此类个人所添加的。这应鼓励其他人参与进来并做出类似贡献。
+* 突出那些带领各项工作/倡议的人，以及这些工作是由此类个人或团队完成的。这应鼓励其他人参与进来并做出类似贡献
 
-## Sponsorship link on nodejs/node README.md
+## nodejs/node README.md 中的赞助链接
 
-Collaborators may add a single link beside their name on the nodejs/node
-[`README.md`](../../README.md) file in the section titled `Collaborators`
-named `Support me`. This link may be:
+协作者可以在 nodejs/node 的 [`README.md`](../../README.md) 文件中，`Collaborators` 标题下、其姓名旁添加一个名为 `Support me` 的单个链接。该链接可以是：
 
-1. a direct link to one of the sponsorship platforms listed below,
-2. a page that has text explaining how to support the collaborator
-   including zero or more links to the sponsorship platforms listed below.
-   The page should not have any outgoing links other than to the
-   sponsorship platforms. We expect and trust collaborators to ensure that
-   the text is professional and respectful.
+1. 直接链接到下方列出的某个赞助平台，
+2. 一个包含如何支持该协作者说明的页面，其中可包含一个或多个指向下方列出的赞助平台的链接。该页面除指向这些赞助平台外，不应有任何外部链接。我们期望并信任协作者确保该文本专业且尊重他人。
 
-The sponsorship platforms to which links can be made currently
-includes (in alphabetical order):
+目前可链接到的赞助平台包括（按字母顺序）：
 
 * [GitHub Sponsors](https://github.com/sponsors)
 * [Polar](https://polar.sh/)
 * [thanks.dev](https://thanks.dev)
 
-## Amplification of posts announcing talks by collaborators
+## 宣传协作者关于演讲的发帖
 
-When a collaborator is speaking at a public event they may request amplification
-by the Node.js social media accounts. They can request that a post highlighting
-that they are speaking at the event be amplified by the Node.js accounts by
-making a request in the #nodejs-social channel in the OpenJS Foundation slack.
-We trust that collaborators will only request amplification when they believe
-the event is relevant to the Node.js community and the content of the post is
-in line with the norms of the project.
+当某位协作者在公开活动中发言时，他们可以请求 Node.js 社交媒体账号对其进行宣传。他们可以通过在 OpenJS Foundation slack 的 #nodejs-social 频道中提出请求，来请求 Node.js 账号转发一条强调他们将在该活动中发言的帖子。我们相信协作者只会在他们认为该活动与 Node.js 社区相关，且帖文内容符合项目规范时才会请求宣传。
 
-## Bi-monthly contributor spotlight
+## 双月度贡献者聚焦
 
-The contributor spotlight program showcases individual(s) or teams who have
-made signification contributions to the project. Anybody who is not
-a member of the Technical Steering Committee (TSC) and has made a
-notable contribution to the project can be nominated. They DO NOT need
-to be a collaborator, team member etc.
+贡献者聚焦计划展示对项目做出显著贡献的个人或团队。任何不是技术指导委员会（TSC）成员且已对项目做出显著贡献的人都可以被提名。他们不需要是协作者、团队成员等。
 
-The work of the team or individual(s) will be showcased on the
-Node.js social channels and, if warranted, through a blog post created by the
-OpenJS marketing staff along with the team or individual(s) which will
-be published on [openjsf.org](https://openjsf.org/).
+该团队或个人的工作将会在 Node.js 社交渠道上展示；如果有必要，还会由 OpenJS 营销团队与该团队或个人共同撰写一篇博客文章，并发布在 [openjsf.org](https://openjsf.org/) 上。
 
-Nominations can be made through this web form:
+提名可通过此网页表单提交：
 [Contributor Spotlight nomination](https://forms.gle/dXBXZn8yu83HLJ57A)
 
-Nominations will be reviewed/approved by the Technical Steering Committee (TSC)
-on a regular basis as scheduled by the TSC chair. The TSC will also
-recommend the order in which approved nominations are processed
-by the OpenJS marketing staff.
+提名将由技术指导委员会（TSC）按照 TSC 主席安排的定期计划进行审查/批准。TSC 还将建议已批准提名由 OpenJS 营销团队处理的顺序。
 
-Before any work proceeds on an approved nomination the individual(s)
-or team will be contacted to confirm they want to participate. Social
-content and or spotlight blog post will only be published after the
-team or individual(s) have confirmed they are happy with the content.
+在任何已批准的提名开始推进之前，将联系相关个人或团队以确认他们愿意参与。社交内容和/或聚焦博客文章仅会在团队或个人确认他们对内容满意之后发布。

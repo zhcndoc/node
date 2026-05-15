@@ -4,7 +4,7 @@
 
 <table>
 <tr>
-<th>当前</th>
+<th>Current</th>
 </tr>
 <tr>
 <td>
@@ -14,7 +14,7 @@
 </tr>
 </table>
 
-* 其他版本
+* Other versions
   * [25.x](CHANGELOG_V25.md)
   * [24.x](CHANGELOG_V24.md)
   * [23.x](CHANGELOG_V23.md)
@@ -40,46 +40,47 @@
   * [0.12.x](CHANGELOG_V012.md)
   * [0.10.x](CHANGELOG_V010.md)
   * [io.js](CHANGELOG_IOJS.md)
-  * [归档](CHANGELOG_ARCHIVE.md)
+  * [Archive](CHANGELOG_ARCHIVE.md)
 
 <a id="26.1.0"></a>
 
-## 2026-05-07，版本 26.1.0（当前），@aduh95
+## 2026-05-07, Version 26.1.0 (Current), @aduh95
 
-### 显著变更
+### Notable changes
 
-#### 实验性的 `node:ffi` 模块
+#### Experimental `node:ffi` module
 
-Node.js 现在包含一个实验性的 `node:ffi` 模块，用于加载动态
-库并从 JavaScript 调用本地符号。
+Node.js now includes an experimental `node:ffi` module for loading dynamic
+libraries and calling native symbols from JavaScript.
 
-该 API 由 `--experimental-ffi` 标志控制，并且在启用 Permission
-Model 时，需要 `--allow-ffi`。
+This API is gated by `--experimental-ffi`, and requires `--allow-ffi`
+when the Permission Model is enabled.
 
-此 API 本质上是不安全的。无效的指针、错误的签名，或在内存
-释放后访问内存，都可能导致进程崩溃或内存损坏。
+This API is fundamentally unsafe. Invalid pointers, incorrect signatures,
+or accessing memory after it has been freed can cause process crashes or
+memory corruption.
 
-由 Paolo Insogna 贡献，见 [#62072](https://github.com/nodejs/node/pull/62072)。
+Contributed by Paolo Insogna in [#62072](https://github.com/nodejs/node/pull/62072).
 
-#### 其他显著变更
+#### Other notable changes
 
-* \[[`34a6454fe3`](https://github.com/nodejs/node/commit/34a6454fe3)] - **(SEMVER-MINOR)** **buffer**: 添加 `end` 参数 (Robert Nagy) [#62390](https://github.com/nodejs/node/pull/62390)
-* \[[`073e84d7fe`](https://github.com/nodejs/node/commit/073e84d7fe)] - **(SEMVER-MINOR)** **crypto**: 接受 `crypto.diffieHellman()` 中的密钥数据并清理 DH 作业 (Filip Skokan) [#62527](https://github.com/nodejs/node/pull/62527)
-* \[[`5b9cb10a5f`](https://github.com/nodejs/node/commit/5b9cb10a5f)] - **(SEMVER-MINOR)** **crypto**: 实现 `randomUUIDv7()` (nabeel378) [#62553](https://github.com/nodejs/node/pull/62553)
-* \[[`98f9becd16`](https://github.com/nodejs/node/commit/98f9becd16)] - **(SEMVER-MINOR)** **debugger**: 向 `node inspect` 添加免编辑运行时表达式探针 (Joyee Cheung) [#62713](https://github.com/nodejs/node/pull/62713)
-* \[[`06defaa2ea`](https://github.com/nodejs/node/commit/06defaa2ea)] - **(SEMVER-MINOR)** **fs**: 向 `fs.stat()` 添加 `signal` 选项 (Mert Can Altin) [#57775](https://github.com/nodejs/node/pull/57775)
-* \[[`db66a963bf`](https://github.com/nodejs/node/commit/db66a963bf)] - **(SEMVER-MINOR)** **fs**: 在 `statfs` 中暴露 `frsize` 字段 (Jinho Jang) [#62277](https://github.com/nodejs/node/pull/62277)
-* \[[`87adb3472b`](https://github.com/nodejs/node/commit/87adb3472b)] - **(SEMVER-MINOR)** **http**: 加固 `ClientRequest` 选项合并 (Matteo Collina) [#63082](https://github.com/nodejs/node/pull/63082)
-* \[[`9047ec12ce`](https://github.com/nodejs/node/commit/9047ec12ce)] - **(SEMVER-MINOR)** **http**: 向 `IncomingMessage` 添加 `req.signal` (Akshat) [#62541](https://github.com/nodejs/node/pull/62541)
-* \[[`ab66de8eaa`](https://github.com/nodejs/node/commit/ab66de8eaa)] - **(SEMVER-MINOR)** **process**: 在 `execve(2)` 失败时抛出异常，而不是中止 (Bryan English) [#62878](https://github.com/nodejs/node/pull/62878)
-* \[[`8273682c87`](https://github.com/nodejs/node/commit/8273682c87)] - **(SEMVER-MINOR)** **src**: 允许空的 `--experimental-config-file` (Marco Ippolito) [#61610](https://github.com/nodejs/node/pull/61610)
-* \[[`fbff28f7e6`](https://github.com/nodejs/node/commit/fbff28f7e6)] - **(SEMVER-MINOR)** **stream**: 在 `duplexPair` 中传播销毁 (Ahmed Elhor) [#61098](https://github.com/nodejs/node/pull/61098)
-* \[[`a8c773a0c7`](https://github.com/nodejs/node/commit/a8c773a0c7)] - **(SEMVER-MINOR)** **test\_runner**: 对齐 mock timeout API (sangwook) [#62820](https://github.com/nodejs/node/pull/62820)
-* \[[`b883a5eaea`](https://github.com/nodejs/node/commit/b883a5eaea)] - **(SEMVER-MINOR)** **test\_runner**: 为 `AbortSignal.timeout` 添加 mock-timers 支持 (DeveloperViraj) [#60751](https://github.com/nodejs/node/pull/60751)
-* \[[`a21ae1771e`](https://github.com/nodejs/node/commit/a21ae1771e)] - **(SEMVER-MINOR)** **test\_runner**: 支持测试顺序随机化 (Pietro Marchini) [#61747](https://github.com/nodejs/node/pull/61747)
-* \[[`b85c73ff10`](https://github.com/nodejs/node/commit/b85c73ff10)] - **(SEMVER-MINOR)** **util**: 使用十六进制颜色为文本着色 (Guilherme Araújo) [#61556](https://github.com/nodejs/node/pull/61556)
+* \[[`34a6454fe3`](https://github.com/nodejs/node/commit/34a6454fe3)] - **(SEMVER-MINOR)** **buffer**: add `end` parameter (Robert Nagy) [#62390](https://github.com/nodejs/node/pull/62390)
+* \[[`073e84d7fe`](https://github.com/nodejs/node/commit/073e84d7fe)] - **(SEMVER-MINOR)** **crypto**: accept key material in `crypto.diffieHellman()` and clean up DH jobs (Filip Skokan) [#62527](https://github.com/nodejs/node/pull/62527)
+* \[[`5b9cb10a5f`](https://github.com/nodejs/node/commit/5b9cb10a5f)] - **(SEMVER-MINOR)** **crypto**: implement `randomUUIDv7()` (nabeel378) [#62553](https://github.com/nodejs/node/pull/62553)
+* \[[`98f9becd16`](https://github.com/nodejs/node/commit/98f9becd16)] - **(SEMVER-MINOR)** **debugger**: add edit-free runtime expression probes to `node inspect` (Joyee Cheung) [#62713](https://github.com/nodejs/node/pull/62713)
+* \[[`06defaa2ea`](https://github.com/nodejs/node/commit/06defaa2ea)] - **(SEMVER-MINOR)** **fs**: add `signal` option to `fs.stat()` (Mert Can Altin) [#57775](https://github.com/nodejs/node/pull/57775)
+* \[[`db66a963bf`](https://github.com/nodejs/node/commit/db66a963bf)] - **(SEMVER-MINOR)** **fs**: expose `frsize` field in `statfs` (Jinho Jang) [#62277](https://github.com/nodejs/node/pull/62277)
+* \[[`87adb3472b`](https://github.com/nodejs/node/commit/87adb3472b)] - **(SEMVER-MINOR)** **http**: harden `ClientRequest` option merging (Matteo Collina) [#63082](https://github.com/nodejs/node/pull/63082)
+* \[[`9047ec12ce`](https://github.com/nodejs/node/commit/9047ec12ce)] - **(SEMVER-MINOR)** **http**: add `req.signal` to `IncomingMessage` (Akshat) [#62541](https://github.com/nodejs/node/pull/62541)
+* \[[`ab66de8eaa`](https://github.com/nodejs/node/commit/ab66de8eaa)] - **(SEMVER-MINOR)** **process**: throw on `execve(2)` failure instead of aborting (Bryan English) [#62878](https://github.com/nodejs/node/pull/62878)
+* \[[`8273682c87`](https://github.com/nodejs/node/commit/8273682c87)] - **(SEMVER-MINOR)** **src**: allow empty `--experimental-config-file` (Marco Ippolito) [#61610](https://github.com/nodejs/node/pull/61610)
+* \[[`fbff28f7e6`](https://github.com/nodejs/node/commit/fbff28f7e6)] - **(SEMVER-MINOR)** **stream**: propagate destroy in `duplexPair` (Ahmed Elhor) [#61098](https://github.com/nodejs/node/pull/61098)
+* \[[`a8c773a0c7`](https://github.com/nodejs/node/commit/a8c773a0c7)] - **(SEMVER-MINOR)** **test\_runner**: align mock timeout API (sangwook) [#62820](https://github.com/nodejs/node/pull/62820)
+* \[[`b883a5eaea`](https://github.com/nodejs/node/commit/b883a5eaea)] - **(SEMVER-MINOR)** **test\_runner**: add mock-timers support for `AbortSignal.timeout` (DeveloperViraj) [#60751](https://github.com/nodejs/node/pull/60751)
+* \[[`a21ae1771e`](https://github.com/nodejs/node/commit/a21ae1771e)] - **(SEMVER-MINOR)** **test\_runner**: support test order randomization (Pietro Marchini) [#61747](https://github.com/nodejs/node/pull/61747)
+* \[[`b85c73ff10`](https://github.com/nodejs/node/commit/b85c73ff10)] - **(SEMVER-MINOR)** **util**: colorize text using hex colors (Guilherme Araújo) [#61556](https://github.com/nodejs/node/pull/61556)
 
-### 提交
+### Commits
 
 * \[[`1b959d02c2`](https://github.com/nodejs/node/commit/1b959d02c2)] - **assert,util**: 修复过时的嵌套循环 memo 条目 (Ruben Bridgewater) [#62509](https://github.com/nodejs/node/pull/62509)
 * \[[`bbeb38d210`](https://github.com/nodejs/node/commit/bbeb38d210)] - **buffer**: 修复 indexOf/lastIndexOf 中 end 参数的 bug (Robert Nagy) [#62711](https://github.com/nodejs/node/pull/62711)
@@ -402,19 +403,23 @@ Undici 已更新到 8.0.2 版本，为 Node.js 的 HTTP 客户端实现带来了
 
 #### 弃用和移除
 
-* \[[`dff46c07c3`](https://github.com/nodejs/node/commit/dff46c07c3)] - **(SEMVER-MAJOR)** **crypto**：将 DEP0182 移至生命周期结束（Tobias Nießen）[#61084](https://github.com/nodejs/node/pull/61084)
-* \[[`93c25815ee`](https://github.com/nodejs/node/commit/93c25815ee)] - **(SEMVER-MAJOR)** **http**：将 writeHeader 移至生命周期结束（Sebastian Beltran）[#60635](https://github.com/nodejs/node/pull/60635)
+* \[[`dff46c07c3`](https://github.com/nodejs/node/commit/dff46c07c3)] - **(SEMVER-MAJOR)** **crypto**: 将 DEP0182 移至生命周期结束（Tobias Nießen）[#61084](https://github.com/nodejs/node/pull/61084)
 
-`http.Server.prototype.writeHeader()` 现已被完全移除。请改用 `http.Server.prototype.writeHead()`。
+* \[[`93c25815ee`](https://github.com/nodejs/node/commit/93c25815ee)] - **(SEMVER-MAJOR)** **http**: 将 writeHeader 移至生命周期结束（Sebastian Beltran）[#60635](https://github.com/nodejs/node/pull/60635)
+
+  `http.Server.prototype.writeHeader()` 现已完全移除。请改用 `http.Server.prototype.writeHead()`。
 
 * \[[`c755b0113c`](https://github.com/nodejs/node/commit/c755b0113c)] - **(SEMVER-MAJOR)** **stream**：将 \_stream\_\* 移至生命周期结束（Sebastian Beltran）[#60657](https://github.com/nodejs/node/pull/60657)
 
-旧版 `_stream_wrap`、`_stream_readable`、`_stream_writable`、`_stream_duplex`、`_stream_transform` 和 `_stream_passthrough` 模块现已被完全移除。
+  旧版 `_stream_wrap`、`_stream_readable`、`_stream_writable`、`_stream_duplex`、`_stream_transform` 和 `_stream_passthrough` 模块现已完全移除。
 
-* \[[`adac077484`](https://github.com/nodejs/node/commit/adac077484)] - **(SEMVER-MAJOR)** **crypto**：在运行时弃用 DEP0203 和 DEP0204（Filip Skokan）[#62453](https://github.com/nodejs/node/pull/62453)
-* \[[`ac6375417a`](https://github.com/nodejs/node/commit/ac6375417a)] - **(SEMVER-MAJOR)** **stream**：将 DEP0201 提升为运行时弃用（René）[#62173](https://github.com/nodejs/node/pull/62173)
-* \[[`98907f560f`](https://github.com/nodejs/node/commit/98907f560f)] - **(SEMVER-MAJOR)** **module**：在运行时弃用 module.register()（Geoffrey Booth）[#62401](https://github.com/nodejs/node/pull/62401)
-* \[[`89f4b6cddb`](https://github.com/nodejs/node/commit/89f4b6cddb)] - **(SEMVER-MAJOR)** **module**：移除 --experimental-transform-types（Marco Ippolito）[#61803](https://github.com/nodejs/node/pull/61803)
+* \[[`adac077484`](https://github.com/nodejs/node/commit/adac077484)] - **(SEMVER-MAJOR)** **crypto**: 在运行时弃用 DEP0203 和 DEP0204（Filip Skokan）[#62453](https://github.com/nodejs/node/pull/62453)
+
+* \[[`ac6375417a`](https://github.com/nodejs/node/commit/ac6375417a)] - **(SEMVER-MAJOR)** **stream**: 将 DEP0201 提升为运行时弃用（René）[#62173](https://github.com/nodejs/node/pull/62173)
+
+* \[[`98907f560f`](https://github.com/nodejs/node/commit/98907f560f)] - **(SEMVER-MAJOR)** **module**: 在运行时弃用 module.register()（Geoffrey Booth）[#62401](https://github.com/nodejs/node/pull/62401)
+
+* \[[`89f4b6cddb`](https://github.com/nodejs/node/commit/89f4b6cddb)] - **(SEMVER-MAJOR)** **module**: 移除 --experimental-transform-types（Marco Ippolito）[#61803](https://github.com/nodejs/node/pull/61803)
 
 ### Semver-Major 提交
 

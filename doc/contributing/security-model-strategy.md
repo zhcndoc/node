@@ -1,62 +1,59 @@
-# Security Model Strategy
+# 安全模型策略
 
-A clear security model, with features like permissions and policy enforcement,
-is a
-[top technical priority](https://github.com/nodejs/node/blob/HEAD/doc/contributing/technical-priorities.md#permissionspoliciessecurity-model)
-of Node.js.
+一个清晰的安全模型，具备权限和策略强制执行等功能，
+是 Node.js 的
+[技术优先事项之一](https://github.com/nodejs/node/blob/HEAD/doc/contributing/technical-priorities.md#permissionspoliciessecurity-model)。
 
-## High-level approach
+## 高层方法
 
-* Document the security model
-* Document threat models and current state of the art
-* Support experimentation on features like permissions and policies
-* Add a security component in Node.js certification covering
-  the Node.js security model
+* 记录安全模型
+* 记录威胁模型和当前最先进实践
+* 支持对权限和策略等功能进行实验
+* 在 Node.js 认证中增加一个安全组件，涵盖
+  Node.js 安全模型
 
-### Document the security model
+### 记录安全模型
 
-The current security model for Node.js is not yet well documented.
-At a high level it is:
+Node.js 当前的安全模型尚未得到充分记录。
+从高层来看，它是：
 
-* Node.js does not provide a sandbox, both the JavaScript and
-  native code which is run is trusted to not be malicious.
-* The project works to help code running on top of Node.js to avoid
-  making mistakes, but not doing so is not considered a
-  vulnerability in Node.js. Just because you can build something
-  vulnerable with the APIs does not mean there is a vulnerability
-  in Node.js itself.
+* Node.js 不提供沙箱，运行的 JavaScript 和
+  原生代码都被信任不会是恶意的。
+* 该项目致力于帮助运行在 Node.js 之上的代码避免
+  犯错，但未能做到这一点并不被视为 Node.js 中的
+  漏洞。仅仅因为你可以利用这些 API 构建出有漏洞的东西，
+  并不意味着 Node.js 本身存在漏洞。
 
-The project has a goal to better document the security model
-and this section will be expanded when that happens.
+该项目的目标是更好地记录安全模型，
+当这件事完成后，本节将会扩展。
 
-Once the security model is documented the project will work
-to add a security component in Node.js certification covering
-the Node.js security model.
+一旦安全模型被记录下来，该项目将努力
+在 Node.js 认证中增加一个安全组件，涵盖
+Node.js 安全模型。
 
-### Document threat models and current state of the art
+### 记录威胁模型和当前最先进实践
 
-Node.js is used in several different use cases and the
-threats may be different in each use case. The project
-should document the threat models and use that to
-help define the security model in the context of each
-of these use cases.
+Node.js 被用于多种不同的使用场景，
+而在每种使用场景中，威胁可能都不同。该项目
+应该记录这些威胁模型，并据此帮助定义
+这些使用场景下的安全模型。
 
-This section will be expanded as the use case/threat
-models are defined. The initial list includes:
+当使用场景/威胁模型被定义后，本节将会扩展。
+初始列表包括：
 
-* Server
-* Desktop application
-* Cli
-* Single executable application
-* CI/CD pipeline components
+* 服务器
+* 桌面应用程序
+* CLI
+* 单一可执行应用程序
+* CI/CD 流水线组件
 
-### Support experimentation on features like permissions
+### 支持对权限等功能进行实验
 
-The project is not currently planning to provide supported
-sandbox functionality, but wants to support experimentation on
-related features like permission enforcement.
+该项目目前不计划提供受支持的
+沙箱功能，但希望支持对相关功能进行实验，
+例如权限强制执行。
 
-Features in this category should:
+此类别中的功能应当：
 
-* be opt-in, and additional overhead when not enabled must be low
-* limit change in core to just what is needed to enable experimentation
+* 支持按需启用，且未启用时额外开销必须很低
+* 将核心中的变更限制为仅实现实验所必需的部分

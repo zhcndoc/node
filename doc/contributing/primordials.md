@@ -1,44 +1,34 @@
-# Usage of primordials in core
+# core 中 primordials 的使用
 
-The file `lib/internal/per_context/primordials.js` subclasses and stores the JS
-built-ins that come from the VM so that Node.js built-in modules do not need to
-later look these up from the global proxy, which can be mutated by users.
+文件 `lib/internal/per_context/primordials.js` 会对来自 VM 的 JS
+内建对象进行子类化并存储，这样 Node.js 内置模块之后就不需要再从
+global proxy 中查找这些对象，因为它可能会被用户修改。
 
-For some area of the codebase, performance and code readability are deemed more
-important than reliability against prototype pollution:
+对于代码库中的某些区域，性能和代码可读性被认为比抵御原型污染的可靠性更重要：
 
 * `node:http`
 * `node:http2`
 * `node:tls`
 * `node:zlib`
 
-Usage of primordials should be preferred for new code in other areas, but
-replacing current code with primordials should be
-[done with care](#primordials-with-known-performance-issues). It is highly
-recommended to ping the relevant team when reviewing a pull request that touches
-one of the subsystems they "own".
+在其他区域的新代码中应优先使用 primordials，但将现有代码替换为 primordials 时应
+[谨慎进行](#primordials-with-known-performance-issues)。在审查涉及其“所属”子系统之一的拉取请求时，强烈建议提醒相关团队。
 
-## Accessing primordials
+## 访问 primordials
 
-The primordials are meant for internal use only, and are only accessible for
-internal core modules. User code cannot use or rely on primordials. It is
-usually fine to rely on ECMAScript built-ins and assume that it will behave as
-specified.
+primordials 仅用于内部，不对内部 core 模块之外的代码开放。用户代码不能使用或依赖 primordials。通常可以依赖 ECMAScript 内建对象，并假定其行为符合规范。
 
-If you would like to access the `primordials` object to help you with Node.js
-core development or for tinkering, you can expose it on the global scope using
-this combination of CLI flags:
+如果你想访问 `primordials` 对象以帮助进行 Node.js core 开发或用于试验，可以使用以下 CLI 标志组合将其暴露到全局作用域：
 
 ```bash
 node --expose-internals -r internal/test/binding
 ```
 
-## Contents of primordials
+## primordials 的内容
 
-### Properties of the global object
+### 全局对象的属性
 
-Objects and functions on the global object can be deleted or replaced. Using
-them from primordials makes the code more reliable:
+全局对象上的对象和函数都可能被删除或替换。使用 primordials 中的它们可以让代码更可靠：
 
 ```js
 globalThis.Array === primordials.Array; // true
@@ -52,27 +42,25 @@ primordials.Array(0); // []
 globalThis.Array(0); // [1,2,3]
 ```
 
-### Prototype methods
+### 原型方法
 
-ECMAScript provides a group of methods available on built-in objects that are
-used to interact with JavaScript objects.
+ECMAScript 提供了一组可用于内建对象的方法，用于与 JavaScript 对象交互。
 
 ```js
 const array = [1, 2, 3];
-array.push(4); // Here `push` refers to %Array.prototype.push%.
+array.push(4); // 这里 `push` 指的是 %Array.prototype.push%.
 console.log(JSON.stringify(array)); // [1,2,3,4]
 
-// %Array.prototype%.push is modified in userland.
+// 用户环境中修改了 %Array.prototype%.push。
 Array.prototype.push = function push(val) {
   return this.unshift(val);
 };
 
-array.push(5); // Now `push` refers to the modified method.
+array.push(5); // 现在 `push` 指的是被修改后的方法。
 console.log(JSON.stringify(array)); // [5,1,2,3,4]
 ```
 
-Primordials wrap the original prototype functions with new functions that take
-the `this` value as the first argument:
+Primordials 会用新函数包装原始原型函数，这些新函数将 `this` 值作为第一个参数：
 
 ```js
 const {
@@ -91,65 +79,49 @@ ArrayPrototypePush(array, 5);
 console.log(JSON.stringify(array)); // [1,2,3,4,5]
 ```
 
-### Safe classes
+### 安全类
 
-Safe classes are classes that provide the same API as their equivalent class,
-but whose implementation aims to avoid any reliance on user-mutable code.
-Safe classes should not be exposed to user-land; use unsafe equivalent when
-dealing with objects that are accessible from user-land.
+安全类是提供与其对应类相同 API 的类，但其实现旨在避免依赖任何可被用户修改的代码。安全类不应暴露给用户层；在处理用户层可访问的对象时，请使用不安全的等价实现。
 
-### Variadic functions
+### 可变参数函数
 
-There are some built-in functions that accept a variable number of arguments
-(e.g.: `Math.max`, `%Array.prototype.push%`). It is sometimes useful to provide
-the list of arguments as an array. You can use primordial function with the
-suffix `Apply` (e.g.: `MathMaxApply`, `ArrayPrototypePushApply`) to do that.
+有些内建函数接受可变数量的参数（例如：`Math.max`、`%Array.prototype.push%`）。有时将参数列表作为数组提供会很有用。你可以使用带有 `Apply` 后缀的 primordials 函数（例如：`MathMaxApply`、`ArrayPrototypePushApply`）来实现这一点。
 
-## Primordials with known performance issues
+## 已知存在性能问题的 primordials
 
-One of the reasons why the current Node.js API is not completely tamper-proof is
-performance: sometimes the use of primordials can cause performance regressions
-with V8, which when in a hot code path, could significantly decrease the
-performance of code in Node.js.
+当前 Node.js API 之所以并非完全防篡改，其中一个原因是性能：有时使用 primordials 会导致 V8 性能回退，而在热点代码路径中，这可能会显著降低 Node.js 代码的性能。
 
-* Methods that mutate the internal state of arrays:
+* 会修改数组内部状态的方法：
   * `ArrayPrototypePush`
   * `ArrayPrototypePop`
   * `ArrayPrototypeShift`
   * `ArrayPrototypeUnshift`
-* Methods of the function prototype:
+* 函数原型的方法：
   * `FunctionPrototypeBind`
-  * `FunctionPrototypeCall`: creates performance issues when used to invoke
-    super constructors.
-  * `FunctionPrototype`: use `() => {}` instead when referencing a no-op
-    function.
+  * `FunctionPrototypeCall`: 在用于调用 super 构造函数时会导致性能问题。
+  * `FunctionPrototype`: 在引用空操作函数时请改用 `() => {}`。
 * `SafeArrayIterator`
 * `SafeStringIterator`
 * `SafePromiseAll`
 * `SafePromiseAllSettled`
 * `SafePromiseAny`
 * `SafePromiseRace`
-* `SafePromisePrototypeFinally`: use `try {} finally {}` block instead.
-* `ReflectConstruct`: Also affects `Reflect.construct`.
-  `ReflectConstruct` creates new types of classes inside functions.
-  Instead consider creating a shared class. See [nodejs/performance#109](https://github.com/nodejs/performance/issues/109).
+* `SafePromisePrototypeFinally`: 请改用 `try {} finally {}` 块。
+* `ReflectConstruct`: 也会影响 `Reflect.construct`。
+  `ReflectConstruct` 会在函数内部创建新的类类型。
+  更好的替代方案是创建一个共享类。参见 [nodejs/performance#109](https://github.com/nodejs/performance/issues/109)。
 
-In general, when sending or reviewing a PR that makes changes in a hot code
-path, use extra caution and run extensive benchmarks.
+一般来说，在发送或审查会修改热点代码路径的 PR 时，请格外谨慎并运行充分的基准测试。
 
-## Implicit use of user-mutable methods
+## 用户可修改方法的隐式使用
 
-### Unsafe array iteration
+### 不安全的数组迭代
 
-There are many usual practices in JavaScript that rely on iteration. It's useful
-to be aware of them when dealing with arrays (or `TypedArray`s) in core as array
-iteration typically calls several user-mutable methods. This sections lists the
-most common patterns in which ECMAScript code relies non-explicitly on array
-iteration and how to avoid it.
+JavaScript 中有许多常见实践依赖迭代。在处理 core 中的数组（或 `TypedArray`）时，了解这些实践很有用，因为数组迭代通常会调用若干可由用户修改的方法。本节列出了 ECMAScript 代码中非显式依赖数组迭代的最常见模式，以及如何避免它们。
 
 <details>
 
-<summary>Avoid for-of loops on arrays</summary>
+<summary>避免在数组上使用 for-of 循环</summary>
 
 ```js
 for (const item of array) {
@@ -157,29 +129,27 @@ for (const item of array) {
 }
 ```
 
-This code is internally expanded into something that looks like:
+这段代码在内部会展开成类似如下的内容：
 
 ```js
 {
-  // 1. Lookup %Symbol.iterator% property on `array` (user-mutable if
-  //    user-provided).
-  // 2. Lookup %Symbol.iterator% property on %Array.prototype% (user-mutable).
-  // 3. Call that function.
+  // 1. 查找 `array` 上的 %Symbol.iterator% 属性（如果由用户提供，则可被用户修改）。
+  // 2. 查找 %Array.prototype% 上的 %Symbol.iterator% 属性（可被用户修改）。
+  // 3. 调用该函数。
   const iterator = array[Symbol.iterator]();
-  // 1. Lookup `next` property on `iterator` (doesn't exist).
-  // 2. Lookup `next` property on %ArrayIteratorPrototype% (user-mutable).
-  // 3. Call that function.
+  // 1. 查找 `iterator` 上的 `next` 属性（不存在）。
+  // 2. 查找 %ArrayIteratorPrototype% 上的 `next` 属性（可被用户修改）。
+  // 3. 调用该函数。
   let { done, value: item } = iterator.next();
   while (!done) {
     console.log(item);
-    // Repeat.
+    // 重复。
     ({ done, value: item } = iterator.next());
   }
 }
 ```
 
-Instead of utilizing iterators, you can use the more traditional but still very
-performant `for` loop:
+与其使用迭代器，不如使用更传统但仍然非常高效的 `for` 循环：
 
 ```js
 for (let i = 0; i < array.length; i++) {
@@ -187,11 +157,10 @@ for (let i = 0; i < array.length; i++) {
 }
 ```
 
-The following code snippet illustrates how user-land code could impact the
-behavior of internal modules:
+下面的代码片段展示了用户层代码如何影响内部模块的行为：
 
 ```js
-// User-land
+// 用户层
 Array.prototype[Symbol.iterator] = () => ({
   next: () => ({ done: true }),
 });
@@ -210,69 +179,63 @@ console.log(forOfLoopBlockExecuted); // false
 console.log(forLoopBlockExecuted); // true
 ```
 
-This only applies if you are working with a genuine array (or array-like
-object). If you are instead expecting an iterator, a for-of loop may be a better
-choice.
+这只适用于你处理的是真正的数组（或类数组对象）。如果你期望的是一个迭代器，那么 for-of 循环可能是更好的选择。
 
 </details>
 
 <details>
 
-<summary>Avoid array destructuring assignment on arrays</summary>
+<summary>避免在数组上使用数组解构赋值</summary>
 
 ```js
 const [first, second] = array;
 ```
 
-This is roughly equivalent to:
+这大致等价于：
 
 ```js
-// 1. Lookup %Symbol.iterator% property on `array` (user-mutable if
-//    user-provided).
-// 2. Lookup %Symbol.iterator% property on %Array.prototype% (user-mutable).
-// 3. Call that function.
+// 1. 查找 `array` 上的 %Symbol.iterator% 属性（如果由用户提供，则可被用户修改）。
+// 2. 查找 %Array.prototype% 上的 %Symbol.iterator% 属性（可被用户修改）。
+// 3. 调用该函数。
 const iterator = array[Symbol.iterator]();
-// 1. Lookup `next` property on `iterator` (doesn't exist).
-// 2. Lookup `next` property on %ArrayIteratorPrototype% (user-mutable).
-// 3. Call that function.
+// 1. 查找 `iterator` 上的 `next` 属性（不存在）。
+// 2. 查找 %ArrayIteratorPrototype% 上的 `next` 属性（可被用户修改）。
+// 3. 调用该函数。
 const first = iterator.next().value;
-// Repeat.
+// 重复。
 const second = iterator.next().value;
 ```
 
-Instead you can use object destructuring:
+你可以改用对象解构：
 
 ```js
 const { 0: first, 1: second } = array;
 ```
 
-or
+或者
 
 ```js
 const first = array[0];
 const second = array[1];
 ```
 
-This only applies if you are working with a genuine array (or array-like
-object). If you are instead expecting an iterator, array destructuring is the
-best choice.
+这只适用于你处理的是真正的数组（或类数组对象）。如果你期望的是一个迭代器，那么数组解构是最佳选择。
 
 </details>
 
 <details>
 
-<summary>Avoid spread operator on arrays</summary>
+<summary>避免在数组上使用展开运算符</summary>
 
 ```js
-// 1. Lookup %Symbol.iterator% property on `array` (user-mutable if
-//    user-provided).
-// 2. Lookup %Symbol.iterator% property on %Array.prototype% (user-mutable).
-// 3. Lookup `next` property on %ArrayIteratorPrototype% (user-mutable).
+// 1. 查找 `array` 上的 %Symbol.iterator% 属性（如果由用户提供，则可被用户修改）。
+// 2. 查找 %Array.prototype% 上的 %Symbol.iterator% 属性（可被用户修改）。
+// 3. 查找 %ArrayIteratorPrototype% 上的 `next` 属性（可被用户修改）。
 const arrayCopy = [...array];
 func(...array);
 ```
 
-Instead you can use other ECMAScript features to achieve the same result:
+你可以使用其他 ECMAScript 特性来达到相同结果：
 
 ```js
 const arrayCopy = ArrayPrototypeSlice(array);
@@ -283,26 +246,25 @@ ReflectApply(func, null, array);
 
 <details>
 
-<summary><code>%Array.prototype.concat%</code> looks up
-         <code>%Symbol.isConcatSpreadable%</code> property of the passed
-         arguments and the <code>this</code> value</summary>
+<summary><code>%Array.prototype.concat%</code> 会查找传入参数以及 <code>this</code> 值的
+         <code>%Symbol.isConcatSpreadable%</code> 属性</summary>
 
 ```js
 {
-  // Unsafe code example:
-  // 1. Lookup %Symbol.isConcatSpreadable% property on `array`
-  //    (user-mutable if user-provided).
-  // 2. Lookup %Symbol.isConcatSpreadable% property on `%Array.prototype%
-  //    (user-mutable).
-  // 2. Lookup %Symbol.isConcatSpreadable% property on `%Object.prototype%
-  //    (user-mutable).
+  // 不安全代码示例：
+  // 1. 查找 `array` 上的 %Symbol.isConcatSpreadable% 属性
+  //    （如果由用户提供，则可被用户修改）。
+  // 2. 查找 `%Array.prototype%` 上的 %Symbol.isConcatSpreadable% 属性
+  //    （可被用户修改）。
+  // 2. 查找 `%Object.prototype%` 上的 %Symbol.isConcatSpreadable% 属性
+  //    （可被用户修改）。
   const array = [];
   ArrayPrototypeConcat(array);
 }
 ```
 
 ```js
-// User-land
+// 用户层
 Object.defineProperty(Object.prototype, Symbol.isConcatSpreadable, {
   get() {
     this.push(5);
@@ -312,23 +274,23 @@ Object.defineProperty(Object.prototype, Symbol.isConcatSpreadable, {
 
 // Core
 {
-  // Using ArrayPrototypeConcat does not produce the expected result:
+  // 使用 ArrayPrototypeConcat 无法得到预期结果：
   const a = [1, 2];
   const b = [3, 4];
   console.log(ArrayPrototypeConcat(a, b)); // [1, 2, 5, 3, 4, 5]
 }
 {
-  // Concatenating two arrays can be achieved safely, e.g.:
+  // 例如，可以安全地拼接两个数组：
   const a = [1, 2];
   const b = [3, 4];
-  // Using %Array.prototype.push% and `SafeArrayIterator` to get the expected
-  // outcome:
+  // 使用 %Array.prototype.push% 和 `SafeArrayIterator` 以获得预期
+  // 结果：
   const concatArray = [];
   ArrayPrototypePush(concatArray, ...new SafeArrayIterator(a),
                      ...new SafeArrayIterator(b));
   console.log(concatArray); // [1, 2, 3, 4]
 
-  // Or using `ArrayPrototypePushApply` if it's OK to mutate the first array:
+  // 或者，如果可以修改第一个数组，也可以使用 `ArrayPrototypePushApply`：
   ArrayPrototypePushApply(a, b);
   console.log(a); // [1, 2, 3, 4]
 }
@@ -338,30 +300,29 @@ Object.defineProperty(Object.prototype, Symbol.isConcatSpreadable, {
 
 <details>
 
-<summary><code>%Object.fromEntries%</code> iterate over an array</summary>
+<summary><code>%Object.fromEntries%</code> 会遍历数组</summary>
 
 ```js
 {
-  // Unsafe code example:
-  // 1. Lookup %Symbol.iterator% property on `array` (user-mutable if
-  //    user-provided).
-  // 2. Lookup %Symbol.iterator% property on %Array.prototype% (user-mutable).
-  // 3. Lookup `next` property on %ArrayIteratorPrototype% (user-mutable).
+  // 不安全代码示例：
+  // 1. 查找 `array` 上的 %Symbol.iterator% 属性（如果由用户提供，则可被用户修改）。
+  // 2. 查找 %Array.prototype% 上的 %Symbol.iterator% 属性（可被用户修改）。
+  // 3. 查找 %ArrayIteratorPrototype% 上的 `next` 属性（可被用户修改）。
   const obj = ObjectFromEntries(array);
 }
 
 {
-  // Safe example using `SafeArrayIterator`:
+  // 使用 `SafeArrayIterator` 的安全示例：
   const obj = ObjectFromEntries(new SafeArrayIterator(array));
 }
 
 {
-  // Safe example without using `SafeArrayIterator`:
+  // 不使用 `SafeArrayIterator` 的安全示例：
   const obj = {};
   for (let i = 0; i < array.length; i++) {
     obj[array[i][0]] = array[i][1];
   }
-  // In a hot code path, this would be the preferred method.
+  // 在热点代码路径中，这将是首选方法。
 }
 ```
 
@@ -369,61 +330,57 @@ Object.defineProperty(Object.prototype, Symbol.isConcatSpreadable, {
 
 <details>
 
-<summary><code>%Promise.all%</code>,
-         <code>%Promise.allSettled%</code>,
-         <code>%Promise.any%</code>, and
-         <code>%Promise.race%</code> iterate over an array</summary>
+<summary><code>%Promise.all%</code>、
+         <code>%Promise.allSettled%</code>、
+         <code>%Promise.any%</code> 和
+         <code>%Promise.race%</code> 会遍历数组</summary>
 
 ```js
-// 1. Lookup %Symbol.iterator% property on `array` (user-mutable if
-//    user-provided).
-// 2. Lookup %Symbol.iterator% property on %Array.prototype% (user-mutable).
-// 3. Lookup `next` property on %ArrayIteratorPrototype% (user-mutable).
-// 4. Lookup `then` property on %Array.Prototype% (user-mutable).
-// 5. Lookup `then` property on %Object.Prototype% (user-mutable).
-PromiseAll([]); // unsafe
+// 1. 查找 `array` 上的 %Symbol.iterator% 属性（如果由用户提供，则可被用户修改）。
+// 2. 查找 %Array.prototype% 上的 %Symbol.iterator% 属性（可被用户修改）。
+// 3. 查找 %ArrayIteratorPrototype% 上的 `next` 属性（可被用户修改）。
+// 4. 查找 %Array.Prototype% 上的 `then` 属性（可被用户修改）。
+// 5. 查找 %Object.Prototype% 上的 `then` 属性（可被用户修改）。
+PromiseAll([]); // 不安全
 
-// 1. Lookup `then` property on %Array.Prototype% (user-mutable).
-// 2. Lookup `then` property on %Object.Prototype% (user-mutable).
-PromiseAll(new SafeArrayIterator([])); // still unsafe
-SafePromiseAll([]); // still unsafe
+// 1. 查找 %Array.Prototype% 上的 `then` 属性（可被用户修改）。
+// 2. 查找 %Object.Prototype% 上的 `then` 属性（可被用户修改）。
+PromiseAll(new SafeArrayIterator([])); // 仍然不安全
+SafePromiseAll([]); // 仍然不安全
 
-SafePromiseAllReturnVoid([]); // safe
-SafePromiseAllReturnArrayLike([]); // safe
+SafePromiseAllReturnVoid([]); // 安全
+SafePromiseAllReturnArrayLike([]); // 安全
 
 const array = [promise];
 const set = new SafeSet().add(promise);
-// When running one of these functions on a non-empty iterable, it will also:
-// 1. Lookup `then` property on `promise` (user-mutable if user-provided).
-// 2. Lookup `then` property on `%Promise.prototype%` (user-mutable).
-// 3. Lookup `then` property on %Array.Prototype% (user-mutable).
-// 4. Lookup `then` property on %Object.Prototype% (user-mutable).
-PromiseAll(new SafeArrayIterator(array)); // unsafe
-PromiseAll(set); // unsafe
+// 当在非空可迭代对象上运行这些函数之一时，它还会：
+// 1. 查找 `promise` 上的 `then` 属性（如果由用户提供，则可被用户修改）。
+// 2. 查找 `%Promise.prototype%` 上的 `then` 属性（可被用户修改）。
+// 3. 查找 %Array.Prototype% 上的 `then` 属性（可被用户修改）。
+// 4. 查找 %Object.Prototype% 上的 `then` 属性（可被用户修改）。
+PromiseAll(new SafeArrayIterator(array)); // 不安全
+PromiseAll(set); // 不安全
 
-SafePromiseAllReturnVoid(array); // safe
-SafePromiseAllReturnArrayLike(array); // safe
+SafePromiseAllReturnVoid(array); // 安全
+SafePromiseAllReturnArrayLike(array); // 安全
 
-// Some key differences between `SafePromise[...]` and `Promise[...]` methods:
+// `SafePromise[...]` 和 `Promise[...]` 方法有一些关键区别：
 
-// 1. SafePromiseAll, SafePromiseAllSettled, SafePromiseAny, SafePromiseRace,
-//    SafePromiseAllReturnArrayLike, SafePromiseAllReturnVoid, and
-//    SafePromiseAllSettledReturnVoid support passing a mapperFunction as second
-//    argument.
-SafePromiseAll(ArrayPrototypeMap(array, someFunction));
-SafePromiseAll(array, someFunction); // Same as the above, but more efficient.
+// 1. SafePromiseAll、SafePromiseAllSettled、SafePromiseAny、SafePromiseRace、
+//    SafePromiseAllReturnArrayLike、SafePromiseAllReturnVoid 以及
+//    SafePromiseAllSettledReturnVoid 支持将 mapperFunction 作为第二个参数。
+// SafePromiseAll(ArrayPrototypeMap(array, someFunction));
+SafePromiseAll(array, someFunction); // 与上面相同，但更高效。
 
-// 2. SafePromiseAll, SafePromiseAllSettled, SafePromiseAny, SafePromiseRace,
-//    SafePromiseAllReturnArrayLike, SafePromiseAllReturnVoid, and
-//    SafePromiseAllSettledReturnVoid only support arrays and array-like
-//    objects, not iterables. Use ArrayFrom to convert an iterable to an array.
-SafePromiseAllReturnVoid(set); // ignores set content.
-SafePromiseAllReturnVoid(ArrayFrom(set)); // works
+// 2. SafePromiseAll、SafePromiseAllSettled、SafePromiseAny、SafePromiseRace、
+//    SafePromiseAllReturnArrayLike、SafePromiseAllReturnVoid 以及
+//    SafePromiseAllSettledReturnVoid 只支持数组和类数组
+//    对象，不支持可迭代对象。使用 ArrayFrom 将可迭代对象转换为数组。
+// SafePromiseAllReturnVoid(set); // 忽略 set 内容。
+SafePromiseAllReturnVoid(ArrayFrom(set)); // 可用
 
-// 3. SafePromiseAllReturnArrayLike is safer than SafePromiseAll, however you
-//    should not use them when its return value is passed to the user as it can
-//    be surprising for them not to receive a genuine array.
-SafePromiseAllReturnArrayLike(array).then((val) => val instanceof Array); // false
+// 3. SafePromiseAllReturnArrayLike 比 SafePromiseAll 更安全，不过如果其返回值被传递给用户，就不应使用它，因为用户可能会因为没有收到真正的数组而感到意外。
+// SafePromiseAllReturnArrayLike(array).then((val) => val instanceof Array); // false
 SafePromiseAll(array).then((val) => val instanceof Array); // true
 ```
 
@@ -431,26 +388,26 @@ SafePromiseAll(array).then((val) => val instanceof Array); // true
 
 <details>
 
-<summary><code>%Map%</code>, <code>%Set%</code>, <code>%WeakMap%</code>, and
-         <code>%WeakSet%</code> constructors iterate over an array</summary>
+<summary><code>%Map%</code>、<code>%Set%</code>、<code>%WeakMap%</code> 和
+         <code>%WeakSet%</code> 构造函数会遍历数组</summary>
 
 ```js
-// User-land
+// 用户层
 Array.prototype[Symbol.iterator] = () => ({
   next: () => ({ done: true }),
 });
 
 // Core
 
-// 1. Lookup %Symbol.iterator% property on %Array.prototype% (user-mutable).
-// 2. Lookup `next` property on %ArrayIteratorPrototype% (user-mutable).
+// 1. 查找 %Array.prototype% 上的 %Symbol.iterator% 属性（可被用户修改）。
+// 2. 查找 %ArrayIteratorPrototype% 上的 `next` 属性（可被用户修改）。
 const set = new SafeSet([1, 2, 3]);
 
 console.log(set.size); // 0
 ```
 
 ```js
-// User-land
+// 用户层
 Array.prototype[Symbol.iterator] = () => ({
   next: () => ({ done: true }),
 });
@@ -463,15 +420,15 @@ console.log(set.size); // 3
 
 </details>
 
-### Promise objects
+### Promise 对象
 
 <details>
 
-<summary><code>%Promise.prototype.finally%</code> looks up <code>then</code>
-         property of the Promise instance</summary>
+<summary><code>%Promise.prototype.finally%</code> 会查找 Promise 实例的 <code>then</code>
+         属性</summary>
 
 ```js
-// User-land
+// 用户层
 Promise.prototype.then = function then(a, b) {
   return Promise.resolve();
 };
@@ -484,7 +441,7 @@ process.on('exit', () => console.log(finallyBlockExecuted)); // false
 ```
 
 ```js
-// User-land
+// 用户层
 Promise.prototype.then = function then(a, b) {
   return Promise.resolve();
 };
@@ -505,25 +462,22 @@ process.on('exit', () => console.log(finallyBlockExecuted)); // true
 
 <details>
 
-<summary><code>%Promise.all%</code>,
-         <code>%Promise.allSettled%</code>,
-         <code>%Promise.any%</code>, and
-         <code>%Promise.race%</code> look up <code>then</code>
-         property of the Promise instances</summary>
+<summary><code>%Promise.all%</code>、
+         <code>%Promise.allSettled%</code>、
+         <code>%Promise.any%</code> 和
+         <code>%Promise.race%</code> 会查找 Promise 实例的 <code>then</code>
+         属性</summary>
 
-You can use safe alternatives from primordials that differ slightly from the
-original methods:
+你可以使用 primordials 中更安全的替代方案，它们与原始方法略有不同：
 
-* It expects an array (or array-like object) instead of an iterable.
-* It wraps each promise in `SafePromise` objects and wraps the result in a new
-  `Promise` instance – which may come with a performance penalty.
-* It accepts a `mapperFunction` as second argument.
-* Because it doesn't look up `then` property, it may not be the right tool to
-  handle user-provided promises (which may be instances of a subclass of
-  `Promise`).
+* 它期望的是数组（或类数组对象），而不是可迭代对象。
+* 它会将每个 promise 包装在 `SafePromise` 对象中，并将结果包装在新的
+  `Promise` 实例中——这可能带来性能损失。
+* 它接受一个 `mapperFunction` 作为第二个参数。
+* 因为它不会查找 `then` 属性，所以它可能不是处理用户提供的 promise 的正确工具（这些 promise 可能是 `Promise` 子类的实例）。
 
 ```js
-// User-land
+// 用户层
 Promise.prototype.then = function then(a, b) {
   return Promise.resolve();
 };
@@ -538,7 +492,7 @@ process.on('exit', () => console.log(thenBlockExecuted)); // false
 ```
 
 ```js
-// User-land
+// 用户层
 Promise.prototype.then = function then(a, b) {
   return Promise.resolve();
 };
@@ -552,30 +506,26 @@ PromisePrototypeThen(
 process.on('exit', () => console.log(thenBlockExecuted)); // true
 ```
 
-A common pattern is to map on the array of `Promise`s to apply some
-transformations, in that case it can be more efficient to pass a second argument
-rather than invoking `%Array.prototype.map%`.
+一个常见模式是在 Promise 数组上进行 map 以应用一些转换，在这种情况下，传递第二个参数可能比调用 `%Array.prototype.map%` 更高效。
 
 ```js
 SafePromiseAll(ArrayPrototypeMap(array, someFunction));
-SafePromiseAll(array, someFunction); // Same as the above, but more efficient.
+SafePromiseAll(array, someFunction); // 与上面相同，但更高效。
 ```
 
 </details>
 
-### (Async) Generator functions
+### （异步）生成器函数
 
-Generators and async generators returned by generator functions and async
-generator functions are relying on user-mutable methods; their use in core
-should be avoided.
+生成器函数和异步生成器函数返回的生成器与异步生成器依赖于用户可修改的方法；在 core 中应避免使用它们。
 
 <details>
 
-<summary><code>%GeneratorFunction.prototype.prototype%.next</code> is
-         user-mutable</summary>
+<summary><code>%GeneratorFunction.prototype.prototype%.next</code> 是
+         用户可修改的</summary>
 
 ```js
-// User-land
+// 用户层
 Object.getPrototypeOf(function* () {}).prototype.next = function next() {
   return { done: true };
 };
@@ -597,11 +547,11 @@ console.log(loopCodeExecuted); // false
 
 <details>
 
-<summary><code>%AsyncGeneratorFunction.prototype.prototype%.next</code> is
-         user-mutable</summary>
+<summary><code>%AsyncGeneratorFunction.prototype.prototype%.next</code> 是
+         用户可修改的</summary>
 
 ```js
-// User-land
+// 用户层
 Object.getPrototypeOf(async function* () {}).prototype.next = function next() {
   return new Promise(() => {});
 };
@@ -616,7 +566,7 @@ let finallyBlockExecuted = false;
 async () => {
   try {
     for await (const nb of someGenerator()) {
-      // some code;
+      // 某些代码；
     }
   } finally {
     finallyBlockExecuted = true;
@@ -627,11 +577,11 @@ process.on('exit', () => console.log(finallyBlockExecuted)); // false
 
 </details>
 
-### Text processing
+### 文本处理
 
-#### Unsafe string methods
+#### 不安全的字符串方法
 
-| The string method             | looks up the property |
+| 字符串方法                     | 查找的属性            |
 | ----------------------------- | --------------------- |
 | `String.prototype.match`      | `Symbol.match`        |
 | `String.prototype.matchAll`   | `Symbol.matchAll`     |
@@ -641,7 +591,7 @@ process.on('exit', () => console.log(finallyBlockExecuted)); // false
 | `String.prototype.split`      | `Symbol.split`        |
 
 ```js
-// User-land
+// 用户层
 RegExp.prototype[Symbol.replace] = () => 'foo';
 String.prototype[Symbol.replace] = () => 'baz';
 
@@ -651,14 +601,13 @@ console.log(StringPrototypeReplace('ber', 'e', 'a')); // 'baz'
 console.log(RegExpPrototypeSymbolReplace(/e/, 'ber', 'a')); // 'bar'
 ```
 
-#### Unsafe string iteration
+#### 不安全的字符串迭代
 
-As with arrays, iterating over strings calls several user-mutable methods. Avoid
-iterating over strings when possible, or use `SafeStringIterator`.
+与数组一样，遍历字符串会调用若干可由用户修改的方法。尽可能避免遍历字符串，或者使用 `SafeStringIterator`。
 
-#### Unsafe `RegExp` methods
+#### 不安全的 `RegExp` 方法
 
-Functions that lookup the `exec` property on the prototype chain:
+会在原型链上查找 `exec` 属性的函数：
 
 * `RegExp.prototype[Symbol.match]`
 * `RegExp.prototype[Symbol.matchAll]`
@@ -668,7 +617,7 @@ Functions that lookup the `exec` property on the prototype chain:
 * `RegExp.prototype.test`
 
 ```js
-// User-land
+// 用户层
 RegExp.prototype.exec = () => null;
 
 // Core
@@ -679,17 +628,15 @@ console.log(RegExpPrototypeSymbolSearch(/o/, 'foo')); // -1
 console.log(SafeStringPrototypeSearch('foo', /o/)); // 1
 ```
 
-#### Don't trust `RegExp` flags
+#### 不要信任 `RegExp` 标志
 
-RegExp flags are not own properties of the regex instances, which means flags
-can be reset from user-land.
+RegExp 标志不是正则实例自身的属性，这意味着标志可以从用户层被重置。
 
 <details>
 
-<summary>List of <code>RegExp</code> methods that look up properties from
-         mutable getters</summary>
+<summary>会从可变 getter 中查找属性的 <code>RegExp</code> 方法列表</summary>
 
-| `RegExp` method                     | looks up the following flag-related properties                     |
+| `RegExp` 方法                     | 会查找以下与标志相关的属性                                         |
 | ----------------------------------- | ------------------------------------------------------------------ |
 | `get RegExp.prototype.flags`        | `global`, `ignoreCase`, `multiline`, `dotAll`, `unicode`, `sticky` |
 | `RegExp.prototype[Symbol.match]`    | `global`, `unicode`                                                |
@@ -701,7 +648,7 @@ can be reset from user-land.
 </details>
 
 ```js
-// User-land
+// 用户层
 Object.defineProperty(RegExp.prototype, 'global', { value: false });
 
 // Core
@@ -709,14 +656,12 @@ console.log(RegExpPrototypeSymbolReplace(/o/g, 'foo', 'a')); // 'fao'
 console.log(RegExpPrototypeSymbolReplace(hardenRegExp(/o/g), 'foo', 'a')); // 'faa'
 ```
 
-### Defining object own properties
+### 定义对象自身属性
 
-When defining property descriptor (to add or update an own property to a
-JavaScript object), be sure to always use a null-prototype object to avoid
-prototype pollution.
+在定义属性描述符时（为 JavaScript 对象添加或更新自身属性），务必始终使用无原型对象，以避免原型污染。
 
 ```js
-// User-land
+// 用户层
 Object.prototype.get = function get() {};
 
 // Core
@@ -728,7 +673,7 @@ try {
 ```
 
 ```js
-// User-land
+// 用户层
 Object.prototype.get = function get() {};
 
 // Core
@@ -736,11 +681,10 @@ ObjectDefineProperty({}, 'someProperty', { __proto__: null, value: 0 });
 console.log('no errors'); // no errors.
 ```
 
-Same applies when trying to modify an existing property, e.g. trying to make a
-read-only property enumerable:
+在尝试修改已有属性时也同样适用，例如尝试让只读属性可枚举：
 
 ```js
-// User-land
+// 用户层
 Object.prototype.value = 'Unrelated user-provided data';
 
 // Core
@@ -752,12 +696,12 @@ console.log(new SomeClass().readOnlyProperty); // Unrelated user-provided data
 ```
 
 ```js
-// User-land
+// 用户层
 Object.prototype.value = 'Unrelated user-provided data';
 
 // Core
 const kEnumerableProperty = { __proto__: null, enumerable: true };
-// In core, use const {kEnumerableProperty} = require('internal/util');
+// 在 core 中，使用 const {kEnumerableProperty} = require('internal/util');
 class SomeClass {
   get readOnlyProperty() { return 'genuine data'; }
 }
@@ -765,13 +709,12 @@ ObjectDefineProperty(SomeClass.prototype, 'readOnlyProperty', kEnumerablePropert
 console.log(new SomeClass().readOnlyProperty); // genuine data
 ```
 
-### Defining a `Proxy` handler
+### 定义 `Proxy` 处理器
 
-When defining a `Proxy`, the handler object could be at risk of prototype
-pollution when using a plain object literal:
+在定义 `Proxy` 时，处理器对象如果使用普通对象字面量，可能会面临原型污染风险：
 
 ```js
-// User-land
+// 用户层
 Object.prototype.get = () => 'Unrelated user-provided data';
 
 // Core
@@ -789,12 +732,12 @@ const proxyWithNullPrototypeObject = new Proxy(objectToProxy, {
 console.log(proxyWithNullPrototypeObject.someProperty); // genuine value
 ```
 
-### Checking if an object is an instance of a class
+### 检查对象是否为某个类的实例
 
-#### Using `instanceof` looks up the `%Symbol.hasInstance%` property of the class
+#### 使用 `instanceof` 会查找类的 `%Symbol.hasInstance%` 属性
 
 ```js
-// User-land
+// 用户层
 Object.defineProperty(Array, Symbol.hasInstance, {
   __proto__: null,
   value: () => true,
@@ -816,8 +759,7 @@ console.log(FunctionPrototypeSymbolHasInstance(Array, new Date())); // false
 console.log(FunctionPrototypeSymbolHasInstance(Date, new Date())); // true
 ```
 
-Even without user mutations, the result of `instanceof` can be deceiving when
-dealing with values from different realms:
+即使没有用户修改，在处理来自不同 realm 的值时，`instanceof` 的结果也可能具有误导性：
 
 ```js
 const vm = require('node:vm');
@@ -831,6 +773,4 @@ console.log(vm.runInNewContext('Array').isArray(vm.runInNewContext('[]'))); // t
 console.log(vm.runInNewContext('Array').isArray([])); // true
 ```
 
-In general, using `instanceof` (or `FunctionPrototypeSymbolHasInstance`) checks
-is not recommended, consider checking for the presence of properties or methods
-for more reliable results.
+一般来说，不推荐使用 `instanceof`（或 `FunctionPrototypeSymbolHasInstance`）进行检查，考虑检查属性或方法是否存在，以获得更可靠的结果。

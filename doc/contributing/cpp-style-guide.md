@@ -1,93 +1,80 @@
-# C++ style guide
+# C++ 风格指南
 
-See also the [C++ codebase README](../../src/README.md) for C++ idioms in the
-Node.js codebase not related to stylistic issues.
+另请参阅 [C++ codebase README](../../src/README.md)，了解 Node.js 代码库中与风格问题无关的 C++ 惯用法。
 
-## Table of contents
+## 目录
 
-* [Guides and references](#guides-and-references)
-* [Formatting](#formatting)
-  * [Left-leaning (C++ style) asterisks for pointer declarations](#left-leaning-c-style-asterisks-for-pointer-declarations)
-  * [C++ style comments](#c-style-comments)
-  * [2 spaces of indentation for blocks or bodies of conditionals](#2-spaces-of-indentation-for-blocks-or-bodies-of-conditionals)
-  * [4 spaces of indentation for statement continuations](#4-spaces-of-indentation-for-statement-continuations)
-  * [Align function arguments vertically](#align-function-arguments-vertically)
-  * [Initialization lists](#initialization-lists)
-  * [PascalCase for methods, functions, and classes](#pascalcase-for-methods-functions-and-classes)
-  * [`snake_case` for local variables and parameters](#snake_case-for-local-variables-and-parameters)
-  * [`snake_case_` for private class fields](#snake_case_-for-private-class-fields)
-  * [`snake_case` for C-like structs](#snake_case-for-c-like-structs)
-  * [Space after `template`](#space-after-template)
-* [Memory management](#memory-management)
-  * [Memory allocation](#memory-allocation)
-  * [Use `nullptr` instead of `NULL` or `0`](#use-nullptr-instead-of-null-or-0)
-  * [Use explicit pointer comparisons](#use-explicit-pointer-comparisons)
-  * [Ownership and smart pointers](#ownership-and-smart-pointers)
-  * [Avoid non-const references](#avoid-non-const-references)
-  * [Use AliasedBuffers to manipulate TypedArrays](#use-aliasedbuffers-to-manipulate-typedarrays)
-* [Others](#others)
-  * [Type casting](#type-casting)
-  * [Using `auto`](#using-auto)
-  * [Do not include `*.h` if `*-inl.h` has already been included](#do-not-include-h-if--inlh-has-already-been-included)
-  * [Avoid throwing JavaScript errors in C++ methods](#avoid-throwing-javascript-errors-in-c)
-    * [Avoid throwing JavaScript errors in nested C++ methods](#avoid-throwing-javascript-errors-in-nested-c-methods)
+* [指南和参考](#guides-and-references)
+* [格式化](#formatting)
+  * [用于指针声明的左倾（C++ 风格）星号](#left-leaning-c-style-asterisks-for-pointer-declarations)
+  * [C++ 风格注释](#c-style-comments)
+  * [块或条件语句体使用 2 个空格缩进](#2-spaces-of-indentation-for-blocks-or-bodies-of-conditionals)
+  * [语句续行使用 4 个空格缩进](#4-spaces-of-indentation-for-statement-continuations)
+  * [函数参数垂直对齐](#align-function-arguments-vertically)
+  * [初始化列表](#initialization-lists)
+  * [方法、函数和类使用 PascalCase](#pascalcase-for-methods-functions-and-classes)
+  * [局部变量和参数使用 `snake_case`](#snake_case-for-local-variables-and-parameters)
+  * [私有类字段使用 `snake_case_`](#snake_case_-for-private-class-fields)
+  * [C 风格结构体使用 `snake_case`](#snake_case-for-c-like-structs)
+  * [`template` 后加空格](#space-after-template)
+* [内存管理](#memory-management)
+  * [内存分配](#memory-allocation)
+  * [使用 `nullptr` 代替 `NULL` 或 `0`](#use-nullptr-instead-of-null-or-0)
+  * [使用显式指针比较](#use-explicit-pointer-comparisons)
+  * [所有权和智能指针](#ownership-and-smart-pointers)
+  * [避免使用非 const 引用](#avoid-non-const-references)
+  * [使用 AliasedBuffer 操作 TypedArray](#use-aliasedbuffers-to-manipulate-typedarrays)
+* [其他](#others)
+  * [类型转换](#type-casting)
+  * [使用 `auto`](#using-auto)
+  * [如果已经包含了 `*-inl.h`，则不要再包含 `*.h`](#do-not-include-h-if--inlh-has-already-been-included)
+  * [避免在 C++ 方法中抛出 JavaScript 错误](#avoid-throwing-javascript-errors-in-c)
+    * [避免在嵌套的 C++ 方法中抛出 JavaScript 错误](#avoid-throwing-javascript-errors-in-nested-c-methods)
 
-## Guides and references
+## 指南和参考
 
-The Node.js C++ codebase strives to be consistent in its use of language
-features and idioms, as well as have some specific guidelines for the use of
-runtime features.
+Node.js 的 C++ 代码库力求在语言特性和惯用法的使用上保持一致，同时对运行时特性的使用也有一些特定指南。
 
-Coding guidelines are based on the following guides (highest priority first):
+编码指南基于以下指南（优先级从高到低）：
 
-1. This document.
-2. The [Google C++ Style Guide][].
-3. The ISO [C++ Core Guidelines][].
+1. 本文档。
+2. [Google C++ Style Guide][]。
+3. ISO [C++ Core Guidelines][]。
 
-In general, code should follow the C++ Core Guidelines, unless overridden by the
-Google C++ Style Guide or this document. At the moment these guidelines are
-checked manually by reviewers with the goal to validate this with automatic
-tools.
+通常情况下，代码应遵循 C++ Core Guidelines，除非被 Google C++ Style Guide 或本文档覆盖。目前，这些指南由审阅者手动检查，目标是通过自动化工具来验证这一点。
 
-## Formatting
+## 格式化
 
-Unfortunately, the C++ linter (based on [Google's `cpplint`][]), which can be
-run explicitly via `make lint-cpp`, does not currently catch a lot of rules that
-are specific to the Node.js C++ code base. This document explains the most
-common of these rules:
+不幸的是，C++ linter（基于 [Google's `cpplint`][]）目前不能通过 `make lint-cpp` 显式运行来捕获大量 Node.js C++ 代码库特有的规则。本文档解释了其中最常见的规则：
 
-### Left-leaning (C++ style) asterisks for pointer declarations
+### 用于指针声明的左倾（C++ 风格）星号
 
-`char* buffer;` instead of `char *buffer;`
+`char* buffer;`，而不是 `char *buffer;`
 
-### C++ style comments
+### C++ 风格注释
 
-Use C++ style comments (`//`) for both single-line and multi-line comments.
-Comments should also start with uppercase and finish with a dot.
+单行和多行注释都使用 C++ 风格注释（`//`）。注释也应以大写字母开头，并以句号结尾。
 
-Examples:
+示例：
 
 ```cpp
-// A single-line comment.
+// 一个单行注释。
 
-// Multi-line comments
-// should also use C++
-// style comments.
+// 多行注释
+// 也应使用 C++
+// 风格注释。
 ```
 
-The codebase may contain old C style comments (`/* */`) from before this was the
-preferred style. Feel free to update old comments to the preferred style when
-working on code in the immediate vicinity or when changing/improving those
-comments.
+代码库中可能包含早期遗留的旧式 C 注释（`/* */`），那时这还不是首选风格。在修改附近代码或更改/改进这些注释时，可以顺手将旧注释更新为首选风格。
 
-### 2 spaces of indentation for blocks or bodies of conditionals
+### 块或条件语句体使用 2 个空格缩进
 
 ```cpp
 if (foo)
   bar();
 ```
 
-or
+或者
 
 ```cpp
 if (foo) {
@@ -96,20 +83,20 @@ if (foo) {
 }
 ```
 
-Braces are optional if the statement body only has one line.
+如果语句体只有一行，大括号是可选的。
 
-`namespace`s receive no indentation on their own.
+`namespace` 自身不额外缩进。
 
-### 4 spaces of indentation for statement continuations
+### 语句续行使用 4 个空格缩进
 
 ```cpp
 VeryLongTypeName very_long_result = SomeValueWithAVeryLongName +
     SomeOtherValueWithAVeryLongName;
 ```
 
-Operators are before the line break in these cases.
+在这些情况下，运算符写在换行符前面。
 
-### Align function arguments vertically
+### 函数参数垂直对齐
 
 ```cpp
 void FunctionWithAVeryLongName(int parameter_with_a_very_long_name,
@@ -117,7 +104,7 @@ void FunctionWithAVeryLongName(int parameter_with_a_very_long_name,
                                ...);
 ```
 
-If that doesn't work, break after the `(` and use 4 spaces of indentation:
+如果这样做不行，则在 `(` 之后换行，并使用 4 个空格缩进：
 
 ```cpp
 void FunctionWithAReallyReallyReallyLongNameSeriouslyStopIt(
@@ -125,9 +112,9 @@ void FunctionWithAReallyReallyReallyLongNameSeriouslyStopIt(
     ...);
 ```
 
-### Initialization lists
+### 初始化列表
 
-Long initialization lists are formatted like this:
+较长的初始化列表格式如下：
 
 ```cpp
 HandleWrap::HandleWrap(Environment* env,
@@ -139,10 +126,9 @@ HandleWrap::HandleWrap(Environment* env,
       handle_(handle) {
 ```
 
-### PascalCase for methods, functions, and classes
+### 方法、函数和类使用 PascalCase
 
-Exceptions are simple getters/setters, which are named `property_name()` and
-`set_property_name()`, respectively.
+例外是简单的 getter/setter，它们分别命名为 `property_name()` 和 `set_property_name()`。
 
 ```cpp
 class FooBar {
@@ -151,11 +137,11 @@ class FooBar {
   static void DoSomethingButItsStaticInstead();
 
   void set_foo_flag(int flag_value);
-  int foo_flag() const;  // Use const-correctness whenever possible.
+  int foo_flag() const;  // 在可能的情况下始终使用 const 正确性。
 };
 ```
 
-### `snake_case` for local variables and parameters
+### 局部变量和参数使用 `snake_case`
 
 ```cpp
 int FunctionThatDoesSomething(const char* important_string) {
@@ -163,7 +149,7 @@ int FunctionThatDoesSomething(const char* important_string) {
 }
 ```
 
-### `snake_case_` for private class fields
+### 私有类字段使用 `snake_case_`
 
 ```cpp
 class Foo {
@@ -172,9 +158,9 @@ class Foo {
 };
 ```
 
-### `snake_case` for C-like structs
+### C 风格结构体使用 `snake_case`
 
-For plain C-like structs snake\_case can be used.
+对于普通的 C 风格结构体，可以使用 snake\_case。
 
 ```cpp
 struct foo_bar {
@@ -182,7 +168,7 @@ struct foo_bar {
 };
 ```
 
-### Space after `template`
+### `template` 后加空格
 
 ```cpp
 template <typename T>
@@ -191,46 +177,42 @@ class FancyContainer {
 };
 ```
 
-## Memory management
+## 内存管理
 
-### Memory allocation
+### 内存分配
 
-* `Malloc()`, `Calloc()`, etc. from `util.h` abort in Out-of-Memory situations
-* `UncheckedMalloc()`, etc. return `nullptr` in OOM situations
+* `util.h` 中的 `Malloc()`、`Calloc()` 等在内存不足时会中止
+* `UncheckedMalloc()` 等在内存不足（OOM）时返回 `nullptr`
 
-### Use `nullptr` instead of `NULL` or `0`
+### 使用 `nullptr` 代替 `NULL` 或 `0`
 
-Further reading in the [C++ Core Guidelines][ES.47].
+进一步阅读请参见 [C++ Core Guidelines][ES.47]。
 
-### Use explicit pointer comparisons
+### 使用显式指针比较
 
-Use explicit comparisons to `nullptr` when testing pointers, i.e.
-`if (foo == nullptr)` instead of `if (foo)` and
-`foo != nullptr` instead of `!foo`.
+在测试指针时，使用与 `nullptr` 的显式比较，即用
+`if (foo == nullptr)` 代替 `if (foo)`，并用
+`foo != nullptr` 代替 `!foo`。
 
-### Ownership and smart pointers
+### 所有权和智能指针
 
-* [R.20][]: Use `std::unique_ptr` or `std::shared_ptr` to represent ownership
-* [R.21][]: Prefer `unique_ptr` over `shared_ptr` unless you need to share
-  ownership
+* [R.20][]：使用 `std::unique_ptr` 或 `std::shared_ptr` 表示所有权
+* [R.21][]：除非需要共享所有权，否则优先使用 `unique_ptr` 而不是 `shared_ptr`
 
-Use `std::unique_ptr` to make ownership transfer explicit. For example:
+使用 `std::unique_ptr` 使所有权转移显式化。例如：
 
 ```cpp
 std::unique_ptr<Foo> FooFactory();
 void FooConsumer(std::unique_ptr<Foo> ptr);
 ```
 
-Since `std::unique_ptr` has only move semantics, passing one by value transfers
-ownership to the callee and invalidates the caller's instance.
+由于 `std::unique_ptr` 只有移动语义，按值传递会把所有权转移给被调用方，并使调用方的实例失效。
 
-Don't use `std::auto_ptr`, it is deprecated ([Reference][cppref_auto_ptr]).
+不要使用 `std::auto_ptr`，它已被弃用（[参考][cppref_auto_ptr]）。
 
-### Avoid non-const references
+### 避免使用非 const 引用
 
-Using non-const references often obscures which values are changed by an
-assignment. Consider using a pointer instead, which requires more explicit
-syntax to indicate that modifications take place.
+使用非 const 引用通常会掩盖哪些值会被赋值修改。可以考虑改用指针，因为指针需要更明确的语法来表明会发生修改。
 
 ```cpp
 class ExampleClass {
@@ -238,16 +220,16 @@ class ExampleClass {
   explicit ExampleClass(OtherClass* other_ptr) : pointer_to_other_(other_ptr) {}
 
   void SomeMethod(const std::string& input_param,
-                  std::string* in_out_param);  // Pointer instead of reference
+                  std::string* in_out_param);  // 用指针而不是引用
 
   const std::string& get_foo() const { return foo_string_; }
   void set_foo(const std::string& new_value) { foo_string_ = new_value; }
 
   void ReplaceCharacterInFoo(char from, char to) {
-    // A non-const reference is okay here, because the method name already tells
-    // users that this modifies 'foo_string_' -- if that is not the case,
-    // it can still be better to use an indexed for loop, or leave appropriate
-    // comments.
+    // 这里使用非 const 引用是可以的，因为方法名已经告诉
+    // 用户这会修改 'foo_string_' —— 如果不是这样，
+    // 仍然可能更适合使用带索引的 for 循环，或者添加适当的
+    // 注释。
     for (char& character : foo_string_) {
       if (character == from)
         character = to;
@@ -256,103 +238,95 @@ class ExampleClass {
 
  private:
   std::string foo_string_;
-  // Pointer instead of reference. If this object 'owns' the other object,
-  // this should be a `std::unique_ptr<OtherClass>`; a
-  // `std::shared_ptr<OtherClass>` can also be a better choice.
+  // 用指针而不是引用。如果这个对象“拥有”另一个对象，
+  // 那么这里应该是 `std::unique_ptr<OtherClass>`；`std::shared_ptr<OtherClass>`
+  // 也可能是更好的选择。
   OtherClass* pointer_to_other_;
 };
 ```
 
-### Use AliasedBuffers to manipulate TypedArrays
+### 使用 AliasedBuffer 操作 TypedArray
 
-When working with typed arrays that involve direct data modification
-from C++, use an `AliasedBuffer` when possible. The API abstraction and
-the usage scope of `AliasedBuffer` are documented in
-[aliased\_buffer.h][aliased_buffer.h].
+当处理需要从 C++ 直接修改数据的 typed array 时，尽可能使用 `AliasedBuffer`。
+`AliasedBuffer` 的 API 抽象和使用范围记录在
+[aliased\_buffer.h][aliased_buffer.h] 中。
 
 ```cpp
-// Create an AliasedBuffer.
+// 创建一个 AliasedBuffer。
 AliasedBuffer<uint32_t, v8::Uint32Array> data;
 ...
 
-// Modify the data through natural operator semantics.
+// 通过自然的运算符语义修改数据。
 data[0] = 12345;
 ```
 
-## Others
+## 其他
 
-### Type casting
+### 类型转换
 
-* Use `static_cast<T>` if casting is required, and it is valid.
-* Use `reinterpret_cast` only when it is necessary.
-* Avoid C-style casts (`(type)value`).
-* `dynamic_cast` does not work because Node.js is built without
-  [Run Time Type Information][].
+* 如果必须进行转换且该转换是有效的，请使用 `static_cast<T>`。
+* 仅在必要时使用 `reinterpret_cast`。
+* 避免使用 C 风格转换（`(type)value`）。
+* `dynamic_cast` 不起作用，因为 Node.js 构建时未启用 [运行时类型信息][]。
 
-Further reading:
+进一步阅读：
 
-* [ES.48][]: Avoid casts
-* [ES.49][]: If you must use a cast, use a named cast
+* [ES.48][]：避免转换
+* [ES.49][]：如果必须使用转换，请使用命名转换
 
-### Using `auto`
+### 使用 `auto`
 
-Being explicit about types is usually preferred over using `auto`.
+通常更推荐显式写出类型，而不是使用 `auto`。
 
-Use `auto` to avoid type names that are noisy, obvious, or unimportant. When
-doing so, keep in mind that explicit types often help with readability and
-verifying the correctness of code.
+可使用 `auto` 来避免那些冗长、显而易见或不重要的类型名。在这样做时，请记住，显式类型通常有助于提高可读性并验证代码正确性。
 
 ```cpp
 for (const auto& item : some_map) {
   const KeyType& key = item.first;
   const ValType& value = item.second;
-  // The rest of the loop can now just refer to key and value,
-  // a reader can see the types in question, and we've avoided
-  // the too-common case of extra copies in this iteration.
+  // 这样循环的其余部分就可以直接引用 key 和 value，
+  // 读者可以看到相关类型，并且我们避免了
+  // 这类迭代中很常见的额外拷贝。
 }
 ```
 
-### Do not include `*.h` if `*-inl.h` has already been included
+### 如果已经包含了 `*-inl.h`，则不要再包含 `*.h`
 
-Do:
+应当这样做：
 
 ```cpp
-#include "util-inl.h"  // already includes util.h
+#include "util-inl.h"  // 已经包含了 util.h
 ```
 
-Instead of:
+而不是这样：
 
 ```cpp
 #include "util.h"
 #include "util-inl.h"
 ```
 
-### Avoid throwing JavaScript errors in C++
+### 避免在 C++ 中抛出 JavaScript 错误
 
-When there is a need to throw errors from a C++ binding method, try to
-return the data necessary for constructing the errors to JavaScript,
-then construct and throw the errors [using `lib/internal/errors.js`][errors].
+当需要从 C++ 绑定方法中抛出错误时，尽量将构造错误所需的数据返回给 JavaScript，
+然后使用 [`lib/internal/errors.js`][errors] 构造并抛出错误。
 
-In general, type-checks on arguments should be done in JavaScript
-before the arguments are passed into C++. Then in the C++ binding, simply using
-`CHECK` assertions to guard against invalid arguments should be enough.
+通常，应在参数传入 C++ 之前先在 JavaScript 中完成类型检查。然后在 C++ 绑定中，仅使用
+`CHECK` 断言来防止无效参数即可。
 
-If the return value of the binding cannot be used to signal failures or return
-the necessary data for constructing errors in JavaScript, pass a context object
-to the binding and put the necessary data inside in C++. For example:
+如果绑定的返回值不能用于表示失败，或不能返回在 JavaScript 中构造错误所需的数据，那么就向绑定传入一个上下文对象，并在 C++ 中把所需数据放进去。例如：
 
 ```cpp
 void Foo(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
-  // Let the JavaScript handle the actual type-checking,
-  // only assertions are placed in C++
+  // 让 JavaScript 处理实际的类型检查，
+  // C++ 中只放置断言
   CHECK_EQ(args.Length(), 2);
   CHECK(args[0]->IsString());
   CHECK(args[1]->IsObject());
 
   int err = DoSomethingWith(args[0].As<String>());
   if (err) {
-    // Put the data inside the error context
+    // 将数据放入错误上下文中
     Local<Object> ctx = args[1].As<Object>();
     Local<String> key = FIXED_ONE_BYTE_STRING(env->isolate(), "code");
     ctx->Set(env->context(), key, err).FromJust();
@@ -361,13 +335,13 @@ void Foo(const FunctionCallbackInfo<Value>& args) {
   }
 }
 
-// In the initialize function
+// 在初始化函数中
 env->SetMethod(target, "foo", Foo);
 ```
 
 ```js
 exports.foo = function(str) {
-  // Prefer doing the type-checks in JavaScript
+  // 优先在 JavaScript 中进行类型检查
   if (typeof str !== 'string') {
     throw new errors.codes.ERR_INVALID_ARG_TYPE('str', 'string');
   }
@@ -381,16 +355,15 @@ exports.foo = function(str) {
 };
 ```
 
-#### Avoid throwing JavaScript errors in nested C++ methods
+#### 避免在嵌套的 C++ 方法中抛出 JavaScript 错误
 
-When you need to throw a JavaScript exception from C++ (i.e.
-`isolate()->ThrowException()`), do it as close to the return to JavaScript as
-possible, and not inside of nested C++ calls. Since this changes the JavaScript
-execution state, doing it closest to where it is consumed reduces the chances of
-side effects.
+当你需要从 C++ 中抛出 JavaScript 异常时（即
+`isolate()->ThrowException()`），应尽可能接近返回给 JavaScript 的位置来做，而不要在嵌套的 C++ 调用中进行。由于这会改变 JavaScript
+执行状态，把它放在最接近被消耗的位置可以减少
+副作用的可能性。
 
-Node.js is built [without C++ exception handling][], so code using `throw` or
-even `try` and `catch` **will** break.
+Node.js 的构建 [未启用 C++ 异常处理][]，因此使用 `throw` 甚至 `try` 和 `catch` 的代码
+**都会**出问题。
 
 [C++ Core Guidelines]: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
 [ES.47]: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-nullptr

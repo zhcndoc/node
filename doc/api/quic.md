@@ -23,6 +23,160 @@ const quic = require('node:quic');
 
 该模块仅在 `node:` 方案下可用。
 
+## 概览
+
+`quic` 模块提供了用于创建 QUIC 客户端和服务器的 API。
+
+### 相关 RFC 和规范
+
+QUIC 和 HTTP/3 协议由一组 RFC 定义，这些 RFC 主要由 IETF QUIC 工作组制定。
+强烈建议本模块的用户熟悉这些文档。
+
+**核心 QUIC 传输：**
+
+* [RFC 8999][] — 与版本无关的 QUIC 属性
+* [RFC 9000][] — QUIC：基于 UDP 的多路复用安全传输
+* [RFC 9001][] — 使用 TLS 保障 QUIC 安全
+* [RFC 9002][] — QUIC 丢包检测与拥塞控制
+
+**核心 HTTP/3：**
+
+* [RFC 9114][] — HTTP/3
+* [RFC 9204][] — QPACK：HTTP/3 字段压缩
+
+**QUIC 扩展：**
+
+* [RFC 9221][] — QUIC 的不可靠数据报扩展
+* [RFC 9287][] — QUIC 位的混淆
+* [RFC 9368][] — QUIC 的兼容版本协商
+* [RFC 9369][] — QUIC 版本 2
+* [RFC 9443][] — QUIC 的多路复用方案更新
+
+**HTTP/3 扩展：**
+
+* [RFC 9218][] — HTTP 可扩展优先级方案
+* [RFC 9220][] — 使用 HTTP/3 引导 WebSockets
+* [RFC 9297][] — HTTP 数据报与 Capsule 协议
+* [RFC 9412][] — HTTP/3 中的 ORIGIN 扩展
+
+**运营与信息性：**
+
+* [RFC 9308][] — QUIC 传输协议的适用性
+* [RFC 9312][] — QUIC 传输协议的可管理性
+
+## 架构
+
+`quic` 模块围绕三个核心抽象构建：
+
+* `QuicEndpoint`：表示 QUIC 的本地 UDP 套接字绑定。它用于发送和接收 QUIC 数据包，并且可以在多个会话之间共享。单个 endpoint 可以同时作为客户端和服务器使用。
+
+* `QuicSession`：表示本地 endpoint 与远程对等方之间的 QUIC 连接。会话可通过使用 `quic.connect()` 发起到远程对等方的连接，或者通过 `quic.listen()` 接受来自远程对等方的传入连接来创建。
+
+* `QuicStream`：表示会话中的 QUIC 流。流由本地或远程对等方创建，可以是双向的，也可以是单向的。
+
+与传统基于 TCP 的协议不同，QUIC 的“连接”并不天然绑定到特定的本地端口 / 远程端口对。会话通过 QUIC endpoint 发起，但在其生命周期内可以迁移到不同的本地或远程地址，可以存活于创建它的 endpoint 之外，甚至可以同时关联多个 endpoint。这种灵活性支持连接迁移、多宿主和负载均衡等高级用例。不过，大多数情况下，endpoint 与 session 之间一对一的简单关系已经足够。
+
+### 集成的 TLS 1.3
+
+QUIC 协议将 TLS 1.3 直接集成到协议中，用于连接建立和安全保障。`quic` 模块的 API 通过暴露与 TLS 相关的信息和配置选项体现了这种集成。目前无法在不使用 TLS 的情况下使用 QUIC，也无法使用不同版本的 TLS。
+
+每个 QUIC 会话都始于客户端和服务器执行 TLS 握手，以协商应用协议（通过 ALPN）、验证服务器身份（以及可选地验证客户端）、交换传输参数，并建立用于加密的共享密钥。
+
+### 应用程序
+
+每个 `QuicSession` 都与单一的应用协议相关联，该协议在 TLS 握手期间通过 ALPN 协商。`quic` 模块总体上被设计为与应用无关，但内置支持 HTTP/3 这一特定应用协议。使用 HTTP/3 时，`quic` 模块提供额外的 API 来处理 HTTP/3 特有的功能，如 headers、trailers 和优先级。对于其他应用协议，用户可以在核心 QUIC 传输功能之上实现自己的消息分帧和多路复用。
+
+在发起 TLS 握手时，客户端会在 `ClientHello` 中包含一个支持的 ALPN 协议列表。服务器会从这些协议中选择一个（如果有的话）并将其包含在 `ServerHello` 中。协商出的协议决定 `QuicSession` 和 `QuicStream` API 的行为。例如，当为 HTTP/3 协商了 `h3` 协议时，`QuicSession` 和 `QuicStream` 将支持 HTTP/3 特有的功能。
+
+目前，`quic` 模块仅支持 HTTP/3 作为内置应用协议。所有其他协议都必须由用户在所提供的 JavaScript API 之上自行实现。
+
+### 配置
+
+QUIC API 的设计目标是灵活且高度可配置，以支持广泛的用例。用户可以通过传递给 `quic.connect()` 和 `quic.listen()` 函数的选项，以及在 `QuicEndpoint` 和 `QuicSession` 实例上动态配置，来设置 QUIC 传输、TLS 握手和应用行为的各个方面。该 API 还提供了用于监控和调试的详细统计信息和事件访问能力。
+
+QUIC 传输参数会在 TLS 握手期间交换，用于协商各种传输级设置，例如最大流数量、空闲超时和数据报支持。`quic` 模块允许用户配置其 endpoint 向对等方宣告的传输参数，也允许访问对等方宣告的传输参数。这些参数会与对等方协同，配置 QUIC 连接的能力和限制。
+
+此外，还提供了一组丰富的本地设置，用于配置本地 endpoint 和会话的行为。这些设置包括连接限制、拥塞控制、流优先级等。
+
+### 回调和 Promise
+
+`quic` 模块在异步操作中结合使用回调和 Promise。例如，通过 `quic.connect()` 发起连接会返回一个已建立会话的 Promise，而服务器端的传入会话则通过传递给 `quic.listen()` 的回调来处理。在会话内部，诸如传入流、数据报和会话状态变化等事件都通过 `QuicSession` 实例上的回调处理。Promise 用于具有明确完成点的操作，例如 TLS 握手完成或会话的优雅关闭。
+
+所有回调都以同步方式调用，并且可以同步返回，也可以返回一个 Promise。如果某个回调返回的 Promise 被拒绝，或者抛出错误，而未指定 `onerror` 回调，则对象将以该错误作为原因被销毁。
+
+### 流
+
+流是 QUIC 中承载数据的主要抽象。在会话建立后，流可以由本地 endpoint 或远程对等方发起。
+
+流可以是双向的（数据双向流动）或单向的（数据只向一个方向流动）。`quic` 模块为创建这两种流分别提供了独立的 API：
+[`session.createBidirectionalStream()`][] 和
+[`session.createUnidirectionalStream()`][]。由远程对等方发起的流会通过 [`session.onstream`][] 回调传递。
+
+向流写入数据有两种方式：
+
+* **正文来源** — 在创建流时传递 `body` 选项（或调用 [`stream.setBody()`][]）。正文可以是字符串、`ArrayBuffer`、`ArrayBufferView`、`Blob`、`FileHandle`、`AsyncIterable`、同步 `Iterable`，或解析为这些类型之一的 `Promise`。`null` 正文会立即关闭可写端。当数据事先可用，或者可以表示为可迭代对象时，这是最简单的方法。
+* **写入器** — 访问 [`stream.writer`][] 以增量推送数据。写入器提供同步方法（`writeSync()`、`writevSync()`、`endSync()`），它们会立即返回，也提供异步对应方法（`write()`、`writev()`、`end()`），在受到背压时会等待 drain。`writeSync()` 在写入缓冲区已满时返回 `false`；调用方应在重试前等待 drain。
+
+这两种方式对于同一流而言是互斥的。
+
+读取通过将流作为异步可迭代对象进行迭代来完成。每次迭代都会产出一批 `Uint8Array` 块：
+
+```mjs
+for await (const chunks of stream) {
+  for (const chunk of chunks) {
+    // 处理每个 Uint8Array 块
+  }
+}
+```
+
+每个流只能获取一个异步迭代器。该流也兼容 `node:stream/iter` 工具，例如 `Stream.bytes()`、`Stream.text()` 和 `Stream.pipeTo()`。
+
+### 数据报
+
+除了流之外，QUIC 还支持不可靠数据报（[RFC 9221][]），适用于需要低延迟、尽力而为消息传递的用例。
+
+数据报支持在两个层面启用。在 QUIC 传输层面，双方都必须在握手期间宣告一个非零的 [`maxDatagramFrameSize`][] 传输参数。对于 HTTP/3 会话，双方还必须额外将 [`application.enableDatagrams`][] 设置为 `true`，这会在 HTTP/3 控制流上交换 `SETTINGS_H3_DATAGRAM` 设置。
+
+一个数据报通过单次调用 [`session.sendDatagram()`][] 发送。每个数据报都必须能放入单个 QUIC 数据包中——数据报不能分片。最大负载大小由对等方的 `maxDatagramFrameSize` 和路径 MTU 决定。如果数据报过大，或者对等方不支持数据报，`sendDatagram()` 会返回 `0n`，而不是抛出错误。
+
+不保证送达。数据报可能丢失、重复或乱序到达。[`session.ondatagramstatus`][] 回调会报告每个已发送数据报是 `'acknowledged'`、`'lost'` 还是 `'abandoned'`（从未在线路上发送）。
+
+### 0-RTT 早期数据和会话恢复
+
+QUIC 支持 0-RTT 早期数据，允许之前曾连接到服务器的客户端在第一个数据包中就发送应用数据，而无需等待握手完成。这可以在重新连接时消除完整的一次往返延迟。
+
+先前连接中的两项状态使这成为可能：
+
+* **会话票据**，通过 [`session.onsessionticket`][] 回调接收，可启用 TLS 会话恢复和 0-RTT 加密。在后续连接到同一服务器时，将其作为 [`sessionOptions.sessionTicket`][] 选项传入。
+* **地址验证令牌**，通过 [`session.onnewtoken`][] 回调接收，可让客户端跳过服务器的地址验证步骤（避免一次 Retry 往返）。将其作为 [`sessionOptions.token`][] 选项传入。
+
+如果服务器接受会话票据，则在握手完成前发送的任何数据都属于 0-RTT 早期数据。在服务器端，对于承载早期数据的流，`stream.early` 为 `true`。服务器可以拒绝 0-RTT 尝试（例如，如果自票据发出后其配置发生了变化）。发生这种情况时，所有在 0-RTT 阶段打开的流都会被销毁，客户端的 [`session.onearlyrejected`][] 回调会触发。连接会回退到正常的 1-RTT 握手，应用程序可以重新打开流。
+
+早期数据比握手完成后发送的数据更不安全——它可能被攻击者重放。应用程序应当对 0-RTT 数据保持适当谨慎，并避免在早期数据阶段执行非幂等操作。
+
+### 连接生命周期
+
+典型的客户端会话会按以下阶段进行：
+
+1. 使用服务器地址和选项调用 [`quic.connect()`][]。这将返回一个 `QuicSession`。
+2. TLS 握手自动运行。握手完成时，`session.opened` 会被解析，并提供协商出的 ALPN、密码套件和证书验证结果。
+3. 打开流、发送数据报并交换数据。
+4. 调用 [`session.close()`][] 发起优雅关闭。现有流被允许完成，然后会话被销毁。返回的 Promise（也可通过 `session.closed` 访问）会在拆除完成时解析。
+
+在服务器端，使用回调调用 [`quic.listen()`][]。该回调会在 TLS 握手开始后针对每个传入会话触发。传入流通过 [`session.onstream`][] 回调到达。
+
+[`session.destroy()`][] 可用于立即拆除——所有打开的流都会被销毁，会话也会在不等待它们完成的情况下关闭。
+
+`QuicEndpoint` 和 `QuicSession` 支持 `Symbol.asyncDispose`，因此可以与 `await using` 一起使用以实现自动清理。
+
+### 错误处理
+
+`quic` 模块中的错误通过两种互补机制传达：`onerror` 回调和 `closed` Promise。
+
+`QuicSession` 和 `QuicStream` 都暴露了一个可选的 `onerror` 回调。当会话或流因错误而被销毁时——包括其他用户回调抛出的错误——在对象拆除之前会调用 `onerror` 回调并传入该错误。设置 `onerror` 还会将 `closed` Promise 标记为已处理，从而防止未处理拒绝警告。如果未设置 `onerror`，错误将仅通过 `closed` Promise 的拒绝来传递。
+
+[`QuicError`][] 类携带一个显式的数值 QUIC 错误码（[`error.errorCode`][]），以及常规的 `message` 和 `code` 属性。当将 `QuicError` 传递给 [`stream.destroy()`][] 或 [`writer.fail()`][] 时，其 `errorCode` 会用于发送给对等方的 `RESET_STREAM` 或 `STOP_SENDING` 帧。任何其他错误类型都会回退为所协商协议的通用内部错误码。
+
 ## `quic.connect(address[, options])`
 
 <!-- YAML
@@ -63,7 +217,7 @@ const endpoint = new QuicEndpoint({
 const client = await connect('123.123.123.123:8888', { endpoint });
 ```
 
-## `quic.listen(onsession,[options])`
+## `quic.listen(onsession[, options])`
 
 <!-- YAML
 added: v23.8.0
@@ -96,6 +250,39 @@ QUIC 会话，请传递 `endpoint` 选项，
 参数为 `QuicEndpoint` 或 `EndpointOptions`。
 
 任何单个 `QuicEndpoint` 最多只能配置为监听服务器一次。
+
+## `quic.constants`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* {Object}
+
+一个包含 QUIC 配置中常用常量的对象。
+
+### `quic.constants.cc`
+
+* {Object}
+
+拥塞控制算法标识符，可与
+[`sessionOptions.cc`][] 选项一起使用：
+
+* `quic.constants.cc.RENO` — Reno 拥塞控制。
+* `quic.constants.cc.CUBIC` — CUBIC 拥塞控制。
+* `quic.constants.cc.BBR` — BBR 拥塞控制。
+
+### `quic.constants.DEFAULT_CIPHERS`
+
+* {string}
+
+当未指定 [`sessionOptions.ciphers`][] 时使用的默认 TLS 1.3 密码套件列表。
+
+### `quic.constants.DEFAULT_GROUPS`
+
+* {string}
+
+当未指定 [`sessionOptions.groups`][] 时使用的默认 TLS 1.3 密钥交换组列表。
 
 ## 类：`QuicEndpoint`
 
@@ -195,6 +382,10 @@ added: v23.8.0
 
 ### `endpoint.listening`
 
+<!-- YAML
+added: REPLACEME
+-->
+
 * 类型：{boolean}
 
 如果端点正在主动监听传入连接，则为 true。只读。
@@ -260,7 +451,7 @@ added: v23.8.0
 
 * 类型：{quic.QuicEndpoint.Stats}
 
-为活动会话收集的统计信息。只读。
+活动端点收集的统计信息。只读。
 
 ### `endpoint[Symbol.asyncDispose]()`
 
@@ -398,20 +589,19 @@ added: v23.8.0
 
 * `options` {Object}
   * `code` {bigint|number} 要包含在发送给对等方的 `CONNECTION_CLOSE`
-    帧中的错误码。默认值为 `0`（无错误）。**默认：** `0`。
-  * `type` {string} `'transport'` 或 `'application'` 之一。决定在
+    帧中的错误码。**默认：** `0`（无错误）。
+  * `type` {string} `'transport'` 或 `'application'` 之一。它决定
     `CONNECTION_CLOSE` 帧中使用的错误码命名空间。当为 `'transport'`
-    （默认值）时，帧类型为 `0x1c`，错误码被解释为 QUIC
-    传输错误。当为 `'application'` 时，帧类型为 `0x1d`，错误码
-    是应用程序特定的。**默认：** `'transport'`。
+    （默认值）时，帧类型为 `0x1c`，该代码将被解释为 QUIC
+    传输错误。当为 `'application'` 时，帧类型为 `0x1d`，该代码
+    为应用程序特定。**默认：** `'transport'`。
   * `reason` {string} 可选的人类可读原因字符串，包含在
-    `CONNECTION_CLOSE` 帧中。根据 RFC 9000，这仅用于诊断
-    目的，不应用于机器可读的错误描述。
+    `CONNECTION_CLOSE` 帧中。根据 RFC 9000，这仅用于诊断目的，
+    不应用于机器可读的错误描述。
 * 返回：{Promise}
 
-发起会话的优雅关闭。现有流将被允许
-完成，但不会打开新流。一旦所有流都关闭，
-会话将被销毁。返回的 promise 将在
+发起会话的优雅关闭。现有流将被允许完成，但不会打开新流。
+一旦所有流都关闭，会话将被销毁。返回的 promise 将在
 会话销毁后履行。如果指定了非零 `code`，
 则 promise 将根据 `type` 拒绝并抛出
 `ERR_QUIC_TRANSPORT_ERROR` 或
@@ -455,6 +645,17 @@ added: v23.8.0
 
 会话销毁后履行的 promise。
 
+### `session.closing`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{boolean}
+
+如果已调用 [`session.close()`][] 且会话尚未
+被销毁，则为 true。只读。
+
 ### `session.destroy([error[, options]])`
 
 <!-- YAML
@@ -490,14 +691,18 @@ added: v23.8.0
 ### `session.endpoint`
 
 <!-- YAML
-added: v23.8.0
+added: REPLACEME
 -->
 
-* 类型：{quic.QuicEndpoint}
+* 类型：{quic.QuicEndpoint|null}
 
-创建此会话的端点。只读。
+创建此会话的端点。如果会话已被销毁，则返回 `null`。只读。
 
 ### `session.onerror`
+
+<!-- YAML
+added: REPLACEME
+-->
 
 * 类型：{Function|undefined}
 
@@ -542,6 +747,10 @@ added: v23.8.0
 当数据报状态更新时调用的回调。读/写。
 
 ### `session.onearlyrejected`
+
+<!-- YAML
+added: REPLACEME
+-->
 
 * 类型：{Function|undefined}
 
@@ -724,14 +933,17 @@ added: v23.8.0
 * `options` {Object}
   * `body` {string | ArrayBuffer | SharedArrayBuffer | ArrayBufferView |
     Blob | FileHandle | AsyncIterable | Iterable | Promise | null}
-    出站主体来源。有关支持的类型，请参见 [`stream.setBody()`][]。
-    省略时，流会立即关闭。
+    出站主体来源。有关支持的类型，请参见 [`stream.setBody()`][]。省略时，
+    流会立即关闭。
   * `headers` {Object} 要发送的初始请求头。
   * `priority` {string} 流的优先级。可选 `'high'`、`'default'` 或
     `'low'`。**默认：** `'default'`。
   * `incremental` {boolean} 当为 `true` 时，此流的数据可与
     同优先级的其他流数据交错。当为 `false` 时，
     应在同优先级对等流之前完成该流。**默认：** `false`。
+  * `highWaterMark` {number} 写入器在 `writeSync()` 返回 `false` 之前可缓冲的最大字节数。
+    当缓冲数据超过此限制时，调用方应等待 drain 后再写入更多数据。
+    **默认：** `65536`（64 KB）。
   * `onheaders` {Function} 接收到初始响应头时的回调。
     以 `(headers)` 调用。
   * `ontrailers` {Function} 接收到尾随头时的回调。
@@ -1250,7 +1462,11 @@ QuicStream 可以通过三种方式中止，每种方式都会产生不同的线
 
 ### `stream.early`
 
-* 类型：{boolean}
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {boolean}
 
 如果该流上的任何数据是在 TLS 握手完成前作为 0-RTT（早期数据）接收的，则为 True。
 早期数据安全性较低，攻击者可能会重放。应用程序应当以适当谨慎的方式对待早期数据。
@@ -1263,9 +1479,9 @@ QuicStream 可以通过三种方式中止，每种方式都会产生不同的线
 added: v23.8.0
 -->
 
-* 类型：{string} `'bidi'` 或 `'uni'` 其中之一。
+* Type: {string|null} 取 `'bidi'`、`'uni'` 或 `null` 之一。
 
-流的方向。只读。
+流的方向性；如果流已被销毁或仍处于 pending 状态，则为 `null`。只读。
 
 ### `stream.highWaterMark`
 
@@ -1275,8 +1491,8 @@ added: REPLACEME
 
 * 类型：{number}
 
-写入器在 `writeSync()` 返回 `false` 之前可缓冲的最大字节数。当缓冲数据超过此限制时，
-调用方在写入更多数据前应等待 `drainableProtocol` promise 兑现。
+在 `writeSync()` 返回 `false` 之前，写入器将缓冲的最大字节数。当缓冲数据超过此限制时，
+调用方在继续写入前应等待 drain。
 
 该值可随时动态更改。这对于通过 `onstream` 回调接收的流尤其有用，因为默认值（65536）
 可能需要根据应用需求进行调整。有效范围为 `0` 到 `4294967295`。
@@ -1287,13 +1503,17 @@ added: REPLACEME
 added: v23.8.0
 -->
 
-* 类型：{bigint}
+* Type: {bigint|null}
 
-流 ID。只读。
+流 ID；如果流已被销毁或仍处于 pending 状态，则为 `null`。只读。
 
 ### `stream.onerror`
 
-* 类型：{Function|undefined}
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {Function|undefined}
 
 当流因错误被销毁时调用的可选回调。这包括由抛出或拒绝的用户回调引起的错误
 （参见[回调错误处理][]）。回调接收一个参数：触发销毁的错误。如果 `onerror` 回调自身抛出
@@ -1567,9 +1787,9 @@ added: REPLACEME
 added: v23.8.0
 -->
 
-* 类型：{quic.QuicSession}
+* Type: {quic.QuicSession|null}
 
-创建此流的会话。只读。
+创建此流的会话；如果流已被销毁，则为 `null`。只读。
 
 ### `stream.stats`
 
@@ -1713,7 +1933,7 @@ added: v23.8.0
 
 * 类型：{bigint|number}
 
-端点维护一个已验证 socket 地址的内部缓存作为性能优化。此选项设置缓存地址的最大数量。这是一个高级选项，用户通常无需指定。
+端点会维护一个已验证套接字地址的内部缓存，以提升性能。此选项设置可缓存的最大地址数量。这是一个高级选项，用户通常无需指定。
 
 #### `endpointOptions.disableStatelessReset`
 
@@ -1940,7 +2160,8 @@ added: v23.8.0
 
 * 类型：{string}
 
-指定将使用的拥塞控制算法。必须设置为 `'reno'`、`'cubic'` 或 `'bbr'` 其中之一。
+指定将要使用的拥塞控制算法。
+必须设置为 `'reno'`、`'cubic'` 或 `'bbr'` 之一。
 
 这是一个高级选项，用户通常无需指定。
 
@@ -1992,7 +2213,7 @@ added: v23.8.0
 
 * 类型：{string}
 
-支持的 TLS 1.3 加密组列表。
+支持的 TLS 1.3 密码组列表。
 
 #### `sessionOptions.keylog`
 
@@ -2503,14 +2724,17 @@ added: v23.8.0
 -->
 
 * `this` {quic.QuicSession}
-* `sni` {string}
-* `alpn` {string}
-* `cipher` {string}
-* `cipherVersion` {string}
-* `validationErrorReason` {string}
-* `validationErrorCode` {number}
-* `earlyDataAttempted` {boolean}
-* `earlyDataAccepted` {boolean}
+* `info` {Object} 与 `session.opened` 解析结果相同的对象。
+  * `local` {net.SocketAddress} 本地套接字地址。
+  * `remote` {net.SocketAddress} 远程套接字地址。
+  * `servername` {string} 在握手期间协商得到的 SNI 服务器名。
+  * `protocol` {string} 在握手期间协商得到的 ALPN 协议。
+  * `cipher` {string} 协商得到的 TLS 密码套件名称。
+  * `cipherVersion` {string} 该密码套件所使用的 TLS 协议版本。
+  * `validationErrorReason` {string} 如果证书验证失败，则为原因字符串。验证成功时为空字符串。
+  * `validationErrorCode` {number} 如果证书验证失败，则为错误代码。验证成功时为 `0`。
+  * `earlyDataAttempted` {boolean} 是否尝试了 0-RTT 早期数据。
+  * `earlyDataAccepted` {boolean} 是否接受了 0-RTT 早期数据。
 
 ### 回调：`OnNewTokenCallback`
 
@@ -2683,8 +2907,10 @@ const stream = await session.createBidirectionalStream({
 });
 
 const decoder = new TextDecoder();
-for await (const chunk of stream) {
-  process.stdout.write(decoder.decode(chunk, { stream: true }));
+for await (const chunks of stream) {
+  for (const chunk of chunks) {
+    process.stdout.write(decoder.decode(chunk, { stream: true }));
+  }
 }
 
 await session.close();
@@ -2693,16 +2919,18 @@ await session.close();
 有几点需要注意：
 
 * `session.createBidirectionalStream({ headers })` 在未提供 `body` 时会自动
-  将 HEADERS 帧标记为终止帧 —
-  即请求为 `HEADERS` 后跟 `END_STREAM`。
+  将 HEADERS 帧标记为终止帧——
+  请求即为 `HEADERS` 后跟 `END_STREAM`。
 * `onheaders` 回调会在一个对象中接收响应伪标头和
-  常规标头，该对象的键为小写字符串。
-  回调返回后，同一个对象也可通过 [`stream.headers`][] 访问。
-* 通过 `for await (const chunk of stream)` 读取会把响应
-  体作为 `Uint8Array` 块进行消费。
-* HTTP 语义层辅助功能（URL 解析、方法/状态验证、
-  重定向、内容协商等）并不会内置。调用方需要负责
-  除了线缆分帧之外的任何 HTTP 层处理。
+  常规标头，键为小写字符串。
+  回调返回后，同一个对象也可通过
+  [`stream.headers`][] 访问。
+* 读取 `for await (const chunks of stream)` 会消耗响应
+  主体。每次迭代都会产出一个 `Uint8Array[]` 分块批次。
+* HTTP 语义辅助功能（URL 解析、方法/状态校验、
+  重定向、内容协商等）是刻意未
+  内置的。除线上帧格式之外的任何 HTTP 层处理都
+  由调用方负责。
 
 ### 最小 HTTP/3 服务器
 
@@ -3218,7 +3446,7 @@ added: REPLACEME
 在流从对等方接收到 STOP_SENDING 或 RESET_STREAM 帧
 时发布，表示对等方已中止该流。这是
 诊断应用层问题（例如已取消的
-请求）的关键 संकेत。
+请求）的关键信号。
 
 ### 通道：`quic.stream.blocked`
 
@@ -3235,7 +3463,24 @@ added: REPLACEME
 [中止流]: #aborting-a-stream
 [回调错误处理]: #callback-error-handling
 [JSON-SEQ]: https://www.rfc-editor.org/rfc/rfc7464
-[NSS 密钥日志格式]: https://udn.realityripple.com/docs/Mozilla/Projects/NSS/Key_Log_Format
+[NSS Key Log Format]: https://udn.realityripple.com/docs/Mozilla/Projects/NSS/Key_Log_Format
+[RFC 8999]: https://www.rfc-editor.org/rfc/rfc8999
+[RFC 9000]: https://www.rfc-editor.org/rfc/rfc9000
+[RFC 9001]: https://www.rfc-editor.org/rfc/rfc9001
+[RFC 9002]: https://www.rfc-editor.org/rfc/rfc9002
+[RFC 9114]: https://www.rfc-editor.org/rfc/rfc9114
+[RFC 9204]: https://www.rfc-editor.org/rfc/rfc9204
+[RFC 9218]: https://www.rfc-editor.org/rfc/rfc9218
+[RFC 9220]: https://www.rfc-editor.org/rfc/rfc9220
+[RFC 9221]: https://www.rfc-editor.org/rfc/rfc9221
+[RFC 9287]: https://www.rfc-editor.org/rfc/rfc9287
+[RFC 9297]: https://www.rfc-editor.org/rfc/rfc9297
+[RFC 9308]: https://www.rfc-editor.org/rfc/rfc9308
+[RFC 9312]: https://www.rfc-editor.org/rfc/rfc9312
+[RFC 9368]: https://www.rfc-editor.org/rfc/rfc9368
+[RFC 9369]: https://www.rfc-editor.org/rfc/rfc9369
+[RFC 9412]: https://www.rfc-editor.org/rfc/rfc9412
+[RFC 9443]: https://www.rfc-editor.org/rfc/rfc9443
 [`PerformanceEntry`]: perf_hooks.md#class-performanceentry
 [`PerformanceObserver`]: perf_hooks.md#class-performanceobserver
 [`QuicError`]: #class-quicerror
@@ -3246,23 +3491,35 @@ added: REPLACEME
 [`endpoint.maxConnectionsTotal`]: #endpointmaxconnectionstotal
 [`error.errorCode`]: #errorerrorcode
 [`fs.promises.open(path, 'r')`]: fs.md#fspromisesopenpath-flags-mode
+[`maxDatagramFrameSize`]: #transportparamsmaxdatagramframesize
 [`quic.connect()`]: #quicconnectaddress-options
-[`quic.listen()`]: #quiclistencallback-options
+[`quic.listen()`]: #quiclistenonsession-options
 [`session.close()`]: #sessioncloseoptions
+[`session.createBidirectionalStream()`]: #sessioncreatebidirectionalstreamoptions
+[`session.createUnidirectionalStream()`]: #sessioncreateunidirectionalstreamoptions
 [`session.destroy()`]: #sessiondestroyerror-options
 [`session.maxPendingDatagrams`]: #sessionmaxpendingdatagrams
 [`session.ondatagram`]: #sessionondatagram
+[`session.ondatagramstatus`]: #sessionondatagramstatus
+[`session.onearlyrejected`]: #sessiononearlyrejected
 [`session.onerror`]: #sessiononerror
 [`session.ongoaway`]: #sessionongoaway
 [`session.onkeylog`]: #sessiononkeylog
 [`session.onnewtoken`]: #sessiononnewtoken
 [`session.onorigin`]: #sessiononorigin
 [`session.onqlog`]: #sessiononqlog
+[`session.onsessionticket`]: #sessiononsessionticket
+[`session.onstream`]: #sessiononstream
 [`session.sendDatagram()`]: #sessionsenddatagramdatagram-encoding
+[`sessionOptions.cc`]: #sessionoptionscc
+[`sessionOptions.ciphers`]: #sessionoptionsciphers
 [`sessionOptions.datagramDropPolicy`]: #sessionoptionsdatagramdroppolicy
+[`sessionOptions.groups`]: #sessionoptionsgroups
 [`sessionOptions.keylog`]: #sessionoptionskeylog
 [`sessionOptions.qlog`]: #sessionoptionsqlog
+[`sessionOptions.sessionTicket`]: #sessionoptionssessionticket
 [`sessionOptions.sni`]: #sessionoptionssni-server-only
+[`sessionOptions.token`]: #sessionoptionstoken-client-only
 [`stream.destroy()`]: #streamdestroyerror-options
 [`stream.headers`]: #streamheaders
 [`stream.onerror`]: #streamonerror

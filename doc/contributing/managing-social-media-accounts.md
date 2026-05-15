@@ -1,9 +1,8 @@
-# Managing social media accounts
+# 管理社交媒体账号
 
-The project obtains and manages social media accounts in order to help
-promote the project and to share content that benefits the ecosystem.
+该项目获取并管理社交媒体账号，以帮助推广项目并分享有益于生态系统的内容。
 
-Currently the project has the following social media accounts:
+目前该项目拥有以下社交媒体账号：
 
 * [bluesky](https://bsky.app/profile/nodejs.org)
 * [twitter](https://x.com/nodejs)
@@ -12,38 +11,27 @@ Currently the project has the following social media accounts:
 
 ## bluesky
 
-Bluesky is managed directly by the project. Automation is used
-to request posts/reposts as outlined in
-[nodejs/bluesky](https://github.com/nodejs/bluesky).
+Bluesky 由项目直接管理。系统会使用自动化方式来请求发帖/转发，具体说明见
+[nodejs/bluesky](https://github.com/nodejs/bluesky)。
 
-Login credentials are available to members of the Technical
-Steering Committee, but are not to be used directly except
-in exceptional circumstances.
+登录凭据可供技术指导委员会成员使用，但除特殊情况外不得直接使用。
 
 ## Twitter/X
 
-Day to day management of the Twitter/X account has been
-delegated to the Foundation Staff.
+Twitter/X 账号的日常管理已委托给基金会工作人员。
 
-In addition, it has been agreed that Releasers may login
-and post when doing a release, and TSC members may post
-an announcement of a release if a releaser is not able to
-do it themselves.
+此外，双方已同意，发布者在进行版本发布时可以登录并发帖；如果发布者无法自行完成，TSC 成员也可以发布版本公告。
 
-Login credentials are available to members of the Technical
-Steering Committee. Releasers may request access by
-opening an issue in the nodejs/admin repo asking for access.
+登录凭据可供技术指导委员会成员使用。发布者可通过在 nodejs/admin 仓库中提交 issue 来申请访问权限。
 
 ## Facebook
 
-Day to day management of the Facebook account has been
-delegated to the Foundation Staff.
+Facebook 账号的日常管理已委托给基金会工作人员。
 
-No project members have access to the Facebook account.
+没有项目成员可以访问 Facebook 账号。
 
 ## LinkedIn
 
-Day to day management of the LinkedIn account has been
-delegated to the Foundation Staff.
+LinkedIn 账号的日常管理已委托给基金会工作人员。
 
-No project members have access to the LinkedIn account.
+没有项目成员可以访问 LinkedIn 账号。

@@ -390,7 +390,7 @@ Node.js 一直以来都将执行速度作为优化目标。如果某项变更能
 
 拉取请求可以通过说 LGTM（即 “Looks Good To Me”）或使用 GitHub 的 Approve 按钮来批准。在过程中可以使用 GitHub 的拉取请求审阅功能。更多信息请查看 [官方文档](https://help.github.com/articles/reviewing-changes-in-pull-requests/)。
 
-在你将新更改推送到分支后，即使 GitHub 显示“Approved”，你也需要再次为这些新更改获取批准，因为审阅者之前已经按过按钮了。
+在你将新更改推送到分支后，即使 GitHub 显示“已批准”，你也需要再次为这些新更改获取批准，因为审阅者之前已经按过按钮了。
 
 ### 等待拉取请求合并
 

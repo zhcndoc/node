@@ -1,137 +1,99 @@
-# Diagnostic tooling support tiers
+# 诊断工具支持等级
 
-Diagnostic tooling is important to the consumers of Node.js. It is used both
-in development and in production in order to investigate problems.  The failure
-of one of these tools may be as big a problem for an end user as a bug within
-the runtime itself.
+诊断工具对 Node.js 的使用者很重要。它既用于开发，也用于生产环境，以便调查问题。其中一个工具的失效，对最终用户来说可能和运行时本身的 bug 一样严重。
 
-The Node.js project has assessed the tools and the APIs which support those
-tools. Each of the tools and APIs has been put into one of
-the following tiers.
+Node.js 项目已经对这些工具以及支持这些工具的 API 进行了评估。每个工具和 API 都被划分到以下等级之一。
 
-* Tier 1 - Must always be working (CI tests passing) for all
-  Current and LTS Node.js releases. A release will not be shipped if the test
-  suite for the tool/API is not green. To be considered for inclusion
-  in this tier it must have a good test suite and that test suite and a job
-  must exist in the Node.js CI so that it can be run as part of the release
-  process. Tests on `main` will be run nightly when possible to provide
-  early warning of potential issues.  No commit to the current and LTS
-  release branches should break this tool/API if the next major release
-  is within 1 month. In addition:
-  * The maintainers of the tool must remain responsive when there
-    are problems;
-  * The tool must be actively used by the ecosystem;
-  * The tool must be heavily depended on;
-  * The tool must have a guide or other documentation in the Node.js GitHub
-    organization or website;
-  * The tool must be working on all supported platforms;
-  * The tool must only be using APIs exposed by Node.js as opposed to
-    its dependencies;
-  * The tool must be open source.
+* 等级 1 - 对所有 Current 和 LTS 版 Node.js 来说，必须始终可用（CI 测试通过）。如果该工具/API 的测试套件不是绿色，发布将不会进行。要被纳入此等级，它必须有良好的测试套件，并且该测试套件和一个任务必须存在于 Node.js CI 中，以便能作为发布流程的一部分运行。`main` 上的测试会在可能的情况下每晚运行，以便尽早发现潜在问题。如果下一次主要版本发布将在 1 个月内进行，那么对当前和 LTS 发布分支的任何提交都不应破坏此工具/API。此外：
+  * 工具的维护者在出现问题时必须保持响应；
+  * 该工具必须被生态系统积极使用；
+  * 该工具必须被广泛依赖；
+  * 该工具必须有指南或其他文档，位于 Node.js GitHub 组织或网站中；
+  * 该工具必须可在所有受支持的平台上运行；
+  * 该工具只能使用 Node.js 暴露的 API，而不能使用其依赖项的 API；
+  * 该工具必须是开源的。
 
-* Tier 2 - Must be working (CI tests passing) for all
-  LTS releases. An LTS release will not be shipped if the test
-  suite for the tool/API is not green. To be considered for inclusion
-  in this tier it must have a good test suite and that test suite and a job
-  must exist in the Node.js CI so that it can be run as part of the release
-  process. In addition:
-  * The maintainers of the tool must remain responsive when
-    there are problems;
-  * The tool must be actively used by the ecosystem;
-  * The tool must be heavily depended on;
-  * The tool must have a guide or other documentation in the Node.js GitHub
-    organization or website;
-  * The tool must be open source.
+* 等级 2 - 对所有 LTS 版本来说，必须可用（CI 测试通过）。如果该工具/API 的测试套件不是绿色，LTS 版本将不会发布。要被纳入此等级，它必须有良好的测试套件，并且该测试套件和一个任务必须存在于 Node.js CI 中，以便能作为发布流程的一部分运行。此外：
+  * 工具的维护者在出现问题时必须保持响应；
+  * 该工具必须被生态系统积极使用；
+  * 该工具必须被广泛依赖；
+  * 该工具必须有指南或其他文档，位于 Node.js GitHub 组织或网站中；
+  * 该工具必须是开源的。
 
-* Tier 3 - If possible its test suite will be run at least nightly
-  in the Node.js CI or in CITGM, and issues opened for failures.
-  Does not block shipping a release.
+* 等级 3 - 如果可能，其测试套件将至少每晚在 Node.js CI 或 CITGM 中运行，并且会为失败创建 issue。
+  不会阻止发布版本。
 
-* Tier 4 - Does not block shipping a release.
+* 等级 4 - 不会阻止发布版本。
 
-* Unclassified - tool/API is new or does not have the required testing in the
-  Node.js CI in order to qualify for a higher tier.
+* 未分类 - 工具/API 是新的，或在 Node.js CI 中没有满足更高等级所需的测试。
 
-The choice of which tier a particular tool will be assigned to, will be a
-collaborative decision between Diagnostics WG and Release WG. Some of the
-criteria considered might be:
+某个具体工具会被分配到哪个等级，是 Diagnostics WG 和 Release WG 之间的协作决策。所考虑的标准可能包括：
 
-* If the tool fits into a key category as listed below.
-* Whether the tool is actively used by the ecosystem.
-* The availability of alternatives.
-* Impact to the overall ecosystem if the tool is not working.
-* The availability of reliable test suite that can be integrated into our CI.
-* The availability of maintainer or community collaborator who will help
-  resolve issues when there are CI failures.
-* If the tool is maintained by the Node.js Foundation GitHub organization.
+* 该工具是否属于下面列出的关键类别之一。
+* 该工具是否被生态系统积极使用。
+* 是否有可用的替代方案。
+* 如果该工具不可用，对整个生态系统的影响。
+* 是否有可可靠集成到我们 CI 中的测试套件。
+* 是否有维护者或社区协作者愿意在 CI 失败时帮助解决问题。
+* 该工具是否由 Node.js Foundation GitHub 组织维护。
 
-The current categories of tools/APIs that fall under these Tiers are:
+目前属于这些等级的工具/API 类别如下：
 
-* FFDC (F) - First failure data capture, easy to consume initial diagnostic
-  information.
-* Tracing (T) - use of logging to provide information about execution flow.
-* Memory (M) - tools that provide additional information about memory
-  used in the Heap or by native code.
-* Profiling (P) - tools that provide additional information about where
-  CPU cycles are being spent.
-* AsyncFlow (A) - tools that provide additional insight into asynchronous
-  execution flow.
+* FFDC（F）- 首次故障数据捕获，易于使用的初始诊断信息。
+* Tracing（T）- 使用日志提供有关执行流程的信息。
+* Memory（M）- 提供有关 Heap 中或原生代码所使用内存的额外信息的工具。
+* Profiling（P）- 提供有关 CPU 周期花费位置的额外信息的工具。
+* AsyncFlow（A）- 为异步执行流提供更多洞察的工具。
 
-## Adding a tool to this list
+## 将工具添加到此列表
 
-Any tool that might be used to investigate issues when running Node.js can
-be added to the list. If there is a new tool that should be added to the
-list, it should start by being added to the "Not yet classified" or
-"Tier 4" lists. Once it has been added to the list "promotion" to Tier 3
-through Tier 1 requires that the requirements listed above be met AND
-have agreement from Diagnostics WG and Release WG based on the criteria
-listed above.
+任何在运行 Node.js 时可用于调查问题的工具，都可以添加到列表中。如果有一个新工具应当被添加到列表中，它应首先被加入到“尚未分类”或“等级 4”列表中。一旦它被添加到列表中，要将其“提升”到等级 3 至等级 1，需要满足上述列出的要求，并且还必须根据上述标准获得 Diagnostics WG 和 Release WG 的一致同意。
 
-## Tiers
+## 等级
 
-The tools are currently assigned to Tiers as follows:
+当前分配到各等级的工具如下：
 
-## Tier 1
+## 等级 1
 
-| Tool Type | Tool/API Name         | Regular Testing in Node.js CI | Integrated with Node.js | Target Tier |
-| --------- | --------------------- | ----------------------------- | ----------------------- | ----------- |
-| FFDC      | [diagnostic report][] | Yes                           | Yes                     | 1           |
+| 工具类型 | 工具/API 名称         | 在 Node.js CI 中的常规测试 | 与 Node.js 集成 | 目标等级 |
+| -------- | --------------------- | ----------------------------- | ----------------------- | ----------- |
+| FFDC      | [diagnostic report][] | 是                           | 是                     | 1           |
 |           |                       |                               |                         |             |
 
-## Tier 2
+## 等级 2
 
-| Tool Type | Tool/API Name                | Regular Testing in Node.js CI | Integrated with Node.js | Target Tier |
-| --------- | ---------------------------- | ----------------------------- | ----------------------- | ----------- |
-| Debugger  | [Chrome DevTools Protocol][] | Yes                           | Yes                     | 1           |
+| 工具类型 | 工具/API 名称                | 在 Node.js CI 中的常规测试 | 与 Node.js 集成 | 目标等级 |
+| -------- | ---------------------------- | ----------------------------- | ----------------------- | ----------- |
+| Debugger  | [Chrome DevTools Protocol][] | 是                           | 是                     | 1           |
 
-## Tier 3
+## 等级 3
 
-| Tool Type | Tool/API Name                        | Regular Testing in Node.js CI | Integrated with Node.js | Target Tier |
+| 工具类型 | 工具/API 名称                        | 在 Node.js CI 中的常规测试 | 与 Node.js 集成 | 目标等级 |
 | --------- | ------------------------------------ | ----------------------------- | ----------------------- | ----------- |
-| Profiling | V8 CPU profiler                      | Partial (V8 Tests)            | Yes                     | 1           |
-| Profiling | --prof/--prof-process flags          | Yes                           | Yes                     | 1           |
-| Profiling | V8 CodeEventHandler API              | Partial (V8 Tests)            | Yes                     | 2           |
-| Profiling | V8 --interpreted-frames-native-stack | Yes                           | Yes                     | 2           |
-| Profiling | [Linux perf][]                       | Yes                           | Partial                 | 2           |
-| Profiling | [node-clinic][]                      | No                            | No                      | 3           |
-| Debugger  | [Chrome DevTools Frontend][]         | No                            | No                      | 3           |
+| Profiling | V8 CPU profiler                      | 部分（V8 Tests）            | 是                     | 1           |
+| Profiling | --prof/--prof-process flags          | 是                           | 是                     | 1           |
+| Profiling | V8 CodeEventHandler API              | 部分（V8 Tests）            | 是                     | 2           |
+| Profiling | V8 --interpreted-frames-native-stack | 是                           | 是                     | 2           |
+| Profiling | [Linux perf][]                       | 是                           | 部分                     | 2           |
+| Profiling | [node-clinic][]                      | 否                            | 否                      | 3           |
+| Debugger  | [Chrome DevTools Frontend][]         | 否                            | 否                      | 3           |
 
-## Tier 4
+## 等级 4
 
-| Tool Type | Tool/API Name | Regular Testing in Node.js CI | Integrated with Node.js | Target Tier |
+| 工具类型 | 工具/API 名称 | 在 Node.js CI 中的常规测试 | 与 Node.js 集成 | 目标等级 |
 | --------- | ------------- | ----------------------------- | ----------------------- | ----------- |
-| Profiling | [0x][]        | No                            | No                      | 3           |
+| Profiling | [0x][]        | 否                            | 否                      | 3           |
 
-## Not yet classified
+## 尚未分类
 
-| Tool Type | Tool/API Name                             | Regular Testing in Node.js CI | Integrated with Node.js | Target Tier |
+| 工具类型 | 工具/API 名称                             | 在 Node.js CI 中的常规测试 | 与 Node.js 集成 | 目标等级 |
 | --------- | ----------------------------------------- | ----------------------------- | ----------------------- | ----------- |
-| Memory    | V8 heap profiler                          | No                            | Yes                     | 1           |
-| Memory    | V8 sampling heap profiler                 | No                            | Yes                     | 1           |
-| AsyncFlow | [Async Hooks (API)][]                     | ?                             | Yes                     | 1           |
-| Debugger  | [Command line Debug Client][]             | ?                             | Yes                     | 1           |
-| Tracing   | [trace\_events (API)][trace_events (API)] | No                            | Yes                     | 1           |
-| Tracing   | trace\_gc                                 | No                            | Yes                     | 1           |
+| Memory    | V8 heap profiler                          | 否                            | 是                     | 1           |
+| Memory    | V8 sampling heap profiler                 | 否                            | 是                     | 1           |
+| AsyncFlow | [Async Hooks (API)][]                     | ?                             | 是                     | 1           |
+| Debugger  | [Command line Debug Client][]             | ?                             | 是                     | 1           |
+| Tracing   | [trace\_events (API)][trace_events (API)] | 否                            | 是                     | 1           |
+| Tracing   | trace\_gc                                 | 否                            | 是                     | 1           |
 
 [0x]: https://github.com/davidmarkclements/0x
 [Async Hooks (API)]: https://nodejs.org/api/async_hooks.html

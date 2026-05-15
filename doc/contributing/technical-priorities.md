@@ -1,177 +1,86 @@
-# Technical Priorities
+# 技术优先事项
 
-This list represents the current view of key technical priorities recognized
-by the project as important to ensure the ongoing success of Node.js.
-It is based on an understanding of the Node.js
-[constituencies](https://github.com/nodejs/next-10/blob/main/CONSTITUENCIES.md)
-and their [needs](https://github.com/nodejs/next-10/blob/main/CONSTITUENCY-NEEDS.md).
+此列表代表项目当前对关键技术优先事项的看法，这些事项被认为对确保 Node.js 的持续成功很重要。它基于对 Node.js
+[受众群体](https://github.com/nodejs/next-10/blob/main/CONSTITUENCIES.md)
+及其[需求](https://github.com/nodejs/next-10/blob/main/CONSTITUENCY-NEEDS.md)的理解。
 
-The initial version was created based on the work of the
-[Next-10 team](https://github.com/nodejs/next-10) and the
+初始版本是基于
+[Next-10 团队](https://github.com/nodejs/next-10)以及 2021 年 8 月 5 日的
 [mini-summit](https://github.com/nodejs/next-10/issues/76)
-on August 5th 2021.
+的工作创建的。
 
-They will be updated regularly and will be reviewed by the next-10 team
-and the TSC on a 6-month basis.
+它们将定期更新，并会由 next-10 团队
+和 TSC 每 6 个月审查一次。
 
-Version from the [mini-summit](https://github.com/nodejs/next-10/issues/1)
-on October 1st 2022.
+来自 2022 年 10 月 1 日
+[mini-summit](https://github.com/nodejs/next-10/issues/1)
+的版本。
 
-## Modern HTTP
+## 现代 HTTP
 
-_Present in: 2021_
+_当前存在于：2021_
 
-Base HTTP support is a key component of modern cloud-native applications,
-and built-in support was part of what made Node.js a success in the first
-10 years. The current implementation is hard to support and a common
-source of vulnerabilities. We must work towards an
-implementation that is easier to support and makes it easier to integrate
-the new HTTP versions (HTTP3, QUIC) and to support efficient
-implementations of different versions concurrently.
+基础 HTTP 支持是现代云原生应用的关键组成部分，而内置支持是 Node.js 在最初 10 年里取得成功的重要原因之一。当前的实现难以维护，并且是漏洞的常见来源。我们必须朝着一种更易维护的实现努力，这种实现能更轻松地集成新的 HTTP 版本（HTTP3、QUIC），并支持不同版本的高效并发实现。
 
-## Suitable types for end-users
+## 适合终端用户的类型支持
 
-_Present in: 2021_
+_当前存在于：2021_
 
-Using typings with JavaScript can allow a richer experience when using Visual
-Studio Code (or any other IDEs) environments, more complete documentation
-of APIs and the ability to identify and resolve errors earlier in the
-development process. These benefits are important to a large number of Node.js
-developers (maybe 50%).  Further typing support may be important
-to enterprises that are considering expanding their preferred platforms to
-include Node.js. It is, therefore, important that the Node.js project work
-to ensure there are good typings available for the public Node.js APIs.
+在 JavaScript 中使用类型标注可以在使用 Visual Studio Code（或其他任何 IDE）环境时提供更丰富的体验、更完整的 API 文档，并且能够更早地在开发过程中识别和解决错误。这些好处对大量 Node.js 开发者（也许 50%）来说都很重要。进一步加强类型支持对于正在考虑将其偏好平台扩展到包括 Node.js 的企业也可能很重要。因此，Node.js 项目应努力确保公开的 Node.js API 有良好的类型定义可用。
 
-## Documentation
+## 文档
 
-_Present in: 2021_
+_当前存在于：2021_
 
-The current documentation is great for experienced developers or people
-who are aware of what they are looking for. On the other hand, for
-beginners this documentation can be quite hard to read and finding the
-desired information is difficult. We must have documentation
-that is suitable for beginners to continue the rapid growth in use.
-This documentation should include more concrete examples and a learning
-path for newcomers.
+当前文档对有经验的开发者或已经知道自己在找什么的人来说很棒。另一方面，对于初学者来说，这些文档可能相当难读，而且很难找到所需信息。我们必须拥有适合初学者的文档，以继续保持快速增长的使用率。这些文档应包含更多具体示例和面向新手的学习路径。
 
 ## WebAssembly
 
-_Present in: 2021_
+_当前存在于：2021_
 
-The use of WebAssembly has been growing over the last few years.
-To ensure Node.js continues to be part of solutions where a
-subset of the solution needs the performance that WebAssembly can
-deliver, Node.js must provide good support for running
-WebAssembly components along with the JavaScript that makes up the rest
-of the solution. This includes implementations of “host” APIs like WASI.
+过去几年中，WebAssembly 的使用一直在增长。为确保 Node.js 继续成为那些解决方案的一部分——其中方案的一部分需要 WebAssembly 所能提供的性能——Node.js 必须为运行 WebAssembly 组件以及构成解决方案其余部分的 JavaScript 提供良好支持。这包括诸如 WASI 之类“宿主” API 的实现。
 
-## ES Modules (ESM)
+## ES 模块（ESM）
 
-_Present in: 2021_
+_当前存在于：2021_
 
-The CommonJS module system was one of the key components that led to the
-success of Node.js in its first 10 years. ESM is the standard that has
-been adopted as the equivalent in the broader JavaScript ecosystem and
-Node.js must continue to develop and improve its ESM implementation
-to stay relevant and ensure continued growth for the next 10 years.
+CommonJS 模块系统是 Node.js 在最初 10 年里取得成功的关键组成部分之一。ESM 是在更广泛的 JavaScript 生态系统中被采纳为对应标准的规范，Node.js 必须继续开发和改进其 ESM 实现，以保持相关性并确保未来 10 年的持续增长。
 
-## Support for features from the latest ECMAScript spec
+## 支持最新 ECMAScript 规范中的特性
 
-JavaScript developers are a fast moving group and need/want support for new ES
-JavaScript features in a timely manner. Node.js must continue
-to provide support for up to date ES versions to remain the runtime
-of choice and to ensure its continued growth for the next 10 years.
+JavaScript 开发者是一个变化非常快的群体，需要/希望及时支持新的 ES JavaScript 特性。Node.js 必须继续提供对最新 ES 版本的支持，以保持作为首选运行时，并确保未来 10 年的持续增长。
 
-## Observability
+## 可观测性
 
-_Present in: 2021_
+_当前存在于：2021_
 
-The ability to investigate and resolve problems that occur in applications
-running in production is crucial for organizations. Tools that allow
-people to observe the current and past operation of the application are
-needed to support that need. It is therefore important that the Node.js
-project work towards well understood and defined processes for observing
-the behavior of Node.js applications as well as ensuring there are well
-supported tools to implement those processes (logging, metrics and tracing).
-This includes support within the Node.js runtime itself (for example
-generating heap dumps, performance metrics, etc.) as well as support for
-applications on top of the runtime. In addition, it is also important to
-clearly document the use cases, problem determination methods, and best
-practices for those tools.
+调查和解决生产环境中运行的应用程序所出现问题的能力对组织至关重要。能够让人们观察应用程序当前和过去运行情况的工具是满足这一需求所必需的。因此，Node.js 项目应致力于形成对 Node.js 应用行为进行观测的清晰且明确定义的流程，并确保有得到良好支持的工具来实现这些流程（日志、指标和追踪）。这包括 Node.js 运行时本身的支持（例如生成堆转储、性能指标等），以及对运行时之上的应用程序的支持。此外，清晰记录这些工具的使用场景、问题判定方法和最佳实践也同样重要。
 
-## Better multithreaded support
+## 更好的多线程支持
 
-_Present in: 2021_
+_当前存在于：2021_
 
-Today's servers support multiple threads of concurrent execution.
-Node.js deployments must be able to make full and efficient
-use of the available resources. The right answer is often to use
-technologies like containers to run multiple single threaded Node.js
-instances on the same server. However, there are important use cases
-where a single Node.js instance needs to make use of multiple threads
-to achieve a performant and efficient implementation. In addition,
-even when a Node.js instance only needs to consume a single thread to
-complete its work there can be issues. If that work is long running,
-blocking the event loop will interfere with other supporting work like
-metrics gathering and health checks. Node.js
-must provide good support for using multiple threads
-to ensure the continued growth and success of Node.js.
+今天的服务器支持多个并发执行线程。Node.js 部署必须能够充分且高效地利用可用资源。正确的做法通常是使用容器等技术，在同一台服务器上运行多个单线程的 Node.js 实例。然而，在一些重要场景中，单个 Node.js 实例需要利用多个线程来实现高性能且高效的实现。此外，即使一个 Node.js 实例只需要消耗一个线程来完成工作，也可能会出现问题。如果该工作运行时间很长，阻塞事件循环将会干扰其他支持性工作，例如指标收集和健康检查。Node.js 必须为使用多线程提供良好支持，以确保 Node.js 持续增长和成功。
 
-## Single Executable Applications
+## 单可执行文件应用
 
-Node.js often loses out to other runtimes/languages in cases where
-being able to package a single, executable application simplifies
-distribution and management of what needs to be delivered. While there are
-components/approaches for doing this, they need to be better
-documented and evangelized so that this is not seen as a barrier
-for using Node.js in these situations. This is important to support
-the expansion of where/when Node.js is used in building solutions.
+在很多情况下，Node.js 会输给其他运行时/语言，因为能够将单个可执行应用程序打包会简化分发和管理所需交付内容。虽然已有用于实现这一点的组件/方法，但它们需要更好的文档和推广，这样在这些场景中使用 Node.js 就不会被视为一种障碍。这对于支持扩展 Node.js 在构建解决方案中被使用的方式/时机很重要。
 
-## Serverless
+## 无服务器
 
-Serverless is a cloud computing model where the cloud provider manages the
-underlying infrastructure and automatically allocates resources as
-needed. Developers only need to focus on writing code for specific
-functions, which are executed as individual units of work in response to
-events. Node.js is one of the main technology used by developers in
-this field therefore it is crucial for us to provide a great solution.
+无服务器是一种云计算模型，其中云提供商管理底层基础设施，并在需要时自动分配资源。开发者只需专注于为特定函数编写代码，这些函数会作为单独的工作单元响应事件执行。Node.js 是开发者在这一领域使用的主要技术之一，因此为我们提供一个出色的解决方案至关重要。
 
-## Small footprint
+## 小体积
 
-Small software footprints refer to software that has a minimal impact on
-system resources such as memory and processing power. This can be achieved
-through various methods such as optimizing code, reducing the number of
-dependencies, or using lightweight frameworks. Smaller footprints can lead
-to faster startup times, reduced memory usage, and improved overall system
-performance. This is fundamental for Node.js to be a lightweight proposition
-inside the ecosystem as it is used across a wild variety of projects, from
-web application to IoT and serverless.
+小体积软件是指对内存和处理能力等系统资源影响最小的软件。这可以通过多种方法实现，例如优化代码、减少依赖数量，或使用轻量级框架。更小的体积可以带来更快的启动时间、更少的内存使用以及更好的整体系统性能。这对于 Node.js 作为生态系统中的轻量级选择来说是基础性的，因为它被用于各种各样的项目中，从 Web 应用到 IoT 再到无服务器。
 
-## Developers-first DX
+## 以开发者为先的 DX
 
-Developer experience (DX) refers to the overall experience a developer has when
-working with a software development platform, framework, or tool. It encompasses
-all aspects of the developer's interactions with the system, from installation
-and configuration to writing code and debugging. A good DX prioritizes ease
-of use, efficiency, and productivity, and can lead to faster development times,
-higher quality code, and greater developer satisfaction. Factors that can
-impact DX include documentation, community support, testing tools,
-and integration with other systems.
-As TypeScript usage continues to grow and gains more prominence in the
-ecosystem, enhancing its support is essential for delivering an improved
-developer experience for newcomers and experienced users alike.
+开发者体验（DX）指开发者在使用软件开发平台、框架或工具时的整体体验。它涵盖了开发者与系统交互的各个方面，从安装和配置到编写代码和调试。良好的 DX 优先考虑易用性、效率和生产力，并能带来更快的开发时间、更高质量的代码以及更高的开发者满意度。会影响 DX 的因素包括文档、社区支持、测试工具以及与其他系统的集成。
+随着 TypeScript 的使用持续增长并在生态系统中变得越来越重要，加强对它的支持对于为新手和有经验的用户都提供更好的开发者体验至关重要。
 
-## Package management
+## 包管理
 
-The ability to easily install and manage dependencies and development tools is a
-key part of the user experience, and for that reason Node.js must provide a
-package manager as part of its distribution. Node.js includes `npm` for this
-purpose. This is for historical reasons — when `npm` was added in 2011, it was
-the only JavaScript package manager — and because it is the reference
-implementation for the npm registry, which is the de facto primary source for
-most JavaScript software. In accordance with our [policy][distribution-policy]
-of not including multiple dependencies or tools that serve the same purpose, the
-Node.js project does not include any other package managers; though it may
-include other software to download other package managers.
+轻松安装和管理依赖项及开发工具的能力是用户体验中的关键部分，因此 Node.js 必须在其发行版中提供一个包管理器。Node.js 为此包含了 `npm`。这有历史原因——当 `npm` 在 2011 年加入时，它是唯一的 JavaScript 包管理器——以及因为它是 npm 仓库的参考实现，而 npm 仓库是绝大多数 JavaScript 软件事实上的主要来源。根据我们[不包含多个用途相同的依赖或工具的政策][distribution-policy]，Node.js 项目不包含任何其他包管理器；不过它可以包含用于下载其他包管理器的其他软件。
 
 [distribution-policy]: ./distribution.md

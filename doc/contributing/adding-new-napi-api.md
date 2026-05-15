@@ -1,52 +1,50 @@
-# Contributing a new API to Node-API
+# 为 Node-API 贡献新的 API
 
-Node-API is the ABI-stable API for native addons. We encourage contributions to enhance the API,
-while also ensuring compatibility and adherence to guidelines. When adding a new API to Node-API,
-please follow these principles and guidelines:
+Node-API 是用于原生插件的 ABI 稳定 API。我们鼓励通过贡献来增强该 API，同时也要确保兼容性并遵循相关准则。在为 Node-API 添加新的 API 时，请遵循以下原则和指南：
 
-## Core principles
+## 核心原则
 
-1. **Adherence to Node-API standards**
-   * **Must** be a C API.
-   * **Must** not throw exceptions.
-   * **Must** return `napi_status`.
-   * **Should** consume `napi_env`.
-   * **Must** operate on primitive data types, pointers to primitive data types, or opaque handles.
-   * **Must** be a necessary API, not a convenience API (which belongs in node-addon-api).
-   * **Must** not break ABI compatibility with other Node.js versions.
+1. **遵循 Node-API 标准**
+   * **必须** 是 C API。
+   * **必须** 不抛出异常。
+   * **必须** 返回 `napi_status`。
+   * **应该** 使用 `napi_env`。
+   * **必须** 作用于基本数据类型、指向基本数据类型的指针，或不透明句柄。
+   * **必须** 是必要的 API，而不是便利性 API（后者应归入 node-addon-api）。
+   * **必须** 不破坏与其他 Node.js 版本的 ABI 兼容性。
 
-2. **Maintaining VM agnosticism**
-   * New APIs **should** be compatible with various JavaScript VMs.
+2. **保持对虚拟机无依赖**
+   * 新 API **应该** 兼容各种 JavaScript 虚拟机。
 
-## Documentation and testing
+## 文档和测试
 
-1. **Documentation**
-   * PRs introducing new APIs **must** include corresponding documentation updates.
-   * Experimental APIs **must** be clearly documented as experimental and require an explicit compile-time flag
-     to opt-in (`#define`).
+1. **文档**
+   * 引入新 API 的 PR **必须** 包含相应的文档更新。
+   * 实验性 API **必须** 明确标注为实验性，并且需要一个显式的编译时标志
+     来启用（`#define`）。
 
-2. **Testing**
-   * PRs **must** include at least one test case demonstrating API usage.
-   * **Should** include test cases for various interesting uses of the API.
-   * **Should** provide a sample demonstrating realistic usage, similar to a real-world addon.
+2. **测试**
+   * PR **必须** 包含至少一个展示 API 用法的测试用例。
+   * **应该** 包含该 API 各种有趣用法的测试用例。
+   * **应该** 提供一个展示真实使用场景的示例，类似于实际项目中的插件。
 
-## Process and approval
+## 流程与批准
 
-1. **Team discussion**
-   * New APIs **should** be discussed in a Node-API team meeting.
+1. **团队讨论**
+   * 新 API **应该** 在 Node-API 团队会议中讨论。
 
-2. **Review and approval**
-   * A new API addition **must** be signed off by at least two Node-API team members.
-   * **Should** be implemented in terms of available VM APIs in at least one other VM implementation of Node.js.
+2. **审查与批准**
+   * 新 API 的添加 **必须** 至少获得两名 Node-API 团队成员的签署同意。
+   * **应该** 以至少另一种 Node.js 的虚拟机实现中可用的 VM API 为基础来实现。
 
-3. **Experimental phase**
-   * New APIs **must** be marked as experimental for at least one minor Node.js release before promotion.
-   * **Must** have a feature flag (`NODE_API_EXPERIMENTAL_HAS_<FEATURE>`) for distinguishing experimental
-     feature existence.
-   * **Must** be considered for backporting.
-   * Exit criteria from experimental status include:
-     * Opening a PR in `nodejs/node` to remove experimental status, tagged as **node-api** and **semver-minor**.
-     * Approval by the Node-API team.
-     * Availability of a down-level implementation if backporting is needed.
-     * Usage by a published real-world module.
-     * Implementable in an alternative VM.
+3. **实验阶段**
+   * 新 API 在升级为正式版之前，**必须** 至少在一个 Node.js 次要版本中标记为实验性。
+   * **必须** 提供一个功能标志（`NODE_API_EXPERIMENTAL_HAS_<FEATURE>`）用于区分实验性
+     功能是否存在。
+   * **必须** 被纳入回移植考虑。
+   * 从实验性状态退出的标准包括：
+     * 在 `nodejs/node` 中开启一个用于移除实验性状态的 PR，并标记为 **node-api** 和 **semver-minor**。
+     * 获得 Node-API 团队批准。
+     * 如果需要回移植，则必须有一个低版本实现可用。
+     * 已被已发布的真实世界模块使用。
+     * 可在替代虚拟机中实现。

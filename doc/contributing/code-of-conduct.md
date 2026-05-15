@@ -1,43 +1,21 @@
-# Code of Conduct
+# 行为准则
 
-The Node.js project has a [Code of Conduct][] that _all_ contributors are
-expected to follow. This code describes the _minimum_ behavior expectations
-for all contributors.
+Node.js 项目有一份 [行为准则][]，期望 _所有_ 贡献者都遵守。该准则描述了对所有贡献者的 _最低_ 行为期望。
 
-As a contributor to Node.js, how you choose to act and interact towards your
-fellow contributors, as well as to the community, will reflect back not only
-on yourself but on the project as a whole. The Code of Conduct is designed and
-intended, above all else, to help establish a culture within the project that
-allows anyone and everyone who wants to contribute to feel safe doing so.
+作为 Node.js 的贡献者，你选择如何对待和与其他贡献者以及社区互动，不仅会反映你自己，也会反映整个项目。行为准则旨在并且主要是为了帮助在项目内建立一种文化，使任何想要贡献的人都能在这样做时感到安全。
 
-Should any individual act in any way that is considered in violation of the
-[Code of Conduct][], corrective actions will be taken. It is possible, however,
-for any individual to _act_ in such a manner that is not in violation of the
-strict letter of the Code of Conduct guidelines while still going completely
-against the spirit of what that Code is intended to accomplish.
+如果任何个人以任何被认为违反 [行为准则][] 的方式行事，将会采取纠正措施。然而，任何个人都可能以一种 _行为_ 方式行事：虽然并未违反行为准则指南的严格字面规定，却完全违背了该准则旨在实现的精神。
 
-Open, diverse, and inclusive communities live and die on the basis of trust.
-Contributors can disagree with one another so long as they trust that those
-disagreements are in good faith and everyone is working towards a common goal.
+开放、多元、包容的社区，其存在与消亡都建立在信任之上。贡献者之间可以彼此分歧，只要他们相信这些分歧是真诚的，并且每个人都在朝着共同目标努力。
 
-## Bad actors
+## 不良行为者
 
-All contributors to Node.js tacitly agree to abide by both the letter and
-spirit of the [Code of Conduct][]. Failure, or unwillingness, to do so will
-result in contributions being respectfully declined.
+所有 Node.js 贡献者都默认同意遵守 [行为准则][] 的字面要求和精神。若未能做到，或不愿意做到，相关贡献将会被礼貌地拒绝。
 
-A _bad actor_ is someone who repeatedly violates the spirit of the Code of
-Conduct through failure to regulate how they
-interact with others. In doing so, bad actors
-alienate other contributors, discourage collaboration, and generally reflect
-poorly on the project as a whole.
+所谓 _不良行为者_，是指由于未能规范自己与他人互动的方式，而反复违反行为准则精神的人。这样做会疏远其他贡献者，打击协作积极性，并且总体上会对项目造成不良影响。
 
-Being a bad actor may be intentional or unintentional. Typically, unintentional
-bad behavior can be easily corrected by being quick to apologize and correct
-course _even if you are not entirely convinced you need to_. Giving other
-contributors the benefit of the doubt and having a sincere willingness to admit
-that you _might_ be wrong is critical for any successful open collaboration.
+成为不良行为者可能是有意的，也可能是无意的。通常情况下，无意的不良行为可以通过迅速道歉并纠正方向来轻松修正，_即使你并不完全认同自己需要这样做_。对其他贡献者保持善意推定，并真诚地愿意承认自己_可能_是错的，这对任何成功的开放协作都至关重要。
 
-Don't be a bad actor.
+不要成为不良行为者。
 
-[Code of Conduct]: https://github.com/nodejs/admin/blob/HEAD/CODE_OF_CONDUCT.md
+[行为准则]: https://github.com/nodejs/admin/blob/HEAD/CODE_OF_CONDUCT.md

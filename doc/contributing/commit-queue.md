@@ -1,124 +1,76 @@
-# Commit queue
+# 提交队列
 
-_tl;dr: You can land pull requests by adding the `commit-queue` label to it._
+_tl;dr：你可以通过为拉取请求添加 `commit-queue` 标签来合并它。_
 
-Commit Queue is a feature for the project which simplifies the
-landing process by automating it via GitHub Actions. With it, collaborators can
-land pull requests by adding the `commit-queue` label to a PR. All
-checks will run via `@node-core/utils`, and if the pull request is ready to
-land, the Action will rebase it and push to `main`.
+提交队列是项目的一个功能，通过借助 GitHub Actions 自动化合并流程来简化落地过程。借助它，协作者可以通过给 PR 添加 `commit-queue` 标签来合并拉取请求。所有检查都会通过 `@node-core/utils` 运行，如果拉取请求已准备好合并，Action 会将其 rebase 并推送到 `main`。
 
-This document gives an overview of how the Commit Queue works, as well as
-implementation details, reasoning for design choices, and current limitations.
+本文档概述了提交队列的工作方式，以及实现细节、设计选择的原因和当前限制。
 
-## Overview
+## 概览
 
-From a high-level, the Commit Queue works as follow:
+从高层来看，提交队列的工作流程如下：
 
-1. Collaborators will add `commit-queue` label to pull requests ready to land
-2. Every five minutes the queue will do the following for each mergeable pull request
-   with the label:
-   1. Check if the PR also has a `request-ci` label (if it has, skip this PR
-      since it's pending a CI run)
-   2. Check if the last Jenkins CI is finished running (if it is not, skip this
-      PR)
-   3. Remove the `commit-queue` label
-   4. Run `git node land <pr> --oneCommitMax`
-   5. If it fails:
-      1. Abort `git node land` session
-      2. Add `commit-queue-failed` label to the PR
-      3. Leave a comment on the PR with the output from `git node land`
-      4. Skip next steps, go to next PR in the queue
-   6. If it succeeds:
-      1. Push the changes to nodejs/node
-      2. Leave a comment on the PR with `Landed in ...`
-      3. Close the PR
-      4. Go to next PR in the queue
+1. 协作者会为准备合并的拉取请求添加 `commit-queue` 标签
+2. 每五分钟，队列会对每个可合并且带有该标签的拉取请求执行以下操作：
+   1. 检查该 PR 是否也有 `request-ci` 标签（如果有，则跳过该 PR，因为它正在等待 CI 运行）
+   2. 检查最近一次 Jenkins CI 是否已完成运行（如果没有，则跳过该 PR）
+   3. 移除 `commit-queue` 标签
+   4. 运行 `git node land <pr> --oneCommitMax`
+   5. 如果失败：
+      1. 终止 `git node land` 会话
+      2. 为 PR 添加 `commit-queue-failed` 标签
+      3. 在 PR 上留下包含 `git node land` 输出的评论
+      4. 跳过后续步骤，进入队列中的下一个 PR
+   6. 如果成功：
+      1. 将更改推送到 nodejs/node
+      2. 在 PR 上留下 `Landed in ...` 评论
+      3. 关闭 PR
+      4. 进入队列中的下一个 PR
 
-To make the Commit Queue squash all the commits of a pull request into the
-first one, add the `commit-queue-squash` label.
-To make the Commit Queue land a pull request containing several commits, add the
-`commit-queue-rebase` label. When using this option, make sure
-that all commits are self-contained, meaning every commit should pass all tests.
+要让提交队列将拉取请求的所有提交压缩到第一个提交中，请添加 `commit-queue-squash` 标签。
+要让提交队列合并包含多个提交的拉取请求，请添加 `commit-queue-rebase` 标签。使用此选项时，请确保所有提交都是自包含的，也就是说，每个提交都应通过所有测试。
 
-## Current limitations
+## 当前限制
 
-The Commit Queue feature is still in early stages, and as such it might not
-work for more complex pull requests. These are the currently known limitations
-of the commit queue:
+提交队列功能仍处于早期阶段，因此它可能不适用于更复杂的拉取请求。以下是当前已知的提交队列限制：
 
-1. All commits in a pull request must either be following commit message
-   guidelines or be a valid [`fixup!`](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---fixupamendrewordltcommitgt)
-   commit that will be correctly handled by the [`--autosquash`](https://git-scm.com/docs/git-rebase#Documentation/git-rebase.txt---autosquash)
-   option
-2. A CI must've ran and succeeded since the last change on the PR
-3. A collaborator must have approved the PR since the last change
-4. Only Jenkins CI and GitHub Actions are checked (V8 CI and CITGM are ignored)
-5. The PR must target the `main` branch (PRs opened against other branches, such
-   as backport PRs, are ignored)
+1. 拉取请求中的所有提交要么必须遵循提交信息规范，要么必须是一个有效的 [`fixup!`](https://git-scm.com/docs/git-commit#Documentation/git-commit.txt---fixupamendrewordltcommitgt)
+   提交，并且能够被 [`--autosquash`](https://git-scm.com/docs/git-rebase#Documentation/git-rebase.txt---autosquash)
+   选项正确处理
+2. 自 PR 最近一次变更之后，必须已经运行过一次 CI 且成功
+3. 自 PR 最近一次变更之后，必须有协作者批准该 PR
+4. 仅检查 Jenkins CI 和 GitHub Actions（忽略 V8 CI 和 CITGM）
+5. PR 必须以 `main` 分支为目标（针对其他分支打开的 PR，例如回移 PR，会被忽略）
 
-## Implementation
+## 实现
 
-The [action](../../.github/workflows/commit-queue.yml) will run on scheduler
-events every five minutes. Five minutes is the smallest number accepted by
-the scheduler. The scheduler is not guaranteed to run every five minutes, it
-might take longer between runs.
+[Action](../../.github/workflows/commit-queue.yml) 将在计划任务事件上每五分钟运行一次。五分钟是调度器接受的最小值。调度器并不保证每五分钟都会运行一次，两次运行之间可能会更久。
 
-Using the scheduler is preferable over using pull\_request\_target for two
-reasons:
+相比使用 pull\_request\_target，使用调度器更可取，原因有两个：
 
-1. if two Commit Queue Actions execution overlap, there's a high-risk that
-   the last one to finish will fail because the local branch will be out of
-   sync with the remote after the first Action pushes. `issue_comment` event
-   has the same limitation.
-2. `pull_request_target` will only run if the Action exists on the base commit
-   of a pull request, and it will run the Action version present on that
-   commit, meaning we wouldn't be able to use it for already opened PRs
-   without rebasing them first.
+1. 如果两个提交队列 Action 的执行发生重叠，最后完成的那个有很高风险会失败，因为在第一个 Action 推送之后，本地分支会与远程分支不同步。`issue_comment` 事件也有相同的限制。
+2. `pull_request_target` 只有在 Action 存在于拉取请求的基础提交上时才会运行，并且它会运行该提交中存在的 Action 版本，这意味着如果不先对已有 PR 进行 rebase，我们就无法将其用于已经打开的 PR。
 
-`@node-core/utils` is configured with a personal token and
-a Jenkins token from
-[@nodejs-github-bot](https://github.com/nodejs/github-bot).
-`octokit/graphql-action` is used to fetch all pull requests with the
-`commit-queue` label. The output is a JSON payload, so `jq` is used to turn
-that into a list of PR ids we can pass as arguments to
-[`commit-queue.sh`](../../tools/actions/commit-queue.sh).
+`@node-core/utils` 配置了一个个人令牌和一个来自
+[@nodejs-github-bot](https://github.com/nodejs/github-bot) 的 Jenkins 令牌。
+`octokit/graphql-action` 用于获取所有带有 `commit-queue` 标签的拉取请求。输出是一个 JSON 负载，因此使用 `jq` 将其转换为可作为参数传递给
+[`commit-queue.sh`](../../tools/actions/commit-queue.sh) 的 PR id 列表。
 
-> The personal token only needs permission for public repositories and to read
-> profiles, we can use the GITHUB\_TOKEN for write operations. Jenkins token is
-> required to check CI status.
+> 个人令牌只需要公共仓库权限以及读取个人资料的权限，我们可以使用 GITHUB\_TOKEN 执行写操作。Jenkins 令牌用于检查 CI 状态。
 
-`commit-queue.sh` receives the following positional arguments:
+`commit-queue.sh` 接收以下位置参数：
 
-1. The repository owner
-2. The repository name
-3. The Action GITHUB\_TOKEN
-4. Every positional argument starting at this one will be a pull request ID of
-   a pull request with commit-queue set.
+1. 仓库所有者
+2. 仓库名称
+3. Action 的 GITHUB\_TOKEN
+4. 从这里开始的每个位置参数都将是一个带有 commit-queue 标签的拉取请求 ID。
 
-The script will iterate over the pull requests. `ncu-ci` is used to check if
-the last CI is still pending, and calls to the GitHub API are used to check if
-the PR is waiting for CI to start (`request-ci` label). The PR is skipped if CI
-is pending. No other CI validation is done here since `git node land` will fail
-if the last CI failed.
+脚本会遍历这些拉取请求。`ncu-ci` 用于检查最近一次 CI 是否仍在等待中，并使用 GitHub API 调用来检查 PR 是否正在等待 CI 开始（`request-ci` 标签）。如果 CI 仍在等待，则跳过该 PR。这里不会进行其他 CI 验证，因为如果最近一次 CI 失败，`git node land` 会失败。
 
-The script removes the `commit-queue` label. It then runs `git node land`,
-forwarding stdout and stderr to a file. If any errors happen,
-`git node land --abort` is run, and then a `commit-queue-failed` label is added
-to the PR, as well as a comment with the output of `git node land`.
+脚本会移除 `commit-queue` 标签。然后运行 `git node land`，将 stdout 和 stderr 重定向到文件。如果发生任何错误，就会运行 `git node land --abort`，然后向 PR 添加 `commit-queue-failed` 标签，并附上一条包含 `git node land` 输出的评论。
 
-If no errors happen during `git node land`, the script will use the
-`GITHUB_TOKEN` to push the changes to `main`, and then will leave a
-`Landed in ...` comment in the PR, and then will close it. Iteration continues
-until all PRs have done the steps above.
+如果在 `git node land` 期间没有发生错误，脚本将使用 `GITHUB_TOKEN` 将更改推送到 `main`，然后在 PR 中留下一个 `Landed in ...` 评论，随后关闭该 PR。这个迭代过程会持续进行，直到所有 PR 都完成上述步骤。
 
-## Reverting broken commits
+## 回滚有问题的提交
 
-Reverting broken commits is done manually by collaborators, just like when
-commits are landed manually via `git node land`. An easy way to revert is a
-good feature for the project, but is not explicitly required for the Commit
-Queue to work because the Action lands PRs just like collaborators do today. If
-once we start using the Commit Queue we notice that the number of required
-reverts increases drastically, we can pause the queue until a Revert Queue is
-implemented, but until then we can enable the Commit Queue and then work on a
-Revert Queue as a follow-up.
+回滚有问题的提交由协作者手动完成，就像通过 `git node land` 手动落地提交时一样。对于项目来说，提供一种简单的回滚方式是一个很好的功能，但这并不是提交队列正常工作所必需的，因为该 Action 的合并方式与协作者当前的做法相同。如果在开始使用提交队列后，我们发现所需的回滚数量大幅增加，我们可以暂停队列，直到实现 Revert Queue，但在此之前，我们可以先启用提交队列，然后再把 Revert Queue 作为后续工作来推进。

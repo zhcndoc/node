@@ -1,47 +1,38 @@
-# Maintaining the root certificates
+# 维护根证书
 
-Node.js contains a compiled-in set of root certificates used as trust anchors
-for TLS certificate validation.
+Node.js 包含一组内置的根证书，用作 TLS 证书验证的信任锚点。
 
-The certificates come from Mozilla, specifically NSS's `certdata.txt` file.
+这些证书来自 Mozilla，具体来说是 NSS 的 `certdata.txt` 文件。
 
-The PEM encodings of the certificates are converted to C strings, and committed
-in `src/node_root_certs.h`.
+这些证书的 PEM 编码会被转换为 C 字符串，并提交到 `src/node_root_certs.h` 中。
 
-## When to update
+## 何时更新
 
-Root certificates should be updated sometime after Mozilla makes an NSS release,
-check the [NSS release schedule][].
+根证书应在 Mozilla 发布 NSS 版本之后的某个时间更新，请查看 [NSS 发布计划][]。
 
-## Process
+## 流程
 
-The `tools/dep_updaters/update-root-certs.mjs` script automates the update of
-the root certificates, including:
+`tools/dep_updaters/update-root-certs.mjs` 脚本会自动更新根证书，包括：
 
-* Downloading `certdata.txt` from Mozilla's source control repository.
-* Running `tools/mk-ca-bundle.pl` to convert the certificates and generate
-  `src/node_root_certs.h`.
-* Using `git diff-files` to determine which certificate have been added and/or
-  removed.
+* 从 Mozilla 的源代码仓库下载 `certdata.txt`。
+* 运行 `tools/mk-ca-bundle.pl` 转换证书并生成 `src/node_root_certs.h`。
+* 使用 `git diff-files` 确定哪些证书已添加和/或移除。
 
-Manual instructions are included in the following collapsed section.
+下面折叠的部分包含手动说明。
 
 <details>
 
-Commands assume that the current working directory is the root of a checkout of
-the nodejs/node repository.
+以下命令假定当前工作目录是 nodejs/node 仓库检出的根目录。
 
-1. Find NSS metadata for update.
+1. 查找用于更新的 NSS 元数据。
 
-   The latest released NSS version, release date, Firefox version, and Firefox
-   release date can be found in the [NSS release schedule][].
+   最新发布的 NSS 版本、发布日期、Firefox 版本以及 Firefox 发布日期可在 [NSS 发布计划][] 中找到。
 
-   The tag to fetch `certdata.txt` from is found by looking for the release
-   version in the [tag list][].
+   要获取 `certdata.txt` 的标签，可在 [标签列表][] 中按发布版本查找。
 
-2. Update `certdata.txt` from the NSS release tag.
+2. 从 NSS 发布标签更新 `certdata.txt`。
 
-   Update the tag in the commands below, and run:
+   在下面的命令中更新标签，然后运行：
 
    ```bash
    cd tools/
@@ -49,34 +40,32 @@ the nodejs/node repository.
    curl -O https://hg.mozilla.org/projects/nss/raw-file/NSS_3_41_RTM/lib/ckfw/builtins/certdata.txt
    ```
 
-   The `_before` file will be used later. Verify that running `mk-ca-bundle`
-   made no changes to `src/node_root_certs.h`. If it did, something went wrong
-   with the previous update. Seek help!
+   `_before` 文件之后会用到。验证运行 `mk-ca-bundle` 后没有对 `src/node_root_certs.h` 做任何更改。如果有，说明上一次更新出了问题。请寻求帮助！
 
-   Update metadata in the message below, and commit `certdata.txt`:
+   在下面的消息中更新元数据，并提交 `certdata.txt`：
 
    ```text
    tools: update certdata.txt
 
-   This is the certdata.txt[0] from NSS 3.41, released on 2018-12-03.
+   这是来自 NSS 3.41 的 certdata.txt[0]，发布于 2018-12-03。
 
-   This is the version of NSS that will ship in Firefox 65 on
-   2018-12-11.
+   这是将随 Firefox 65 一起发布的 NSS 版本，发布时间为
+   2018-12-11。
 
    [0] https://hg.mozilla.org/projects/nss/raw-file/NSS_3_41_RTM/lib/ckfw/builtins/certdata.txt
    ```
 
-3. Update `node_root_certs.h` from `certdata.txt`.
+3. 从 `certdata.txt` 更新 `node_root_certs.h`。
 
-   Run the command below:
+   运行下面的命令：
 
    ```bash
    ./mk-ca-bundle.pl -v 2>_after
    ```
 
-   Confirm that `../src/node_root_certs.h` was updated.
+   确认 `../src/node_root_certs.h` 已更新。
 
-   Determine what changes were made by diffing the before and after files:
+   通过比较更新前后的文件来确定做了哪些更改：
 
    ```console
    % diff _before _after
@@ -105,15 +94,14 @@ the nodejs/node repository.
    > Done (135 CA certs processed, 16 skipped).
    ```
 
-   Use the diff to update the message below, and commit `src/node_root_certs.h`:
+   使用 diff 更新下面的消息，并提交 `src/node_root_certs.h`：
 
    ```text
-   crypto: update root certificates
+   crypto: 更新根证书
 
-   Update the list of root certificates in src/node_root_certs.h with
-   tools/mk-ca-bundle.pl.
+   使用 tools/mk-ca-bundle.pl 更新 src/node_root_certs.h 中的根证书列表。
 
-   Certificates added:
+   已添加的证书：
    - GlobalSign Root CA - R6
    - OISTE WISeKey Global Root GC CA
    - GTS Root R1
@@ -124,7 +112,7 @@ the nodejs/node repository.
    - UCA Extended Validation Root
    - Certigna Root CA
 
-   Certificates removed:
+   已移除的证书：
    - Visa eCommerce Root
    - TÜRKTRUST Elektronik Sertifika Hizmet Sağlayıcısı H5
    - Certplus Root CA G1
@@ -136,5 +124,5 @@ the nodejs/node repository.
 
 </details>
 
-[NSS release schedule]: https://wiki.mozilla.org/NSS:Release_Versions
-[tag list]: https://hg.mozilla.org/projects/nss/tags
+[NSS 发布计划]: https://wiki.mozilla.org/NSS:Release_Versions
+[标签列表]: https://hg.mozilla.org/projects/nss/tags

@@ -1,41 +1,39 @@
-# Strategic initiatives
+# 战略倡议
 
-The Node.js project has several strategic initiatives underway. A review of the
-current initiatives is a standing item on the Technical Steering Committee
-agenda to ensure they are active and have the support they need.
+Node.js 项目目前有若干战略倡议正在推进。对当前倡议的审查是技术指导委员会议程中的固定项目，以确保它们保持活跃并获得所需的支持。
 
-## Current initiatives
+## 当前倡议
 
-| Initiative             | Champion                         | Links                                             |
-| ---------------------- | -------------------------------- | ------------------------------------------------- |
-| QUIC / HTTP3           | [James M Snell][jasnell]         | <https://github.com/nodejs/quic>                  |
-| Shadow Realm           | [Chengzhong Wu][legendecas]      | <https://github.com/nodejs/node/issues/42528>     |
-| Startup Snapshot       | [Joyee Cheung][joyeecheung]      | <https://github.com/nodejs/node/issues/35711>     |
-| V8 Currency            | [Michaël Zasso][targos]          |                                                   |
-| Next-10                | [Michael Dawson][mhdawson]       | <https://github.com/nodejs/next-10>               |
-| Single executable apps | [Darshan Sen][RaisinTen]         | <https://github.com/nodejs/single-executable>     |
-| Performance            | [Rafael Gonzaga][RafaelGSS]      | <https://github.com/nodejs/performance>           |
-| Primordials            | [Benjamin Gruenbaum][benjamingr] | <https://github.com/nodejs/primordials-use-cases> |
+| 倡议                    | 负责人                           | 链接                                              |
+| ----------------------- | -------------------------------- | ------------------------------------------------- |
+| QUIC / HTTP3            | [James M Snell][jasnell]         | <https://github.com/nodejs/quic>                  |
+| Shadow Realm            | [Chengzhong Wu][legendecas]      | <https://github.com/nodejs/node/issues/42528>     |
+| 启动快照                | [Joyee Cheung][joyeecheung]      | <https://github.com/nodejs/node/issues/35711>     |
+| V8 货币化               | [Michaël Zasso][targos]          |                                                   |
+| Next-10                 | [Michael Dawson][mhdawson]       | <https://github.com/nodejs/next-10>               |
+| 单文件可执行应用        | [Darshan Sen][RaisinTen]         | <https://github.com/nodejs/single-executable>     |
+| 性能                    | [Rafael Gonzaga][RafaelGSS]      | <https://github.com/nodejs/performance>           |
+| 原始对象                | [Benjamin Gruenbaum][benjamingr] | <https://github.com/nodejs/primordials-use-cases> |
 
 <details>
-<summary>List of completed initiatives</summary>
+<summary>已完成倡议列表</summary>
 
-## Completed initiatives
+## 已完成倡议
 
-| Initiative         | Champion                         | Links                                                                |
+| 倡议               | 负责人                         | 链接                                                                |
 | ------------------ | -------------------------------- | -------------------------------------------------------------------- |
-| Build resources    | Michael Dawson                   | <https://github.com/nodejs/build/issues/1154#issuecomment-448418977> |
-| Core Promise APIs  | Matteo Collina, Antoine du Hamel | <https://github.com/nodejs/TSC/issues/1094>                          |
-| CVE Management     | Michael Dawson                   | <https://github.com/nodejs/security-wg/issues/33>                    |
-| Governance         | Myles Borins                     |                                                                      |
-| Moderation Team    | Rich Trott                       | <https://github.com/nodejs/TSC/issues/329>                           |
-| Modules            | Myles Borins                     | <https://github.com/nodejs/modules>                                  |
+| 构建资源           | Michael Dawson                   | <https://github.com/nodejs/build/issues/1154#issuecomment-448418977> |
+| 核心 Promise API   | Matteo Collina, Antoine du Hamel | <https://github.com/nodejs/TSC/issues/1094>                          |
+| CVE 管理           | Michael Dawson                   | <https://github.com/nodejs/security-wg/issues/33>                    |
+| 治理               | Myles Borins                     |                                                                      |
+| 维护团队           | Rich Trott                       | <https://github.com/nodejs/TSC/issues/329>                           |
+| 模块               | Myles Borins                     | <https://github.com/nodejs/modules>                                  |
 | N-API              | Michael Dawson                   | <https://github.com/nodejs/abi-stable-node>                          |
-| npm Integration    | Myles Borins                     | <https://github.com/nodejs/node/pull/21594>                          |
-| OpenSSL Evolution  | Rod Vagg                         | <https://github.com/nodejs/TSC/issues/677>                           |
-| Open Web Standards | Myles Borins, Joyee Cheung       | <https://github.com/nodejs/open-standards>                           |
-| VM module fix      | Franziska Hinkelmann             | <https://github.com/nodejs/node/issues/6283>                         |
-| Workers            | Anna Henningsen                  | <https://github.com/nodejs/worker>                                   |
+| npm 集成           | Myles Borins                     | <https://github.com/nodejs/node/pull/21594>                          |
+| OpenSSL 演进       | Rod Vagg                         | <https://github.com/nodejs/TSC/issues/677>                           |
+| 开放 Web 标准      | Myles Borins, Joyee Cheung       | <https://github.com/nodejs/open-standards>                           |
+| VM 模块修复       | Franziska Hinkelmann             | <https://github.com/nodejs/node/issues/6283>                         |
+| Worker            | Anna Henningsen                  | <https://github.com/nodejs/worker>                                   |
 
 </details>
 
