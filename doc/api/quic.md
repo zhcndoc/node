@@ -577,7 +577,9 @@ The valid range is `0` to `65535`.
 ### `endpoint.setSNIContexts(entries[, options])`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * `entries` {object} An object mapping host names to TLS identity options.
@@ -742,6 +744,18 @@ added: v23.8.0
 
 A `QuicSession` represents the local side of a QUIC connection.
 
+### `session.applicationOptions`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {quic.ApplicationOptions}
+
+The current application-level options for this session. These include settings
+that are specific to the negotiated application protocol (e.g. HTTP/3) and may
+be negotiated separately from the transport parameters. Read only.
+
 ### `session.close([options])`
 
 <!-- YAML
@@ -850,6 +864,17 @@ added: v23.8.0
 * Type: {boolean}
 
 True if `session.destroy()` has been called. Read only.
+
+### `session.localTransportParams`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {quic.TransportParams|null}
+
+The transport parameters advertised by the local endpoint during the handshake.
+Returns `null` if the session has been destroyed. Read only.
 
 ### `session.endpoint`
 
@@ -1143,6 +1168,19 @@ added: v23.8.0
   * `remote` {net.SocketAddress}
 
 The local and remote socket addresses associated with the session. Read only.
+
+### `session.remoteTransportParams`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {quic.TransportParams|null|undefined}
+
+The transport parameters advertised by the remote peer during the handshake.
+Returns `null` if the session has been destroyed, `undefined` if the handshake
+has not yet completed and the remote parameters are not yet available. Read
+only.
 
 ### `session.sendDatagram(datagram[, encoding])`
 
@@ -2094,6 +2132,20 @@ added: v23.8.0
 
 * Type: {bigint}
 
+### `streamStats.bytesAccumulated`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {bigint}
+
+The current number of bytes sitting in the stream's receive accumulation
+buffer, awaiting delivery to the application. A value near zero indicates
+the reader is keeping up with incoming data. A value near the stream's
+flow control window indicates the application is not consuming data fast
+enough.
+
 ### `streamStats.bytesReceived`
 
 <!-- YAML
@@ -2142,6 +2194,20 @@ added: v23.8.0
 
 * Type: {bigint}
 
+### `streamStats.maxBytesAccumulated`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {bigint}
+
+The peak number of bytes that were accumulated in the stream's receive
+buffer at any point during the stream's lifetime. This value only
+increases monotonically. It is useful for diagnosing whether a stream
+experienced backpressure episodes and whether the accumulation buffer
+sizing is appropriate for the workload.
+
 ### `streamStats.maxOffset`
 
 <!-- YAML
@@ -2183,6 +2249,70 @@ added: v23.8.0
 * Type: {bigint}
 
 ## Types
+
+### type: `ApplicationOptions`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {Object}
+
+The application specific options.
+
+#### `applicationOptions.maxHeaderPairs`
+
+* Type: {bigint|number}
+
+Maximum number of header name-value pairs accepted per header block.
+Headers beyond this limit are silently dropped. **Default:** `128`
+
+#### `applicationOptions.maxHeaderLength`
+
+* Type: {bigint|number}
+
+Maximum total byte length of all header names and values combined per header
+block. Headers that would push the total over this limit are silently
+dropped. **Default:** `8192`
+
+#### `applicationOptions.maxFieldSectionSize`
+
+* Type: {bigint|number}
+
+Maximum size of a compressed header field section (QPACK). `0` means
+unlimited. **Default:** `0`
+
+#### `applicationOptions.qpackMaxDTableCapacity`
+
+* Type: {bigint|number}
+
+QPACK dynamic table capacity in bytes. Set to `0` to disable the dynamic
+table. **Default:** `4096`
+
+#### `applicationOptions.qpackEncoderMaxDTableCapacity`
+
+* Type: {bigint|number}
+
+QPACK encoder maximum dynamic table capacity. **Default:** `4096`
+
+#### `applicationOptions.qpackBlockedStreams`
+
+* Type: {bigint|number}
+
+Maximum number of streams that can e blocked waiting for QPACK dynamic table
+updates. **Default:** `100`
+
+#### `applicationOptions.enableConnectProtocol`
+
+* Type: {boolean}
+
+Enable the extended CONNECT protocol (RFC 9220). **Default:** `false`
+
+#### `applicationOptions.enableDatagrams`
+
+* Type: {boolean}
+
+Enable HTTP/3 datagrams (RFC 9297). **Default:** `false`
 
 ### Type: `EndpointOptions`
 
@@ -2257,6 +2387,23 @@ added: v23.8.0
 * Type: {boolean}
 
 When `true`, indicates that the endpoint should bind only to IPv6 addresses.
+
+#### `endpointOptions.reusePort`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {boolean}
+* Default: `false`
+
+When `true`, allows multiple endpoints (across separate processes) to bind to
+the same address and port. The kernel will load-balance incoming UDP datagrams
+across all sockets bound with this option. This enables horizontal scaling of
+QUIC servers by running multiple Node.js processes on the same port.
+
+Supported on Linux 3.9+ and DragonFlyBSD 3.6+. On unsupported platforms, the
+bind will fail with an error.
 
 #### `endpointOptions.maxConnectionsPerHost`
 
@@ -2396,7 +2543,9 @@ added: v23.8.0
 #### `sessionOptions.alpn`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * Type: {string} (client) | {string\[]} (server)
@@ -2423,30 +2572,9 @@ Default: `'h3'`
 added: v26.2.0
 -->
 
-* Type: {Object}
+* Type: {quic.ApplicationOptions}
 
-HTTP/3 application-specific options. These only apply when the negotiated
-ALPN selects the HTTP/3 application (`'h3'`).
-
-* `maxHeaderPairs` {number} Maximum number of header name-value pairs
-  accepted per header block. Headers beyond this limit are silently
-  dropped. **Default:** `128`
-* `maxHeaderLength` {number} Maximum total byte length of all header
-  names and values combined per header block. Headers that would push
-  the total over this limit are silently dropped. **Default:** `8192`
-* `maxFieldSectionSize` {number} Maximum size of a compressed header
-  field section (QPACK). `0` means unlimited. **Default:** `0`
-* `qpackMaxDTableCapacity` {number} QPACK dynamic table capacity in
-  bytes. Set to `0` to disable the dynamic table. **Default:** `4096`
-* `qpackEncoderMaxDTableCapacity` {number} QPACK encoder maximum
-  dynamic table capacity. **Default:** `4096`
-* `qpackBlockedStreams` {number} Maximum number of streams that can
-  be blocked waiting for QPACK dynamic table updates.
-  **Default:** `100`
-* `enableConnectProtocol` {boolean} Enable the extended CONNECT
-  protocol (RFC 9220). **Default:** `false`
-* `enableDatagrams` {boolean} Enable HTTP/3 datagrams (RFC 9297).
-  **Default:** `false`
+Application-specific options.
 
 ```mjs
 const { listen } = await import('node:quic');
@@ -2698,6 +2826,23 @@ added: v23.8.0
 Specifies the maximum number of milliseconds a TLS handshake is permitted to take
 to complete before timing out.
 
+#### `sessionOptions.initialRtt`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {bigint|number}
+* **Default:** `0` (use ngtcp2 default of 333ms)
+
+Specifies the initial round-trip time estimate in milliseconds. This value is
+used for probe timeout (PTO) computation, initial pacing, and early loss
+detection before the first actual RTT sample is collected from the connection.
+The default of 333ms is appropriate for the general internet. For low-latency
+environments such as loopback or same-rack deployments, setting a value closer
+to the actual RTT (e.g., `1`) avoids unnecessarily conservative initial
+behavior.
+
 #### `sessionOptions.keepAlive`
 
 <!-- YAML
@@ -2725,7 +2870,9 @@ The peer server name to target (SNI). Defaults to `'localhost'`.
 #### `sessionOptions.sni` (server only)
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * Type: {Object}
@@ -2885,6 +3032,37 @@ won't have need to specify.
 added: v23.8.0
 -->
 
+The `TransportParams` type represents the QUIC transport parameters that are
+negotiated during session establishment. These parameters are used when
+creating a session. The negotiated values can be observed via the
+`session.localTransportParams` and `session.remoteTransportParams` properties.
+
+#### `transportParams.initialSCID`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {string}
+
+The initial source connection ID (SCID) specified. This field is ignored on
+creation of the session and is provided for informational purposes only when
+available in the `session.localTransportParams` and
+`session.remoteTransportParams` properties.
+
+#### `transportParams.originalDCID`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {string}
+
+The original destination connection ID (DCID) specified. This field is
+ignored on creation of the session and is provided for informational
+purposes only when available in the `session.localTransportParams` and
+`session.remoteTransportParams` properties.
+
 #### `transportParams.preferredAddressIpv4`
 
 <!-- YAML
@@ -2997,6 +3175,19 @@ is willing to receive. Set to `0` to disable datagram support. The peer
 will not send datagrams larger than this value. The actual maximum size of
 a datagram that can be _sent_ is determined by the peer's
 `maxDatagramFrameSize`, not this endpoint's value.
+
+#### `transportParams.retrySCID`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {string}
+
+The retry connection ID specified. This field is ignored on creation
+of the session and is provided for informational purposes only when
+available in the `session.localTransportParams` and
+`session.remoteTransportParams` properties.
 
 ## Callbacks
 
