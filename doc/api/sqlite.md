@@ -479,7 +479,9 @@ added: v22.5.0
 ### `database.serialize([dbName])`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * `dbName` {string} 要序列化的数据库名称。可以是 `'main'`
@@ -512,7 +514,9 @@ console.log(buffer.length); // 打印数据库的字节长度
 ### `database.deserialize(buffer[, options])`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * `buffer` {Uint8Array} 数据库的二进制表示，例如 [`database.serialize()`][] 的输出。

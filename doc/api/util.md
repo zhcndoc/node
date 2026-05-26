@@ -546,25 +546,25 @@ import { getCallSites } from 'node:util';
 function exampleFunction() {
   const callSites = getCallSites();
 
-  console.log('Call Sites:');
+  console.log('调用站点：');
   callSites.forEach((callSite, index) => {
-    console.log(`CallSite ${index + 1}:`);
-    console.log(`Function Name: ${callSite.functionName}`);
-    console.log(`Script Name: ${callSite.scriptName}`);
-    console.log(`Line Number: ${callSite.lineNumber}`);
-    console.log(`Column Number: ${callSite.columnNumber}`);
+    console.log(`调用站点 ${index + 1}:`);
+    console.log(`函数名称: ${callSite.functionName}`);
+    console.log(`脚本名称: ${callSite.scriptName}`);
+    console.log(`行号: ${callSite.lineNumber}`);
+    console.log(`列号: ${callSite.columnNumber}`);
   });
-  // CallSite 1:
-  // Function Name: exampleFunction
-  // Script Name: /home/example.js
-  // Line Number: 5
-  // Column Number: 26
+  // 调用站点 1:
+  // 函数名称: exampleFunction
+  // 脚本名称: /home/example.js
+  // 行号: 5
+  // 列号: 26
 
-  // CallSite 2:
-  // Function Name: anotherFunction
-  // Script Name: /home/example.js
-  // Line Number: 22
-  // Column Number: 3
+  // 调用站点 2:
+  // 函数名称: anotherFunction
+  // 脚本名称: /home/example.js
+  // 行号: 22
+  // 列号: 3
 
   // ...
 }
@@ -583,25 +583,25 @@ const { getCallSites } = require('node:util');
 function exampleFunction() {
   const callSites = getCallSites();
 
-  console.log('Call Sites:');
+  console.log('调用站点：');
   callSites.forEach((callSite, index) => {
-    console.log(`CallSite ${index + 1}:`);
-    console.log(`Function Name: ${callSite.functionName}`);
-    console.log(`Script Name: ${callSite.scriptName}`);
-    console.log(`Line Number: ${callSite.lineNumber}`);
-    console.log(`Column Number: ${callSite.columnNumber}`);
+    console.log(`调用站点 ${index + 1}:`);
+    console.log(`函数名称: ${callSite.functionName}`);
+    console.log(`脚本名称: ${callSite.scriptName}`);
+    console.log(`行号: ${callSite.lineNumber}`);
+    console.log(`列号: ${callSite.columnNumber}`);
   });
-  // CallSite 1:
-  // Function Name: exampleFunction
-  // Script Name: /home/example.js
-  // Line Number: 5
-  // Column Number: 26
+  // 调用站点 1:
+  // 函数名称: exampleFunction
+  // 脚本名称: /home/example.js
+  // 行号: 5
+  // 列号: 26
 
-  // CallSite 2:
-  // Function Name: anotherFunction
-  // Script Name: /home/example.js
-  // Line Number: 22
-  // Column Number: 3
+  // 调用站点 2:
+  // 函数名称: anotherFunction
+  // 脚本名称: /home/example.js
+  // 行号: 22
+  // 列号: 3
 
   // ...
 }
@@ -628,16 +628,16 @@ interface Foo {
 const callSites = getCallSites({ sourceMap: true });
 
 // 使用 sourceMap:
-// Function Name: ''
-// Script Name: example.js
-// Line Number: 7
-// Column Number: 26
+// 函数名称: ''
+// 脚本名称: example.js
+// 行号: 7
+// 列号: 26
 
 // 不使用 sourceMap:
-// Function Name: ''
-// Script Name: example.js
-// Line Number: 2
-// Column Number: 26
+// 函数名称: ''
+// 脚本名称: example.js
+// 行号: 2
+// 列号: 26
 ```
 
 ```cjs
@@ -646,16 +646,16 @@ const { getCallSites } = require('node:util');
 const callSites = getCallSites({ sourceMap: true });
 
 // 使用 sourceMap:
-// Function Name: ''
-// Script Name: example.js
-// Line Number: 7
-// Column Number: 26
+// 函数名称: ''
+// 脚本名称: example.js
+// 行号: 7
+// 列号: 26
 
 // 不使用 sourceMap:
-// Function Name: ''
-// Script Name: example.js
-// Line Number: 2
-// Column Number: 26
+// 函数名称: ''
+// 脚本名称: example.js
+// 行号: 2
+// 列号: 26
 ```
 
 ## `util.getSystemErrorName(err)`
@@ -774,7 +774,7 @@ console.log(stream instanceof EventEmitter); // true
 console.log(MyStream.super_ === EventEmitter); // true
 
 stream.on('data', (data) => {
-  console.log(`Received data: "${data}"`);
+  console.log(`接收到的数据: "${data}"`);
 });
 stream.write('It works!'); // 接收到的数据："It works!"
 ```
@@ -793,7 +793,7 @@ class MyStream extends EventEmitter {
 const stream = new MyStream();
 
 stream.on('data', (data) => {
-  console.log(`Received data: "${data}"`);
+  console.log(`接收到的数据: "${data}"`);
 });
 stream.write('With ES6');
 ```
@@ -810,7 +810,7 @@ class MyStream extends EventEmitter {
 const stream = new MyStream();
 
 stream.on('data', (data) => {
-  console.log(`Received data: "${data}"`);
+  console.log(`接收到的数据: "${data}"`);
 });
 stream.write('With ES6');
 ```
@@ -2301,7 +2301,9 @@ added:
   - v21.7.0
   - v20.12.0
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.16.0
     pr-url: https://github.com/nodejs/node/pull/61556
     description: 添加对十六进制颜色的支持。
   - version:
@@ -2951,7 +2953,7 @@ added: v10.0.0
 #include <js_native_api.h>
 #include <stdlib.h>
 napi_value result;
-static napi_value MyNapi(napi_env env, napi_callback_info info) {
+static napi_value MyNapi(struct napi_env env, napi_callback_info info) {
   int* raw = (int*) malloc(1024);
   napi_status status = napi_create_external(env, (void*) raw, NULL, NULL, &result);
   if (status != napi_ok) {

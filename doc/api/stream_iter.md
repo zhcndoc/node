@@ -191,7 +191,7 @@ API 支持两种模型：
 
 * **槽位（桶）** -- 准备好供消费者使用的数据，上限为 `highWaterMark`。当消费者拉取时，它会将所有槽位一次性排空到一个批次中。
 
-* **待处理写入（软管）** -- 等待槽位空间的写入。在消费者排空后，待处理写入被提升到现在空的槽位中，它们的 promise 被解析。
+* **待处理写入（软管）** -- 等待槽位空间的写入。消费者排空后，待处理写入会被提升到现在为空的槽位中，其 Promise 随之兑现。
 
 每种策略如何使用这些缓冲区：
 
@@ -372,8 +372,8 @@ writer.fail(err);  // 始终同步，不需要回退
 #### `writer.end([options])`
 
 * `options` {Object}
-  * `signal` {AbortSignal} 仅取消此操作。该信号仅取消待处理的 `end()` 调用；它不会使 writer 本身失败。
-* 返回：{Promise\<number>} 写入的总字节数。
+  * `signal` {AbortSignal} 仅取消此操作。该信号只会取消挂起的 `end()` 调用；不会使 writer 自身失败。
+* 返回：{Promise} 完成时返回已写入的总字节数。
 
 信号表明不再写入更多数据。
 
@@ -400,10 +400,10 @@ if (result < 0) {
 
 * `chunk` {Uint8Array|string}
 * `options` {Object}
-  * `signal` {AbortSignal} 仅取消此写入操作。该信号仅取消待处理的 `write()` 调用；它不会使 writer 本身失败。
-* 返回：{Promise\<void>}
+  * `signal` {AbortSignal} 仅取消此写入操作。该信号只会取消挂起的 `write()` 调用；不会使 writer 自身失败。
+* 返回：{Promise} 当缓冲区空间可用时完成，返回 `undefined`。
 
-写入一个块。当缓冲空间可用时，promise 解析。
+写入一个块。
 
 #### `writer.writeSync(chunk)`
 
@@ -416,8 +416,8 @@ if (result < 0) {
 
 * `chunks` {Uint8Array\[]|string\[]}
 * `options` {Object}
-  * `signal` {AbortSignal} 仅取消此写入操作。该信号仅取消待处理的 `writev()` 调用；它不会使 writer 本身失败。
-* 返回：{Promise\<void>}
+  * `signal` {AbortSignal} 仅取消此写入操作。该信号只会取消挂起的 `writev()` 调用；不会使 writer 自身失败。
+* 返回：{Promise}
 
 将多个块作为单个批次写入。
 
@@ -533,9 +533,11 @@ added:
 * `writer` {Object} 具有 `write(chunk)` 方法的目标。
 * `options` {Object}
   * `signal` {AbortSignal} 中止管道。
-  * `preventClose` {boolean} 如果为 `true`，则在源结束时不调用 `writer.end()`。**默认：** `false`。
-  * `preventFail` {boolean} 如果为 `true`，则在出错时不调用 `writer.fail()`。**默认：** `false`。
-* 返回：{Promise\<number>} 写入的总字节数。
+  * `preventClose` {boolean} 如果为 `true`，当源结束时不调用 `writer.end()`。
+    **默认：** `false`。
+  * `preventFail` {boolean} 如果为 `true`，出错时不调用 `writer.fail()`。
+    **默认：** `false`。
+* 返回：{Promise} 以写入的总字节数完成。
 
 将源通过转换管道输送到写入器。如果写入器具有
 `writev(chunks)` 方法，则整个批次会在单次调用中传递（启用
@@ -835,7 +837,7 @@ added:
 * `options` {Object}
   * `signal` {AbortSignal}
   * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
-* 返回：{Promise\<Uint8Array\[]>}
+* 返回：{Promise} 完成时返回一个 `Uint8Array` 对象数组。
 
 将所有块收集为 `Uint8Array` 值的数组（不进行连接）。
 
@@ -850,7 +852,7 @@ added:
 * `options` {Object}
   * `signal` {AbortSignal}
   * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
-* 返回：{Promise\<ArrayBuffer>}
+* 返回：{Promise} 完成时返回一个 `ArrayBuffer` 对象。
 
 将所有字节收集到一个 `ArrayBuffer` 中。
 
@@ -893,7 +895,7 @@ added:
 * `options` {Object}
   * `signal` {AbortSignal}
   * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
-* 返回：{Promise\<Uint8Array>}
+* 返回：{Promise} 完成时返回一个 `Uint8Array` 对象。
 
 将流中的所有字节收集到单个 `Uint8Array` 中。
 
@@ -941,7 +943,7 @@ added:
   * `encoding` {string} 文本编码。**默认：** `'utf-8'`。
   * `signal` {AbortSignal}
   * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
-* 返回：{Promise\<string>}
+* 返回：{Promise} 完成时返回一个 `string`。
 
 收集所有字节并解码为文本。
 
@@ -985,10 +987,10 @@ added:
  - v25.9.0
 -->
 
-* `drainable` {Object} 实现可排空协议的对象。
-* 返回：{Promise\<boolean>|null}
+* `drainable` {Object} 一个实现了 drainable 协议的对象。
+* 返回：{Promise|null}
 
-等待可排空写入器的背压清除。当写入器可以接受更多数据时，返回一个解析为 `true` 的 Promise，如果对象未实现可排空协议，则返回 `null`。
+等待一个可排空写入器的背压清除。如果对象不实现 drainable 协议，则返回 `null`；否则返回一个在写入器可以接受更多数据时兑现为 `true` 的 promise。
 
 ```mjs
 import { push, ondrain, text } from 'node:stream/iter';
@@ -997,10 +999,10 @@ const { writer, readable } = push({ highWaterMark: 2 });
 writer.writeSync('a');
 writer.writeSync('b');
 
-// 开始消费以便缓冲区实际上可以排空
+// Start consuming so the buffer can actually drain
 const consuming = text(readable);
 
-// 缓冲区已满 -- 等待排空
+// Buffer is full -- wait for drain
 const canWrite = await ondrain(writer);
 if (canWrite) {
   await writer.write('c');
@@ -1017,10 +1019,10 @@ async function run() {
   writer.writeSync('a');
   writer.writeSync('b');
 
-  // 开始消费以便缓冲区实际上可以排空
+  // Start consuming so the buffer can actually drain
   const consuming = text(readable);
 
-  // 缓冲区已满 -- 等待排空
+  // Buffer is full -- wait for drain
   const canWrite = await ondrain(writer);
   if (canWrite) {
     await writer.write('c');
@@ -1039,7 +1041,7 @@ added:
  - v25.9.0
 -->
 
-* `...sources` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>} 两个或更多可迭代对象。
+* `...sources` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>} Two or more iterable objects.
 * `options` {Object}
   * `signal` {AbortSignal}
 * 返回：{AsyncIterable\<Uint8Array\[]>}
@@ -1081,7 +1083,7 @@ import { from, pull, text, tap } from 'node:stream/iter';
 
 const result = pull(
   from('hello'),
-  tap((chunks) => console.log('批次大小：', chunks.length)),
+  tap((chunks) => console.log('Batch size:', chunks.length)),
 );
 console.log(await text(result));
 ```
@@ -1092,7 +1094,7 @@ const { from, pull, text, tap } = require('node:stream/iter');
 async function run() {
   const result = pull(
     from('hello'),
-    tap((chunks) => console.log('批次大小：', chunks.length)),
+    tap((chunks) => console.log('Batch size:', chunks.length)),
   );
   console.log(await text(result));
 }
@@ -1124,7 +1126,7 @@ added:
 -->
 
 * `options` {Object}
-  * `highWaterMark` {number} 缓冲区大小（以槽位计）。必须 >= 1；低于 1 的值会被钳制为 1。**默认：** `16`。
+  * `highWaterMark` {number} Buffer size in slots. Must be >= 1; values below 1 are clamped to 1. **默认：** `16`。
   * `backpressure` {string} `'strict'`、`'block'`、`'drop-oldest'` 或 `'drop-newest'`。**默认：** `'strict'`。
   * `signal` {AbortSignal}
 * 返回：{Object}
@@ -1232,7 +1234,7 @@ added:
 
 * `source` {AsyncIterable} 要共享的源。
 * `options` {Object}
-  * `highWaterMark` {number} 缓冲区大小。必须 >= 1；低于 1 的值会被钳制为 1。**默认：** `16`。
+  * `highWaterMark` {number} Buffer size. Must be >= 1; values below 1 are clamped to 1. **默认：** `16`。
   * `backpressure` {string} `'strict'`、`'block'`、`'drop-oldest'` 或 `'drop-newest'`。**默认：** `'strict'`。
 * 返回：{Share}
 
@@ -1440,8 +1442,9 @@ duck-typed 等效对象）创建 stream/iter Writer 适配器。该适配器可�
 返回 `false` 或 `-1`，defer 到异步路径。每次写入
 来自 Writer 接口的 `options.signal` 参数也会被忽略。
 
-结果按实例缓存 -- 使用同一流调用 `fromWritable()` 两次
-返回相同的 Writer。
+The result is cached per instance and backpressure policy -- calling
+`fromWritable()` twice with the same stream and `backpressure` option returns
+the same Writer.
 
 对于不暴露 `writableHighWaterMark`、
 `writableLength` 或类似属性的 duck-typed 流，
@@ -1486,7 +1489,7 @@ added: v26.1.0
 * `source` {AsyncIterable} 一个 `AsyncIterable<Uint8Array[]>` 源，例如
   [`pull()`][] 或 [`from()`][] 的返回值。
 * `options` {Object}
-  * `highWaterMark` {number} 应用背压前的内部缓冲区大小（以字节为单位）。**默认：** `65536` (64 KB)。
+  * `highWaterMark` {number} 在应用背压之前内部缓冲区的大小（以字节为单位）。**默认：** `65536` (64 KB)。
   * `signal` {AbortSignal} 用于中止 readable 的可选 signal。
 * 返回：{stream.Readable}
 
@@ -1526,7 +1529,7 @@ added: v26.1.0
 * `source` {Iterable} 一个 `Iterable<Uint8Array[]>` 源，例如
   [`pullSync()`][] 或 [`fromSync()`][] 的返回值。
 * `options` {Object}
-  * `highWaterMark` {number} 应用背压前的内部缓冲区大小（以字节为单位）。**默认：** `65536` (64 KB)。
+  * `highWaterMark` {number} 在应用背压之前内部缓冲区的大小（以字节为单位）。**默认：** `65536` (64 KB)。
 * 返回：{stream.Readable}
 
 从同步
@@ -1677,7 +1680,7 @@ text(consumer).then(console.log); // 'hello'
 
 * 值：`Symbol.for('Stream.drainableProtocol')`
 
-实现此方法以使写入器与 `ondrain()` 兼容。该方法应返回一个在背压清除时解析的 promise，如果没有背压则返回 `null`。
+实现以使写入器与 `ondrain()` 兼容。如果没有背压，该方法应返回 `null`；或者在背压解除时返回一个会以真值完成的 promise。
 
 ```mjs
 import { ondrain } from 'node:stream/iter';
@@ -1874,7 +1877,7 @@ console.log(textSync(consumer)); // 'hello'
 
 * 值：`Symbol.for('Stream.toAsyncStreamable')`
 
-该值必须是一个将对象转换为可流式传输值的函数。当该对象在流式管道的任何地方被遇到时（作为传递给 `from()` 的源，或作为从转换返回的值），此方法被调用来产生实际数据。它可以返回（或解析为）任何可流式传输的值：字符串、`Uint8Array`、`AsyncIterable`、`Iterable` 或另一个可流式传输对象。
+该值必须是一个将对象转换为可流式传输值的函数。当在流式传输管道中的任何位置遇到该对象时（作为传递给 `from()` 的源，或作为转换返回的值），就会调用此方法以生成实际数据。它可以返回任何会解析为以下类型的值：字符串、`Uint8Array`、`AsyncIterable`、`Iterable`，或另一个可流式传输对象。
 
 ```mjs
 import { from, text } from 'node:stream/iter';
@@ -1918,7 +1921,7 @@ text(stream).then(console.log); // 'hello world'
 
 * 值：`Symbol.for('Stream.toStreamable')`
 
-该值必须是一个同步将对象转换为可流式传输值的函数。当该对象在流式管道的任何地方被遇到时（作为传递给 `fromSync()` 的源，或作为从同步转换返回的值），此方法被调用来产生实际数据。它必须同步返回一个可流式传输的值：字符串、`Uint8Array` 或 `Iterable`。
+该值必须是一个同步将对象转换为可流式传输值的函数。当在流式传输管道中的任何位置遇到该对象时（作为传递给 `fromSync()` 的源，或作为同步转换返回的值），就会调用此方法以生成实际数据。它必须同步返回一个可流式传输的值：字符串、`Uint8Array` 或 `Iterable`。
 
 ```mjs
 import { fromSync, textSync } from 'node:stream/iter';

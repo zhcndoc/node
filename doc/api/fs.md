@@ -666,7 +666,9 @@ added:
 <!-- YAML
 added: v10.0.0
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.16.0
     pr-url: https://github.com/nodejs/node/pull/57775
     description: 现在接受额外的 `signal` 属性以允许中止操作。
   - version: v10.5.0
@@ -868,25 +870,25 @@ added:
 * `options` {Object}
   * `autoClose` {boolean} 当 writer 结束或失败时关闭文件句柄。**默认：** `false`。
   * `start` {number} 开始写入的字节偏移量。指定时，写入使用显式定位。**默认：** 当前文件位置。
-  * `limit` {number} writer 将接受的最大字节数。超过限制的异步写入（`write()`、`writev()`）将 rejected 并带有 `ERR_OUT_OF_RANGE`。同步写入（`writeSync()`、`writevSync()`）返回 `false`。**默认：** 无限制。
-  * `chunkSize` {number} 同步写入操作的最大块大小（字节）。大于此阈值的写入回退到异步 I/O。将此设置为与 reader 的 `chunkSize` 匹配以获得最佳 `pipeTo()` 性能。**默认：** `131072` (128 KB)。
+  * `limit` {number} writer 接受的最大字节数。会超出限制的异步写入（`write()`、`writev()`）将以 `ERR_OUT_OF_RANGE` 拒绝。同步写入（`writeSync()`、`writevSync()`）返回 `false`。**默认：** 无限制。
+  * `chunkSize` {number} 同步写操作的最大块大小（字节）。大于此阈值的写入会回退到异步 I/O。将其设置为与 reader 的 `chunkSize` 匹配可获得最佳 `pipeTo()` 性能。**默认：** `131072` (128 KB)。
 * 返回：{Object}
-  * `write(chunk[, options])` {Function} 返回 {Promise\<void>}。接受 `Uint8Array`、`Buffer` 或字符串（UTF-8 编码）。
+  * `write(chunk[, options])` {Function} 返回 {Promise}。接受 `Uint8Array`、`Buffer` 或字符串（UTF-8 编码）。
     * `chunk` {Buffer|TypedArray|DataView|string}
     * `options` {Object}
-      * `signal` {AbortSignal} 如果信号已中止，则写入 rejected 并带有 `AbortError` 且不执行 I/O。
-  * `writev(chunks[, options])` {Function} 返回 {Promise\<void>}。通过单个 `writev()` 系统调用使用散/聚 I/O。接受混合 `Uint8Array`/字符串数组。
-    * `chunks` {Array\<Buffer|TypedArray|DataView|string>}
+      * `signal` {AbortSignal} 如果信号已中止，则写入将拒绝并返回 `AbortError`，且不执行 I/O。
+  * `writev(chunks[, options])` {Function} 返回 {Promise}。通过单次 `writev()` 系统调用使用散布/聚集 I/O。接受混合的 `Uint8Array`/字符串数组。
+    * `chunks` {Buffer\[]|TypedArray\[]|DataView\[]|string\[]}
     * `options` {Object}
-      * `signal` {AbortSignal} 如果信号已中止，则写入 rejected 并带有 `AbortError` 且不执行 I/O。
+      * `signal` {AbortSignal} 如果信号已中止，则写入拒绝并带有 `AbortError` 且不执行 I/O。
   * `writeSync(chunk)` {Function} 返回 {boolean}。尝试同步写入。如果写入成功则返回 `true`，如果调用者应回退到异步 `write()` 则返回 `false`。当以下情况时返回 `false`：writer 已关闭/出错，异步操作正在进行中，块超过 `chunkSize`，或写入将超过 `limit`。
     * `chunk` {Buffer|TypedArray|DataView|string}
-  * `writevSync(chunks)` {Function} 返回 {boolean}。同步批量写入。与 `writeSync()` 相同的回退语义。
-    * `chunks` {Array\<Buffer|TypedArray|DataView|string>}
-  * `end([options])` {Function} 返回 {Promise\<number>} 总写入字节数。幂等：如果已关闭则返回 `totalBytesWritten`，如果正在关闭则返回待处理的 promise。如果 writer 处于错误状态则 rejected。
+  * `writevSync(chunks)` {Function} 返回 {boolean}。同步批量写入。语义与 `writeSync()` 相同。
+    * `chunks` {Buffer\[]|TypedArray\[]|DataView\[]|string\[]}
+  * `end([options])` {Function} 返回 {Promise}，兑现为已写入的总字节数。如果已关闭，则幂等地返回 `totalBytesWritten`；如果已在关闭过程中，则返回待处理的 promise。如果 writer 处于错误状态，则拒绝。
     * `options` {Object}
-      * `signal` {AbortSignal} 如果信号已中止，`end()` rejected 并带有 `AbortError` 且 writer 保持打开。
-  * `endSync()` {Function} 成功时返回 {number|number} 总写入字节数，如果 writer 出错或异步操作正在进行中则返回 `-1`。已关闭时幂等。
+      * `signal` {AbortSignal} 如果信号已中止，`end()` 将拒绝并带有 `AbortError`，且 writer 保持打开。
+  * `endSync()` {Function} 成功时返回 {number} 总写入字节数，如果 writer 出错或异步操作正在进行中则返回 `-1`。已关闭时幂等。
   * `fail(reason)` {Function} 将 writer 置于终端错误状态。同步。如果 writer 已关闭或出错，这是无操作。如果 `autoClose` 为 true，则同步关闭文件句柄。
 
 返回由此文件句柄支持的 [`node:stream/iter`][] writer。
@@ -1121,7 +1123,9 @@ changes:
 <!-- YAML
 added: v22.0.0
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.16.0
     pr-url: https://github.com/nodejs/node/pull/62695
     description: 添加对 `followSymlinks` 选项的支持。
   - version:
@@ -2392,16 +2396,16 @@ changes:
 * `src` {string|URL} 要复制的源路径。
 * `dest` {string|URL} 要复制到的目标路径。
 * `options` {Object}
-  * `dereference` {boolean} 解引用符号链接。**默认：** `false`。
-  * `errorOnExist` {boolean} 当 `force` 为 `false` 且目标存在时，抛出错误。**默认：** `false`。
-  * `filter` {Function} 用于过滤复制的文件/目录的函数。返回 `true` 以复制该项目，`false` 以忽略它。忽略目录时，其所有内容也将被跳过。也可以返回一个解析为 `true` 或 `false` 的 `Promise`。**默认：** `undefined`。
+  * `dereference` {boolean} 取消引用符号链接。**默认：** `false`。
+  * `errorOnExist` {boolean} 当 `force` 为 `false` 且目标已存在时，抛出错误。**默认：** `false`。
+  * `filter` {Function} 用于过滤要复制的文件/目录的函数。返回 `true` 以复制该项，返回 `false` 以忽略它。忽略目录时，其所有内容也将被跳过。也可以返回一个 `Promise`，其结果为 `true` 或 `false`。**默认：** `undefined`。
     * `src` {string} 要复制的源路径。
     * `dest` {string} 要复制到的目标路径。
-    * 返回：{boolean|Promise} 可强制转换为 `boolean` 的值或履行此类值的 `Promise`。
-  * `force` {boolean} 覆盖现有文件或目录。如果将此设置为 false 且目标存在，复制操作将忽略错误。使用 `errorOnExist` 选项更改此行为。**默认：** `true`。
+    * 返回：{boolean|Promise} 一个可转换为 `boolean` 的值，或者一个会以该值履行的 `Promise`。
+  * `force` {boolean} 覆盖现有文件或目录。如果将其设置为 `false` 且目标已存在，复制操作将忽略错误。使用 `errorOnExist` 选项来更改此行为。**默认：** `true`。
   * `mode` {integer} 复制操作的修饰符。**默认：** `0`。参见 [`fs.copyFile()`][] 的 `mode` 标志。
-  * `preserveTimestamps` {boolean} 当为 `true` 时，将保留 `src` 的时间戳。**默认：** `false`。
-  * `recursive` {boolean} 递归复制目录。**默认：** `false`
+  * `preserveTimestamps` {boolean} 当为 `true` 时，将保留来自 `src` 的时间戳。**默认：** `false`。
+  * `recursive` {boolean} 递归复制目录 **默认：** `false`
   * `verbatimSymlinks` {boolean} 当为 `true` 时，将跳过符号链接的路径解析。**默认：** `false`
 * `callback` {Function}
   * `err` {Error}
@@ -2933,7 +2937,9 @@ changes:
 <!-- YAML
 added: v22.0.0
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.16.0
     pr-url: https://github.com/nodejs/node/pull/62695
     description: 添加对 `followSymlinks` 选项的支持。
   - version:
@@ -3820,7 +3826,7 @@ changes:
     description: 添加了 Pipe/Socket 解析支持。
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: "`path` 参数可以是使用`file:` 协议的 WHATWG `URL` 对象。"
+    description: "`path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
     description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
@@ -4087,7 +4093,11 @@ Stats {
   atime: 2019-06-22T03:37:33.072Z,
   mtime: 2019-06-22T03:36:54.583Z,
   ctime: 2019-06-22T03:37:06.624Z,
-  birthtime: 2019-06-22T03:28:46.937Z
+  birthtime: 2019-06-22T03:28:46.937Z,
+  atimeInstant: 2019-06-22T03:37:33.071963Z,
+  mtimeInstant: 2019-06-22T03:36:54.5833518Z,
+  ctimeInstant: 2019-06-22T03:37:06.6235366Z,
+  birthtimeInstant: 2019-06-22T03:28:46.9372893Z
 }
 false
 Stats {
@@ -4108,7 +4118,11 @@ Stats {
   atime: 2019-06-22T03:36:56.619Z,
   mtime: 2019-06-22T03:36:54.584Z,
   ctime: 2019-06-22T03:36:54.584Z,
-  birthtime: 2019-06-22T03:26:47.711Z
+  birthtime: 2019-06-22T03:26:47.711Z,
+  atimeInstant: 2019-06-22T03:36:56.6188555Z,
+  mtimeInstant: 2019-06-22T03:36:54.584Z,
+  ctimeInstant: 2019-06-22T03:36:54.5838145Z,
+  birthtimeInstant: 2019-06-22T03:26:47.7107478Z
 }
 ```
 
@@ -4138,7 +4152,7 @@ added: v0.1.31
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/23724
     description: "如果 `type` 参数未定义，Node 将自动检测`target` 类型并自动选择 `dir` 或 `file`。"
@@ -4183,7 +4197,7 @@ added: v0.8.6
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37460
     description: "如果返回多个错误，返回的错误可能是 `AggregateError`。"
@@ -4231,7 +4245,7 @@ added: v0.0.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
     description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
@@ -4284,7 +4298,7 @@ added: v0.4.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/12562
     description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
@@ -4320,7 +4334,9 @@ changes:
 <!-- YAML
 added: v0.5.10
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.16.0
     pr-url: https://github.com/nodejs/node/pull/61870
     description: 添加了 `throwIfNoEntry` 选项。
   - version: v19.1.0
@@ -4478,7 +4494,7 @@ added: v0.0.2
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
     description: "`buffer` 参数不再将不支持的输入强制转换为字符串。"
@@ -4731,7 +4747,7 @@ added: v12.9.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `fd` {integer}
@@ -5101,7 +5117,9 @@ changes:
 <!-- YAML
 added: v22.0.0
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.16.0
     pr-url: https://github.com/nodejs/node/pull/62695
     description: 为 `followSymlinks` 选项添加支持。
   - version:
@@ -6224,7 +6242,7 @@ import { watch } from 'node:fs';
 watch('./tmp', { encoding: 'buffer' }, (eventType, filename) => {
   if (filename) {
     console.log(filename);
-    // 打印：<Buffer ...>
+    // 输出：<Buffer ...>
   }
 });
 ```
@@ -6412,6 +6430,9 @@ added:
 <!-- YAML
 added: v0.1.21
 changes:
+  - version: v26.2.0
+    pr-url: https://github.com/nodejs/node/pull/60789
+    description: Added `Temporal.Instant` support.
   - version:
     - v22.0.0
     - v20.13.0
@@ -6447,10 +6468,19 @@ Stats {
   mtimeMs: 1318289051000.1,
   ctimeMs: 1318289051000.1,
   birthtimeMs: 1318289051000.1,
+
+  // Date 的实例
   atime: Mon, 10 Oct 2011 23:24:11 GMT,
   mtime: Mon, 10 Oct 2011 23:24:11 GMT,
   ctime: Mon, 10 Oct 2011 23:24:11 GMT,
-  birthtime: Mon, 10 Oct 2011 23:24:11 GMT }
+  birthtime: Mon, 10 Oct 2011 23:24:11 GMT,
+
+  // Temporal.Instant 的实例
+  atimeInstant: 2011-10-10T23:24:11.0001Z,
+  mtimeInstant: 2011-10-10T23:24:11.0001Z,
+  ctimeInstant: 2011-10-10T23:24:11.0001Z,
+  birthtimeInstant: 2011-10-10T23:24:11.0001Z
+}
 ```
 
 `bigint` 版本：
@@ -6475,10 +6505,19 @@ BigIntStats {
   mtimeNs: 1318289051000000000n,
   ctimeNs: 1318289051000000000n,
   birthtimeNs: 1318289051000000000n,
+
+  // Date 的实例
   atime: Mon, 10 Oct 2011 23:24:11 GMT,
   mtime: Mon, 10 Oct 2011 23:24:11 GMT,
   ctime: Mon, 10 Oct 2011 23:24:11 GMT,
-  birthtime: Mon, 10 Oct 2011 23:24:11 GMT }
+  birthtime: Mon, 10 Oct 2011 23:24:11 GMT,
+
+  // Temporal.Instant 的实例
+  atimeInstant: 2011-10-10T23:24:11Z,
+  mtimeInstant: 2011-10-10T23:24:11Z,
+  ctimeInstant: 2011-10-10T23:24:11Z,
+  birthtimeInstant: 2011-10-10T23:24:11Z
+}
 ```
 
 #### `stats.isBlockDevice()`
@@ -6891,7 +6930,9 @@ added:
 #### `statfs.frsize`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * 类型：{number|bigint}
@@ -6964,7 +7005,7 @@ added: v24.6.0
 
 #### 事件：`'finish'`
 
-当流已结束且所有数据已刷新到底层文件时发出 `'finish'` 事件。
+当流已结束且所有数据都已刷新到底层文件时发出 `'finish'` 事件。
 
 #### 事件：`'ready'`
 
@@ -7904,7 +7945,7 @@ fs.open('<directory>', 'a+', (err, fd) => {
 [`fs.lstat()`]: #fslstatpath-options-callback
 [`fs.lutimes()`]: #fslutimespath-atime-mtime-callback
 [`fs.mkdir()`]: #fsmkdirpath-options-callback
-[`fs.mkdtemp()`]: #fsmk dtempprefix-options-callback
+[`fs.mkdtemp()`]: #fsmkdtempprefix-options-callback
 [`fs.open()`]: #fsopenpath-flags-mode-callback
 [`fs.opendir()`]: #fsopendirpath-options-callback
 [`fs.opendirSync()`]: #fsopendirsyncpath-options

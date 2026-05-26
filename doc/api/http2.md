@@ -1091,10 +1091,13 @@ added: v8.4.0
 added: v8.4.0
 -->
 
-* `headers` {HTTP/2 头对象} 描述头的对象
-* `flags` {number} 关联的数字标志
+* `headers` {HTTP/2 Headers Object} An object describing the headers
+* `flags` {number} The associated numeric flags
+* `rawHeaders` {HTTP/2 Raw Headers}
 
-当收到与尾随头字段关联的头块时，会发出 `'trailers'` 事件。监听器回调被传递 [HTTP/2 头对象][] 和与头关联的标志。
+The `'trailers'` event is emitted when a block of headers associated with
+trailing header fields is received. The listener callback is passed the [HTTP/2 Headers Object][], flags associated
+with the headers, and the headers in raw format (see [HTTP/2 Raw Headers][]).
 
 如果在收到尾随头之前调用 `http2stream.end()` 且未读取或监听传入数据，则可能不会发出此事件。
 
@@ -1408,8 +1411,11 @@ added: v8.4.0
 
 * `headers` {HTTP/2 头对象}
 * `flags` {number}
+* `rawHeaders` {HTTP/2 Raw Headers}
 
-当收到服务器推送流的响应头时，会发出 `'push'` 事件。监听器回调被传递 [HTTP/2 头对象][] 和与头关联的标志。
+The `'push'` event is emitted when response headers for a Server Push stream
+are received. The listener callback is passed the [HTTP/2 Headers Object][], flags associated
+with the headers, and the headers in raw format (see [HTTP/2 Raw Headers][]).
 
 ```js
 stream.on('push', (headers, flags) => {
@@ -3491,7 +3497,7 @@ const server = createSecureServer(
 ).listen(8000);
 
 function onRequest(req, res) {
-  // 检测是 HTTPS 请求还是 HTTP/2
+  // Detects if it is an HTTPS request or HTTP/2
   const { socket: { alpnProtocol } } = req.httpVersion === '2.0' ?
     req.stream.session : req;
   res.writeHead(200, { 'content-type': 'application/json' });
@@ -3515,7 +3521,7 @@ const server = createSecureServer(
 ).listen(4443);
 
 function onRequest(req, res) {
-  // 检测是 HTTPS 请求还是 HTTP/2
+  // Detects if it is an HTTPS request or HTTP/2
   const { socket: { alpnProtocol } } = req.httpVersion === '2.0' ?
     req.stream.session : req;
   res.writeHead(200, { 'content-type': 'application/json' });
@@ -4247,6 +4253,30 @@ response.writeEarlyHints({
 });
 ```
 
+#### `response.writeInformation(statusCode[, headers])`
+
+<!-- YAML
+added: v26.2.0
+-->
+
+* `statusCode` {number} An HTTP 1xx informational status code, between `100`
+  and `199` inclusive, excluding `101` (Switching Protocols) which is not
+  allowed in HTTP/2.
+* `headers` {Object} An optional object of headers to send with the
+  informational response.
+
+Sends an arbitrary HTTP 1xx informational response, equivalent in HTTP/2 to a
+`HEADERS` frame whose `:status` pseudo-header is a 1xx code. May be called
+multiple times before the final response. After the final response headers
+have been sent, this method is a no-op and returns `false`.
+
+This is the generic equivalent of [`response.writeContinue()`][] and
+[`response.writeEarlyHints()`][].
+
+```js
+response.writeInformation(110, { 'X-Progress': '50%' });
+```
+
 #### `response.writeHead(statusCode[, statusMessage][, headers])`
 
 <!-- YAML
@@ -4419,6 +4449,7 @@ HTTP/2 要求请求具有 `:authority` 伪头部或 `host` 头部。直接构建
 [`response.write()`]: #responsewritechunk-encoding-callback
 [`response.write(data, encoding)`]: http.md#responsewritechunk-encoding-callback
 [`response.writeContinue()`]: #responsewritecontinue
+[`response.writeEarlyHints()`]: #responsewriteearlyhintshints
 [`response.writeHead()`]: #responsewriteheadstatuscode-statusmessage-headers
 [`server.close()`]: #serverclosecallback
 [`server.maxHeadersCount`]: http.md#servermaxheaderscount

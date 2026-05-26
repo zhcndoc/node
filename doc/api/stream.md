@@ -1186,16 +1186,16 @@ const rs = fs.createReadStream('archive.tar');
 
 finished(rs, (err) => {
   if (err) {
-    console.error('Stream failed.', err);
+    console.error('流失败。', err);
   } else {
-    console.log('Stream is done reading.');
+    console.log('流已完成读取。');
   }
 });
 
 rs.resume(); // 排空流。
 ```
 
-在错误处理场景中特别有用，其中流被过早销毁（例如 aborted HTTP 请求），并且不会发出 `'end'` 或 `'finish'`。
+在错误处理场景中特别有用，其中流被过早销毁（例如中止的 HTTP 请求），并且不会发出 `'end'` 或 `'finish'`。
 
 `finished` API 提供 [promise 版本][stream-finished-promise]。
 
@@ -1265,9 +1265,9 @@ pipeline(
   fs.createWriteStream('archive.tar.gz'),
   (err) => {
     if (err) {
-      console.error('Pipeline failed.', err);
+      console.error('管道失败。', err);
     } else {
-      console.log('Pipeline succeeded.');
+      console.log('管道成功。');
     }
   },
 );
@@ -1308,6 +1308,9 @@ const server = http.createServer((req, res) => {
 <!-- YAML
 added: v16.9.0
 changes:
+  - version: v26.2.0
+    pr-url: https://github.com/nodejs/node/pull/62562
+    description: 将 API 标记为稳定。
   - version:
     - v21.1.0
     - v20.10.0
@@ -1320,7 +1323,7 @@ changes:
     description: 增加了对 webstreams 的支持。
 -->
 
-> 稳定性：1 - `stream.compose` 是实验性的。
+> 稳定性：2 - 稳定
 
 * `streams` {Stream\[]|Iterable\[]|AsyncIterable\[]|Function\[]|
   ReadableStream\[]|WritableStream\[]|TransformStream\[]|Duplex\[]|Function}

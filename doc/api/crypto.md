@@ -5077,7 +5077,9 @@ added:
 ### `crypto.randomUUIDv7([options])`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * `options` {Object}
@@ -5290,7 +5292,9 @@ added: v10.0.0
 <!-- YAML
 added: v12.0.0
 changes:
-  - version: v26.0.0
+  - version:
+     - v26.1.0
+     - v24.16.0
     pr-url: https://github.com/nodejs/node/pull/62474
     description: 添加对 Ed25519 上下文参数的支持。
   - version: v24.8.0
@@ -5318,7 +5322,7 @@ changes:
 <!--lint disable maximum-line-length remark-lint-->
 
 * `algorithm` {string | null | undefined}
-* `data` {ArrayBuffer|Buffer|TypedArray|DataView}
+* `data` {ArrayBuffer|Buffer|SharedArrayBuffer|TypedArray|DataView|string}
 * `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
 * `callback` {Function}
   * `err` {Error}
@@ -5401,7 +5405,9 @@ changes:
 <!-- YAML
 added: v12.0.0
 changes:
-  - version: v26.0.0
+  - version:
+     - v26.1.0
+     - v24.16.0
     pr-url: https://github.com/nodejs/node/pull/62474
     description: 添加对 Ed25519 上下文参数的支持。
   - version: v24.8.0
@@ -5432,9 +5438,9 @@ changes:
 <!--lint disable maximum-line-length remark-lint-->
 
 * `algorithm` {string|null|undefined}
-* `data` {ArrayBuffer| Buffer|TypedArray|DataView}
+* `data` {ArrayBuffer|Buffer|SharedArrayBuffer|TypedArray|DataView|string}
 * `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
-* `signature` {ArrayBuffer|Buffer|TypedArray|DataView}
+* `signature` {ArrayBuffer|Buffer|SharedArrayBuffer|TypedArray|DataView}
 * `callback` {Function}
   * `err` {Error}
   * `result` {boolean}
@@ -5811,7 +5817,8 @@ default_properties = fips=yes
   </tr>
   <tr>
     <td><code>SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS</code></td>
-    <td>指示 OpenSSL 禁用 OpenSSL 0.9.6d 中添加的 SSL 3.0/TLS 1.0 漏洞变通方法。</td>
+    <td>指示 OpenSSL 禁用 OpenSSL 0.9.6d 中添加的 SSL 3.0/TLS 1.0 漏洞
+    规避方法。</td>
   </tr>
   <tr>
     <td><code>SSL_OP_LEGACY_SERVER_CONNECT</code></td>

@@ -324,7 +324,7 @@ changes:
     description: 添加用于运行时访问的初始 JavaScript API。
 -->
 
-模块编译缓存可以通过 [`module.enableCompileCache()`][] 方法或 [`NODE_COMPILE_CACHE=dir`][] 环境变量启用。启用后，每当 Node.js 编译 CommonJS、ECMAScript 模块或 TypeScript 模块时，它将使用存储在指定目录中的磁盘上 [V8 代码缓存][] 来加速编译。这可能会减慢模块图的首次加载，但如果模块内容不变，后续加载同一模块图可能会获得显著的速度提升。
+模块编译缓存可以通过 [`module.enableCompileCache()`][] 方法或 [`NODE_COMPILE_CACHE=dir`][] 环境变量启用。启用后，每当 Node.js 编译 CommonJS、ECMAScript 模块或 TypeScript 模块时，它将使用指定目录中持久化到磁盘上的 [V8 代码缓存][] 来加速编译。这可能会减慢模块图的首次加载，但如果模块内容没有变化，后续对同一模块图的加载可能会显著加速。
 
 要清理磁盘上生成的编译缓存，只需删除缓存目录即可。下次使用同一目录进行编译缓存存储时，将重新创建该缓存目录。为避免用过期缓存填满磁盘，建议使用 [`os.tmpdir()`][] 下的目录。如果通过调用 [`module.enableCompileCache()`][] 启用编译缓存而未指定 `directory`，Node.js 将使用 [`NODE_COMPILE_CACHE=dir`][] 环境变量（如果已设置），否则默认为 `path.join(os.tmpdir(), 'node-compile-cache')`。要定位正在运行的 Node.js 实例使用的编译缓存目录，请使用 [`module.getCompileCacheDir()`][]。
 
@@ -1623,9 +1623,18 @@ changes:
 
 #### `sourceMap.payload`
 
+<!-- YAML
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62830
+    description: 对象是冻结的。
+-->
+
 * 返回：{Object}
 
 用于构造 [`SourceMap`][] 实例的有效负载的 getter。
+
+返回的对象使用 [`Object.freeze()`][] 冻结，并且每次访问都会返回相同的引用。不要修改返回的对象。
 
 #### `sourceMap.findEntry(lineOffset, columnOffset)`
 
@@ -1685,7 +1694,8 @@ added:
 [`NODE_COMPILE_CACHE=dir`]: cli.md#node_compile_cachedir
 [`NODE_COMPILE_CACHE_PORTABLE=1`]: cli.md#node_compile_cache_portable1
 [`NODE_DISABLE_COMPILE_CACHE=1`]: cli.md#node_disable_compile_cache1
-[`NODE_V8_COVERAGE=dir`]: cli.md#node_v8_coverage_dir
+[`NODE_V8_COVERAGE=dir`]: cli.md#node_v8_coveragedir
+[`Object.freeze()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
 [`SourceMap`]: #class-modulesourcemap
 [`initialize`]: #initialize
 [`module.constants.compileCacheStatus`]: #moduleconstantscompilecachestatus

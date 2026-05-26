@@ -21,13 +21,13 @@ $ node inspect [--port=<port>] [<node-option> ...] [<script> [<script-args>] | <
 ```console
 $ node inspect myscript.js
 < Debugger listening on ws://127.0.0.1:9229/621111f9-ffcb-4e82-b718-48a145fa5db8
-< For help, see: https://nodejs.org/learn/getting-started/debugging
+< 如需帮助，请参见：https://nodejs.org/learn/getting-started/debugging
 <
 connecting to 127.0.0.1:9229 ... ok
 < Debugger attached.
 <
  ok
-Break on start in myscript.js:2
+在 myscript.js:2 处于启动时中断
   1 // myscript.js
 > 2 global.x = 5;
   3 setTimeout(() => {
@@ -48,21 +48,21 @@ setTimeout(() => {
 console.log('hello');
 $ NODE_INSPECT_RESUME_ON_START=1 node inspect myscript.js
 < Debugger listening on ws://127.0.0.1:9229/f1ed133e-7876-495b-83ae-c32c6fc319c2
-< For help, see: https://nodejs.org/learn/getting-started/debugging
+< 如需帮助，请参见：https://nodejs.org/learn/getting-started/debugging
 <
 connecting to 127.0.0.1:9229 ... ok
 < Debugger attached.
 <
 < hello
 <
-break in myscript.js:4
+在 myscript.js:4 处断开
   2 global.x = 5;
   3 setTimeout(() => {
 > 4   debugger;
   5   console.log('world');
   6 }, 1000);
 debug> next
-break in myscript.js:5
+在 myscript.js:5 处断开
   3 setTimeout(() => {
   4   debugger;
 > 5   console.log('world');
@@ -77,7 +77,7 @@ Press Ctrl+C to leave debug repl
 debug> next
 < world
 <
-break in myscript.js:6
+在 myscript.js:6 处断开
   4   debugger;
   5   console.log('world');
 > 6 }, 1000);
@@ -121,19 +121,19 @@ $
 ```console
 $ node inspect main.js
 < Debugger listening on ws://127.0.0.1:9229/48a5b28a-550c-471b-b5e1-d13dd7165df9
-< For help, see: https://nodejs.org/learn/getting-started/debugging
+< 如需帮助，请参见：https://nodejs.org/learn/getting-started/debugging
 <
 connecting to 127.0.0.1:9229 ... ok
 < Debugger attached.
 <
-Break on start in main.js:1
+在 main.js:1 处于启动时中断
 > 1 const mod = require('./mod.js');
   2 mod.hello();
   3 mod.hello();
 debug> setBreakpoint('mod.js', 22)
 Warning: script 'mod.js' was not loaded yet.
 debug> c
-break in mod.js:22
+在 mod.js:22 处断开
  20 // USE OR OTHER DEALINGS IN THE SOFTWARE.
  21
 >22 exports.hello = function() {
@@ -147,11 +147,11 @@ debug>
 ```console
 $ node inspect main.js
 < Debugger listening on ws://127.0.0.1:9229/ce24daa8-3816-44d4-b8ab-8273c8a66d35
-< For help, see: https://nodejs.org/learn/getting-started/debugging
+< 如需帮助，请参见：https://nodejs.org/learn/getting-started/debugging
 <
 connecting to 127.0.0.1:9229 ... ok
 < Debugger attached.
-Break on start in main.js:7
+在 main.js:7 处于启动时中断
   5 }
   6
 > 7 addOne(10);
@@ -168,7 +168,7 @@ debug> setBreakpoint('main.js', 4, 'num < 0')
   8 addOne(-1);
   9
 debug> cont
-break in main.js:4
+在 main.js:4 处断开
   2
   3 function addOne(num) {
 > 4   return num + 1;
@@ -211,6 +211,14 @@ debug>
 <!-- YAML
 added:
   - v26.1.0
+  - v24.16.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63437
+    description: 添加 inspector 端会话中途失败时的终端 `error` 事件 `probe_failure`，以及用于提供每次命中和终端错误额外上下文的 `error.details`。
+  - version: v26.2.0
+    pr-url: https://github.com/nodejs/node/pull/63286
+    description: JSON 报告 schema 升级到 v2。Probe `target` 现在是 `{ suffix, line, column? }`，而不是数组。每个 "hit" 事件都携带一个 `location` 字段，报告实际求值位置。当探测未指定列时，它会绑定到该行第一个可执行列，而不是默认绑定到 1。
 -->
 
 > 稳定性：1 - 实验性
@@ -228,15 +236,16 @@ $ node inspect --probe <file>:<line>[:<col>] --expr <expr>
               [--] [<node-option> ...] <script> [<script-args> ...]
 ```
 
-* `--probe <file>:<line>[:<col>]`: 探测点的源码位置。当执行到该位置时，会对所提供的表达式求值并打印到输出中。行号和列号从 1 开始。若省略列号，默认值为 1。
-* `--expr <expr>`: 每当执行到前一个 `--probe` 指定的位置时，要计算的 JavaScript 表达式。
+* `--probe <file>:<line>[:<col>]`: 探测的源位置。当执行到该位置时，会对提供的表达式求值并打印到输出中。`<file>` 会与要探测脚本的 URL 后缀进行匹配。
+  `<line>` 和 `<col>` 编号从 1 开始。若省略 `<col>`，探测会绑定到该行第一个可执行列。
+* `--expr <expr>`: 每当执行到前一个 `--probe` 指定的位置时要计算的 JavaScript 表达式。
   必须紧跟其所属的 `--probe`。
-* `--timeout=<ms>`: 整个探测会话的全局墙钟时间截止期限。
-  默认值为 `30000`。可用于探测可由外部终止的长时间运行应用。
-* `--json`: 若使用，则输出结构化 JSON 报告，而不是默认的文本报告。
-* `--preview`: 若使用，非原始值会为类对象的 JSON 探测值包含 CDP 属性预览。
+* `--timeout=<ms>`: 整个探测会话的全局墙钟截止时间。
+  默认值为 `30000`。这可用于探测一个可被外部终止的长时间运行应用。
+* `--json`: 如使用，则输出结构化 JSON 报告，而不是默认的文本报告。
+* `--preview`: 如使用，则非原始值会为对象样式的 JSON 探测值包含 CDP 属性预览。
 * `--port=<port>`: 选择探测会话监听的本地 inspector 端口。默认值为 `0`，表示请求一个随机端口。
-* `--` 是可选的，除非子进程需要自己的 Node.js 标志。
+* `--` 可选，除非子进程需要自己的 Node.js 标志。
 
 关于 `--probe` 和 `--expr` 参数还有以下附加规则：
 
@@ -271,47 +280,67 @@ for (let i = 0; i < 2; i++) {
 
 ```console
 $ node inspect --probe cli.js:5 --expr 'rss' cli.js
-Hit 1 at cli.js:5
+Hit 1 at file:///path/to/cli.js:5:3
   rss = 54935552
-Hit 2 at cli.js:5
+Hit 2 at file:///path/to/cli.js:5:3
   rss = 55083008
 Completed
 ```
 
-原始类型结果会直接打印，而对象和数组在可用时会使用 Chrome DevTools Protocol 的预览数据。其他非原始值则回退为 Chrome DevTools Protocol 的 `description` 字符串。表达式失败会记录为 `[error] ...` 行，但不会导致整个会话失败。如果需要更丰富的文本格式，可以将表达式包装在 `JSON.stringify(...)` 或 `util.inspect(...)` 中。
+传递给 `--probe` 的原始 `<file>:<line>[:<col>]` 可能会被解析到不同的位置，以确保它可中断，或者它可能匹配多个已加载脚本，因此实际求值位置有助于消歧。
+
+原始结果会直接打印，而对象和数组在可用时会使用 Chrome DevTools Protocol 的预览数据。其他非原始值则回退到 Chrome DevTools Protocol 的 `description` 字符串。
+表达式失败会记录为 `[error] ...` 行，不会使整个会话失败。如需更丰富的文本格式，可将表达式包裹在 `JSON.stringify(...)` 或 `util.inspect(...)` 中。
 
 使用 `--json` 时，输出结构如下：
 
 ```console
 $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
-{"v":1,"probes":[{"expr":"rss","target":["cli.js",5]}],"results":[{"probe":0,"event":"hit","hit":1,"result":{"type":"number","value":55443456,"description":"55443456"}},{"probe":0,"event":"hit","hit":2,"result":{"type":"number","value":55574528,"description":"55574528"}},{"event":"completed"}]}
+{"v":2,"probes":[{"expr":"rss","target":{"suffix":"cli.js","line":5}}],"results":[{"probe":0,"event":"hit","hit":1,"location":{"url":"file:///path/to/cli.js","line":5,"column":3},"result":{"type":"number","value":55443456,"description":"55443456"}},{"probe":0,"event":"hit","hit":2,"location":{"url":"file:///path/to/cli.js","line":5,"column":3},"result":{"type":"number","value":55574528,"description":"55574528"}},{"event":"completed"}]}
 ```
 
 ```json
 {
-  "v": 1, // 探测 JSON 结构版本。
+  "v": 2, // Probe JSON schema version.
   "probes": [
     {
       "expr": "rss", // 与 --probe 配对的表达式。
-      "target": ["cli.js", 5] // [文件, 行] 或 [文件, 行, 列]。
+      "target": {
+        // 用户的探测规格。`suffix` 是传递给 --probe 的原始 <file>，并作为
+        // 以路径分隔符锚定的后缀与每个已加载脚本的 URL 进行匹配。只有当
+        // 用户提供了 `:col` 时才会出现 `column`。实际求值位置可能与目标不同，
+        // 并会在每个命中的 `location` 字段中报告。
+        "suffix": "cli.js",
+        "line": 5
+      }
     }
   ],
   "results": [
     {
       "probe": 0, // probes[] 的索引。
       "event": "hit", // 命中事件按观察顺序记录。
-      "hit": 1, // 该探测的 1-based 命中次数。
+      "hit": 1, // 该探测的命中计数，从 1 开始。
+      "location": {
+        // 执行暂停以求值该探测表达式的实际位置。
+        // 这可能由于可暂停性调整或多重匹配而与探测目标不同。
+        "url": "file:///path/to/cli.js",
+        "line": 5,
+        "column": 3
+      },
       "result": {
         "type": "number",
         "value": 55443456,
         "description": "55443456"
       }
-      // 如果表达式抛出异常，则这里是 "error" 而不是 "result"。
+      // 如果探测表达式抛出、失败或从未完成，该条目会带有 `error` 字段，
+      // 而不是 `result`，其形状为 `{ message: string, details?: object }`。
+      // `message` 和 `details` 的内容仅供参考，可能会在不同版本之间变化。
     },
     {
       "probe": 0,
       "event": "hit",
       "hit": 2,
+      "location": { "url": "file:///path/to/cli.js", "line": 5, "column": 3 },
       "result": {
         "type": "number",
         "value": 55574528,
@@ -337,8 +366,19 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
       //      "error": {
       //       "code": "probe_target_exit",
       //       "exitCode": 1,
-      //       "stderr": "[Error: boom]",
-      //       "message": "在命中探测之前目标以代码 1 退出：app.js:10"
+      //       "stderr": "Error: boom",
+      //       "message": "Target exited with code 1 before probes: app.js:10"
+      //      }
+      //    }
+      // 5. {
+      //      "event": "error",
+      //      "pending": [1],
+      //      "error": {
+      //       "code": "probe_failure",
+      //       "probe": 0,
+      //       "stderr": "...",
+      //       "message": "Target process exited during probe evaluation before probes: app.js:12. If the failure repeats, review the probe expression.",
+      //       "details": { "lastCdpMethod": "Debugger.evaluateOnCallFrame" }
       //      }
       //    }
     }
@@ -346,9 +386,11 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
 }
 ```
 
-### 被探测进程的输出和退出码
+### 输出和退出码
 
-探测模式只会将最终探测报告打印到 stdout，并会静默子进程的 stdout/stderr。当探测会话结束时，`node inspect` 通常以 `0` 退出码退出，并向 stdout 打印最终报告。如果子进程在探测会话结束前以非零退出码退出，最终报告会记录一个终止 `error` 事件，以及退出码和捕获到的子进程 stderr。在这种情况下，探测进程本身仍会以 `0` 退出码退出。
+探测模式只会将最终探测报告打印到 stdout，并且会屏蔽子进程的 stdout/stderr。探测会话结束时，探测进程通常会以退出码 `0` 退出，并将最终报告打印到 stdout。如果子进程在探测会话结束前以非零代码退出，或者探测会话因其他原因无法完成，则最终报告会记录一个终止 `error` 事件。
+
+当 `error.code` 为 `'probe_failure'` 或 `'probe_timeout'` 时，探测进程会以非零代码退出，表示记录到的命中可能不完整。在这种情况下，`error.message` 会包含恢复提示；并且当 `error.probe` 存在时，它是报告中 `probes` 数组的索引，会尽力标识可能的罪魁祸首探测，以帮助调试。
 
 无效参数以及致命的启动或连接失败，可能会导致探测进程以非零退出码退出，并向 stderr 打印错误消息，而不会输出最终探测报告。
 
@@ -370,9 +412,9 @@ $ node inspect --probe app.js:4 --expr 'x' --probe app.js:4 --expr 'y' -- app.js
 打印
 
 ```text
-Hit 1 at app.js:4
+在 file:///path/to/app.js:4:1 命中 1 次
   x = {x: 42}
-Hit 1 at app.js:4
+在 file:///path/to/app.js:4:1 命中 1 次
   y = {y: 35}
 Completed
 ```
@@ -384,7 +426,7 @@ $ node inspect --probe app.js:4 --expr 'x' --probe app.js:4 --expr 'y' --json --
 打印
 
 ```json
-{"v":1,"probes":[{"expr":"x","target":["app.js",4]},{"expr":"y","target":["app.js",4]}],"results":[{"probe":0,"event":"hit","hit":1,"result":{"type":"object","description":"Object","preview":{"type":"object","description":"Object","overflow":false,"properties":[{"name":"x","type":"number","value":"42"}]}}},{"probe":1,"event":"hit","hit":1,"result":{"type":"object","description":"Object","preview":{"type":"object","description":"Object","overflow":false,"properties":[{"name":"y","type":"number","value":"35"}]}}},{"event":"completed"}]}
+{"v":2,"probes":[{"expr":"x","target":{"suffix":"app.js","line":4}},{"expr":"y","target":{"suffix":"app.js","line":4}}],"results":[{"probe":0,"event":"hit","hit":1,"location":{"url":"file:///path/to/app.js","line":4,"column":1},"result":{"type":"object","description":"Object","preview":{"type":"object","description":"Object","overflow":false,"properties":[{"name":"x","type":"number","value":"42"}]}}},{"probe":1,"event":"hit","hit":1,"location":{"url":"file:///path/to/app.js","line":4,"column":1},"result":{"type":"object","description":"Object","preview":{"type":"object","description":"Object","overflow":false,"properties":[{"name":"y","type":"number","value":"35"}]}}},{"event":"completed"}]}
 ```
 
 ### 选择探测位置
@@ -399,7 +441,7 @@ console.log(x);      // 第 3 行
 
 ```console
 $ node inspect --probe app.js:1 --expr 'x' app.js
-Hit 1 at app.js:1
+Hit 1 at file:///path/to/app.js:1:1
   [error] x = ReferenceError: Cannot access 'x' from debugger
   ...
 Completed
@@ -409,12 +451,12 @@ Completed
 
 ```console
 $ node inspect --probe app.js:3 --expr 'x' app.js
-Hit 1 at app.js:3
+Hit 1 at file:///path/to/app.js:3:1
   x = 42
 Completed
 ```
 
-探测路径会像原生调试器通常匹配断点那样，按 basename 与已加载脚本的 URL 匹配。给定：
+`<file>` 参数会作为每个已加载脚本 URL 的路径后缀进行匹配，并以路径分隔符为锚点。只传入基名会匹配所有具有该基名的已加载脚本，类似于原生调试器通常匹配断点的方式；而传入部分路径则会缩小匹配范围。给定：
 
 ```text
 project/
@@ -422,7 +464,8 @@ project/
   - lib/utils.js
 ```
 
-`--probe utils.js:10` 会绑定到 _两个_ 文件，并且每个匹配都会产生一次命中。要消除歧义，请指定一个更完整、只会匹配目标文件的路径：
+`--probe utils.js:10` 会同时绑定到这两个文件，并对每个匹配产生一次命中。
+每次命中都会携带自己的 `location` 字段，指明表达式实际执行的位置，因此使用者可以准确地将结果归属到两个文件之一。若要在绑定时消除歧义，请指定一个更完整、只匹配目标文件的路径：
 
 ```console
 $ node inspect --probe src/utils.js:10 --expr 'x' main.js   # 仅匹配 src/utils.js

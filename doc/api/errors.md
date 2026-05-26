@@ -2319,6 +2319,18 @@ added:
 
 尝试使用需要 [ICU][] 的功能，但 Node.js 编译时未包含 ICU 支持。
 
+<a id="ERR_NO_TEMPORAL"></a>
+
+### `ERR_NO_TEMPORAL`
+
+<!-- YAML
+added: v26.2.0
+-->
+
+An attempt was made to use features that require [`Temporal`][], but Node.js was not
+compiled with `Temporal` support or it has been disabled in the current environment
+(for example, when running with `--no-harmony-temporal`).
+
 <a id="ERR_NO_TYPESCRIPT"></a>
 
 ### `ERR_NO_TYPESCRIPT`
@@ -2498,7 +2510,7 @@ added:
 ### `ERR_QUIC_STREAM_ABORTED`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 > 稳定性：1 - 实验性
@@ -2511,7 +2523,7 @@ added: REPLACEME
 ### `ERR_QUIC_STREAM_RESET`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 > 稳定性：1 - 实验性
@@ -2582,7 +2594,9 @@ changes:
 ### `ERR_REQUIRE_ESM_RACE_CONDITION`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 > 稳定性：1 - 实验性。
@@ -2876,7 +2890,8 @@ added: v13.3.0
 
 ### `ERR_TLS_INVALID_PROTOCOL_METHOD`
 
-指定的 `secureProtocol` 方法无效。它要么未知，要么因不安全而被禁用。
+The specified `secureProtocol` method is invalid. It is either unknown, or
+disabled because it is insecure.
 
 <a id="ERR_TLS_INVALID_PROTOCOL_VERSION"></a>
 
@@ -4147,6 +4162,7 @@ CRL nextUpdate 字段包含无效时间。
 [`QuicError`]: quic.md#class-quicerror
 [`REPL`]: repl.md
 [`ServerResponse`]: http.md#class-httpserverresponse
+[`Temporal`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal
 [`Writable`]: stream.md#class-streamwritable
 [`child_process`]: child_process.md
 [`cipher.getAuthTag()`]: crypto.md#ciphergetauthtag

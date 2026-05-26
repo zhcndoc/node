@@ -433,7 +433,7 @@ added: v0.9.2
 changes:
   - version: v0.11.12
     pr-url: https://github.com/nodejs/node-v0.x-archive/pull/7118
-    description: "The `callback` argument is now supported."
+    description: "现在支持 `callback` 参数。"
 -->
 
 创建新的 TLS 会话时发出 `'newSession'` 事件。这可用于将会话存储在外部存储中。数据应提供给 [`'resumeSession'`][] 回调。
@@ -898,7 +898,7 @@ added: v5.0.0
 added: v9.9.0
 -->
 
-* 返回：{Buffer|undefined} 最新的 `Finished` 消息，已作为 SSL/TLS 握手的一部分发送到 socket，或者如果尚未发送 `Finished` 消息则为 `undefined`。
+* 返回：{Buffer|undefined} 作为 SSL/TLS 握手一部分发送到套接字的最新 `Finished` 消息，如果尚未发送 `Finished` 消息，则返回 `undefined`。
 
 由于 `Finished` 消息是完整握手的信息摘要（TLS 1.0 总共 192 位，SSL 3.0 更多），当 SSL/TLS 提供的认证不需要或不够时，它们可用于外部认证过程。
 
@@ -1007,7 +1007,7 @@ changes:
 added: v9.9.0
 -->
 
-* 返回：{Buffer|undefined} 最新的 `Finished` 消息，预期或已实际作为 SSL/TLS 握手的一部分从 socket 接收，或者如果到目前为止没有 `Finished` 消息则为 `undefined`。
+* 返回：{Buffer|undefined} 作为 SSL/TLS 握手一部分，预期收到或已实际从套接字收到的最新 `Finished` 消息，如果到目前为止没有 `Finished` 消息，则返回 `undefined`。
 
 由于 `Finished` 消息是完整握手的信息摘要（TLS 1.0 总共 192 位，SSL 3.0 更多），当 SSL/TLS 提供的认证不需要或不够时，它们可用于外部认证过程。
 
@@ -1618,8 +1618,8 @@ changes:
 创建一个新的 [`tls.Server`][]。如果提供了 `secureConnectionListener`，它
 会自动设置为 [`'secureConnection'`][] 事件的监听器。
 
-`ticketKeys` 选项会在 `node:cluster` 模块
-工作进程之间自动共享。
+The `ticketKeys` option is automatically shared between `node:cluster` module
+workers.
 
 以下说明了一个简单的回显服务器：
 
@@ -1809,7 +1809,7 @@ added: v0.11.13
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/16853
-    description: "Default value changed to `'auto'`."
+    description: "默认值更改为 `'auto'`。"
 -->
 
 TLS 服务器中用于 ECDH 密钥协商的默认曲线名称。默认值为 `'auto'`。有关更多信息，请参阅 [`tls.createSecureContext()`][]。

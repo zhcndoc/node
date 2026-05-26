@@ -443,7 +443,7 @@ describe('test 2', (t) => {
 ## 测试标签
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 > 稳定性：1.0 - 早期开发
@@ -644,7 +644,9 @@ node --test "**/*.test.js" "**/*.spec.js"
 ### 随机化测试执行顺序
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 > 稳定性：1.0 - 早期开发
@@ -1488,7 +1490,7 @@ added:
   - v18.9.0
   - v16.19.0
 changes:
-  - version: REPLACEME
+  - version: v26.2.0
     pr-url: https://github.com/nodejs/node/pull/63221
     description: Added the `testTagFilters` option.
   - version:
@@ -1698,7 +1700,7 @@ added:
   - v18.0.0
   - v16.17.0
 changes:
-  - version: REPLACEME
+  - version: v26.2.0
     pr-url: https://github.com/nodejs/node/pull/63221
     description: Added the `tags` option.
   - version:
@@ -2162,7 +2164,7 @@ added:
 
 将 mock 函数实现重置为其原始行为。调用此函数后仍可继续使用 mock。
 
-## Class: `MockModuleContext`
+## 类：`MockModuleContext`
 
 <!-- YAML
 added:
@@ -2170,9 +2172,9 @@ added:
   - v20.18.0
 -->
 
-> Stability: 1.0 - Early development
+> 稳定性：1.0 - 早期开发阶段
 
-The `MockModuleContext` class is used to manipulate the behavior of module mocks created through the [`MockTracker`][] API.
+`MockModuleContext` 类用于操纵通过 [`MockTracker`][] API 创建的模块 mock 的行为。
 
 ### `ctx.restore()`
 
@@ -2182,9 +2184,9 @@ added:
   - v20.18.0
 -->
 
-Reset the mocked module implementation.
+重置被 mock 的模块实现。
 
-## Class: `MockPropertyContext`
+## 类：`MockPropertyContext`
 
 <!-- YAML
 added:
@@ -2192,45 +2194,45 @@ added:
   - v22.20.0
 -->
 
-The `MockPropertyContext` class is used to inspect or manipulate the behavior of property mocks created through the [`MockTracker`][] API.
+`MockPropertyContext` 类用于检查或操纵通过 [`MockTracker`][] API 创建的属性 mock 的行为。
 
 ### `ctx.accesses`
 
-* Type: {Array}
+* 类型：{Array}
 
-A getter that returns a copy of the internal array used to track accesses (get/set) to the mocked property. Each entry in the array is an object with the following properties:
+一个 getter，返回用于跟踪被 mock 属性访问（get/set）的内部数组副本。数组中的每一项都是一个具有以下属性的对象：
 
-* `type` {string} `'get'` or `'set'`, indicating the type of access.
-* `value` {any} The value read (for `'get'`) or written (for `'set'`).
-* `stack` {Error} An `Error` object whose stack can be used to determine the call site of the mocked function.
+* `type` {string} `'get'` 或 `'set'`，表示访问类型。
+* `value` {any} 读取（对于 `'get'`）或写入（对于 `'set'`）的值。
+* `stack` {Error} 一个 `Error` 对象，其堆栈可用于确定被 mock 函数的调用位置。
 
 ### `ctx.accessCount()`
 
-* Returns: {integer} The number of times the property was accessed (read or written).
+* 返回：{integer} 属性被访问的次数（读取或写入）。
 
-This function returns the number of times the property was accessed.
-This function is more efficient than checking `ctx.accesses.length`, because
-`ctx.accesses` is a getter that creates a copy of the internal access tracking array.
+此函数返回属性被访问的次数。
+此函数比检查 `ctx.accesses.length` 更高效，因为
+`ctx.accesses` 是一个 getter，它会创建内部访问跟踪数组的副本。
 
 ### `ctx.mockImplementation(value)`
 
-* `value` {any} The new value to set as the mocked property value.
+* `value` {any} 要设置为被 mock 属性值的新值。
 
-This function is used to change the value returned by the mocked property getter.
+此函数用于更改被 mock 属性 getter 返回的值。
 
 ### `ctx.mockImplementationOnce(value[, onAccess])`
 
-* `value` {any} The value to use as the mock implementation for the call number specified by `onAccess`.
-* `onAccess` {integer} The call number that will use `value`. If
-  the specified call has already occurred, an exception is thrown.
-  **Default:** The number of the next call.
+* `value` {any} 用作 `onAccess` 指定调用编号的 mock 实现的值。
+* `onAccess` {integer} 将使用 `value` 的调用编号。如果
+  指定的调用已经发生，则会抛出异常。
+  **默认：** 下一次调用的编号。
 
-This function is used to change the behavior of an existing mock for a single call. Once the `onAccess` call occurs, the mock will revert to the behavior it would have used if `mockImplementationOnce()` had not been called.
+此函数用于更改单次现有 mock 的行为。一旦发生 `onAccess` 调用，mock 将恢复为在未调用 `mockImplementationOnce()` 时本应使用的行为。
 
-The following example uses `t.mock.property()` to create a mock function, call the mocked property, change the mock implementation for the next call to a different value, then restore its previous behavior.
+下面的示例使用 `t.mock.property()` 创建一个 mock 函数，调用该被 mock 属性，将下一次调用的 mock 实现更改为不同的值，然后恢复其先前行为。
 
 ```js
-test('changes a mock behavior once', (t) => {
+test('更改一次 mock 行为', (t) => {
   const obj = { foo: 1 };
 
   const prop = t.mock.property(obj, 'foo', 5);
@@ -2242,19 +2244,19 @@ test('changes a mock behavior once', (t) => {
 });
 ```
 
-#### Notes
+#### 注意
 
-To be consistent with the rest of the mocking API, this function treats both property gets and sets as accesses. If a property set occurs at the same access index, the "once" value is consumed by the set operation, and the mocked property value will be changed to the "once" value. This can lead to unexpected behavior if you intend to use the "once" value only for get operations.
+为了与其余 mocking API 保持一致，此函数将属性的 get 和 set 都视为访问。如果在相同的访问索引处发生属性 set，那么“once”值会被 set 操作消费，并且被 mock 的属性值将被更改为“once”值。如果你打算仅将“once”值用于 get 操作，这可能会导致意外行为。
 
 ### `ctx.resetAccesses()`
 
-Reset the access history of the mocked property.
+重置被 mock 属性的访问历史。
 
 ### `ctx.restore()`
 
-Reset the mocked property implementation to its original behavior. The mock can still be used after calling this function.
+将被 mock 属性实现重置为其原始行为。调用此函数后，mock 仍然可以继续使用。
 
-## Class: `MockTracker`
+## 类：`MockTracker`
 
 <!-- YAML
 added:
@@ -2262,8 +2264,8 @@ added:
   - v18.13.0
 -->
 
-The `MockTracker` class is used to manage mock functionality. The test runner module provides a top-level `mock` export that is a `MockTracker` instance.
-Each test also has its own `MockTracker` instance available through the test context's `mock` property.
+`MockTracker` 类用于管理 mock 功能。test runner 模块提供一个顶层的 `mock` 导出，它是一个 `MockTracker` 实例。
+每个测试也都有自己的 `MockTracker` 实例，可通过测试上下文的 `mock` 属性访问。
 
 ### `mock.fn([original[, implementation]][, options])`
 
@@ -2273,19 +2275,16 @@ added:
   - v18.13.0
 -->
 
-* `original` {Function|AsyncFunction} An optional function to create a mock on top of.
-  **Default:** a no-op function.
-* `implementation` {Function|AsyncFunction} An optional function to use as the mock implementation for `original`. This is useful for creating mocks that act one way for a specified number of calls and then revert to the behavior of `original`. **Default:** the function specified by `original`.
-* `options` {Object} Optional configuration options for the mock function. The following properties are supported:
-  * `times` {integer} The number of times the mock will use the behavior from `implementation`. Once the mock function has been called `times` times, it
-    will automatically revert to the behavior of `original`. This value must be a positive integer. **Default:** `Infinity`.
-* Returns: {Proxy} The mocked function. The mocked function contains a special
-  `mock` property that is an instance of [`MockFunctionContext`][] and can be used to inspect and change the mocked function's behavior.
+* `original` {Function|AsyncFunction} 可选函数，用于在其基础上创建 mock。
+  **默认：** 一个空操作函数。
+* `implementation` {Function|AsyncFunction} 可选函数，用作 `original` 的 mock 实现。这对于创建在指定次数内按一种方式运行，然后恢复为 `original` 行为的 mock 很有用。**默认：** 由 `original` 指定的函数。
+* `options` {Object} mock 函数的可选配置项。支持以下属性：
+  * `times` {integer} mock 将使用 `implementation` 行为的次数。一旦 mock 函数被调用 `times` 次，它将自动恢复为 `original` 的行为。该值必须是正整数。**默认：** `Infinity`。
+* 返回：{Proxy} 被 mock 的函数。被 mock 的函数包含一个特殊的 `mock` 属性，它是 [`MockFunctionContext`][] 的一个实例，可用于检查和更改被 mock 函数的行为。
 
-This function is used to create mock functions.
+此函数用于创建 mock 函数。
 
-The following example creates a mock function that increments a counter on each call. The `times` option is used to modify the mock behavior so that
-the first two calls increment the counter by two instead of one.
+下面的示例创建了一个在每次调用时都会递增计数器的 mock 函数。`times` 选项用于修改 mock 行为，使前两次调用每次将计数器增加 2 而不是 1。
 
 ```js
 test('模拟一个计数函数', (t) => {
@@ -2318,8 +2317,8 @@ added:
   - v18.13.0
 -->
 
-This function is syntax sugar for [`MockTracker.method`][] where `options.getter`
-is set to `true`.
+此函数是 [`MockTracker.method`][] 的语法糖，其中 `options.getter`
+被设为 `true`。
 
 ### `mock.method(object, methodName[, implementation][, options])`
 
@@ -2329,23 +2328,22 @@ added:
   - v18.13.0
 -->
 
-* `object` {Object} The object whose method is being mocked.
-* `methodName` {string|symbol} An identifier for the method on `object` to mock.
-  If `object[methodName]` is not a function, an error is thrown.
-* `implementation` {Function|AsyncFunction} An optional function to use as the
-  mock implementation for `object[methodName]`. **Default:** the original method specified by `object[methodName]`.
-* `options` {Object} Optional configuration options for the mock method. The following properties are supported:
-  * `getter` {boolean} If `true`, `object[methodName]` is treated as a getter.
-    This option cannot be used with the `setter` option. **Default:** false.
-  * `setter` {boolean} If `true`, `object[methodName]` is treated as a setter.
-    This option cannot be used with the `getter` option. **Default:** false.
-  * `times` {integer} The number of times the mock will use the behavior from `implementation`. Once the mocked method has been called `times` times, it
-    will automatically revert to the original behavior. This value must be a positive integer. **Default:** `Infinity`.
-* Returns: {Proxy} The mocked method. The mocked method contains a special
-  `mock` property that is an instance of [`MockFunctionContext`][] and can be used to inspect and change the mocked method's behavior.
+* `object` {Object} 要对其方法进行 mock 的对象。
+* `methodName` {string|symbol} `object` 上要 mock 的方法标识符。
+  如果 `object[methodName]` 不是函数，则会抛出错误。
+* `implementation` {Function|AsyncFunction} 可选函数，用作
+  `object[methodName]` 的 mock 实现。**默认：** `object[methodName]` 指定的原始方法。
+* `options` {Object} mock 方法的可选配置项。支持以下属性：
+  * `getter` {boolean} 如果为 `true`，`object[methodName]` 将被视为 getter。
+    此选项不能与 `setter` 选项同时使用。**默认：** false。
+  * `setter` {boolean} 如果为 `true`，`object[methodName]` 将被视为 setter。
+    此选项不能与 `getter` 选项同时使用。**默认：** false。
+  * `times` {integer} mock 将使用 `implementation` 行为的次数。一旦被 mock 的方法被调用 `times` 次，它将自动恢复为原始行为。该值必须是正整数。**默认：** `Infinity`。
+* 返回：{Proxy} 被 mock 的方法。被 mock 的方法包含一个特殊的
+  `mock` 属性，它是 [`MockFunctionContext`][] 的一个实例，可用于检查和更改被 mock 方法的行为。
 
-This function is used to create a mock on an existing object method. The following
-example demonstrates how to create a mock on an existing object method.
+此函数用于在现有对象方法上创建 mock。下面的
+示例演示如何在现有对象方法上创建 mock。
 
 ```js
 test('监听一个对象方法', (t) => {
@@ -2382,56 +2380,49 @@ changes:
     - v24.0.0
     - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/58007
-    description: Support JSON modules.
+    description: 支持 JSON 模块。
 -->
 
-> Stability: 1.0 - Early development
+> 稳定性：1.0 - 早期开发阶段
 
-* `specifier` {string|URL} A string that identifies the module to mock.
-* `options` {Object} Optional configuration options for the mock module. The following properties are supported:
-  * `cache` {boolean} If `false`, each call to `require()` or `import()`
-    will generate a new mocked module. If `true`, subsequent calls will return the same
-    module mock and the mock module will be inserted into the CommonJS cache.
-    **Default:** false.
-  * `exports` {Object} Optional mocked exports. If a `default` property is provided, it
-    is used as the mock module's default export. All other own enumerable properties are used as named exports.
-    **This option cannot be used with `defaultExport` or `namedExports`.**
-    * If the mock is a CommonJS or builtin module, `exports.default` is used as
-      the value of `module.exports`.
-    * If no `exports.default` is provided for a CommonJS or builtin mock,
-      `module.exports` defaults to an empty object.
-    * If named exports are provided and the default export is not an object, the mock
-      will throw an exception when used as a CommonJS or builtin module.
-  * `defaultExport` {any} An optional value used as the mock module's default
-    export. If this value is not provided, the ESM mock does not include a default export. If the mock is a CommonJS or builtin module, this setting is used as the value of
-    `module.exports`. If this value is not provided, CJS and builtin
-    mocks use an empty object as the value of `module.exports`.
-    **This option cannot be used with `options.exports`.**
-    This option is deprecated and will be removed in a future version.
-    Use `options.exports.default` instead.
-  * `namedExports` {Object} An optional object whose keys and values are used to
-    create named exports for the mock module. If the mock is a CommonJS or
-    builtin module, these values are copied onto `module.exports`. Therefore, if
-    the mock is created with named exports and a non-object default export,
-    the mock will throw an exception when used as a CJS or builtin module.
-    **This option cannot be used with `options.exports`.**
-    This option is deprecated and will be removed in a future version.
-    Use `options.exports` instead.
-* Returns: {MockModuleContext} An object that can be used to manipulate the mock.
+* `specifier` {string|URL} 标识要 mock 的模块的字符串。
+* `options` {Object} mock 模块的可选配置项。支持以下属性：
+  * `cache` {boolean} 如果为 `false`，每次调用 `require()` 或 `import()` 都会生成一个新的 mocked 模块。如果为 `true`，后续调用将返回相同的模块 mock，并且该 mock 模块将被插入 CommonJS 缓存。
+    **默认：** false。
+  * `exports` {Object} 可选的 mock 导出。如果提供了 `default` 属性，它将被用作 mock 模块的默认导出。其他所有自有可枚举属性都作为具名导出使用。
+    **此选项不能与 `defaultExport` 或 `namedExports` 一起使用。**
+    * 如果 mock 是 CommonJS 或内置模块，则 `exports.default` 用作 `module.exports` 的值。
+    * 如果对 CommonJS 或内置模块的 mock 未提供 `exports.default`，则 `module.exports` 默认为空对象。
+    * 如果提供了具名导出且默认导出不是对象，那么当作为 CommonJS 或内置模块使用时，mock 将抛出异常。
+  * `defaultExport` {any} 可选值，用作 mock 模块的默认
+    导出。如果未提供该值，ESM mock 不包含默认导出。如果 mock 是 CommonJS 或内置模块，则此设置将用作 `module.exports` 的值。如果未提供该值，CJS 和内置
+    mock 将使用空对象作为 `module.exports` 的值。
+    **此选项不能与 `options.exports` 一起使用。**
+    此选项已弃用，并将在未来版本中移除。
+    请改用 `options.exports.default`。
+  * `namedExports` {Object} 可选对象，其键和值用于
+    为 mock 模块创建具名导出。如果 mock 是 CommonJS 或
+    内置模块，这些值会被复制到 `module.exports` 上。因此，如果
+    mock 是通过具名导出和非对象默认导出创建的，
+    当作为 CJS 或内置模块使用时，mock 将抛出异常。
+    **此选项不能与 `options.exports` 一起使用。**
+    此选项已弃用，并将在未来版本中移除。
+    请改用 `options.exports`。
+* 返回：{MockModuleContext} 可用于操纵该 mock 的对象。
 
-This function is used to mock the exports of ECMAScript modules, CommonJS modules, JSON modules, and
-Node.js builtin modules. Any references to the original module before mocking are not affected. To
-enable module mocking, Node.js must be run with the [`--experimental-test-module-mocks`][] command-line flag.
+此函数用于 mock ECMAScript 模块、CommonJS 模块、JSON 模块和
+Node.js 内置模块的导出。在 mock 之前对原始模块的任何引用都不会受到影响。要
+启用模块 mock，Node.js 必须使用 [`--experimental-test-module-mocks`][] 命令行标志运行。
 
-**Note**: [module customization hooks][] registered through the **synchronous** API affect resolution of the `specifier` passed to `mock.module`.
-Customization hooks registered through the **asynchronous** API are currently ignored (because the test runner's loader is synchronous and Node does not support multi-chain/cross-chain loaders).
+**注意**：[module customization hooks][] 通过 **同步** API 注册时会影响传递给 `mock.module` 的 `specifier` 的解析。
+通过 **异步** API 注册的 customization hooks 当前会被忽略（因为 test runner 的 loader 是同步的，并且 Node 不支持 multi-chain/cross-chain loaders）。
 
-The following example demonstrates how to create a mock for a module.
+下面的示例演示如何为模块创建 mock。
 
 ```js
 test('模拟内置模块在两种模块系统中的行为', async (t) => {
-  // Create a mock for 'node:readline' with a named export called 'foo',
-  // which does not exist in the original 'node:readline' module.
+  // 为 'node:readline' 创建一个 mock，并带有一个名为 'foo' 的具名导出，
+  // 该导出在原始 'node:readline' 模块中不存在。
   const mock = t.mock.module('node:readline', {
     exports: { foo: () => 42 },
   });
@@ -2439,7 +2430,7 @@ test('模拟内置模块在两种模块系统中的行为', async (t) => {
   let esmImpl = await import('node:readline');
   let cjsImpl = require('node:readline');
 
-  // cursorTo() is an export of the original 'node:readline' module.
+  // cursorTo() 是原始 'node:readline' 模块的一个导出。
   assert.strictEqual(esmImpl.cursorTo, undefined);
   assert.strictEqual(cjsImpl.cursorTo, undefined);
   assert.strictEqual(esmImpl.fn(), 42);
@@ -2447,7 +2438,7 @@ test('模拟内置模块在两种模块系统中的行为', async (t) => {
 
   mock.restore();
 
-  // The mock is restored, so we get the original builtin module back.
+  // mock 已恢复，因此我们会拿回原始内置模块。
   esmImpl = await import('node:readline');
   cjsImpl = require('node:readline');
 
@@ -2466,16 +2457,16 @@ added:
   - v22.20.0
 -->
 
-* `object` {Object} The object whose value is being mocked.
-* `propertyName` {string|symbol} An identifier for the property on `object` to mock.
-* `value` {any} An optional value to use as the mock value for `object[propertyName]`.
-  **Default:** The original property value.
-* Returns: {Proxy} A proxy for the mocked object. The mocked object contains a
-  special `mock` property that is an instance of [`MockPropertyContext`][] and
-  can be used to inspect and change the mocked property's behavior.
+* `object` {Object} 要对其值进行 mock 的对象。
+* `propertyName` {string|symbol} `object` 上要 mock 的属性标识符。
+* `value` {any} 可选值，用作 `object[propertyName]` 的 mock 值。
+  **默认：** 原始属性值。
+* 返回：{Proxy} 被 mock 对象的代理。被 mock 对象包含一个
+  特殊的 `mock` 属性，它是 [`MockPropertyContext`][] 的一个实例，并且
+  可用于检查和更改被 mock 属性的行为。
 
-Create a mock for a property value on an object. This allows you to track and control access to a specific property,
-including how many times it is read (getter) or written (setter), and restore the original value after mocking.
+在对象上的某个属性值创建 mock。这使你可以跟踪并控制对特定属性的访问，
+包括它被读取（getter）或写入（setter）的次数，并在 mock 后恢复原始值。
 
 ```js
 test('模拟一个属性值', (t) => {
@@ -2505,13 +2496,12 @@ added:
   - v18.13.0
 -->
 
-This function restores the default behavior of all mocks previously created by this `MockTracker`, and disassociates the mocks from the
-`MockTracker` instance. Once disassociated, the mocks can still be used, but the
-`MockTracker` instance is no longer able to reset their behavior or
-interact with them in other ways.
+此函数会恢复此前由此 `MockTracker` 创建的所有 mock 的默认行为，并将这些 mock 与
+`MockTracker` 实例解除关联。一旦解除关联，这些 mock 仍然可以使用，但
+`MockTracker` 实例将无法再重置它们的行为或
+以其他方式与它们交互。
 
-This function is called on the test context's `MockTracker` after each test completes. If the global `MockTracker` is used extensively, it is recommended to call this
-function manually.
+每个测试完成后，都会在测试上下文的 `MockTracker` 上调用此函数。如果大量使用全局 `MockTracker`，建议手动调用此函数。
 
 ### `mock.restoreAll()`
 
@@ -2521,8 +2511,8 @@ added:
   - v18.13.0
 -->
 
-This function restores the default behavior of all mocks previously created by this `MockTracker`. Unlike `mock.reset()`, `mock.restoreAll()` does not
-disassociate the mocks from the `MockTracker` instance.
+此函数会恢复此前由此 `MockTracker` 创建的所有 mock 的默认行为。与 `mock.reset()` 不同，`mock.restoreAll()` 不会
+将这些 mock 与 `MockTracker` 实例解除关联。
 
 ### `mock.setter(object, methodName[, implementation][, options])`
 
@@ -2532,10 +2522,10 @@ added:
   - v18.13.0
 -->
 
-This function is syntax sugar for [`MockTracker.method`][] where `options.setter`
-is set to `true`.
+此函数是 [`MockTracker.method`][] 的语法糖，其中 `options.setter`
+被设为 `true`。
 
-## Class: `MockTimers`
+## 类：`MockTimers`
 
 <!-- YAML
 added:
@@ -2547,11 +2537,11 @@ changes:
     description: Mock timers are now stable.
 -->
 
-Mock timers are a technique commonly used in software testing to simulate and control the behavior of timers (for example `setInterval` and `setTimeout`) without actually waiting for the specified time interval.
+Mock timers 是软件测试中常用的一种技术，用于模拟和控制定时器（例如 `setInterval` 和 `setTimeout`）的行为，而无需实际等待指定的时间间隔。
 
-MockTimers can also mock the `Date` object.
+MockTimers 也可以模拟 `Date` 对象。
 
-[`MockTracker`][] provides a top-level `timers` export that is a `MockTimers` instance.
+[`MockTracker`][] 提供一个顶层的 `timers` 导出，它是一个 `MockTimers` 实例。
 
 ### `timers.enable([enableOptions])`
 
@@ -2567,23 +2557,22 @@ changes:
     description: "Updated parameters to an options object that contains available APIs and a default initial epoch."
 -->
 
-Enable timer mocking for the specified timers.
+为指定的定时器启用定时器模拟。
 
-* `enableOptions` {Object} Optional configuration options for enabling timer mocking. The following properties are supported:
-  * `apis` {Array} An optional array containing the timers to mock.
-    Currently supported timer values are `'setInterval'`, `'setTimeout'`, `'setImmediate'`
-    and `'Date'`. **Default:** `['setInterval', 'setTimeout', 'setImmediate', 'Date']`.
-    If no array is provided, all time-related APIs (`'setInterval'`, `'clearInterval'`,
-    `'setTimeout'`, `'clearTimeout'`, `'setImmediate'`, `'clearImmediate'`, and
-    `'Date'`) are mocked by default.
-  * `now` {number | Date} An optional number or Date object representing the initial time in milliseconds to use as the
-    `Date.now()` value. **Default:** `0`.
+* `enableOptions` {Object} 可选配置项，用于启用定时器模拟。支持以下属性：
+  * `apis` {Array} 一个可选数组，包含要模拟的定时器。
+    当前支持的定时器值有 `'setInterval'`、`'setTimeout'`、`'setImmediate'`
+    和 `'Date'`。**默认值：** `['setInterval', 'setTimeout', 'setImmediate', 'Date']`。
+    如果未提供数组，则默认模拟所有与时间相关的 API（`'setInterval'`、`'clearInterval'`、
+    `'setTimeout'`、`'clearTimeout'`、`'setImmediate'`、`'clearImmediate'` 和
+    `'Date'`）。
+  * `now` {number | Date} 一个可选的数字或 Date 对象，表示用于 `Date.now()` 值的初始时间（以毫秒为单位）。**默认值：** `0`。
 
-**Note:** When you enable mocking for a specific timer, its associated clear function will also be implicitly mocked.
+**注意：** 当你为某个特定定时器启用模拟时，其关联的清除函数也会被隐式模拟。
 
-**Note:** Mocking `Date` affects the behavior of mock timers, because they use the same internal clock.
+**注意：** 模拟 `Date` 会影响 mock timers 的行为，因为它们使用的是同一个内部时钟。
 
-Example usage with no initial time set:
+不设置初始时间的使用示例：
 
 ```mjs
 import { mock } from 'node:test';
@@ -2595,11 +2584,11 @@ const { mock } = require('node:test');
 mock.timers.enable({ apis: ['setInterval'] });
 ```
 
-The above example enabled mocking for the `setInterval` timer and implicitly mocked the `clearInterval` function. Only the `setInterval` and `clearInterval` functions from [node:timers](./timers.md),
-[node:timers/promises](./timers.md#timers-promises-api), and
-`globalThis` will be mocked.
+上面的示例启用了对 `setInterval` 定时器的模拟，并隐式模拟了 `clearInterval` 函数。来自 [node:timers](./timers.md)、
+[node:timers/promises](./timers.md#timers-promises-api) 和
+`globalThis` 的 `setInterval` 与 `clearInterval` 函数都会被模拟。
 
-Example usage setting the initial time
+设置初始时间的使用示例
 
 ```mjs
 import { mock } from 'node:test';
@@ -2611,7 +2600,7 @@ const { mock } = require('node:test');
 mock.timers.enable({ apis: ['Date'], now: 1000 });
 ```
 
-Example usage setting the initial Date object as the time
+将初始 Date 对象设置为时间的使用示例
 
 ```mjs
 import { mock } from 'node:test';
@@ -2623,13 +2612,12 @@ const { mock } = require('node:test');
 mock.timers.enable({ apis: ['Date'], now: new Date() });
 ```
 
-Or, if you call `mock.timers.enable()` with no arguments:
+或者，如果你不带参数调用 `mock.timers.enable()`：
 
-All timers (`'setInterval'`, `'clearInterval'`, `'setTimeout'`, `'clearTimeout'`,
-`'setImmediate'`, and `'clearImmediate'`) will be mocked. The `setInterval`,
-`clearInterval`, `setTimeout`, `clearTimeout`, `setImmediate`, and
-`clearImmediate` functions from `node:timers`, `node:timers/promises`, and
-`globalThis` will be mocked. And the global `Date` object.
+所有定时器（`'setInterval'`、`'clearInterval'`、`'setTimeout'`、`'clearTimeout'`、
+`'setImmediate'` 和 `'clearImmediate'`）都会被模拟。来自 `node:timers`、`node:timers/promises` 和
+`globalThis` 的 `setInterval`、`clearInterval`、`setTimeout`、`clearTimeout`、`setImmediate` 和
+`clearImmediate` 函数都会被模拟。全局 `Date` 对象也会被模拟。
 
 ### `timers.reset()`
 
@@ -2639,9 +2627,9 @@ added:
   - v18.19.0
 -->
 
-This function restores the default behavior of all mocks previously created by this `MockTimers` instance, and disassociates the mocks from the `MockTracker` instance.
+此函数会恢复此前由该 `MockTimers` 实例创建的所有 mock 的默认行为，并解除这些 mock 与 `MockTracker` 实例之间的关联。
 
-**Note:** After each test completes, this function is called on the test context's `MockTracker`.
+**注意：** 每个测试完成后，都会在测试上下文的 `MockTracker` 上调用此函数。
 
 ```mjs
 import { mock } from 'node:test';
@@ -2655,7 +2643,7 @@ mock.timers.reset();
 
 ### `timers[Symbol.dispose]()`
 
-Calls `timers.reset()`.
+调用 `timers.reset()`。
 
 ### `timers.tick([milliseconds])`
 
@@ -2665,14 +2653,14 @@ added:
   - v18.19.0
 -->
 
-Advance time for all mocked timers.
+推进所有已模拟定时器的时间。
 
-* `milliseconds` {number} The amount of time, in milliseconds, to advance the timers. **Default:** `1`.
+* `milliseconds` {number} 要推进的时间量，单位为毫秒。**默认值：** `1`。
 
-**Note:** This is not the same behavior as `setTimeout` in Node.js, which only accepts positive numbers. In Node.js, `setTimeout` with a negative number is supported only for web compatibility reasons.
+**注意：** 这与 Node.js 中 `setTimeout` 的行为不同，后者只接受正数。在 Node.js 中，带负数的 `setTimeout` 仅出于 Web 兼容性原因而被支持。
 
-The following example mocks a `setTimeout` function,
-and triggers all pending timers by advancing time using `.tick`.
+下面的示例会模拟一个 `setTimeout` 函数，
+并通过使用 `.tick` 推进时间来触发所有待处理的定时器。
 
 ```mjs
 import assert from 'node:assert';
@@ -2687,7 +2675,7 @@ test('mocks setTimeout to be executed synchronously without having to actually w
 
   assert.strictEqual(fn.mock.callCount(), 0);
 
-  // Advance time
+  // 推进时间
   context.mock.timers.tick(9999);
 
   assert.strictEqual(fn.mock.callCount(), 1);
@@ -2705,14 +2693,14 @@ test('mocks setTimeout to be executed synchronously without having to actually w
   setTimeout(fn, 9999);
   assert.strictEqual(fn.mock.callCount(), 0);
 
-  // Advance time
+  // 推进时间
   context.mock.timers.tick(9999);
 
   assert.strictEqual(fn.mock.callCount(), 1);
 });
 ```
 
-Alternatively, `.tick` can be called multiple times
+另外，`.tick` 可以多次调用
 
 ```mjs
 import assert from 'node:assert';
@@ -2752,7 +2740,7 @@ test('mocks setTimeout to be executed synchronously without having to actually w
 });
 ```
 
-Advancing time with `.tick` will also advance the time of any `Date` objects created after mocking was enabled, if `Date` was also set to be mocked.
+如果在启用模拟时也将 `Date` 设置为被模拟，那么使用 `.tick` 推进时间时，也会推进之后创建的任何 `Date` 对象的时间。
 
 ```mjs
 import assert from 'node:assert';
@@ -2767,7 +2755,7 @@ test('mocks setTimeout to be executed synchronously without having to actually w
   assert.strictEqual(fn.mock.callCount(), 0);
   assert.strictEqual(Date.now(), 0);
 
-  // Advance time
+  // 推进时间
   context.mock.timers.tick(9999);
   assert.strictEqual(fn.mock.callCount(), 1);
   assert.strictEqual(Date.now(), 9999);
@@ -2786,17 +2774,17 @@ test('mocks setTimeout to be executed synchronously without having to actually w
   assert.strictEqual(fn.mock.callCount(), 0);
   assert.strictEqual(Date.now(), 0);
 
-  // Advance time
+  // 推进时间
   context.mock.timers.tick(9999);
   assert.strictEqual(fn.mock.callCount(), 1);
   assert.strictEqual(Date.now(), 9999);
 });
 ```
 
-#### Using clear functions
+#### 使用清除函数
 
-As noted earlier, all clear functions from timers (`clearTimeout`, `clearInterval`, and
-`clearImmediate`) are implicitly mocked. Take a look at this example using `setTimeout`:
+如前所述，来自定时器的所有清除函数（`clearTimeout`、`clearInterval` 和
+`clearImmediate`）都会被隐式模拟。请看下面使用 `setTimeout` 的示例：
 
 ```mjs
 import assert from 'node:assert';
@@ -2805,15 +2793,15 @@ import { test } from 'node:test';
 test('mocks setTimeout to be executed synchronously without having to actually wait for it', (context) => {
   const fn = context.mock.fn();
 
-  // Optionally choose what to mock
+  // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['setTimeout'] });
   const id = setTimeout(fn, 9999);
 
-  // Also implicitly mocked
+  // 也会被隐式模拟
   clearTimeout(id);
   context.mock.timers.tick(9999);
 
-  // Because that setTimeout was cleared, the mock function will never be called
+  // 因为那个 setTimeout 已被清除，所以 mock 函数永远不会被调用
   assert.strictEqual(fn.mock.callCount(), 0);
 });
 ```
@@ -2825,27 +2813,27 @@ const { test } = require('node:test');
 test('mocks setTimeout to be executed synchronously without having to actually wait for it', (context) => {
   const fn = context.mock.fn();
 
-  // Optionally choose what to mock
+  // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['setTimeout'] });
   const id = setTimeout(fn, 9999);
 
-  // Also implicitly mocked
+  // 也会被隐式模拟
   clearTimeout(id);
   context.mock.timers.tick(9999);
 
-  // Because that setTimeout was cleared, the mock function will never be called
+  // 因为那个 setTimeout 已被清除，所以 mock 函数永远不会被调用
   assert.strictEqual(fn.mock.callCount(), 0);
 });
 ```
 
-#### Using the Node.js timer module
+#### 使用 Node.js 定时器模块
 
-Once you've enabled timer mocking, the [node:timers](./timers.md),
-[node:timers/promises](./timers.md#timers-promises-api) module,
-and timers from the Node.js global context will be enabled:
+一旦启用了定时器模拟，[node:timers](./timers.md)、
+[node:timers/promises](./timers.md#timers-promises-api) 模块，
+以及 Node.js 全局上下文中的定时器都会被启用：
 
-**Note:** This API does not currently support destructuring functions like
-`import { setTimeout } from 'node:timers'`.
+**注意：** 该 API 目前不支持类似
+`import { setTimeout } from 'node:timers'` 这样的解构导入函数。
 
 ```mjs
 import assert from 'node:assert';
@@ -2858,14 +2846,14 @@ test('mocks setTimeout to be executed synchronously without having to actually w
   const nodeTimerSpy = context.mock.fn();
   const nodeTimerPromiseSpy = context.mock.fn();
 
-  // Optionally choose what to mock
+  // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['setTimeout'] });
   setTimeout(globalTimeoutObjectSpy, 9999);
   nodeTimers.setTimeout(nodeTimerSpy, 9999);
 
   const promise = nodeTimersPromises.setTimeout(9999).then(nodeTimerPromiseSpy);
 
-  // Advance time
+  // 推进时间
   context.mock.timers.tick(9999);
   assert.strictEqual(globalTimeoutObjectSpy.mock.callCount(), 1);
   assert.strictEqual(nodeTimerSpy.mock.callCount(), 1);
@@ -2885,14 +2873,14 @@ test('mocks setTimeout to be executed synchronously without having to actually w
   const nodeTimerSpy = context.mock.fn();
   const nodeTimerPromiseSpy = context.mock.fn();
 
-  // Optionally choose what to mock
+  // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['setTimeout'] });
   setTimeout(globalTimeoutObjectSpy, 9999);
   nodeTimers.setTimeout(nodeTimerSpy, 9999);
 
   const promise = nodeTimersPromises.setTimeout(9999).then(nodeTimerPromiseSpy);
 
-  // Advance time
+  // 推进时间
   context.mock.timers.tick(9999);
   assert.strictEqual(globalTimeoutObjectSpy.mock.callCount(), 1);
   assert.strictEqual(nodeTimerSpy.mock.callCount(), 1);
@@ -2901,8 +2889,8 @@ test('mocks setTimeout to be executed synchronously without having to actually w
 });
 ```
 
-In Node.js, `setInterval` from [node:timers/promises](./timers.md#timers-promises-api)
-is an `AsyncGenerator` and is also supported by this API:
+在 Node.js 中，[node:timers/promises](./timers.md#timers-promises-api) 中的 `setInterval`
+是一个 `AsyncGenerator`，此 API 也支持它：
 
 ```mjs
 import assert from 'node:assert';
@@ -2976,10 +2964,10 @@ added:
   - v18.19.0
 -->
 
-Immediately trigger all pending mocked timers. If the `Date` object is also mocked, it will also advance the `Date` object to the farthest timer's time.
+立即触发所有待处理的 mock 定时器。如果 `Date` 对象也被模拟，它还会将 `Date` 对象推进到最远的定时器时间。
 
-The following example immediately triggers all pending timers,
-causing them to execute without delay.
+下面的示例会立即触发所有待处理的定时器，
+从而使它们无需延迟即可执行。
 
 ```mjs
 import assert from 'node:assert';
@@ -2990,8 +2978,8 @@ test('runAll functions following the given order', (context) => {
   const results = [];
   setTimeout(() => results.push(1), 9999);
 
-  // Note that if two timers have the same timeout,
-  // the execution order is guaranteed
+  // 请注意，如果两个定时器具有相同的超时时间，
+  // 其执行顺序是有保证的
   setTimeout(() => results.push(3), 8888);
   setTimeout(() => results.push(2), 8888);
 
@@ -2999,7 +2987,7 @@ test('runAll functions following the given order', (context) => {
 
   context.mock.timers.runAll();
   assert.deepStrictEqual(results, [3, 2, 1]);
-  // The Date object is also advanced to the farthest timer's time
+  // Date 对象也会被推进到最远的定时器时间
   assert.strictEqual(Date.now(), 9999);
 });
 ```
@@ -3013,8 +3001,8 @@ test('runAll functions following the given order', (context) => {
   const results = [];
   setTimeout(() => results.push(1), 9999);
 
-  // Note that if two timers have the same timeout,
-  // the execution order is guaranteed
+  // 请注意，如果两个定时器具有相同的超时时间，
+  // 其执行顺序是有保证的
   setTimeout(() => results.push(3), 8888);
   setTimeout(() => results.push(2), 8888);
 
@@ -3022,14 +3010,13 @@ test('runAll functions following the given order', (context) => {
 
   context.mock.timers.runAll();
   assert.deepStrictEqual(results, [3, 2, 1]);
-  // The Date object is also advanced to the farthest timer's time
+  // Date 对象也会被推进到最远的定时器时间
   assert.strictEqual(Date.now(), 9999);
 });
 ```
 
-**Note:** The `runAll()` function is specifically designed to trigger timers within
-a timer mocking context.
-It has no effect on the real system clock or on actual timers outside the mocked environment.
+**注意：** `runAll()` 函数专门用于在定时器模拟上下文中触发定时器。
+它对真实系统时钟或模拟环境之外的实际定时器没有任何影响。
 
 ### `timers.setTime(milliseconds)`
 
@@ -3039,7 +3026,7 @@ added:
   - v20.11.0
 -->
 
-Set the current Unix timestamp, which will be used as the reference for any mocked `Date` object.
+设置当前 Unix 时间戳，它将作为任何被模拟的 `Date` 对象的参考时间。
 
 ```mjs
 import assert from 'node:assert';
@@ -3048,12 +3035,12 @@ import { test } from 'node:test';
 test('runAll functions following the given order', (context) => {
   const now = Date.now();
   const setTime = 1000;
-  // Date.now is not mocked
+  // Date.now 未被模拟
   assert.deepStrictEqual(Date.now(), now);
 
   context.mock.timers.enable({ apis: ['Date'] });
   context.mock.timers.setTime(setTime);
-  // Date.now is now 1000
+  // Date.now 现在是 1000
   assert.strictEqual(Date.now(), setTime);
 });
 ```
@@ -3065,21 +3052,21 @@ const { test } = require('node:test');
 test('setTime replaces current time', (context) => {
   const now = Date.now();
   const setTime = 1000;
-  // Date.now is not mocked
+  // Date.now 未被模拟
   assert.deepStrictEqual(Date.now(), now);
 
   context.mock.timers.enable({ apis: ['Date'] });
   context.mock.timers.setTime(setTime);
-  // Date.now is now 1000
+  // Date.now 现在是 1000
   assert.strictEqual(Date.now(), setTime);
 });
 ```
 
-#### Dates and timers working together
+#### Date 与定时器协同工作
 
-Date and timer objects are interdependent. If you use `setTime()` to pass the current time to a mocked `Date` object, timers set with `setTimeout` and `setInterval` will **not** be affected.
+Date 和定时器对象是相互依赖的。如果你使用 `setTime()` 将当前时间传递给一个被模拟的 `Date` 对象，那么使用 `setTimeout` 和 `setInterval` 设置的定时器将**不会**受到影响。
 
-However, the `tick` method **will** advance mocked `Date` objects.
+但是，`tick` 方法**会**推进被模拟的 `Date` 对象。
 
 ```mjs
 import assert from 'node:assert';
@@ -3093,7 +3080,7 @@ test('runAll functions following the given order', (context) => {
   assert.deepStrictEqual(results, []);
   context.mock.timers.setTime(12000);
   assert.deepStrictEqual(results, []);
-  // Date has advanced but the timer has not moved
+  // Date 已推进，但定时器并未移动
   assert.strictEqual(Date.now(), 12000);
 });
 ```
@@ -3110,7 +3097,7 @@ test('runAll functions following the given order', (context) => {
   assert.deepStrictEqual(results, []);
   context.mock.timers.setTime(12000);
   assert.deepStrictEqual(results, []);
-  // Date has advanced but the timer has not moved
+  // Date 已推进，但定时器并未移动
   assert.strictEqual(Date.now(), 12000);
 });
 ```
@@ -3122,6 +3109,9 @@ added:
   - v18.9.0
   - v16.19.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63435
+    description: 为携带 `testId` 的测试事件添加了 `parentId`。
   - version:
     - v20.0.0
     - v19.9.0
@@ -3184,26 +3174,28 @@ changes:
 ### 事件：`'test:complete'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，或者
-    如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
   * `details` {Object} 额外的执行元数据。
     * `passed` {boolean} 测试是否通过。
     * `duration_ms` {number} 测试持续时间，单位为毫秒。
-    * `error` {Error|undefined} 一个包装了测试抛出的错误的错误对象，
-      如果测试未通过则存在。
+    * `error` {Error|undefined} 对测试抛出的错误进行包装的错误，
+      如果测试未通过，则会有此值。
       * `cause` {Error} 测试实际抛出的错误。
-    * `type` {string|undefined} 测试类型，用于表示是否
-      这是一个套件。
+    * `type` {string|undefined} 测试的类型，用于表示这是否为套件。
   * `file` {string|undefined} 测试文件的路径，
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `line` {number|undefined} 测试定义所在的行号，或者
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
   * `nesting` {number} 测试的嵌套级别。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、已展开并转为小写的标签，按声明顺序排列。未标记的测试为空。
+  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
+    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
+    让自定义报告器能够跟踪谱系。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
+    按声明顺序排列。未标记测试为空。
     参见 [Test tags][]。
   * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
-    对同一测试实例的所有事件保持一致，便于在自定义报告器中可靠关联。
+    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
   * `testNumber` {number} 测试的序号。
   * `todo` {string|boolean|undefined} 当调用 [`context.todo`][] 时存在
   * `skip` {string|boolean|undefined} 当调用 [`context.skip`][] 时存在
@@ -3215,18 +3207,21 @@ changes:
 ### 事件：`'test:dequeue'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，或者
-    如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
   * `file` {string|undefined} 测试文件的路径，
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `line` {number|undefined} 测试定义所在的行号，或者
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
   * `nesting` {number} 测试的嵌套级别。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、已展开并转为小写的标签，按声明顺序排列。未标记的测试为空。
+  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
+    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
+    让自定义报告器能够跟踪谱系。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
+    按声明顺序排列。未标记测试为空。
     参见 [Test tags][]。
   * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
-    对同一测试实例的所有事件保持一致，便于在自定义报告器中可靠关联。
+    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
   * `type` {string} 测试类型。可以是 `'suite'` 或 `'test'`。
 
 当测试出队时发出，就在执行之前。
@@ -3252,18 +3247,21 @@ changes:
 ### 事件：`'test:enqueue'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，或者
-    如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
   * `file` {string|undefined} 测试文件的路径，
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `line` {number|undefined} 测试定义所在的行号，或者
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
   * `nesting` {number} 测试的嵌套级别。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、已展开并转为小写的标签，按声明顺序排列。未标记的测试为空。
+  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
+    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
+    让自定义报告器能够跟踪谱系。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
+    按声明顺序排列。未标记测试为空。
     参见 [Test tags][]。
   * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
-    对同一测试实例的所有事件保持一致，便于在自定义报告器中可靠关联。
+    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
   * `type` {string} 测试类型。可以是 `'suite'` 或 `'test'`。
 
 当测试入队等待执行时发出。
@@ -3271,14 +3269,12 @@ changes:
 ### 事件：`'test:fail'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，或者
-    如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
   * `details` {Object} 额外的执行元数据。
     * `duration_ms` {number} 测试持续时间，单位为毫秒。
-    * `error` {Error} 一个包装了测试抛出的错误的错误对象。
+    * `error` {Error} 对测试抛出的错误进行包装的错误。
       * `cause` {Error} 测试实际抛出的错误。
-    * `type` {string|undefined} 测试类型，用于表示是否
-      这是一个套件。
+    * `type` {string|undefined} 测试的类型，用于表示这是否为套件。
     * `attempt` {number|undefined} 测试运行的尝试次数，
       仅在使用 [`--test-rerun-failures`][] 标志时存在。
   * `file` {string|undefined} 测试文件的路径，
@@ -3287,10 +3283,14 @@ changes:
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
   * `nesting` {number} 测试的嵌套级别。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、已展开并转为小写的标签，按声明顺序排列。未标记的测试为空。
+  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
+    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
+    让自定义报告器能够跟踪谱系。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
+    按声明顺序排列。未标记测试为空。
     参见 [Test tags][]。
   * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
-    对同一测试实例的所有事件保持一致，便于在自定义报告器中可靠关联。
+    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
   * `testNumber` {number} 测试的序号。
   * `todo` {string|boolean|undefined} 当调用 [`context.todo`][] 时存在
   * `skip` {string|boolean|undefined} 当调用 [`context.skip`][] 时存在
@@ -3322,15 +3322,13 @@ added:
 ### 事件：`'test:pass'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，或者
-    如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
   * `details` {Object} 额外的执行元数据。
     * `duration_ms` {number} 测试持续时间，单位为毫秒。
-    * `type` {string|undefined} 测试类型，用于表示是否
-      这是一个套件。
+    * `type` {string|undefined} 测试的类型，用于表示这是否为套件。
     * `attempt` {number|undefined} 测试运行的尝试次数，
       仅在使用 [`--test-rerun-failures`][] 标志时存在。
-    * `passed_on_attempt` {number|undefined} 测试通过时的尝试次数，
+    * `passed_on_attempt` {number|undefined} 测试通过时所处的尝试次数，
       仅在使用 [`--test-rerun-failures`][] 标志时存在。
   * `file` {string|undefined} 测试文件的路径，
     如果测试是通过 REPL 运行的，则为 `undefined`。
@@ -3338,10 +3336,14 @@ added:
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
   * `nesting` {number} 测试的嵌套级别。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、已展开并转为小写的标签，按声明顺序排列。未标记的测试为空。
+  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
+    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
+    让自定义报告器能够跟踪谱系。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
+    按声明顺序排列。未标记测试为空。
     参见 [Test tags][]。
   * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
-    对同一测试实例的所有事件保持一致，便于在自定义报告器中可靠关联。
+    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
   * `testNumber` {number} 测试的序号。
   * `todo` {string|boolean|undefined} 当调用 [`context.todo`][] 时存在
   * `skip` {string|boolean|undefined} 当调用 [`context.skip`][] 时存在
@@ -3365,17 +3367,21 @@ added:
 ### 事件：`'test:start'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，或者
-    如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
   * `file` {string|undefined} 测试文件的路径，
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `line` {number|undefined} 测试定义所在的行号，或者
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
   * `nesting` {number} 测试的嵌套级别。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、已展开并转为小写的标签，按声明顺序排列。未标记的测试为空。
+  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
+    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
+    让自定义报告器能够跟踪谱系。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
+    按声明顺序排列。未标记测试为空。
     参见 [Test tags][]。
   * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
+    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
 
 当测试开始报告自身及其子测试的状态时发出。
 此事件保证按测试定义的顺序发出。
@@ -3461,7 +3467,9 @@ describe('example suite', () => {
 ## 测试埋点与 OpenTelemetry
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 测试运行器通过 Node.js
@@ -3795,7 +3803,7 @@ added: v25.0.0
 ### `context.tags`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 > 稳定性：1.0 - 早期开发
@@ -3996,7 +4004,7 @@ added:
   - v18.0.0
   - v16.17.0
 changes:
-  - version: REPLACEME
+  - version: v26.2.0
     pr-url: https://github.com/nodejs/node/pull/63221
     description: 添加了 `tags` 选项。
   - version:
@@ -4117,7 +4125,9 @@ added:
 ### `context.passed`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * 类型：{boolean}
@@ -4127,7 +4137,9 @@ added: v26.1.0
 ### `context.attempt`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * 类型：{number}
@@ -4137,7 +4149,9 @@ added: v26.1.0
 ### `context.diagnostic(message)`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * `message` {string} 要输出的诊断消息。

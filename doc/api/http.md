@@ -1448,7 +1448,7 @@ added: v0.1.94
 changes:
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/25605
-    description: "如果发生 HPE_HEADER_OVERFLOW 错误，默认行为将返回 431 Request HeaderFields Too Large。"
+    description: 默认行为将在发生 HPE_HEADER_OVERFLOW 错误时返回 431 Request Header Fields Too Large。
   - version: v9.4.0
     pr-url: https://github.com/nodejs/node/pull/17672
     description: "`rawPacket` 是当前刚刚被解析的缓冲区。将此缓冲区添加到 `'clientError'` 事件的错误对象中，是为了让开发者能够记录损坏的数据包。"
@@ -1469,8 +1469,8 @@ socket。例如，可以选择用
 除非用户指定了不同于 {net.Socket} 的 socket 类型，否则该事件保证传入 {net.Socket} 类的实例，
 它是 {stream.Duplex} 的子类。
 
-默认行为是尝试使用 HTTP `'400 Bad Request'` 关闭 socket，或者在
-[`HPE_HEADER_OVERFLOW`][] 错误的情况下使用 HTTP `'431 Request Header Fields Too Large'`。如果 socket 不可写，或者当前附加的 [`http.ServerResponse`][] 的头部已经发送，则会立即销毁。
+默认行为是尝试使用 HTTP `'400 Bad Request'` 关闭 socket，
+如果发生 [`HPE_HEADER_OVERFLOW`][] 错误，则尝试使用 HTTP `'431 Request Header Fields Too Large'` 关闭 socket。如果 socket 不可写，或当前附加的 [`http.ServerResponse`][] 的头部已发送，则会立即销毁它。
 
 `socket` 是错误来源的 [`net.Socket`][] 对象。
 
@@ -1884,7 +1884,7 @@ added: v8.0.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62782
-    description: " `http.Server.keepAliveTimeout` 的默认值已从 5 秒更改为 65 秒。"
+    description: "`http.Server.keepAliveTimeout` 的默认值已从 5 秒更改为 65 秒。"
 -->
 
 * Type: {number} 毫秒级超时时间。**默认值：** `65000`（65 秒）。
@@ -2407,7 +2407,7 @@ response.writeEarlyHints({
   'x-trace-id': 'id for diagnostics',
 });
 
-const earlyHintsCallback = () => console.log('early hints message sent');
+const earlyHintsCallback = () => console.log('早期提示消息已发送');
 response.writeEarlyHints({
   'link': earlyHintsLinks,
 }, earlyHintsCallback);
@@ -2476,13 +2476,31 @@ const server = http.createServer((req, res) => {
 
 尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][]。
 
+### `response.writeInformation(statusCode[, headers][, callback])`
+
+<!-- YAML
+added: v26.2.0
+-->
+
+* `statusCode` {number} 一个 HTTP 1xx 信息性状态码，范围在 `100` 到 `199`（含）之间，不包括 `101`（Switching Protocols），该状态仅可通过 [`'upgrade'`][] 事件获取。
+* `headers` {Object|Array} 随信息性响应发送的可选头部集合。接受与 [`response.writeHead()`][] 相同的形式。
+* `callback` {Function} 可选，在消息写入 socket 后调用一次。
+
+向客户端发送任意的 HTTP/1.1 1xx 信息性响应。这是 [`response.writeContinue()`][]、[`response.writeProcessing()`][] 和 [`response.writeEarlyHints()`][] 的通用等价形式，并且可以在最终响应之前调用多次。在最终响应头部已发送后（通过 [`response.writeHead()`][] 或隐式头部发送），调用此方法将抛出 `ERR_HTTP_HEADERS_SENT`。
+
+客户端通过 `http.ClientRequest` 上的 [`'information'`][information event] 事件接收这些响应。
+
+```js
+response.writeInformation(110, { 'X-Progress': '50%' });
+```
+
 ### `response.writeProcessing()`
 
 <!-- YAML
 added: v10.0.0
 -->
 
-向客户端发送 HTTP/1.1 102 Processing 消息，表示应发送请求主体。
+向客户端发送 HTTP/1.1 102 Processing 消息，表示请求主体应该被发送。
 
 ## 类：`http.IncomingMessage`
 
@@ -2739,7 +2757,9 @@ added: v0.5.9
 ### `message.signal`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * 类型：{AbortSignal}
@@ -3367,58 +3387,58 @@ changes:
 -->
 
 * `options` {Object}
-  * `connectionsCheckingInterval`：设置检查不完整请求中的请求和头部超时的间隔值（毫秒）。
-    **默认值：** `30000`。
-  * `headersTimeout`：设置从客户端接收完整 HTTP 头部的超时值（毫秒）。
-    有关更多信息，请参阅 [`server.headersTimeout`][]。
-    **默认值：** `60000`。
+  * `connectionsCheckingInterval`: 以毫秒为单位设置用于检查不完整请求中的请求超时和头部超时的间隔值。
+    **默认值:** `30000`。
+  * `headersTimeout`: 以毫秒为单位设置从客户端接收完整 HTTP 头部的超时时间。
+    更多信息请参见 [`server.headersTimeout`][]。
+    **默认值:** `60000`。
   * `highWaterMark` {number} 可选地覆盖所有 `socket` 的
     `readableHighWaterMark` 和 `writableHighWaterMark`。这会影响
     `IncomingMessage` 和 `ServerResponse` 的 `highWaterMark` 属性。
-    **默认值：** 请参阅 [`stream.getDefaultHighWaterMark()`][]。
-  * `insecureHTTPParser` {boolean} 如果设置为 `true`，它将使用启用了宽容标志的 HTTP 解析器。应避免使用不安全的解析器。
-    有关更多信息，请参阅 [`--insecure-http-parser`][]。
-    **默认值：** `false`。
+    **默认值:** 参见 [`stream.getDefaultHighWaterMark()`][]。
+  * `insecureHTTPParser` {boolean} 如果设置为 `true`，将使用启用宽松标志的 HTTP 解析器。
+    应避免使用不安全的解析器。
+    更多信息请参见 [`--insecure-http-parser`][]。
+    **默认值:** `false`。
   * `IncomingMessage` {http.IncomingMessage} 指定要使用的 `IncomingMessage`
-    类。对于扩展原始 `IncomingMessage` 很有用。
-    **默认值：** `IncomingMessage`。
-  * `joinDuplicateHeaders` {boolean} 如果设置为 `true`，此选项允许
-    将请求中多个头部的字段行值用逗号（`, `）连接，而不是丢弃重复项。
-    有关更多信息，请参阅 [`message.headers`][]。
-    **默认值：** `false`。
-  * `keepAlive` {boolean} 如果设置为 `true`，它会在收到新的传入连接后立即在 socket 上启用 keep-alive 功能，
-    类似于在 \[`socket.setKeepAlive([enable][, initialDelay])`]\[`socket.setKeepAlive(enable, initialDelay)`] 中所做的。
-    **默认值：** `false`。
-  * `keepAliveInitialDelay` {number} 如果设置为正数，它设置在空闲 socket 上发送第一个 keepalive 探测之前的初始延迟。
-    **默认值：** `0`。
-  * `keepAliveTimeout`：服务器在完成写入最后一个响应后，需要等待额外传入数据的非活动毫秒数，之后 socket 将被销毁。
-    有关更多信息，请参阅 [`server.keepAliveTimeout`][]。
-    **默认值：** `5000`。
-  * `maxHeaderSize` {number} 可选地覆盖此服务器接收请求的
-    [`--max-http-header-size`][] 的值，即请求头部的最大长度（字节）。
-    **默认值：** 16384 (16 KiB)。
-  * `noDelay` {boolean} 如果设置为 `true`，它会在收到新的传入连接后立即禁用 Nagle 算法的使用。
-    **默认值：** `true`。
-  * `requestTimeout`：设置从客户端接收整个请求的超时值（毫秒）。
-    有关更多信息，请参阅 [`server.requestTimeout`][]。
-    **默认值：** `300000`。
-  * `requireHostHeader` {boolean} 如果设置为 `true`，它强制服务器对任何缺少 Host 头部的 HTTP/1.1
-    请求消息响应 400 (Bad Request) 状态码
-    （根据规范强制要求）。
-    **默认值：** `true`。
-  * `ServerResponse` {http.ServerResponse} 指定要使用的 `ServerResponse` 类
-    。对于扩展原始 `ServerResponse` 很有用。**默认值：**
+    类。适用于扩展原始的 `IncomingMessage`。
+    **默认值:** `IncomingMessage`。
+  * `joinDuplicateHeaders` {boolean} 如果设置为 `true`，此选项允许将请求中多个头部的字段行值用逗号（`, `）连接起来，而不是丢弃重复项。
+    更多信息请参见 [`message.headers`][]。
+    **默认值:** `false`。
+  * `keepAlive` {boolean} 如果设置为 `true`，在收到新的传入连接后会立即在套接字上启用 keep-alive 功能，
+    类似于 \[`socket.setKeepAlive([enable][, initialDelay])`]\[`socket.setKeepAlive(enable, initialDelay)`] 的行为。
+    **默认值:** `false`。
+  * `keepAliveInitialDelay` {number} 如果设置为正数，则在空闲套接字上发送第一个 keepalive 探测之前设置初始延迟。
+    **默认值:** `0`。
+  * `keepAliveTimeout`: 在服务器写入最后一个响应后，套接字被销毁之前，需要等待额外传入数据的毫秒数。
+    更多信息请参见 [`server.keepAliveTimeout`][]。
+    **默认值:** `5000`。
+  * `maxHeaderSize` {number} 可选地覆盖该服务器接收的请求的
+    [`--max-http-header-size`][] 值，即请求头的最大字节长度。
+    **默认值:** 16384（16 KiB）。
+  * `noDelay` {boolean} 如果设置为 `true`，在收到新的传入连接后会立即禁用 Nagle 算法。
+    **默认值:** `true`。
+  * `requestTimeout`: 以毫秒为单位设置从客户端接收整个请求的超时时间。
+    更多信息请参见 [`server.requestTimeout`][]。
+    **默认值:** `300000`。
+  * `requireHostHeader` {boolean} 如果设置为 `true`，对于任何缺少 Host 头部的 HTTP/1.1 请求消息，
+    将强制服务器返回 400（Bad Request）状态码
+    （这是规范所要求的）。
+    **默认值:** `true`。
+  * `ServerResponse` {http.ServerResponse} 指定要使用的 `ServerResponse` 类。
+    适用于扩展原始的 `ServerResponse`。 **默认值:**
     `ServerResponse`。
-  * `shouldUpgradeCallback(request)` {Function} 一个回调，接收传入请求并返回布尔值，以控制应接受哪些升级尝试。接受的升级将触发 `'upgrade'` 事件（或者如果没有注册监听器，它们的 socket 将被销毁），而被拒绝的升级将像任何非升级请求一样触发 `'request'` 事件。此选项默认为
+  * `shouldUpgradeCallback(request)` {Function} 一个回调函数，接收一个
+    传入请求并返回布尔值，用于控制哪些升级尝试应被接受。被接受的升级将触发 `'upgrade'` 事件（如果没有注册监听器，则其套接字将被销毁），而被拒绝的升级将像任何非升级请求一样触发 `'request'` 事件。此选项的默认值为
     `() => server.listenerCount('upgrade') > 0`。
-  * `uniqueHeaders` {Array} 应只发送一次的响应头列表。如果头部的值是数组，项将使用
-    `; ` 连接。
-  * `rejectNonStandardBodyWrites` {boolean} 如果设置为 `true`，则在写入没有正文的 HTTP 响应时会抛出错误。
-    **默认值：** `false`。
+  * `uniqueHeaders` {Array} 仅应发送一次的响应头列表。如果头部值是数组，数组项将使用 `; ` 连接。
+  * `rejectNonStandardBodyWrites` {boolean} 如果设置为 `true`，当向没有正文的 HTTP 响应写入时会抛出错误。
+    **默认值:** `false`。
   * `optimizeEmptyRequests` {boolean} 如果设置为 `true`，没有 `Content-Length`
-    或 `Transfer-Encoding` 头部（表示没有正文）的请求将使用已结束的正文流初始化，因此它们永远不会发出任何流事件
-    （如 `'data'` 或 `'end'`）。你可以使用 `req.readableEnded` 来检测这种情况。
-    **默认值：** `false`。
+    或 `Transfer-Encoding` 头部（表示没有正文）的请求将使用一个已经结束的正文流进行初始化，因此它们永远不会触发任何流事件
+    （如 `'data'` 或 `'end'`）。您可以使用 `req.readableEnded` 来检测这种情况。
+    **默认值:** `false`。
 
 * `requestListener` {Function}
 
@@ -3633,34 +3653,63 @@ changes:
 
 * `url` {string | URL}
 * `options` {Object}
-  * `agent` {http.Agent | boolean} 控制 [`Agent`][] 行为。可能的值：
-    * `undefined`（默认）：为此主机和端口使用 [`http.globalAgent`][]。
+  * `agent` {http.Agent | boolean} 控制 [`Agent`][] 的行为。可能的
+    值：
+    * `undefined`（默认）：对此主机和端口使用 [`http.globalAgent`][]。
     * `Agent` 对象：显式使用传入的 `Agent`。
-    * `false`：导致使用默认值创建新的 `Agent`。
-  * `auth` {string} 基本认证（`'user:password'`），用于计算 Authorization 头部。
-  * `createConnection` {Function} 当未使用 `agent` 选项时，产生用于请求的套接字/流的函数。这可用于避免仅为了覆盖默认 `createConnection` 函数而创建自定义 `Agent` 类。详见 [`agent.createConnection()`][]。任何 [`Duplex`][] 流都是有效的返回值。
-  * `defaultPort` {number} 协议的默认端口。**默认：** 如果使用了 `Agent` 则为 `agent.defaultPort`，否则为 `undefined`。
-  * `family` {number} 解析 `host` 或 `hostname` 时使用的 IP 地址族。有效值为 `4` 或 `6`。未指定时，将同时使用 IP v4 和 v6。
-  * `headers` {Object|Array} 包含请求头部的对象或字符串数组。数组格式与 [`message.rawHeaders`][] 相同。
+    * `false`：使用带默认值的新的 `Agent`。
+  * `auth` {string} 用于计算 Authorization 头部的基本认证（`'user:password'`）。
+  * `createConnection` {Function} 当未使用 `agent` 选项时，用于生成套接字/流供请求使用的函数。可用它来
+    避免仅仅为了覆盖默认的 `createConnection` 函数而创建自定义 `Agent` 类。更多
+    细节请参见 [`agent.createConnection()`][]。任何 [`Duplex`][] 流都可以作为有效返回值。
+  * `defaultPort` {number} 协议的默认端口。**默认值:**
+    如果使用了 `Agent`，则为 `agent.defaultPort`，否则为 `undefined`。
+  * `family` {number} 解析 `host` 或
+    `hostname` 时使用的 IP 地址族。有效值为 `4` 或 `6`。如果未指定，将同时使用 IPv4 和
+    IPv6。
+  * `headers` {Object|Array} 包含请求
+    头部的对象或字符串数组。该数组格式与 [`message.rawHeaders`][] 相同。
   * `hints` {number} 可选的 [`dns.lookup()` 提示][]。
-  * `host` {string} 发出请求的服务器的域名或 IP 地址。**默认：** `'localhost'`。
-  * `hostname` {string} `host` 的别名。为了支持 [`url.parse()`][]，如果同时指定了 `host` 和 `hostname`，将使用 `hostname`。
-  * `insecureHTTPParser` {boolean} 如果设置为 `true`，将使用启用了宽松标志的 HTTP 解析器。应避免使用不安全的解析器。详见 [`--insecure-http-parser`][]。**默认：** `false`
-  * `joinDuplicateHeaders` {boolean} 它将请求中多个头部的字段行值用 `, ` 连接起来，而不是丢弃重复项。详见 [`message.headers`][]。**默认：** `false`。
-  * `localAddress` {string} 用于网络连接绑定的本地接口。
-  * `localPort` {number} 用于连接的本地端口。
-  * `lookup` {Function} 自定义查找函数。**默认：** [`dns.lookup()`][]。
-  * `maxHeaderSize` {number} 可选地覆盖 [`--max-http-header-size`][] 的值（服务器接收到的响应头部的最大长度，字节）。**默认：** 16384 (16 KiB)。
-  * `method` {string} 指定 HTTP 请求方法的字符串。**默认：** `'GET'`。
-  * `path` {string} 请求路径。如有查询字符串应包含在内。例如：`'/index.html?page=12'`。当请求路径包含非法字符时会抛出异常。目前，只有空格会被拒绝，但未来可能会改变。**默认：** `'/'`。
-  * `port` {number} 远程服务器的端口。**默认：** 如果设置了 `defaultPort` 则为 `defaultPort`，否则为 `80`。
-  * `protocol` {string} 使用的协议。**默认：** `'http:'`。
-  * `setDefaultHeaders` {boolean}：指定是否自动添加默认头部，如 `Connection`、`Content-Length`、`Transfer-Encoding` 和 `Host`。如果设置为 `false`，则必须手动添加所有必要的头部。默认为 `true`。
-  * `setHost` {boolean}：指定是否自动添加 `Host` 头部。如果提供，此项将覆盖 `setDefaultHeaders`。默认为 `true`。
-  * `signal` {AbortSignal}：一个可用于中止正在进行的请求的 AbortSignal。
-  * `socketPath` {string} Unix 域套接字。如果指定了 `host` 或 `port` 之一，则不能使用此项，因为它们指定的是 TCP 套接字。
-  * `timeout` {number}：一个数字，指定套接字超时时间（毫秒）。这将在套接字连接之前设置超时。
-  * `uniqueHeaders` {Array} 应只发送一次的请求头部列表。如果头部的值是数组，项将使用 `; ` 连接。
+  * `host` {string} 要向其发出
+    请求的服务器域名或 IP 地址。**默认值:** `'localhost'`。
+  * `hostname` {string} `host` 的别名。为了支持 [`url.parse()`][]，
+    如果同时指定了 `host` 和 `hostname`，将使用 `hostname`。
+  * `insecureHTTPParser` {boolean} 如果设置为 `true`，将使用启用宽松标志的 HTTP 解析器。
+    应避免使用不安全的解析器。
+    更多信息请参见 [`--insecure-http-parser`][]。
+    **默认值:** `false`
+  * `joinDuplicateHeaders` {boolean} 它会将请求中多个头部的字段行值用
+    `, ` 连接起来，而不是丢弃重复项。更多信息请参见 [`message.headers`][]。
+    **默认值:** `false`。
+  * `localAddress` {string} 用于绑定网络连接的本地接口。
+  * `localPort` {number} 用于建立连接的本地端口。
+  * `lookup` {Function} 自定义查找函数。**默认值:** [`dns.lookup()`][]。
+  * `maxHeaderSize` {number} 可选地覆盖
+    [`--max-http-header-size`][]（响应头的最大字节长度）这一值，用于从服务器接收的响应。
+    **默认值:** 16384（16 KiB）。
+  * `method` {string} 指定 HTTP 请求方法的字符串。**默认值:**
+    `'GET'`。
+  * `path` {string} 请求路径。如果有查询字符串，应包含查询字符串。
+    例如 `'/index.html?page=12'`。当请求路径
+    包含非法字符时会抛出异常。目前只会拒绝空格，但
+    未来可能会改变。**默认值:** `'/'`。
+  * `port` {number} 远程服务器的端口。**默认值:** 如果设置了 `defaultPort`，
+    则为其值，否则为 `80`。
+  * `protocol` {string} 要使用的协议。**默认值:** `'http:'`。
+  * `setDefaultHeaders` {boolean}: 指定是否自动添加
+    `Connection`、`Content-Length`、`Transfer-Encoding` 和 `Host` 等
+    默认头部。如果设置为 `false`，则必须手动添加所有必要头部。
+    默认值为 `true`。
+  * `setHost` {boolean}: 指定是否自动添加
+    `Host` 头部。如果提供此选项，它将覆盖 `setDefaultHeaders`。默认值为
+    `true`。
+  * `signal` {AbortSignal}: 可用于中止正在进行
+    请求的 AbortSignal。
+  * `socketPath` {string} Unix 域套接字。如果指定了 `host`
+    或 `port` 之一，则不能使用该选项，因为它们表示 TCP 套接字。
+  * `timeout` {number}: 指定套接字超时时间（毫秒）的数字。
+    这将在套接字连接之前设置超时。
+  * `uniqueHeaders` {Array} 仅应发送一次的请求头列表。如果头部值是数组，数组项将使用 `; ` 连接。
 * `callback` {Function}
 * 返回：{http.ClientRequest}
 
@@ -4248,7 +4297,9 @@ const agent2 = new http.Agent({ proxyEnv: process.env });
 [`response.write()`]: #responsewritechunk-encoding-callback
 [`response.write(data, encoding)`]: #responsewritechunk-encoding-callback
 [`response.writeContinue()`]: #responsewritecontinue
+[`response.writeEarlyHints()`]: #responsewriteearlyhintshints-callback
 [`response.writeHead()`]: #responsewriteheadstatuscode-statusmessage-headers
+[`response.writeProcessing()`]: #responsewriteprocessing
 [`server.close()`]: #serverclosecallback
 [`server.headersTimeout`]: #serverheaderstimeout
 [`server.keepAliveTimeoutBuffer`]: #serverkeepalivetimeoutbuffer
@@ -4269,4 +4320,5 @@ const agent2 = new http.Agent({ proxyEnv: process.env });
 [`writable.destroyed`]: stream.md#writabledestroyed
 [`writable.uncork()`]: stream.md#writableuncork
 [`writable.write()`]: stream.md#writablewritechunk-encoding-callback
-[初始延迟]: net.md#socketsetkeepaliveenable-initialdelay
+[information event]: #event-information
+[initial delay]: net.md#socketsetkeepaliveenable-initialdelay

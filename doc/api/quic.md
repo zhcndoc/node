@@ -82,6 +82,83 @@ QUIC 协议将 TLS 1.3 直接集成到协议中，用于连接建立和安全保
 
 每个 QUIC 会话都始于客户端和服务器执行 TLS 握手，以协商应用协议（通过 ALPN）、验证服务器身份（以及可选地验证客户端）、交换传输参数，并建立用于加密的共享密钥。
 
+#### 证书大小和握手性能
+
+QUIC 包含反放大限制（[RFC 9000 第 8.1 节][]），该限制规定在客户端地址被验证之前，服务器发送的数据量最多只能是从客户端接收数据量的三倍。由于客户端的 Initial 数据包通常约为 1200 字节，因此服务器在必须等待客户端确认之前最多只能发送约 3600 字节。
+
+服务器的初始响应主要由其 TLS 证书链占用。如果证书链超过了放大限制，握手就需要额外的一次往返——服务器必须暂停，等待客户端确认，然后继续发送证书的剩余部分。这会消除 QUIC 相比 TCP+TLS 的 1-RTT 握手优势，并可能在首次连接时增加 50–100 毫秒或更多的延迟，具体取决于网络路径。
+
+为避免这种情况，服务器应使用紧凑的证书链：
+
+* **使用 ECDSA 证书**（P-256 或 P-384）而不是 RSA。ECDSA 密钥和签名明显更小。一个典型的带有一个中间证书的 ECDSA P-256 证书链大约为 1.5–2 KB，完全在放大限制之内。等效的 RSA-2048 链通常为 3–5 KB，可能会超出限制。
+
+* **尽量缩短证书链。** 只包含叶子证书和必要的中间证书。不要包含根证书（客户端已经在其信任库中拥有它）。当自签名根证书已经被广泛信任时，避免使用交叉签名中间证书。
+
+* **优先选择证书链较短的证书颁发机构。** 一些 CA 签发的证书只需一个较小的中间证书，而另一些则需要多个较大的 RSA 中间证书。CA 的选择会直接影响握手延迟。
+
+证书压缩（[RFC 8879][]）也可以通过在握手期间压缩证书链来解决此问题。不过，Node.js 目前不支持 TLS 证书压缩。
+
+### 速率限制
+
+QUIC endpoint 内置了速率限制，以防御拒绝服务攻击。它包含两层防护：
+
+**全局速率限制**会限制 endpoint 发送无状态响应的总速率，而不考虑源地址。这可防止来自伪造源 IP 地址的洪泛攻击，攻击者会通过轮换大量伪造源地址来绕过按主机限制。四种类型的无状态响应分别独立进行速率限制：
+
+* **Retry 数据包** — 在连接建立期间用于验证客户端地址。可通过 [`endpointOptions.retryRate`][] 和 [`endpointOptions.retryBurst`][] 配置。
+* **无状态重置数据包** — 在 endpoint 收到未知会话的数据包时发送。可通过 [`endpointOptions.statelessResetRate`][] 和 [`endpointOptions.statelessResetBurst`][] 配置。
+* **版本协商数据包** — 当客户端使用不受支持的 QUIC 版本时发送。可通过 [`endpointOptions.versionNegotiationRate`][] 和 [`endpointOptions.versionNegotiationBurst`][] 配置。
+* **立即关闭连接数据包** — 在服务器繁忙或令牌无效时发送。可通过 [`endpointOptions.immediateCloseRate`][] 和 [`endpointOptions.immediateCloseBurst`][] 配置。
+
+每个速率限制都使用令牌桶：endpoint 可以立即发送至多等于突发容量的数据，令牌则按配置的每秒速率补充。当桶为空时，该类型的额外响应会被静默丢弃。默认值（每秒 100，突发 200）适用于大多数部署。
+
+**按主机会话创建速率限制**会限制单个远程地址创建新会话的速度。它按已验证的远程地址进行跟踪，防止单个客户端通过频繁创建和断开会话来消耗服务器资源。可通过 [`endpointOptions.sessionCreationRate`][] 和 [`endpointOptions.sessionCreationBurst`][] 配置。默认值（每秒 50，突发 100）对于合法流量模式来说已相当宽松。对于流量来自单一来源的基准测试场景，请增加这些值。
+
+除了速率限制外，endpoint 还通过 `maxConnectionsPerHost` 和 `maxConnectionsTotal` 支持**并发连接限制**，并通过 [`endpoint.busy`][] 提供**繁忙模式**，用于拒绝所有新连接。
+
+可以通过 endpoint 的统计对象监控速率限制活动。每个速率限制器都有相应的计数器
+（例如 `endpoint.stats.retryRateLimited`、
+`endpoint.stats.sessionCreationRateLimited`），用于跟踪被丢弃的响应数量。非零值表示速率限制器正在积极保护 endpoint。
+
+#### 黑名单
+
+endpoint 可以使用 [`net.BlockList`][] 根据源地址过滤传入的数据包。在任何 QUIC 处理发生之前都会检查黑名单，因此被阻止的数据包除了检查本身外不会消耗任何资源。
+
+在**拒绝**模式（默认）下，来自列表中地址的数据包会被丢弃：
+
+```mjs
+import { BlockList } from 'node:net';
+import { listen } from 'node:quic';
+
+const blocked = new BlockList();
+blocked.addSubnet('192.168.1.0', 24);  // 阻止整个子网
+blocked.addAddress('10.0.0.5');        // 阻止特定地址
+
+const endpoint = await listen(onSession, {
+  endpoint: {
+    blockList: blocked,
+    blockListPolicy: 'deny',
+  },
+  // ...
+});
+```
+
+在**允许**模式下，只有来自列表中地址的数据包才会被接受：
+
+```mjs
+const trusted = new BlockList();
+trusted.addSubnet('10.0.0.0', 8);
+
+const endpoint = await listen(onSession, {
+  endpoint: {
+    blockList: trusted,
+    blockListPolicy: 'allow',
+  },
+  // ...
+});
+```
+
+黑名单是动态评估的——在 endpoint 创建后添加或移除的规则会立即生效。`endpoint.stats.packetsBlocked` 计数器会跟踪有多少数据包被过滤器丢弃。
+
 ### 应用程序
 
 每个 `QuicSession` 都与单一的应用协议相关联，该协议在 TLS 握手期间通过 ALPN 协商。`quic` 模块总体上被设计为与应用无关，但内置支持 HTTP/3 这一特定应用协议。使用 HTTP/3 时，`quic` 模块提供额外的 API 来处理 HTTP/3 特有的功能，如 headers、trailers 和优先级。对于其他应用协议，用户可以在核心 QUIC 传输功能之上实现自己的消息分帧和多路复用。
@@ -177,23 +254,19 @@ QUIC 支持 0-RTT 早期数据，允许之前曾连接到服务器的客户端�
 
 [`QuicError`][] 类携带一个显式的数值 QUIC 错误码（[`error.errorCode`][]），以及常规的 `message` 和 `code` 属性。当将 `QuicError` 传递给 [`stream.destroy()`][] 或 [`writer.fail()`][] 时，其 `errorCode` 会用于发送给对等方的 `RESET_STREAM` 或 `STOP_SENDING` 帧。任何其他错误类型都会回退为所协商协议的通用内部错误码。
 
-### Permission model
+### 权限模型
 
-When using the [Permission Model][], the `--allow-net` flag must be passed to
-allow QUIC network operations. Without it, calling [`quic.connect()`][] or
-[`quic.listen()`][] will throw an `ERR_ACCESS_DENIED` error.
+在使用[权限模型][]时，必须传入 `--allow-net` 标志才能允许 QUIC 网络操作。如果没有它，调用 [`quic.connect()`][] 或 [`quic.listen()`][] 将抛出 `ERR_ACCESS_DENIED` 错误。
 
 ```console
 $ node --permission --allow-fs-read=* --experimental-quic index.mjs
-Error: Access to this API has been restricted. Use --allow-net to manage permissions.
+Error: 访问此 API 已受限制。请使用 --allow-net 来管理权限。
   code: 'ERR_ACCESS_DENIED',
   permission: 'Net',
 }
 ```
 
-Creating a [`QuicEndpoint`][] instance without connecting or listening
-is permitted even without `--allow-net`, since no network I/O occurs until
-[`quic.connect()`][] or [`quic.listen()`][] is called.
+即使没有 `--allow-net`，也可以创建一个未连接或未监听的 [`QuicEndpoint`][] 实例，因为直到调用 [`quic.connect()`][] 或 [`quic.listen()`][] 之前都不会发生网络 I/O。
 
 ## `quic.connect(address[, options])`
 
@@ -272,7 +345,7 @@ QUIC 会话，请传递 `endpoint` 选项，
 ## `quic.constants`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * {Object}
@@ -401,7 +474,7 @@ added: v23.8.0
 ### `endpoint.listening`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{boolean}
@@ -411,7 +484,7 @@ added: REPLACEME
 ### `endpoint.maxConnectionsPerHost`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{number}
@@ -424,7 +497,7 @@ added: REPLACEME
 ### `endpoint.maxConnectionsTotal`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{number}
@@ -437,7 +510,9 @@ added: REPLACEME
 ### `endpoint.setSNIContexts(entries[, options])`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * `entries` {object} 将主机名映射到 TLS 身份选项的对象。
@@ -565,7 +640,11 @@ added: v23.8.0
 added: v23.8.0
 -->
 
-* 类型：{bigint} 此端点上的 QUIC 重试尝试总数。只读。
+* 类型：{bigint} 此端点发送的重试数据包总数。只读。
+
+### `endpointStats.retryRateLimited`
+
+* 类型：{bigint} 由全局速率限制器丢弃的重试数据包总数。只读。非零值表示端点正承受重试洪泛压力。
 
 ### `endpointStats.versionNegotiationCount`
 
@@ -573,7 +652,11 @@ added: v23.8.0
 added: v23.8.0
 -->
 
-* 类型：{bigint} 由于 QUIC 版本不匹配而被拒绝的会话总数。只读。
+* 类型：{bigint} 此端点发送的版本协商数据包总数。只读。
+
+### `endpointStats.versionNegotiationRateLimited`
+
+* 类型：{bigint} 由全局速率限制器丢弃的版本协商数据包总数。只读。
 
 ### `endpointStats.statelessResetCount`
 
@@ -581,7 +664,11 @@ added: v23.8.0
 added: v23.8.0
 -->
 
-* 类型：{bigint} 此端点处理的无状态重置总数。只读。
+* 类型：{bigint} 此端点发送的无状态重置数据包总数。只读。
+
+### `endpointStats.statelessResetRateLimited`
+
+* 类型：{bigint} 由全局速率限制器丢弃的无状态重置数据包总数。只读。
 
 ### `endpointStats.immediateCloseCount`
 
@@ -589,7 +676,19 @@ added: v23.8.0
 added: v23.8.0
 -->
 
-* 类型：{bigint} 在握手完成前关闭的会话总数。只读。
+* 类型：{bigint} 此端点发送的立即关闭连接数据包总数。只读。
+
+### `endpointStats.immediateCloseRateLimited`
+
+* 类型：{bigint} 由全局速率限制器丢弃的立即关闭连接数据包总数。只读。
+
+### `endpointStats.sessionCreationRateLimited`
+
+* 类型：{bigint} 由每主机速率限制器丢弃的会话创建尝试总数。只读。非零值表示一个或多个远程地址创建会话的速度超过了配置的速率上限。
+
+### `endpointStats.packetsBlocked`
+
+* 类型：{bigint} 被阻止列表过滤器丢弃的传入数据包总数。只读。
 
 ## 类：`QuicSession`
 
@@ -598,6 +697,16 @@ added: v23.8.0
 -->
 
 `QuicSession` 代表 QUIC 连接的本地端。
+
+### `session.applicationOptions`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {quic.ApplicationOptions}
+
+此会话当前的应用层选项。这些选项包括特定于协商后的应用协议（例如 HTTP/3）的设置，并且可能会与传输参数分别协商。只读。
 
 ### `session.close([options])`
 
@@ -628,7 +737,7 @@ added: v23.8.0
 ### `session.opened`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Promise} 一个关于 {Object} 的 promise
@@ -666,7 +775,7 @@ added: v23.8.0
 ### `session.closing`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{boolean}
@@ -706,6 +815,16 @@ added: v23.8.0
 
 如果已调用 `session.destroy()`，则为 true。只读。
 
+### `session.localTransportParams`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {quic.TransportParams|null}
+
+握手期间由本地端点公布的传输参数。如果会话已被销毁，则返回 `null`。只读。
+
 ### `session.endpoint`
 
 <!-- YAML
@@ -719,7 +838,7 @@ added: REPLACEME
 ### `session.onerror`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Function|undefined}
@@ -767,7 +886,7 @@ added: v23.8.0
 ### `session.onearlyrejected`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Function|undefined}
@@ -823,7 +942,7 @@ added: v23.8.0
 ### `session.onnewtoken`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{quic.OnNewTokenCallback}
@@ -834,7 +953,7 @@ added: REPLACEME
 ### `session.onorigin`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{quic.OnOriginCallback}
@@ -845,7 +964,7 @@ added: REPLACEME
 ### `session.ongoaway`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Function}
@@ -855,7 +974,7 @@ added: REPLACEME
 是一个 `{bigint}`：
 
 * 当 `lastStreamId` 为 `-1n` 时，对等方发送了关闭通知（意图
-  关闭），但未指定流边界。所有现有流仍可继续处理。
+ 关闭），但未指定流边界。所有现有流仍可继续处理。
 * 当 `lastStreamId` `>= 0n` 时，它是对等方可能已处理的
  最高流 ID。ID 高于此值的流未被处理，
   并且可以在新连接上安全重试。
@@ -869,7 +988,7 @@ added: REPLACEME
 ### `session.onkeylog`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{quic.OnKeylogCallback}
@@ -885,7 +1004,7 @@ Wireshark 等工具解密数据包捕获非常有用。读/写。
 ### `session.onqlog`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{quic.OnQlogCallback}
@@ -987,7 +1106,18 @@ added: v23.8.0
 
 与会话关联的本地和远程套接字地址。只读。
 
-### `session.sendDatagram([datagram, encoding])`
+### `session.remoteTransportParams`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {quic.TransportParams|null|undefined}
+
+握手期间由远程对等方公布的传输参数。如果会话已被销毁，则返回 `null`，如果握手
+尚未完成且远程参数尚不可用，则返回 `undefined`。只读。
+
+### `session.sendDatagram(datagram[, encoding])`
 
 <!-- YAML
 added: v23.8.0
@@ -1031,7 +1161,7 @@ added: v23.8.0
 ### `session.certificate`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Object|undefined}
@@ -1042,7 +1172,7 @@ added: REPLACEME
 ### `session.peerCertificate`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Object|undefined}
@@ -1053,7 +1183,7 @@ added: REPLACEME
 ### `session.ephemeralKeyInfo`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Object|undefined}
@@ -1065,7 +1195,7 @@ added: REPLACEME
 ### `session.maxDatagramSize`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{number}
@@ -1078,7 +1208,7 @@ added: REPLACEME
 ### `session.maxPendingDatagrams`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{number}
@@ -1308,10 +1438,14 @@ added: v23.8.0
 
 * 类型：{bigint}
 
+### `sessionStats.streamsIdleTimedOut`
+
+* 类型：{bigint} 由于流空闲超时而被销毁的由对端发起的流的总数。只读。
+
 ## 类：`QuicError`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1346,7 +1480,7 @@ Node.js 错误码固定为 `'ERR_QUIC_STREAM_ABORTED'`，这样 catch 块无需�
 ### `new QuicError(message, options)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `message` {string} 错误的人类可读描述。
@@ -1378,7 +1512,7 @@ console.log(custom.code);    // 'ERR_MY_QUIC_FAILURE'
 ### `error.errorCode`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{bigint}
@@ -1388,7 +1522,7 @@ added: REPLACEME
 ### `error.type`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{string}
@@ -1418,7 +1552,7 @@ added: v23.8.0
 <!-- YAML
 added: v23.8.0
 changes:
-  - version: REPLACEME
+  - version: v26.2.0
     pr-url: https://github.com/nodejs/node/pull/62876
     description: 添加了接受 `code` 和 `reason` 的 `options` 参数。
 -->
@@ -1481,10 +1615,10 @@ QuicStream 可以通过三种方式中止，每种方式都会产生不同的线
 ### `stream.early`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
-* Type: {boolean}
+* 类型：{boolean}
 
 如果该流上的任何数据是在 TLS 握手完成前作为 0-RTT（早期数据）接收的，则为 True。
 早期数据安全性较低，攻击者可能会重放。应用程序应当以适当谨慎的方式对待早期数据。
@@ -1497,14 +1631,14 @@ added: REPLACEME
 added: v23.8.0
 -->
 
-* Type: {string|null} 取 `'bidi'`、`'uni'` 或 `null` 之一。
+* 类型：{string|null} 取 `'bidi'`、`'uni'` 或 `null` 之一。
 
 流的方向性；如果流已被销毁或仍处于 pending 状态，则为 `null`。只读。
 
 ### `stream.highWaterMark`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{number}
@@ -1521,17 +1655,17 @@ added: REPLACEME
 added: v23.8.0
 -->
 
-* Type: {bigint|null}
+* 类型：{bigint|null}
 
 流 ID；如果流已被销毁或仍处于 pending 状态，则为 `null`。只读。
 
 ### `stream.onerror`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
-* Type: {Function|undefined}
+* 类型：{Function|undefined}
 
 当流因错误被销毁时调用的可选回调。这包括由抛出或拒绝的用户回调引起的错误
 （参见[回调错误处理][]）。回调接收一个参数：触发销毁的错误。如果 `onerror` 回调自身抛出
@@ -1566,7 +1700,7 @@ added: v23.8.0
 ### `stream.headers`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Object|undefined}
@@ -1580,7 +1714,7 @@ added: REPLACEME
 ### `stream.onheaders`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Function}
@@ -1592,7 +1726,7 @@ added: REPLACEME
 ### `stream.ontrailers`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Function}
@@ -1603,7 +1737,7 @@ added: REPLACEME
 ### `stream.oninfo`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Function}
@@ -1615,7 +1749,7 @@ added: REPLACEME
 ### `stream.onwanttrailers`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Function}
@@ -1626,7 +1760,7 @@ added: REPLACEME
 ### `stream.pendingTrailers`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Object|undefined}
@@ -1638,7 +1772,7 @@ added: REPLACEME
 ### `stream.sendHeaders(headers[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `headers` {Object} 带字符串键以及字符串或字符串数组值的头部对象。伪头部（`:method`、`:path` 等）
@@ -1654,7 +1788,7 @@ added: REPLACEME
 ### `stream.sendInformationalHeaders(headers)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `headers` {Object} 头部对象。必须包含 `:status` 且值为 1xx（例如 `{ ':status': '103', 'link': '</style.css>; rel=preload' }`）。
@@ -1665,7 +1799,7 @@ added: REPLACEME
 ### `stream.sendTrailers(headers)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `headers` {Object} 尾部头部对象。尾部中不得包含伪头部。
@@ -1677,7 +1811,7 @@ added: REPLACEME
 ### `stream.priority`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Object|null}
@@ -1693,7 +1827,7 @@ added: REPLACEME
 ### `stream.setPriority([options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `options` {Object}
@@ -1708,7 +1842,7 @@ added: REPLACEME
 ### `stream[Symbol.asyncIterator]()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 返回：{AsyncIterableIterator} 产出 {Uint8Array\[]}
@@ -1739,7 +1873,7 @@ await Stream.pipeTo(stream, someWriter);
 ### `stream.writer`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{Object}
@@ -1774,7 +1908,7 @@ Writer 具有以下方法：
 ### `stream.setBody(body)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `body` {string | ArrayBuffer | SharedArrayBuffer | ArrayBufferView |
@@ -1805,7 +1939,7 @@ added: REPLACEME
 added: v23.8.0
 -->
 
-* Type: {quic.QuicSession|null}
+* 类型：{quic.QuicSession|null}
 
 创建此流的会话；如果流已被销毁，则为 `null`。只读。
 
@@ -1832,6 +1966,16 @@ added: v23.8.0
 -->
 
 * 类型：{bigint}
+
+### `streamStats.bytesAccumulated`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{bigint}
+
+流的接收累积缓冲区中当前等待传递给应用程序的字节数。接近零的值表示读取端能够跟上接收数据。接近流控窗口上限的值表示应用程序消费数据的速度不够快。
 
 ### `streamStats.bytesReceived`
 
@@ -1881,6 +2025,16 @@ added: v23.8.0
 
 * 类型：{bigint}
 
+### `streamStats.maxBytesAccumulated`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{bigint}
+
+在流生命周期内任意时刻，流的接收缓冲区中累积的字节峰值。该值只会单调增加。它有助于诊断流是否经历过背压，以及累积缓冲区大小是否适合工作负载。
+
 ### `streamStats.maxOffset`
 
 <!-- YAML
@@ -1923,6 +2077,64 @@ added: v23.8.0
 
 ## 类型
 
+### type: `ApplicationOptions`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{Object}
+
+应用程序特定选项。
+
+#### `applicationOptions.maxHeaderPairs`
+
+* 类型：{bigint|number}
+
+每个头部块接受的 header 名值对最大数量。超过此限制的 header 会被静默丢弃。**默认值：** `128`
+
+#### `applicationOptions.maxHeaderLength`
+
+* 类型：{bigint|number}
+
+每个头部块中所有 header 名称和值的总字节长度上限。会使总长度超过此限制的 header 会被静默丢弃。**默认值：** `8192`
+
+#### `applicationOptions.maxFieldSectionSize`
+
+* 类型：{bigint|number}
+
+压缩后的 header 字段部分（QPACK）最大大小。`0` 表示无限制。**默认值：** `0`
+
+#### `applicationOptions.qpackMaxDTableCapacity`
+
+* 类型：{bigint|number}
+
+QPACK 动态表容量（字节）。设为 `0` 可禁用动态表。**默认值：** `4096`
+
+#### `applicationOptions.qpackEncoderMaxDTableCapacity`
+
+* 类型：{bigint|number}
+
+QPACK 编码器动态表最大容量。**默认值：** `4096`
+
+#### `applicationOptions.qpackBlockedStreams`
+
+* 类型：{bigint|number}
+
+可因等待 QPACK 动态表更新而被阻塞的流的最大数量。**默认值：** `100`
+
+#### `applicationOptions.enableConnectProtocol`
+
+* 类型：{boolean}
+
+启用扩展 CONNECT 协议（RFC 9220）。**默认值：** `false`
+
+#### `applicationOptions.enableDatagrams`
+
+* 类型：{boolean}
+
+启用 HTTP/3 datagram（RFC 9297）。**默认值：** `false`
+
 ### 类型：`EndpointOptions`
 
 <!-- YAML
@@ -1943,6 +2155,28 @@ added: v23.8.0
 
 如果未指定，端点将绑定到随机端口上的 IPv4 `localhost`。
 
+#### `endpointOptions.blockList`
+
+* 类型：{net.BlockList}
+
+用于按源地址过滤传入数据包的可选 [`net.BlockList`][] 实例。配置后，每个收到的 UDP 数据包都会在进行任何 QUIC 处理之前先与阻止列表进行检查，从而最大限度减少被阻止来源的资源消耗。阻止列表是实时生效的——端点创建后添加到 `BlockList` 对象中的规则会立即生效。
+
+有关如何解释匹配项，请参见 [`endpointOptions.blockListPolicy`][]。
+
+#### `endpointOptions.blockListPolicy`
+
+* 类型：{string} 取值为 `'deny'` 或 `'allow'` 之一。
+* **默认值：** `'deny'`
+
+控制如何解释 [`endpointOptions.blockList`][]：
+
+* `'deny'` — 来自与阻止列表匹配的地址的数据包会被丢弃。
+  其他所有地址都会被接受。这是典型的 blocklist 模式。
+* `'allow'` — 只有来自与阻止列表匹配的地址的数据包才会被接受。
+  其他所有地址都会被丢弃。这是一种用于限制已知客户端访问的 allowlist 模式。
+
+如果未配置阻止列表，则此选项无效。
+
 #### `endpointOptions.addressLRUSize`
 
 <!-- YAML
@@ -1956,7 +2190,7 @@ added: v23.8.0
 #### `endpointOptions.disableStatelessReset`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{boolean}
@@ -1966,7 +2200,7 @@ added: REPLACEME
 #### `endpointOptions.idleTimeout`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{number}
@@ -1983,6 +2217,19 @@ added: v23.8.0
 * 类型：{boolean}
 
 当为 `true` 时，表示端点应仅绑定到 IPv6 地址。
+
+#### `endpointOptions.reusePort`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{boolean}
+* 默认值：`false`
+
+当为 `true` 时，允许多个端点（跨独立进程）绑定到相同的地址和端口。内核会在所有使用此选项绑定的套接字之间对传入的 UDP 数据报进行负载均衡。这使得可以通过在同一端口上运行多个 Node.js 进程来横向扩展 QUIC 服务器。
+
+支持 Linux 3.9+ 和 DragonFlyBSD 3.6+。在不支持的平台上，绑定将失败并报错。
 
 #### `endpointOptions.maxConnectionsPerHost`
 
@@ -2010,25 +2257,77 @@ added: v23.8.0
 
 该限制也可以在构建后通过 [`endpoint.maxConnectionsTotal`][] 动态更改。
 
-#### `endpointOptions.maxRetries`
+#### `endpointOptions.retryRate`
 
-<!-- YAML
-added: v23.8.0
--->
+* 类型：{number}
+* **默认值：** `100`
 
-* 类型：{bigint|number}
+端点每秒最多发送的 QUIC 重试数据包数量。
+这是一个全局速率限制（不是按主机限制），用于限制整个服务器的重试响应速率，防止伪造源地址的洪泛消耗无限资源。
 
-指定每个远程对等点地址允许的最大 QUIC 重试尝试次数。
+#### `endpointOptions.retryBurst`
 
-#### `endpointOptions.maxStatelessResetsPerHost`
+* 类型：{number}
+* **默认值：** `200`
 
-<!-- YAML
-added: v23.8.0
--->
+在速率限制生效之前允许的重试数据包最大突发数。
 
-* 类型：{bigint|number}
+#### `endpointOptions.statelessResetRate`
 
-指定每个远程对等点地址允许的最大无状态重置次数。
+* 类型：{number}
+* **默认值：** `100`
+
+端点每秒最多发送的无状态重置数据包数量。
+
+#### `endpointOptions.statelessResetBurst`
+
+* 类型：{number}
+* **默认值：** `200`
+
+在速率限制生效之前允许的无状态重置数据包最大突发数。
+
+#### `endpointOptions.versionNegotiationRate`
+
+* 类型：{number}
+* **默认值：** `100`
+
+端点每秒最多发送的版本协商数据包数量。
+
+#### `endpointOptions.versionNegotiationBurst`
+
+* 类型：{number}
+* **默认值：** `200`
+
+在速率限制生效之前允许的版本协商数据包最大突发数。
+
+#### `endpointOptions.immediateCloseRate`
+
+* 类型：{number}
+* **默认值：** `100`
+
+端点每秒最多发送的立即连接关闭数据包数量。
+
+#### `endpointOptions.immediateCloseBurst`
+
+* 类型：{number}
+* **默认值：** `200`
+
+在速率限制生效之前允许的立即连接关闭数据包最大突发数。
+
+#### `endpointOptions.sessionCreationRate`
+
+* 类型：{number}
+* **默认值：** `50`
+
+单个远程地址每秒可创建的新会话最大数量。这是一个按主机计算的速率限制，记录在地址验证 LRU 缓存中。它可防止已验证的远程地址以比服务器处理能力更快的速度不断创建和放弃会话（快速打开并丢弃连接）。
+对于流量来自单一来源的基准测试，可将其设置为较高值。
+
+#### `endpointOptions.sessionCreationBurst`
+
+* 类型：{number}
+* **默认值：** `100`
+
+在速率限制生效之前，单个远程地址允许的新会话创建最大突发数。
 
 #### `endpointOptions.retryTokenExpiration`
 
@@ -2113,7 +2412,9 @@ added: v23.8.0
 #### `sessionOptions.alpn`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * 类型：{string}（客户端）| {string\[]}（服务器）
@@ -2131,21 +2432,12 @@ ALPN（应用层协议协商）标识符。
 #### `sessionOptions.application`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
-* 类型：{Object}
+* 类型：{quic.ApplicationOptions}
 
-HTTP/3 应用特定选项。这些选项仅在协商得到的 ALPN 选择 HTTP/3 应用（`'h3'`）时适用。
-
-* `maxHeaderPairs` {number} 每个头块接受的 header 名值对最大数量。超出此限制的 header 会被静默丢弃。**默认值：** `128`
-* `maxHeaderLength` {number} 每个头块中所有 header 名称和值合计的最大字节长度。会使总长度超出此限制的 header 会被静默丢弃。**默认值：** `8192`
-* `maxFieldSectionSize` {number} 压缩后的 header 字段段（QPACK）最大大小。`0` 表示无限制。**默认值：** `0`
-* `qpackMaxDTableCapacity` {number} QPACK 动态表容量，单位为字节。设置为 `0` 可禁用动态表。**默认值：** `4096`
-* `qpackEncoderMaxDTableCapacity` {number} QPACK 编码器最大动态表容量。**默认值：** `4096`
-* `qpackBlockedStreams` {number} 因等待 QPACK 动态表更新而可被阻塞的最大流数量。**默认值：** `100`
-* `enableConnectProtocol` {boolean} 启用扩展 CONNECT 协议（RFC 9220）。**默认值：** `false`
-* `enableDatagrams` {boolean} 启用 HTTP/3 数据报（RFC 9297）。**默认值：** `false`
+应用程序特定选项。
 
 ```mjs
 const { listen } = await import('node:quic');
@@ -2216,7 +2508,7 @@ added: v23.8.0
 #### `sessionOptions.enableEarlyData`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{boolean} **默认值：** `true`
@@ -2305,9 +2597,10 @@ added: v23.8.0
 added: v23.8.0
 -->
 
-* 类型：{string} `'use'`、`'ignore'` 或 `'default'` 其中之一。
+* 类型：{string} 取值为 `'use'`、`'ignore'` 或 `'default'` 之一。
+* **默认值：** `'ignore'`
 
-当远程对等点通告首选地址时，此选项指定是使用它还是忽略它。
+当远程对等方通告首选地址时，此选项指定是使用它还是忽略它。默认值为 `'ignore'`，因为遵从服务器的首选地址会导致客户端将连接迁移到不同的 IP 地址，这可能被利用进行数据外泄攻击，而且在网络层面上与合法的 QUIC 连接迁移无法区分。仅当连接到需要首选地址迁移的可信服务器时才设置为 `'use'`。
 
 #### `sessionOptions.qlog`
 
@@ -2330,7 +2623,7 @@ added: v23.8.0
 #### `sessionOptions.datagramDropPolicy`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{string}
@@ -2339,6 +2632,15 @@ added: REPLACEME
 控制当待处理数据报队列（由 [`session.maxPendingDatagrams`][] 决定大小）已满时丢弃哪个数据报。必须是 `'drop-oldest'`（丢弃队列中最旧的数据报以腾出空间）或 `'drop-newest'`（拒绝传入的数据报）之一。被丢弃的数据报会通过 `ondatagramstatus` 回调报告为丢失。
 
 此选项在会话创建后不可变。
+
+#### `sessionOptions.streamIdleTimeout`
+
+* 类型：{bigint|number}
+* **默认值：** `30000`（30 秒）
+
+对等方发起的流在被自动销毁之前可以空闲（未接收数据）的最长时间（毫秒）。这可防御慢速攻击（slowloris）式攻击，即远程对等方打开流但从不发送数据，从而无限期占用服务器资源。仅检查由对等方发起的流——本地发起的流由应用程序负责。设为 `0` 可禁用。
+
+空闲检查作为正常发送处理循环的一部分运行，因此不会增加额外的计时器或事件循环开销。`session.stats.streamsIdleTimedOut` 计数器会跟踪有多少流因此机制被销毁。
 
 #### `sessionOptions.maxDatagramSendAttempts`
 
@@ -2350,7 +2652,7 @@ added: REPLACEME
 #### `sessionOptions.drainingPeriodMultiplier`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{number}
@@ -2368,16 +2670,44 @@ added: v23.8.0
 
 指定 TLS 握手在完成前允许花费的最大毫秒数，超过该时间将超时。
 
-#### `sessionOptions.keepAlive`
+#### `sessionOptions.initialRtt`
 
 <!-- YAML
 added: REPLACEME
 -->
 
 * 类型：{bigint|number}
+* **默认值：** `0`（使用 ngtcp2 的默认值 333ms）
+
+指定初始往返时间估计值，单位为毫秒。此值用于 Probe Timeout（PTO）计算、初始 pacing，以及在首次从连接收集到实际 RTT 样本之前的早期丢包检测。333ms 的默认值适用于通用互联网。对于环回或同机架部署等低延迟环境，将其设置为更接近实际 RTT 的值（例如 `1`）可避免初始行为过于保守。
+
+#### `sessionOptions.keepAlive`
+
+<!-- YAML
+added: v26.2.0
+-->
+
+* 类型：{bigint|number}
 * **默认值：** `0`（已禁用）
 
 指定保活超时时间，单位为毫秒。当设置为非零值时，会自动发送 PING 帧，以便在空闲超时触发之前保持连接存活。该值应小于有效的空闲超时（`maxIdleTimeout` 传输参数），这样才有意义。
+
+#### `sessionOptions.verifyPeer`（仅限客户端）
+
+* 类型：{string} 取值为 `'strict'`、`'auto'` 或 `'manual'` 之一。
+* **默认值：** `'auto'`
+
+控制客户端如何处理服务器证书验证：
+
+* `'strict'` — 如果服务器证书验证失败，OpenSSL 会立即中止 TLS 握手。`session.opened` promise 会以 TLS 错误拒绝。应用程序无法检查证书或错误详细信息。这是最安全的模式。
+
+* `'auto'` — 无论验证结果如何，TLS 握手都会完成。
+  如果验证失败，`session.opened` promise 会以包含验证原因的错误被拒绝，并且会话会被销毁。
+  `onhandshake` 回调（如果设置）会在拒绝之前触发，从而允许记录诊断日志。这是默认值，并且与 `tls.connect()` 在 `rejectUnauthorized: true` 时的行为一致。
+
+* `'manual'` — 无论验证结果如何，TLS 握手都会完成。
+  `session.opened` promise 会解析为握手信息，其中如果验证失败，会包含 `validationErrorReason` 和 `validationErrorCode`。
+  应用程序负责检查这些值并决定是否继续。此模式适用于自定义验证逻辑、证书固定，或有意接受自签名证书。
 
 #### `sessionOptions.servername`（仅限客户端）
 
@@ -2392,7 +2722,9 @@ added: v23.8.0
 #### `sessionOptions.sni`（仅限服务器）
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 * 类型：{Object}
@@ -2430,12 +2762,12 @@ added: v23.8.0
 
 * 类型：{boolean}
 
-为 true 以启用 TLS 追踪输出。
+设为 true 以启用 TLS 追踪输出。
 
 #### `sessionOptions.token`（仅限客户端）
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{ArrayBufferView}
@@ -2465,7 +2797,7 @@ added: v23.8.0
 #### `sessionOptions.rejectUnauthorized`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{boolean} **默认值：** `true`
@@ -2475,7 +2807,7 @@ added: REPLACEME
 #### `sessionOptions.reuseEndpoint`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * 类型：{boolean}
@@ -2520,6 +2852,28 @@ added: v23.8.0
 <!-- YAML
 added: v23.8.0
 -->
+
+`TransportParams` 类型表示在会话建立期间协商的 QUIC 传输参数。这些参数会在创建会话时使用。协商后的值可通过 `session.localTransportParams` 和 `session.remoteTransportParams` 属性查看。
+
+#### `transportParams.initialSCID`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{string}
+
+指定的初始源连接 ID（SCID）。此字段在创建会话时会被忽略，仅在 `session.localTransportParams` 和 `session.remoteTransportParams` 属性中可用时提供信息用途。
+
+#### `transportParams.originalDCID`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{string}
+
+指定的原始目标连接 ID（DCID）。此字段在创建会话时会被忽略，仅在 `session.localTransportParams` 和 `session.remoteTransportParams` 属性中可用时提供信息用途。
 
 #### `transportParams.preferredAddressIpv4`
 
@@ -2627,6 +2981,16 @@ added: v23.8.0
 * **默认值：** `1200`
 
 此端点愿意接收的 DATAGRAM 帧负载的最大字节数。设置为 `0` 可禁用数据报支持。对等方不会发送大于此值的数据报。实际可 _发送_ 的数据报最大大小由对等方的 `maxDatagramFrameSize` 决定，而不是此端点的值。
+
+#### `transportParams.retrySCID`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{string}
+
+指定的重试连接 ID。此字段在创建会话时会被忽略，仅在 `session.localTransportParams` 和 `session.remoteTransportParams` 属性中可用时提供信息用途。
 
 ## 回调
 
@@ -2757,7 +3121,7 @@ added: v23.8.0
 ### 回调：`OnNewTokenCallback`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `this` {quic.QuicSession}
@@ -2767,7 +3131,7 @@ added: REPLACEME
 ### 回调：`OnOriginCallback`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `this` {quic.QuicSession}
@@ -2776,7 +3140,7 @@ added: REPLACEME
 ### 回调：`OnKeylogCallback`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `this` {quic.QuicSession}
@@ -2791,7 +3155,7 @@ TLS 1.3 握手期间会发出多行，每行包含一个密钥标签、客户端
 ### 回调：`OnQlogCallback`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `this` {quic.QuicSession}
@@ -2823,7 +3187,7 @@ added: v23.8.0
 ### 回调：`OnHeadersCallback`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `this` {quic.QuicStream}
@@ -2836,7 +3200,7 @@ added: REPLACEME
 ### 回调：`OnTrailersCallback`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `this` {quic.QuicStream}
@@ -2847,7 +3211,7 @@ added: REPLACEME
 ### 回调：`OnInfoCallback`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 * `this` {quic.QuicStream}
@@ -2859,7 +3223,7 @@ added: REPLACEME
 ## HTTP/3 支持
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 当协商得到的 ALPN 标识符是 `'h3'`（或 `'h3-*'`
@@ -3012,7 +3376,7 @@ console.log('listening on', endpoint.address);
 ## 性能测量
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 QUIC 会话、流和端点会发出 `[`PerformanceEntry`][]` 对象，
@@ -3080,7 +3444,7 @@ obs.observe({ entryTypes: ['quic'] });
 ### 通道：`quic.endpoint.created`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `endpoint` {quic.QuicEndpoint}
@@ -3091,7 +3455,7 @@ added: v23.8.0
 ### 通道：`quic.endpoint.listen`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `endpoint` {quic.QuicEndpoint}
@@ -3102,7 +3466,7 @@ added: v23.8.0
 ### 通道：`quic.endpoint.connect`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `endpoint` {quic.QuicEndpoint}
@@ -3116,7 +3480,7 @@ added: REPLACEME
 ### 通道：`quic.endpoint.closing`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `endpoint` {quic.QuicEndpoint}
@@ -3127,7 +3491,7 @@ added: v23.8.0
 ### 通道：`quic.endpoint.closed`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `endpoint` {quic.QuicEndpoint}
@@ -3138,7 +3502,7 @@ added: v23.8.0
 ### 通道：`quic.endpoint.error`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `endpoint` {quic.QuicEndpoint}
@@ -3149,7 +3513,7 @@ added: v23.8.0
 ### 通道：`quic.endpoint.busy.change`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `endpoint` {quic.QuicEndpoint}
@@ -3160,7 +3524,7 @@ added: v23.8.0
 ### 通道：`quic.session.created.client`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `endpoint` {quic.QuicEndpoint}
@@ -3173,7 +3537,7 @@ added: v23.8.0
 ### 通道：`quic.session.created.server`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `endpoint` {quic.QuicEndpoint}
@@ -3185,7 +3549,7 @@ added: v23.8.0
 ### 通道：`quic.session.open.stream`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3197,7 +3561,7 @@ added: v23.8.0
 ### 通道：`quic.session.received.stream`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3209,7 +3573,7 @@ added: v23.8.0
 ### 通道：`quic.session.send.datagram`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `id` {bigint} 数据报 ID。
@@ -3221,7 +3585,7 @@ added: v23.8.0
 ### 通道：`quic.session.update.key`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `session` {quic.QuicSession}
@@ -3231,7 +3595,7 @@ added: v23.8.0
 ### 通道：`quic.session.closing`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `session` {quic.QuicSession}
@@ -3242,7 +3606,7 @@ GOAWAY 帧时）。
 ### 通道：`quic.session.closed`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `session` {quic.QuicSession}
@@ -3255,7 +3619,7 @@ added: v23.8.0
 ### 通道：`quic.session.error`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `session` {quic.QuicSession}
@@ -3270,7 +3634,7 @@ added: REPLACEME
 ### 通道：`quic.session.receive.datagram`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `length` {number} 数据报负载大小，单位为字节。
@@ -3282,7 +3646,7 @@ added: v23.8.0
 ### 通道：`quic.session.receive.datagram.status`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `id` {bigint} 数据报 ID。
@@ -3294,7 +3658,7 @@ added: v23.8.0
 ### 通道：`quic.session.path.validation`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `result` {string} 为 `'success'`、`'failure'` 或 `'aborted'` 之一。
@@ -3310,7 +3674,7 @@ added: v23.8.0
 ### 通道：`quic.session.new.token`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `token` {Buffer} NEW_TOKEN 令牌数据。
@@ -3322,7 +3686,7 @@ added: REPLACEME
 ### 通道：`quic.session.ticket`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `ticket` {Object} 不透明的会话票据。
@@ -3333,7 +3697,7 @@ added: v23.8.0
 ### 通道：`quic.session.version.negotiation`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `version` {number} 为此会话配置的 QUIC 版本。
@@ -3346,7 +3710,7 @@ added: v23.8.0
 ### 通道：`quic.session.receive.origin`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `origins` {string\[]} 服务器具有权威性的来源列表。
@@ -3357,7 +3721,7 @@ added: REPLACEME
 ### 通道：`quic.session.handshake`
 
 <!-- YAML
-added: v23.8.0
+已添加：v23.8.0
 -->
 
 * `session` {quic.QuicSession}
@@ -3375,7 +3739,7 @@ added: v23.8.0
 ### 通道：`quic.session.goaway`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `session` {quic.QuicSession}
@@ -3389,7 +3753,7 @@ added: REPLACEME
 ### 通道：`quic.session.early.rejected`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `session` {quic.QuicSession}
@@ -3400,7 +3764,7 @@ added: REPLACEME
 ### 通道：`quic.stream.closed`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3414,7 +3778,7 @@ added: REPLACEME
 ### 通道：`quic.stream.headers`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3429,7 +3793,7 @@ added: REPLACEME
 ### 通道：`quic.stream.trailers`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3441,7 +3805,7 @@ added: REPLACEME
 ### 通道：`quic.stream.info`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3454,7 +3818,7 @@ added: REPLACEME
 ### 通道：`quic.stream.reset`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3469,7 +3833,7 @@ added: REPLACEME
 ### 通道：`quic.stream.blocked`
 
 <!-- YAML
-added: REPLACEME
+已添加：v26.2.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3481,10 +3845,12 @@ added: REPLACEME
 [中止流]: #aborting-a-stream
 [回调错误处理]: #callback-error-handling
 [JSON-SEQ]: https://www.rfc-editor.org/rfc/rfc7464
-[NSS Key Log Format]: https://udn.realityripple.com/docs/Mozilla/Projects/NSS/Key_Log_Format
+[NSS Key Log 格式]: https://udn.realityripple.com/docs/Mozilla/Projects/NSS/Key_Log_Format
 [Permission Model]: permissions.md#permission-model
+[RFC 8879]: https://www.rfc-editor.org/rfc/rfc8879
 [RFC 8999]: https://www.rfc-editor.org/rfc/rfc8999
 [RFC 9000]: https://www.rfc-editor.org/rfc/rfc9000
+[RFC 9000 第 8.1 节]: https://www.rfc-editor.org/rfc/rfc9000#section-8.1
 [RFC 9001]: https://www.rfc-editor.org/rfc/rfc9001
 [RFC 9002]: https://www.rfc-editor.org/rfc/rfc9002
 [RFC 9114]: https://www.rfc-editor.org/rfc/rfc9114
@@ -3507,11 +3873,25 @@ added: REPLACEME
 [`application.enableConnectProtocol`]: #sessionoptionsapplication
 [`application.enableDatagrams`]: #sessionoptionsapplication
 [`application.qpackMaxDTableCapacity`]: #sessionoptionsapplication
+[`endpoint.busy`]: #endpointbusy
 [`endpoint.maxConnectionsPerHost`]: #endpointmaxconnectionsperhost
 [`endpoint.maxConnectionsTotal`]: #endpointmaxconnectionstotal
+[`endpointOptions.blockListPolicy`]: #endpointoptionsblocklistpolicy
+[`endpointOptions.blockList`]: #endpointoptionsblocklist
+[`endpointOptions.immediateCloseBurst`]: #endpointoptionsimmediatecloseburst
+[`endpointOptions.immediateCloseRate`]: #endpointoptionsimmediatecloserate
+[`endpointOptions.retryBurst`]: #endpointoptionsretryburst
+[`endpointOptions.retryRate`]: #endpointoptionsretryrate
+[`endpointOptions.sessionCreationBurst`]: #endpointoptionssessioncreationburst
+[`endpointOptions.sessionCreationRate`]: #endpointoptionssessioncreationrate
+[`endpointOptions.statelessResetBurst`]: #endpointoptionsstatelessresetburst
+[`endpointOptions.statelessResetRate`]: #endpointoptionsstatelessresetrate
+[`endpointOptions.versionNegotiationBurst`]: #endpointoptionsversionnegotiationburst
+[`endpointOptions.versionNegotiationRate`]: #endpointoptionsversionnegotiationrate
 [`error.errorCode`]: #errorerrorcode
 [`fs.promises.open(path, 'r')`]: fs.md#fspromisesopenpath-flags-mode
 [`maxDatagramFrameSize`]: #transportparamsmaxdatagramframesize
+[`net.BlockList`]: net.md#class-netblocklist
 [`quic.connect()`]: #quicconnectaddress-options
 [`quic.listen()`]: #quiclistenonsession-options
 [`session.close()`]: #sessioncloseoptions

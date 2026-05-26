@@ -105,17 +105,15 @@ FFI 签名使用字符串类型名称。
 
 函数和回调用签名对象来描述。
 
-支持的字段：
+签名对象可以包含以下属性，两者都是可选的：
 
-* `result`、`return` 或 `returns`：用于返回类型。
-* `parameters` 或 `arguments`：用于参数类型列表。
+* `return` {string} 一个指定函数或回调返回类型的 [类型名称][type names]。**默认值：** `'void'`。
+* `arguments` {string\[]} 一个指定函数或回调参数类型列表的 [类型名称][] 数组。**默认值：** `[]`。
 
-在单个签名对象中，只允许存在一个返回类型字段以及一个参数列表字段。
-
-```cjs
+```js
 const signature = {
-  result: 'i32',
-  parameters: ['i32', 'i32'],
+  return: 'i32',
+  arguments: ['i32', 'i32'],
 };
 ```
 
@@ -169,7 +167,7 @@ import { dlopen } from 'node:ffi';
 
 {
   using handle = dlopen('./mylib.so', {
-    add_i32: { parameters: ['i32', 'i32'], result: 'i32' },
+    add_i32: { arguments: ['i32', 'i32'], return: 'i32' },
   });
   console.log(handle.functions.add_i32(20, 22));
 } // 此处会自动调用 handle.lib.close()。
@@ -179,8 +177,8 @@ import { dlopen } from 'node:ffi';
 import { dlopen } from 'node:ffi';
 
 const { lib, functions } = dlopen('./mylib.so', {
-  add_i32: { parameters: ['i32', 'i32'], result: 'i32' },
-  string_length: { parameters: ['pointer'], result: 'u64' },
+  add_i32: { arguments: ['i32', 'i32'], return: 'i32' },
+  string_length: { arguments: ['pointer'], return: 'u64' },
 });
 
 console.log(functions.add_i32(20, 22));
@@ -190,8 +188,8 @@ console.log(functions.add_i32(20, 22));
 const { dlopen } = require('node:ffi');
 
 const { lib, functions } = dlopen('./mylib.so', {
-  add_i32: { parameters: ['i32', 'i32'], result: 'i32' },
-  string_length: { parameters: ['pointer'], result: 'u64' },
+  add_i32: { arguments: ['i32', 'i32'], return: 'i32' },
+  string_length: { arguments: ['pointer'], return: 'u64' },
 });
 
 console.log(functions.add_i32(20, 22));
@@ -317,8 +315,8 @@ const { DynamicLibrary } = require('node:ffi');
 
 const lib = new DynamicLibrary('./mylib.so');
 const add = lib.getFunction('add_i32', {
-  parameters: ['i32', 'i32'],
-  result: 'i32',
+  arguments: ['i32', 'i32'],
+  return: 'i32',
 });
 
 console.log(add(20, 22));
@@ -365,19 +363,19 @@ const { DynamicLibrary } = require('node:ffi');
 const lib = new DynamicLibrary('./mylib.so');
 
 const callback = lib.registerCallback(
-  { parameters: ['i32'], result: 'i32' },
+  { arguments: ['i32'], return: 'i32' },
   (value) => value * 2,
 );
 ```
 
 回调受以下限制：
 
-* 必须在创建它们的同一系统线程上被调用。
-* 必须不能抛出异常。
-* 必须不能返回 Promise。
-* 必须返回一个与声明的结果类型兼容的值。
-* 在运行时不得对其所属库调用 `library.close()`。
-* 在运行时不得取消自身的注册。
+* 它们必须在创建它们的同一系统线程上被调用。
+* 它们不能抛出异常。
+* 它们不能返回 promise。
+* 它们必须返回与声明的返回类型兼容的值。
+* 在运行时，它们不能对其所属库调用 `library.close()`。
+* 在运行时，它们不能自行注销。
 
 在回调内部关闭其所属库，或在回调执行时从内部对当前执行的回调进行注销，不受支持且危险。这样做可能导致进程崩溃、产生不正确的输出，或破坏内存。
 
@@ -414,7 +412,7 @@ JavaScript `number` 值。
 
 对于 64 位整数类型（`i64` 和 `u64`），请传入 JavaScript `bigint` 值。
 
-对于类似指针的参数：
+指针类参数：
 
 * `null` 和 `undefined` 会作为空指针传入。
 * `string` 值会被复制为临时的 NUL 终止 UTF-8 字符串，持续时间仅为该调用期间。
@@ -653,3 +651,4 @@ added: v26.1.0
 [`--allow-ffi`]: cli.md#--allow-ffi
 [`ffi.toBuffer(pointer, length, copy)`]: #ffitobufferpointer-length-copy
 [`using`]: https://tc39.es/proposal-explicit-resource-management/#sec-using-declarations
+[type names]: #type-names

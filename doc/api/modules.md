@@ -223,7 +223,11 @@ const { distance } = require('./point.mjs');
 console.log(distance); // undefined
 ```
 
-注意在上面的示例中，当使用 `module.exports` 导出名称时，命名导出将对 CommonJS 使用者丢失。为了允许 CommonJS 使用者继续访问命名导出，模块可以确保默认导出是一个对象，并将命名导出作为属性附加到它上面。例如，对于上面的示例，`distance` 可以作为静态方法附加到默认导出（即 `Point` 类）上。
+请注意，在上面的示例中，当使用 `module.exports` 导出名称时，命名导出
+会对 CommonJS 消费者丢失。为了让 CommonJS 消费者继续访问
+命名导出，模块可以确保默认导出是一个对象，并将命名导出
+作为属性附加到它上面。例如，在上面的示例中，
+`distance` 可以作为静态方法附加到默认导出 `Point` 类上。
 
 ```mjs
 export function distance(a, b) { return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2); }
@@ -282,10 +286,10 @@ require(X) from module at path Y
 7. 抛出 "not found"
 
 MAYBE_DETECT_AND_LOAD(X)
-1. 如果 X 解析为 CommonJS 模块，将 X 作为 CommonJS 模块加载。停止。
-2. 否则，如果 X 的源代码可以使用 <a href="esm.md#resolver-algorithm-specification">ESM 解析器中定义的 DETECT_MODULE_SYNTAX</a> 解析为 ECMAScript 模块，
+1. 如果 X 被解析为 CommonJS 模块，则将 X 作为 CommonJS 模块加载。停止。
+2. 否则，如果 X 的源代码可以使用 ESM 解析器中定义的 DETECT_MODULE_SYNTAX 解析为 ECMAScript 模块，
   a. 将 X 作为 ECMAScript 模块加载。停止。
-3. 抛出尝试在 1 中将 X 解析为 CommonJS 时产生的 SyntaxError。停止。
+3. 在 1 中尝试将 X 解析为 CommonJS 时抛出的 SyntaxError。停止。
 
 LOAD_AS_FILE(X)
 1. 如果 X 是一个文件，按其文件扩展格式加载 X。停止
@@ -346,21 +350,22 @@ LOAD_PACKAGE_IMPORTS(X, DIR)
 4. 如果未启用 `--no-require-module`
   a. 设 CONDITIONS = ["node", "require", "module-sync"]
   b. 否则，设 CONDITIONS = ["node", "require"]
-5. 设 MATCH = PACKAGE_IMPORTS_RESOLVE(X, pathToFileURL(SCOPE),
-  CONDITIONS) <a href="esm.md#resolver-algorithm-specification">在 ESM 解析器中定义</a>。
+5. 设 MATCH = ESM 解析器中定义的 PACKAGE_IMPORTS_RESOLVE(X, pathToFileURL(SCOPE),
+  CONDITIONS)。
 6. RESOLVE_ESM_MATCH(MATCH)。
 
 LOAD_PACKAGE_EXPORTS(X, DIR)
-1. 尝试将 X 解释为 NAME 和 SUBPATH 的组合，其中名称可能有 @scope/ 前缀，子路径以斜杠 (`/`) 开头。
-2. 如果 X 不匹配此模式或 DIR/NAME/package.json 不是文件，
+1. 尝试将 X 解释为 NAME 和 SUBPATH 的组合，其中 name
+   可能带有 @scope/ 前缀，且 subpath 以斜杠（`/`）开头。
+2. 如果 X 不匹配此模式，或者 DIR/NAME/package.json 不是一个文件，
    返回。
 3. 解析 DIR/NAME/package.json，并查找 "exports" 字段。
 4. 如果 "exports" 为 null 或 undefined，返回。
 5. 如果未启用 `--no-require-module`
   a. 设 CONDITIONS = ["node", "require", "module-sync"]
   b. 否则，设 CONDITIONS = ["node", "require"]
-6. 设 MATCH = PACKAGE_EXPORTS_RESOLVE(pathToFileURL(DIR/NAME), "." + SUBPATH,
-   `package.json` "exports", CONDITIONS) <a href="esm.md#resolver-algorithm-specification">在 ESM 解析器中定义</a>。
+6. 设 MATCH = ESM 解析器中定义的 PACKAGE_EXPORTS_RESOLVE(pathToFileURL(DIR/NAME), "." + SUBPATH,
+   `package.json` "exports", CONDITIONS)。
 7. RESOLVE_ESM_MATCH(MATCH)
 
 LOAD_PACKAGE_SELF(X, DIR)
@@ -368,9 +373,8 @@ LOAD_PACKAGE_SELF(X, DIR)
 2. 如果未找到作用域，返回。
 3. 如果 SCOPE/package.json "exports" 为 null 或 undefined，返回。
 4. 如果 SCOPE/package.json "name" 不是 X 的第一段，返回。
-5. 设 MATCH = PACKAGE_EXPORTS_RESOLVE(pathToFileURL(SCOPE),
+5. 设 MATCH = ESM 解析器中定义的 PACKAGE_EXPORTS_RESOLVE(pathToFileURL(SCOPE),
    "." + X.slice("name".length), `package.json` "exports", ["node", "require"])
-   <a href="esm.md#resolver-algorithm-specification">在 ESM 解析器中定义</a>。
 6. RESOLVE_ESM_MATCH(MATCH)
 
 RESOLVE_ESM_MATCH(MATCH)
@@ -379,7 +383,9 @@ RESOLVE_ESM_MATCH(MATCH)
 3. 抛出 "not found"
 ```
 
-## 缓存
+“ESM 解析器”在 [ESM 文档](esm.md#resolver-algorithm-specification)中定义。
+
+## Caching
 
 <!--type=misc-->
 

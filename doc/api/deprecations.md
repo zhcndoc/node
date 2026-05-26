@@ -745,7 +745,10 @@ changes:
 
 类型：已撤销
 
-[`events.listenerCount(emitter, eventName)`][] API 曾被弃用，因为它提供了与 [`emitter.listenerCount(eventName)`][] 相同的功能。弃用被撤销，因为此函数已被重新用于也接受 {EventTarget} 参数。
+The [`events.listenerCount(emitter, eventName)`][] API was deprecated, as it
+provided identical functionality to [`emitter.listenerCount(eventName)`][]. The
+deprecation was revoked because this function has been repurposed to also
+accept {EventTarget} arguments.
 
 ### DEP0034: `fs.exists(path, callback)`
 
@@ -4275,7 +4278,7 @@ changes:
 
 <!-- YAML
 changes:
-  - version: REPLACEME
+  - version: v26.2.0
     pr-url: https://github.com/nodejs/node/pull/63121
     description: 仅文档弃用。
 -->

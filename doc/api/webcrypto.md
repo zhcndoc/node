@@ -830,7 +830,7 @@ added: v24.7.0
 * `'ML-KEM-768'`[^modern-algos]
 * `'ML-KEM-1024'`[^modern-algos]
 
-### `subtle.decapsulateKey(decapsulationAlgorithm, decapsulationKey, ciphertext, sharedKeyAlgorithm, extractable, usages)`
+### `subtle.decapsulateKey(decapsulationAlgorithm, decapsulationKey, ciphertext, sharedKeyAlgorithm, extractable, keyUsages)`
 
 <!-- YAML
 added: v24.7.0
@@ -843,7 +843,7 @@ added: v24.7.0
 * `ciphertext` {ArrayBuffer|TypedArray|DataView|Buffer}
 * `sharedKeyAlgorithm` {string|Algorithm|HmacImportParams|AesDerivedKeyParams|KmacImportParams}
 * `extractable` {boolean}
-* `usages` {string\[]} 参见 [密钥用途][]。
+* `keyUsages` {string\[]} 参见 [密钥用途][]。
 * 返回：{Promise} 成功时兑现为 {CryptoKey}。
 
 消息接收者使用他们的非对称私钥解密“封装密钥”（密文），从而恢复一个临时对称密钥（表示为 {CryptoKey}），然后用于解密消息。
@@ -930,7 +930,7 @@ changes:
 * `'X25519'`
 * `'X448'`[^secure-curves]
 
-### `subtle.deriveKey(algorithm, baseKey, derivedKeyAlgorithm, extractable, keyUsages)`
+### `subtle.deriveKey(algorithm, baseKey, derivedKeyType, extractable, keyUsages)`
 
 <!-- YAML
 added: v15.0.0
@@ -949,16 +949,16 @@ changes:
 
 * `algorithm` {EcdhKeyDeriveParams|HkdfParams|Pbkdf2Params|Argon2Params}
 * `baseKey` {CryptoKey}
-* `derivedKeyAlgorithm` {string|Algorithm|HmacImportParams|AesDerivedKeyParams|KmacImportParams}
+* `derivedKeyType` {string|Algorithm|HmacImportParams|AesDerivedKeyParams|KmacImportParams}
 * `extractable` {boolean}
 * `keyUsages` {string\[]} 参见 [密钥用途][]。
 * 返回：{Promise} 成功时兑现为 {CryptoKey}。
 
 <!--lint enable maximum-line-length remark-lint-->
 
-使用 `algorithm` 中指定的方法和参数以及 `baseKey` 提供的密钥材料，此方法尝试基于 `derivedKeyAlgorithm` 中的方法和参数生成一个新的 {CryptoKey}。
+使用 `algorithm` 中指定的方法和参数，以及 `baseKey` 提供的密钥材料，此方法尝试基于 `derivedKeyType` 中的方法和参数生成一个新的 {CryptoKey}。
 
-调用此方法等同于调用 [`subtle.deriveBits()`][] 生成原始密钥材料，然后使用 `derivedKeyAlgorithm`、`extractable` 和 `keyUsages` 参数作为输入，将结果传递给 [`subtle.importKey()`][] 方法。
+调用此方法等同于先调用 [`subtle.deriveBits()`][] 生成原始密钥材料，然后使用 `derivedKeyType`、`extractable` 和 `keyUsages` 参数作为输入，将结果传递给 [`subtle.importKey()`][] 方法。
 
 目前支持的算法包括：
 
@@ -1032,7 +1032,7 @@ added: v24.7.0
 * `'ML-KEM-768'`[^modern-algos]
 * `'ML-KEM-1024'`[^modern-algos]
 
-### `subtle.encapsulateKey(encapsulationAlgorithm, encapsulationKey, sharedKeyAlgorithm, extractable, usages)`
+### `subtle.encapsulateKey(encapsulationAlgorithm, encapsulationKey, sharedKeyAlgorithm, extractable, keyUsages)`
 
 <!-- YAML
 added: v24.7.0
@@ -1044,7 +1044,7 @@ added: v24.7.0
 * `encapsulationKey` {CryptoKey}
 * `sharedKeyAlgorithm` {string|Algorithm|HmacImportParams|AesDerivedKeyParams|KmacImportParams}
 * `extractable` {boolean}
-* `usages` {string\[]} 参见 [密钥用途][]。
+* `keyUsages` {string\[]} 参见 [密钥用途][]。
 * 返回：{Promise} 成功时兑现为 {EncapsulatedKey}。
 
 使用消息接收者的非对称公钥加密临时对称密钥。此加密密钥是表示为 {EncapsulatedKey} 的“封装密钥”。
@@ -1355,7 +1355,7 @@ changes:
 * `'RSA-PSS'`
 * `'RSASSA-PKCS1-v1_5'`
 
-### `subtle.unwrapKey(format, wrappedKey, unwrappingKey, unwrapAlgo, unwrappedKeyAlgo, extractable, keyUsages)`
+### `subtle.unwrapKey(format, wrappedKey, unwrappingKey, unwrapAlgorithm, unwrappedKeyAlgorithm, extractable, keyUsages)`
 
 <!-- YAML
 added: v15.0.0
@@ -1374,8 +1374,8 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `unwrapAlgo` {string|Algorithm|RsaOaepParams|AesCtrParams|AesCbcParams|AeadParams}
-* `unwrappedKeyAlgo` {string|Algorithm|RsaHashedImportParams|EcKeyImportParams|HmacImportParams|KmacImportParams}
+* `unwrapAlgorithm` {string|Algorithm|RsaOaepParams|AesCtrParams|AesCbcParams|AeadParams}
+* `unwrappedKeyAlgorithm` {string|Algorithm|RsaHashedImportParams|EcKeyImportParams|HmacImportParams|KmacImportParams}
 
 <!--lint enable maximum-line-length remark-lint-->
 
@@ -1383,7 +1383,7 @@ changes:
 * `keyUsages` {string\[]} 参见 [密钥用途][]。
 * 返回：{Promise} 成功时兑现为 {CryptoKey}。
 
-在密码学中，“包装密钥”指的是导出然后加密密钥材料。此方法尝试解密包装的密钥并创建 {CryptoKey} 实例。它等效于先对加密的密钥数据调用 [`subtle.decrypt()`][]（使用 `wrappedKey`、`unwrapAlgo` 和 `unwrappingKey` 参数作为输入），然后将结果传递给 [`subtle.importKey()`][] 方法，使用 `unwrappedKeyAlgo`、`extractable` 和 `keyUsages` 参数作为输入。如果成功，返回的 Promise 将解决为 {CryptoKey} 对象。
+在密码学中，“包装密钥”指的是导出然后加密密钥材料。此方法尝试解密一个已包装的密钥并创建一个 {CryptoKey} 实例。它等同于先对加密的密钥数据调用 [`subtle.decrypt()`][]（使用 `wrappedKey`、`unwrapAlgorithm` 和 `unwrappingKey` 作为输入），然后使用 `unwrappedKeyAlgorithm`、`extractable` 和 `keyUsages` 参数作为输入，将结果传递给 [`subtle.importKey()`][] 方法。如果成功，返回的 Promise 将以一个 {CryptoKey} 对象兑现。
 
 目前支持的包装算法包括：
 
@@ -1466,7 +1466,7 @@ changes:
 * `'RSA-PSS'`
 * `'RSASSA-PKCS1-v1_5'`
 
-### `subtle.wrapKey(format, key, wrappingKey, wrapAlgo)`
+### `subtle.wrapKey(format, key, wrappingKey, wrapAlgorithm)`
 
 <!-- YAML
 added: v15.0.0
@@ -1484,12 +1484,12 @@ changes:
 * `format` {string} 必须是 `'raw'`、`'pkcs8'`、`'spki'`、`'jwk'`、`'raw-secret'`[^modern-algos]、`'raw-public'`[^modern-algos] 或 `'raw-seed'`[^modern-algos] 之一。
 * `key` {CryptoKey}
 * `wrappingKey` {CryptoKey}
-* `wrapAlgo` {string|Algorithm|RsaOaepParams|AesCtrParams|AesCbcParams|AeadParams}
+* `wrapAlgorithm` {string|Algorithm|RsaOaepParams|AesCtrParams|AesCbcParams|AeadParams}
 * 返回：{Promise} 成功时兑现为 {ArrayBuffer}。
 
 <!--lint enable maximum-line-length remark-lint-->
 
-在密码学中，“包装密钥”指的是导出然后加密密钥材料。此方法将密钥材料导出为 `format` 标识的格式，然后使用 `wrapAlgo` 指定的方法和参数以及 `wrappingKey` 提供的密钥材料对其进行加密。它等效于使用 `format` 和 `key` 作为参数调用 [`subtle.exportKey()`][]，然后将结果传递给 [`subtle.encrypt()`][] 方法，使用 `wrappingKey` 和 `wrapAlgo` 作为输入。如果成功，返回的 Promise 将解决为一个包含加密密钥数据的 {ArrayBuffer}。
+在密码学中，“包装密钥”指的是导出然后加密密钥材料。此方法会将密钥材料导出为 `format` 标识的格式，然后使用 `wrapAlgorithm` 指定的方法和参数以及 `wrappingKey` 提供的密钥材料对其进行加密。它等同于使用 `format` 和 `key` 作为参数调用 [`subtle.exportKey()`][]，然后将结果作为输入传递给 [`subtle.encrypt()`][] 方法，使用 `wrappingKey` 和 `wrapAlgorithm` 作为输入。如果成功，返回的 Promise 将以一个包含加密密钥数据的 {ArrayBuffer} 兑现。
 
 目前支持的包装算法包括：
 
@@ -2692,19 +2692,19 @@ added:
 [Web Crypto API]: https://www.w3.org/TR/WebCryptoAPI/
 [`SubtleCrypto.supports()`]: #static-method-subtlecryptosupportsoperation-algorithm-lengthoradditionalalgorithm
 [`subtle.decapsulateBits()`]: #subtledecapsulatebitsdecapsulationalgorithm-decapsulationkey-ciphertext
-[`subtle.decapsulateKey()`]: #subtledecapsulatekeydecapsulationalgorithm-decapsulationkey-ciphertext-sharedkeyalgorithm-extractable-usages
+[`subtle.decapsulateKey()`]: #subtledecapsulatekeydecapsulationalgorithm-decapsulationkey-ciphertext-sharedkeyalgorithm-extractable-keyusages
 [`subtle.decrypt()`]: #subtledecryptalgorithm-key-data
 [`subtle.deriveBits()`]: #subtlederivebitsalgorithm-basekey-length
-[`subtle.deriveKey()`]: #subtlederivekeyalgorithm-basekey-derivedkeyalgorithm-extractable-keyusages
+[`subtle.deriveKey()`]: #subtlederivekeyalgorithm-basekey-derivedkeytype-extractable-keyusages
 [`subtle.digest()`]: #subtledigestalgorithm-data
 [`subtle.encapsulateBits()`]: #subtleencapsulatebitsencapsulationalgorithm-encapsulationkey
-[`subtle.encapsulateKey()`]: #subtleencapsulatekeyencapsulationalgorithm-encapsulationkey-sharedkeyalgorithm-extractable-usages
+[`subtle.encapsulateKey()`]: #subtleencapsulatekeyencapsulationalgorithm-encapsulationkey-sharedkeyalgorithm-extractable-keyusages
 [`subtle.encrypt()`]: #subtleencryptalgorithm-key-data
 [`subtle.exportKey()`]: #subtleexportkeyformat-key
 [`subtle.generateKey()`]: #subtlegeneratekeyalgorithm-extractable-keyusages
 [`subtle.getPublicKey()`]: #subtlegetpublickeykey-keyusages
 [`subtle.importKey()`]: #subtleimportkeyformat-keydata-algorithm-extractable-keyusages
 [`subtle.sign()`]: #subtlesignalgorithm-key-data
-[`subtle.unwrapKey()`]: #subtleunwrapkeyformat-wrappedkey-unwrappingkey-unwrapalgo-unwrappedkeyalgo-extractable-keyusages
+[`subtle.unwrapKey()`]: #subtleunwrapkeyformat-wrappedkey-unwrappingkey-unwrapalgorithm-unwrappedkeyalgorithm-extractable-keyusages
 [`subtle.verify()`]: #subtleverifyalgorithm-key-signature-data
-[`subtle.wrapKey()`]: #subtlewrapkeyformat-key-wrappingkey-wrapalgo
+[`subtle.wrapKey()`]: #subtlewrapkeyformat-key-wrappingkey-wrapalgorithm

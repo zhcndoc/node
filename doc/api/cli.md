@@ -1039,6 +1039,17 @@ added:
 此标志是 `--experimental-config-file` 不带参数的别名。
 如果存在，Node.js 将在当前工作目录中查找 `node.config.json` 文件并将其作为配置文件加载。
 
+### `--experimental-dtls`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> Stability: 1 - Experimental
+
+Enable experimental support for the DTLS protocol. See the
+[dtls documentation][] for details.
+
 ### `--experimental-eventsource`
 
 <!-- YAML
@@ -1139,7 +1150,9 @@ added:
 ### `--experimental-quic`
 
 <!-- YAML
-added: v25.0.0
+added:
+ - v25.0.0
+ - v24.16.0
 -->
 
 > 稳定性：1.1 - 积极开发中
@@ -1171,6 +1184,7 @@ added:
 <!-- YAML
 added:
   - v25.5.0
+  - v24.16.0
 -->
 
 > 稳定性：1.1 - 积极开发中
@@ -1228,7 +1242,7 @@ changes:
 ### `--experimental-test-tag-filter=<tag>`
 
 <!-- YAML
-added: REPLACEME
+added: v26.2.0
 -->
 
 > Stability: 1.0 - Early development
@@ -1241,6 +1255,16 @@ case-insensitive.
 The flag may be specified more than once; tests must contain **every**
 filter value to run. See [Test tags][] for details on declaring and
 inheriting tags.
+
+### `--experimental-vfs`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> Stability: 1 - Experimental
+
+Enable the experimental [`node:vfs`][] module.
 
 ### `--experimental-vm-modules`
 
@@ -2421,7 +2445,9 @@ changes:
 ### `--test-random-seed`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 设置用于随机化测试执行顺序的种子。这适用于测试
@@ -2435,7 +2461,9 @@ added: v26.1.0
 ### `--test-randomize`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.16.0
 -->
 
 随机化测试执行顺序。这适用于测试文件执行顺序
@@ -3244,6 +3272,7 @@ node --require "./a.js" --require "./b.js"
 * `--experimental-abortcontroller`
 * `--experimental-addon-modules`
 * `--experimental-detect-module`
+* `--experimental-dtls`
 * `--experimental-eventsource`
 * `--experimental-ffi`
 * `--experimental-import-meta-resolve`
@@ -3258,6 +3287,7 @@ node --require "./a.js" --require "./b.js"
 * `--experimental-stream-iter`
 * `--experimental-test-isolation`
 * `--experimental-top-level-await`
+* `--experimental-vfs`
 * `--experimental-vm-modules`
 * `--experimental-wasi-unstable-preview1`
 * `--force-context-aware`
@@ -3813,6 +3843,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`node:ffi`]: ffi.md
 [`node:sqlite`]: sqlite.md
 [`node:stream/iter`]: stream_iter.md
+[`node:vfs`]: vfs.md
 [`process.setUncaughtExceptionCaptureCallback()`]: process.md#processsetuncaughtexceptioncapturecallbackfn
 [`tls.DEFAULT_MAX_VERSION`]: tls.md#tlsdefault_max_version
 [`tls.DEFAULT_MIN_VERSION`]: tls.md#tlsdefault_min_version
@@ -3820,14 +3851,15 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`v8.startupSnapshot.addDeserializeCallback()`]: v8.md#v8startupsnapshotadddeserializecallbackcallback-data
 [`v8.startupSnapshot.setDeserializeMainFunction()`]: v8.md#v8startupsnapshotsetdeserializemainfunctioncallback-data
 [`v8.startupSnapshot` API]: v8.md#startup-snapshot-api
-[异步模块自定义钩子]: module.md#asynchronous-customization-hooks
-[由 Node.js 内置快照捕获]: https://github.com/nodejs/node/blob/b19525a33cc84033af4addd0f80acd4dc33ce0cf/test/parallel/test-bootstrap-modules.js#L24
-[从测试中收集代码覆盖率]: test.md#collecting-code-coverage
-[条件导出]: packages.md#conditional-exports
-[上下文感知]: addons.md#context-aware-addons
-[调试器]: debugger.md
-[调试安全影响]: https://nodejs.org/en/docs/guides/debugging-getting-started/#security-implications
-[弃用警告]: deprecations.md#list-of-deprecated-apis
+[asynchronous module customization hooks]: module.md#asynchronous-customization-hooks
+[captured by the built-in snapshot of Node.js]: https://github.com/nodejs/node/blob/b19525a33cc84033af4addd0f80acd4dc33ce0cf/test/parallel/test-bootstrap-modules.js#L24
+[collecting code coverage from tests]: test.md#collecting-code-coverage
+[conditional exports]: packages.md#conditional-exports
+[context-aware]: addons.md#context-aware-addons
+[debugger]: debugger.md
+[debugging security implications]: https://nodejs.org/en/docs/guides/debugging-getting-started/#security-implications
+[deprecation warnings]: deprecations.md#list-of-deprecated-apis
+[dtls documentation]: dtls.md
 [emit_warning]: process.md#processemitwarningwarning-options
 [环境变量]: #environment-variables_1
 [按名称过滤测试]: test.md#filtering-tests-by-name
