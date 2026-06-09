@@ -213,7 +213,7 @@ added:
   - v26.1.0
   - v24.16.0
 changes:
-  - version: REPLACEME
+  - version: v26.3.0
     pr-url: https://github.com/nodejs/node/pull/63437
     description: 添加 inspector 端会话中途失败时的终端 `error` 事件 `probe_failure`，以及用于提供每次命中和终端错误额外上下文的 `error.details`。
   - version: v26.2.0

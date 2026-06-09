@@ -208,7 +208,12 @@ $ git reset --hard upstream/vN.x
 
 要包含的补丁列表应在 `nodejs-private` 的“下一个安全发布”问题中列出。如果不确定，请咨询安全发布负责人。
 
-`git node land` 工具不适用于 `nodejs-private` 组织。要在 Node.js 私有仓库中合并 PR，请使用 `git cherry-pick` 来应用每个提交。您还需要通过修改提交消息来手动应用 PR 元数据（`PR-URL`、`Reviewed-by` 等）。如果已知，请另外在提交元数据中包含 `CVE-ID: CVE-XXXX-XXXXX`。
+To use the `git node land` tool to land Pull Requests in the `nodejs-private`
+organization, you need to specify the full URL to the Pull Request and make sure
+you provide a GitHub token with read permission to the private repository. If
+known, additionally include `CVE-ID: CVE-XXXX-XXXXX` in the commit metadata.
+Make sure to sign and push to resulting commit to the private repository and not
+the public one.
 
 **注意**：在 CI 锁定之前，请勿在 `nodejs-private` 中的 PR 上运行任何 CI。
 您可以在不运行完整 CI 的情况下将 PR 集成到提案中。
@@ -1075,7 +1080,7 @@ git node release --prepare --startLTS
 
 应在发布前 6 周创建草稿发布提案。应创建一个单独的 `vN.x-proposal` 分支，该分支跟踪 `vN.x` 分支。此分支将包含草稿发布提交（带有草稿变更日志）。
 
-在发布提案 PR 中通知 `@nodejs/npm` 团队，告知他们即将发布的版本。`npm` 维护一个[支持的版本](https://github.com/npm/cli/blob/latest/lib/utils/unsupported.js#L3)列表，该列表需要更新以包含新的主要版本。
+通知 `@nodejs/npm` 团队在发布提案 PR 中知晓即将发布的版本。
 
 为了在发布日期之前保持分支同步，可以简单地执行以下操作：
 
@@ -1170,7 +1175,7 @@ Emitted 'error' event on DestroyableTransform instance at:
     at TLSSocket.socketErrorListener (node:_http_client:494:9)
     at TLSSocket.emit (node:events:513:28)
     at emitErrorNT (node:internal/streams/destroy:157:8)
-    at emitErrorCloseNT (node:internal/streams/destroy:122:3)
+    at emitErrorCloseNT (node:internal/streams/destroy:122:8)
     at processTicksAndRejections (node:internal/process/task_queues:83:21) {
   errno: -104,
   code: 'ECONNRESET',

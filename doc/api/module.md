@@ -437,7 +437,13 @@ changes:
 
 对于一般用例，建议调用 `module.enableCompileCache()` 而不指定 `options.directory`，以便在必要时可以通过 `NODE_COMPILE_CACHE` 环境变量覆盖目录。
 
-由于编译缓存应该是一种非关键任务的优化，此方法设计为在无法启用编译缓存时不抛出任何异常。相反，它将返回一个对象，其中包含 `message` 字段中的错误消息以辅助调试。如果成功启用编译缓存，返回对象中的 `directory` 字段包含存储编译缓存的目录路径。返回对象中的 `status` 字段将是 `module.constants.compileCacheStatus` 值之一，以指示启用 [模块编译缓存][] 的尝试结果。
+Since compile cache is supposed to be an optimization that is not mission critical, this
+method is designed to not throw any exception when the compile cache cannot be enabled.
+Instead, it will return an object containing an error message in the `message` field to
+aid debugging. If compile cache is enabled successfully, the `directory` field in the
+returned object contains the path to the directory where the compile cache is stored. The
+`status` field in the returned object would be one of the `module.constants.compileCacheStatus`
+values to indicate the result of the attempt to enable the [module compile cache][].
 
 此方法仅影响当前 Node.js 实例。要在子工作线程中启用它，要么也在子工作线程中调用此方法，要么将 `process.env.NODE_COMPILE_CACHE` 值设置为编译缓存目录，以便行为可以继承到子工作线程。目录可以从该方法返回的 `directory` 字段获取，或使用 [`module.getCompileCacheDir()`][] 获取。
 
@@ -1627,7 +1633,7 @@ changes:
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/62830
-    description: 对象是冻结的。
+    description: 对象已冻结。
 -->
 
 * 返回：{Object}

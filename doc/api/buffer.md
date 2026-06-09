@@ -795,12 +795,12 @@ changes:
 _可能包含敏感数据_。使用 [`buf.fill(0)`][`buf.fill()`] 来用零初始化
 此类 `Buffer` 实例。
 
-当使用 [`Buffer.allocUnsafe()`][] 分配新的 `Buffer` 实例时，
-小于 `Buffer.poolSize >>> 1`（当使用默认 poolSize 时为 4KiB）的分配是从
-单个预分配的 `Buffer` 切片的。这允许应用程序避免
-创建许多单独分配的 `Buffer`
-实例的垃圾回收开销。这种方法通过
-消除跟踪和清理许多单独 `ArrayBuffer` 对象的需要来提高性能和内存使用率。
+When using [`Buffer.allocUnsafe()`][] to allocate new `Buffer` instances,
+allocations less than `Buffer.poolSize >>> 1` (32KiB when default poolSize is used) are sliced
+from a single pre-allocated `Buffer`. This allows applications to avoid the
+garbage collection overhead of creating many individually allocated `Buffer`
+instances. This approach improves both performance and memory usage by
+eliminating the need to track and clean up as many individual `ArrayBuffer` objects.
 
 但是，如果开发者可能需要保留池中一小块
 内存不确定的时间，使用 `Buffer.allocUnsafeSlow()` 创建未池化的 `Buffer` 实例
@@ -1419,9 +1419,13 @@ console.log(Buffer.isEncoding(''));
 
 <!-- YAML
 added: v0.11.3
+changes:
+  - version: v26.3.0
+    pr-url: https://github.com/nodejs/node/pull/63597
+    description: Default raised from 8192 to 65536.
 -->
 
-* 类型：{integer} **默认值：** `8192`
+* Type: {integer} **Default:** `65536`
 
 这是用于池化的预分配内部 `Buffer` 实例的大小（以字节为单位）。此值可以被修改。
 

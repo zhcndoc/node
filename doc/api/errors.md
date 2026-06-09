@@ -1603,6 +1603,15 @@ HTTP/2 ping 有效载荷长度必须正好为 8 字节。
 指定了无效的 HTTP 状态码。状态码必须是
 `100` 到 `599`（含）之间的整数。
 
+<a id="ERR_HTTP2_STREAM_ABORTED"></a>
+
+### `ERR_HTTP2_STREAM_ABORTED`
+
+The peer reset the `Http2Stream` with a clean error code (`NGHTTP2_NO_ERROR`
+or `NGHTTP2_CANCEL`) before sending `END_STREAM`, so the readable side will
+not be fully delivered. Mirrors HTTP/1's `ECONNRESET` for a peer-side
+`socket.destroy()`.
+
 <a id="ERR_HTTP2_STREAM_CANCEL"></a>
 
 ### `ERR_HTTP2_STREAM_CANCEL`

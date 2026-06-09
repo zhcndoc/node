@@ -176,7 +176,7 @@ added:
 
 ### `blockList.fromJSON(value)`
 
-> 稳定性：1 - 实验性
+> 稳定性：1.2 - 候选发布
 
  <!-- YAML
 added:
@@ -200,7 +200,7 @@ blockList.fromJSON(JSON.stringify(data));
 
 ### `blockList.toJSON()`
 
-> 稳定性：1 - 实验性
+> 稳定性：1.2 - 候选发布
 
  <!-- YAML
 added:
@@ -260,449 +260,7 @@ added:
 <!-- YAML
 added:
   - v15.14.0
-  - v14.18.0
--->
-
-* 类型：{number}
-
-### `socketaddress.port`
-
-<!-- YAML
-added:
-  - v15.14.0
-  - v14.18.0
--->
-
-* 类型：{number}
-
-### `SocketAddress.parse(input)`
-
-<!-- YAML
-added:
-  - v23.4.0
-  - v22.13.0
--->
-
-* `input` {string} 包含 IP 地址和可选端口的输入字符串，
-  例如 `123.1.2.3:1234` 或 `[1::1]:1234`。
-* 返回：{net.SocketAddress} 如果解析成功则返回 `SocketAddress`。
-  否则返回 `undefined`。
-
-## Class: `net.Server`
-
-<!-- YAML
-added: v0.1.90
--->
-
-* 继承自：{EventEmitter}
-
-此类用于创建 TCP 或 [IPC][] 服务器。
-
-### `new net.Server([options][, connectionListener])`
-
-* `options` {Object} 参见
-  [`net.createServer([options][, connectionListener])`][`net.createServer()`]。
-* `connectionListener` {Function} 自动设置为
-  [`'connection'`][] 事件的监听器。
-* 返回：{net.Server}
-
-`net.Server` 是一个 [`EventEmitter`][]，具有以下事件：
-
-### Event: `'close'`
-
-<!-- YAML
-added: v0.5.0
--->
-
-当服务器关闭时发出。如果存在连接，则此
-事件直到所有连接结束后才会发出。
-
-### Event: `'connection'`
-
-<!-- YAML
-added: v0.1.90
--->
-
-* 类型：{net.Socket} 连接对象
-
-当建立新连接时发出。`socket` 是
-`net.Socket` 的实例。
-
-### Event: `'error'`
-
-<!-- YAML
-added: v0.1.90
--->
-
-* 类型：{Error}
-
-当发生错误时发出。与 [`net.Socket`][] 不同，[`'close'`][]
-事件**不会**在此事件之后直接发出，除非
-手动调用 [`server.close()`][]。参见 [`server.listen()`][] 讨论中的示例。
-
-### Event: `'listening'`
-
-<!-- YAML
-added: v0.1.90
--->
-
-当调用 [`server.listen()`][] 后服务器已绑定时发出。
-
-### Event: `'drop'`
-
-<!-- YAML
-added:
-  - v18.6.0
-  - v16.17.0
--->
-
-当连接数达到 `server.maxConnections` 的阈值时，
-服务器将丢弃新连接并发出 `'drop'` 事件。如果是
-TCP 服务器，则参数如下，否则参数为 `undefined`。
-
-* `data` {Object} 传递给事件监听器的参数。
-  * `localAddress` {string} 本地地址。
-  * `localPort` {number} 本地端口。
-  * `localFamily` {string} 本地族。
-  * `remoteAddress` {string} 远程地址。
-  * `remotePort` {number} 远程端口。
-  * `remoteFamily` {string} 远程 IP 族。`'IPv4'` 或 `'IPv6'`。
-
-### `server.address()`
-
-<!-- YAML
-added: v0.1.90
-changes:
-  - version: v18.4.0
-    pr-url: https://github.com/nodejs/node/pull/43054
-    description: "`family` 属性现在返回字符串而不是数字。"
-  - version: v18.0.0
-    pr-url: https://github.com/nodejs/node/pull/41431
-    description: "`family` 属性现在返回数字而不是字符串。"
--->
-
-* 返回：{Object|string|null}
-
-如果在监听 IP 套接字，则返回操作系统报告的服务器绑定的 `address`、地址 `family` 名称和 `port`
-（当获取操作系统分配的地址时，用于查找分配了哪个端口很有用）：
-`{ port: 12346, family: 'IPv4', address: '127.0.0.1' }`。
-
-对于监听管道或 Unix 域套接字的服务器，名称作为
-字符串返回。
-
-```js
-const server = net.createServer((socket) => {
-  socket.end('goodbye\n');
-}).on('error', (err) => {
-  // 在此处处理错误。
-  throw err;
-});
-
-// 获取一个任意未使用的端口。
-server.listen(() => {
-  console.log('opened server on', server.address());
-});
-```
-
-在 `'listening'` 事件发出之前或调用 `server.close()` 之后，
-`server.address()` 返回 `null`。
-
-### `server.close([callback])`
-
-<!-- YAML
-added: v0.1.90
--->
-
-* `callback` {Function} 当服务器关闭时调用。
-* 返回：{net.Server}
-
-停止服务器接受新连接并保持现有
-连接。此函数是异步的，当所有连接结束且服务器发出 [`'close'`][] 事件时，服务器最终关闭。
-可选的 `callback` 将在 `'close'` 事件发生时调用一次。与该事件不同，如果服务器
-在关闭时未开启，它将仅带有一个 `Error` 作为其参数被调用。
-
-### `server[Symbol.asyncDispose]()`
-
-<!-- YAML
-added:
- - v20.5.0
- - v18.18.0
-changes:
- - version: v24.2.0
-   pr-url: https://github.com/nodejs/node/pull/58467
-   description: 不再是实验性的。
--->
-
-调用 [`server.close()`][] 并返回一个 promise，当服务器
-关闭时该 promise 会被兑现。
-
-### `server.getConnections(callback)`
-
-<!-- YAML
-added: v0.9.7
--->
-
-* `callback` {Function}
-* 返回：{net.Server}
-
-异步获取服务器上的并发连接数。当套接字被发送到
-叉进程时有效。
-
-回调应接受两个参数 `err` 和 `count`。
-
-### `server.listen()`
-
-启动服务器监听连接。`net.Server` 可以是 TCP 或
-[IPC][] 服务器，具体取决于它监听的内容。
-
-可能的签名：
-
-* [`server.listen(handle[, backlog][, callback])`][`server.listen(handle)`]
-* [`server.listen(options[, callback])`][`server.listen(options)`]
-* [`server.listen(path[, backlog][, callback])`][`server.listen(path)`]
-  用于 [IPC][] 服务器
-* [`server.listen([port[, host[, backlog]]][, callback])`][`server.listen(port)`]
-  用于 TCP 服务器
-
-此函数是异步的。当服务器开始监听时，
-[`'listening'`][] 事件将被发出。最后一个参数 `callback`
-将作为 [`'listening'`][] 事件的监听器添加。
-
-所有 `listen()` 方法都可以接受一个 `backlog` 参数来指定待处理连接队列的最大
-长度。实际长度将由操作系统通过 sysctl 设置确定，例如
-Linux 上的 `tcp_max_syn_backlog` 和 `somaxconn`。此参数的默认值为 511（不是 512）。
-
-所有 [`net.Socket`][] 都设置为 `SO_REUSEADDR`（详见 [`socket(7)`][]）。
-
-当且仅当第一次 `server.listen()` 调用期间发生错误或已调用
-`server.close()` 时，才可以再次调用 `server.listen()` 方法。否则，将抛出
-`ERR_SERVER_ALREADY_LISTEN` 错误。
-
-监听时引发的最常见错误之一是 `EADDRINUSE`。
-当另一个服务器已经在监听从请求的
-`port`/`path`/`handle` 时，会发生这种情况。处理此问题的一种方法是在
-一定时间后重试：
-
-```js
-server.on('error', (e) => {
-  if (e.code === 'EADDRINUSE') {
-    console.error('地址正在使用中，正在重试...');
-    setTimeout(() => {
-      server.close();
-      server.listen(PORT, HOST);
-    }, 1000);
-  }
-});
-```
-
-#### `server.listen(handle[, backlog][, callback])`
-
-<!-- YAML
-added: v0.5.10
--->
-
-* `handle` {Object}
-* `backlog` {number} [`server.listen()`][] 函数的通用参数
-* `callback` {Function}
-* 返回：{net.Server}
-
-在已经绑定到端口、Unix 域套接字或 Windows 命名管道的给定 `handle` 上
-启动服务器监听连接。
-
-`handle` 对象可以是服务器、套接字（任何具有底层 `_handle` 成员的对象），或具有
-有效文件描述符的 `fd` 成员的对象。
-
-Windows 上不支持监听文件描述符。
-
-#### `server.listen(options[, callback])`
-
-<!-- YAML
-added: v0.11.14
-changes:
-  - version:
-    - v23.1.0
-    - v22.12.0
-    pr-url: https://github.com/nodejs/node/pull/55408
-    description: "支持 `reusePort` 选项。"
-  - version: v15.6.0
-    pr-url: https://github.com/nodejs/node/pull/36623
-    description: 添加了 AbortSignal 支持。
-  - version: v11.4.0
-    pr-url: https://github.com/nodejs/node/pull/23798
-    description: "支持 `ipv6Only` 选项。"
--->
-
-* `options` {Object} 必需。支持以下属性：
-  * `backlog` {number} [`server.listen()`][] 函数的通用参数。
-  * `exclusive` {boolean} **默认：** `false`
-  * `host` {string}
-  * `ipv6Only` {boolean} 对于 TCP 服务器，将 `ipv6Only` 设置为 `true` 将
-    禁用双栈支持，即，绑定到主机 `::` 不会使
-    `0.0.0.0` 被绑定。**默认：** `false`。
-  * `reusePort` {boolean} 对于 TCP 服务器，将 `reusePort` 设置为 `true` 允许
-    同一主机上的多个套接字绑定到同一端口。传入连接
-    由操作系统分发到监听套接字。此选项
-    仅在某些平台上可用，例如 Linux 3.9+、DragonFlyBSD 3.6+、FreeBSD 12.0+、
-    Solaris 11.4 和 AIX 7.2.5+。在不支持的平台上，此选项会抛出
-    错误。**默认：** `false`。
-  * `path` {string} 如果指定了 `port` 将被忽略。参见
-    [识别 IPC 连接的路径][]。
-  * `port` {number}
-  * `readableAll` {boolean} 对于 IPC 服务器，使管道对所有用户
-    可读。**默认：** `false`。
-  * `signal` {AbortSignal} 一个可用于关闭监听
-    服务器的 AbortSignal。
-  * `writableAll` {boolean} 对于 IPC 服务器，使管道对所有用户
-    可写。**默认：** `false`。
-* `callback` {Function}
-  函数。
-* 返回：{net.Server}
-
-如果指定了 `port`，其行为与
-[`server.listen([port[, host[, backlog]]][, callback])`][`server.listen(port)`] 相同。
-否则，如果指定了 `path`，其行为与
-[`server.listen(path[, backlog][, callback])`][`server.listen(path)`] 相同。
-如果未指定任何一项，将抛出错误。
-
-如果 `exclusive` 为 `false`（默认），则集群工作进程将使用相同的
-底层句柄，允许共享连接处理职责。当
-`exclusive` 为 `true` 时，句柄不共享，尝试共享端口
-会导致错误。下面展示了一个监听独占端口的示例。
-
-```js
-server.listen({
-  host: 'localhost',
-  port: 80,
-  exclusive: true,
-});
-```
-
-当 `exclusive` 为 `true` 且底层句柄被共享时，
-几个工作进程可能会使用不同的 backlog 查询句柄。
-在这种情况下，将使用传递给主进程的第一个 `backlog`。
-
-以 root 身份启动 IPC 服务器可能会导致服务器路径对
-非特权用户不可访问。使用 `readableAll` 和 `writableAll` 将使服务器
-对所有用户可访问。
-
-如果启用了 `signal` 选项，在相应的
-`AbortController` 上调用 `.abort()` 类似于在服务器上调用 `.close()`：
-
-```js
-const controller = new AbortController();
-server.listen({
-  host: 'localhost',
-  port: 80,
-  signal: controller.signal,
-});
-// 稍后，当你想要关闭服务器时。
-controller.abort();
-```
-
-#### `server.listen(path[, backlog][, callback])`
-
-<!-- YAML
-added: v0.1.90
--->
-
-* `path` {string} 服务器应监听的路径。参见
-  [识别 IPC 连接的路径][]。
-* `backlog` {number} [`server.listen()`][] 函数的通用参数。
-* `callback` {Function}。
-* 返回：{net.Server}
-
-启动 [IPC][] 服务器监听给定 `path` 上的连接。
-
-#### `server.listen([port[, host[, backlog]]][, callback])`
-
-<!-- YAML
-added: v0.1.90
--->
-
-* `port` {number}
-* `host` {string}
-* `backlog` {number} [`server.listen()`][] 函数的通用参数。
-* `callback` {Function}。
-* 返回：{net.Server}
-
-启动 TCP 服务器监听给定 `port` 和 `host` 上的连接。
-
-如果省略 `port` 或为 0，操作系统将分配一个任意
-未使用的端口，可以在 [`'listening'`][] 事件发出后
-通过使用 `server.address().port` 检索该端口。
-
-如果省略 `host`，当 IPv6 可用时，服务器将接受
-[未指定的 IPv6 地址][] (`::`) 上的连接，否则接受
-[未指定的 IPv4 地址][] (`0.0.0.0`) 上的连接。
-
-在大多数操作系统中，监听 [未指定的 IPv6 地址][] (`::`)
-可能会导致 `net.Server` 也监听 [未指定的 IPv4 地址][]
-(`0.0.0.0`)。
-
-### `server.listening`
-
-<!-- YAML
-added: v5.7.0
--->
-
-* 类型：{boolean} 指示服务器是否正在监听连接。
-
-### `server.maxConnections`
-
-<!-- YAML
-added: v0.2.0
-changes:
-  - version: v21.0.0
-    pr-url: https://github.com/nodejs/node/pull/48276
-    description: "将 `maxConnections` 设置为 `0` 会丢弃所有传入连接。此前，它被解释为 `Infinity`。"
--->
-
-* 类型：{integer}
-
-当连接数达到 `server.maxConnections` 阈值时：
-
-1. 如果进程未在集群模式下运行，Node.js 将关闭连接。
-
-2. 如果进程在集群模式下运行，默认情况下，Node.js 会将连接路由到另一个工作进程。要改为关闭连接，请将 [`server.dropMaxConnection`][] 设置为 `true`。
-
-一旦套接字已通过 [`child_process.fork()`][] 发送到子进程，
-不建议使用此选项。
-
-### `server.dropMaxConnection`
-
-<!-- YAML
-added:
-  - v23.1.0
-  - v22.12.0
--->
-
-* 类型：{boolean}
-
-将此属性设置为 `true` 以在连接数达到 [`server.maxConnections`][] 阈值时开始关闭连接。此设置仅在集群模式下有效。
-
-### `server.ref()`
-
-<!-- YAML
-added: v0.9.1
--->
-
-* 返回：{net.Server}
-
-`unref()` 的反操作，对之前 `unref` 的服务器调用 `ref()` 将
-_不会_ 让程序退出，如果它是唯一剩下的服务器（默认行为）。
-如果服务器已 `ref`，再次调用 `ref()` 将无效。
-
-### `server.unref()`
-
-<!-- YAML
-added: v0.9.1
--->
-
-* 返回：{net.Server}
-
-在服务器上调用 `unref()` 将允许程序退出，如果这是
-事件系统中唯一的活跃服务器。如果服务器已经 `unref`，再次调用
-`unref()` 将无效。
+  - v14.18.0-->
 
 ## 类：`net.Socket`
 
@@ -1521,7 +1079,7 @@ added: v0.1.90
 ```mjs
 import net from 'node:net';
 const client = net.createConnection({ port: 8124 }, () => {
-  // 'connect' 监听器。
+  // `'connect'` 监听器。
   console.log('connected to server!');
   client.write('world!\r\n');
 });
@@ -1537,7 +1095,7 @@ client.on('end', () => {
 ```cjs
 const net = require('node:net');
 const client = net.createConnection({ port: 8124 }, () => {
-  // 'connect' 监听器。
+  // `'connect'` 监听器。
   console.log('connected to server!');
   client.write('world!\r\n');
 });
@@ -1695,7 +1253,7 @@ changes:
 ```mjs
 import net from 'node:net';
 const server = net.createServer((c) => {
-  // 'connection' 监听器。
+  // `'connection'` 监听器。
   console.log('client connected');
   c.on('end', () => {
     console.log('client disconnected');
@@ -1714,7 +1272,7 @@ server.listen(8124, () => {
 ```cjs
 const net = require('node:net');
 const server = net.createServer((c) => {
-  // 'connection' 监听器。
+  // `'connection'` 监听器。
   console.log('client connected');
   c.on('end', () => {
     console.log('client disconnected');

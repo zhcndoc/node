@@ -1319,7 +1319,7 @@ const customReporter = new Transform({
         break;
       case 'test:coverage': {
         const { totalLineCount } = event.data.summary.totals;
-        callback(null, `total line count: ${totalLineCount}\n`);
+        callback(null, `总行数：${totalLineCount}\n`);
         break;
       }
     }
@@ -1367,7 +1367,7 @@ const customReporter = new Transform({
         break;
       case 'test:coverage': {
         const { totalLineCount } = event.data.summary.totals;
-        callback(null, `total line count: ${totalLineCount}\n`);
+        callback(null, `总行数：${totalLineCount}\n`);
         break;
       }
     }
@@ -1414,7 +1414,7 @@ export default async function * customReporter(source) {
         break;
       case 'test:coverage': {
         const { totalLineCount } = event.data.summary.totals;
-        yield `total line count: ${totalLineCount}\n`;
+        yield `总行数：${totalLineCount}\n`;
         break;
       }
     }
@@ -1457,7 +1457,7 @@ module.exports = async function * customReporter(source) {
         break;
       case 'test:coverage': {
         const { totalLineCount } = event.data.summary.totals;
-        yield `total line count: ${totalLineCount}\n`;
+        yield `总行数：${totalLineCount}\n`;
         break;
       }
     }
@@ -3109,7 +3109,7 @@ added:
   - v18.9.0
   - v16.19.0
 changes:
-  - version: REPLACEME
+  - version: v26.3.0
     pr-url: https://github.com/nodejs/node/pull/63435
     description: 为携带 `testId` 的测试事件添加了 `parentId`。
   - version:
@@ -3446,14 +3446,14 @@ added: v26.1.0
 ```mjs
 import { getTestContext } from 'node:test';
 
-test('example test', async () => {
+test('示例测试', async () => {
   const ctx = getTestContext();
-  console.log(`Running test: ${ctx.name}`);
+  console.log(`正在运行测试：${ctx.name}`);
 });
 
-describe('example suite', () => {
+describe('示例套件', () => {
   const ctx = getTestContext();
-  console.log(`Running suite: ${ctx.name}`);
+  console.log(`正在运行套件：${ctx.name}`);
 });
 ```
 
@@ -3530,12 +3530,12 @@ testChannel.start.bindStore(testStorage, (data) => {
 // 可选地处理错误和清理
 testChannel.error.subscribe((data) => {
   const store = testStorage.getStore();
-  console.log(`Test "${data.name}" failed after ${Date.now() - store.startTime}ms`);
+  console.log(`测试 "${data.name}" 在 ${Date.now() - store.startTime}ms 后失败`);
 });
 
 testChannel.end.subscribe((data) => {
   const store = testStorage.getStore();
-  console.log(`Test "${data.name}" completed in ${Date.now() - store.startTime}ms`);
+  console.log(`测试 "${data.name}" 在 ${Date.now() - store.startTime}ms 内完成`);
 });
 ```
 
@@ -3588,7 +3588,7 @@ added:
 此函数用于创建一个钩子，在当前测试的每个子测试之前运行。
 
 ```js
-test('top level test', async (t) => {
+test('顶级测试', async (t) => {
   t.beforeEach((t) => t.diagnostic(`即将运行 ${t.name}`));
   await t.test(
     '这是一个子测试',
@@ -3615,7 +3615,7 @@ added:
 此函数用于创建一个钩子，在当前测试完成后运行。
 
 ```js
-test('top level test', (t) => {
+test('顶级测试', (t) => {
   t.after((t) => t.diagnostic(`已完成运行 ${t.name}`));
   // 此处进行相关的断言
 });
@@ -3637,7 +3637,7 @@ added:
 此函数用于创建一个钩子，在当前测试的每个子测试之后运行。
 
 ```js
-test('top level test', async (t) => {
+test('顶级测试', async (t) => {
   t.afterEach((t) => t.diagnostic(`已完成运行 ${t.name}`));
   await t.test(
     '这是一个子测试',
@@ -3731,7 +3731,7 @@ added:
 此函数用于将诊断信息写入输出。任何诊断信息都包含在测试结果的末尾。此函数不返回值。
 
 ```js
-test('top level test', (t) => {
+test('顶级测试', (t) => {
   t.diagnostic('一条诊断消息');
 });
 ```
@@ -3830,7 +3830,7 @@ added:
 import { test } from 'node:test';
 import { process } from 'node:process';
 
-test('database operations', async (t) => {
+test('数据库操作', async (t) => {
   // 可通过 context 获取 Worker ID
   console.log(`正在 worker ${t.workerId} 中运行`);
 
@@ -3871,7 +3871,7 @@ changes:
 > 注意：为了确保断言被追踪，必须使用 `t.assert` 而不是直接使用 `assert`。
 
 ```js
-test('top level test', (t) => {
+test('顶级测试', (t) => {
   t.plan(2);
   t.assert.ok('some relevant assertion here');
   t.test('subtest', () => {});
@@ -3903,7 +3903,7 @@ test('planning with streams', (t, done) => {
 当使用 `wait` 选项时，你可以控制测试等待预期断言的时间。例如，设置最大等待时间可确保测试在指定的时间范围内等待异步断言完成：
 
 ```js
-test('plan with wait: 2000 waits for async assertions', (t) => {
+test('wait 为 2000 的计划会等待异步断言', (t) => {
   t.plan(1, { wait: 2000 }); // 最多等待 2 秒以便断言完成。
 
   const asyncActivity = () => {
@@ -3931,12 +3931,12 @@ added:
 如果 `shouldRunOnlyTests` 为真值，则测试上下文将仅运行设置了 `only` 选项的测试。否则，将运行所有测试。如果 Node.js 未使用 [`--test-only`][] 命令行选项启动，则此函数为空操作。
 
 ```js
-test('top level test', (t) => {
+test('顶级测试', (t) => {
   // 测试上下文可设置为运行带有 'only' 选项的子测试。
   t.runOnly(true);
   return Promise.all([
-    t.test('this subtest is now skipped'),
-    t.test('this subtest is run', { only: true }),
+    t.test('此子测试现在将被跳过'),
+    t.test('此子测试将运行', { only: true }),
   ]);
 });
 ```
@@ -3954,7 +3954,7 @@ added:
 当测试被中止时，可用于中止测试子任务。
 
 ```js
-test('top level test', async (t) => {
+test('顶级测试', async (t) => {
   await fetch('some/uri', { signal: t.signal });
 });
 ```
@@ -3972,7 +3972,7 @@ added:
 此函数使测试的输出指示测试被跳过。如果提供了 `message`，则将其包含在输出中。调用 `skip()` 不会终止测试函数的执行。此函数不返回值。
 
 ```js
-test('top level test', (t) => {
+test('顶级测试', (t) => {
   // 如果测试包含额外逻辑，也请确保在此处返回。
   t.skip('此处被跳过');
 });
@@ -3991,7 +3991,7 @@ added:
 此函数向测试的输出添加 `TODO` 指令。如果提供了 `message`，则将其包含在输出中。调用 `todo()` 不会终止测试函数的执行。此函数不返回值。
 
 ```js
-test('top level test', (t) => {
+test('顶级测试', (t) => {
   // 此测试被标记为 `TODO`
   t.todo('这是一个待办事项');
 });
@@ -4045,7 +4045,7 @@ changes:
 此函数用于在当前测试下创建子测试。此函数的行为与顶层 [`test()`][] 函数相同。
 
 ```js
-test('top level test', async (t) => {
+test('顶级测试', async (t) => {
   await t.test(
     '这是一个子测试',
     { only: false, skip: false, concurrency: 1, todo: false, plan: 1 },

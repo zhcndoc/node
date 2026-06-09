@@ -2,6 +2,17 @@
 
 <!--introduced_in=v10.5.0-->
 
+<!-- YAML
+added: v10.5.0
+changes:
+  - version: v12.11.0
+    pr-url: https://github.com/nodejs/node/pull/29512
+    description: 此 API 不再是实验性功能。
+  - version: v11.7.0
+    pr-url: https://github.com/nodejs/node/pull/25361
+    description: 此 API 不再受 `--experimental-worker` CLI 标志限制。
+-->
+
 > 稳定性：2 - 稳定
 
 <!-- source_link=lib/worker_threads.js -->
@@ -1059,7 +1070,7 @@ added: v10.5.0
 禁用连接任一侧的进一步消息发送。
 当不再通过此 `MessagePort` 进行通信时，可以调用此方法。
 
-[`'close'` 事件][] 会在属于该通道的两个 `MessagePort` 实例上发出。
+[`'close' 事件][] 会在属于该通道的两个 `MessagePort` 实例上发出。
 
 ### `port.postMessage(value[, transferList])`
 
@@ -1251,16 +1262,14 @@ port2.postMessage(new Foo());
 // 打印：{ c: 3 }
 ```
 
-此限制扩展到许多内置对象，例如全局 `URL` 对象：
+一些内置对象根本无法克隆。例如，发送一个
+`URL` 对象会抛出 `DataCloneError`：
 
 ```js
 const { port1, port2 } = new MessageChannel();
 
-port1.onmessage = ({ data }) => console.log(data);
-
 port2.postMessage(new URL('https://example.org'));
-
-// 打印：{ }
+// 抛出 DataCloneError：无法克隆不受支持类型的对象。
 ```
 
 ### `port.hasRef()`

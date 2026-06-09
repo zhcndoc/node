@@ -396,7 +396,9 @@ changes:
   * `err` {Error}
   * `addresses` {string\[] | Object\[]}
 
-使用 DNS 协议解析 `hostname` 的 IPv4 地址（`A` 记录）。传递给 `callback` 函数的 `addresses` 参数将包含一个 IPv4 地址数组（例如 `['74.125.79.104', '74.125.79.105', '74.125.79.106']`）。
+使用 DNS 协议来解析 `hostname` 的 IPv4 地址（`A` 记录）。传递给 `callback` 函数的 `addresses` 参数
+将包含一个 IPv4 地址数组（例如
+`['74.125.79.104', '74.125.79.105', '74.125.79.106']`）。
 
 ## `dns.resolve6(hostname[, options], callback)`
 

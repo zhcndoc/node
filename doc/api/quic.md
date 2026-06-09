@@ -10,7 +10,7 @@ added: v23.8.0
 
 <!-- source_link=lib/quic.js -->
 
-'node:quic' 模块提供了 QUIC 协议的实现。
+`node:quic` 模块提供了 QUIC 协议的实现。
 要访问它，请使用 `--experimental-quic` 选项启动 Node.js，然后：
 
 ```mjs
@@ -341,6 +341,18 @@ QUIC 会话，请传递 `endpoint` 选项，
 参数为 `QuicEndpoint` 或 `EndpointOptions`。
 
 任何单个 `QuicEndpoint` 最多只能配置为监听服务器一次。
+
+## `quic.listEndpoints([options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `options` {object}
+  * `active` {boolean} 如果为 `true`（默认值），则仅返回处于活动状态（未销毁、未关闭且未繁忙）的端点。如果为 `false`，则返回所有端点。
+* 返回：{quic.QuicEndpoint\[]}
+
+返回所有 `QuicEndpoint` 实例的列表。默认情况下，仅返回活动端点。
 
 ## `quic.constants`
 
@@ -701,7 +713,7 @@ added: v23.8.0
 ### `session.applicationOptions`
 
 <!-- YAML
-added: REPLACEME
+added: v26.3.0
 -->
 
 * Type: {quic.ApplicationOptions}
@@ -818,7 +830,7 @@ added: v23.8.0
 ### `session.localTransportParams`
 
 <!-- YAML
-added: REPLACEME
+added: v26.3.0
 -->
 
 * Type: {quic.TransportParams|null}
@@ -1109,7 +1121,7 @@ added: v23.8.0
 ### `session.remoteTransportParams`
 
 <!-- YAML
-added: REPLACEME
+added: v26.3.0
 -->
 
 * Type: {quic.TransportParams|null|undefined}
@@ -1970,7 +1982,7 @@ added: v23.8.0
 ### `streamStats.bytesAccumulated`
 
 <!-- YAML
-added: REPLACEME
+added: v26.3.0
 -->
 
 * 类型：{bigint}
@@ -2028,7 +2040,7 @@ added: v23.8.0
 ### `streamStats.maxBytesAccumulated`
 
 <!-- YAML
-added: REPLACEME
+added: v26.3.0
 -->
 
 * 类型：{bigint}
@@ -2080,7 +2092,7 @@ added: v23.8.0
 ### type: `ApplicationOptions`
 
 <!-- YAML
-added: REPLACEME
+added: v26.3.0
 -->
 
 * 类型：{Object}
@@ -2221,7 +2233,7 @@ added: v23.8.0
 #### `endpointOptions.reusePort`
 
 <!-- YAML
-added: REPLACEME
+added: v26.3.0
 -->
 
 * 类型：{boolean}
@@ -2673,7 +2685,7 @@ added: v23.8.0
 #### `sessionOptions.initialRtt`
 
 <!-- YAML
-added: REPLACEME
+added: v26.3.0
 -->
 
 * 类型：{bigint|number}
@@ -2858,7 +2870,7 @@ added: v23.8.0
 #### `transportParams.initialSCID`
 
 <!-- YAML
-added: REPLACEME
+added: v26.3.0
 -->
 
 * 类型：{string}
@@ -2868,7 +2880,7 @@ added: REPLACEME
 #### `transportParams.originalDCID`
 
 <!-- YAML
-added: REPLACEME
+added: v26.3.0
 -->
 
 * 类型：{string}
@@ -2985,7 +2997,7 @@ added: v23.8.0
 #### `transportParams.retrySCID`
 
 <!-- YAML
-added: REPLACEME
+added: v26.3.0
 -->
 
 * 类型：{string}

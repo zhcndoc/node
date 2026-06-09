@@ -6889,7 +6889,26 @@ added:
 
 * 类型：{number|bigint}
 
-非特权用户可用的空闲块。
+Free blocks available to unprivileged users. Multiply by [`statfs.bsize`][]
+to get the number of available bytes.
+
+```mjs
+import { statfs } from 'node:fs/promises';
+
+const stats = await statfs('/');
+const availableBytes = stats.bsize * stats.bavail;
+console.log(`Available space: ${availableBytes} bytes`);
+```
+
+```cjs
+const { statfs } = require('node:fs/promises');
+
+(async () => {
+  const stats = await statfs('/');
+  const availableBytes = stats.bsize * stats.bavail;
+  console.log(`Available space: ${availableBytes} bytes`);
+})();
+```
 
 #### `statfs.bfree`
 
@@ -6901,7 +6920,26 @@ added:
 
 * 类型：{number|bigint}
 
-文件系统中的空闲块。
+Free blocks in file system. Multiply by [`statfs.bsize`][] to get the number
+of free bytes.
+
+```mjs
+import { statfs } from 'node:fs/promises';
+
+const stats = await statfs('/');
+const freeBytes = stats.bsize * stats.bfree;
+console.log(`Free space: ${freeBytes} bytes`);
+```
+
+```cjs
+const { statfs } = require('node:fs/promises');
+
+(async () => {
+  const stats = await statfs('/');
+  const freeBytes = stats.bsize * stats.bfree;
+  console.log(`Free space: ${freeBytes} bytes`);
+})();
+```
 
 #### `statfs.blocks`
 
@@ -6913,7 +6951,26 @@ added:
 
 * 类型：{number|bigint}
 
-文件系统中的总数据块。
+Total data blocks in file system. Multiply by [`statfs.bsize`][] to get the
+total size in bytes.
+
+```mjs
+import { statfs } from 'node:fs/promises';
+
+const stats = await statfs('/');
+const totalBytes = stats.bsize * stats.blocks;
+console.log(`Total space: ${totalBytes} bytes`);
+```
+
+```cjs
+const { statfs } = require('node:fs/promises');
+
+(async () => {
+  const stats = await statfs('/');
+  const totalBytes = stats.bsize * stats.blocks;
+  console.log(`Total space: ${totalBytes} bytes`);
+})();
+```
 
 #### `statfs.bsize`
 
@@ -6925,7 +6982,7 @@ added:
 
 * 类型：{number|bigint}
 
-最佳传输块大小。
+Optimal transfer block size in bytes.
 
 #### `statfs.frsize`
 
@@ -6973,7 +7030,11 @@ added:
 
 * 类型：{number|bigint}
 
-文件系统类型。
+Type of file system. A platform-specific numeric identifier for the type of
+file system. This value corresponds to the `f_type` field returned by
+`statfs(2)` on POSIX systems (for example, `0xEF53` for ext4 on Linux). Its
+meaning is OS-dependent and is not guaranteed to be consistent across
+platforms.
 
 ### 类：`fs.Utf8Stream`
 
@@ -7980,6 +8041,7 @@ fs.open('<directory>', 'a+', (err, fd) => {
 [`kqueue(2)`]: https://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2
 [`minimatch`]: https://github.com/isaacs/minimatch
 [`node:stream/iter`]: stream_iter.md
+[`statfs.bsize`]: #statfsbsize
 [`stream/iter pipeTo()`]: stream_iter.md#pipetosource-transforms-writer
 [`stream/iter pull()`]: stream_iter.md#pullsource-transforms-options
 [`stream/iter pullSync()`]: stream_iter.md#pullsyncsource-transforms

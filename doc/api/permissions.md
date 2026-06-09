@@ -23,7 +23,7 @@ changes:
     - v23.5.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/56201
-    description: This feature is no longer experimental.
+    description: 此功能不再是实验性功能。
 -->
 
 > 稳定性：2 - 稳定
@@ -54,8 +54,8 @@ Error: Access to this API has been restricted
 
 #### 运行时 API
 
-当通过 [`--permission`][] 标志启用权限模型时，`process` 对象会添加一个新属性 `permission`。
-该属性包含一个函数：
+当通过 [`--permission`][] 标志启用权限模型时，会向 `process` 对象添加一个新的 `permission` 属性。
+该属性包含以下函数：
 
 ##### `permission.has(scope[, reference])`
 
@@ -67,6 +67,30 @@ process.permission.has('fs.write', '/home/rafaelgss/protected-folder'); // true
 
 process.permission.has('fs.read'); // true
 process.permission.has('fs.read', '/home/rafaelgss/protected-folder'); // false
+```
+
+##### `permission.drop(scope[, reference])`
+
+在运行时撤销权限的 API 调用。此操作是**不可逆**的。
+
+如果不传入 reference，则会撤销整个作用域；如果传入 reference，则只会撤销该特定资源的权限。撤销权限只会影响未来的访问检查。它不会关闭或撤销已经打开的资源的访问权限，例如文件描述符、网络套接字、子进程或工作线程。应用程序负责在不再需要这些资源时关闭或终止它们。
+
+您只能撤销明确授予的精确资源。传递给 `drop()` 的 reference 必须与原始授予内容匹配。如果权限是使用通配符（`*`）授予的，则只能通过不传入 reference 调用 `drop()` 来撤销整个作用域。如果授予的是目录（例如 `--allow-fs-read=/my/folder`），则不能撤销其中的单个文件——必须撤销最初授予的同一个目录。
+
+```js
+const fs = require('node:fs');
+
+// 在启动时读取配置，此时我们仍然拥有权限
+const config = fs.readFileSync('/etc/myapp/config.json', 'utf8');
+
+// 初始化后撤销对 /etc/myapp 的读取访问
+process.permission.drop('fs.read', '/etc/myapp');
+
+// 现在这将抛出 ERR_ACCESS_DENIED
+process.permission.has('fs.read', '/etc/myapp/config.json'); // false
+
+// 完全撤销子进程权限
+process.permission.drop('child');
 ```
 
 #### 文件系统权限
@@ -187,43 +211,31 @@ npx --node-options="--permission" package-name
   * 文件系统访问
   * WASI
   * FFI
-* The Permission Model is initialized after the Node.js environment is set up.
-  However, certain flags such as `--env-file` or `--openssl-config` are designed
-  to read files before environment initialization. As a result, such flags are
-  not subject to the rules of the Permission Model. The same applies for V8
-  flags that can be set via runtime through `v8.setFlagsFromString`.
-* OpenSSL engines cannot be requested at runtime when the Permission
-  Model is enabled, affecting the built-in crypto, https, and tls modules.
-* Run-Time Loadable Extensions cannot be loaded when the Permission Model is
-  enabled, affecting the sqlite module.
-* Using existing file descriptors via the `node:fs` module bypasses the
-  Permission Model.
+* 权限模型会在 Node.js 环境设置完成后初始化。
+  但是，某些标志（如 `--env-file` 或 `--openssl-config`）旨在在环境初始化之前读取文件。因此，这类标志不受权限模型规则约束。通过运行时使用 `v8.setFlagsFromString` 设置的 V8 标志也同样如此。
+* 在启用权限模型时，不能在运行时请求 OpenSSL 引擎，这会影响内置的 crypto、https 和 tls 模块。
+* 在启用权限模型时，不能加载运行时可加载扩展，这会影响 sqlite 模块。
+* 通过 `node:fs` 模块使用现有文件描述符会绕过权限模型。
 
-#### process.\_debugProcess() and cross-process Inspector activation
+#### `process._debugProcess()` 和跨进程 Inspector 激活
 
-The `kInspector` permission scope restricts the current process from opening its own V8 Inspector. However,
-process.\_debugProcess(pid) — which sends an OS-level signal (SIGUSR1 on POSIX, a remote thread on Windows)
-to an external process — is not gated by the `kInspector` scope or any other Permission Model scope.
+`kInspector` 权限作用域会限制当前进程打开自身 V8 Inspector 的能力。然而，
+`process._debugProcess(pid)`——它会向外部进程发送操作系统级信号（在 POSIX 上为 SIGUSR1，在 Windows 上为远程线程）——
+不受 `kInspector` 作用域或任何其他权限模型作用域的约束。
 
-A sandboxed process running under --permission with no additional grants can call process.\_debugProcess(pid)
-to force another Node.js process to open its V8 Inspector. The target process does not need to be running
-under --permission for this to work — any Node.js process running on the same host under the same OS user
-can be signaled.
+在 `--permission` 下运行且没有额外授权的受限进程可以调用 `process._debugProcess(pid)`，
+强制另一个 Node.js 进程打开其 V8 Inspector。目标进程不需要在 `--permission` 下运行即可生效——
+任何在同一主机上、同一 OS 用户下运行的 Node.js 进程都可以被发出信号。
 
-This is consistent with the Node.js threat model: Node.js trusts the OS environment in which it runs.
-Cross-process signaling is an operating-system-level capability; restricting it is the responsibility of
-the operator (for example, using OS-level process isolation, separate OS users per process, or
-seccomp/AppArmor profiles on Linux).
+这与 Node.js 的威胁模型一致：Node.js 信任其运行所在的操作系统环境。跨进程信号传递是操作系统级能力；限制它是操作人员的责任（例如，在 Linux 上使用操作系统级进程隔离、每个进程使用不同的 OS 用户，或使用 seccomp/AppArmor 配置文件）。
 
-Developers relying on --permission to sandbox untrusted code should be aware that:
+依赖 `--permission` 来隔离不受信任代码的开发者应注意：
 
-* process.\_debugProcess() is callable from any sandboxed process with no grants.
-* If a target Node.js process is running on the same host under the same OS user, it can be forced to
-  open its Inspector via this API.
-* To prevent this, run sandboxed and target processes under different OS users, or use OS-level isolation
-  mechanisms outside of Node.js.
+* 任何没有授权的受限进程都可以调用 `process._debugProcess()`。
+* 如果目标 Node.js 进程在同一主机上以同一 OS 用户运行，它可以通过此 API 被强制打开 Inspector。
+* 为防止这种情况，请在不同的 OS 用户下运行受限进程和目标进程，或者使用 Node.js 之外的操作系统级隔离机制。
 
-#### Limitations and Known Issues
+#### 限制与已知问题
 
 * 符号链接将被跟随，即使指向未授予访问权限的路径位置。相对符号链接可能允许访问任意文件和目录。当启用权限模型启动应用程序时，必须确保授予访问权限的路径不包含相对符号链接。
 

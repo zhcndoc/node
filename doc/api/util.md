@@ -1410,7 +1410,10 @@ changes:
 
 除了可以通过 `util.inspect.custom` 访问外，此符号还在 [全局符号注册表][global symbol registry] 中注册，可以在任何环境中作为 `Symbol.for('nodejs.util.inspect.custom')` 访问。
 
-使用此允许以可移植的方式编写代码，以便自定义检查函数在 Node.js 环境中使用而在浏览器中被忽略。`util.inspect()` 函数本身作为第三个参数传递给自定义检查函数，以允许进一步的可移植性。
+Using this allows code to be written in a portable fashion, so that the custom
+inspect function is used in a Node.js environment and ignored in the browser.
+The `util.inspect()` function itself is passed as third argument to the custom
+inspect function to allow further portability.
 
 ```js
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');

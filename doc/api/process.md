@@ -644,13 +644,13 @@ Node.js 二进制文件编译所在的操作系统 CPU 架构。可能的值为�
 ```mjs
 import { arch } from 'node:process';
 
-console.log(`This processor architecture is ${arch}`);
+console.log(`此处理器架构为 ${arch}`);
 ```
 
 ```cjs
 const { arch } = require('node:process');
 
-console.log(`This processor architecture is ${arch}`);
+console.log(`此处理器架构为 ${arch}`);
 ```
 
 ## `process.argv`
@@ -1532,14 +1532,14 @@ added: v0.11.8
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/43716
-    description: 只接受数字类型的代码，或者如果是字符串类型，则表示整数。
+    description: Only accepts numeric codes, or integer strings if a string is provided.
 -->
 
-* 类型：{integer|string|null|undefined} 退出代码。对于字符串类型，仅允许整数字符串（例如，'1'）。**默认：** `undefined`。
+* Type: {integer|string|null|undefined} The exit code. For string values, only integer strings are allowed, e.g. `'1'`. **Default:** `undefined`.
 
-当进程优雅退出或通过 [`process.exit()`][] 退出而未指定代码时，该数字将成为进程退出代码。
+When the process exits gracefully, or exits via [`process.exit()`][] without specifying a code, this number will be used as the process exit code.
 
-可以通过为 `process.exitCode` 赋值或向 [`process.exit()`][] 传递参数来更新 `process.exitCode` 的值：
+The value of `process.exitCode` can be updated by assigning to `process.exitCode` or by passing an argument to [`process.exit()`][]:
 
 ```console
 $ node -e 'process.exitCode = 9'; echo $?
@@ -1550,7 +1550,7 @@ $ node -e 'process.exitCode = 9; process.exit(42)'; echo $?
 42
 ```
 
-当发生不可恢复的错误时（例如遇到未结算的顶层 await），Node.js 也可以隐式设置该值。但是显式操作退出代码始终优先于隐式操作：
+Node.js may also implicitly set this value when unrecoverable errors occur, for example, when an unsettled top-level await is encountered. However, explicit operations on the exit code always take precedence over implicit ones:
 
 ```console
 $ node --input-type=module -e 'await new Promise(() => {})'; echo $?
@@ -1565,9 +1565,9 @@ $ node --input-type=module -e 'process.exitCode = 9; await new Promise(() => {})
 added: v12.0.0
 -->
 
-* 类型：{boolean}
+* Type: {boolean}
 
-如果当前 Node.js 构建正在缓存内置模块，则为 `true` 的布尔值。
+A boolean that is `true` if the current Node.js build is caching built-in modules.
 
 ## `process.features.debug`
 
@@ -1575,9 +1575,9 @@ added: v12.0.0
 added: v0.5.5
 -->
 
-* 类型：{boolean}
+* Type: {boolean}
 
-如果当前 Node.js 构建是调试构建，则为 `true` 的布尔值。
+A boolean that is `true` if the current Node.js build is a debug build.
 
 ## `process.features.inspector`
 
@@ -1585,9 +1585,9 @@ added: v0.5.5
 added: v11.10.0
 -->
 
-* 类型：{boolean}
+* Type: {boolean}
 
-如果当前 Node.js 构建包含 inspector，则为 `true` 的布尔值。
+A boolean that is `true` if the current Node.js build includes inspector.
 
 ## `process.features.ipv6`
 
@@ -1598,13 +1598,13 @@ deprecated:
   - v22.13.0
 -->
 
-> 稳定性：0 - 已弃用。此属性始终为 true，任何基于它的检查都是多余的。
+> Stability: 0 - Deprecated. This property is always true and any check based on it is redundant.
 
-* 类型：{boolean}
+* Type: {boolean}
 
-如果当前 Node.js 构建包含对 IPv6 的支持，则为 `true` 的布尔值。
+A boolean that is `true` if the current Node.js build includes IPv6 support.
 
-由于所有 Node.js 构建都具有 IPv6 支持，因此此值始终为 `true`。
+Because all Node.js builds have IPv6 support, this value is always `true`.
 
 ## `process.features.require_module`
 
@@ -1615,9 +1615,9 @@ added:
  - v20.19.0
 -->
 
-* 类型：{boolean}
+* Type: {boolean}
 
-如果当前 Node.js 构建支持[使用 `require()` 加载 ECMAScript 模块][]，则为 `true` 的布尔值。
+A boolean that is `true` if the current Node.js build supports [loading ECMAScript modules using `require()`][].
 
 ## `process.features.tls`
 
@@ -1625,9 +1625,9 @@ added:
 added: v0.5.3
 -->
 
-* 类型：{boolean}
+* Type: {boolean}
 
-如果当前 Node.js 构建包含对 TLS 的支持，则为 `true` 的布尔值。
+A boolean that is `true` if the current Node.js build includes TLS support.
 
 ## `process.features.tls_alpn`
 
@@ -1638,14 +1638,14 @@ deprecated:
   - v22.13.0
 -->
 
-> 稳定性：0 - 已弃用。请改用 `process.features.tls`。
+> Stability: 0 - Deprecated. Use `process.features.tls` instead.
 
-* 类型：{boolean}
+* Type: {boolean}
 
-如果当前 Node.js 构建包含对 TLS 中 ALPN 的支持，则为 `true` 的布尔值。
+A boolean that is `true` if the current Node.js build includes ALPN support in TLS.
 
-在 Node.js 11.0.0 及更高版本中，OpenSSL 依赖项具有无条件 ALPN 支持。
-因此，此值与 `process.features.tls` 的值相同。
+In Node.js 11.0.0 and later, the OpenSSL dependency has unconditional ALPN support.
+Therefore, this value is the same as `process.features.tls`.
 
 ## `process.features.tls_ocsp`
 
@@ -1656,14 +1656,14 @@ deprecated:
   - v22.13.0
 -->
 
-> 稳定性：0 - 已弃用。请改用 `process.features.tls`。
+> Stability: 0 - Deprecated. Use `process.features.tls` instead.
 
-* 类型：{boolean}
+* Type: {boolean}
 
-如果当前 Node.js 构建包含对 TLS 中 OCSP 的支持，则为 `true` 的布尔值。
+A boolean that is `true` if the current Node.js build includes OCSP support in TLS.
 
-在 Node.js 11.0.0 及更高版本中，OpenSSL 依赖项具有无条件 OCSP 支持。
-因此，此值与 `process.features.tls` 的值相同。
+In Node.js 11.0.0 and later, the OpenSSL dependency has unconditional OCSP support.
+Therefore, this value is the same as `process.features.tls`.
 
 ## `process.features.tls_sni`
 
@@ -1674,14 +1674,14 @@ deprecated:
   - v22.13.0
 -->
 
-> 稳定性：0 - 已弃用。请改用 `process.features.tls`。
+> Stability: 0 - Deprecated. Use `process.features.tls` instead.
 
-* 类型：{boolean}
+* Type: {boolean}
 
-如果当前 Node.js 构建包含对 TLS 中 SNI 的支持，则为 `true` 的布尔值。
+A boolean that is `true` if the current Node.js build includes SNI support in TLS.
 
-在 Node.js 11.0.0 及更高版本中，OpenSSL 依赖项具有无条件 SNI 支持。
-因此，此值与 `process.features.tls` 的值相同。
+In Node.js 11.0.0 and later, the OpenSSL dependency has unconditional SNI support.
+Therefore, this value is the same as `process.features.tls`.
 
 ## `process.features.typescript`
 
@@ -1692,19 +1692,19 @@ added:
 changes:
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/61803
-    description: "移除了 `transform` 值。"
+    description: "Removed the `transform` value."
   - version:
       - v25.2.0
       - v24.12.0
     pr-url: https://github.com/nodejs/node/pull/60600
-    description: 类型剥离现已稳定。
+    description: Type stripping is now stable.
 -->
 
-> 稳定性：1.2 - 发布候选
+> Stability: 1.2 - Release candidate
 
-* 类型：{boolean|string}
+* Type: {boolean|string}
 
-默认值为 `"strip"`，如果 Node.js 使用 `--no-strip-types` 运行，则为 `false`。
+The default value is `"strip"`, and is `false` if Node.js is run with `--no-strip-types`.
 
 ## `process.features.uv`
 
@@ -1715,13 +1715,13 @@ deprecated:
   - v22.13.0
 -->
 
-> 稳定性：0 - 已弃用。此属性始终为 true，任何基于它的检查都是多余的。
+> Stability: 0 - Deprecated. This property is always true and any check based on it is redundant.
 
-* 类型：{boolean}
+* Type: {boolean}
 
-如果当前 Node.js 构建包含对 libuv 的支持，则为 `true` 的布尔值。
+A boolean that is `true` if the current Node.js build includes libuv support.
 
-由于不可能在没有 libuv 的情况下构建 Node.js，因此此值始终为 `true`。
+Because it is not possible to build Node.js without libuv, this value is always `true`.
 
 ## `process.finalization.register(ref, callback)`
 
@@ -1729,39 +1729,39 @@ deprecated:
 added: v22.5.0
 -->
 
-> 稳定性：1.1 - 积极开发中
+> Stability: 1.1 - Active development
 
-* `ref` {Object | Function} 正在被跟踪的资源的引用。
-* `callback` {Function} 当资源被终结时要调用的回调函数。
-  * `ref` {Object | Function} 正在被跟踪的资源的引用。
-  * `event` {string} 触发终结的事件。默认为 'exit'。
+* `ref` {Object | Function} A reference to the resource being tracked.
+* `callback` {Function} The callback to call when the resource is finalized.
+  * `ref` {Object | Function} A reference to the resource being tracked.
+  * `event` {string} The event that triggered finalization. Defaults to `'exit'`.
 
-此函数注册一个回调，当进程发出 `exit` 事件且 `ref` 对象未被垃圾回收时调用该回调。如果对象 `ref` 在 `exit` 事件发出之前被垃圾回收，回调将从终结注册表中移除，并且不会在进程退出时调用。
+This function registers a callback to be called when the process emits the `exit` event and the `ref` object was not garbage collected. If the object `ref` was garbage collected before the `exit` event is emitted, the callback will be removed from the finalization registry, and it will not be called when the process exits.
 
-在回调内部，你可以释放 `ref` 对象分配的资源。
-请注意，适用于 `beforeExit` 事件所有限制也适用于 `callback` 函数，这意味着在某些特殊情况下回调可能不会被调用。
+Inside the callback, you may free the resources allocated by the `ref` object.
+Note that all limitations that apply to the `beforeExit` event also apply to the `callback` function, which means that in some special circumstances the callback may not be called.
 
-此函数的目的是帮助你在进程开始退出时释放资源，但如果对象不再被使用，也允许其被垃圾回收。
+The purpose of this function is to help you free resources when the process starts to exit, but also allow the object to be garbage collected if it is no longer used.
 
-例如：你可以注册一个包含缓冲区的对象，你想确保在进程退出时释放该缓冲区，但如果对象在进程退出前被垃圾回收，我们就不再需要释放缓冲区，所以在这种情况下我们只是从终结注册表中移除回调。
+For example, you can register an object containing a buffer that you want to ensure is freed when the process exits, but if the object is garbage collected before the process exits then there's no need to free the buffer anymore, so in that case we just remove the callback from the finalization registry.
 
 ```cjs
 const { finalization } = require('node:process');
 
-// 请确保传递给 finalization.register() 的函数
-// 不会围绕不必要的对象创建闭包。
+// Make sure that the function passed to finalization.register()
+// does not create a closure around unnecessary objects.
 function onFinalize(obj, event) {
-  // 你可以对对象做任何你想做的事
+  // You can do whatever you want to the object.
   obj.dispose();
 }
 
 function setup() {
-  // 此对象可以被安全地垃圾回收，
-  // 并且最终的关闭函数不会被调用。
-  // 没有泄漏。
+  // This object can be safely garbage collected,
+  // and the finalizer won't be called.
+  // No leaks.
   const myDisposableObject = {
     dispose() {
-      // 同步释放你的资源
+      // Release your resources synchronously
     },
   };
 
@@ -1774,20 +1774,20 @@ setup();
 ```mjs
 import { finalization } from 'node:process';
 
-// 请确保传递给 finalization.register() 的函数
-// 不会围绕不必要的对象创建闭包。
+// Make sure that the function passed to finalization.register()
+// does not create a closure around unnecessary objects.
 function onFinalize(obj, event) {
-  // 你可以对对象做任何你想做的事
+  // You can do whatever you want to the object.
   obj.dispose();
 }
 
 function setup() {
-  // 此对象可以被安全地垃圾回收，
-  // 并且最终的关闭函数不会被调用。
-  // 没有泄漏。
+  // This object can be safely garbage collected,
+  // and the finalizer won't be called.
+  // No leaks.
   const myDisposableObject = {
     dispose() {
-      // 同步释放你的资源
+      // Release your resources synchronously
     },
   };
 
@@ -1797,30 +1797,30 @@ function setup() {
 setup();
 ```
 
-上述代码依赖于以下假设：
+The above code relies on the following assumptions:
 
-* 避免使用箭头函数
-* 建议常规函数位于全局上下文（根）中
+* Avoid arrow functions
+* It is recommended that regular functions be in the global context (root)
 
-常规函数_可能_引用 `obj` 所在的上下文，使得 `obj` 无法被垃圾回收。
+Regular functions _may_ reference the context in which `obj` lives, making `obj` not garbage collectible.
 
-箭头函数将持有之前的上下文。例如，考虑：
+Arrow functions will hold on to the previous context. For example, consider:
 
 ```js
 class Test {
   constructor() {
     finalization.register(this, (ref) => ref.dispose());
 
-    // 即使是像这样的代码也强烈不推荐
+    // Even code like this is strongly discouraged
     // finalization.register(this, () => this.dispose());
   }
   dispose() {}
 }
 ```
 
-此对象被垃圾回收的可能性非常小（并非不可能），但如果未被回收，当调用 `process.exit` 时将调用 `dispose`。
+This object has a very small chance of being garbage collected (not impossible), but if it is not, `dispose` will be called when `process.exit` is called.
 
-请小心，避免依赖此功能来处理关键资源，因为不能保证在所有情况下都会调用回调。
+Be careful not to rely on this feature for critical resources, because there is no guarantee that the callback will be called in all cases.
 
 ## `process.finalization.registerBeforeExit(ref, callback)`
 
@@ -1828,16 +1828,16 @@ class Test {
 added: v22.5.0
 -->
 
-> 稳定性：1.1 - 积极开发中
+> Stability: 1.1 - Active development
 
-* `ref` {Object | Function} 正在被跟踪的资源的引用。
-* `callback` {Function} 当资源被终结时要调用的回调函数。
-  * `ref` {Object | Function} 正在被跟踪的资源的引用。
-  * `event` {string} 触发终结的事件。默认为 'beforeExit'。
+* `ref` {Object | Function} A reference to the resource being tracked.
+* `callback` {Function} The callback to call when the resource is finalized.
+  * `ref` {Object | Function} A reference to the resource being tracked.
+  * `event` {string} The event that triggered finalization. Defaults to `'beforeExit'`.
 
-此函数的行为与 `register` 完全相同，只不过如果 `ref` 对象未被垃圾回收，回调将在进程发出 `beforeExit` 事件时调用。
+This function behaves exactly the same as `register`, except that if the `ref` object was not garbage collected, the callback will be called when the process emits the `beforeExit` event.
 
-请注意，适用于 `beforeExit` 事件所有限制也适用于 `callback` 函数，这意味着在某些特殊情况下回调可能不会被调用。
+Note that all limitations that apply to the `beforeExit` event also apply to the `callback` function, which means that in some special circumstances the callback may not be called.
 
 ## `process.finalization.unregister(ref)`
 
@@ -1845,35 +1845,35 @@ added: v22.5.0
 added: v22.5.0
 -->
 
-> 稳定性：1.1 - 积极开发中
+> Stability: 1.1 - Active development
 
-* `ref` {Object | Function} 之前注册的资源的引用。
+* `ref` {Object | Function} A previously registered reference to a resource.
 
-此函数从终结注册表中移除对象的注册，因此回调将不再被调用。
+This function removes the object's registration from the finalization registry, so the callback will no longer be called.
 
 ```cjs
 const { finalization } = require('node:process');
 
-// 请确保传递给 finalization.register() 的函数
-// 不会围绕不必要的对象创建闭包。
+// Make sure that the function passed to finalization.register()
+// does not create a closure around unnecessary objects.
 function onFinalize(obj, event) {
-  // 你可以对对象做任何你想做的事
+  // You can do whatever you want to the object.
   obj.dispose();
 }
 
 function setup() {
-  // 此对象可以被安全地垃圾回收，
-  // 并且最终的关闭函数不会被调用。
-  // 没有泄漏。
+  // This object can be safely garbage collected,
+  // and the finalizer won't be called.
+  // No leaks.
   const myDisposableObject = {
     dispose() {
-      // 同步释放你的资源
+      // Release your resources synchronously
     },
   };
 
   finalization.register(myDisposableObject, onFinalize);
 
-  // 做一些事情
+  // Do something
 
   myDisposableObject.dispose();
   finalization.unregister(myDisposableObject);
@@ -1885,33 +1885,33 @@ setup();
 ```mjs
 import { finalization } from 'node:process';
 
-// 请确保传递给 finalization.register() 的函数
-// 不会围绕不必要的对象创建闭包。
+// Make sure that the function passed to finalization.register()
+// does not create a closure around unnecessary objects.
 function onFinalize(obj, event) {
-  // 你可以对对象做任何你想做的事
+  // You can do whatever you want to the object.
   obj.dispose();
 }
 
 function setup() {
-  // 此对象可以被安全地垃圾回收，
-  // 并且最终的关闭函数不会被调用。
-  // 没有泄漏。
+  // This object can be safely garbage collected,
+  // and the finalizer won't be called.
+  // No leaks.
   const myDisposableObject = {
     dispose() {
-      // 同步释放你的资源
+      // Release your resources synchronously
     },
   };
 
-  // 请确保传递给 finalization.register() 的函数
-  // 不会围绕不必要的对象创建闭包。
+  // Make sure that the function passed to finalization.register()
+  // does not create a closure around unnecessary objects.
   function onFinalize(obj, event) {
-    // 你可以对对象做任何你想做的事
+    // You can do whatever you want to the object.
     obj.dispose();
   }
 
   finalization.register(myDisposableObject, onFinalize);
 
-  // 做一些事情
+  // Do something
 
   myDisposableObject.dispose();
   finalization.unregister(myDisposableObject);
@@ -1931,12 +1931,12 @@ changes:
     - v24.0.0
     - v22.16.0
     pr-url: https://github.com/nodejs/node/pull/57765
-    description: 将此功能的稳定性索引从实验性更改为稳定。
+    description: Changed the stability index for this feature from experimental to stable.
 -->
 
-* 返回：{string\[]}
+* Returns: {string\[]}
 
-`process.getActiveResourcesInfo()` 方法返回一个字符串数组，包含当前保持事件循环存活的活跃资源的类型。
+The `process.getActiveResourcesInfo()` method returns an array of strings containing the types of the active resources that are currently keeping the event loop alive.
 
 ```mjs
 import { getActiveResourcesInfo } from 'node:process';
@@ -1945,9 +1945,9 @@ import { setTimeout } from 'node:timers';
 console.log('Before:', getActiveResourcesInfo());
 setTimeout(() => {}, 1000);
 console.log('After:', getActiveResourcesInfo());
-// 打印：
-//   之前：[ 'CloseReq', 'TTYWrap', 'TTYWrap', 'TTYWrap' ]
-//   之后：[ 'CloseReq', 'TTYWrap', 'TTYWrap', 'TTYWrap', 'Timeout' ]
+// Prints:
+//   Before: [ 'CloseReq', 'TTYWrap', 'TTYWrap', 'TTYWrap' ]
+//   After: [ 'CloseReq', 'TTYWrap', 'TTYWrap', 'TTYWrap', 'Timeout' ]
 ```
 
 ```cjs
@@ -1957,9 +1957,9 @@ const { setTimeout } = require('node:timers');
 console.log('Before:', getActiveResourcesInfo());
 setTimeout(() => {}, 1000);
 console.log('After:', getActiveResourcesInfo());
-// 打印：
-//   之前：[ 'TTYWrap', 'TTYWrap', 'TTYWrap' ]
-//   之后：[ 'TTYWrap', 'TTYWrap', 'TTYWrap', 'Timeout' ]
+// Prints:
+//   Before: [ 'TTYWrap', 'TTYWrap', 'TTYWrap' ]
+//   After: [ 'TTYWrap', 'TTYWrap', 'TTYWrap', 'Timeout' ]
 ```
 
 ## `process.getBuiltinModule(id)`
@@ -1970,25 +1970,25 @@ added:
 - v20.16.0
 -->
 
-* `id` {string} 请求的内建模块的 ID。
-* 返回值：{Object|undefined}
+* `id` {string} The ID of the built-in module requested.
+* Returns: {Object|undefined}
 
-`process.getBuiltinModule(id)` 提供了一种在全局可用函数中加载内建模块的方法。需要支持其他环境的 ES 模块可以使用它在 Node.js 中运行时条件加载 Node.js 内建模块，而不必处理 `import` 在非 Node.js 环境中可能抛出的解析错误，或者也不必使用动态 `import()`，因为这要么会将模块变成异步模块，要么会将同步 API 变成异步 API。
+`process.getBuiltinModule(id)` provides a way of loading built-in modules in a globally available function. ES modules that need to support other environments can use it to conditionally load Node.js built-in modules when running in Node.js, without having to deal with resolution errors that `import` may throw in non-Node.js environments, or without using dynamic `import()` since this would either make the module async or turn a synchronous API into an asynchronous API.
 
 ```mjs
 if (globalThis.process?.getBuiltinModule) {
-  // 在 Node.js 中运行，使用 Node.js fs 模块。
+  // Running in Node.js, use the Node.js fs module.
   const fs = globalThis.process.getBuiltinModule('fs');
-  // 如果需要 `require()` 来加载用户模块，请使用 createRequire()
+  // Use createRequire() if `require()` is needed to load user modules
   const module = globalThis.process.getBuiltinModule('module');
   const require = module.createRequire(import.meta.url);
   const foo = require('foo');
 }
 ```
 
-如果 `id` 指定了当前 Node.js 进程中可用的内建模块，`process.getBuiltinModule(id)` 方法返回相应的内建模块。如果 `id` 不对应任何内建模块，则返回 `undefined`。
+If `id` specifies a built-in module available in the current Node.js process, the `process.getBuiltinModule(id)` method returns the corresponding built-in module. If `id` does not correspond to any built-in module, `undefined` is returned.
 
-`process.getBuiltinModule(id)` 接受 [`module.isBuiltin(id)`][] 识别的内建模块 ID。某些内建模块必须使用 `node:` 前缀加载，请参阅 [必须使用 `node:` 前缀的内建模块][]。`process.getBuiltinModule(id)` 返回的引用始终指向与 `id` 对应的内建模块，即使用户修改了 [`require.cache`][] 使得 `require(id)` 返回其他内容。
+`process.getBuiltinModule(id)` accepts built-in module IDs recognized by [`module.isBuiltin(id)`][]. Some built-in modules must be loaded with the `node:` prefix; see [Built-in modules with mandatory `node:` prefix][]. The reference returned by `process.getBuiltinModule(id)` always points to the built-in module corresponding to `id`, even if the user mutates [`require.cache`][] such that `require(id)` returns something else.
 
 ## `process.getegid()`
 
@@ -1996,7 +1996,7 @@ if (globalThis.process?.getBuiltinModule) {
 added: v2.0.0
 -->
 
-`process.getegid()` 方法返回 Node.js 进程的数字有效组 ID。（参见 getegid(2)。）
+`process.getegid()` method returns the numerical effective group identity of the Node.js process. (See getegid(2).)
 
 ```mjs
 import process from 'node:process';
@@ -2012,7 +2012,7 @@ if (process.getegid) {
 }
 ```
 
-此函数仅在 POSIX 平台上可用（即不适用于 Windows 或 Android）。
+This function is only available on POSIX platforms (i.e. not on Windows or Android).
 
 ## `process.geteuid()`
 
@@ -2020,9 +2020,9 @@ if (process.getegid) {
 added: v2.0.0
 -->
 
-* 返回值：{Object}
+* Returns: {Object}
 
-`process.geteuid()` 方法返回进程的数字有效用户 ID。（参见 geteuid(2)。）
+`process.geteuid()` method returns the numerical effective user identity of the process. (See geteuid(2).)
 
 ```mjs
 import process from 'node:process';
@@ -2038,7 +2038,7 @@ if (process.geteuid) {
 }
 ```
 
-此函数仅在 POSIX 平台上可用（即不适用于 Windows 或 Android）。
+This function is only available on POSIX platforms (i.e. not on Windows or Android).
 
 ## `process.getgid()`
 
@@ -2046,9 +2046,9 @@ if (process.geteuid) {
 added: v0.1.31
 -->
 
-* 返回值：{Object}
+* Returns: {Object}
 
-`process.getgid()` 方法返回进程的数字组 ID。（参见 getgid(2)。）
+`process.getgid()` method returns the numerical group identity of the process. (See getgid(2).)
 
 ```mjs
 import process from 'node:process';
@@ -2064,7 +2064,7 @@ if (process.getgid) {
 }
 ```
 
-此函数仅在 POSIX 平台上可用（即不适用于 Windows 或 Android）。
+This function is only available on POSIX platforms (i.e. not on Windows or Android).
 
 ## `process.getgroups()`
 
@@ -2704,6 +2704,53 @@ added: v20.0.0
 process.permission.has('fs.read', './README.md');
 // 检查进程是否有读取权限操作
 process.permission.has('fs.read');
+```
+
+### `process.permission.drop(scope[, reference])`
+
+<!-- YAML
+added: v26.3.0
+-->
+
+> 稳定性：1.1 - Active Development
+
+* `scope` {string}
+* `reference` {string}
+
+从当前进程中删除指定的权限。此操作是**不可逆的**——一旦权限被删除，就无法通过任何 Node.js API 重新恢复。
+
+如果未提供引用，则会删除整个作用域。例如，`process.permission.drop('fs.read')` 将撤销所有文件系统读取权限。
+
+当提供引用时，只会删除该特定资源的权限。例如，`process.permission.drop('fs.read', '/etc/myapp')` 将撤销对该目录的读取访问，同时保留其他读取权限。
+
+**重要：** 你只能删除显式授予的精确资源。传递给 `drop()` 的引用必须与原始授予完全匹配：
+
+* 如果权限是使用通配符（`*`）授予的，例如 `--allow-fs-read=*`，则无法删除单个路径——只能删除整个作用域（通过在不带引用的情况下调用 `drop()`）。
+* 如果授予的是目录（例如 `--allow-fs-read=/my/folder`），则无法删除其中单个文件的访问权限。你必须删除与授予时相同的目录。任何剩余的授予仍然有效。
+
+可用的作用域与 [`process.permission.has()`][] 相同：
+
+* `fs` - 所有文件系统（同时删除读取和写入）
+* `fs.read` - 文件系统读取操作
+* `fs.write` - 文件系统写入操作
+* `child` - 子进程生成操作
+* `worker` - Worker 线程生成操作
+* `net` - 网络操作
+* `inspector` - Inspector 操作
+* `wasi` - WASI 操作
+* `addon` - 原生 addon 操作
+
+```js
+const fs = require('node:fs');
+
+// 启动期间读取配置
+const config = fs.readFileSync('/etc/myapp/config.json', 'utf8');
+
+// 初始化后删除对配置目录的读取权限
+process.permission.drop('fs.read', '/etc/myapp');
+
+// 现在这将抛出 ERR_ACCESS_DENIED
+fs.readFileSync('/etc/myapp/config.json');
 ```
 
 ## `process.pid`
@@ -3938,6 +3985,7 @@ console.log(versions);
 [`process.hrtime()`]: #processhrtimetime
 [`process.hrtime.bigint()`]: #processhrtimebigint
 [`process.kill()`]: #processkillpid-signal
+[`process.permission.has()`]: #processpermissionhasscope-reference
 [`process.setUncaughtExceptionCaptureCallback()`]: #processsetuncaughtexceptioncapturecallbackfn
 [`promise.catch()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
 [`queueMicrotask()`]: globals.md#queuemicrotaskcallback

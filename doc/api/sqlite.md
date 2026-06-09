@@ -711,10 +711,10 @@ added:
 -->
 
 * `changeset` {Uint8Array} 二进制 changeset 或 patchset。
-* `options` {Object} 如何应用更改的配置选项。
-  * `filter` {Function} 一个函数，当传入目标表名时，如果返回 true，则跳过对应更改。
-    默认会尝试应用所有更改。
-  * `onConflict` {Function} 决定如何处理冲突的函数。该函数接收一个参数，其值可以是以下之一：
+* `options` {Object} 用于指定如何应用更改的配置选项。
+  * `filter` {Function} 对于 changeset 中至少受一项更改影响的每个表，都会以表名作为第一个参数调用 `filter` 回调。如果返回值为假，则不会尝试对该表应用任何更改。否则，如果返回值为真或未提供 `filter` 回调，则会尝试应用该表的所有更改。
+  * `onConflict` {Function} 用于决定如何处理冲突的函数。该函数接收一个参数，
+    该参数可以是以下值之一：
 
     * `SQLITE_CHANGESET_DATA`：`DELETE` 或 `UPDATE` 更改不包含预期的“之前”值。
     * `SQLITE_CHANGESET_NOTFOUND`：不存在与 `DELETE` 或 `UPDATE` 更改的主键匹配的行。
@@ -820,8 +820,8 @@ added:
 
 * 返回值：{Uint8Array} 可应用于其他数据库的二进制补丁集。
 
-与上述方法类似，但生成更紧凑的补丁集。请参阅 SQLite 文档中的 [变更集和补丁集][]
-。如果数据库或会话未打开，则抛出异常。此方法是
+与上述方法类似，但生成更紧凑的补丁集。请参阅 SQLite 文档中的 [变更集和补丁集][]。
+如果数据库或会话未打开，则抛出异常。此方法是
 对 [`sqlite3session_patchset()`][] 的封装。
 
 ### `session.close()`
