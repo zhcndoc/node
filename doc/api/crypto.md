@@ -2256,6 +2256,10 @@ be listed in the `transferList` argument.
 <!-- YAML
 added: v15.0.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a non-extractable CryptoKey as `key` is no longer
+                 supported.
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: Passing a non-extractable CryptoKey as `key` is deprecated.
@@ -2264,11 +2268,11 @@ changes:
 * `key` {CryptoKey}
 * Returns: {KeyObject}
 
-Returns the underlying {KeyObject} of a {CryptoKey}. The returned {KeyObject}
-does not retain any of the restrictions imposed by the Web Crypto API on the
-original {CryptoKey}, such as the allowed key usages, the algorithm or hash
-algorithm bindings, and the extractability flag. In particular, the underlying
-key material of the returned {KeyObject} can always be exported.
+Returns a {KeyObject} representation of the underlying key material of an
+extractable {CryptoKey}.
+The returned {KeyObject} does not retain any of the restrictions imposed by
+the Web Crypto API on the original {CryptoKey}, such as the allowed key usages,
+the algorithm or hash algorithm bindings.
 
 ```mjs
 const { KeyObject } = await import('node:crypto');
@@ -2622,6 +2626,9 @@ console.log(verify.verify(publicKey, signature));
 <!-- YAML
 added: v0.1.92
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `privateKey` is no longer supported.
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: The privateKey can also be an ArrayBuffer and CryptoKey.
@@ -2643,7 +2650,7 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
   * `dsaEncoding` {string}
   * `padding` {integer}
   * `saltLength` {integer}
@@ -2752,6 +2759,9 @@ This can be called many times with new data as it is streamed.
 <!-- YAML
 added: v0.1.92
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: The key can also be an ArrayBuffer and CryptoKey.
@@ -2773,7 +2783,7 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
   * `dsaEncoding` {string}
   * `padding` {integer}
   * `saltLength` {integer}
@@ -3308,8 +3318,6 @@ Does not perform any other validation checks on the certificate.
 added: v24.7.0
 -->
 
-> Stability: 1.2 - Release candidate
-
 * `algorithm` {string} Variant of Argon2, one of `"argon2d"`, `"argon2i"` or `"argon2id"`.
 * `parameters` {Object}
   * `message` {string|ArrayBuffer|Buffer|TypedArray|DataView} REQUIRED, this is the password for password
@@ -3393,8 +3401,6 @@ argon2('argon2id', parameters, (err, derivedKey) => {
 <!-- YAML
 added: v24.7.0
 -->
-
-> Stability: 1.2 - Release candidate
 
 * `algorithm` {string} Variant of Argon2, one of `"argon2d"`, `"argon2i"` or `"argon2id"`.
 * `parameters` {Object}
@@ -3534,6 +3540,9 @@ operations. The specific constants currently defined are described in
 <!-- YAML
 added: v0.1.94
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: Passing a CryptoKey as `key` is deprecated.
@@ -3570,7 +3579,7 @@ changes:
 -->
 
 * `algorithm` {string}
-* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `iv` {string|ArrayBuffer|Buffer|TypedArray|DataView|null}
 * `options` {Object} [`stream.transform` options][]
 * Returns: {Cipheriv}
@@ -3611,6 +3620,9 @@ given IV will be.
 <!-- YAML
 added: v0.1.94
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: Passing a CryptoKey as `key` is deprecated.
@@ -3643,7 +3655,7 @@ changes:
 -->
 
 * `algorithm` {string}
-* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `iv` {string|ArrayBuffer|Buffer|TypedArray|DataView|null}
 * `options` {Object} [`stream.transform` options][]
 * Returns: {Decipheriv}
@@ -3837,6 +3849,9 @@ input.on('readable', () => {
 <!-- YAML
 added: v0.1.94
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: Passing a CryptoKey as `key` is deprecated.
@@ -3851,7 +3866,7 @@ changes:
 -->
 
 * `algorithm` {string}
-* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `options` {Object} [`stream.transform` options][]
   * `encoding` {string} The string encoding to use when `key` is a string.
 * Returns: {Hmac}
@@ -3930,6 +3945,9 @@ input.on('readable', () => {
 <!-- YAML
 added: v11.6.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: Added JWK format support for ML-KEM and SLH-DSA
@@ -3985,6 +4003,9 @@ of the passphrase is limited to 1024 bytes.
 <!-- YAML
 added: v11.6.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: Added JWK format support for ML-KEM and SLH-DSA
@@ -4119,8 +4140,6 @@ algorithm names.
 added: v24.7.0
 -->
 
-> Stability: 1.2 - Release candidate
-
 * `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject} Private Key
 * `ciphertext` {ArrayBuffer|Buffer|TypedArray|DataView}
 * `callback` {Function}
@@ -4187,8 +4206,6 @@ If the `callback` function is provided this function uses libuv's threadpool.
 <!-- YAML
 added: v24.7.0
 -->
-
-> Stability: 1.2 - Release candidate
 
 * `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject} Public Key
 * `callback` {Function}
@@ -5220,6 +5237,9 @@ An array of supported digest functions can be retrieved using
 <!-- YAML
 added: v0.11.14
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `privateKey` is no longer supported.
   - version:
       - v21.6.2
       - v20.11.1
@@ -5246,7 +5266,7 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
   * `oaepHash` {string} The hash function to use for OAEP padding and MGF1.
     **Default:** `'sha1'`
   * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} The label to
@@ -5278,6 +5298,9 @@ attempting to use `RSA_PKCS1_PADDING` will fail.
 <!-- YAML
 added: v1.1.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `privateKey` is no longer supported.
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: Added string, ArrayBuffer, and CryptoKey as allowable key
@@ -5291,8 +5314,8 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
-  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
     A PEM encoded private key.
   * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} An optional
     passphrase for the private key.
@@ -5319,6 +5342,9 @@ object, the `padding` property can be passed. Otherwise, this function uses
 <!-- YAML
 added: v1.1.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: Added string, ArrayBuffer, and CryptoKey as allowable key
@@ -5332,7 +5358,7 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
   * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} An optional
     passphrase for the private key.
   * `padding` {crypto.constants} An optional padding value defined in
@@ -5361,6 +5387,9 @@ be passed instead of a public key.
 <!-- YAML
 added: v0.11.14
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: Added string, ArrayBuffer, and CryptoKey as allowable key
@@ -5380,9 +5409,9 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
-  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
-    A PEM encoded public or private key, {KeyObject}, or {CryptoKey}.
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+    A PEM encoded public or private key, or {KeyObject}.
   * `oaepHash` {string} The hash function to use for OAEP padding and MGF1.
     **Default:** `'sha1'`
   * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} The label to
@@ -6104,6 +6133,9 @@ Throws an error if FIPS mode is not available.
 <!-- YAML
 added: v12.0.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version:
      - v26.1.0
      - v24.16.0
@@ -6137,7 +6169,7 @@ changes:
 
 * `algorithm` {string | null | undefined}
 * `data` {ArrayBuffer|Buffer|SharedArrayBuffer|TypedArray|DataView|string}
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `callback` {Function}
   * `err` {Error}
   * `signature` {Buffer}
@@ -6235,6 +6267,9 @@ not introduce timing vulnerabilities.
 <!-- YAML
 added: v12.0.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version:
      - v26.1.0
      - v24.16.0
@@ -6271,7 +6306,7 @@ changes:
 
 * `algorithm` {string|null|undefined}
 * `data` {ArrayBuffer|Buffer|SharedArrayBuffer|TypedArray|DataView|string}
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `signature` {ArrayBuffer|Buffer|SharedArrayBuffer|TypedArray|DataView}
 * `callback` {Function}
   * `err` {Error}
