@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx @node-core/doc-kit generate -t web -t orama-db -i 'doc/api/*.md' -o out --index doc/api/index.md",
+  "buildCommand": "npx @node-core/doc-kit generate --config-file doc-kit.config.mjs",
   "framework": null,
   "installCommand": "npx --version",
   "outputDirectory": "out"

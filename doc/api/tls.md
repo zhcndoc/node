@@ -186,13 +186,13 @@ TLSv1.3 不支持重新协商。
 
 单进程服务器无需特定实现即可使用会话票据。要在服务器重启或负载均衡器之间使用会话票据，所有服务器必须具有相同的票据密钥。内部有三个 16 字节密钥，但 tls API 为了方便将它们暴露为单个 48 字节缓冲区。
 
-可以通过在一个服务器实例上调用 [`server.getTicketKeys()`][] 来获取票据密钥然后分发它们，但更合理的是安全生成 48 字节的安全随机数据并使用 [`tls.createServer()`][] 的 `ticketKeys` 选项设置它们。密钥应定期再生，并且可以使用 [`server.setTicketKeys()`][] 重置服务器的密钥。
+可以通过在一个服务器实例上调用 [`server.getTicketKeys()`][] 来获取票据密钥然后分发它们，但更合理的是安全生成 48 字节的安全随机数据并使用 [`tls.createServer()`] 的 `ticketKeys` 选项设置它们。密钥应定期再生，并且可以使用 [`server.setTicketKeys()`] 重置服务器的密钥。
 
 会话票据密钥是加密密钥，它们_**必须安全存储**_。使用 TLS 1.2 及以下版本时，如果它们被泄露，所有使用它们加密的票据的会话都可以被解密。它们不应存储在磁盘上，并且应定期再生。
 
 如果客户端宣布支持票据，服务器将发送它们。服务器可以通过在 `secureOptions` 中提供 `require('node:constants').SSL_OP_NO_TICKET` 来禁用票据。
 
-会话标识符和会话票据都会超时，导致服务器创建新会话。超时可以使用 [`tls.createServer()`][] 的 `sessionTimeout` 选项进行配置。
+会话标识符和会话票据都会超时，导致服务器创建新会话。超时可以使用 [`tls.createServer()`] 的 `sessionTimeout` 选项进行配置。
 
 对于所有机制，当恢复失败时，服务器将创建新会话。由于恢复会话失败不会导致 TLS/HTTPS 连接失败，因此很容易注意不到不必要的糟糕 TLS 性能。可以使用 OpenSSL CLI 验证服务器是否正在恢复会话。例如，对 `openssl s_client` 使用 `-reconnect` 选项：
 
@@ -200,13 +200,13 @@ TLSv1.3 不支持重新协商。
 openssl s_client -connect localhost:443 -reconnect
 ```
 
-阅读调试输出。第一个连接应显示 "New"，例如：
+阅读调试输出。第一个连接应显示“新建”，例如：
 
 ```text
 New, TLSv1.2, Cipher is ECDHE-RSA-AES128-GCM-SHA256
 ```
 
-后续连接应显示 "Reused"，例如：
+后续连接应显示“Reused”，例如：
 
 ```text
 Reused, TLSv1.2, Cipher is ECDHE-RSA-AES128-GCM-SHA256
@@ -389,7 +389,7 @@ added: v0.3.2
 
 接受使用 TLS 或 SSL 的加密连接。
 
-### 事件：`'connection'`
+### 事件：`connection`
 
 <!-- YAML
 added: v0.3.2
@@ -401,7 +401,7 @@ added: v0.3.2
 
 用户也可以显式发出此事件以将连接注入 TLS 服务器。在这种情况下，可以传递任何 [`Duplex`][] 流。
 
-### 事件：`'keylog'`
+### 事件：`keylog`
 
 <!-- YAML
 added:
@@ -610,7 +610,7 @@ added: v3.0.0
 
 票证密钥的更改仅对未来的服务器连接有效。现有或当前待处理的服务器连接将使用以前的密钥。
 
-有关更多信息，请参阅 [会话恢复][]。
+有关更多信息，请参阅 [会话恢复][].
 
 ## 类：`tls.TLSSocket`
 
@@ -677,53 +677,53 @@ const logFile = fs.createWriteStream('/tmp/ssl-keys.log', { flags: 'a' });
 tlsSocket.on('keylog', (line) => logFile.write(line));
 ```
 
-### 事件：`'OCSPResponse'`
+### 事件：ocspResponse
 
 <!-- YAML
 added: v0.11.13
 -->
 
-如果在创建 `tls.TLSSocket` 时设置了 `requestOCSP` 选项并且收到了 OCSP 响应，则会发出 `'OCSPResponse'` 事件。调用监听器回调时传入单个参数：
+如果在创建 tls.TLSSocket 时设置了 requestOCSP 选项并且收到了 OCSP 响应，则会发出 ocspResponse 事件。调用监听器回调时传入单个参数：
 
-* `response` {Buffer} 服务器的 OCSP 响应
+* response {Buffer} 服务器的 OCSP 响应
 
-通常，`response` 是来自服务器 CA 的数字签名对象，其中包含有关服务器证书吊销状态的信息。
+通常，response 是来自服务器 CA 的数字签名对象，其中包含有关服务器证书吊销状态的信息。
 
-### 事件：`'secure'`
-
-<!-- YAML
-added: v0.11.4
--->
-
-`'secure'` 事件在 TLS 握手成功完成并建立安全连接后发出。
-
-此事件在客户端和服务器 {tls.TLSSocket} 实例上发出，包括使用 `new tls.TLSSocket()` 构造函数创建的 socket。
-
-### 事件：`'secureConnect'`
+### 事件：secureConnect
 
 <!-- YAML
 added: v0.11.4
 -->
 
-`'secureConnect'` 事件在新连接的握手过程成功完成后发出。无论服务器的证书是否已授权，都将调用监听器回调。客户端有责任检查 `tlsSocket.authorized` 属性以确定服务器证书是否由指定的 CA 之一签名。如果 `tlsSocket.authorized === false`，则可以通过检查 `tlsSocket.authorizationError` 属性找到错误。如果使用了 ALPN，则可以检查 `tlsSocket.alpnProtocol` 属性以确定协商的协议。
+secureConnect 事件在 TLS 握手成功完成并建立安全连接后发出。
 
-当使用 `new tls.TLSSocket()` 构造函数创建 {tls.TLSSocket} 时，不会发出 `'secureConnect'` 事件。
+此事件在客户端和服务器 {tls.TLSSocket} 实例上发出，包括使用 tls.connect 构造函数创建的 socket。
 
-### 事件：`'session'`
+### 事件：secure
+
+<!-- YAML
+added: v0.11.4
+-->
+
+secure 事件在新连接的握手过程成功完成后发出。无论服务器的证书是否已授权，都将调用监听器回调。客户端有责任检查 authorized 属性以确定服务器证书是否由指定的 CA 之一签名。如果 unauthorized，则可以通过检查 authorizationError 属性找到错误。如果使用了 ALPN，则可以检查 alpnProtocol 属性以确定协商的协议。
+
+当使用 tls.connect 构造函数创建 {tls.TLSSocket} 时，不会发出 secure 事件。
+
+### 事件：session
 
 <!-- YAML
 added: v11.10.0
 -->
 
-* `session` {Buffer}
+* session {Buffer}
 
-当新会话或 TLS 票据可用时，会在客户端 `tls.TLSSocket` 上发出 `'session'` 事件。这可能发生在握手完成之前或之后，具体取决于协商的 TLS 协议版本。该事件不在服务器上发出，或者如果没有创建新会话，例如当连接恢复时。对于某些 TLS 协议版本，该事件可能会发出多次，在这种情况下，所有会话都可用于恢复。
+当新会话或 TLS 票据可用时，会在客户端 socket 上发出 session 事件。这可能发生在握手完成之前或之后，具体取决于协商的 TLS 协议版本。该事件不在服务器上发出，或者如果没有创建新会话，例如当连接恢复时。对于某些 TLS 协议版本，该事件可能会发出多次，在这种情况下，所有会话都可用于恢复。
 
-在客户端，`session` 可以提供给 [`tls.connect()`][] 的 `session` 选项以恢复连接。
+在客户端，session 可以提供给 [tls.connect][] 的 session 选项以恢复连接。
 
 参见 [会话恢复][] 获取更多信息。
 
-对于 TLSv1.2 及以下版本，一旦握手完成，可以调用 [`tls.TLSSocket.getSession()`][]。对于 TLSv1.3，协议仅允许基于票据的恢复，发送多个票据，并且票据仅在握手完成后发送。因此有必要等待 `'session'` 事件来获取可恢复的会话。应用程序应使用 `'session'` 事件而不是 `getSession()` 以确保它们适用于所有 TLS 版本。仅期望获取或使用一个会话的应用程序应只监听此事件一次：
+对于 TLSv1.2 及以下版本，一旦握手完成，可以调用 [tlsSocket.getSession][]。对于 TLSv1.3，协议仅允许基于票据的恢复，发送多个票据，并且票据仅在握手完成后发送。因此有必要等待 session 事件来获取可恢复的会话。应用程序应使用 session 事件而不是 secure 以确保它们适用于所有 TLS 版本。仅期望获取或使用一个会话的应用程序应只监听此事件一次：
 
 ```js
 tlsSocket.once('session', (session) => {
@@ -1007,7 +1007,7 @@ changes:
 added: v9.9.0
 -->
 
-* 返回：{Buffer|undefined} 作为 SSL/TLS 握手一部分，预期收到或已实际从套接字收到的最新 `Finished` 消息，如果到目前为止没有 `Finished` 消息，则返回 `undefined`。
+* 返回：{Buffer|undefined} 作为 SSL/TLS 握手的一部分，预期收到或已实际从套接字收到的最新 `Finished` 消息，如果到目前为止没有 `Finished` 消息，则返回 `undefined`。
 
 由于 `Finished` 消息是完整握手的信息摘要（TLS 1.0 总共 192 位，SSL 3.0 更多），当 SSL/TLS 提供的认证不需要或不够时，它们可用于外部认证过程。
 
@@ -1204,9 +1204,9 @@ added: v0.11.11
 
 `tlsSocket.setMaxSendFragment()` 方法设置最大 TLS 分片大小。如果设置限制成功则返回 `true`；否则返回 `false`。
 
-较小的分片大小减少客户端上的缓冲延迟：较大的分片由 TLS 层缓冲，直到收到整个分片并验证其完整性；较大的分片可以跨越多个往返，并且由于数据包丢失或重新排序，它们的处理可能会延迟。然而，较小的分片增加额外的 TLS framing 字节和 CPU 开销，这可能会降低整体服务器吞吐量。
+较小的分片大小减少客户端上的缓冲延迟：较大的分片由 TLS 层缓冲，直到收到整个分片并验证其完整性；较大的分片可以跨越多个往返，并且由于数据包丢失或重新排序，它们的处理可能会延迟。然而，较小的分片增加额外的 TLS 帧字节和 CPU 开销，这可能会降低整体服务器吞吐量。
 
-## `tls.checkServerIdentity(hostname, cert)`
+## 证书验证回调
 
 <!-- YAML
 added: v0.8.4
@@ -1236,7 +1236,7 @@ changes:
 
 早期版本的 Node.js 错误地接受了给定 `hostname` 的证书，如果存在匹配的 `uniformResourceIdentifier` 主体备用名称（见 [CVE-2021-44531][]）。希望接受 `uniformResourceIdentifier` 主体备用名称的应用程序可以使用实现所需行为的自定义 `options.checkServerIdentity` 函数。
 
-## `tls.connect(options[, callback])`
+## 连接选项
 
 <!-- YAML
 added: v0.11.3
@@ -1435,6 +1435,12 @@ added: v0.11.3
 <!-- YAML
 added: v0.11.13
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63966
+    description: "`clientCertEngine`、`privateKeyEngine` 和 `privateKeyIdentifier` 选项已在运行时弃用。"
+  - version: v26.4.0
+    pr-url: https://github.com/nodejs/node/pull/62217
+    description: 已添加 `certificateCompression` 选项。
   - version:
     - v22.9.0
     - v20.18.0
@@ -1444,12 +1450,12 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53329
-    description: "`clientCertEngine`、`privateKeyEngine` 和`privateKeyIdentifier` 选项依赖于 OpenSSL 中的自定义引擎支持，该支持在 OpenSSL 3 中已废弃。"
+    description: "`clientCertEngine`、`privateKeyEngine` 和 `privateKeyIdentifier` 选项依赖于 OpenSSL 中的自定义引擎支持，而该支持在 OpenSSL 3 中已废弃。"
   - version:
     - v19.8.0
     - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46978
-    description: "`dhparam` 选项现在可以设置为 `'auto'` 以启用具有适当知名参数的 DHE。"
+    description: "`dhparam` 选项现在可以设置为 `'auto'`，以启用具有适当知名参数的 DHE。"
   - version: v12.12.0
     pr-url: https://github.com/nodejs/node/pull/28973
     description: "添加了 `privateKeyIdentifier` 和 `privateKeyEngine` 选项以从 OpenSSL 引擎获取私钥。"
@@ -1485,37 +1491,79 @@ changes:
 -->
 
 * `options` {Object}
-  * `allowPartialTrustChain` {boolean} 将信任 CA 证书列表中的中间（非自签名）证书视为受信任。
-  * `ca` {string|string\[]|Buffer|Buffer\[]} 可选地覆盖受信任的 CA 证书。如果未指定，默认信任的 CA 证书与使用 `default` 类型通过 [`tls.getCACertificates()`][] 返回的证书相同。如果指定，默认列表将被 `ca` 选项中的证书完全替换（而不是连接）。如果用户希望添加额外的证书而不是完全覆盖默认值，则需要手动连接。
-    值可以是字符串或 `Buffer`，或者是字符串和/或 `Buffer` 的 `Array`。任何字符串或 `Buffer` 都可以包含多个连接在一起的 PEM CA。对等方的证书必须能够链接到服务器信任的 CA 才能对连接进行身份验证。当使用无法链接到知名 CA 的证书时，必须明确指定证书的 CA 为受信任，否则连接将无法通过身份验证。
-    如果对等方使用的证书与默认 CA 之一不匹配或无法链接到其中之一，请使用 `ca` 选项提供对等方证书可以匹配或链接到的 CA 证书。
-    对于自签名证书，证书是其自身的 CA，必须提供。
-    对于 PEM 编码的证书，支持的类型是 "TRUSTED CERTIFICATE"、"X509 CERTIFICATE" 和 "CERTIFICATE"。
-  * `cert` {string|string\[]|Buffer|Buffer\[]} PEM 格式的证书链。每个私钥应提供一个证书链。每个证书链应由提供的私钥 `key` 的 PEM 格式证书组成，后跟 PEM 格式的中间证书（如果有），按顺序排列，不包括根 CA（根 CA 必须为对等方预先知晓，参见 `ca`）。当提供多个证书链时，它们的顺序不必与 `key` 中的私钥顺序相同。如果未提供中间证书，对等方将无法验证证书，握手将失败。
-  * `sigalgs` {string} 支持的签名算法的冒号分隔列表。列表可以包含摘要算法（`SHA256`、`MD5` 等）、公钥算法（`RSA-PSS`、`ECDSA` 等）、两者的组合（例如 'RSA+SHA384'）或 TLS v1.3 方案名称（例如 `rsa_pss_pss_sha512`）。
-    请参阅 [OpenSSL 手册页](https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set1_sigalgs_list.html) 以获取更多信息。
-  * `ciphers` {string} 密码套件规范，替换默认值。有关更多信息，请参阅 [修改默认 TLS 密码套件][]。允许的密码可以通过 [`tls.getCiphers()`][] 获取。为了使 OpenSSL 接受，密码名称必须大写。
-  * `clientCertEngine` {string} 可提供客户端证书的 OpenSSL 引擎名称。**已废弃。**
+  * `allowPartialTrustChain` {boolean} 将信任 CA 证书列表中的中间（非自签名）证书视为受信任证书。
+  * `ca` {string|string\[]|Buffer|Buffer\[]} 可选地覆盖受信任的 CA 证书。如果未指定，默认受信任的 CA 证书与使用 `default` 类型通过 [`tls.getCACertificates()`][] 返回的结果相同。如果指定，默认列表将被 `ca` 选项中的证书完全替换（而不是追加）。如果用户希望添加额外的证书而不是完全覆盖默认值，需要手动拼接。
+    该值可以是字符串或 `Buffer`，也可以是由字符串和/或 `Buffer` 组成的 `Array`。任何字符串或 `Buffer` 都可以包含多个拼接在一起的 PEM CA。对等方的证书必须能够链到服务器信任的 CA，连接才能通过身份验证。使用无法链到已知 CA 的证书时，必须显式指定该证书的 CA 为受信任，否则连接将无法完成身份验证。
+    如果对等方使用的证书与默认 CA 不匹配或无法链到默认 CA 之一，请使用 `ca` 选项提供一个 CA 证书，使对等方的证书可以匹配或链到该证书。
+    对于自签名证书，证书本身就是其 CA，必须提供。
+    对于 PEM 编码的证书，支持的类型为 "TRUSTED CERTIFICATE"、"X509 CERTIFICATE" 和 "CERTIFICATE"。
+  * `cert` {string|string\[]|Buffer|Buffer\[]} PEM 格式的证书链。每个私钥应提供一条证书链。每条证书链应由所提供的私有 `key` 的 PEM 格式证书开始，
+    然后按顺序附带 PEM 格式的中间证书（如果有），且不包括根 CA（根 CA 必须已被对等方预先知晓，参见 `ca`）。在提供多条证书链时，它们不必与 `key` 中私钥的顺序相同。如果未提供中间证书，对等方将无法验证该证书，握手将失败。
+  * `certificateCompression` {string\[]} 按优先级顺序排列的受支持证书压缩算法名称数组。支持的值为 `'zlib'`、`'brotli'` 和 `'zstd'`。设置后，将启用 TLS 证书压缩（[RFC 8879][]），它会在 TLS 握手期间压缩证书，从而减少握手大小。仅在 TLSv1.3 下生效。
+    **默认值：** `[]`（已禁用）。
+  * `sigalgs` {string} 以冒号分隔的支持签名算法列表。
+    该列表可以包含摘要算法（`SHA256`、`MD5` 等）、公钥算法（`RSA-PSS`、`ECDSA` 等）、二者的组合（例如 'RSA+SHA384'），或 TLS v1.3 方案名称（例如 `rsa_pss_pss_sha512`）。
+    更多信息请参见 [OpenSSL 手册页](https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set1_sigalgs_list.html)。
+  * `ciphers` {string} 密码套件规范，将替换默认值。更多信息请参见 [修改默认 TLS 密码套件][]。可接受的密码套件可通过 [`tls.getCiphers()`][] 获取。为了让 OpenSSL 接受，密码名称必须使用大写。
+  * `clientCertEngine` {string} 可提供客户端证书的 OpenSSL 引擎名称。**已弃用。**
   * `crl` {string|string\[]|Buffer|Buffer\[]} PEM 格式的 CRL（证书吊销列表）。
-  * `dhparam` {string|Buffer} `'auto'` 或自定义 Diffie-Hellman 参数，非 ECDHE [完美前向保密][] 所需。如果省略或无效，参数将被静默丢弃，DHE 密码将不可用。基于 [ECDHE][] 的 [完美前向保密][] 仍将可用。
-  * `ecdhCurve` {string} 描述命名曲线的字符串或由冒号分隔的曲线 NID 或名称列表，例如 `P-521:P-384:P-256`，用于 ECDH 密钥协商。设置为 `auto` 以自动选择曲线。使用 [`crypto.getCurves()`][] 获取可用曲线名称列表。在最近版本中，`openssl ecparam -list_curves` 也将显示每个可用椭圆曲线的名称和描述。
+  * `dhparam` {string|Buffer} `'auto'` 或自定义的 Diffie-Hellman 参数，非 ECDHE [完美前向保密][] 所必需。如果省略或无效，这些参数将被静默丢弃，DHE 密码套件将不可用。
+    基于 [ECDHE][] 的 [完美前向保密][] 仍然可用。
+  * `ecdhCurve` {string} 用于 ECDH 密钥协商的命名曲线描述字符串，或由冒号分隔的曲线 NID 或名称列表，例如 `P-521:P-384:P-256`。设置为 `auto` 可自动选择曲线。使用 [`crypto.getCurves()`][] 可获取可用曲线名称列表。在较新的版本中，`openssl ecparam -list_curves`
+    也会显示每条可用椭圆曲线的名称和描述。
     **默认值：** [`tls.DEFAULT_ECDH_CURVE`][]。
-  * `honorCipherOrder` {boolean} 尝试使用服务器的密码套件偏好而不是客户端的。当为 `true` 时，会导致在 `secureOptions` 中设置 `SSL_OP_CIPHER_SERVER_PREFERENCE`，请参阅 [OpenSSL 选项][] 以获取更多信息。
-  * `key` {string|string\[]|Buffer|Buffer\[]|Object\[]} PEM 格式的私钥。PEM 允许私钥被加密。加密的密钥将使用 `options.passphrase` 解密。可以使用不同算法的多个密钥，既可以作为未加密密钥字符串或缓冲区的数组提供，也可以作为 `{pem: <string|buffer>[, passphrase: <string>]}` 形式的对象数组提供。对象形式只能出现在数组中。`object.passphrase` 是可选的。如果提供了加密密钥，将使用 `object.passphrase` 解密，否则使用 `options.passphrase`。
-  * `privateKeyEngine` {string} 用于获取私钥的 OpenSSL 引擎名称。应与 `privateKeyIdentifier` 一起使用。**已废弃。**
-  * `privateKeyIdentifier` {string} 由 OpenSSL 引擎管理的私钥标识符。应与 `privateKeyEngine` 一起使用。不应与 `key` 一起设置，因为这两个选项以不同方式定义私钥。**已废弃。**
-  * `maxVersion` {string} 可选地设置允许的最大 TLS 版本。`'TLSv1.3'`、`'TLSv1.2'`、`'TLSv1.1'` 或 `'TLSv1'` 之一。不能与 `secureProtocol` 选项一起指定；请使用其中之一。
+  * `honorCipherOrder` {boolean} 尝试使用服务器的密码套件偏好，而不是客户端的。设为 `true` 时，会将 `SSL_OP_CIPHER_SERVER_PREFERENCE` 设为 `secureOptions`，更多信息请参见 [OpenSSL 选项][]。
+  * `key` {string|string\[]|Buffer|Buffer\[]|Object\[]} PEM 格式的私钥。PEM 允许私钥使用加密。加密的密钥将使用 `options.passphrase` 解密。可以提供使用不同算法的多个密钥，形式可以是未加密密钥字符串或缓冲区数组，也可以是以下形式的对象数组
+    * `{pem: <string|buffer>[, passphrase: <string>]}`. 对象形式只能
+    出现在数组中。`object.passphrase` 是可选的。加密的密钥将
+    使用 `object.passphrase`（如果提供）或 `options.passphrase`（如果
+    未提供）进行解密。
+  * `privateKeyEngine` {string} OpenSSL 引擎的名称，用于获取私钥。
+    应与 `privateKeyIdentifier` 一起使用。**已弃用。**
+  * `privateKeyIdentifier` {string} 由
+    OpenSSL 引擎管理的私钥标识符。应与 `privateKeyEngine` 一起使用。
+    不应与 `key` 一起设置，因为这两个选项以不同方式定义
+    私钥。**已弃用。**
+  * `maxVersion` {string} 可选地设置允许的最大 TLS 版本。以下之一：
+    `'TLSv1.3'`、`'TLSv1.2'`、`'TLSv1.1'` 或 `'TLSv1'`。不能与
+    `secureProtocol` 选项同时指定；二者择一。
     **默认值：** [`tls.DEFAULT_MAX_VERSION`][]。
-  * `minVersion` {string} 可选地设置允许的最小 TLS 版本。`'TLSv1.3'`、`'TLSv1.2'`、`'TLSv1.1'` 或 `'TLSv1'` 之一。不能与 `secureProtocol` 选项一起指定；请使用其中之一。避免设置为低于 TLSv1.2，但为了互操作性可能需要。TLSv1.2 之前的版本可能需要降低 [OpenSSL 安全级别][]。
+  * `minVersion` {string} 可选地设置允许的最小 TLS 版本。以下之一：
+    `'TLSv1.3'`、`'TLSv1.2'`、`'TLSv1.1'` 或 `'TLSv1'`。不能与
+    `secureProtocol` 选项同时指定；二者择一。避免
+    将其设置为低于 TLSv1.2，但为了
+    互操作性可能需要这样做。TLSv1.2 之前的版本可能需要降低 [OpenSSL Security Level][]。
     **默认值：** [`tls.DEFAULT_MIN_VERSION`][]。
-  * `passphrase` {string} 用于单个私钥和/或 PFX 的共享密码短语。
-  * `pfx` {string|string\[]|Buffer|Buffer\[]|Object\[]} PFX 或 PKCS12 编码的私钥和证书链。`pfx` 是单独提供 `key` 和 `cert` 的替代方案。PFX 通常是加密的，如果是，`passphrase` 将用于解密它。可以提供多个 PFX，既可以作为未加密 PFX 缓冲区的数组，也可以作为 `{buf: <string|buffer>[, passphrase: <string>]}` 形式的对象数组。对象形式只能出现在数组中。`object.passphrase` 是可选的。如果提供了加密 PFX，将使用 `object.passphrase` 解密，否则使用 `options.passphrase`。
-  * `secureOptions` {number} 可选地影响 OpenSSL 协议行为，通常不需要。如果有的话，应该小心使用！值是来自 [OpenSSL 选项][] 的 `SSL_OP_*` 选项的数字位掩码。
-  * `secureProtocol` {string} 选择要使用的 TLS 协议版本的遗留机制，它不支持独立控制最小和最大版本，也不支持将协议限制为 TLSv1.3。请改用 `minVersion` 和 `maxVersion`。可能的值列为 [SSL\_METHODS][SSL_METHODS]，使用函数名作为字符串。例如，使用 `'TLSv1_1_method'` 强制 TLS 版本 1.1，或使用 `'TLS_method'` 允许任何高达 TLSv1.3 的 TLS 协议版本。不建议使用低于 1.2 的 TLS 版本，但为了互操作性可能需要。
+  * `passphrase` {string} 用于单个私钥和/或
+    PFX 的共享密码短语。
+  * `pfx` {string|string\[]|Buffer|Buffer\[]|Object\[]} PFX 或 PKCS12 编码的
+    私钥和证书链。`pfx` 是同时提供
+    `key` 和 `cert` 的替代方案。PFX 通常会加密，如果已加密，
+    将使用 `passphrase` 进行解密。可以通过两种方式提供多个 PFX：
+    作为未加密 PFX 缓冲区数组，或作为形如
+    `{buf: <string|buffer>[, passphrase: <string>]}` 的对象数组。对象形式只能
+    出现在数组中。`object.passphrase` 是可选的。加密的 PFX 将
+    使用 `object.passphrase`（如果提供）或 `options.passphrase`（如果
+    未提供）进行解密。
+  * `secureOptions` {number} 可选地影响 OpenSSL 协议行为，
+    这通常不是必需的。如果要使用，也应谨慎！
+    其值是来自 [OpenSSL Options][] 的 `SSL_OP_*` 选项的数值位掩码。
+  * `secureProtocol` {string} 用于选择所使用 TLS 协议
+    版本的旧机制，它不支持独立控制最小和
+    最大版本，也不支持将协议限制为 TLSv1.3。请改用
+    `minVersion` 和 `maxVersion`。可用值列在
+    [SSL\_METHODS][SSL_METHODS] 中，请将函数名作为字符串使用。例如，
+    使用 `'TLSv1_1_method'` 强制使用 TLS 1.1，或使用 `'TLS_method'` 允许
+    直到 TLSv1.3 的任意 TLS 协议版本。不建议使用低于 1.2 的 TLS
+    版本，但这可能出于互操作性需要。
     **默认值：** 无，参见 `minVersion`。
-  * `sessionIdContext` {string} 服务器使用的不透明标识符，以确保会话状态不在应用程序之间共享。客户端不使用。
-  * `ticketKeys` {Buffer} 48 字节的加密强伪随机数据。请参阅 [会话恢复][] 以获取更多信息。
-  * `sessionTimeout` {number} 服务器创建的 TLS 会话不再可恢复的秒数。请参阅 [会话恢复][] 以获取更多信息。**默认值：** `300`。
+  * `sessionIdContext` {string} 服务器用于确保
+    会话状态不在应用之间共享的不可见标识符。客户端不使用。
+  * `ticketKeys` {Buffer} 48 字节的密码学强伪随机
+    数据。更多信息请参见 [Session Resumption][]。
+  * `sessionTimeout` {number} 服务器创建的 TLS 会话在多少秒后
+    将不再可恢复。更多信息请参见
+    [Session Resumption][]。**默认值：** `300`。
 
 [`tls.createServer()`][] 将 `honorCipherOrder` 选项的默认值设置为 `true`，其他创建安全上下文的 API 则不设置。
 
@@ -1534,6 +1582,9 @@ changes:
 <!-- YAML
 added: v0.3.2
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63966
+    description: "`clientCertEngine` 选项已在运行时弃用。"
   - version:
     - v22.4.0
     - v20.16.0
@@ -1549,7 +1600,7 @@ changes:
     description: "如果设置了 `ALPNProtocols`，发送不含支持协议的ALPN 扩展的传入连接将被终止，并返回致命的 `no_application_protocol` 警报。"
   - version: v12.3.0
     pr-url: https://github.com/nodejs/node/pull/27665
-    description: "`options` 参数现在支持 `net.createServer()`选项。"
+    description: "`options` 参数现在支持 `net.createServer()` 选项。"
   - version: v9.3.0
     pr-url: https://github.com/nodejs/node/pull/14903
     description: "`options` 参数现在可以包含 `clientCertEngine`。"
@@ -1618,8 +1669,8 @@ changes:
 创建一个新的 [`tls.Server`][]。如果提供了 `secureConnectionListener`，它
 会自动设置为 [`'secureConnection'`][] 事件的监听器。
 
-The `ticketKeys` option is automatically shared between `node:cluster` module
-workers.
+`ticketKeys` 选项会在 `node:cluster` 模块
+工作线程之间自动共享。
 
 以下说明了一个简单的回显服务器：
 
@@ -1724,8 +1775,8 @@ import tls from 'node:tls';
 tls.setDefaultCACertificates(tls.getCACertificates('system'));
 ```
 
-此函数完全替换默认的 CA 证书列表。要将其他
-证书添加到现有默认值中，获取当前证书并追加它们：
+此函数会完全替换默认的 CA 证书列表。若要将其他
+证书添加到现有默认值中，请获取当前证书并追加它们：
 
 ```cjs
 const tls = require('node:tls');
@@ -1786,6 +1837,22 @@ added: v0.10.2
 
 ```js
 console.log(tls.getCiphers()); // ['aes128-gcm-sha256', 'aes128-sha', ...]
+```
+
+## `tls.getCertificateCompressionAlgorithms()`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+* 返回：{string\[]}
+
+返回一个数组，其中包含当前 OpenSSL 构建支持的 RFC 8879 证书压缩算法名称，适用于 [`tls.createSecureContext()`][] 的 `certificateCompression` 选项。可能的值包括 `'zlib'`、`'brotli'` 和 `'zstd'`。
+
+当证书压缩不可用时，该数组为空。
+
+```js
+console.log(tls.getCertificateCompressionAlgorithms()); // ['zlib', 'brotli', 'zstd']
 ```
 
 ## `tls.rootCertificates`
@@ -1857,6 +1924,7 @@ added: v0.11.3
 [RFC 4279]: https://tools.ietf.org/html/rfc4279
 [RFC 5077]: https://tools.ietf.org/html/rfc5077
 [RFC 5929]: https://tools.ietf.org/html/rfc5929
+[RFC 8879]: https://tools.ietf.org/html/rfc8879
 [SSL_METHODS]: https://www.openssl.org/docs/man1.1.1/man7/ssl.html#Dealing-with-Protocol-Methods
 [会话恢复]: #session-resumption
 [流]: stream.md#stream

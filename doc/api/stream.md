@@ -55,7 +55,7 @@ changes:
       - v19.7.0
       - v18.16.0
     pr-url: https://github.com/nodejs/node/pull/46307
-    description: Added support for webstreams.
+    description: 添加对 Web 流的支持。
   - version:
       - v18.0.0
       - v17.2.0
@@ -67,10 +67,10 @@ changes:
 * `streams` {Stream\[]|Iterable\[]|AsyncIterable\[]|Function\[]|
   ReadableStream\[]|WritableStream\[]|TransformStream\[]}
 * `source` {Stream|Iterable|AsyncIterable|Function|ReadableStream}
-  * Returns: {Promise|AsyncIterable}
+  * 返回：{Promise|AsyncIterable}
 * `...transforms` {Stream|Function|TransformStream}
   * `source` {AsyncIterable}
-  * Returns: {Promise|AsyncIterable}
+  * 返回：{Promise|AsyncIterable}
 * `destination` {Stream|Function|WritableStream}
   * `source` {AsyncIterable}
   * 返回：{Promise|AsyncIterable}
@@ -335,7 +335,7 @@ await finished(rs, { cleanup: true });
 
 <!--type=misc-->
 
-几乎所有的 Node.js 应用程序，无论多么简单，都以某种方式使用流。以下是在实现 HTTP 服务器的 Node.js 应用程序中使用流的示例：
+几乎所有的 Node.js 应用程序，无论多么简单，都会以某种方式使用流。以下是在实现 HTTP 服务器的 Node.js 应用程序中使用流的示例：
 
 ```js
 const http = require('node:http');
@@ -379,15 +379,15 @@ server.listen(1337);
 // error: Unexpected token 'o', "not json" is not valid JSON
 ```
 
-[`Writable`][] 流（例如示例中的 `res`）暴露了 `write()` 和 `end()` 等方法，用于将数据写入流。
+[可读流][] 流（例如示例中的 [Readable][]）暴露了 [push][] 和 [unshift][] 等方法，用于将数据写入流。
 
-[`Readable`][] 流使用 [`EventEmitter`][] API 在数据可供从流中读取时通知应用程序代码。可以通过多种方式从流中读取可用数据。
+[流][] 流使用 [EventEmitter][] API 在数据可供从流中读取时通知应用程序代码。可以通过多种方式从流中读取可用数据。
 
-[`Writable`][] 和 [`Readable`][] 流都以各种方式使用 [`EventEmitter`][] API 来通信流的当前状态。
+[可读流][] 和 [可写流][] 流都以各种方式使用 [EventEmitter][] API 来通信流的当前状态。
 
-[`Duplex`][] 和 [`Transform`][] 流既是 [`Writable`][] 也是 [`Readable`][]。
+[双工流][] 和 [转换流][] 流既是 [可读流][] 也是 [可写流][]。
 
-向流写入数据或从流消费数据的应用程序不需要直接实现流接口，并且通常没有理由调用 `require('node:stream')`。
+向流写入数据或从流消费数据的应用程序不需要直接实现流接口，并且通常没有理由调用 _write()。
 
 希望实现新类型流的开发者应参考 [流实现者 API][] 部分。
 
@@ -395,7 +395,7 @@ server.listen(1337);
 
 可写流是对数据写入_目的地_的抽象。
 
-[`Writable`][] 流的示例包括：
+[可写流][] 流的示例包括：
 
 * [HTTP 请求，在客户端][]
 * [HTTP 响应，在服务器端][]
@@ -404,13 +404,13 @@ server.listen(1337);
 * [crypto 流][crypto]
 * [TCP 套接字][]
 * [子进程 stdin][]
-* [`process.stdout`][]，[`process.stderr`]
+* [文件系统][fs]，[文件描述符][]
 
-其中一些示例实际上是实现了 [`Writable`][] 接口的 [`Duplex`][] 流。
+其中一些示例实际上是实现了 [stream.Writable][] 接口的 [流][] 流。
 
-所有 [`Writable`][] 流都实现了 `stream.Writable` 类定义的接口。
+所有 [Writable][] 流都实现了 [stream.Writable][] 类定义的接口。
 
-虽然 [`Writable`][] 流的具体实例可能在各方面有所不同，但所有 `Writable` 流都遵循与以下示例中说明相同的基本使用模式：
+虽然 [Writable][] 流的具体实例可能在各方面有所不同，但所有 [Writable][] 流都遵循与以下示例中说明相同的基本使用模式：
 
 ```js
 const myStream = getWritableStreamSomehow();
@@ -485,7 +485,7 @@ added: v0.9.4
 
 * 类型：{Error}
 
-如果在写入或管道传输数据时发生错误，则会发出 `'error'` 事件。调用监听器回调时会传递单个 `Error` 参数。
+如果在写入或通过管道传输数据时发生错误，则会发出 `'error'` 事件。调用监听器回调时会传递单个 `Error` 参数。
 
 除非在创建流时将 [`autoDestroy`][writable-new] 选项设置为 `false`，否则在发出 `'error'` 事件时流会关闭。
 
@@ -968,9 +968,9 @@ added:
 
 > 稳定性：1 - 实验性
 
-* `limit` {number} 要从 readable 丢弃的块的数量。
+* `limit` {number} 要从 readable 中丢弃的块数量。
 * `options` {Object}
-  * `signal` {AbortSignal} 如果信号被中止，允许销毁流。
+  * `signal` {AbortSignal} 如果信号被中止，则允许销毁流。
 * 返回：{Readable} 一个丢弃了 `limit` 个块的流。
 
 此方法返回一个新流，其中前 `limit` 个块被丢弃。
@@ -1014,8 +1014,8 @@ added:
 
 > 稳定性：1 - 实验性
 
-* `fn` {Function|AsyncFunction} 一个在流的每个块上调用的 reducer 函数。
-  * `previous` {any} 从上次调用 `fn` 获得的值，或者如果指定了 `initial` 值则为该值，否则为流的第一个块。
+* `fn` {Function|AsyncFunction} 一个在流的每个块上调用的归约函数。
+  * `previous` {any} 上一次调用 `fn` 得到的值，或者如果指定了 `initial` 值则为该值，否则为流的第一个块。
   * `data` {any} 来自流的一个数据块。
   * `options` {Object}
     * `signal` {AbortSignal} 如果流被销毁则中止，允许提前中止 `fn` 调用。
@@ -1062,7 +1062,7 @@ const folderSize = await Readable.from(filesInDir)
 console.log(folderSize);
 ```
 
-### Duplex 和 transform 流
+### Duplex 和转换流
 
 #### 类：`stream.Duplex`
 
@@ -1173,7 +1173,7 @@ changes:
     description: "回调将在调用 `finished(stream, cb)` 之前已经完成的流上被调用。"
 -->
 
-* `stream` {Stream|ReadableStream|WritableStream} 一个 readable 和/或 writable 流/webstream。
+* `stream` {Stream|ReadableStream|WritableStream} 一个可读和/或可写流/Web 流。
 * `options` {Object}
   * `error` {boolean} 如果设置为 `false`，则调用 `emit('error', err)` 不被视为完成。**默认：** `true`。
   * `readable` {boolean} 当设置为 `false` 时，即使流可能仍然可读，也会在流结束时调用回调。**默认：** `true`。
@@ -1329,8 +1329,6 @@ changes:
     description: 增加了对 webstreams 的支持。
 -->
 
-> 稳定性：2 - 稳定
-
 * `streams` {Stream\[]|Iterable\[]|AsyncIterable\[]|Function\[]|
   ReadableStream\[]|WritableStream\[]|TransformStream\[]|Duplex\[]|Function}
 * 返回：{stream.Duplex}
@@ -1366,10 +1364,10 @@ console.log(res); // 打印 'HELLOWORLD'
 
 `stream.compose` 可用于将异步可迭代对象、生成器和函数转换为流。
 
-* `AsyncIterable` 转换为 readable `Duplex`。不能 yield `null`。
-* `AsyncGeneratorFunction` 转换为 readable/writable transform `Duplex`。
+* `AsyncIterable` 转换为可读 `Duplex`。不能 yield `null`。
+* `AsyncGeneratorFunction` 转换为可读/可写转换 `Duplex`。
   必须将 source `AsyncIterable` 作为第一个参数。不能 yield `null`。
-* `AsyncFunction` 转换为 writable `Duplex`。必须返回 `null` 或 `undefined`。
+* `AsyncFunction` 转换为可写 `Duplex`。必须返回 `null` 或 `undefined`。
 
 ```mjs
 import { compose } from 'node:stream';
@@ -1415,7 +1413,7 @@ changes:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: 标记 API 为稳定。
+    description: 将 API 标记为稳定。
 -->
 
 * `stream` {Readable|Writable|Duplex|WritableStream|ReadableStream}
@@ -1434,7 +1432,7 @@ changes:
       - v24.0.0
       - v22.17.0
     pr-url: https://github.com/nodejs/node/pull/57513
-    description: 标记 API 为稳定。
+    description: 将 API 标记为稳定。
 -->
 
 * `stream` {Readable|Duplex|ReadableStream}
@@ -1461,7 +1459,7 @@ added:
 * `options` {Object} 提供给 `new stream.Readable([options])` 的选项。默认情况下，`Readable.from()` 会将 `options.objectMode` 设置为 `true`，除非通过将 `options.objectMode` 设置为 `false` 显式选择退出。
 * 返回：{stream.Readable}
 
-一个用于从迭代器创建 readable 流的实用方法。
+一个用于从迭代器创建可读流的实用方法。
 
 ```js
 const { Readable } = require('node:stream');
@@ -1611,7 +1609,7 @@ changes:
   AsyncGeneratorFunction|AsyncFunction|Promise|Object|
   ReadableStream|WritableStream}
 
-一个用于创建 duplex 流的实用方法。
+一个用于创建双工流的实用方法。
 
 * `Stream` 将 writable 流转换为 writable `Duplex`，readable 流转换为 `Duplex`。
 * `Blob` 转换为 readable `Duplex`。
@@ -1746,7 +1744,7 @@ changes:
 
 * `streamDuplex` {stream.Duplex}
 * `options` {Object}
-  * `readableType` {string} 指定创建的 readable-writable 对的 `ReadableStream` 一半的类型。必须是 `'bytes'` 或 undefined。
+  * `readableType` {string} 指定创建的可读写对的 `ReadableStream` 一半的类型。必须是 `'bytes'` 或 undefined。
     （`options.type` 是此选项的已弃用别名。）
 * 返回：{Object}
   * `readable` {ReadableStream}
@@ -1812,9 +1810,9 @@ changes:
 * `signal` {AbortSignal} 一个表示可能取消的信号
 * `stream` {Stream|ReadableStream|WritableStream} 一个要附加信号的流。
 
-将 AbortSignal 附加到 readable 或 writable 流。这允许代码使用 `AbortController` 控制流销毁。
+将 AbortSignal 附加到可读流或可写流。这允许代码使用 `AbortController` 控制流的销毁。
 
-在与传递的 `AbortSignal` 对应的 `AbortController` 上调用 `abort` 的行为与在流上调用 `.destroy(new AbortError())` 以及在 webstreams 上调用 `controller.error(new AbortError())` 的行为相同。
+在与传递的 `AbortSignal` 对应的 `AbortController` 上调用 `abort` 的行为，与在流上调用 `.destroy(new AbortError())` 以及在 webstreams 上调用 `controller.error(new AbortError())` 的行为相同。
 
 ```js
 const fs = require('node:fs');
@@ -1828,7 +1826,7 @@ const read = addAbortSignal(
 controller.abort();
 ```
 
-或者将 `AbortSignal` 与 readable 流一起用作异步可迭代对象：
+或者将 `AbortSignal` 与可读流一起用作异步可迭代对象：
 
 ```js
 const controller = new AbortController();
@@ -1852,7 +1850,7 @@ const stream = addAbortSignal(
 })();
 ```
 
-或者将 `AbortSignal` 与 ReadableStream 一起使用：
+或者将 `AbortSignal` 与可读流一起使用：
 
 ```js
 const controller = new AbortController();
@@ -1943,7 +1941,7 @@ class WriteStream extends Writable {
 }
 ```
 
-#### `writable._write(chunk, encoding, callback)`
+#### 写入器
 
 <!-- YAML
 changes:
@@ -1968,9 +1966,9 @@ changes:
 
 如果在构造函数选项中将 `decodeStrings` 属性显式设置为 `false`，则 `chunk` 将保持与传递给 `.write()` 相同的对象，并且可能是字符串而不是 `Buffer`。这是为了支持对某些字符串数据编码具有优化处理的实现。在这种情况下，`encoding` 参数将指示字符串的字符编码。否则，`encoding` 参数可以安全地忽略。
 
-`writable._write()` 方法以前缀下划线开头，因为它对于定义它的类是内部的，用户程序绝不应直接调用它。
+`writable._write()` 函数以前缀下划线开头，因为它对于定义它的类是内部的，用户程序绝不应直接调用它。
 
-#### `writable._writev(chunks, callback)`
+#### 写入多个数据块
 
 * `chunks` {Object\[]} 要写入的数据。值是一个 {Object} 数组，每个对象代表一个要写入的离散数据块。这些对象的属性是：
   * `chunk` {Buffer|string} 包含要写入数据的 buffer 实例或字符串。如果 `Writable` 创建时 `decodeStrings` 选项设置为 `false` 并且字符串传递给 `write()`，则 `chunk` 将是字符串。
@@ -1983,7 +1981,7 @@ changes:
 
 `writable._writev()` 方法以前缀下划线开头，因为它对于定义它的类是内部的，用户程序绝不应直接调用它。
 
-#### `writable._destroy(err, callback)`
+#### 销毁时
 
 <!-- YAML
 added: v8.0.0
@@ -1994,7 +1992,7 @@ added: v8.0.0
 
 `_destroy()` 方法由 [`writable.destroy()`][writable-destroy] 调用。它可以被子类覆盖，但**不得**直接调用。
 
-#### `writable._final(callback)`
+#### 收尾
 
 <!-- YAML
 added: v8.0.0
@@ -2044,9 +2042,9 @@ class MyWritable extends Writable {
 }
 ```
 
-#### 在可写流中解码 buffers
+#### 在可写流中解码缓冲区
 
-解码 buffers 是一项常见任务，例如，当使用输入为字符串的转换器时。当使用多字节字符编码（如 UTF-8）时，这不是一个简单的过程。以下示例展示了如何使用 `StringDecoder` 和 [`Writable`][] 解码多字节字符串。
+解码缓冲区是一项常见任务，例如在使用以字符串作为输入的转换器时。当使用多字节字符编码（如 UTF-8）时，这并不是一个简单的过程。以下示例展示了如何使用 `StringDecoder` 和 [`Writable`][] 解码多字节字符串。
 
 ```js
 const { Writable } = require('node:stream');
@@ -2315,7 +2313,7 @@ class SourceWrapper extends Readable {
 
 `readable.push()` 方法用于将内容推入内部缓冲区。它可以由 [`readable._read()`][] 方法驱动。
 
-对于不在对象模式下运行的流，如果 `readable.push()` 的 `chunk` 参数是 `undefined`，它将被视为空字符串或 buffer。有关更多信息，请参阅 [`readable.push('')`][]。
+对于不在对象模式下运行的流，如果 `readable.push()` 的 `chunk` 参数是 `undefined`，它将被视为空字符串或缓冲区。有关更多信息，请参阅 [`readable.push('')`][]。
 
 #### 读取时的错误
 
@@ -2435,7 +2433,7 @@ const myDuplex = new Duplex({
 });
 ```
 
-当使用 pipeline 时：
+当使用流水线时：
 
 ```js
 const { Transform, pipeline } = require('node:stream');
@@ -2602,43 +2600,43 @@ const myTransform = new Transform({
 });
 ```
 
-#### 事件：`'end'`
+#### 事件：finish
 
-[`'end'`][] 事件来自 `stream.Readable` 类。`'end'` 事件在所有数据输出后发出，这发生在 [`transform._flush()`][stream-_flush] 中的回调被调用之后。在出错的情况下，不应发出 `'end'`。
+[finish][] 事件来自 Transform 类。finish 事件在所有数据输出后发出，这发生在 [._flush][stream-_flush] 中的回调被调用之后。在出错的情况下，不应发出 finish。
 
-#### 事件：`'finish'`
+#### 事件：end
 
-[`'finish'`][] 事件来自 `stream.Writable` 类。在调用 [`stream.end()`][stream-end] 且所有块都由 [`stream._transform()`][stream-_transform] 处理后，发出 `'finish'` 事件。在出错的情况下，不应发出 `'finish'`。
+[end][] 事件来自 Transform 类。在调用 [push(null)][stream-end] 且所有块都由 [._transform][stream-_transform] 处理后，发出 end 事件。在出错的情况下，不应发出 end。
 
-#### `transform._flush(callback)`
+#### ._flush()
 
-* `callback` {Function} 当剩余数据已刷新时调用的回调函数（可选带错误参数和数据）。
+* _flush {Function} 当剩余数据已刷新时调用的回调函数（可选带错误参数和数据）。
 
-此函数不得由应用程序代码直接调用。它应由子类实现，并仅由内部 `Readable` 类方法调用。
+此函数不得由应用程序代码直接调用。它应由子类实现，并仅由内部 _readableState 类方法调用。
 
-在某些情况下，转换操作可能需要在流结束时发出额外的一点数据。例如，`zlib` 压缩流将存储用于优化压缩输出的内部状态量。然而，当流结束时，需要刷新该额外数据，以便压缩数据完整。
+在某些情况下，转换操作可能需要在流结束时发出额外的一点数据。例如，zlib 压缩流将存储用于优化压缩输出的内部状态量。然而，当流结束时，需要刷新该额外数据，以便压缩数据完整。
 
-自定义 [`Transform`][] 实现 _可以_ 实现 `transform._flush()` 方法。当没有更多写入数据要消费时，但在发出信号表示 [`Readable`][] 流结束的 [`'end'`][] 事件之前，将调用此方法。
+自定义 [Transform][] 实现可以实现 _flush 方法。当没有更多写入数据要消费时，但在发出信号表示 [Writable][] 流结束的 [finish][] 事件之前，将调用此方法。
 
-在 `transform._flush()` 实现中，`transform.push()` 方法可以调用零次或多次，视情况而定。当刷新操作完成时，必须调用 `callback` 函数。
+在 Transform 实现中，_flush 方法可以调用零次或多次，视情况而定。当刷新操作完成时，必须调用 callback 函数。
 
-`transform._flush()` 方法以前缀下划线开头，因为它对于定义它的类是内部的，用户程序绝不应直接调用它。
+_flush 方法以前缀下划线开头，因为它对于定义它的类是内部的，用户程序绝不应直接调用它。
 
-#### `transform._transform(chunk, encoding, callback)`
+#### _transform(chunk, encoding, callback)
 
-* `chunk` {Buffer|string|any} 要转换的 `Buffer`，由传递给 [`stream.write()`][stream-write] 的 `string` 转换而来。如果流的 `decodeStrings` 选项为 `false` 或流在对象模式下运行，则 chunk 不会被转换 & 将是传递给 [`stream.write()`][stream-write] 的任何内容。
-* `encoding` {string} 如果 chunk 是字符串，则这是编码类型。如果 chunk 是 buffer，则这是特殊值 `'buffer'`。在这种情况下忽略它。
-* `callback` {Function} 在提供的 `chunk` 处理完成后调用的回调函数（可选带错误参数和数据）。
+* chunk {Buffer|string|any} 要转换的 chunk，由传递给 [write][stream-write] 的参数转换而来。如果流的 decodeStrings 选项为 false 或流在对象模式下运行，则 chunk 不会被转换 & 将是传递给 [write][stream-write] 的任何内容。
+* encoding {string} 如果 chunk 是字符串，则这是编码类型。如果 chunk 是 buffer，则这是特殊值 buffer。 在这种情况下忽略它。
+* callback {Function} 在提供的 chunk 处理完成后调用的回调函数（可选带错误参数和数据）。
 
-此函数不得由应用程序代码直接调用。它应由子类实现，并仅由内部 `Readable` 类方法调用。
+此函数不得由应用程序代码直接调用。它应由子类实现，并仅由内部 _write 类方法调用。
 
-所有 `Transform` 流实现必须提供 `_transform()` 方法以接受输入并产生输出。`transform._transform()` 实现处理正在写入的字节，计算输出，然后使用 `transform.push()` 方法将该输出传递给可读部分。
+所有 Transform 流实现必须提供 _transform 方法以接受输入并产生输出。_transform 实现处理正在写入的字节，计算输出，然后使用 push 方法将该输出传递给可读部分。
 
-`transform.push()` 方法可以调用零次或多次以从单个输入块生成输出，具体取决于作为块的结果要输出多少。
+_push 方法可以调用零次或多次以从单个输入块生成输出，具体取决于作为块的结果要输出多少。
 
 有可能不会从任何给定的输入数据块生成输出。
 
-仅当当前块完全消耗时才必须调用 `callback` 函数。传递给 `callback` 的第一个参数必须是 `Error` 对象（如果在处理输入时发生错误）或 `null`（否则）。如果将第二个参数传递给 `callback`，它将被转发到 `transform.push()` 方法，但仅当第一个参数为 falsy 时。换句话说，以下等价：
+仅当当前块完全消耗时才必须调用 callback 函数。传递给 callback 的第一个参数必须是 Error 对象（如果在处理输入时发生错误）或 null（否则）。如果将第二个参数传递给 callback，它将被转发到 _write 方法，但仅当第一个参数为 falsy 时。换句话说，以下等价：
 
 ```js
 transform.prototype._transform = function(data, encoding, callback) {
@@ -2683,7 +2681,7 @@ transform.prototype._transform = function(data, encoding, callback) {
 
 #### 使用异步生成器创建 readable 流
 
-可以使用 `Readable.from()` 工具方法从异步生成器创建 Node.js readable 流：
+可以使用 `Readable.from()` 工具方法从异步生成器创建 Node.js 可读流：
 
 ```js
 const { Readable } = require('node:stream');
@@ -2708,9 +2706,9 @@ readable.on('data', (chunk) => {
 });
 ```
 
-#### 从异步迭代器管道传输到 writable 流
+#### 从异步迭代器管道传输到可写流
 
-当从异步迭代器写入 writable 流时，确保正确处理背压和错误。[`stream.pipeline()`][] 抽象化了背压和背压相关错误的处理：
+当从异步迭代器写入可写流时，确保正确处理背压和错误。[`stream.pipeline()`][] 抽象化了背压和与背压相关错误的处理：
 
 ```js
 const fs = require('node:fs');
@@ -2763,7 +2761,7 @@ pipelinePromise(iterator, writable)
 
 * 未添加 [`'data'`][] 事件监听器。
 * 从未调用 [`stream.resume()`][stream-resume] 方法。
-* 流未管道传输到任何 writable 目标。
+* 流未管道传输到任何可写目标。
 
 例如，考虑以下代码：
 

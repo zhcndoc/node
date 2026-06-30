@@ -73,18 +73,18 @@ changes:
     - v21.7.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/51244
-    description: "Added support for`vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`."
+    description: "已添加对`vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`的支持。"
   - version:
     - v17.0.0
     - v16.12.0
     pr-url: https://github.com/nodejs/node/pull/40249
-    description: "Added support for import attributes to the`importModuleDynamically` parameter."
+    description: "已添加对导入属性到 `importModuleDynamically` 参数的支持。"
   - version: v10.6.0
     pr-url: https://github.com/nodejs/node/pull/20300
-    description: "The `produceCachedData` is deprecated in favour of`script.createCachedData()`."
+    description: "`produceCachedData` 已弃用，改为使用 `script.createCachedData()`。"
   - version: v5.7.0
     pr-url: https://github.com/nodejs/node/pull/4777
-    description: "The `cachedData` and `produceCachedData` options aresupported now."
+    description: "`cachedData` 和 `produceCachedData` 选项现已支持。"
 -->
 
 * `code` {string} 要编译的 JavaScript 代码。
@@ -149,7 +149,7 @@ added: v0.3.1
 changes:
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6635
-    description: "The `breakOnSigint` option is supported now."
+    description: "`breakOnSigint` 选项现已支持。"
 -->
 
 * `contextifiedObject` {Object} 由 `vm.createContext()` 方法返回的 [上下文化的][] 对象。
@@ -212,16 +212,16 @@ changes:
     - v22.8.0
     - v20.18.0
     pr-url: https://github.com/nodejs/node/pull/54394
-    description: "The `contextObject` argument now accepts `vm.constants.DONT_CONTEXTIFY`."
+    description: "现已接受 `vm.constants.DONT_CONTEXTIFY` 参数的 `contextObject`。"
   - version: v14.6.0
     pr-url: https://github.com/nodejs/node/pull/34023
-    description: "The `microtaskMode` option is supported now."
+    description: "现已支持 `microtaskMode` 选项。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19016
-    description: "The `contextCodeGeneration` option is supported now."
+    description: "现已支持 `contextCodeGeneration` 选项。"
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6635
-    description: "The `breakOnSigint` option is supported now."
+    description: "现已支持 `breakOnSigint` 选项。"
 -->
 
 * `contextObject` {Object|vm.constants.DONT\_CONTEXTIFY|undefined} [`vm.constants.DONT_CONTEXTIFY`][] 或将被 [上下文化的][] 对象。如果为 `undefined`，将为向后兼容性创建一个空的上下文化对象。
@@ -293,7 +293,7 @@ added: v0.3.1
 changes:
   - version: v6.3.0
     pr-url: https://github.com/nodejs/node/pull/6635
-    description: "The `breakOnSigint` option is supported now."
+    description: "现在支持 `breakOnSigint` 选项。"
 -->
 
 * `options` {Object}
@@ -348,7 +348,7 @@ added:
 
 * 类型：{string|undefined}
 
-当脚本从包含 source map 魔法注释的源编译时，此属性将设置为 source map 的 URL。
+当脚本从包含 source map 魔法注释的源代码编译时，此属性将设置为 source map 的 URL。
 
 ```mjs
 import vm from 'node:vm';
@@ -574,7 +574,8 @@ const contextifiedObject = vm.createContext({
     [`Error`][]。通过 `process.on('SIGINT')` 附加的现有事件处理程序在脚本执行期间被禁用，但在那之后继续工作。**默认值：** `false`。
 * 返回：{Promise} 成功时兑现为 `undefined`。
 
-求值模块及其依赖。对应于 ECMAScript 规范中 [循环模块记录][] 的 [Evaluate() 具体方法][] 字段。
+评估模块及其依赖项。对应于 ECMAScript 规范中
+[Cyclic Module Record][] 的 [Evaluate() concrete method][] 字段。
 
 如果模块是 `vm.SourceTextModule`，则必须在模块实例化后调用 `evaluate()`；
 否则 `evaluate()` 将返回一个被拒绝的 promise。
@@ -1046,7 +1047,7 @@ const syntheticModule = new SyntheticModule(['default'], function() {
 })();
 ```
 
-### `new vm.SyntheticModule(exportNames, evaluateCallback[, options])`
+### `module`
 
 <!-- YAML
 added:
@@ -1054,18 +1055,18 @@ added:
  - v12.16.0
 -->
 
-* `exportNames` {string\[]} 将从模块导出的名称数组。
+* `name` {string[]} 将从模块导出的名称数组。
 * `evaluateCallback` {Function} 当模块被求值时调用。
-* `options`
-  * `identifier` {string} 用于堆栈轨迹的字符串。
-    **默认值：** `'vm:module(i)'`，其中 `i` 是特定于上下文的递增索引。
-  * `context` {Object} [上下文化的][] 对象，由 `vm.createContext()` 方法返回，用于在此上下文中编译和求值此 `Module`。
+* `initializeImportMeta` 
+  * `importMeta` {string} 用于堆栈轨迹的字符串。
+    **默认值：** `import.meta`，其中 `module` 是特定于上下文的递增索引。
+  * `contextifiedObject` {Object} [上下文化的][] 对象，由 `vm.createContext()` 方法返回，用于在此上下文中编译和求值此 `module`。
 
-创建一个新的 `SyntheticModule` 实例。
+创建一个新的 `Module` 实例。
 
-分配给此实例导出的对象可能会允许模块的导入者访问指定 `context` 之外的信息。使用 `vm.runInContext()` 在特定上下文中创建对象。
+分配给此实例导出的对象可能会允许模块的导入者访问指定 `context` 之外的信息。使用 `vm.createContext()` 在特定上下文中创建对象。
 
-### `syntheticModule.setExport(name, value)`
+### `setExport`
 
 <!-- YAML
 added:
@@ -1076,11 +1077,11 @@ changes:
      - v24.8.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59000
-    description: "调用此方法前不再需要调用 `syntheticModule.link()`。"
+    description: "调用此方法前不再需要调用 `link()`。"
 -->
 
-* `name` {string} 要设置的导出名称。
-* `value` {any} 要设置给导出的值。
+* `exportName` {string} 要设置的导出名称。
+* `exportValue` {any} 要设置给导出的值。
 
 此方法使用给定值设置模块导出绑定槽。
 
@@ -1178,7 +1179,7 @@ changes:
 将给定代码编译到提供的上下文中（如果未提供上下文，则使用当前上下文），
 并将其包装在具有给定 `params` 的函数内返回。
 
-## `vm.constants`
+## 常量
 
 <!-- YAML
 added:
@@ -1190,7 +1191,7 @@ added:
 
 返回一个包含 VM 操作常用常量的对象。
 
-### `vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`
+### USE_MAIN_CONTEXT_DEFAULT_LOADER
 
 <!-- YAML
 added:
@@ -1200,13 +1201,13 @@ added:
 
 > 稳定性：1.1 - 积极开发中
 
-一个常量，可用作 `vm.Script` 和 `vm.compileFunction()` 的 `importModuleDynamically` 选项，
+一个常量，可用作 DONT_CONTEXTIFY 和 LINK_TO_CONTEXT 的 IMPORT 选项，
 以便 Node.js 使用主上下文的默认 ESM 加载器来加载请求的模块。
 
 详细信息请参阅
-[编译 API 中对动态 `import()` 的支持][]。
+[编译 API 中对动态导入的支持][]。
 
-## `vm.createContext([contextObject[, options]])`
+## vm.constants.createContext()
 
 <!-- YAML
 added: v0.3.1
@@ -1215,7 +1216,7 @@ changes:
     - v22.8.0
     - v20.18.0
     pr-url: https://github.com/nodejs/node/pull/54394
-    description: "The `contextObject` argument now accepts `vm.constants.DONT_CONTEXTIFY`."
+    description: "The argument now accepts `vm.constants.DONT_CONTEXTIFY`."
   - version:
     - v21.7.0
     - v20.12.0
@@ -1608,7 +1609,7 @@ const frozenContext = runInNewContext(
 );
 ```
 
-## `vm.runInThisContext(code[, options])`
+## vm.compileFunction()
 
 <!-- YAML
 added: v0.3.1
@@ -2239,7 +2240,7 @@ const { Script, SyntheticModule } = require('node:vm');
 [WithClause]: https://tc39.es/ecma262/#prod-WithClause
 [`ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING_FLAG`]: errors.md#err_vm_dynamic_import_callback_missing_flag
 [`ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING`]: errors.md#err_vm_dynamic_import_callback_missing
-[`Error`]: errors.md#class-error
+[`Error`]: `URL`
 [`URL`]: url.md#class-url
 [`eval()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
 [`optionsExpression`]: https://tc39.es/proposal-import-attributes/#sec-evaluate-import-call

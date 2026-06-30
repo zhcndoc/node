@@ -160,7 +160,7 @@ API 支持两种模型：
 
 * **拉取** -- 数据按需流动。`pull()` 和 `pullSync()` 创建惰性管道，仅当消费者迭代时才从源读取。
 
-* **推送** -- 数据被显式写入。`push()` 创建一个具有背压的 writer/readable 对。writer 将数据推入；readable 作为异步可迭代对象被消费。
+* **推送** -- 数据被显式写入。`push()` 创建一个具有背压的写入器/可读取对象对。写入器将数据推入；可读取对象作为异步可迭代对象被消费。
 
 ### 背压
 
@@ -256,9 +256,9 @@ for (const item of dataset) {
 
 #### 阻塞模式
 
-阻塞模式将槽位限制为 `highWaterMark`，但对待处理写入队列没有限制。等待的写入会阻塞，直到消费者腾出空间，就像严格模式一样。区别在于，未等待的写入会静默地永远排队，而不是抛出错误 -- 如果生产者忘记 `await`，这可能导致内存泄漏。
+阻塞模式将槽位限制为 `highWaterMark`，但对待处理写入队列没有限制。等待中的写入会阻塞，直到消费者腾出空间，就像严格模式一样。区别在于，未等待的写入会静默地无限期排队，而不是抛出错误——如果生产者忘记 `await`，这可能导致内存泄漏。
 
-这是现有 Node.js 经典流和 Web Streams 默认的模式。当你控制生产者并知道它正确等待时，或者从这些 API 迁移代码时使用它。
+这是现有 Node.js 经典流和 Web Streams 默认使用的模式。当你控制生产者并知道它会正确等待时，或者从这些 API 迁移代码时，可以使用它。
 
 ```mjs
 import { push, text } from 'node:stream/iter';
@@ -302,7 +302,7 @@ run().catch(console.error);
 
 #### 丢弃最旧
 
-写入从不等待。当槽位缓冲区满时，最旧的缓冲块被驱逐，为传入的写入腾出空间。消费者总是看到最新的数据。适用于实时馈送、遥测或任何陈旧数据不如当前数据有价值的场景。
+写入从不等待。当槽位缓冲区满时，最旧的缓冲块会被驱逐，为传入的写入腾出空间。消费者始终看到最新数据。适用于实时馈送、遥测或任何陈旧数据不如当前数据有价值的场景。
 
 ```mjs
 import { push } from 'node:stream/iter';
@@ -326,7 +326,7 @@ const { writer, readable } = push({
 
 #### 丢弃最新
 
-写入从不等待。当槽位缓冲区满时，传入的写入被静默丢弃。消费者处理已缓冲的内容，而不会被新数据淹没。适用于速率限制或在压力下卸载负载。
+写入从不等待。当槽位缓冲区已满时，传入的写入会被静默丢弃。消费者处理已缓冲的内容，而不会被新数据淹没。适用于速率限制或在压力下卸载负载。
 
 ```mjs
 import { push } from 'node:stream/iter';
@@ -361,7 +361,7 @@ if (writer.endSync() < 0) await writer.end();
 writer.fail(err);  // 始终同步，不需要回退
 ```
 
-#### `writer.desiredSize`
+#### 写入高水位线前可用槽位数
 
 * {number|null}
 
@@ -369,7 +369,7 @@ writer.fail(err);  // 始终同步，不需要回退
 
 该值始终为非负数。
 
-#### `writer.end([options])`
+#### 写入全部数据
 
 * `options` {Object}
   * `signal` {AbortSignal} 仅取消此操作。该信号只会取消挂起的 `end()` 调用；不会使 writer 自身失败。
@@ -377,7 +377,7 @@ writer.fail(err);  // 始终同步，不需要回退
 
 信号表明不再写入更多数据。
 
-#### `writer.endSync()`
+#### 获取已写入字节数
 
 * 返回：{number} 写入的总字节数，如果 writer 未打开则为 `-1`。
 
@@ -394,7 +394,7 @@ if (result < 0) {
 
 * `reason` {any}
 
-将 writer 置于终止错误状态。如果 writer 已关闭或出错，这是无操作。与 `write()` 和 `end()` 不同，`fail()` 无条件同步，因为使 writer 失败是纯状态转换，无需执行异步工作。
+将 writer 置于终止错误状态。如果 writer 已关闭或出错，则这是无操作。与 `write()` 和 `end()` 不同，`fail()` 无条件同步，因为使 writer 失败是纯状态转换，无需执行异步工作。
 
 #### `writer.write(chunk[, options])`
 
@@ -539,7 +539,7 @@ added:
     **默认：** `false`。
 * 返回：{Promise} 以写入的总字节数完成。
 
-将源通过转换管道输送到写入器。如果写入器具有
+将源通过转换管道传输到写入器。如果写入器具有
 `writev(chunks)` 方法，则整个批次会在单次调用中传递（启用
 分散/聚集 I/O）。
 
@@ -836,7 +836,7 @@ added:
 * `source` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>}
 * `options` {Object}
   * `signal` {AbortSignal}
-  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+  * `limit` {number} 要收集的最大字节数。如果收集到的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
 * 返回：{Promise} 完成时返回一个 `Uint8Array` 对象数组。
 
 将所有块收集为 `Uint8Array` 值的数组（不进行连接）。
@@ -851,7 +851,7 @@ added:
 * `source` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>}
 * `options` {Object}
   * `signal` {AbortSignal}
-  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+  * `limit` {number} 要收集的最大字节数。如果收集到的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
 * 返回：{Promise} 完成时返回一个 `ArrayBuffer` 对象。
 
 将所有字节收集到一个 `ArrayBuffer` 中。
@@ -865,7 +865,7 @@ added:
 
 * `source` {Iterable\<Uint8Array\[]>}
 * `options` {Object}
-  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+  * `limit` {number} 要收集的最大字节数。如果收集到的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
 * 返回：{ArrayBuffer}
 
 [`arrayBuffer()`][] 的同步版本。
@@ -879,7 +879,7 @@ added:
 
 * `source` {Iterable\<Uint8Array\[]>}
 * `options` {Object}
-  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+  * `limit` {number} 要收集的最大字节数。如果收集到的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
 * 返回：{Uint8Array\[]}
 
 [`array()`][] 的同步版本。
@@ -894,7 +894,7 @@ added:
 * `source` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>}
 * `options` {Object}
   * `signal` {AbortSignal}
-  * `limit` {number} 要消耗的最大字节数。如果收集的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
+  * `limit` {number} 要收集的最大字节数。如果收集到的总字节数超过限制，将抛出 `ERR_OUT_OF_RANGE` 错误
 * 返回：{Promise} 完成时返回一个 `Uint8Array` 对象。
 
 将流中的所有字节收集到单个 `Uint8Array` 中。
@@ -1041,7 +1041,7 @@ added:
  - v25.9.0
 -->
 
-* `...sources` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>} Two or more iterable objects.
+* `...sources` {AsyncIterable\<Uint8Array\[]>|Iterable\<Uint8Array\[]>} 两个或更多可迭代对象。
 * `options` {Object}
   * `signal` {AbortSignal}
 * 返回：{AsyncIterable\<Uint8Array\[]>}
@@ -1126,7 +1126,7 @@ added:
 -->
 
 * `options` {Object}
-  * `highWaterMark` {number} Buffer size in slots. Must be >= 1; values below 1 are clamped to 1. **默认：** `16`。
+  * `highWaterMark` {number} 缓冲区槽位大小。必须大于等于 1；小于 1 的值会被截断为 1。**默认：** `16`。
   * `backpressure` {string} `'strict'`、`'block'`、`'drop-oldest'` 或 `'drop-newest'`。**默认：** `'strict'`。
   * `signal` {AbortSignal}
 * 返回：{Object}
@@ -1234,7 +1234,7 @@ added:
 
 * `source` {AsyncIterable} 要共享的源。
 * `options` {Object}
-  * `highWaterMark` {number} Buffer size. Must be >= 1; values below 1 are clamped to 1. **默认：** `16`。
+  * `highWaterMark` {number} 缓冲区大小。必须大于等于 1；小于 1 的值会被钳制为 1。**默认：** `16`。
   * `backpressure` {string} `'strict'`、`'block'`、`'drop-oldest'` 或 `'drop-newest'`。**默认：** `'strict'`。
 * 返回：{Share}
 
@@ -1367,24 +1367,23 @@ added: v26.1.0
 
 > 稳定性：1 - 实验性
 
-* `readable` {stream.Readable|Object} 经典 Readable 流或任何具有
-  `read()` 和 `on()` 方法的对象。
+* `readable` {stream.Readable|Object} 经典的 Readable 流或任何具有
+  `read()`、`on()` 和 `off()` 方法的对象。
 * 返回：{AsyncIterable\<Uint8Array\[]>} 一个 stream/iter 异步可迭代源。
 
 将经典 Readable 流（或 duck-typed 等效对象）转换为
 stream/iter 异步可迭代源，可以传递给 [`from()`][]、
 [`pull()`][]、[`text()`][] 等。
 
-如果对象实现了 [`toAsyncStreamable`][] 协议（如
-`stream.Readable` 所做的那样），则使用该协议。否则，函数
-对 `read()` 和 `on()` (EventEmitter) 进行 duck-type 检查，并用
-批处理异步迭代器包装流。
+如果对象实现了 [`toAsyncStreamable`][] 协议（`stream.Readable` 也是如此），则会使用该协议。否则，函数会基于
+`read()`、`on()` 和 `off()`（EventEmitter）进行 duck-type 检测，并将
+流包装为批处理异步迭代器。
 
-结果按实例缓存 -- 使用同一流调用 `fromReadable()` 两次
-返回相同的可迭代对象。
+结果会按实例缓存 -- 使用同一流调用 `fromReadable()` 两次
+会返回相同的可迭代对象。
 
-对于 object-mode 或编码的 Readable 流，块会自动
-标准化为 `Uint8Array`。
+对于 object-mode 或已编码的 Readable 流，块会自动
+规范化为 `Uint8Array`。
 
 ```mjs
 import { Readable } from 'node:stream';
@@ -1439,16 +1438,15 @@ duck-typed 等效对象）创建 stream/iter Writer 适配器。该适配器可�
 
 由于经典 Writable 上的所有写入本质上是异步的，
 同步 Writer 方法（`writeSync`、`writevSync`、`endSync`）始终
-返回 `false` 或 `-1`，defer 到异步路径。每次写入
+返回 `false` 或 `-1`，转而走异步路径。每次写入
 来自 Writer 接口的 `options.signal` 参数也会被忽略。
 
-The result is cached per instance and backpressure policy -- calling
-`fromWritable()` twice with the same stream and `backpressure` option returns
-the same Writer.
+结果会按实例和背压策略进行缓存——使用相同的流和 `backpressure` 选项两次调用
+`fromWritable()` 会返回同一个 Writer。
 
 对于不暴露 `writableHighWaterMark`、
 `writableLength` 或类似属性的 duck-typed 流，
-会使用合理的默认值。Object-mode writable（如果可检测）会被拒绝，因为 Writer
+会使用合理的默认值。Object 模式 writable（如果可检测）会被拒绝，因为 Writer
 接口仅支持字节。
 
 ```mjs
@@ -1567,8 +1565,11 @@ added: v26.1.0
 
 创建由 stream/iter Writer 支持的经典 [`stream.Writable`][]。
 
-每次 `_write()` / `_writev()` 调用首先尝试 Writer 的同步方法
-（`writeSync` / `writevSync`），如果同步路径返回 `false` 或抛出异常，则回退到异步方法。同样，`_final()` 在 `end()` 之前尝试 `endSync()`。当同步路径成功时，回调通过 `queueMicrotask` 延迟，以保持异步解析契约。
+每次 `_write()` / `_writev()` 调用都会先尝试 Writer 的同步方法
+（`writeSync` / `writevSync`），如果同步路径返回 `false`，
+则回退到异步方法。类似地，`_final()` 会先尝试 `endSync()`
+再尝试 `end()`。当同步路径成功时，回调会通过
+`queueMicrotask` 延迟，以保持异步解析约定。
 
 Writable 的 `highWaterMark` 设置为 `Number.MAX_SAFE_INTEGER` 以
 有效禁用其内部缓冲，允许底层 Writer
@@ -1873,9 +1874,9 @@ const consumer = shared.pull();
 console.log(textSync(consumer)); // 'hello'
 ```
 
-### `Stream.toAsyncStreamable`
+### 可流式传输对象
 
-* 值：`Symbol.for('Stream.toAsyncStreamable')`
+* 值：toWellFormed
 
 该值必须是一个将对象转换为可流式传输值的函数。当在流式传输管道中的任何位置遇到该对象时（作为传递给 `from()` 的源，或作为转换返回的值），就会调用此方法以生成实际数据。它可以返回任何会解析为以下类型的值：字符串、`Uint8Array`、`AsyncIterable`、`Iterable`，或另一个可流式传输对象。
 

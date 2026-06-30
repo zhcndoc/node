@@ -1,4 +1,4 @@
-# Net
+# 网络
 
 <!--introduced_in=v0.10.0-->
 
@@ -65,7 +65,7 @@ net.createServer().listen(
   path.join('\\\\?\\pipe', process.cwd(), 'myctl'));
 ```
 
-## Class: `net.BlockList`
+## 类：`net.BlockList`
 
 <!-- YAML
 added:
@@ -161,7 +161,7 @@ added:
 
 * 类型：{string\[]}
 
-添加到阻止列表的规则列表。
+要添加到阻止列表中的规则列表。
 
 ### `BlockList.isBlockList(value)`
 
@@ -210,7 +210,7 @@ added:
 
 * 返回 Blocklist.rules
 
-## Class: `net.SocketAddress`
+## 类：`net.SocketAddress`
 
 <!-- YAML
 added:
@@ -262,6 +262,431 @@ added:
   - v15.14.0
   - v14.18.0-->
 
+* 类型：{number}
+
+### `socketaddress.port`
+
+<!-- YAML
+added:
+  - v15.14.0
+  - v14.18.0
+-->
+
+* 类型：{number}
+
+### `SocketAddress.parse(input)`
+
+<!-- YAML
+added:
+  - v23.4.0
+  - v22.13.0
+-->
+
+* `input` {string} 一个包含 IP 地址和可选端口的输入字符串，
+  例如 `123.1.2.3:1234` 或 `[1::1]:1234`。
+* 返回值：{net.SocketAddress} 如果解析成功，则返回一个 `SocketAddress`。
+  否则返回 `undefined`。
+
+## 类：`net.Server`
+
+<!-- YAML
+added: v0.1.90
+-->
+
+* 继承：{EventEmitter}
+
+此类用于创建 TCP 或 [IPC][] 服务器。
+
+### `new net.Server([options][, connectionListener])`
+
+* `options` {Object} 参见
+  [`net.createServer([options][, connectionListener])`][`net.createServer()`]。
+* `connectionListener` {Function} 自动设置为
+  [`'connection'`][] 事件的监听器。
+* 返回：{net.Server}
+
+`net.Server` 是一个 [`EventEmitter`][]，具有以下事件：
+
+### 事件：`'close'`
+
+<!-- YAML
+added: v0.5.0
+-->
+
+当服务器关闭时触发。如果存在连接，则在所有连接都结束之前不会触发此事件。
+
+### 事件：`'connection'`
+
+<!-- YAML
+added: v0.1.90
+-->
+
+* 类型：{net.Socket} 连接对象
+
+当建立新连接时触发。`socket` 是
+`net.Socket` 的一个实例。
+
+### 事件：`'error'`
+
+<!-- YAML
+added: v0.1.90
+-->
+
+* 类型：{Error}
+
+当发生错误时触发。不同于 [`net.Socket`][]，[`'close'`][]
+事件不会在此事件之后直接触发，除非手动调用
+[`server.close()`][]。请参见
+[`server.listen()`][] 讨论中的示例。
+
+### 事件：`'listening'`
+
+<!-- YAML
+added: v0.1.90
+-->
+
+在调用 [`server.listen()`][] 后，服务器完成绑定时触发。
+
+### 事件：`'drop'`
+
+<!-- YAML
+added:
+  - v18.6.0
+  - v16.17.0
+-->
+
+当连接数达到 `server.maxConnections` 的阈值时，服务器将丢弃新的连接，并改为触发 `'drop'` 事件。如果它是
+TCP 服务器，参数如下；否则参数为 `undefined`。
+
+* `data` {Object} 传递给事件监听器的参数。
+  * `localAddress` {string}  本地地址。
+  * `localPort` {number} 本地端口。
+  * `localFamily` {string} 本地族。
+  * `remoteAddress` {string} 远程地址。
+  * `remotePort` {number} 远程端口。
+  * `remoteFamily` {string} 远程 IP 族。`'IPv4'` 或 `'IPv6'`。
+
+### `server.address()`
+
+<!-- YAML
+added: v0.1.90
+changes:
+  - version: v18.4.0
+    pr-url: https://github.com/nodejs/node/pull/43054
+    description: "`family` 属性现在返回字符串而不是数字。"
+  - version: v18.0.0
+    pr-url: https://github.com/nodejs/node/pull/41431
+    description: "`family` 属性现在返回数字而不是字符串。"
+-->
+
+* 返回：{Object|string|null}
+
+返回已绑定的 `address`、地址的 `family` 名称，以及服务器的 `port`，如果在 IP 套接字上监听，则由操作系统报告（在获取操作系统分配的地址时很有用）：`{ port: 12346, family: 'IPv4', address: '127.0.0.1' }`。
+
+对于监听管道或 Unix 域套接字的服务器，名称以字符串形式返回。
+
+```js
+const server = net.createServer((socket) => {
+  socket.end('goodbye\n');
+}).on('error', (err) => {
+  // Handle errors here.
+  throw err;
+});
+
+// Grab an arbitrary unused port.
+server.listen(() => {
+  console.log('opened server on', server.address());
+});
+```
+
+在 `'listening'` 事件被发出之前或在调用 `server.close()` 之后，`server.address()` 会返回 `null`。
+
+### `server.close([callback])`
+
+<!-- YAML
+added: v0.1.90
+-->
+
+* `callback` {Function} 在服务器关闭时调用。
+* 返回：{net.Server}
+
+停止服务器接受新连接，并保留现有连接。此函数是异步的，当所有连接都结束且服务器发出 [`'close'`][] 事件时，服务器最终会关闭。可选的 `callback` 会在 `'close'` 事件发生后被调用。与该事件不同的是，如果服务器在关闭时并未处于打开状态，它将以一个 `Error` 作为唯一参数被调用。
+
+### `server[Symbol.asyncDispose]()`
+
+<!-- YAML
+added:
+ - v20.5.0
+ - v18.18.0
+changes:
+ - version: v24.2.0
+   pr-url: https://github.com/nodejs/node/pull/58467
+   description: 不再是实验性功能。
+-->
+
+调用 [`server.close()`][] 并返回一个 promise，该 promise 会在服务器关闭时完成。
+
+### `server.getConnections(callback)`
+
+<!-- YAML
+added: v0.9.7
+-->
+
+* `callback` {Function}
+* 返回：{net.Server}
+
+异步获取服务器上的并发连接数。当套接字被发送到子进程时也能正常工作。
+
+回调应接受两个参数 `err` 和 `count`。
+
+### `server.listen()`
+
+启动一个监听连接的服务器。`net.Server` 可以是 TCP 或 [IPC][] 服务器，具体取决于它监听的内容。
+
+可能的签名：
+
+* [`server.listen(handle[, backlog][, callback])`][`server.listen(handle)`]
+* [`server.listen(options[, callback])`][`server.listen(options)`]
+* [`server.listen(path[, backlog][, callback])`][`server.listen(path)`]
+  适用于 [IPC][] 服务器
+* [`server.listen([port[, host[, backlog]]][, callback])`][`server.listen(port)`]
+  适用于 TCP 服务器
+
+此函数是异步的。当服务器开始监听时，将发出 [`'listening'`][] 事件。最后一个参数 `callback`
+将被添加为 [`'listening'`][] 事件的监听器。
+
+所有 `listen()` 方法都可以接受一个 `backlog` 参数，用于指定待处理连接队列的最大长度。实际长度将由操作系统通过 sysctl 设置决定，例如 Linux 上的 `tcp_max_syn_backlog` 和 `somaxconn`。该参数的默认值为 511（不是 512）。
+
+所有 [`net.Socket`][] 都会被设置为 `SO_REUSEADDR`（详情请参见 [`socket(7)`][]）。
+
+只有在第一次 `server.listen()` 调用期间发生错误，或者已经调用了 `server.close()` 时，才可以再次调用 `server.listen()` 方法。否则会抛出一个 `ERR_SERVER_ALREADY_LISTEN` 错误。
+
+监听时最常见的错误之一是 `EADDRINUSE`。当另一台服务器已经在请求的 `port`/`path`/`handle` 上监听时，就会发生这种情况。处理此问题的一种方法是在一段时间后重试：
+
+```js
+server.on('error', (e) => {
+  if (e.code === 'EADDRINUSE') {
+    console.error('Address in use, retrying...');
+    setTimeout(() => {
+      server.close();
+      server.listen(PORT, HOST);
+    }, 1000);
+  }
+});
+```
+
+#### `server.listen(handle[, backlog][, callback])`
+
+<!-- YAML
+added: v0.5.10
+-->
+
+* `handle` {Object}
+* `backlog` {number} [`server.listen()`][] 函数的通用参数
+* `callback` {Function}
+* 返回值：{net.Server}
+
+在已绑定到端口、Unix 域套接字或 Windows 命名管道的给定 `handle` 上启动服务器监听连接。
+
+`handle` 对象可以是服务器、套接字（任何具有底层 `_handle` 成员的对象）、[`BoundSocket`][]，或者带有有效文件描述符的 `fd`
+成员的对象。
+
+当 `handle` 是 [`BoundSocket`][] 时，服务器会接管该已绑定的
+套接字并开始在其上监听。接管会消耗该已绑定套接字（参见
+[所有权转移][`BoundSocket`]）。
+
+在 Windows 上不支持监听文件描述符。
+
+#### `server.listen(options[, callback])`
+
+<!-- YAML
+added: v0.11.14
+changes:
+  - version:
+    - v23.1.0
+    - v22.12.0
+    pr-url: https://github.com/nodejs/node/pull/55408
+    description: 支持 `reusePort` 选项。
+  - version: v15.6.0
+    pr-url: https://github.com/nodejs/node/pull/36623
+    description: 新增 AbortSignal 支持。
+  - version: v11.4.0
+    pr-url: https://github.com/nodejs/node/pull/23798
+    description: 支持 `ipv6Only` 选项。
+-->
+
+* `options` {Object} 必需。支持以下属性：
+  * `backlog` {number} [`server.listen()`][] 函数的通用参数。
+  * `exclusive` {boolean} **默认值：** `false`
+  * `handle` {net.BoundSocket} 预先绑定的 [`BoundSocket`][]。服务器会接管
+    该已绑定套接字并在其上监听，同时忽略 `host`、`port` 和
+    `path`。接管会消耗该已绑定套接字（参见
+    [所有权转移][`BoundSocket`]）。
+  * `host` {string}
+  * `ipv6Only` {boolean} 对于 TCP 服务器，将 `ipv6Only` 设为 `true` 将
+    禁用双栈支持，也就是说，绑定到主机 `::` 不会让
+    `0.0.0.0` 也被绑定。**默认值：** `false`。
+  * `reusePort` {boolean} 对于 TCP 服务器，将 `reusePort` 设为 `true` 允许
+    同一主机上的多个套接字绑定到同一端口。传入连接由操作系统分配给
+    监听套接字。此选项仅在某些平台上可用，例如 Linux 3.9+、DragonFlyBSD 3.6+、FreeBSD 12.0+、
+    Solaris 11.4 和 AIX 7.2.5+。在不受支持的平台上，此选项会抛出
+    错误。**默认值：** `false`。
+  * `path` {string} 如果指定了 `port`，则将被忽略。参见
+    [为 IPC 连接标识路径][]。
+  * `port` {number}
+  * `readableAll` {boolean} 对于 IPC 服务器，使管道对所有用户
+    可读。**默认值：** `false`。
+  * `signal` {AbortSignal} 可用于关闭正在监听的
+    服务器的 AbortSignal。
+  * `writableAll` {boolean} 对于 IPC 服务器，使管道对所有用户
+    可写。**默认值：** `false`。
+* `callback` {Function}
+  函数。
+* 返回值：{net.Server}
+
+如果指定了 `handle`，服务器会接管该预绑定套接字。否则，如果
+指定了 `port`，其行为与
+[`server.listen([port[, host[, backlog]]][, callback])`][`server.listen(port)`] 相同。
+否则，如果指定了 `path`，其行为与
+[`server.listen(path[, backlog][, callback])`][`server.listen(path)`] 相同。
+如果都未指定，则会抛出错误。
+
+如果 `exclusive` 为 `false`（默认值），则集群工作进程将使用相同的
+底层句柄，从而允许共享连接处理职责。当 `exclusive` 为 `true` 时，句柄不会共享，且尝试共享端口
+会导致错误。下面展示了一个在独占端口上监听的示例。
+
+```js
+server.listen({
+  host: 'localhost',
+  port: 80,
+  exclusive: true,
+});
+```
+
+当 `exclusive` 处于 `true` 状态且底层句柄为共享时，
+可能会出现多个工作进程使用不同的 backlog 查询同一个句柄的情况。
+在这种情况下，将使用传递给主进程的第一个 `backlog`。
+
+以 root 身份启动 IPC 服务器可能会导致无特权用户无法访问服务器路径。
+使用 `readableAll` 和 `writableAll` 将使所有用户都可以访问该服务器。
+
+如果启用了 `signal` 选项，在对应的 `AbortController` 上调用 `.abort()` 类似于在服务器上调用 `.close()`：
+
+```js
+const controller = new AbortController();
+server.listen({
+  host: 'localhost',
+  port: 80,
+  signal: controller.signal,
+});
+// Later, when you want to close the server.
+controller.abort();
+```
+
+#### `server.listen(path[, backlog][, callback])`
+
+<!-- YAML
+added: v0.1.90
+-->
+
+* `path` {string} 服务器应监听的路径。参见
+  [识别 IPC 连接的路径][]。
+* `backlog` {number} [`server.listen()`][] 函数的公共参数。
+* `callback` {Function}.
+* 返回：{net.Server}
+
+启动一个 [IPC][] 服务器，在给定的 `path` 上监听连接。
+
+#### `server.listen([port[, host[, backlog]]][, callback])`
+
+<!-- YAML
+added: v0.1.90
+-->
+
+* `port` {number}
+* `host` {string}
+* `backlog` {number} [`server.listen()`][] 函数的公共参数。
+* `callback` {Function}.
+* 返回：{net.Server}
+
+启动一个 TCP 服务器，在给定的 `port` 和 `host` 上监听连接。
+
+如果未省略 `port` 或其值为 0，操作系统将分配一个任意的
+未使用端口，可在发出 [`'listening'`][] 事件后使用 `server.address().port`
+获取该端口。
+
+如果未省略 `host`，服务器将在 [未指定的 IPv6 地址][]（`::`）可用时接受连接，
+否则将在 [未指定的 IPv4 地址][]（`0.0.0.0`）上接受连接。
+
+在大多数操作系统中，监听 [未指定的 IPv6 地址][]（`::`）
+可能会导致 `net.Server` 也监听 [未指定的 IPv4 地址][]
+（`0.0.0.0`）。
+
+### `server.listening`
+
+<!-- YAML
+added: v5.7.0
+-->
+
+* 类型：{boolean} 指示服务器当前是否正在监听连接。
+
+### `server.maxConnections`
+
+<!-- YAML
+added: v0.2.0
+changes:
+  - version: v21.0.0
+    pr-url: https://github.com/nodejs/node/pull/48276
+    description: 将 `maxConnections` 设置为 `0` 会丢弃所有传入的
+                 连接。此前，它被解释为 `Infinity`。
+-->
+
+* 类型：{integer}
+
+当连接数达到 `server.maxConnections` 阈值时：
+
+1. 如果进程未在集群模式下运行，Node.js 将关闭该连接。
+
+2. 如果进程在集群模式下运行，Node.js 默认会将该连接路由到另一个工作进程。若要改为关闭连接，请将 [`server.dropMaxConnection`][] 设置为 `true`。
+
+不建议在套接字已通过 [`child_process.fork()`][] 发送给子进程后再使用此选项。
+
+### `server.dropMaxConnection`
+
+<!-- YAML
+added:
+  - v23.1.0
+  - v22.12.0
+-->
+
+* 类型：{boolean}
+
+将此属性设置为 `true`，以便在连接数达到 [`server.maxConnections`][] 阈值后开始关闭连接。此设置仅在集群模式下有效。
+
+### `server.ref()`
+
+<!-- YAML
+added: v0.9.1
+-->
+
+* 返回：{net.Server}
+
+与 `unref()` 相反，在之前已 `unref` 的服务器上调用 `ref()` 将
+_不会_ 让程序在它是唯一剩余服务器时退出（默认行为）。
+如果服务器已 `ref`，再次调用 `ref()` 将没有效果。
+
+### `server.unref()`
+
+<!-- YAML
+added: v0.9.1
+-->
+
+* 返回：{net.Server}
+
+在服务器上调用 `unref()` 将允许程序在它是事件系统中唯一
+活动服务器时退出。如果服务器已经 `unref`，再次调用
+`unref()` 将没有效果。
+
 ## 类：`net.Socket`
 
 <!-- YAML
@@ -294,24 +719,23 @@ changes:
     description: "添加了 `onread` 选项。"
 -->
 
-* `options` {Object} 可用选项包括：
-  * `allowHalfOpen` {boolean} 如果设置为 `false`，则当可读端结束时，Socket 将自动结束可写端。详见 [`net.createServer()`][] 和 [`'end'`][] 事件。**默认值：**
-    `false`。
+* `options` {Object} 可用选项如下：
+  * `allowHalfOpen` {boolean} 如果设置为 `false`，则当可读端结束时，套接字将自动结束可写端。详情请参见 [`net.createServer()`][] 和 [`'end'`] 事件。**默认值：** `false`。
   * `blockList` {net.BlockList} `blockList` 可用于禁用对特定 IP 地址、IP 范围或 IP 子网的出站访问。
-  * `fd` {number} 如果指定，则围绕具有给定文件描述符的现有 Socket 进行包装，否则将创建一个新的 Socket。
-  * `keepAlive` {boolean} 如果设置为 `true`，则在连接建立后立即在 Socket 上启用保活功能，类似于 [`socket.setKeepAlive()`][] 中的操作。**默认值：** `false`。
-  * `keepAliveInitialDelay` {number} 如果设置为正数，则设置在空闲 Socket 上发送第一个保活探测之前的初始延迟。**默认值：** `0`。
-  * `noDelay` {boolean} 如果设置为 `true`，则在 Socket 建立后立即禁用 Nagle 算法的使用。**默认值：** `false`。
-  * `onread` {Object} 如果指定，传入的数据将存储在单个 `buffer` 中，并在数据到达 Socket 时传递给提供的 `callback`。
-    这将导致流功能不提供任何数据。
-    Socket 将照常发出 `'error'`、`'end'` 和 `'close'` 等事件。`pause()` 和 `resume()` 等方法也将按
-    预期行为。
-    * `buffer` {Buffer|Uint8Array|Function} 要么是可重用的内存块用于存储传入数据，要么是返回此类内容的函数。
-    * `callback` {Function} 每到达一块传入数据都会调用此函数。传递给它两个参数：写入 `buffer` 的字节数和对 `buffer` 的引用。从此函数返回 `false` 以隐式 `pause()` Socket。此函数将在全局上下文中执行。
-  * `readable` {boolean} 当传递 `fd` 时允许在 Socket 上读取，否则忽略。**默认值：** `false`。
-  * `signal` {AbortSignal} 一个可用于销毁 Socket 的 Abort 信号。
-  * `typeOfService` {number} 初始服务类型 (TOS) 值。
-  * `writable` {boolean} 当传递 `fd` 时允许在 Socket 上写入，否则忽略。**默认值：** `false`。
+  * `fd` {number} 如果指定，则使用给定的文件描述符包装现有套接字，否则将创建一个新套接字。
+  * `handle` {net.BoundSocket} 如果指定，则包装来自 [`BoundSocket`][] 的已绑定套接字。随后对 [`socket.connect()`][`socket.connect()`] 的调用会将已绑定套接字用作连接的源绑定（遵循已绑定的本地地址和端口）。
+    采用会消耗该已绑定套接字（参见 [所有权转移][`BoundSocket`]）。
+  * `keepAlive` {boolean} 如果设置为 `true`，则会在连接建立后立即在套接字上启用 keep-alive 功能，类似于 [`socket.setKeepAlive()`][] 中的做法。**默认值：** `false`。
+  * `keepAliveInitialDelay` {number} 如果设置为正数，则会设置在空闲套接字上发送第一个 keepalive 探测前的初始延迟。**默认值：** `0`。
+  * `noDelay` {boolean} 如果设置为 `true`，则会在套接字建立后立即禁用 Nagle 算法。**默认值：** `false`。
+  * `onread` {Object} 如果指定，则传入数据会存储在单个 `buffer` 中，并在数据到达套接字时传递给提供的 `callback`。这将导致流式功能不提供任何数据。
+    套接字仍会像往常一样发出 `'error'`、`'end'` 和 `'close'` 等事件。`pause()` 和 `resume()` 等方法也会按预期运行。
+    * `buffer` {Buffer|Uint8Array|Function} 用于存储传入数据的可重用内存块，或者返回此类内存块的函数。
+    * `callback` {Function} 每当有传入数据块时都会调用此函数。会向其传递两个参数：写入 `buffer` 的字节数，以及对 `buffer` 的引用。从此函数返回 `false` 可隐式 `pause()` 套接字。此函数将在全局上下文中执行。
+  * `readable` {boolean} 当传入 `fd` 时，允许在套接字上进行读取，否则忽略。**默认值：** `false`。
+  * `signal` {AbortSignal} 可用于销毁套接字的中止信号。
+  * `typeOfService` {number} 初始服务类型（TOS）值。
+  * `writable` {boolean} 当传入 `fd` 时，允许在套接字上进行写入，否则忽略。**默认值：** `false`。
 * 返回：{net.Socket}
 
 创建一个新的 Socket 对象。
@@ -817,11 +1241,59 @@ added: v0.1.90
 将 Socket 的编码设置为 [可读流][]。详见
 [`readable.setEncoding()`][] 以获取更多信息。
 
-### `socket.setKeepAlive([enable][, initialDelay])`
+### `socket.setKeepAlive()`
+
+启用/禁用 keep-alive 功能，并可选择配置 keepalive 探测时序。返回该 socket 本身。
+
+可能的签名：
+
+* [`socket.setKeepAlive([options])`][`socket.setKeepAlive(options)`]
+* [`socket.setKeepAlive([enable][, initialDelay][, interval][, count])`][`socket.setKeepAlive(enable)`]
+
+启用 keep-alive 会设置在空闲 socket 上发送第一条 keepalive 探测之前的初始延迟。
+
+设置 `initialDelay`（以毫秒为单位）可设置最后一个接收到的数据包与第一条 keepalive 探测之间的延迟。为 `0` 设置 `initialDelay` 将保持该值不变，仍使用默认值（或之前的）设置。
+
+设置 `interval`（以毫秒为单位）可设置 keepalive 探测开始后连续探测之间的延迟（`TCP_KEEPINTVL`）。将 `count` 设置为在连接被断开前发送但未得到确认的探测次数（`TCP_KEEPCNT`）。这两个参数仅在启用 keep-alive 时生效。省略 `interval` 或 `count` 时，分别使用 `1000` 毫秒和 `10` 的默认值。与 `initialDelay` 一样，非正的 `interval` 或 `count` 会使相应的系统默认值保持不变。
+
+`initialDelay` 和 `interval` 以毫秒为单位指定，但底层 socket 选项会按整秒配置；在应用之前，这些值会除以 `1000` 并向下取整。
+
+启用 keep-alive 功能将设置以下 socket 选项：
+
+* `SO_KEEPALIVE=1`
+* `TCP_KEEPIDLE=initialDelay / 1000`
+* `TCP_KEEPCNT=count`
+* `TCP_KEEPINTVL=interval / 1000`
+
+在早于 build 1709 的 Windows 版本上，keep-alive 通过 `SIO_KEEPALIVE_VALS` 配置，它没有探测计数字段，因此在这些平台上会忽略 `count`。
+
+#### `socket.setKeepAlive([options])`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+* `options` {Object}
+  * `enable` {boolean} **默认值：** `false`
+  * `initialDelay` {number} **默认值：** `0`
+  * `interval` {number} **默认值：** `1000`
+  * `count` {number} **默认值：** `10`
+* 返回值：{net.Socket} 该 socket 本身。
+
+使用选项对象配置 keep-alive。有关每个属性的说明，请参见 [`socket.setKeepAlive()`][]。
+
+```js
+socket.setKeepAlive({ enable: true, initialDelay: 1000, interval: 1000, count: 10 });
+```
+
+#### `socket.setKeepAlive([enable][, initialDelay][, interval][, count])`
 
 <!-- YAML
 added: v0.1.92
 changes:
+  - version: v26.4.0
+    pr-url: https://github.com/nodejs/node/pull/63825
+    description: 添加了用于配置 `TCP_KEEPINTVL` 和 `TCP_KEEPCNT` 的 `interval` 和 `count` 参数。
   - version:
     - v13.12.0
     - v12.17.0
@@ -831,18 +1303,12 @@ changes:
 
 * `enable` {boolean} **默认值：** `false`
 * `initialDelay` {number} **默认值：** `0`
+* `interval` {number} **默认值：** `1000`
+* `count` {number} **默认值：** `10`
 * 返回：{net.Socket} Socket 本身。
 
-启用/禁用保活功能，并可选设置在空闲 Socket 上发送第一个保活探测之前的初始延迟。
-
-设置 `initialDelay`（以毫秒为单位）以设置最后一个数据包接收和第一个保活探测之间的延迟。将 `0` 设置为 `initialDelay` 将使值保持与默认值（或之前的设置）不变。
-
-启用保活功能将设置以下 Socket 选项：
-
-* `SO_KEEPALIVE=1`
-* `TCP_KEEPIDLE=initialDelay`
-* `TCP_KEEPCNT=10`
-* `TCP_KEEPINTVL=1`
+使用位置参数配置保持活动。有关每个参数的说明，请参见
+[`socket.setKeepAlive()`][]。
 
 ### `socket.setNoDelay([noDelay])`
 
@@ -919,7 +1385,7 @@ added:
 * `tos` {integer} 要设置的 TOS 值 (0-255)。
 * 返回：{net.Socket} Socket 本身。
 
-设置从此 Socket 发送的 IPv4 数据包的服務類型 (TOS) 字段或 IPv6 数据包的流量类别。这可用于优先处理网络流量。
+设置从此 Socket 发送的 IPv4 数据包的服务类型 (TOS) 字段或 IPv6 数据包的流量类别。这可用于优先处理网络流量。
 
 `setTypeOfService()` 可以在 Socket 连接之前调用；值将被缓存并在 Socket 建立连接时应用。
 `getTypeOfService()` 甚至在连接之前也会返回当前设置的值。
@@ -980,6 +1446,85 @@ added: v0.5.0
 * 如果流可读且可写，则为 `open`。
 * 如果流可读但不可写，则为 `readOnly`。
 * 如果流不可读但可写，则为 `writeOnly`。
+
+## 类：`net.BoundSocket`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+允许同步创建一个预绑定的套接字，之后可以将其传递给 `listen()` 或 `new net.Socket()`。对于 `listen()`，这可实现同步端口预留；而对于 `new net.Socket()`，它允许通过 `bind(2)` 语义来控制本地出站端口/IP。
+
+接管会转移套接字的所有权；之后 `address()` 和 `close()` 会抛出 [`ERR_SOCKET_HANDLE_ADOPTED`][]。从未被接管的句柄必须关闭，以避免泄漏套接字。
+
+```mjs
+import net from 'node:net';
+
+const bound = new net.BoundSocket();
+const { port } = bound.address();
+console.log(`Reserved port ${port} for server`);
+
+const server = net.createServer();
+server.listen(bound); // Adopt as a server, or pass to new net.Socket() instead.
+```
+
+### `new net.BoundSocket([options])`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+* `options` {Object}
+  * `host` {string} 要绑定的本地地址。必须是数值型 IP 字面量；不会执行 DNS
+    解析。**默认：** `'0.0.0.0'`，或者当 `ipv6Only` 为
+    `true` 时为 `'::'`。
+  * `port` {number} 本地端口。`0` 请求由操作系统分配的临时端口。
+    **默认：** `0`。
+  * `ipv6Only` {boolean} 设置 `IPV6_V6ONLY`，禁用双栈支持，因此
+    套接字仅绑定 IPv6。仅在绑定 IPv6 时有意义。**默认：**
+    `false`。
+  * `reusePort` {boolean} 设置 `SO_REUSEPORT`，允许多个套接字绑定
+    相同的地址和端口，以便在内核级别进行负载均衡。是否支持取决于
+    平台。**默认：** `false`。
+
+### `boundSocket.address()`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+* 返回：{Object} 一个包含 `address`、`family` 和 `port` 属性的对象，
+  如 [`server.address()`][] 返回。
+
+返回已绑定的本地地址。当使用 `port: 0` 绑定时，`port` 是操作系统分配的临时端口。
+
+### `boundSocket.fd()`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+* 返回：{integer} 底层操作系统文件描述符；在不向套接字暴露文件描述符的平台上（例如 Windows），则为 `-1`。
+
+返回已绑定套接字的文件描述符。其所有权仍归 `BoundSocket` 所有，因此调用方不得关闭该描述符。
+该描述符仅在句柄被接管之前可用；之后它属于接管它的 [`net.Server`][] 或 [`net.Socket`][]，并且 `fd()` 会抛出
+[`ERR_SOCKET_HANDLE_ADOPTED`][]。
+
+### `boundSocket.close()`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+释放已绑定的套接字。仅在句柄从未被接管时需要。
+
+### `boundSocket[Symbol.dispose]()`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+如果句柄尚未被接管或关闭，则关闭它；否则不执行任何操作。
 
 ## `net.connect()`
 
@@ -1071,7 +1616,9 @@ added: v0.1.90
 
 其他选项：
 
-* `timeout` {number} 如果设置，将用于在套接字创建之后，但在
+* `handle` {net.BoundSocket} 预绑定的 [`BoundSocket`][]，用作
+  连接的源绑定，并遵循其本地地址和端口。采用后会消耗该绑定套接字（参见[所有权转移][`BoundSocket`]）。
+* `timeout` {number} 如果设置，将用于在套接字创建后、
   开始连接之前调用 [`socket.setTimeout(timeout)`][]。
 
 以下是 [`net.createServer()`][] 部分描述的回显服务器的客户端示例：
@@ -1150,7 +1697,7 @@ net.createConnection({
 });
 ```
 
-### `net.createConnection(path[, connectListener])`
+### 发起 IPC 连接
 
 <!-- YAML
 added: v0.1.90
@@ -1171,7 +1718,7 @@ added: v0.1.90
 [`socket.connect(path[, connectListener])`][`socket.connect(path)`] 发起连接，
 然后返回启动连接的 `net.Socket`。
 
-### `net.createConnection(port[, host][, connectListener])`
+### 发起 TCP 连接
 
 <!-- YAML
 added: v0.1.90
@@ -1203,12 +1750,12 @@ changes:
     - v20.1.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47405
-    description: "The `highWaterMark` option is supported now."
+    description: "现在支持 `highWaterMark` 选项。"
   - version:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41310
-    description: "The `noDelay`, `keepAlive`, and `keepAliveInitialDelay`options are supported now."
+    description: "现在支持 `noDelay`、`keepAlive` 和 `keepAliveInitialDelay` 选项。"
 -->
 
 * `options` {Object}
@@ -1421,6 +1968,8 @@ net.isIPv6('fhqwhgads'); // 返回 false
 [`'error'`]: #event-error_1
 [`'listening'`]: #event-listening
 [`'timeout'`]: #event-timeout
+[`BoundSocket`]: #class-netboundsocket
+[`ERR_SOCKET_HANDLE_ADOPTED`]: errors.md#err_socket_handle_adopted
 [`EventEmitter`]: events.md#class-eventemitter
 [`child_process.fork()`]: child_process.md#child_processforkmodulepath-args-options
 [`dns.lookup()`]: dns.md#dnslookuphostname-options-callback
@@ -1440,6 +1989,7 @@ net.isIPv6('fhqwhgads'); // 返回 false
 [`net.getDefaultAutoSelectFamilyAttemptTimeout()`]: #netgetdefaultautoselectfamilyattempttimeout
 [`new net.Socket(options)`]: #new-netsocketoptions
 [`readable.setEncoding()`]: stream.md#readablesetencodingencoding
+[`server.address()`]: #serveraddress
 [`server.close()`]: #serverclosecallback
 [`server.dropMaxConnection`]: #serverdropmaxconnection
 [`server.listen()`]: #serverlisten
@@ -1459,7 +2009,9 @@ net.isIPv6('fhqwhgads'); // 返回 false
 [`socket.pause()`]: #socketpause
 [`socket.resume()`]: #socketresume
 [`socket.setEncoding()`]: #socketsetencodingencoding
-[`socket.setKeepAlive()`]: #socketsetkeepaliveenable-initialdelay
+[`socket.setKeepAlive()`]: #socketsetkeepalive
+[`socket.setKeepAlive(enable)`]: #socketsetkeepaliveenable-initialdelay-interval-count
+[`socket.setKeepAlive(options)`]: #socketsetkeepaliveoptions
 [`socket.setTimeout()`]: #socketsettimeouttimeout-callback
 [`socket.setTimeout(timeout)`]: #socketsettimeouttimeout-callback
 [`stream.getDefaultHighWaterMark()`]: stream.md#streamgetdefaulthighwatermarkobjectmode

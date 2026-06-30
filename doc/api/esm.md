@@ -171,7 +171,7 @@ CommonJS。
 与 CommonJS 一样，除非包的 [`package.json`][] 包含
 [`"exports"`][] 字段，否则可以通过在包名后附加路径来访问包内的
 模块文件，在这种情况下，包内的文件只能
-通过 [`"exports"`][] 中定义的路径访问。
+通过 [`"exports"`] 中定义的路径访问。
 
 有关适用于 Node.js 模块解析中裸标识符的这些包解析规则的详细信息，请参阅 [包文档](packages.md)。
 
@@ -281,8 +281,10 @@ Node.js 仅支持 `type` 属性，它支持以下值：
 | 属性 `type` | 适用于 |
 | ---------------- | ---------------- |
 | `'json'`         | [JSON 模块][] |
+| `'text'`         | [文本模块][] |
 
-导入 JSON 模块时，`type: 'json'` 属性是强制的。
+导入 JSON 模块时，`type: 'json'` 属性是必需的。
+导入文本模块时，`type: 'text'` 属性是必需的。
 
 ## 内置模块
 
@@ -424,7 +426,7 @@ if (import.meta.main) main();
 // `foo` 可以从另一个模块导入，而不会受到 `main` 可能的副作用影响
 ```
 
-### `import.meta.resolve(specifier)`
+### 模块相对解析器
 
 <!-- YAML
 added:
@@ -458,7 +460,7 @@ changes:
 * `specifier` {string} 相对于当前模块要解析的模块标识符。
 * 返回值：{string} 标识符将解析到的绝对 URL 字符串。
 
-[`import.meta.resolve`][] 是一个限定于
+[`import.meta.resolve`][] 是一个仅限于
 每个模块的模块相对解析函数，返回 URL 字符串。
 
 ```js
@@ -682,6 +684,23 @@ import packageConfig from './package.json' with { type: 'json' };
 如果 JSON 模块已从相同路径导入，则在 CommonJS 中返回
 相同的对象。
 
+## 文本模块
+
+> 稳定性：1.0 - 早期开发
+
+文本模块可在 `--experimental-import-text` 标志后使用。
+
+文本文件可以通过 `import` 引用：
+
+```js
+import message from './message.txt' with { type: 'text' };
+```
+
+`with { type: 'text' }` 语法是必需的；请参见 [导入属性][]。
+
+导入的文本只会暴露一个 `default` 导出，其值是模块
+源码字符串。
+
 <i id="esm_experimental_wasm_modules"></i>
 
 ## Wasm 模块
@@ -798,7 +817,7 @@ import * as M from './library.wasm';
 console.log(M);
 ```
 
-在以下环境下执行：
+请提供需要本地化翻译的 markdown/mdx 文档内容。
 
 ```bash
 node index.mjs
@@ -894,6 +913,9 @@ spawn(execPath, [
 * 在任何其他 URL 协议上失败
 * 在 `file:` 加载的未知扩展名上失败
   （仅支持 `.cjs`、`.js` 和 `.mjs`）
+
+当启用 [`--experimental-package-map`][] 标志时，裸标识符
+解析会首先查看包映射配置。如果导入的模块位于映射包内，并且该标识符匹配已声明的依赖项，则包映射解析优先。详情请参见 [包映射][]。
 
 ### 解析算法
 
@@ -1000,7 +1022,7 @@ _defaultConditions_ 是条件环境名称数组，
 注意：此函数由 CommonJS 解析算法直接调用。
 
 > 1. 如果 _exports_ 是一个对象，同时包含始于 _"."_ 的键和不始于 _"."_ 的键，抛出 _无效包配置_ 错误。
-> 2. 如果 _subpath_ 等于 _"."_，则
+> 2. 如果 _subpath_ 等于 _"."，则
 >    1. 令 _mainExport_ 为 **undefined**。
 >    2. 如果 _exports_ 是字符串或数组，或包含没有始于 _"."_ 的键的对象，则
 >       1. 将 _mainExport_ 设置为 _exports_。
@@ -1167,21 +1189,24 @@ _defaultConditions_ 是条件环境名称数组，
 [插件]: addons.md
 [内置模块]: modules.md#built-in-modules
 [CommonJS]: modules.md
-[确定模块系统]: packages.md#determining-module-system
-[动态 `import()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import
-[WebAssembly 的 ES 模块集成提案]: https://github.com/webassembly/esm-integration
-[导入属性]: #import-attributes
-[导入属性 MDN]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import/with
-[JSON 模块]: #json-modules
-[使用 `require()` 加载 ECMAScript 模块]: modules.md#loading-ecmascript-modules-using-require
-[模块自定义钩子]: module.md#customization-hooks
-[Node.js 模块解析和加载算法]: #resolution-algorithm-specification
-[源阶段导入]: https://github.com/tc39/proposal-source-phase-imports
-[术语]: #terminology
+[Determining module system]: packages.md#determining-module-system
+[Dynamic `import()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import
+[ES Module Integration Proposal for WebAssembly]: https://github.com/webassembly/esm-integration
+[Import Attributes]: #import-attributes
+[Import Attributes MDN]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import/with
+[JSON modules]: #json-modules
+[Loading ECMAScript modules using `require()`]: modules.md#loading-ecmascript-modules-using-require
+[Module customization hooks]: module.md#customization-hooks
+[Node.js Module Resolution And Loading Algorithm]: #resolution-algorithm-specification
+[Package maps]: packages.md#package-maps
+[Source Phase Imports]: https://github.com/tc39/proposal-source-phase-imports
+[Terminology]: #terminology
+[Text modules]: #text-modules
 [URL]: https://url.spec.whatwg.org/
 [WebAssembly JS 字符串内置函数提案]: https://github.com/WebAssembly/js-string-builtins
 [`"exports"`]: packages.md#exports
 [`"type"`]: packages.md#type
+[`--experimental-package-map`]: cli.md#--experimental-package-mappath
 [`--input-type`]: cli.md#--input-typetype
 [`data:` URL]: https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data
 [`export`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export

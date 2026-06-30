@@ -370,7 +370,7 @@ changes:
     description: 该 API 在工作线程中暴露。
 -->
 
-尝试关闭所有剩余的连接，阻塞事件循环直到所有连接关闭。一旦所有连接关闭，停用检查器。
+停用检查器。如果存在活动连接，它们将被强制终止。会阻塞直到检查器服务器完全停止。
 
 ### `inspector.console`
 
@@ -380,7 +380,7 @@ changes:
 require('node:inspector').console.log('a message');
 ```
 
-检查器控制台与 Node.js console 没有 API 一致性。
+检查器控制台与 Node.js 控制台没有 API 一致性。
 
 ### `inspector.open([port[, host[, wait]]])`
 
@@ -441,9 +441,9 @@ added: v12.7.0
 > 稳定性：1.1 - 积极开发中
 
 `node:inspector` 模块提供了一个 API，用于与支持 Chrome DevTools 协议的开发者工具集成。
-连接到运行中 Node.js 实例的 DevTools 前端可以捕获实例发出的协议事件并相应地显示它们以促进调试。
-以下方法将协议事件广播到所有连接的前端。
-传递给方法的 `params` 可以是可选的，具体取决于协议。
+连接到运行中 Node.js 实例的 DevTools 前端可以捕获实例发出的协议事件，并相应地显示它们以便调试。
+以下方法将协议事件广播到所有已连接的前端。
+传递给方法的 `params` 可以根据协议是可选的。
 
 ```js
 // 将触发 Network.requestWillBeSent 事件。
@@ -724,7 +724,7 @@ added:
 
 ## 断点支持
 
-Chrome DevTools Protocol 的 [`Debugger` 域][] 允许一个
+Chrome DevTools 协议的 [`Debugger` 域][] 允许一个
 `inspector.Session` 附加到程序并设置断点以逐步执行
 代码。
 

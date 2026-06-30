@@ -282,8 +282,12 @@ require(X) from module at path Y
 4. 如果 X 以 '#' 开头
    a. LOAD_PACKAGE_IMPORTS(X, dirname(Y))
 5. LOAD_PACKAGE_SELF(X, dirname(Y))
-6. LOAD_NODE_MODULES(X, dirname(Y))
-7. 抛出 "not found"
+6. If a package map PACKAGE_MAP exists,
+   a. Find the package ID for the package owning Y
+        1. Let PARENT_PACKAGE_ID be FIND_PACKAGE_ID(dirname(Y), PACKAGE_MAP)
+   b. LOAD_PACKAGE_MAP(X, PARENT_PACKAGE_ID, PACKAGE_MAP)
+7. LOAD_NODE_MODULES(X, dirname(Y))
+8. THROW "not found"
 
 MAYBE_DETECT_AND_LOAD(X)
 1. 如果 X 被解析为 CommonJS 模块，则将 X 作为 CommonJS 模块加载。停止。
@@ -326,9 +330,11 @@ LOAD_AS_DIRECTORY(X)
 2. LOAD_INDEX(X)
 
 LOAD_NODE_MODULES(X, START)
-1. 设 DIRS = NODE_MODULES_PATHS(START)
-2. 对于 DIRS 中的每个 DIR：
-   a. LOAD_PACKAGE_EXPORTS(X, DIR)
+1. Try to interpret X as a combination of NAME and SUBPATH where the name
+   may have a @scope/ prefix and the subpath begins with a slash (`/`).
+2. let DIRS = NODE_MODULES_PATHS(START)
+3. for each DIR in DIRS:
+   a. LOAD_PACKAGE_EXPORTS(SUBPATH, DIR/NAME)
    b. LOAD_AS_FILE(DIR/X)
    c. LOAD_AS_DIRECTORY(DIR/X)
 
@@ -343,6 +349,25 @@ NODE_MODULES_PATHS(START)
    d. 设 I = I - 1
 5. 返回 DIRS + GLOBAL_FOLDERS
 
+FIND_PACKAGE_ID(PATH, PACKAGE_MAP)
+1. Find the PACKAGE_ID for the entry whose "path" is a parent directory of PATH
+2. If multiple entries are found, THROW "ambiguous resolution"
+3. If no entry was found, THROW "external file".
+4. return PACKAGE_ID
+
+LOAD_PACKAGE_MAP(X, PARENT_PACKAGE_ID, PACKAGE_MAP)
+1. Try to interpret X as a combination of NAME and SUBPATH where the name
+   may have a @scope/ prefix and the subpath begins with a slash (`/`).
+2. Find the package map entry for key PARENT_PACKAGE_ID
+3. Look up NAME in the entry's "dependencies" map.
+4. If NAME is not found, THROW "not found".
+5. Let TARGET be PACKAGE_MAP.packages[dependencies[name]]
+6. Let PACKAGE_PATH be the resolved path of TARGET.
+7. LOAD_PACKAGE_EXPORTS(SUBPATH, PACKAGE_PATH)
+8. LOAD_AS_FILE(PACKAGE_PATH/SUBPATH)
+9. LOAD_AS_DIRECTORY(PACKAGE_PATH/SUBPATH)
+10. THROW "not found"
+
 LOAD_PACKAGE_IMPORTS(X, DIR)
 1. 找到离 DIR 最近的包作用域 SCOPE。
 2. 如果未找到作用域，返回。
@@ -354,19 +379,15 @@ LOAD_PACKAGE_IMPORTS(X, DIR)
   CONDITIONS)。
 6. RESOLVE_ESM_MATCH(MATCH)。
 
-LOAD_PACKAGE_EXPORTS(X, DIR)
-1. 尝试将 X 解释为 NAME 和 SUBPATH 的组合，其中 name
-   可能带有 @scope/ 前缀，且 subpath 以斜杠（`/`）开头。
-2. 如果 X 不匹配此模式，或者 DIR/NAME/package.json 不是一个文件，
-   返回。
-3. 解析 DIR/NAME/package.json，并查找 "exports" 字段。
-4. 如果 "exports" 为 null 或 undefined，返回。
-5. 如果未启用 `--no-require-module`
-  a. 设 CONDITIONS = ["node", "require", "module-sync"]
-  b. 否则，设 CONDITIONS = ["node", "require"]
-6. 设 MATCH = ESM 解析器中定义的 PACKAGE_EXPORTS_RESOLVE(pathToFileURL(DIR/NAME), "." + SUBPATH,
-   `package.json` "exports", CONDITIONS)。
-7. RESOLVE_ESM_MATCH(MATCH)
+LOAD_PACKAGE_EXPORTS(SUBPATH, PACKAGE_DIR)
+1. Parse PACKAGE_DIR/package.json, and look for "exports" field.
+2. If "exports" is null or undefined, return.
+3. If `--no-require-module` is not enabled
+  a. let CONDITIONS = ["node", "require", "module-sync"]
+  b. Else, let CONDITIONS = ["node", "require"]
+4. let MATCH = PACKAGE_EXPORTS_RESOLVE(pathToFileURL(PACKAGE_DIR), "." + SUBPATH,
+   `package.json` "exports", CONDITIONS) defined in the ESM resolver.
+5. RESOLVE_ESM_MATCH(MATCH)
 
 LOAD_PACKAGE_SELF(X, DIR)
 1. 找到离 DIR 最近的包作用域 SCOPE。
@@ -383,9 +404,9 @@ RESOLVE_ESM_MATCH(MATCH)
 3. 抛出 "not found"
 ```
 
-“ESM 解析器”在 [ESM 文档](esm.md#resolver-algorithm-specification)中定义。
+The “ESM 解析器”在 [ESM 文档](esm.md#resolution-and-loading-algorithm) 中有定义。
 
-## Caching
+## 缓存
 
 <!--type=misc-->
 
@@ -495,13 +516,13 @@ a done
 in main, a.done = true, b.done = true
 ```
 
-需要仔细规划才能允许循环模块依赖在应用程序中正常工作。
+需要仔细规划，才能让应用程序中的循环模块依赖正常工作。
 
 ## 文件模块
 
-<!--type=misc-->
+<!--type:misc-->
 
-如果未找到确切的文件名，Node.js 将尝试加载带有添加扩展名的所需文件名：`.js`、`.json`，最后是 `.node`。当加载具有不同扩展名的文件（例如 `.cjs`）时，必须将其完整名称传递给 `require()`，包括其文件扩展名（例如 `require('./file.cjs')`）。
+如果未找到确切的文件名，Node.js 将尝试加载带有追加扩展名的所需文件名：`.js`、`.json`，最后是 `.node`。当加载具有不同扩展名的文件（例如 `.cjs`）时，必须将其完整名称传递给 `require()`，包括其文件扩展名（例如 `require('./file.cjs')`）。
 
 `.json` 文件被解析为 JSON 文本文件，`.node` 文件被解释为使用 `process.dlopen()` 加载的编译插件模块。使用任何其他扩展名（或根本没有扩展名）的文件被解析为 JavaScript 文本文件。请参阅 [确定模块系统][] 部分以了解将使用什么解析目标。
 
@@ -515,7 +536,7 @@ in main, a.done = true, b.done = true
 
 ## 文件夹作为模块
 
-<!--type=misc-->
+<!--type:misc-->
 
 > 稳定性：3 - 遗留：请改用 [子路径导出][] 或 [子路径导入][]。
 
@@ -590,7 +611,7 @@ Error: Cannot find module 'some-library'
 
 <!-- type=misc -->
 
-在模块代码执行之前，Node.js 会用一个如下所示的函数包装器包裹它：
+在模块代码执行之前，Node.js 会用如下所示的函数包装器将其包裹起来：
 
 ```js
 (function(exports, require, module, __filename, __dirname) {
@@ -709,7 +730,7 @@ added: v0.3.0
 
 * 类型：{Object}
 
-模块在被要求时会被缓存到此对象中。通过从此对象中删除键值，下一个 `require` 将重新加载模块。这不适用于 [原生插件][]，重新加载将导致错误。
+模块在被 require 时会被缓存到此对象中。通过从此对象中删除键值，下一个 `require` 将重新加载模块。这不适用于 [原生插件][]，重新加载将导致错误。
 
 添加或替换条目也是可能的。在内置模块之前检查此缓存，如果将匹配内置模块的名称添加到缓存中，只有 `node:` 前缀的 require 调用才会接收内置模块。小心使用！
 
@@ -1038,7 +1059,7 @@ added: v0.5.1
 本节已移至
 [模块：`module` 核心模块](module.md#source-map-support)。
 
-<!-- Anchors to make sure old links find a target -->
+<!-- 锚点用于确保旧链接可以找到目标 -->
 
 * <a id="modules_module_findsourcemap_path_error" href="module.html#modulefindsourcemappath">`module.findSourceMap(path)`</a>
 * <a id="modules_class_module_sourcemap" href="module.html#class-modulesourcemap">类：`module.SourceMap`</a>

@@ -344,7 +344,7 @@ NAPI_MODULE_INIT(/* napi_env env, napi_value exports */) {
 
 ## 环境生命周期 API
 
-[ECMAScript 语言规范][] 的 [Agent 章节][] 将 "Agent" 的概念定义为运行 JavaScript 代码的独立环境。
+[ECMAScript 语言规范][] 的 [Agent 章节][] 将 “Agent” 的概念定义为运行 JavaScript 代码的独立环境。
 进程可以并发或按顺序启动和终止多个这样的 Agent。
 
 Node.js 环境对应于一个 ECMAScript Agent。在主进程中，环境在启动时创建，并且可以在单独的线程上创建附加环境以作为 [工作线程][]。当 Node.js 嵌入到另一个应用程序中时，应用程序的主线程也可以在应用程序进程的生命周期内多次构建和销毁 Node.js 环境，以便应用程序创建的每个 Node.js 环境在其生命周期内又可以创建和销毁附加环境作为工作线程。
@@ -445,7 +445,7 @@ typedef enum {
 
 如果 API 返回失败状态时需要更多信息，可以通过调用 `napi_get_last_error_info` 获取。
 
-### `napi_extended_error_info`
+### 获取错误详情
 
 <!-- YAML
 added: v8.0.0
@@ -514,7 +514,7 @@ added: v10.6.0
 napiVersion: 4
 -->
 
-传递给 `napi_call_threadsafe_function()` 的值，用于指示当与线程安全函数关联的队列已满时，调用是否应该阻塞。
+传递给 `napi_call_threadsafe_function()` 的值，用于指示当与线程安全函数关联的队列已满时，调用是否应阻塞。
 
 ```c
 typedef enum {
@@ -525,15 +525,15 @@ typedef enum {
 
 ### Node-API 内存管理类型
 
-#### `napi_handle_scope`
+#### 句柄作用域
 
 这是一种抽象，用于控制和修改在特定作用域内创建的对象的生存期。通常，Node-API 值是在句柄作用域的上下文中创建的。当从 JavaScript 调用原生方法时，将存在一个默认句柄作用域。如果用户没有显式创建新的句柄作用域，Node-API 值将在默认句柄作用域中创建。对于原生方法执行之外的任何代码调用（例如，在 libuv 回调调用期间），模块必须在调用任何可能导致创建 JavaScript 值的函数之前创建作用域。
 
-句柄作用域使用 [`napi_open_handle_scope`][] 创建，并使用 [`napi_close_handle_scope`][] 销毁。关闭作用域可以向 GC 指示，在句柄作用域生存期内创建的所有 `napi_value` 不再从当前堆栈帧引用。
+句柄作用域使用 [napi_open_handle_scope][] 创建，并使用 [napi_close_handle_scope][] 销毁。关闭作用域可以向 GC 指示，在句柄作用域生存期内创建的所有 [句柄][] 不再从当前堆栈帧引用。
 
 有关更多详细信息，请查阅 [对象生命周期管理][]。
 
-#### `napi_escapable_handle_scope`
+#### 可逃逸句柄作用域
 
 <!-- YAML
 added: v8.0.0
@@ -542,18 +542,18 @@ napiVersion: 1
 
 可逃逸句柄作用域是一种特殊类型的句柄作用域，用于将在特定句柄作用域内创建的值返回给父作用域。
 
-#### `napi_ref`
+#### 参考值
 
 <!-- YAML
 added: v8.0.0
 napiVersion: 1
 -->
 
-这是用于引用 `napi_value` 的抽象。这允许用户管理 JavaScript 值的生存期，包括显式定义它们的最小生存期。
+这是用于引用 [句柄][] 的抽象。这允许用户管理 JavaScript 值的生存期，包括显式定义它们的最小生存期。
 
 有关更多详细信息，请查阅 [对象生命周期管理][]。
 
-#### `napi_type_tag`
+#### 类型标记
 
 <!-- YAML
 added:
@@ -562,7 +562,7 @@ added:
 napiVersion: 8
 -->
 
-一个存储为两个无符号 64 位整数的 128 位值。它用作 UUID，JavaScript 对象或 [外部对象][] 可以被打上此标签，以确保它们属于某种类型。这比 [`napi_instanceof`][] 更严格，因为如果对象的原型被操纵，后者可能会报告误报。类型标记与 [`napi_wrap`][] 结合使用最有用，因为它确保从包装对象检索的指针可以安全地转换为与之前应用于 JavaScript 对象的类型标记对应的原生类型。
+一个存储为两个无符号 64 位整数的 128 位值。它用作 UUID，JavaScript 对象或 [外部对象][] 可以被打上此标签，以确保它们属于某种类型。这比 [自有性检查][] 更严格，因为如果对象的原型被操纵，后者可能会报告误报。类型标记与 [包装对象][] 结合使用最有用，因为它确保从包装对象检索的指针可以安全地转换为与之前应用于 JavaScript 对象的类型标记对应的原生类型。
 
 ```c
 typedef struct {
@@ -849,7 +849,7 @@ napi_get_last_error_info(node_api_basic_env env,
 
 如果原生代码需要抛出异常或确定 `napi_value` 是否是 JavaScript `Error` 对象的实例，还可以使用以下实用函数：[`napi_throw_error`][]、[`napi_throw_type_error`][]、[`napi_throw_range_error`][]、[`node_api_throw_syntax_error`][] 和 [`napi_is_error`][]。
 
-如果原生代码需要创建 `Error` 对象，还可以使用以下实用函数：[`napi_create_error`][]、[`napi_create_type_error`][]、[`napi_create_range_error`][] 和 [`node_api_create_syntax_error`][]，其中 result 是引用新创建的 JavaScript `Error` 对象的 `napi_value`。
+如果原生代码需要创建 `Error` 对象，还可以使用以下实用函数：[`napi_create_error`][]、[`napi_create_type_error`][]、[`napi_create_range_error`][] 和 [`node_api_create_syntax_error`]，其中 result 是引用新创建的 JavaScript `Error` 对象的 `napi_value`。
 
 Node.js 项目正在为所有内部生成的错误添加错误代码。目标是让应用程序使用这些错误代码进行所有错误检查。相关的错误消息将保留，但仅用于日志记录和显示，预期消息可以在不适用 SemVer 的情况下更改。为了在 Node-API 中支持此模型，无论是在内部功能还是模块特定功能中（作为一种良好实践），`throw_` 和 `create_` 函数都接受一个可选的 code 参数，该参数是添加到错误对象的代码字符串。如果可选参数为 `NULL`，则不会与错误关联任何代码。如果提供了代码，与错误关联的名称也将更新为：
 
@@ -915,13 +915,13 @@ NAPI_EXTERN napi_status napi_throw_type_error(napi_env env,
                                               const char* msg);
 ```
 
-* `[in] env`：调用 API 所处的环境。
+* `[in] env`：调用 API 的环境。
 * `[in] code`：要在错误上设置的可选错误代码。
-* `[in] msg`：C 字符串，表示与错误关联的文本。
+* `[in] msg`：表示与错误关联文本的 C 字符串。
 
 如果 API 成功，返回 `napi_ok`。
 
-此 API 抛出带有提供文本的 JavaScript `TypeError`。
+此 API 会抛出带有所提供文本的 JavaScript `TypeError`。
 
 #### `napi_throw_range_error`
 
@@ -1048,14 +1048,14 @@ NAPI_EXTERN napi_status napi_create_range_error(napi_env env,
                                                 napi_value* result);
 ```
 
-* `[in] env`：调用 API 所处的环境。
-* `[in] code`：可选的 `napi_value`，带有要与错误关联的错误代码字符串。
+* `[in] env`：调用 API 时所在的环境。
+* `[in] code`：可选的 `napi_value`，包含要与错误关联的错误代码字符串。
 * `[in] msg`：`napi_value`，引用要用作 `Error` 消息的 JavaScript `string`。
 * `[out] result`：`napi_value`，表示创建的错误。
 
-如果 API 成功，返回 `napi_ok`。
+如果 API 成功，则返回 `napi_ok`。
 
-此 API 返回带有提供文本的 JavaScript `RangeError`。
+此 API 返回一个包含所提供文本的 JavaScript `RangeError`。
 
 #### `node_api_create_syntax_error`
 
@@ -1292,12 +1292,12 @@ NAPI_EXTERN napi_status
                                       napi_handle_scope scope);
 ```
 
-* `[in] env`：API 被调用下的环境。
+* `[in] env`：API 被调用时的环境。
 * `[in] scope`: `napi_value` 表示要关闭的作用域。
 
 如果 API 成功则返回 `napi_ok`。
 
-此 API 关闭传入的作用域。作用域必须按照与创建顺序相反的顺序关闭。
+此 API 会关闭传入的作用域。作用域必须按照与创建顺序相反的顺序关闭。
 
 即使存在待处理的 JavaScript 异常，也可以调用此 API。
 
@@ -1404,13 +1404,13 @@ NAPI_EXTERN napi_status napi_reference_ref(napi_env env,
                                            uint32_t* result);
 ```
 
-* `[in] env`: API 被调用下的环境。
-* `[in] ref`: 将增加引用计数的 `napi_ref`。
+* `[in] env`: API 被调用时所在的环境。
+* `[in] ref`: 要增加引用计数的 `napi_ref`。
 * `[out] result`: 新的引用计数。
 
-如果 API 成功则返回 `napi_ok`。
+如果 API 成功，则返回 `napi_ok`。
 
-此 API 增加传入引用的引用计数并返回结果引用计数。
+此 API 会增加传入引用的引用计数，并返回结果引用计数。
 
 #### `napi_reference_unref`
 
@@ -1425,13 +1425,13 @@ NAPI_EXTERN napi_status napi_reference_unref(napi_env env,
                                              uint32_t* result);
 ```
 
-* `[in] env`: API 被调用下的环境。
+* `[in] env`: API 被调用所在的环境。
 * `[in] ref`: 将减少引用计数的 `napi_ref`。
 * `[out] result`: 新的引用计数。
 
 如果 API 成功则返回 `napi_ok`。
 
-此 API 减少传入引用的引用计数并返回结果引用计数。
+此 API 会减少传入引用的引用计数，并返回结果引用计数。
 
 #### `napi_get_reference_value`
 
@@ -1512,7 +1512,7 @@ changes:
     - v14.10.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34819
-    description: "Changed signature of the `hook` callback."
+    description: "已更改 `hook` 回调的签名。"
 -->
 
 ```c
@@ -1547,7 +1547,7 @@ changes:
     - v14.10.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34819
-    description: "Removed `env` parameter."
+    description: "移除了 `env` 参数。"
 -->
 
 ```c
@@ -1822,7 +1822,7 @@ typedef enum {
 ```
 
 这表示 `TypedArray` 的底层二进制标量数据类型。
-此枚举的元素对应于 [ECMAScript 语言规范][ECMAScript Language Specification] 的 [TypedArray 对象部分][Section TypedArray objects]。
+此枚举的元素对应于 [ECMAScript 语言规范][ECMAScript 语言规范] 的 [TypedArray 对象部分][TypedArray 对象部分]。
 
 ### 对象创建函数
 
@@ -2280,9 +2280,11 @@ JavaScript `symbol` 类型在 ECMAScript
 added: v8.0.0
 napiVersion: 1
 changes:
-  - version: v26.2.0
+  - version:
+    - v26.2.0
+    - v24.18.0
     pr-url: https://github.com/nodejs/node/pull/62710
-    description: Added support for `SharedArrayBuffer`.
+    description: 已添加对 `SharedArrayBuffer` 的支持。
 -->
 
 ```c
@@ -2875,7 +2877,7 @@ changes:
      - v24.9.0
      - v22.21.0
     pr-url: https://github.com/nodejs/node/pull/59071
-    description: "Added support for `SharedArrayBuffer`."
+    description: "新增对 `SharedArrayBuffer` 的支持。"
 -->
 
 ```c
@@ -3587,13 +3589,13 @@ napiVersion: 1
 napi_status napi_is_arraybuffer(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`：调用此 API 所处的环境。
+* `[in] env`：调用此 API 的环境。
 * `[in] value`：要检查的 JavaScript 值。
 * `[out] result`：给定对象是否为 `ArrayBuffer`。
 
 如果 API 成功，则返回 `napi_ok`。
 
-此 API 检查传入的 `Object` 是否为数组缓冲区。
+此 API 会检查传入的 `Object` 是否为数组缓冲区。
 
 ### `napi_is_buffer`
 
@@ -3818,7 +3820,7 @@ napi_status node_api_create_sharedarraybuffer(napi_env env,
 * `[in] env`：调用此 API 时所处的环境。
 * `[in] byte_length`：要创建的共享数组缓冲区的字节长度。
 * `[out] data`：指向 `SharedArrayBuffer` 底层字节缓冲区的指针。
-  可以通过传递 `NULL` 来选择性忽略 `data`。
+  可以通过传递 `NULL` 来选择性地忽略 `data`。
 * `[out] result`：表示 JavaScript `SharedArrayBuffer` 的 `napi_value`。
 
 如果 API 成功，则返回 `napi_ok`。
@@ -3885,7 +3887,7 @@ status = napi_set_named_property(env, obj, "myProp", value);
 if (status != napi_ok) return status;
 ```
 
-索引属性可以用类似的方式设置。考虑以下
+索引属性可以用类似的方式设置。请考虑以下
 JavaScript 片段：
 
 ```js
@@ -3893,7 +3895,7 @@ const arr = [];
 arr[123] = 'hello';
 ```
 
-使用 Node-API 值可以通过以下片段完成等效操作：
+使用 Node-API 值可以通过以下代码片段完成等效操作：
 
 ```c
 napi_status status = napi_generic_failure;
@@ -4429,11 +4431,7 @@ napi_status napi_object_freeze(napi_env env,
 
 如果 API 成功则返回 `napi_ok`。
 
-此方法冻结给定对象。这防止将新属性添加
-到它，防止删除现有属性，防止
-更改现有属性的可枚举性、可配置性或可写性，并防止更改现有属性的值。
-它还防止对象的原型被更改。这在
-ECMA-262 规范的 [第 19.1.2.6 节](https://tc39.es/ecma262/#sec-object.freeze) 中描述。
+此方法会冻结给定对象。这会阻止向其添加新属性，阻止删除现有属性，阻止更改现有属性的可枚举性、可配置性或可写性，并阻止更改现有属性的值。它还会阻止对象的原型被更改。这在 ECMA-262 规范的 [第 19.1.2.6 节](https://tc39.es/ecma262/#sec-object.freeze) 中有描述。
 
 #### `napi_object_seal`
 
@@ -4619,7 +4617,7 @@ napi_value Init(napi_env env, napi_value exports) {
 NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)
 ```
 
-给定上述代码，可以从 JavaScript 如下使用插件：
+给定上述代码，可以像下面这样在 JavaScript 中使用插件：
 
 ```js
 const myaddon = require('./addon');
@@ -5439,7 +5437,7 @@ NAPI_EXTERN napi_status napi_adjust_external_memory(node_api_basic_env env,
 
 ## Promise
 
-Node-API 提供了创建 `Promise` 对象的功能，如 ECMA 规范 [Promise 对象部分][] 所述。它将 promise 实现为一对对象。当通过 `napi_create_promise()` 创建 promise 时，会创建一个 "deferred" 对象并与 `Promise` 一起返回。deferred 对象绑定到创建的 `Promise`，是使用 `napi_resolve_deferred()` 或 `napi_reject_deferred()` 解决或拒绝 `Promise` 的唯一方式。由 `napi_create_promise()` 创建的 deferred 对象将由 `napi_resolve_deferred()` 或 `napi_reject_deferred()` 释放。`Promise` 对象可以返回给 JavaScript，在那里它可以像通常一样使用。
+Node-API 提供了创建 `Promise` 对象的功能，如 ECMA 规范 [Promise 对象部分][] 所述。它将 promise 实现为一对对象。当通过 `napi_create_promise()` 创建 promise 时，会创建一个“延迟”对象并与 `Promise` 一起返回。deferred 对象绑定到创建的 `Promise`，是使用 `napi_resolve_deferred()` 或 `napi_reject_deferred()` 解决或拒绝 `Promise` 的唯一方式。由 `napi_create_promise()` 创建的 deferred 对象将由 `napi_resolve_deferred()` 或 `napi_reject_deferred()` 释放。`Promise` 对象可以返回给 JavaScript，在那里它可以像通常一样使用。
 
 例如，创建一个 promise 并将其传递给异步 worker：
 
@@ -5516,13 +5514,13 @@ napi_status napi_resolve_deferred(napi_env env,
                                   napi_value resolution);
 ```
 
-* `[in] env`：调用此 API 所处的环境。
+* `[in] env`：调用此 API 时所处的环境。
 * `[in] deferred`：要解决其关联 promise 的 deferred 对象。
 * `[in] resolution`：用于解决 promise 的值。
 
-此 API 通过与之关联的 deferred 对象解决 JavaScript promise。因此，它只能用于解决具有相应 deferred 对象的 JavaScript promise。这实际上意味着 promise 必须是使用 `napi_create_promise()` 创建的，并且必须保留该调用返回的 deferred 对象才能传递给此 API。
+此 API 通过与之关联的 deferred 对象来解决 JavaScript promise。因此，它只能用于解决具有相应 deferred 对象的 JavaScript promise。这实际上意味着，promise 必须使用 `napi_create_promise()` 创建，并且必须保留该调用返回的 deferred 对象，才能传递给此 API。
 
-deferred 对象在成功完成后被释放。
+deferred 对象在成功完成后会被释放。
 
 ### `napi_reject_deferred`
 

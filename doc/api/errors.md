@@ -611,6 +611,14 @@ _不_ 使用 `AbortSignal` 的 API 通常不会抛出带有此代码的错误。
 与模块加载相关的操作由异步加载器
 钩子自定义，该钩子在加载器线程退出前从未结算 promise。
 
+<a id="ERR_ASYNC_RESOURCE_DOMAIN_REMOVED"></a>
+
+### `ERR_ASYNC_RESOURCE_DOMAIN_REMOVED`
+
+`domain` 属性已从 `AsyncResource` 中移除。domain 模块
+现在改用 `AsyncLocalStorage` 进行上下文传播，而不是 `async_hooks`。
+请改用 `AsyncLocalStorage` 进行上下文传播。
+
 <a id="ERR_ASYNC_TYPE"></a>
 
 ### `ERR_ASYNC_TYPE`
@@ -1607,10 +1615,10 @@ HTTP/2 ping 有效载荷长度必须正好为 8 字节。
 
 ### `ERR_HTTP2_STREAM_ABORTED`
 
-The peer reset the `Http2Stream` with a clean error code (`NGHTTP2_NO_ERROR`
-or `NGHTTP2_CANCEL`) before sending `END_STREAM`, so the readable side will
-not be fully delivered. Mirrors HTTP/1's `ECONNRESET` for a peer-side
-`socket.destroy()`.
+对端在发送 `END_STREAM` 之前，已用干净错误代码（`NGHTTP2_NO_ERROR`
+或 `NGHTTP2_CANCEL`）重置了 `Http2Stream`，因此可读端将
+无法完整传递。这与 HTTP/1 的 `ECONNRESET` 相对应，适用于对端的
+`socket.destroy()`。
 
 <a id="ERR_HTTP2_STREAM_CANCEL"></a>
 
@@ -1647,6 +1655,19 @@ added: v15.14.0
 -->
 
 超过通过 `maxSessionInvalidFrames` 选项指定的对方发送的可接受无效 HTTP/2 协议帧的限制。
+
+<a id="ERR_HTTP2_TOO_MANY_ORIGINS"></a>
+
+### `ERR_HTTP2_TOO_MANY_ORIGINS`
+
+<!-- YAML
+added:
+ - v26.3.1
+ - v24.17.0
+ - v22.23.0
+-->
+
+服务器发送的唯一源数量已超过 `options.maxOriginSetSize` 中定义的值。
 
 <a id="ERR_HTTP2_TRAILERS_ALREADY_SENT"></a>
 
@@ -2386,6 +2407,71 @@ added:
 
 `package.json` [`"imports"`][] 字段未定义给定的内部包说明符映射。
 
+<a id="ERR_PACKAGE_MAP_EXTERNAL_FILE"></a>
+
+### `ERR_PACKAGE_MAP_EXTERNAL_FILE`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+模块尝试使用 [包映射][] 解析一个裸说明符，但导入文件不位于映射中定义的任何包内。
+
+```console
+$ node --experimental-package-map=./package-map.json /tmp/script.js
+Error [ERR_PACKAGE_MAP_EXTERNAL_FILE]: Cannot resolve "dep-a" from "/tmp/script.js": file is not within any package defined in /path/to/package-map.json
+```
+
+要修复此错误，请确保导入文件位于包映射中列出的某个包目录内，或者添加一个新的包条目，使其 `url` 覆盖导入文件。
+
+<a id="ERR_PACKAGE_MAP_INVALID"></a>
+
+### `ERR_PACKAGE_MAP_INVALID`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+[package map][] 配置文件无效。这种情况可能发生在以下情形：
+
+* 文件在指定路径下不存在。
+* 文件包含无效的 JSON。
+* 文件缺少必需的 `packages` 对象。
+* 某个包条目缺少必需的 `url` 字段。
+* 两个包条目具有相同的 `url` 值。
+
+```console
+$ node --experimental-package-map=./missing.json app.js
+Error [ERR_PACKAGE_MAP_INVALID]: Invalid package map at "./missing.json": file not found
+```
+
+<a id="ERR_PACKAGE_MAP_KEY_NOT_FOUND"></a>
+
+### `ERR_PACKAGE_MAP_KEY_NOT_FOUND`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+在 [package map][] 中，包的 `dependencies` 对象引用了一个未在 `packages` 对象中定义的包键。
+
+```json
+{
+  "packages": {
+    "app": {
+      "url": "./app",
+      "dependencies": {
+        "foo": "nonexistent"
+      }
+    }
+  }
+}
+```
+
+在此示例中，`"nonexistent"` 被引用为依赖项目标，但未在 `packages` 中定义，这将抛出此错误。
+
+要修复此错误，请确保 `dependencies` 值中引用的所有包键都已在 `packages` 对象中定义。
+
 <a id="ERR_PACKAGE_PATH_NOT_EXPORTED"></a>
 
 ### `ERR_PACKAGE_PATH_NOT_EXPORTED`
@@ -2714,6 +2800,12 @@ added:
 
 进行了调用，但 UDP 子系统未运行。
 
+<a id="ERR_SOCKET_HANDLE_ADOPTED"></a>
+
+### `ERR_SOCKET_HANDLE_ADOPTED`
+
+对已被 [`BoundSocket`][] 或 [`net.Server`][] 接管的 [`net.Socket`][] 尝试执行了操作。一旦绑定套接字被接管，其 `address()` 和 `close()` 方法将不再可用。
+
 <a id="ERR_SOURCE_MAP_CORRUPT"></a>
 
 ### `ERR_SOURCE_MAP_CORRUPT`
@@ -2899,8 +2991,7 @@ added: v13.3.0
 
 ### `ERR_TLS_INVALID_PROTOCOL_METHOD`
 
-The specified `secureProtocol` method is invalid. It is either unknown, or
-disabled because it is insecure.
+指定的 `secureProtocol` 方法无效。它要么未知，要么因不安全而被禁用。
 
 <a id="ERR_TLS_INVALID_PROTOCOL_VERSION"></a>
 
@@ -3064,7 +3155,7 @@ TLS 套接字必须已连接并安全建立。确保在继续之前发出 'secur
 
 ### `ERR_UNSUPPORTED_DIR_IMPORT`
 
-不支持 `import` 目录 URL。相反，在 [`package.json`][] 文件的 [`"exports"`][] 字段中 [使用包名称自引用包][] 并 [定义自定义子路径][]。
+不支持 `import` 目录 URL。相反，在 [`package.json`][] 文件的 [`"exports"`][] 字段中 [使用包名称自引用包][] 并 [定义自定义子路径][]】【。
 
 ```mjs
 import './'; // 不支持
@@ -4157,7 +4248,8 @@ CRL nextUpdate 字段包含无效时间。
 [`--force-fips`]: cli.md#--force-fips
 [`--no-addons`]: cli.md#--no-addons
 [`--unhandled-rejections`]: cli.md#--unhandled-rejectionsmode
-[`类：assert.AssertionError`]: assert.md#class-assertassertionerror
+[`BoundSocket`]: net.md#class-netboundsocket
+[`Class: assert.AssertionError`]: assert.md#class-assertassertionerror
 [`ERR_INCOMPATIBLE_OPTION_PAIR`]: #err_incompatible_option_pair
 [`ERR_INVALID_ARG_TYPE`]: #err_invalid_arg_type
 [`ERR_MISSING_MESSAGE_PORT_IN_TRANSFER_LIST`]: #err_missing_message_port_in_transfer_list
@@ -4199,8 +4291,10 @@ CRL nextUpdate 字段包含无效时间。
 [`hash.update()`]: crypto.md#hashupdatedata-inputencoding
 [`http`]: http.md
 [`https`]: https.md
-[`libuv 错误处理`]: https://docs.libuv.org/en/v1.x/errors.html
+[`libuv Error handling`]: https://docs.libuv.org/en/v1.x/errors.html
+[`net.Server`]: net.md#class-netserver
 [`net.Socket.write()`]: net.md#socketwritedata-encoding-callback
+[`net.Socket`]: net.md#class-netsocket
 [`net`]: net.md
 [`new URL(input)`]: url.md#new-urlinput-base
 [`new URLPattern(input)`]: url.md#new-urlpatternstring-baseurl-options
@@ -4229,15 +4323,16 @@ CRL nextUpdate 字段包含无效时间。
 [`util.parseArgs()`]: util.md#utilparseargsconfig
 [`v8.startupSnapshot.setDeserializeMainFunction()`]: v8.md#v8startupsnapshotsetdeserializemainfunctioncallback-data
 [`zlib`]: zlib.md
-[`crypto 摘要算法`]: crypto.md#cryptogethashes
+[crypto digest algorithm]: crypto.md#cryptogethashes
 [调试器]: debugger.md
 [定义自定义子路径]: packages.md#subpath-exports
 [域]: domain.md
 [基于事件发射器的]: events.md#class-eventemitter
 [文件描述符]: https://en.wikipedia.org/wiki/File_descriptor
+[包映射]: packages.md#package-maps
 [相对 URL]: https://url.spec.whatwg.org/#relative-url-string
 [使用其名称自引用包]: packages.md#self-referencing-a-package-using-its-name
-[特殊协议方案]: https://url.spec.whatwg.org/#special-scheme
+[特殊方案]: https://url.spec.whatwg.org/#special-scheme
 [基于流的]: stream.md
 [系统调用]: https://man7.org/linux/man-pages/man2/syscalls.2.html
 [try-catch]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch

@@ -18,9 +18,9 @@ changes:
 
 <!-- source_link=lib/diagnostics_channel.js -->
 
-`node:diagnostics_channel` 模块提供了一个 API，用于创建命名通道以报告任意消息数据用于诊断目的。
+`node:diagnostics_channel` 模块提供了一个 API，用于创建命名通道，以便出于诊断目的报告任意消息数据。
 
-可以使用以下方式访问它：
+可以通过以下方式访问它：
 
 ```mjs
 import diagnostics_channel from 'node:diagnostics_channel';
@@ -38,7 +38,7 @@ const diagnostics_channel = require('node:diagnostics_channel');
 
 ### 概述
 
-以下是公共 API 的简单概述。
+以下是公共 API 的简要概述。
 
 ```mjs
 import diagnostics_channel from 'node:diagnostics_channel';
@@ -132,7 +132,7 @@ added:
 * `name` {string|symbol} 通道名称
 * 返回：{Channel} 命名通道对象
 
-这是任何想要发布到命名通道的人的主要入口点。它生成一个通道对象，该对象经过优化，尽可能减少发布时的开销。
+这是任何想要发布到命名通道的人的主要入口点。它会生成一个通道对象，并尽可能优化，以减少发布时的开销。
 
 ```mjs
 import diagnostics_channel from 'node:diagnostics_channel';
@@ -159,7 +159,7 @@ added:
   * `message` {any} 消息数据
   * `name` {string|symbol} 通道名称
 
-注册消息处理函数以订阅此通道。每当消息发布到通道时，此消息处理函数将同步运行。消息处理函数中抛出的任何错误都将触发一个 [`'uncaughtException'`][]。
+注册消息处理函数以订阅此通道。每当消息发布到通道时，此消息处理函数将同步运行。消息处理函数中抛出的任何错误都将触发一个 [`'uncaughtException'`][].
 
 ```mjs
 import diagnostics_channel from 'node:diagnostics_channel';
@@ -225,7 +225,7 @@ added:
 
 > 稳定性：1 - 实验性
 
-* `nameOrChannels` {string|TracingChannel} 通道名称或包含所有 [TracingChannel 通道][] 的对象
+* 创建：{string|TracingChannel} 通道名称或包含所有 [TracingChannel 通道][] 的对象
 * 返回：{TracingChannel} 用于追踪的通道集合
 
 为给定的 [TracingChannel 通道][] 创建一个 [`TracingChannel`][] 包装器。如果给定名称，将以 `tracing:${name}:${eventType}` 的形式创建相应的追踪通道，其中 `eventType` 对应于 [TracingChannel 通道][] 的类型。
@@ -311,7 +311,7 @@ added:
  - v14.17.0
 -->
 
-`Channel` 类代表数据管道中的独立命名通道。它用于跟踪订阅者并在有订阅者时发布消息。它作为单独的对象存在，以避免在发布时进行通道查找，从而实现非常快的发布速度，并允许大量使用而产生极小的开销。通道是使用 [`diagnostics_channel.channel(name)`][] 创建的，不支持直接使用 `new Channel(name)` 构造通道。
+`Channel` 类代表数据管道中的独立命名通道。它用于跟踪订阅者，并在有订阅者时发布消息。它作为单独的对象存在，以避免在发布时进行通道查找，从而实现非常快的发布速度，并允许大量使用而产生极小的开销。通道是使用 [`diagnostics_channel.channel(name)`][] 创建的，不支持直接使用 `new Channel(name)` 构造通道。
 
 #### `channel.hasSubscribers`
 
@@ -323,7 +323,7 @@ added:
 
 * 返回：{boolean} 如果存在活跃订阅者
 
-检查此通道是否有活跃订阅者。如果你要发送的消息准备开销可能很大，这很有帮助。
+检查此通道是否有活跃订阅者。如果你要发送的消息准备开销可能很大，这会很有帮助。
 
 此 API 是可选的，但在尝试从对性能非常敏感的代码发布消息时很有帮助。
 
@@ -355,7 +355,7 @@ added:
  - v14.17.0
 -->
 
-* `message` {any} 要发送给通道订阅者的消息
+* `message` {任意} 要发送给通道订阅者的消息
 
 向通道的任何订阅者发布消息。这将同步触发消息处理函数，因此它们将在同一上下文中执行。
 
@@ -577,7 +577,7 @@ added:
 * `thisArg` {any} 用于函数调用的接收者。
 * `...args` {any} 传递给函数的可选参数。
 
-将给定数据应用于绑定到通道的任何 AsyncLocalStorage 实例，持续给定函数的 duration，然后在数据应用于存储的范围内发布到通道。
+将给定数据应用于绑定到通道的任何 AsyncLocalStorage 实例，持续给定函数的持续时间，然后在数据应用于存储的范围内发布到通道。
 
 如果给 [`channel.bindStore(store)`][] 提供了 transform 函数，它将在消息数据成为存储的上下文值之前应用于转换消息数据。在需要上下文链接的情况下，先前的存储上下文可在 transform 函数内访问。
 
@@ -709,7 +709,7 @@ added:
   * `asyncEnd` {Function} [`asyncEnd` 事件][] 订阅者
   * `error` {Function} [`error` 事件][] 订阅者
 
-用于订阅函数集合到相应通道的辅助函数。这与在每个通道上单独调用 [`channel.subscribe(onMessage)`][] 相同。
+用于将函数集合订阅到相应通道的辅助函数。这与在每个通道上单独调用 [`channel.subscribe(onMessage)`][] 相同。
 
 ```mjs
 import diagnostics_channel from 'node:diagnostics_channel';
@@ -833,13 +833,13 @@ added:
  - v18.19.0
 -->
 
-* `fn` {Function} 要围绕其进行追踪的函数
+* `fn` {Function} 要进行追踪的函数
 * `context` {Object} 用于关联事件的共享对象
 * `thisArg` {any} 用于函数调用的接收者
 * `...args` {any} 传递给函数的可选参数
 * 返回：{any} 给定函数的返回值
 
-追踪同步函数调用。这将始终在执行周围产生 [`start` 事件][] 和 [`end` 事件][]，如果给定函数抛出错误，可能会产生 [`error` 事件][]。这将在 `start` 通道上使用 [`channel.runStores(context, ...)`][] 运行给定函数，确保所有事件都将任何绑定的存储设置为匹配此追踪上下文。
+追踪同步函数调用。这将始终在执行周围产生 [`start` 事件][] 和 [`end` 事件][]，如果给定函数抛出错误，可能会产生 [`error` 事件][]。这将在 `start` 通道上使用 [`channel.runStores(context, ...)`][] 运行给定函数，确保所有事件都将任何绑定的存储设置为与此追踪上下文匹配。
 
 为确保只形成正确的追踪图，只有在开始追踪之前存在订阅者时才会发布事件。在追踪开始后添加的订阅将不会接收来自该追踪的未来事件，只会看到未来的追踪。
 
@@ -874,16 +874,23 @@ added:
  - v19.9.0
  - v18.19.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62407
+    description: 非原生 Promise 的 thenable 现在会按原样返回，
+                 保留其原始类型和方法。
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/61766
-    description: 自定义 thenable 将不再被包装为原生 Promise。非 thenable 将被返回并带有警告。
+    description: 非 thenable 将在返回时发出警告。
 -->
 
-* `fn` {Function} 要围绕其进行追踪的函数
-* `context` {Object} 用于关联追踪事件的共享对象
+* `fn` {Function} 用于包裹跟踪的函数
+* `context` {Object} 用于通过追踪事件关联的共享对象
 * `thisArg` {any} 用于函数调用的接收者
 * `...args` {any} 传递给函数的可选参数
-* 返回：{any} 给定函数的返回值，或者如果追踪通道有活跃订阅者则为在返回值上调用 `.then(...)` 的结果。如果返回值不是 Promise 或 thenable，则原样返回并发出警告。
+* 返回值: {any} 给定函数的返回值。如果返回值
+  是 Promise 或 thenable，则在其完成时将发布追踪事件。
+  如果返回值不是 Promise 或 thenable，则会按原样返回，并
+  发出警告。
 
 追踪返回 {Promise} 或 [thenable 对象][] 的异步函数调用。这将始终在函数执行的同步部分周围产生 [`start` 事件][] 和 [`end` 事件][]，并在返回的 promise 被解决或拒绝时产生 [`asyncStart` 事件][] 和 [`asyncEnd` 事件][]。如果给定函数抛出错误或返回的 promise 被拒绝，也可能产生 [`error` 事件][]。这将在 `start` 通道上使用 [`channel.runStores(context, ...)`][] 运行给定函数，确保所有事件都将任何绑定的存储设置为匹配此追踪上下文。
 
@@ -923,14 +930,14 @@ added:
  - v18.19.0
 -->
 
-* `fn` {Function} 要围绕其进行追踪的使用回调的函数
-* `position` {number} 预期回调的从零开始的参数位置（如果传入 `undefined` 则默认为最后一个参数）
-* `context` {Object} 用于关联追踪事件的共享对象（如果传入 `undefined` 则默认为 `{}`）
+* `fn` {Function} 要进行追踪的使用回调函数
+* `position` {number} 预期回调的从零开始的参数位置（如果传入 `undefined`，则默认为最后一个参数）
+* `context` {Object} 用于关联追踪事件的共享对象（如果传入 `undefined`，则默认为 `{}`）
 * `thisArg` {any} 用于函数调用的接收者
 * `...args` {any} 传递给函数的参数（必须包含回调）
 * 返回：{any} 给定函数的返回值
 
-追踪接收回调的函数调用。预期回调遵循错误作为第一个参数的约定。这将始终在函数执行的同步部分周围产生 [`start` 事件][] 和 [`end` 事件][]，并在回调执行周围产生 [`asyncStart` 事件][] 和 [`asyncEnd` 事件][]。如果给定函数抛出或传递给回调的第一个参数被设置，也可能产生 [`error` 事件][]。这将在 `start` 通道上使用 [`channel.runStores(context, ...)`][] 运行给定函数，确保所有事件都将任何绑定的存储设置为匹配此追踪上下文。
+追踪接收回调的函数调用。预期回调遵循错误作为第一个参数的约定。这将始终在函数执行的同步部分周围产生 [`start` 事件][] 和 [`end` 事件][]，并在回调执行周围产生 [`asyncStart` 事件][] 和 [`asyncEnd` 事件][]。如果给定函数抛出或传递给回调的第一个参数被设置，也可能产生 [`error` 事件][]。这将在 `start` 通道上使用 [`channel.runStores(context, ...)`][] 运行给定函数，确保所有事件都将任何绑定的存储设置为与此追踪上下文匹配。
 
 为确保只形成正确的追踪图，只有在开始追踪之前存在订阅者时才会发布事件。在追踪开始后添加的订阅将不会接收来自该追踪的未来事件，只会看到未来的追踪。
 
@@ -1280,24 +1287,24 @@ const context = {};
 }
 ```
 
-### BoundedChannel 通道
+### 有界通道
 
 `BoundedChannel` 由两个诊断通道组成，表示使用 `using` 语法创建的作用域的生命周期：
 
 * `tracing:${name}:start` - 当 `using` 语句执行时发布（作用域创建）
 * `tracing:${name}:end` - 当退出块时发布（作用域处置）
 
-当使用 `using` 语法与 [`boundedChannel.withScope([context])`][] 时，`start` 事件在语句执行时立即发布，`end` 事件在块结束时发生处置时自动发布。所有事件共享相同的上下文对象，可以在作用域执行期间用 additional properties 如 `result` 扩展。
+当使用 `using` 语法与 [`boundedChannel.withScope([context])`][] 时，`start` 事件在语句执行时立即发布，`end` 事件在块结束时发生处置时自动发布。所有事件共享相同的上下文对象，可以在作用域执行期间用附加属性如 `result` 扩展。
 
-### TracingChannel 通道
+### 跟踪通道
 
-TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪操作的执行生命周期中的特定点。行为分为五个 diagnostics_channels，由 `start`、`end`、`asyncStart`、`asyncEnd` 和 `error` 组成。单个可追踪操作将在所有事件之间共享相同的事件对象，这对于通过 weakmap 管理关联可能很有帮助。
+TracingChannel 是若干 diagnostics_channels 的集合，表示单个可跟踪操作的执行生命周期中的特定点。行为分为五个 diagnostics_channels，由 `start`、`end`、`asyncStart`、`asyncEnd` 和 `error` 组成。单个可跟踪操作将在所有事件之间共享相同的事件对象，这对于通过 weakmap 管理关联可能很有帮助。
 
 当任务“完成”时，这些事件对象将扩展 `result` 或 `error` 值。对于同步任务，`result` 将是返回值，`error` 将是函数抛出的任何内容。对于基于回调的异步函数，`result` 将是回调的第二个参数，而 `error` 将是 `end` 事件中可见的抛出错误，或 `asyncStart` 或 `asyncEnd` 事件中的第一个回调参数。
 
-为确保只形成正确的追踪图，只有在开始追踪之前存在订阅者时才应发布事件。在追踪开始后添加的订阅不应接收来自该追踪的未来事件，只会看到未来的追踪。
+为确保只形成正确的跟踪图，只有在开始跟踪之前存在订阅者时才应发布事件。在跟踪开始后添加的订阅不应接收来自该跟踪的未来事件，只会看到未来的跟踪。
 
-追踪通道应遵循以下命名模式：
+跟踪通道应遵循以下命名模式：
 
 * `tracing:module.class.method:start` 或 `tracing:module.function:start`
 * `tracing:module.class.method:end` 或 `tracing:module.function:end`
@@ -1315,21 +1322,21 @@ TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪�
 
 * 名称：`tracing:${name}:end`
 
-`end` 事件表示函数调用返回值的点。对于异步函数，这是当 promise 返回时，而不是函数内部执行 return 语句时。此时，如果追踪的函数是同步的，`result` 字段将设置为函数的返回值。或者，`error` 字段可能存在以表示任何抛出的错误。
+`end` 事件表示函数调用返回值的点。对于异步函数，这是当 promise 返回时，而不是函数内部执行 return 语句时。此时，如果跟踪的函数是同步的，`result` 字段将设置为函数的返回值。或者，`error` 字段可能存在以表示任何抛出的错误。
 
-建议专门监听 `error` 事件以追踪错误，因为可追踪的操作可能会产生多个错误。例如，失败的异步任务可能在任务的同步部分抛出错误之前就在内部启动了。
+建议专门监听 `error` 事件以跟踪错误，因为可跟踪的操作可能会产生多个错误。例如，失败的异步任务可能在任务的同步部分抛出错误之前就在内部启动了。
 
 #### `asyncStart(event)`
 
 * 名称：`tracing:${name}:asyncStart`
 
-`asyncStart` 事件表示到达可追踪函数的回调或延续。此时回调参数等内容可能可用，或表达操作“结果”的任何其他内容。
+`asyncStart` 事件表示到达可跟踪函数的回调或延续。此时回调参数等内容可能可用，或表达操作“结果”的任何其他内容。
 
 对于基于回调的函数，回调的第一个参数将分配给 `error` 字段（如果不是 `undefined` 或 `null`），第二个参数将分配给 `result` 字段。
 
 对于 promises，`resolve` 路径的参数将分配给 `result`，或 `reject` 路径的参数将分配给 `error`。
 
-建议专门监听 `error` 事件以追踪错误，因为可追踪的操作可能会产生多个错误。例如，失败的异步任务可能在任务的同步部分抛出错误之前就在内部启动了。
+建议专门监听 `error` 事件以跟踪错误，因为可跟踪的操作可能会产生多个错误。例如，失败的异步任务可能在任务的同步部分抛出错误之前就在内部启动了。
 
 #### `asyncEnd(event)`
 
@@ -1341,9 +1348,9 @@ TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪�
 
 * 名称：`tracing:${name}:error`
 
-`error` 事件表示可追踪函数同步或异步产生的任何错误。如果在追踪函数的同步部分抛出错误，错误将分配给事件的 `error` 字段，并且将触发 `error` 事件。如果通过回调或 promise 拒绝异步接收错误，它也将分配给事件的 `error` 字段，并触发 `error` 事件。
+`error` 事件表示可跟踪函数同步或异步产生的任何错误。如果在跟踪函数的同步部分抛出错误，错误将分配给事件的 `error` 字段，并且将触发 `error` 事件。如果通过回调或 promise 拒绝异步接收错误，它也将分配给事件的 `error` 字段，并触发 `error` 事件。
 
-单个可追踪函数调用可能多次产生错误，因此在消费此事件时应考虑这一点。例如，如果内部触发了另一个失败的异步任务，然后函数的同步部分抛出错误，将发出两个 `error` 事件，一个用于同步错误，一个用于异步错误。
+单个可跟踪函数调用可能多次产生错误，因此在消费此事件时应考虑这一点。例如，如果内部触发了另一个失败的异步任务，然后函数的同步部分抛出错误，将发出两个 `error` 事件，一个用于同步错误，一个用于异步错误。
 
 ### 内置通道
 
@@ -1533,7 +1540,7 @@ TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪�
 
 > 稳定性：1 - 实验性
 
-##### Event: `'tracing:module.require:start'`
+##### 事件：`'tracing:module.require:start'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `require()` 的参数。模块名称。
@@ -1583,7 +1590,7 @@ TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪�
 
 当 `import()` 抛出错误时发出。参见 [`error` 事件][]。
 
-#### NET
+#### 网络
 
 > 稳定性：1 - 实验性
 
@@ -1619,7 +1626,7 @@ TracingChannel 是几个 diagnostics_channels 的集合，表示单个可追踪�
 
 当 [`net.Server.listen()`][] 返回错误时发出。
 
-#### UDP
+#### 用户数据报协议
 
 > 稳定性：1 - 实验性
 

@@ -30,11 +30,11 @@ import * as fs from 'node:fs';
 const fs = require('node:fs');
 ```
 
-所有文件系统操作都有同步、回调和基于 Promise 的形式，并且都可以使用 CommonJS 语法和 ES6 模块 (ESM) 访问。
+所有文件系统操作都有同步、回调和基于 Promise 的形式，并且都可以使用 CommonJS 语法和 ES6 模块（ESM）访问。
 
 ## Promise 示例
 
-基于 Promise 的操作返回一个 promise，当异步操作完成时该 promise 会被 fulfilled。
+基于 Promise 的操作会返回一个 promise，当异步操作完成时，该 promise 会被兑现。
 
 ```mjs
 import { unlink } from 'node:fs/promises';
@@ -591,20 +591,60 @@ const {
 
 <!-- YAML
 added: v10.0.0
+changes:
+  - version: v26.4.0
+    pr-url: https://github.com/nodejs/node/pull/63634
+    description: 已新增对 `buffer` 选项的支持。
 -->
 
 * `options` {Object|string}
-  * `encoding` {string|null} **默认：** `null`
-  * `signal` {AbortSignal} 允许中止进行中的 readFile
-* 返回：{Promise} 成功读取时 fulfilled 为文件的内容。如果未指定编码（使用 `options.encoding`），则数据作为 {Buffer} 对象返回。否则，数据将是字符串。
+  * `encoding` {string|null} **默认值：** `null`
+  * `signal` {AbortSignal} 允许中止正在进行中的 readFile 读取
+  * `buffer` {Buffer|TypedArray|DataView|Function} 要读取到其中的缓冲区，或一个根据文件大小调用并返回缓冲区的函数。
+* 返回值：{Promise} 成功读取后会以文件内容完成。若未指定编码（使用 `options.encoding`），数据将作为 {Buffer} 对象返回。否则，数据将是字符串。
 
 异步读取文件的全部内容。
 
 如果 `options` 是字符串，则它指定 `encoding`。
 
+如果提供了 `buffer` 且未指定编码，返回的 {Buffer} 将是所提供缓冲区上的一个视图，其中只包含已读取的字节。如果所提供的缓冲区太小，无法容纳整个文件，操作将失败。
+
 {FileHandle} 必须支持读取。
 
 如果在文件句柄上进行了一次或多次 `filehandle.read()` 调用，然后进行了 `filehandle.readFile()` 调用，则数据将从当前位置读取到文件末尾。它并不总是从文件开头读取。
+
+以下示例展示了使用带预分配缓冲区的 `buffer` 选项：
+
+```mjs
+import { Buffer } from 'node:buffer';
+import { open } from 'node:fs/promises';
+
+const file = await open('./some/file/to/read');
+try {
+  const buf = Buffer.alloc(16384);
+  const contents = await file.readFile({ buffer: buf });
+  console.log(contents); // A view over `buf` containing only the bytes read
+} finally {
+  await file.close();
+}
+```
+
+使用返回缓冲区的函数时，使用 `buffer` 选项的示例：
+
+```mjs
+import { Buffer } from 'node:buffer';
+import { open } from 'node:fs/promises';
+
+const file = await open('./some/file/to/read');
+try {
+  const contents = await file.readFile({
+    buffer: (size) => Buffer.alloc(size),
+  });
+  console.log(contents);
+} finally {
+  await file.close();
+}
+```
 
 #### `filehandle.readLines([options])`
 
@@ -621,7 +661,7 @@ added: v18.11.0
   * `highWaterMark` {integer} **默认：** `64 * 1024`
 * 返回：{readline.InterfaceConstructor}
 
-创建 `readline` 接口并通过文件流式传输的便捷方法。有关选项，请参阅 [`filehandle.createReadStream()`][]。
+创建 `readline` 接口并通过文件流式传输的便捷方法。有关选项，请参阅 [`filehandle.createReadStream()`][].
 
 ```mjs
 import { open } from 'node:fs/promises';
@@ -732,7 +772,7 @@ added: v10.0.0
 * `mtime` {number|string|Date}
 * 返回：{Promise}
 
-更改 {FileHandle} 引用的对象的文件系统时间戳，然后在成功时 fulfilled promise 且不带参数。
+更改 {FileHandle} 引用的对象的文件系统时间戳，然后在成功时返回已完成的 promise，且不带参数。
 
 #### `filehandle.write(buffer, offset[, length[, position]])`
 
@@ -954,7 +994,7 @@ changes:
    description: 不再是实验性的。
 -->
 
-调用 `filehandle.close()` 并返回一个 promise，当文件句柄关闭时该 promise fulfilled。
+调用 `filehandle.close()` 并返回一个 promise，当文件句柄关闭时该 promise 会兑现。
 
 ### `fsPromises.access(path[, mode])`
 
@@ -964,11 +1004,11 @@ added: v10.0.0
 
 * `path` {string|Buffer|URL}
 * `mode` {integer} **默认：** `fs.constants.F_OK`
-* 返回：{Promise} 成功时 fulfilled 为 `undefined`。
+* 返回：{Promise} 成功时兑现为 `undefined`。
 
-测试用户对 `path` 指定的文件或目录的权限。`mode` 参数是一个可选整数，指定要执行的 accessibility 检查。`mode` 应为值 `fs.constants.F_OK` 或由任何 `fs.constants.R_OK`、`fs.constants.W_OK` 和 `fs.constants.X_OK` 的按位 OR 组成的掩码（例如 `fs.constants.W_OK | fs.constants.R_OK`）。检查 [文件访问常量][] 以获取 `mode` 的可能值。
+测试用户对 `path` 指定的文件或目录的权限。`mode` 参数是一个可选整数，指定要执行的可访问性检查。`mode` 应为值 `fs.constants.F_OK` 或由任何 `fs.constants.R_OK`、`fs.constants.W_OK` 和 `fs.constants.X_OK` 的按位 OR 组成的掩码（例如 `fs.constants.W_OK | fs.constants.R_OK`）。检查 [文件访问常量][] 以获取 `mode` 的可能值。
 
-如果 accessibility 检查成功，则 promise fulfilled 且不带值。如果任何 accessibility 检查失败，则 promise 被 rejected 并带有 {Error} 对象。以下示例检查当前进程是否可以读取和写入文件 `/etc/passwd`。
+如果可访问性检查成功，则 promise 兑现且不带值。如果任何可访问性检查失败，则 promise 被拒绝并带有 {Error} 对象。以下示例检查当前进程是否可以读取和写入文件 `/etc/passwd`。
 
 ```mjs
 import { access, constants } from 'node:fs/promises';
@@ -981,7 +1021,7 @@ try {
 }
 ```
 
-在调用 `fsPromises.open()` 之前使用 `fsPromises.access()` 检查文件的 accessibility 是不推荐的。这样做会引入竞争条件，因为其他进程可能会在两次调用之间更改文件的状态。相反，用户代码应直接打开/读取/写入文件并处理如果文件不可访问时引发的错误。
+在调用 `fsPromises.open()` 之前使用 `fsPromises.access()` 检查文件的可访问性是不推荐的。这样做会引入竞争条件，因为其他进程可能会在两次调用之间更改文件的状态。相反，用户代码应直接打开/读取/写入文件并处理如果文件不可访问时引发的错误。
 
 ### `fsPromises.appendFile(path, data[, options])`
 
@@ -1178,7 +1218,7 @@ const { glob } = require('node:fs/promises');
 })();
 ```
 
-### `fsPromises.lchmod(path, mode)`
+### fs.chmod()
 
 <!-- YAML
 deprecated: v10.0.0
@@ -1186,15 +1226,15 @@ deprecated: v10.0.0
 
 > 稳定性：0 - 已弃用
 
-* `path` {string|Buffer|URL}
-* `mode` {integer}
-* 返回：{Promise} 成功时 fulfilled 为 `undefined`。
+* path {string|Buffer|URL}
+* mode {integer}
+* 返回：{Promise} 成功时 fulfilled 为 undefined。
 
 更改符号链接上的权限。
 
 此方法仅在 macOS 上实现。
 
-### `fsPromises.lchown(path, uid, gid)`
+### fs.chown()
 
 <!-- YAML
 added: v10.0.0
@@ -1204,14 +1244,14 @@ changes:
     description: 此 API 不再弃用。
 -->
 
-* `path` {string|Buffer|URL}
-* `uid` {integer}
-* `gid` {integer}
-* 返回：{Promise}  成功时 fulfilled 为 `undefined`。
+* path {string|Buffer|URL}
+* uid {integer}
+* gid {integer}
+* 返回：{Promise}  成功时 fulfilled 为 undefined。
 
 更改符号链接上的所有权。
 
-### `fsPromises.lutimes(path, atime, mtime)`
+### fs.lutimes()
 
 <!-- YAML
 added:
@@ -1219,57 +1259,57 @@ added:
   - v12.19.0
 -->
 
-* `path` {string|Buffer|URL}
-* `atime` {number|string|Date}
-* `mtime` {number|string|Date}
-* 返回：{Promise}  成功时 fulfilled 为 `undefined`。
+* path {string|Buffer|URL}
+* atime {number|string|Date}
+* mtime {number|string|Date}
+* 返回：{Promise}  成功时 fulfilled 为 undefined。
 
-以与 [`fsPromises.utimes()`][] 相同的方式更改文件的访问和修改时间，不同之处在于如果路径引用符号链接，则链接不会被解引用：相反，符号链接本身的时间戳会被更改。
+以与 [fs.utimes][] 相同的方式更改文件的访问和修改时间，不同之处在于如果路径引用符号链接，则链接不会被解引用：相反，符号链接本身的时间戳会被更改。
 
-### `fsPromises.link(existingPath, newPath)`
+### fs.link()
 
 <!-- YAML
 added: v10.0.0
 -->
 
-* `existingPath` {string|Buffer|URL}
-* `newPath` {string|Buffer|URL}
-* 返回：{Promise}  成功时 fulfilled 为 `undefined`。
+* existingPath {string|Buffer|URL}
+* newPath {string|Buffer|URL}
+* 返回：{Promise}  成功时 fulfilled 为 undefined。
 
-从 `existingPath` 到 `newPath` 创建新链接。有关更多详细信息，请参阅 POSIX link(2) 文档。
+从 existingPath 到 newPath 创建新链接。有关更多详细信息，请参阅 POSIX link(2) 文档。
 
-### `fsPromises.lstat(path[, options])`
+### fs.lstat()
 
 <!-- YAML
 added: v10.0.0
 changes:
   - version: v10.5.0
     pr-url: https://github.com/nodejs/node/pull/20220
-    description: "接受一个额外的 `options` 对象以指定返回的数值是否应为 bigint。"
+    description: "接受一个额外的 options 对象以指定返回的数值是否应为 bigint。"
 -->
 
-* `path` {string|Buffer|URL}
-* `options` {Object}
-  * `bigint` {boolean} 返回的 {fs.Stats} 对象中的数值是否应为 `bigint`。**默认：** `false`。
-* 返回：{Promise}   fulfilled 为给定符号链接 `path` 的 {fs.Stats} 对象。
+* path {string|Buffer|URL}
+* options {Object}
+  * bigint {boolean} 返回的 {fs.Stats} 对象中的数值是否应为 bigint。**默认：** false。
+* 返回：{Promise}   fulfilled 为给定符号链接路径的 {fs.Stats} 对象。
 
-等同于 [`fsPromises.stat()`][]，除非 `path` 引用符号链接，在这种情况下统计的是链接本身，而不是它引用的文件。有关更多详细信息，请参阅 POSIX lstat(2) 文档。
+等同于 [fs.stat][]，除非 path 引用符号链接，在这种情况下统计的是链接本身，而不是它引用的文件。有关更多详细信息，请参阅 POSIX lstat(2) 文档。
 
-### `fsPromises.mkdir(path[, options])`
+### fs.mkdir()
 
 <!-- YAML
 added: v10.0.0
 -->
 
-* `path` {string|Buffer|URL}
-* `options` {Object|integer}
-  * `recursive` {boolean} **默认：** `false`
-  * `mode` {string|integer} 在 Windows 上不支持。有关更多详细信息，请参阅 [文件模式][]。**默认：** `0o777`。
-* 返回：{Promise} 成功时，如果 `recursive` 为 `false` 则 fulfilled 为 `undefined`，如果 `recursive` 为 `true` 则 fulfilled 为创建的第一个目录路径。
+* path {string|Buffer|URL}
+* options {Object|integer}
+  * recursive {boolean} **默认：** false
+  * mode {string|integer} 在 Windows 上不支持。有关更多详细信息，请参阅 [文件模式][]。**默认：** 0o777。
+* 返回：{Promise} 成功时，如果 recursive 为 false 则 fulfilled 为 undefined，如果 recursive 为 true 则 fulfilled 为创建的第一个目录路径。
 
 异步创建目录。
 
-可选的 `options` 参数可以是指定 `mode`（权限和粘滞位）的整数，也可以是具有 `mode` 属性和指示是否应创建父目录的 `recursive` 属性的对象。当 `path` 是已存在的目录时调用 `fsPromises.mkdir()` 仅在 `recursive` 为 false 时导致 rejection。
+可选的 options 参数可以是指定 mode（权限和粘滞位）的整数，也可以是具有 mode 属性和指示是否应创建父目录的 recursive 属性的对象。当 path 是已存在的目录时调用 mkdir 仅在 recursive 为 false 时导致 rejection。
 
 ```mjs
 import { mkdir } from 'node:fs/promises';
@@ -1299,7 +1339,7 @@ async function makeDirectory() {
 makeDirectory().catch(console.error);
 ```
 
-### `fsPromises.mkdtemp(prefix[, options])`
+### `fs.promises.mkdtemp()` 
 
 <!-- YAML
 added: v10.0.0
@@ -1337,9 +1377,7 @@ try {
 }
 ```
 
-`fsPromises.mkdtemp()` 方法会将六个随机选择的字符直接追加到 `prefix` 字符串。例如，给定目录 `/tmp`，如果打算 _在_ `/tmp` _内_ 创建临时目录，则 `prefix` 必须以尾随的平台特定路径分隔符（`require('node:path').sep`）结尾。
-
-### `fsPromises.mkdtempDisposable(prefix[, options])`
+### `mkdtemp()`
 
 <!-- YAML
 added: v24.4.0
@@ -1347,35 +1385,36 @@ added: v24.4.0
 
 * `prefix` {string|Buffer|URL}
 * `options` {string|Object}
-  * `encoding` {string} **默认值：** `'utf8'`
+  * `encoding` {string} **默认值：** `utf8`
 * 返回：{Promise} 兑现为一个针对异步可处置对象的 Promise：
   * `path` {string} 创建的目录的路径。
   * `remove` {AsyncFunction} 一个用于移除已创建目录的函数。
-  * `[Symbol.asyncDispose]` {AsyncFunction} 与 `remove` 相同。
+  * `dispose` {AsyncFunction} 与 `remove` 相同。
 
-生成的 Promise 持有一个异步可处置对象，其 `path` 属性持有创建的目录路径。当对象被处置时，如果目录仍然存在，目录及其内容将被异步移除。如果无法删除目录，处置将抛出错误。该对象具有一个异步 `remove()` 方法，将执行相同的任务。
+生成的 Promise 持有一个异步可处置对象，其 `path` 属性持有创建的目录路径。当对象被处置时，如果目录仍然存在，目录及其内容将被异步移除。如果无法删除目录，处置将抛出错误。该对象具有一个异步 `dispose` 方法，将执行相同的任务。
 
-此函数和结果对象上的处置函数都是异步的，因此应像 `await using dir = await fsPromises.mkdtempDisposable('prefix')` 那样与 `await` + `await using` 一起使用。
+此函数和结果对象上的处置函数都是异步的，因此应像 `using` 那样与 `await` + `Promise` 一起使用。
 
-<!-- TODO: 一旦 https://github.com/mdn/content/pull/38027 合并，链接 MDN 关于 disposables 的文档 -->
+<!-- TODO: 一旦 `disposables` 合并，链接 MDN 关于 disposables 的文档 -->
 
-详细信息，请参阅 [`fsPromises.mkdtemp()`][] 的文档。
+详细信息，请参阅 [`mkdtempDisposable()`][] 的文档。
 
-可选的 `options` 参数可以是指定编码的字符串，也可以是具有 `encoding` 属性的对象，用于指定要使用的字符编码。
+可选的 `encoding` 参数可以是指定编码的字符串，也可以是具有 `encoding` 属性的对象，用于指定要使用的字符编码。
 
-### `fsPromises.open(path, flags[, mode])`
+### `open()`
 
 <!-- YAML
 added: v10.0.0
 changes:
-  - version: v11.1.0
-    pr-url: https://github.com/nodejs/node/pull/23767
-    description: "`flags` 参数现在是可选的，默认值为 `'r'`。"
+  - version:
+    - v11.1.0
+    pr-url: 
+    description: "`flags` 参数现在是可选的，默认值为 `r`。"
 -->
 
 * `path` {string|Buffer|URL}
-* `flags` {string|number} 参见 [文件系统 `flags` 的支持][]。
-  **默认值：** `'r'`。
+* `flags` {string|number} 参见 [文件系统标志的支持][]。
+  **默认值：** `r`。
 * `mode` {string|integer} 如果文件被创建，设置文件模式（权限和粘滞位）。
   参见 [文件模式][] 了解更多详情。
   **默认值：** `0o666`（可读和可写）
@@ -1385,9 +1424,9 @@ changes:
 
 请参阅 POSIX open(2) 文档了解更多详情。
 
-某些字符（`< > : " / \ | ? *`）在 Windows 下是保留的，详见 [命名文件、路径和命名空间][]。在 NTFS 下，如果文件名包含冒号，Node.js 将打开一个文件系统流，如 [此 MSDN 页面][MSDN-Using-Streams] 所述。
+某些字符（`<`, `>`, `:`, `"`, `|`, `?`, `*`）在 Windows 下是保留的，详见 [命名文件、路径和命名空间][]。在 NTFS 下，如果文件名包含冒号，Node.js 将打开一个文件系统流，如 [此 MSDN 页面][MSDN-Using-Streams] 所述。
 
-### `fsPromises.opendir(path[, options])`
+### `opendir()`
 
 <!-- YAML
 added: v12.12.0
@@ -1395,21 +1434,21 @@ changes:
   - version:
     - v20.1.0
     - v18.17.0
-    pr-url: https://github.com/nodejs/node/pull/41439
+    pr-url: 
     description: "添加了 `recursive` 选项。"
   - version:
      - v13.1.0
      - v12.16.0
-    pr-url: https://github.com/nodejs/node/pull/30114
+    pr-url: 
     description: "引入了 `bufferSize` 选项。"
 -->
 
 * `path` {string|Buffer|URL}
 * `options` {Object}
-  * `encoding` {string|null} **默认值：** `'utf8'`
+  * `encoding` {string|null} **默认值：** `utf8`
   * `bufferSize` {number} 从目录读取时内部缓冲的目录条目数。
     较高的值会带来更好的性能，但内存使用量也更高。**默认值：** `32`
-  * `recursive` {boolean} 解析后的 `Dir` 将是一个 {AsyncIterable}，
+  * `recursive` {boolean} 解析后的 `opendir()` 将是一个 {AsyncIterable}，
     包含所有子文件和目录。**默认值：** `false`
 * 返回：{Promise} 兑现为一个 {fs.Dir}。
 
@@ -1483,6 +1522,9 @@ try {
 <!-- YAML
 added: v10.0.0
 changes:
+  - version: v26.4.0
+    pr-url: https://github.com/nodejs/node/pull/63634
+    description: 新增对 `buffer` 选项的支持。
   - version:
     - v15.2.0
     - v14.17.0
@@ -1493,9 +1535,11 @@ changes:
 * `path` {string|Buffer|URL|FileHandle} 文件名或 `FileHandle`
 * `options` {Object|string}
   * `encoding` {string|null} **默认值：** `null`
-  * `flag` {string} 参见 [文件系统 `flags` 的支持][]。**默认值：** `'r'`。
+  * `flag` {string} 参见 [对文件系统 `flags` 的支持][]. **默认值：** `'r'`。
   * `signal` {AbortSignal} 允许中止正在进行的 readFile
-* 返回：{Promise} 兑现为文件的内容。
+  * `buffer` {Buffer|TypedArray|DataView|Function} 要读取到其中的缓冲区，或一个
+    接收文件大小并返回缓冲区的函数。
+* Returns: {Promise} 以文件内容完成。
 
 异步读取文件的全部内容。
 
@@ -1503,7 +1547,14 @@ changes:
 
 如果 `options` 是字符串，则它指定编码。
 
-当 `path` 是目录时，`fsPromises.readFile()` 的行为特定于平台。在 macOS、Linux 和 Windows 上，Promise 将被拒绝并抛出错误。在 FreeBSD 上，将返回目录内容的表示。
+如果提供了 `buffer` 且未指定编码，返回的 {Buffer} 将
+是所提供缓冲区上的一个视图，其中只包含已读取的字节。如果
+所提供的缓冲区太小，无法容纳整个文件，则该 promise 将被
+拒绝。
+
+当 `path` 是目录时，`fsPromises.readFile()` 的行为
+取决于平台。在 macOS、Linux 和 Windows 上，该 promise 将被拒绝
+并返回错误。在 FreeBSD 上，将返回目录内容的表示。
 
 读取位于运行代码同一目录中的 `package.json` 文件的示例：
 
@@ -1557,6 +1608,29 @@ try {
 
 任何指定的 {FileHandle} 必须支持读取。
 
+使用预分配缓冲区和 `buffer` 选项的示例：
+
+```mjs
+import { Buffer } from 'node:buffer';
+import { readFile } from 'node:fs/promises';
+
+const buf = Buffer.alloc(16384);
+const contents = await readFile('/path/to/file', { buffer: buf });
+console.log(contents); // A view over `buf` containing only the bytes read
+```
+
+使用返回缓冲区的函数时使用 `buffer` 选项的示例：
+
+```mjs
+import { Buffer } from 'node:buffer';
+import { readFile } from 'node:fs/promises';
+
+const contents = await readFile('/path/to/file', {
+  buffer: (size) => Buffer.alloc(size),
+});
+console.log(contents);
+```
+
 ### `fsPromises.readlink(path[, options])`
 
 <!-- YAML
@@ -1568,10 +1642,10 @@ added: v10.0.0
   * `encoding` {string} **默认值：** `'utf8'`
 * 返回：{Promise} 成功时兑现为 `linkString`。
 
-读取 `path` 引用的符号链接的内容。请参阅 POSIX
+读取 `path` 引用的符号链接内容。请参阅 POSIX
 readlink(2) 文档了解更多详情。成功时 Promise 兑现为 `linkString`。
 
-可选的 `options` 参数可以是指定编码的字符串，也可以是具有 `encoding` 属性的对象，用于指定用于返回的链接路径的字符编码。如果 `encoding` 设置为 `'buffer'`，返回的链接路径将作为 {Buffer} 对象传递。
+可选的 `options` 参数可以是指定编码的字符串，也可以是具有 `encoding` 属性的对象，用于指定返回的链接路径所使用的字符编码。如果 `encoding` 设置为 `'buffer'`，返回的链接路径将作为 {Buffer} 对象传递。
 
 ### `fsPromises.realpath(path[, options])`
 
@@ -1588,7 +1662,7 @@ added: v10.0.0
 
 仅支持可以转换为 UTF8 字符串的路径。
 
-可选的 `options` 参数可以是指定编码的字符串，也可以是具有 `encoding` 属性的对象，用于指定用于路径的字符编码。如果 `encoding` 设置为 `'buffer'`，返回的路径将作为 {Buffer} 对象传递。
+可选的 `options` 参数可以是指定编码的字符串，也可以是具有 `encoding` 属性的对象，用于指定路径所使用的字符编码。如果 `encoding` 设置为 `'buffer'`，返回的路径将作为 {Buffer} 对象传递。
 
 在 Linux 上，当 Node.js 链接到 musl libc 时，必须将 procfs 文件系统挂载到 `/proc` 才能使此函数工作。Glibc 没有此限制。
 
@@ -1614,7 +1688,7 @@ changes:
     description: "移除了 `recursive` 选项。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37216
-    description: "不再允许在为文件的 `path` 上使用 `fsPromises.rmdir(path, { recursive: true })`，在 Windows 上会导致 `ENOENT` 错误，在 POSIX 上会导致 `ENOTDIR` 错误。"
+    description: "不再允许在文件的 `path` 上使用 `fsPromises.rmdir(path, { recursive: true })`，在 Windows 上会导致 `ENOENT` 错误，在 POSIX 上会导致 `ENOTDIR` 错误。"
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37216
     description: "不再允许在不存在的 `path` 上使用 `fsPromises.rmdir(path, { recursive: true })`，会导致 `ENOENT` 错误。"
@@ -1628,7 +1702,7 @@ changes:
      - v13.3.0
      - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/30644
-    description: "`maxBusyTries` 选项重命名为 `maxRetries`，其默认值为 0。`emfileWait` 选项已被移除，`EMFILE` 错误使用与其他错误相同的重试逻辑。现在支持 `retryDelay` 选项。`ENFILE` 错误现在会重试。"
+    description: "`maxBusyTries` 选项已重命名为 `maxRetries`，其默认值为 0。`emfileWait` 选项已被移除，`EMFILE` 错误使用与其他错误相同的重试逻辑。现在支持 `retryDelay` 选项。`ENFILE` 错误现在会重试。"
   - version: v12.10.0
     pr-url: https://github.com/nodejs/node/pull/29168
     description: "现在支持 `recursive`、`maxBusyTries` 和 `emfileWait` 选项。"
@@ -1809,8 +1883,8 @@ added:
     文件名进行测试，函数接收文件名并返回 `true` 以
     忽略。**默认值：** `undefined`。
 * 返回：{AsyncIterator} 对象，具有属性：
-  * `eventType` {string} 更改类型
-  * `filename` {string|Buffer|null} 更改的文件名。
+  * `eventType` {string} 变更类型
+  * `filename` {string|Buffer|null} 变更的文件名。
 
 返回一个异步迭代器，监视 `filename` 上的更改，其中 `filename`
 可以是文件或目录。
@@ -1929,9 +2003,9 @@ added:
   - v16.17.0
 -->
 
-* 类型：{Object}
+* 类型：{对象}
 
-返回一个包含文件系统操作常用常量的对象。该对象与 `fs.constants` 相同。参见 [FS 常量][]
+返回一个包含文件系统操作常用常量的对象。该对象与 `fs.constants` 相同。参见 [文件系统常量][]
 了解更多详情。
 
 ## 回调 API
@@ -2147,7 +2221,7 @@ changes:
 
 异步将数据追加到文件，如果文件尚不存在则创建该文件。`data` 可以是字符串或 {Buffer}。
 
-`mode` 选项仅影响新创建的文件。有关更多详细信息，请参阅 [`fs.open()`][]。
+`mode` 选项仅影响新创建的文件。有关更多详细信息，请参阅 [`fs.open()`][].
 
 ```mjs
 import { appendFile } from 'node:fs';
@@ -2616,11 +2690,11 @@ exists('/etc/passwd', (e) => {
 });
 ```
 
-**此回调的参数与其他 Node.js 回调不一致。** 通常，Node.js 回调的第一个参数是 `err` 参数， optionally 后跟其他参数。`fs.exists()` 回调只有一个布尔参数。这是推荐使用 `fs.access()` 而不是 `fs.exists()` 的原因之一。
+**此回调的参数与其他 Node.js 回调不一致。** 通常，Node.js 回调的第一个参数是 `err` 参数，后面才跟其他参数。`fs.exists()` 回调只有一个布尔参数。这是推荐使用 `fs.access()` 而不是 `fs.exists()` 的原因之一。
 
 如果 `path` 是符号链接，则会被跟随。因此，如果 `path` 存在但指向不存在的元素，回调将接收值 `false`。
 
-不建议在调用 `fs.open()`、`fs.readFile()` 或 `fs.writeFile()` 之前使用 `fs.exists()` 检查文件是否存在。这样做会引入竞争条件，因为其他进程可能会在两次调用之间更改文件的状态。相反，用户代码应直接打开/读取/写入文件，并处理文件不存在时引发的错误。
+不建议在调用 `fs.open()`、`fs.readFile()` 或 `fs.writeFile()` 之前使用 `fs.exists()` 检查文件是否存在。这样做会引入竞争条件，因为其他进程可能会在两次调用之间更改文件状态。相反，用户代码应直接打开、读取或写入文件，并处理文件不存在时引发的错误。
 
 **写入（不推荐）**
 
@@ -3023,7 +3097,7 @@ changes:
 * `callback` {Function}
   * `err` {Error|AggregateError}
 
-更改符号链接上的权限。除了可能的异常外，不给完成回调传递任何参数。
+更改符号链接上的权限。除了可能的异常外，不会向完成回调传递任何参数。
 
 此方法仅在 macOS 上实现。
 
@@ -3055,7 +3129,7 @@ changes:
 * `callback` {Function}
   * `err` {Error}
 
-设置符号链接的所有者。除了可能的异常外，不给完成回调传递任何参数。
+设置符号链接的所有者。除了可能的异常外，不会向完成回调传递任何参数。
 
 有关更多详细信息，请参阅 POSIX lchown(2) 文档。
 
@@ -3079,7 +3153,7 @@ changes:
 
 以与 [`fs.utimes()`][] 相同的方式更改文件的访问和修改时间，不同之处在于如果路径引用符号链接，则链接不会被解引用：相反，符号链接本身的时间戳会被更改。
 
-除了可能的异常外，不给完成回调传递任何参数。
+除了可能的异常外，不会向完成回调传递任何参数。
 
 ### `fs.link(existingPath, newPath, callback)`
 
@@ -3105,7 +3179,7 @@ changes:
 * `callback` {Function}
   * `err` {Error}
 
-创建从 `existingPath` 到 `newPath` 的新链接。有关更多详细信息，请参阅 POSIX link(2) 文档。除了可能的异常外，不给完成回调传递任何参数。
+创建从 `existingPath` 到 `newPath` 的新链接。有关更多详细信息，请参阅 POSIX link(2) 文档。除了可能的异常外，不会向完成回调传递任何参数。
 
 ### `fs.lstat(path[, options], callback)`
 
@@ -3179,7 +3253,7 @@ changes:
 
 异步创建一个目录。
 
-回调被给予一个可能的异常，并且如果 `recursive` 为 `true`，则给予
+回调会接收一个可能的异常，并且如果 `recursive` 为 `true`，则接收
 第一个创建的目录路径，`(err[, path])`。
 当 `recursive` 为 `true` 时，如果没有创建目录（例如，如果它之前已创建），
 `path` 仍然可以是 `undefined`。
@@ -3334,16 +3408,16 @@ changes:
   * `err` {Error}
   * `fd` {integer}
 
-异步文件打开。有关更多详细信息，请参阅 POSIX open(2) 文档。
+异步打开文件。有关更多详细信息，请参阅 POSIX open(2) 文档。
 
 `mode` 设置文件模式（权限和粘滞位），但仅在文件被
-创建时。在 Windows 上，只能操纵写权限；参见
+创建时。在 Windows 上，只能操作写权限；参见
 [`fs.chmod()`][]。
 
 回调获取两个参数 `(err, fd)`。
 
 某些字符（`< > : " / \ | ? *`）在 Windows 下被保留，如
-[命名文件、路径和命名空间][] 所 documented。在 NTFS 下，如果文件名包含
+[命名文件、路径和命名空间][] 所述。在 NTFS 下，如果文件名包含
 冒号，Node.js 将打开一个文件系统流，如
 [此 MSDN 页面][MSDN-Using-Streams] 所述。
 
@@ -3416,7 +3490,7 @@ changes:
 * `options` {Object}
   * `encoding` {string|null} **默认值：** `'utf8'`
   * `bufferSize` {number} 从目录读取时内部缓冲的目录条目数。
-    较高的值会导致更好的性能但更高的内存 usage。**默认值：** `32`
+    较高的值会带来更好的性能，但也会占用更多内存。**默认值：** `32`
   * `recursive` {boolean} **默认值：** `false`
 * `callback` {Function}
   * `err` {Error}
@@ -3425,9 +3499,9 @@ changes:
 异步打开一个目录。有关更多详细信息，请参阅 POSIX opendir(3) 文档。
 
 创建一个 {fs.Dir}，其中包含所有用于读取和
-清理目录的进一步函数。
+清理目录的后续函数。
 
-`encoding` 选项设置在打开目录和后续读取操作时
+`encoding` 选项设置打开目录以及后续读取操作时
 `path` 的编码。
 
 ### `fs.read(fd, buffer, offset, length, position, callback)`
@@ -3615,6 +3689,9 @@ changes:
 <!-- YAML
 added: v0.1.29
 changes:
+  - version: v26.4.0
+    pr-url: https://github.com/nodejs/node/pull/63634
+    description: 为 `buffer` 选项添加了支持。
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
     description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
@@ -3645,9 +3722,11 @@ changes:
 
 * `path` {string|Buffer|URL|integer} 文件名或文件描述符
 * `options` {Object|string}
-  * `encoding` {string|null} **默认值：** `null`
-  * `flag` {string} 参见 [文件系统 `flags` 的支持][]。**默认值：** `'r'`。
+  * `encoding` {string|null} **Default:** `null`
+  * `flag` {string} 参见 [文件系统 `flags` 的支持][]. **Default:** `'r'`.
   * `signal` {AbortSignal} 允许中止正在进行的 readFile
+  * `buffer` {Buffer|TypedArray|DataView|Function} 用于读入的缓冲区，或者一个
+    以文件大小为参数并返回该缓冲区的函数。
 * `callback` {Function}
   * `err` {Error|AggregateError}
   * `data` {string|Buffer}
@@ -3668,7 +3747,11 @@ readFile('/etc/passwd', (err, data) => {
 
 如果未指定编码，则返回原始 buffer。
 
-如果 `options` 是字符串，则它指定编码：
+如果提供了 `buffer` 且未指定编码，则返回的 {Buffer} 是
+对所提供 buffer 的视图，其中只包含已读取的字节。如果所提供的 buffer 太小，
+无法容纳整个文件，则回调会在出错时被调用。
+
+如果 `options` 是一个字符串，则它指定编码：
 
 ```mjs
 import { readFile } from 'node:fs';
@@ -3716,6 +3799,33 @@ controller.abort();
 中止正在进行的请求不会中止单个操作系统
 请求，而是中止 `fs.readFile` 执行的内部缓冲。
 
+使用带有预分配缓冲区的 `buffer` 选项的示例：
+
+```mjs
+import { Buffer } from 'node:buffer';
+import { readFile } from 'node:fs';
+
+const buf = Buffer.alloc(16384);
+readFile('/path/to/file', { buffer: buf }, (err, data) => {
+  if (err) throw err;
+  console.log(data); // A view over `buf` containing only the bytes read
+});
+```
+
+使用 `buffer` 选项与返回缓冲区的函数的示例：
+
+```mjs
+import { Buffer } from 'node:buffer';
+import { readFile } from 'node:fs';
+
+readFile('/path/to/file', {
+  buffer: (size) => Buffer.alloc(size),
+}, (err, data) => {
+  if (err) throw err;
+  console.log(data);
+});
+```
+
 #### 文件描述符
 
 1. 任何指定的文件描述符必须支持读取。
@@ -3729,7 +3839,7 @@ controller.abort();
 
 `fs.readFile()` 方法异步地将文件内容一次一个块地读入
 内存，允许事件循环在每个块之间转动。
-这允许读取操作对可能使用底层 libuv 线程池的其他活动
+这使读取操作对可能使用底层 libuv 线程池的其他活动
 影响较小，但意味着将文件完整读入内存需要更长的
 时间。
 
@@ -3845,7 +3955,7 @@ changes:
   * `err` {Error}
   * `resolvedPath` {string|Buffer}
 
-通过解析 `.`, `..` 和符号链接异步计算规范路径名。
+通过解析 `.`、`..` 和符号链接异步计算规范路径名。
 
 规范路径名不一定是唯一的。硬链接和绑定挂载可以通过许多路径名公开文件系统实体。
 
@@ -4126,7 +4236,7 @@ Stats {
 }
 ```
 
-### `fs.statfs(path[, options], callback)`
+### 文件系统状态统计
 
 <!-- YAML
 added:
@@ -4145,7 +4255,7 @@ added:
 
 在错误的情况下，`err.code` 将是 [常见系统错误][] 之一。
 
-### `fs.symlink(target, path[, type], callback)`
+### 创建符号链接
 
 <!-- YAML
 added: v0.1.31
@@ -4214,7 +4324,7 @@ changes:
 * `callback` {Function}
   * `err` {Error|AggregateError}
 
-截断文件。除了可能的异常外，没有参数被给予完成回调。文件描述符也可以作为第一个参数传递。在这种情况下，调用 `fs.ftruncate()`。
+截断文件。除了可能的异常外，不会向完成回调传递任何参数。文件描述符也可以作为第一个参数传递。在这种情况下，将调用 `fs.ftruncate()`。
 
 ```mjs
 import { truncate } from 'node:fs';
@@ -4261,7 +4371,7 @@ changes:
 * `callback` {Function}
   * `err` {Error}
 
-异步移除文件或符号链接。除了可能的异常外，没有参数被给予完成回调。
+异步移除文件或符号链接。除了可能的异常外，没有参数会传递给完成回调。
 
 ```mjs
 import { unlink } from 'node:fs';
@@ -4272,7 +4382,7 @@ unlink('path/file.txt', (err) => {
 });
 ```
 
-`fs.unlink()` 不适用于目录，无论是否为空。要移除目录，使用 [`fs.rmdir()`][]。
+`fs.unlink()` 不适用于目录，无论是否为空。要移除目录，请使用 [`fs.rmdir()`][]。
 
 有关更多详细信息，请参阅 POSIX unlink(2) 文档。
 
@@ -4434,7 +4544,7 @@ watch('somedir', (eventType, filename) => {
 });
 ```
 
-### `fs.watchFile(filename[, options], listener)`
+### 监视文件
 
 <!-- YAML
 added: v0.1.31
@@ -4680,7 +4790,7 @@ changes:
 
 如果 `data` 是缓冲区，则忽略 `encoding` 选项。
 
-`mode` 选项仅影响新创建的文件。有关更多详细信息，请参阅 [`fs.open()`][]。
+`mode` 选项仅影响新创建的文件。有关更多详细信息，请参阅 [`fs.open()`][].
 
 ```mjs
 import { writeFile } from 'node:fs';
@@ -4701,11 +4811,11 @@ import { writeFile } from 'node:fs';
 writeFile('message.txt', 'Hello Node.js', 'utf8', callback);
 ```
 
-在不等待回调的情况下多次在同一文件上使用 `fs.writeFile()` 是不安全的。对于此场景，推荐使用 [`fs.createWriteStream()`][]。
+在不等待回调的情况下，多次在同一文件上使用 `fs.writeFile()` 是不安全的。对于这种场景，推荐使用 [`fs.createWriteStream()`][]。
 
-与 `fs.readFile` 类似 - `fs.writeFile` 是一个便利方法，它在内部执行多次 `write` 调用以写入传递给它的缓冲区。对于性能敏感的代码，考虑使用 [`fs.createWriteStream()`][]。
+与 `fs.readFile` 类似，`fs.writeFile` 是一个便利方法，它会在内部执行多次 `write` 调用，以写入传递给它的缓冲区。对于性能敏感的代码，建议考虑使用 [`fs.createWriteStream()`][]。
 
-可以使用 {AbortSignal} 来取消 `fs.writeFile()`。取消是“尽最大努力”，可能仍会有少量数据被写入。
+可以使用 {AbortSignal} 来取消 `fs.writeFile()`。取消是“尽最大努力”的，仍可能会有少量数据被写入。
 
 ```mjs
 import { writeFile } from 'node:fs';
@@ -4787,7 +4897,7 @@ changes:
 * `path` {string|Buffer|URL}
 * `mode` {integer} **默认：** `fs.constants.F_OK`
 
-同步测试用户由 `path` 指定的文件或目录的权限。`mode` 参数是一个可选整数，指定要执行的访问检查。`mode` 应该是值 `fs.constants.F_OK` 或由 `fs.constants.R_OK`、`fs.constants.W_OK` 和 `fs.constants.X_OK` 的按位 OR 组成的掩码（例如 `fs.constants.W_OK | fs.constants.R_OK`）。查看 [文件访问常量][] 以获取 `mode` 的可能值。
+同步测试由 `path` 指定的文件或目录的权限。`mode` 参数是一个可选整数，指定要执行的访问检查。`mode` 应该是值 `fs.constants.F_OK` 或由 `fs.constants.R_OK`、`fs.constants.W_OK` 和 `fs.constants.X_OK` 的按位 OR 组成的掩码（例如 `fs.constants.W_OK | fs.constants.R_OK`）。查看 [文件访问常量][] 以获取 `mode` 的可能值。
 
 如果任何访问检查失败，将抛出 `Error`。否则，该方法将返回 `undefined`。
 
@@ -4869,7 +4979,7 @@ try {
 }
 ```
 
-### `fs.chmodSync(path, mode)`
+### 文件系统
 
 <!-- YAML
 added: v0.6.7
@@ -4886,7 +4996,7 @@ changes:
 
 查看更多详情 POSIX chmod(2) 文档。
 
-### `fs.chownSync(path, uid, gid)`
+### 改变所有者和组
 
 <!-- YAML
 added: v0.1.97
@@ -4905,7 +5015,7 @@ changes:
 
 查看更多详情 POSIX chown(2) 文档。
 
-### `fs.closeSync(fd)`
+### 关闭文件描述符
 
 <!-- YAML
 added: v0.1.21
@@ -4919,7 +5029,7 @@ added: v0.1.21
 
 查看更多详情 POSIX close(2) 文档。
 
-### `fs.copyFileSync(src, dest[, mode])`
+### 复制文件
 
 <!-- YAML
 added: v8.5.0
@@ -5431,6 +5541,9 @@ changes:
 <!-- YAML
 added: v0.1.8
 changes:
+  - version: v26.4.0
+    pr-url: https://github.com/nodejs/node/pull/63634
+    description: 添加对 `buffer` 选项的支持。
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
     description: "`path` 参数可以是一个使用 `file:` 协议的 WHATWG `URL` 对象。"
@@ -5443,6 +5556,7 @@ changes:
 * `options` {Object|string}
   * `encoding` {string|null} **默认：** `null`
   * `flag` {string} 参见 [文件系统 `flags` 的支持][]。 **默认：** `'r'`。
+  * `buffer` {Buffer|TypedArray|DataView|Function} 用于读取的缓冲区，或者一个以文件大小为参数并返回缓冲区的函数。
 * 返回：{string|Buffer}
 
 返回 `path` 的内容。
@@ -5451,7 +5565,9 @@ changes:
 
 如果指定了 `encoding` 选项，则此函数返回字符串。否则它返回 buffer。
 
-类似于 [`fs.readFile()`][]，当路径是目录时，`fs.readFileSync()` 的行为是特定于平台的。
+如果提供了 `buffer`，且未指定编码，则返回的 {Buffer} 是所提供缓冲区的一个视图，其中只包含已读取的字节。如果所提供的缓冲区太小，无法容纳整个文件，则会抛出错误。
+
+与 [`fs.readFile()`][] 类似，当路径是目录时，`fs.readFileSync()` 的行为取决于平台。
 
 ```mjs
 import { readFileSync } from 'node:fs';
@@ -5651,9 +5767,9 @@ changes:
 
 同步 rmdir(2)。返回 `undefined`。
 
-在文件（非目录）上使用 `fs.rmdirSync()` 在 Windows 上导致 `ENOENT` 错误，在 POSIX 上导致 `ENOTDIR` 错误。
+在文件（非目录）上使用 `fs.rmdirSync()` 在 Windows 上会导致 `ENOENT` 错误，在 POSIX 上会导致 `ENOTDIR` 错误。
 
-要获得类似于 `rm -rf` Unix 命令的行为，使用 [`fs.rmSync()`][] 并带有选项 `{ recursive: true, force: true }`。
+要获得类似于 `rm -rf` Unix 命令的行为，请使用 [`fs.rmSync()`][] 并带有选项 `{ recursive: true, force: true }`。
 
 ### `fs.rmSync(path[, options])`
 
@@ -5917,7 +6033,7 @@ added: v12.9.0
 
 ## 常用对象
 
-常用对象由所有文件系统 API 变体（promise、callback 和 synchronous）共享。
+常用对象由所有文件系统 API 变体（promise、回调和同步）共享。
 
 ### 类：`fs.Dir`
 
@@ -5955,7 +6071,7 @@ added: v12.12.0
 异步关闭目录的底层资源句柄。
 后续读取将导致错误。
 
-返回一个 Promise，在资源关闭后 fulfilled。
+返回一个 Promise，在资源关闭后变为已完成。
 
 #### `dir.close(callback)`
 
@@ -6001,12 +6117,12 @@ added: v12.12.0
 added: v12.12.0
 -->
 
-* 返回：{Promise} Fulfilled 值为 {fs.Dirent|null}
+* 返回：{Promise} 完成值为 {fs.Dirent|null}
 
 通过 readdir(3) 异步读取下一个目录条目作为
 {fs.Dirent}。
 
-返回一个 Promise，它将 fulfilled 一个 {fs.Dirent}，如果没有更多目录条目可读，则为 `null`。
+返回一个 Promise，它将在返回 {fs.Dirent} 时完成；如果没有更多目录条目可读，则为 `null`。
 
 此函数返回的目录条目没有特定顺序，由操作系统底层目录机制提供。
 迭代目录时添加或删除的条目可能不包含在迭代结果中。
@@ -6051,7 +6167,7 @@ POSIX readdir(3) 文档。
 added: v12.12.0
 -->
 
-* 返回：{AsyncIterator} {fs.Dirent} 的 AsyncIterator
+* 返回：{AsyncIterator} {fs.Dirent} 的异步迭代器
 
 异步迭代目录直到所有条目都被读取。有关更多详细信息，请参阅 POSIX readdir(3) 文档。
 
@@ -6075,7 +6191,7 @@ changes:
    description: 不再是实验性的。
 -->
 
-如果目录句柄是打开的，则调用 `dir.close()`，并返回一个在处置完成时 fulfilled 的 Promise。
+如果目录句柄是打开的，则调用 `dir.close()`，并返回一个在处置完成时变为已完成的 Promise。
 
 #### `dir[Symbol.dispose]()`
 
@@ -6253,7 +6369,7 @@ watch('./tmp', { encoding: 'buffer' }, (eventType, filename) => {
 added: v10.0.0
 -->
 
-当监视器停止监视更改时发出。关闭的
+当监视器停止监视更改时发出。已关闭的
 {fs.FSWatcher} 对象在事件处理程序中不再可用。
 
 #### 事件：`'error'`
@@ -6889,8 +7005,7 @@ added:
 
 * 类型：{number|bigint}
 
-Free blocks available to unprivileged users. Multiply by [`statfs.bsize`][]
-to get the number of available bytes.
+可供非特权用户使用的空闲块数。乘以 [`statfs.bsize`][] 可得到可用字节数。
 
 ```mjs
 import { statfs } from 'node:fs/promises';
@@ -6920,8 +7035,7 @@ added:
 
 * 类型：{number|bigint}
 
-Free blocks in file system. Multiply by [`statfs.bsize`][] to get the number
-of free bytes.
+文件系统中的可用块数。乘以 [`statfs.bsize`][] 可得到可用字节数。
 
 ```mjs
 import { statfs } from 'node:fs/promises';
@@ -6951,8 +7065,8 @@ added:
 
 * 类型：{number|bigint}
 
-Total data blocks in file system. Multiply by [`statfs.bsize`][] to get the
-total size in bytes.
+文件系统中的数据块总数。乘以 [`statfs.bsize`][] 可得
+以字节为单位的总大小。
 
 ```mjs
 import { statfs } from 'node:fs/promises';
@@ -6982,7 +7096,7 @@ added:
 
 * 类型：{number|bigint}
 
-Optimal transfer block size in bytes.
+以字节为单位的最优传输块大小。
 
 #### `statfs.frsize`
 
@@ -7030,11 +7144,7 @@ added:
 
 * 类型：{number|bigint}
 
-Type of file system. A platform-specific numeric identifier for the type of
-file system. This value corresponds to the `f_type` field returned by
-`statfs(2)` on POSIX systems (for example, `0xEF53` for ext4 on Linux). Its
-meaning is OS-dependent and is not guaranteed to be consistent across
-platforms.
+文件系统类型。一个特定于平台的数值标识符，用于表示文件系统类型。此值对应于 POSIX 系统上 `statfs(2)` 返回的 `f_type` 字段（例如，Linux 上 ext4 对应 `0xEF53`）。其含义取决于操作系统，且不保证在不同平台之间一致。
 
 ### 类：`fs.Utf8Stream`
 
@@ -7044,8 +7154,8 @@ added: v24.6.0
 
 > 稳定性：1 - 实验性
 
-一个优化的 UTF-8 流写入器，允许按需刷新所有内部缓冲。它正确处理 `EAGAIN` 错误，允许
-自定义，例如，如果磁盘繁忙则丢弃内容。
+一个优化的 UTF-8 流写入器，允许按需刷新所有内部缓冲区。它能正确处理 `EAGAIN` 错误，并允许
+自定义行为，例如在磁盘繁忙时丢弃内容。
 
 #### 事件：`'close'`
 
@@ -7053,7 +7163,7 @@ added: v24.6.0
 
 #### 事件：`'drain'`
 
-当内部缓冲已充分排空以允许继续写入时发出 `'drain'` 事件。
+当内部缓冲区已充分排空以允许继续写入时发出 `'drain'` 事件。
 
 #### 事件：`'drop'`
 
@@ -7641,7 +7751,7 @@ rename('/tmp/hello', '/tmp/world', (err) => {
 ```
 
 ```cjs
-const { rename, stat } = require('node:fs/promises');
+const { rename, stat } = require('node:fs');
 
 rename('/tmp/hello', '/tmp/world', (err) => {
   if (err) throw err;
@@ -7859,9 +7969,7 @@ open('/open/some/file.txt', 'r', (err, fd) => {
 });
 ```
 
-基于 Promise 的 API 使用 {FileHandle} 对象代替数字
-文件描述符。这些对象由系统更好地管理以确保
-资源不被泄漏。但是，仍然要求在操作完成时关闭它们：
+基于 Promise 的 API 使用 {FileHandle} 对象代替数字文件描述符。这些对象由系统更好地管理，以确保资源不被泄漏。但是，仍然要求在操作完成时关闭它们：
 
 ```mjs
 import { open } from 'node:fs/promises';

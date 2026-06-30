@@ -213,6 +213,9 @@ added:
   - v26.1.0
   - v24.16.0
 changes:
+  - version: v26.4.0
+    pr-url: https://github.com/nodejs/node/pull/63704
+    description: 为每个探针新增 `--max-hit <n>` 选项，用于限制已求值命中次数，并在任一探针达到其限制后立即以 `completed` 终止事件结束。
   - version: v26.3.0
     pr-url: https://github.com/nodejs/node/pull/63437
     description: 添加 inspector 端会话中途失败时的终端 `error` 事件 `probe_failure`，以及用于提供每次命中和终端错误额外上下文的 `error.details`。
@@ -230,28 +233,28 @@ changes:
 探测模式会设置一个或多个源码断点；每当执行到断点时，就会求值指定表达式，并在会话结束时（正常完成、出错或超时）打印一份所有已求值表达式的最终报告。这样开发者就可以进行类似 printf 的调试，而无需修改应用代码并在事后清理。它还支持结构化 JSON 输出，便于工具使用。
 
 ```console
-$ node inspect --probe <file>:<line>[:<col>] --expr <expr>
-              [--probe <file>:<line>[:<col>] --expr <expr> ...]
+$ node inspect --probe <file>:<line>[:<col>] --expr <expr> [--max-hit <n>]
+              [--probe <file>:<line>[:<col>] --expr <expr> [--max-hit <n>] ...]
               [--json] [--preview] [--timeout=<ms>] [--port=<port>]
               [--] [<node-option> ...] <script> [<script-args> ...]
 ```
 
-* `--probe <file>:<line>[:<col>]`: 探测的源位置。当执行到该位置时，会对提供的表达式求值并打印到输出中。`<file>` 会与要探测脚本的 URL 后缀进行匹配。
-  `<line>` 和 `<col>` 编号从 1 开始。若省略 `<col>`，探测会绑定到该行第一个可执行列。
-* `--expr <expr>`: 每当执行到前一个 `--probe` 指定的位置时要计算的 JavaScript 表达式。
-  必须紧跟其所属的 `--probe`。
-* `--timeout=<ms>`: 整个探测会话的全局墙钟截止时间。
-  默认值为 `30000`。这可用于探测一个可被外部终止的长时间运行应用。
-* `--json`: 如使用，则输出结构化 JSON 报告，而不是默认的文本报告。
-* `--preview`: 如使用，则非原始值会为对象样式的 JSON 探测值包含 CDP 属性预览。
-* `--port=<port>`: 选择探测会话监听的本地 inspector 端口。默认值为 `0`，表示请求一个随机端口。
-* `--` 可选，除非子进程需要自己的 Node.js 标志。
+* `--probe <file>:<line>[:<col>]`：探针的源位置。当执行到达该位置时，会对提供的表达式求值，并将结果打印到输出中。`<file>` 与要探测脚本的 URL 后缀匹配。`<line>` 和 `<col>` 的数字从 1 开始计数。当省略 `<col>` 时，探针会绑定到该行上第一个可执行列。
+* `--expr <expr>`：每当执行到达前一个 `--probe` 指定的位置时，要计算的 JavaScript 表达式。
+  必须紧跟在它所属的 `--probe` 之后。
+* `--max-hit <n>`：可选的、针对单个探针的命中次数上限。当未指定时，没有命中限制。当任意探针达到其命中上限时，探测进程将分离并报告结果。被探测的进程将继续运行。如果在会话结束时还有其他探针从未被触发，则会被报告为漏报的探针。
+* `--timeout=<ms>`：整个探针会话的全局墙钟截止时间。默认值为 `30000`。这可用于探测可被外部终止的长时间运行应用程序。
+* `--json`：如果使用，将输出结构化的 JSON 报告，而不是默认的文本报告。
+* `--preview`：如果使用，非原始值将包含对象类 JSON 探针值的 CDP 属性预览。
+* `--port=<port>`：选择探测会话监听的本地 inspector 端口。默认值为 `0`，这会请求一个随机端口。
+* `--` 在子进程需要自己的 Node.js 标志时才是可选的。
 
 关于 `--probe` 和 `--expr` 参数还有以下附加规则：
 
-* `--probe <file>:<line>[:<col>]` 和 `--expr <expr>` 是严格配对的。每个 `--probe` 后面必须立即跟一个且仅一个 `--expr`。
-* `--timeout`、`--json`、`--preview` 和 `--port` 是整个探测会话的全局探测选项。它们可以出现在探测对之前或之间，但不能出现在 `--probe` 和其匹配的 `--expr` 之间。
-* 如果需要将额外的 Node.js 执行参数传递给子脚本，必须使用 `--` 将探测选项与子脚本的 Node.js 选项分隔开。
+* `--probe <file>:<line>[:<col>]` 和 `--expr <expr>` 是严格成对的。每个 `--probe` 后面必须立即跟着且仅跟着一个 `--expr`。
+* `--max-hit <n>` 是一个可选的、适用于最近一个 `--probe`/`--expr` 成对项的探针级选项。它不能出现在第一个 `--probe` 之前，也不能出现在 `--probe` 与其匹配的 `--expr` 之间，并且每个探针最多只能给出一次。
+* `--timeout`、`--json`、`--preview` 和 `--port` 是作用于整个探针会话的全局探针选项。它们可以出现在探针对之前或之间，但不能出现在 `--probe` 与其匹配的 `--expr` 之间。
+* 如果需要将额外的 Node.js 执行参数传递给子脚本，必须使用 `--` 将探针选项与子脚本的 Node.js 选项分隔开来。
 
 示例：
 
@@ -313,6 +316,7 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
         "suffix": "cli.js",
         "line": 5
       }
+      // `maxHit` is present only when the probe was given a --max-hit limit.
     }
   ],
   "results": [
@@ -498,5 +502,5 @@ For help, see: https://nodejs.org/learn/getting-started/debugging
 
 [Chrome DevTools 协议]: https://chromedevtools.github.io/devtools-protocol/
 [`debugger`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/debugger
-[interactive mode]: #interactive-mode
-[non-interactive probe mode]: #probe-mode
+[交互模式]: #interactive-mode
+[非交互式探测模式]: #probe-mode

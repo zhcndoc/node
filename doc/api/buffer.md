@@ -84,13 +84,13 @@ changes:
       - v15.7.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/36952
-    description: "Introduced `base64url` encoding."
+    description: "引入了 `base64url` 编码。"
   - version: v6.4.0
     pr-url: https://github.com/nodejs/node/pull/7111
-    description: "Introduced `latin1` as an alias for `binary`."
+    description: "引入了 `latin1` 作为 `binary` 的别名。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2859
-    description: "Removed the deprecated `raw` and `raws` encodings."
+    description: "移除了已弃用的 `raw` 和 `raws` 编码。"
 -->
 
 在 `Buffer` 和字符串之间转换时，可以指定字符编码。如果未指定字符编码，将使用 UTF-8 作为默认值。
@@ -360,7 +360,7 @@ write.call(uint8array, 'hello', 0, 5, 'utf8'); // 5
 toString.call(uint8array, 'utf8'); // 'hello'
 ```
 
-## Buffer 和迭代
+## 缓冲区和迭代
 
 `Buffer` 实例可以使用 `for..of` 语法进行迭代：
 
@@ -471,7 +471,7 @@ blob.bytes().then((bytes) => {
 });
 ```
 
-### `blob.size`
+### 大小
 
 <!-- YAML
 added:
@@ -481,7 +481,7 @@ added:
 
 `Blob` 的总大小（以字节为单位）。
 
-### `blob.slice([start[, end[, type]]])`
+### 切片
 
 <!-- YAML
 added:
@@ -496,7 +496,7 @@ added:
 创建并返回一个新的 `Blob`，包含此 `Blob` 对象
 数据的子集。原始 `Blob` 不会被更改。
 
-### `blob.stream()`
+### 流
 
 <!-- YAML
 added: v16.7.0
@@ -506,7 +506,7 @@ added: v16.7.0
 
 返回一个新的 `ReadableStream`，允许读取 `Blob` 的内容。
 
-### `blob.text()`
+### 文本
 
 <!-- YAML
 added:
@@ -519,7 +519,19 @@ added:
 返回一个 promise，该 promise 履行时包含解码为
 UTF-8 字符串的 `Blob` 内容。
 
-### `blob.type`
+### 流文本
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Returns: {ReadableStream}
+
+Returns a new `ReadableStream` that allows the content of the `Blob` to be read
+as a stream of UTF-8 decoded strings. It is equivalent to piping
+[`blob.stream()`][] through a [`TextDecoderStream`][] set up with UTF-8.
+
+### 类型
 
 <!-- YAML
 added:
@@ -603,10 +615,10 @@ added: v5.10.0
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/45796
-    description: "对于无效的输入参数，抛出 ERR_INVALID_ARG_TYPE 或 ERR_OUT_OF_RANGE 而不是ERR_INVALID_ARG_VALUE。"
+    description: "对于无效的输入参数，抛出 ERR_INVALID_ARG_TYPE 或 ERR_OUT_OF_RANGE，而不是 ERR_INVALID_ARG_VALUE。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/34682
-    description: 对于无效的输入参数，抛出 ERR_INVALID_ARG_VALUE 而不是 ERR_INVALID_OPT_VALUE。
+    description: 对于无效的输入参数，抛出 ERR_INVALID_ARG_VALUE，而不是 ERR_INVALID_OPT_VALUE。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18129
     description: 尝试用零长度 buffer 填充非零长度 buffer 会触发抛出的异常。
@@ -692,7 +704,7 @@ console.log(buf);
 ```
 
 调用 [`Buffer.alloc()`][] 可能比替代方案
-[`Buffer.allocUnsafe()`][] 明显慢，但确保新创建的 `Buffer` 实例
+[`Buffer.allocUnsafe()`][] 明显更慢，但能确保新创建的 `Buffer` 实例
 内容永远不会包含来自先前分配的敏感数据，包括
 可能未为 `Buffer` 分配的数据。
 
@@ -795,12 +807,11 @@ changes:
 _可能包含敏感数据_。使用 [`buf.fill(0)`][`buf.fill()`] 来用零初始化
 此类 `Buffer` 实例。
 
-When using [`Buffer.allocUnsafe()`][] to allocate new `Buffer` instances,
-allocations less than `Buffer.poolSize >>> 1` (32KiB when default poolSize is used) are sliced
-from a single pre-allocated `Buffer`. This allows applications to avoid the
-garbage collection overhead of creating many individually allocated `Buffer`
-instances. This approach improves both performance and memory usage by
-eliminating the need to track and clean up as many individual `ArrayBuffer` objects.
+使用 [`Buffer.allocUnsafe()`][] 分配新的 `Buffer` 实例时，
+小于 `Buffer.poolSize >>> 1` 的分配（默认使用 poolSize 时为 32KiB）会从单个预分配的
+`Buffer` 中切片获得。这使应用程序能够避免创建许多单独分配的
+`Buffer` 实例所带来的垃圾回收开销。通过消除跟踪和清理大量单独的
+`ArrayBuffer` 对象的需要，这种方法同时提升了性能和内存使用效率。
 
 但是，如果开发者可能需要保留池中一小块
 内存不确定的时间，使用 `Buffer.allocUnsafeSlow()` 创建未池化的 `Buffer` 实例
@@ -1415,21 +1426,23 @@ console.log(Buffer.isEncoding(''));
 // 输出：false
 ```
 
-### `Buffer.poolSize`
+### 16 位整数数组
 
 <!-- YAML
 added: v0.11.3
 changes:
-  - version: v26.3.0
+  - version:
+    - v26.3.0
+    - v24.18.0
     pr-url: https://github.com/nodejs/node/pull/63597
-    description: Default raised from 8192 to 65536.
+    description: 默认值已从 8192 提高到 65536。
 -->
 
-* Type: {integer} **Default:** `65536`
+* 类型：{integer} **默认值：** `65536`
 
 这是用于池化的预分配内部 `Buffer` 实例的大小（以字节为单位）。此值可以被修改。
 
-### `buf[index]`
+### 索引运算符
 
 * `index` {integer}
 
@@ -1512,7 +1525,7 @@ console.log(buffer.buffer === arrayBuffer);
 
 当在 `Buffer.from(ArrayBuffer, byteOffset, length)` 中设置 `byteOffset` 时，
 或者有时当分配小于 `Buffer.poolSize` 的 `Buffer` 时，
-buffer 不从底层 `ArrayBuffer` 的零偏移开始。
+缓冲区不会从底层 `ArrayBuffer` 的零偏移开始。
 
 当直接使用 `buf.buffer` 访问底层 `ArrayBuffer` 时，这
 可能会导致问题，因为 `ArrayBuffer` 的其他部分可能与
@@ -1765,7 +1778,7 @@ added: v1.1.0
 
 * 返回：{Iterator}
 
-从 `buf` 的内容创建并返回一个 `[index, byte]` 对的 [iterator][]。
+从 `buf` 的内容创建并返回一个 `[index, byte]` 对的 [迭代器][]。
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -1979,7 +1992,7 @@ added: v5.3.0
 changes:
   - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62390
-    description: Added the `end` parameter.
+    description: 添加了 `end` 参数。
   - version:
      - v25.5.0
      - v24.13.1
@@ -2047,7 +2060,7 @@ added: v1.5.0
 changes:
   - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62390
-    description: Added the `end` parameter.
+    description: 增加了 `end` 参数。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10236
     description: "`value` 现在可以是 `Uint8Array`。"
@@ -2135,7 +2148,7 @@ console.log(utf16Buffer.indexOf('\u03a3', -4, 'utf16le'));
 
 如果 `byteOffset` 不是数字，它将被强制转换为数字。如果强制转换的结果
 是 `NaN` 或 `0`，则将搜索整个 buffer。此
-行为匹配 [`String.prototype.indexOf()`][]。
+行为与 [`String.prototype.indexOf()`][] 相匹配。
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -2226,7 +2239,7 @@ added: v6.0.0
 changes:
   - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62390
-    description: Added the `end` parameter.
+    description: 添加了 `end` 参数。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10236
     description: value 现在可以是 Uint8Array。
@@ -2304,7 +2317,7 @@ console.log(utf16Buffer.lastIndexOf('\u03a3', -5, 'utf16le'));
 
 如果 `value` 不是字符串、数字或 `Buffer`，此方法将抛出 `TypeError`。如果 `value` 是数字，它将被强制转换为有效的字节值，即 0 到 255 之间的整数。
 
-如果 `byteOffset` 不是数字，它将被强制转换为数字。任何被强制转换为 `NaN` 的参数（如 `{}` 或 `undefined`）将搜索整个 buffer。此行为与 [`String.prototype.lastIndexOf()`][] 匹配。
+如果 `byteOffset` 不是数字，它将被强制转换为数字。任何被强制转换为 `NaN` 的参数（如 `{}` 或 `undefined`）将搜索整个缓冲区。此行为与 [`String.prototype.lastIndexOf()`][] 匹配。
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -2485,8 +2498,8 @@ changes:
     description: 此函数也可作为 buf.readBigUint64LE() 使用。
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足：`0 <= offset <= buf.length - 8`。**默认值：** `0`。
-* 返回值：{bigint}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足：`0 <= offset <= buf.length - 8`。**默认值：** `0`。
+* 返回值：{大整数}
 
 从 `buf` 中指定的 `offset` 处读取一个无符号的小端 64 位整数。
 
@@ -2510,7 +2523,7 @@ console.log(buf.readBigUInt64LE(0));
 // 打印：18446744069414584320n
 ```
 
-### `buf.readDoubleBE([offset])`
+### Buffer.prototype.readDoubleBE
 
 <!-- YAML
 added: v0.11.15
@@ -2613,7 +2626,7 @@ console.log(buf.readFloatBE(0));
 // 打印：2.387939260590663e-38
 ```
 
-### `buf.readFloatLE([offset])`
+### `buffer.readFloatLE(offset)`
 
 <!-- YAML
 added: v0.11.15
@@ -2857,9 +2870,9 @@ changes:
 
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - byteLength`。
-* `byteLength` {integer} 要读取的字节数。必须满足 `0 < byteLength <= 6`。
-* 返回值：{integer}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - byteLength`。
+* `byteLength` {整数} 要读取的字节数。必须满足 `0 < byteLength <= 6`。
+* 返回值：{整数}
 
 从 `buf` 中指定的 `offset` 处读取 `byteLength` 个字节，并将结果解释为大端二进制补码有符号值，支持高达 48 位的精度。
 
@@ -3433,7 +3446,7 @@ added: v5.10.0
 
 * 返回值：{Buffer} 对 `buf` 的引用。
 
-将 `buf` 解释为无符号 16 位整数数组，并就地交换字节顺序。如果 [`buf.length`][] 不是 2 的倍数，则抛出 [`ERR_INVALID_BUFFER_SIZE`][]。
+将 `buf` 解释为无符号 16 位整数数组，并就地交换字节顺序。如果 [`buf.length`][] 不是 2 的倍数，则抛出 [`ERR_INVALID_BUFFER_SIZE`][].
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -3497,7 +3510,7 @@ added: v5.10.0
 
 * 返回值：{Buffer} 对 `buf` 的引用。
 
-将 `buf` 解释为无符号 32 位整数数组，并就地交换字节顺序。如果 [`buf.length`][] 不是 4 的倍数，则抛出 [`ERR_INVALID_BUFFER_SIZE`][]。
+将 `buf` 解释为无符号 32 位整数数组，并就地交换字节顺序。如果 [`buf.length`][] 不是 4 的倍数，则抛出 [`ERR_INVALID_BUFFER_SIZE`][].
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -3545,7 +3558,7 @@ added: v6.3.0
 
 * 返回值：{Buffer} 对 `buf` 的引用。
 
-将 `buf` 解释为 64 位数字数组，并就地交换字节顺序。如果 [`buf.length`][] 不是 8 的倍数，则抛出 [`ERR_INVALID_BUFFER_SIZE`][]。
+将 `buf` 解释为 64 位数字数组，并就地交换字节顺序。如果 [`buf.length`][] 不是 8 的倍数，则抛出 [`ERR_INVALID_BUFFER_SIZE`][].
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -3830,7 +3843,7 @@ console.log(`${length} bytes: ${buffer.toString('utf8', 8, 10)}`);
 // 打印：2 bytes : ab
 ```
 
-### `buf.writeBigInt64BE(value[, offset])`
+### `buffer.writeBigInt64BE()`
 
 <!-- YAML
 added:
@@ -3838,11 +3851,11 @@ added:
  - v10.20.0
 -->
 
-* `value` {bigint} 要写入 `buf` 的数字。
-* `offset` {integer} 开始写入前要跳过的字节数。必须满足：`0 <= offset <= buf.length - 8`。**默认值：** `0`。
+* `value` {bigint} 要写入 `buffer` 的数字。
+* `offset` {integer} 开始写入前要跳过的字节数。必须满足：`0 <= offset <= buffer.length - 8`。**默认值：** `0`。
 * 返回值：{integer} `offset` 加上写入的字节数。
 
-将 `value` 以大端格式写入 `buf` 的指定 `offset` 处。
+将 `value` 以大端格式写入 `buffer` 的指定 `offset` 处。
 
 `value` 被解释并写入为二进制补码有符号整数。
 
@@ -3868,7 +3881,7 @@ console.log(buf);
 // 打印：<Buffer 01 02 03 04 05 06 07 08>
 ```
 
-### `buf.writeBigInt64LE(value[, offset])`
+### `bigint` 的写入方法
 
 <!-- YAML
 added:
@@ -3876,11 +3889,11 @@ added:
  - v10.20.0
 -->
 
-* `value` {bigint} 要写入 `buf` 的数字。
-* `offset` {integer} 开始写入前要跳过的字节数。必须满足：`0 <= offset <= buf.length - 8`。**默认值：** `0`。
+* `value` {bigint} 要写入 `buffer` 的数字。
+* `offset` {integer} 开始写入前要跳过的字节数。必须满足：`0 <= offset <= buffer.length - 8`。**默认值：** `0`。
 * 返回值：{integer} `offset` 加上写入的字节数。
 
-将 `value` 以小端格式写入 `buf` 的指定 `offset` 处。
+将 `value` 以小端格式写入 `buffer` 的指定 `offset` 处。
 
 `value` 被解释并写入为二进制补码有符号整数。
 
@@ -4806,13 +4819,13 @@ deprecated: v6.0.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19524
-    description: "Calling this constructor emits a deprecation warning whenrun from code outside the `node_modules` directory."
+    description: "在 `node_modules` 目录外的代码中运行时，调用此构造函数会发出弃用警告。"
   - version: v7.2.1
     pr-url: https://github.com/nodejs/node/pull/9529
-    description: Calling this constructor no longer emits a deprecation warning.
+    description: 调用此构造函数不再发出弃用警告。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/8169
-    description: Calling this constructor emits a deprecation warning now.
+    description: 调用此构造函数现在会发出弃用警告。
 -->
 
 > 稳定性：0 - 已弃用：请使用 [`Buffer.from(array)`][] 代替。
@@ -4829,16 +4842,16 @@ deprecated: v6.0.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19524
-    description: "Calling this constructor emits a deprecation warning whenrun from code outside the `node_modules` directory."
+    description: "在 `node_modules` 目录外的代码中运行时，调用此构造函数会发出弃用警告。"
   - version: v7.2.1
     pr-url: https://github.com/nodejs/node/pull/9529
-    description: Calling this constructor no longer emits a deprecation warning.
+    description: 调用此构造函数不再发出弃用警告。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/8169
-    description: Calling this constructor emits a deprecation warning now.
+    description: 调用此构造函数现在会发出弃用警告。
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4682
-    description: "The `byteOffset` and `length` parameters are supported now."
+    description: "`byteOffset` 和 `length` 参数现在受支持。"
 -->
 
 > 稳定性：0 - 已弃用：请使用
@@ -4861,13 +4874,13 @@ deprecated: v6.0.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19524
-    description: "Calling this constructor emits a deprecation warning whenrun from code outside the `node_modules` directory."
+    description: "在 `node_modules` 目录外的代码中运行时，调用此构造函数会发出弃用警告。"
   - version: v7.2.1
     pr-url: https://github.com/nodejs/node/pull/9529
-    description: Calling this constructor no longer emits a deprecation warning.
+    description: 调用此构造函数不再发出弃用警告。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/8169
-    description: Calling this constructor emits a deprecation warning now.
+    description: 调用此构造函数现在会发出弃用警告。
 -->
 
 > 稳定性：0 - 已弃用：请使用 [`Buffer.from(buffer)`][] 代替。
@@ -4884,16 +4897,16 @@ deprecated: v6.0.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19524
-    description: "Calling this constructor emits a deprecation warning whenrun from code outside the `node_modules` directory."
+    description: "在 `node_modules` 目录外的代码中运行时，调用此构造函数会发出弃用警告。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/12141
-    description: "The `new Buffer(size)` will return zero-filled memory bydefault."
+    description: "`new Buffer(size)` 将默认返回零填充的内存。"
   - version: v7.2.1
     pr-url: https://github.com/nodejs/node/pull/9529
-    description: Calling this constructor no longer emits a deprecation warning.
+    description: 调用此构造函数不再发出弃用警告。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/8169
-    description: Calling this constructor emits a deprecation warning now.
+    description: 调用此构造函数现在会发出弃用警告。
 -->
 
 > 稳定性：0 - 已弃用：请使用 [`Buffer.alloc()`][] 代替（另见
@@ -4911,13 +4924,13 @@ deprecated: v6.0.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19524
-    description: "Calling this constructor emits a deprecation warning whenrun from code outside the `node_modules` directory."
+    description: "在 `node_modules` 目录外的代码中运行时，调用此构造函数会发出弃用警告。"
   - version: v7.2.1
     pr-url: https://github.com/nodejs/node/pull/9529
-    description: Calling this constructor no longer emits a deprecation warning.
+    description: 调用此构造函数不再发出弃用警告。
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/8169
-    description: Calling this constructor emits a deprecation warning now.
+    description: 调用此构造函数现在会发出弃用警告。
 -->
 
 > 稳定性：0 - 已弃用：
@@ -4926,7 +4939,7 @@ changes:
 * `string` {string} 要编码的字符串。
 * `encoding` {string} `string` 的编码。**默认值：** `'utf8'`。
 
-参见 [`Buffer.from(string[, encoding])`][`Buffer.from(string)`]。
+参见 [`Buffer.from(string[, encoding])`][`Buffer.from(string)`]】【。
 
 ## 类：`File`
 
@@ -4947,7 +4960,7 @@ changes:
 
 {File} 提供有关文件的信息。
 
-### `new buffer.File(sources, fileName[, options])`
+### 构造函数
 
 <!-- YAML
 added:
@@ -4960,12 +4973,12 @@ added:
 * `fileName` {string} 文件的名称。
 * `options` {Object}
   * `endings` {string} `'transparent'` 或 `'native'` 之一。当设置为
-    `'native'` 时，字符串源部分中的行尾将转换为 `require('node:os').EOL` 指定的平台 native 行尾。
+    `'native'` 时，字符串源部分中的行尾将转换为 `require('node:os').EOL` 指定的平台原生行尾。
   * `type` {string} 文件的内容类型。
   * `lastModified` {number} 文件的最后修改日期。
     **默认值：** `Date.now()`。
 
-### `file.name`
+### 属性
 
 <!-- YAML
 added:
@@ -4977,7 +4990,7 @@ added:
 
 `File` 的名称。
 
-### `file.lastModified`
+### 属性
 
 <!-- YAML
 added:
@@ -5033,7 +5046,7 @@ added:
 
 `data` 可以是任何可强制转换为字符串的 JavaScript 值。
 
-**此函数仅提供用于与遗留 Web 平台 API 的兼容性，绝不应在新代码中使用，因为它们使用字符串来表示二进制数据，且早于 JavaScript 中类型数组的引入。对于使用 Node.js API 运行的代码，应在 Base64 编码字符串和二进制数据之间进行转换使用 `Buffer.from(str, 'base64')` 和 `buf.toString('base64')`。**
+**此函数仅用于与遗留 Web 平台 API 兼容，绝不应在新代码中使用，因为它们使用字符串表示二进制数据，并且早于 JavaScript 中类型数组的引入。对于使用 Node.js API 运行的代码，应在 Base64 编码字符串和二进制数据之间进行转换时使用 `Buffer.from(str, 'base64')` 和 `buf.toString('base64')`。**
 
 提供自动迁移工具（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/buffer-atob-btoa)）：
 
@@ -5272,10 +5285,12 @@ $ node --zero-fill-buffers
 [`String.prototype.indexOf()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf
 [`String.prototype.lastIndexOf()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/lastIndexOf
 [`String.prototype.length`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length
+[`TextDecoderStream`]: webstreams.md#class-textdecoderstream
 [`TypedArray.from()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/from
 [`TypedArray.prototype.set()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/set
 [`TypedArray.prototype.slice()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/slice
 [`TypedArray.prototype.subarray()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/subarray
+[`blob.stream()`]: #blobstream
 [`buf.buffer`]: #bufbuffer
 [`buf.compare()`]: #bufcomparetarget-targetstart-targetend-sourcestart-sourceend
 [`buf.entries()`]: #bufentries

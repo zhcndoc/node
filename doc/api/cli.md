@@ -83,7 +83,7 @@ added:
 
 > 稳定性：1.1 - 积极开发中
 
-当使用 [Permission Model][] 时，进程默认将无法使用原生插件。
+当使用 [权限模型][] 时，进程默认将无法使用原生插件。
 除非用户在启动 Node.js 时显式传递 `--allow-addons` 标志，否则尝试这样做将抛出 `ERR_DLOPEN_DISABLED`。
 
 示例：
@@ -206,7 +206,7 @@ changes:
     description: "不再允许使用逗号 (`,`) 分隔的路径。"
 -->
 
-此标志使用 [Permission Model][] 配置文件系统读取权限。
+此标志使用 [权限模型][] 配置文件系统读取权限。
 
 `--allow-fs-read` 标志的有效参数为：
 
@@ -214,7 +214,7 @@ changes:
 * 可以使用多个 `--allow-fs-read` 标志允许多个路径。
   例如 `--allow-fs-read=/folder1/ --allow-fs-read=/folder1/`
 
-示例可以在 [File System Permissions][] 文档中找到。
+示例可以在 [文件系统权限][] 文档中找到。
 
 初始化模块和自定义 `--require` 模块具有隐式读取权限。
 
@@ -230,7 +230,7 @@ process.permission.has('fs.read', 'custom-require.js'); // true
 process.permission.has('fs.read', 'custom-require-2.js'); // true
 ```
 
-### `--allow-fs-write`
+### 文件系统写入权限
 
 <!-- YAML
 added: v20.0.0
@@ -245,7 +245,7 @@ changes:
     description: "不再允许使用逗号 (`,`) 分隔的路径。"
 -->
 
-此标志使用 [Permission Model][] 配置文件系统写入权限。
+此标志使用 [权限模型][] 配置文件系统写入权限。
 
 `--allow-fs-write` 标志的有效参数为：
 
@@ -256,9 +256,9 @@ changes:
 不再允许使用逗号 (`,`) 分隔的路径。
 当传递带有逗号的单个标志时，将显示警告。
 
-示例可以在 [File System Permissions][] 文档中找到。
+示例可以在 [文件系统权限][] 文档中找到。
 
-### `--allow-inspector`
+### 检查器连接权限
 
 <!-- YAML
 added:
@@ -268,7 +268,7 @@ added:
 
 > 稳定性：1.0 - 早期开发
 
-当使用 [Permission Model][] 时，进程将无法通过检查器协议连接。
+当使用 [权限模型][] 时，进程将无法通过检查器协议连接。
 
 除非用户在启动 Node.js 时显式传递 `--allow-inspector` 标志，否则尝试这样做将抛出 `ERR_ACCESS_DENIED`。
 
@@ -437,12 +437,12 @@ I am from the snapshot
 
 有关更多信息，请查看 [`v8.startupSnapshot` API][] 文档。
 
-快照目前仅支持在快照构建过程中加载单个入口点，该入口点可以加载内置模块，但不能加载额外的用户态模块。
-用户可以在构建快照之前使用他们选择的捆绑器将应用程序捆绑到单个脚本中。
+快照当前仅支持在快照构建过程中加载单个入口点，它可以加载内置模块，但不能加载额外的用户态模块。
+在构建快照之前，用户可以使用自己选择的打包工具将应用程序打包成单个脚本。
 
 由于确保所有内置模块的可序列化性很复杂，而且这些模块也在不断增长，因此只有一部分内置模块经过充分测试，可以在快照构建过程中序列化。
-Node.js 核心测试套件检查了几个相当复杂的应用程序是否可以快照化。被 [captured by the built-in snapshot of Node.js][] 的内置模块列表被视为受支持。
-当快照构建器遇到无法序列化的内置模块时，它可能会导致快照构建过程崩溃。在这种情况下，典型的解决方法是延迟加载该模块直到运行时，使用 [`v8.startupSnapshot.setDeserializeMainFunction()`][] 或 [`v8.startupSnapshot.addDeserializeCallback()`][]。如果需要在快照构建过程中为额外的模块进行序列化，请在 [Node.js issue tracker][] 中提交请求，并将其链接到 [tracking issue for user-land snapshots][]。
+Node.js 核心测试套件检查了几个相当复杂的应用程序是否可以快照化。被 [__TRANSDOC_LOCK_14__][] 的内置模块列表被视为受支持。
+当快照构建器遇到无法序列化的内置模块时，它可能会导致快照构建过程崩溃。在这种情况下，典型的解决方法是延迟加载该模块直到运行时，使用 [`v8.startupSnapshot.setDeserializeMainFunction()`][] 或 [`v8.startupSnapshot.addDeserializeCallback()`][]。如果需要在快照构建过程中为额外的模块进行序列化，请在 [Node.js 问题跟踪器][] 中提交请求，并将其链接到 [用户态快照的跟踪问题][]。
 
 ### `--build-snapshot-config`
 
@@ -662,7 +662,7 @@ import sys from 'node:sys';
 const sys = require('node:sys');
 ```
 
-例如，以下脚本在使用 `node --disable-warning=ExperimentalWarning` 执行时将发出 [DEP0025 `require('node:sys')`][DEP0025 warning]，但不发出任何实验性警告（例如 <=v21 中的 [ExperimentalWarning: `vm.measureMemory` is an experimental feature][]）：
+例如，以下脚本在使用 `node --disable-warning=ExperimentalWarning` 执行时将发出 [DEP0025 `require('node:sys')`][DEP0025 警告]，但不发出任何实验性警告（例如 <=v21 中的 [实验性警告：`vm.measureMemory` 是一项实验性功能][]）：
 
 ```mjs
 import sys from 'node:sys';
@@ -856,7 +856,7 @@ A MULTILINE"
 # 将导致 `THIS IS\nA MULTILINE` 作为值。
 ```
 
-键之前的 Export 关键字被忽略：
+键之前的导出关键字被忽略：
 
 ```text
 export USERNAME="nodejs" # 将导致 `nodejs` 作为值。
@@ -1003,7 +1003,7 @@ node --test --test-isolation=process
 不支持无操作标志。
 并非所有 V8 标志目前都受支持。
 
-可以使用 [official JSON schema](../node-config-schema.json) 验证配置文件，这可能因 Node.js 版本而异。
+可以使用 [官方 JSON 模式](../node-config-schema.json) 验证配置文件，这可能因 Node.js 版本而异。
 配置文件中的每个键对应于一个可以作为命令行参数传递的标志。键的值是将传递给标志的值。
 
 例如，上面的配置文件等同于以下命令行参数：
@@ -1014,9 +1014,9 @@ node --import amaro/strip --watch-path=src --watch-preserve-output --test-isolat
 
 配置中的优先级如下：
 
-1. NODE\_OPTIONS and command-line options
+1. NODE\_OPTIONS 和命令行选项
 2. Dotenv NODE\_OPTIONS
-3. Configuration file
+3. 配置文件
 
 配置文件中的值不会覆盖环境变量、命令行选项或由 `--env-file` 标志解析的 `NODE_OPTIONS` env 文件中的值。
 
@@ -1045,10 +1045,10 @@ added:
 added: REPLACEME
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-Enable experimental support for the DTLS protocol. See the
-[dtls documentation][] for details.
+启用对 DTLS 协议的实验性支持。有关详细信息，请参阅
+[dtls 文档][]。
 
 ### `--experimental-eventsource`
 
@@ -1086,9 +1086,20 @@ changes:
     description: "同步 import.meta.resolve 默认可用，同时保留该标志以启用之前支持的实验性第二个参数。"
 -->
 
-启用实验性 `import.meta.resolve()` 父 URL 支持，这允许传递第二个 `parentURL` 参数进行上下文解析。
+启用实验性的 `import.meta.resolve()` 父 URL 支持，这允许传递第二个 `parentURL` 参数进行上下文解析。
 
 之前限制了整个 `import.meta.resolve` 功能。
+
+### `--experimental-import-text`
+
+<!-- YAML
+added:
+  - REPLACEME
+-->
+
+> 稳定性：1.0 - 早期开发
+
+启用通过 `with { type: 'text' }` 导入模块的实验性支持。
 
 ### `--experimental-inspector-network-resource`
 
@@ -1137,6 +1148,25 @@ added:
 
 启用与 Chrome DevTools 进行网络检查的实验性支持。
 
+### `--experimental-package-map=<path>`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+> 稳定性：1 - 实验性
+
+启用实验性的包映射解析。`path` 参数指定定义包解析映射的 JSON 配置文件的位置。
+
+```bash
+node --experimental-package-map=./package-map.json app.js
+```
+
+启用后，裸说明符解析会查询包映射以进行解析。
+这使得可以显式控制哪些包可以导入哪些依赖项。
+
+有关配置文件格式和解析算法的详细信息，请参阅 [包映射][]。
+
 ### `--experimental-print-required-tla`
 
 <!-- YAML
@@ -1145,7 +1175,7 @@ added:
   - v20.17.0
 -->
 
-如果被 `require()` 的 ES 模块包含顶层 `await`，此标志允许 Node.js 评估模块，尝试定位顶层 awaits，并打印它们的位置以帮助用户找到它们。
+如果 ES 模块包含顶层 `await`，此标志允许 Node.js 评估模块，尝试定位顶层 await，并打印其位置以帮助用户找到它们。
 
 ### `--experimental-quic`
 
@@ -1167,7 +1197,7 @@ added: v20.0.0
 
 > 稳定性：1 - 实验性
 
-使用此标志生成一个 blob，可以将其注入到 Node.js 二进制文件中以生成 [single executable application][]。有关详细信息，请参阅有关 [this configuration][`--experimental-sea-config`] 的文档。
+使用此标志生成一个 blob，可以将其注入到 Node.js 二进制文件中以生成 [单文件可执行应用程序][]。有关详细信息，请参阅有关 [此配置][`--experimental-sea-config`] 的文档。
 
 ### `--experimental-shadow-realm`
 
@@ -1216,7 +1246,7 @@ changes:
     description: "此选项可与 `--test` 一起使用。"
 -->
 
-与 `node:test` 模块结合使用时，代码覆盖率报告将作为测试运行器输出的一部分生成。如果没有运行测试，则不会生成覆盖率报告。有关更多详细信息，请参阅 [collecting code coverage from tests][] 文档。
+与 `node:test` 模块结合使用时，代码覆盖率报告将作为测试运行器输出的一部分生成。如果没有运行测试，则不会生成覆盖率报告。有关更多详细信息，请参阅 [从测试中收集代码覆盖率][] 文档。
 
 ### `--experimental-test-module-mocks`
 
@@ -1237,7 +1267,7 @@ changes:
 
 在测试运行器中启用模块 mocking。
 
-如果与 [Permission Model][] 一起使用，此功能需要 `--allow-worker`。
+如果与 [权限模型][] 一起使用，此功能需要 `--allow-worker`。
 
 ### `--experimental-test-tag-filter=<tag>`
 
@@ -1245,26 +1275,25 @@ changes:
 added: v26.2.0
 -->
 
-> Stability: 1.0 - Early development
+> 稳定性：1.0 - 早期开发
 
-Run only tests whose tag set contains `<tag>`. Tests declare tags via the
-`tags` option on `test()`, `it()`, `suite()`, or `describe()`; tags
-inherit from suites to nested tests by union. Filtering is
-case-insensitive.
+仅运行其标签集合包含 `<tag>` 的测试。测试通过
+`tags` 选项在 `test()`、`it()`、`suite()` 或 `describe()` 上声明标签；标签
+通过并集从套件继承到嵌套测试。过滤不区分大小写。
 
-The flag may be specified more than once; tests must contain **every**
-filter value to run. See [Test tags][] for details on declaring and
-inheriting tags.
+该标志可以指定多次；测试必须包含**每一个**
+过滤值才能运行。有关声明和
+继承标签的详细信息，请参阅 [测试标签][]。
 
 ### `--experimental-vfs`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
-> Stability: 1 - Experimental
+> 稳定性：1 - 实验性
 
-Enable the experimental [`node:vfs`][] module.
+启用实验性的 [`node:vfs`][] 模块。
 
 ### `--experimental-vm-modules`
 
@@ -1291,7 +1320,7 @@ changes:
     description: "从 `--experimental-wasi-unstable-preview0` 更改为`--experimental-wasi-unstable-preview1`。"
 -->
 
-启用实验性 WebAssembly 系统接口 (WASI) 支持。
+启用实验性的 WebAssembly 系统接口（WASI）支持。
 
 ### `--experimental-worker-inspection`
 
@@ -1450,7 +1479,7 @@ changes:
 
 当 V8 堆使用量接近堆限制时，将 V8 堆快照写入磁盘。`count` 应为非负整数（在这种情况下，Node.js 将向磁盘写入不超过 `max_count` 个快照）。
 
-生成快照时，可能会触发垃圾回收并降低堆使用量。因此，在 Node.js 实例最终耗尽内存之前，可能会向磁盘写入多个快照。可以比较这些堆快照以确定在连续快照拍摄期间分配了哪些对象。不能保证 Node.js 会向磁盘写入 exactly `max_count` 个快照，但当 `max_count` 大于 `0` 时，它会尽最大努力在 Node.js 实例耗尽内存之前生成至少一个最多 `max_count` 个快照。
+生成快照时，可能会触发垃圾回收并降低堆使用量。因此，在 Node.js 实例最终耗尽内存之前，可能会向磁盘写入多个快照。可以比较这些堆快照以确定在连续快照拍摄期间分配了哪些对象。不能保证 Node.js 会向磁盘写入恰好 `max_count` 个快照，但当 `max_count` 大于 `0` 时，它会尽最大努力在 Node.js 实例耗尽内存之前生成至少一个、最多 `max_count` 个快照。
 
 生成 V8 快照需要时间和内存（V8 堆管理的内存和 V8 堆之外的原生内存）。堆越大，需要的资源越多。Node.js 将调整 V8 堆以适应额外的 V8 堆内存开销，并尽最大努力避免使用进程可用的所有内存。当进程使用的内存超过系统认为适当的量时，根据系统配置，进程可能会被系统突然终止。
 
@@ -1648,7 +1677,7 @@ V8 检查器集成允许 Chrome DevTools 和 IDE 等工具调试和配置 Node.j
 如果指定主机，请确保：
 
 * 主机无法从公共网络访问。
-* 防火墙禁止端口上的 unwanted 连接。
+* 防火墙禁止端口上的未授权连接。
 
 **更具体地说，如果端口（默认为 `9229`）没有防火墙保护，则 `--inspect=0.0.0.0` 是不安全的。**
 
@@ -2025,12 +2054,12 @@ changes:
 为当前进程启用权限模型。启用时，
 以下权限受到限制：
 
-* File System - 可通过 [`--allow-fs-read`][], [`--allow-fs-write`][] 标志管理
-* Network - 可通过 [`--allow-net`][] 标志管理
-* Child Process - 可通过 [`--allow-child-process`][] 标志管理
-* Worker Threads - 可通过 [`--allow-worker`][] 标志管理
+* 文件系统 - 可通过 [`--allow-fs-read`][], [`--allow-fs-write`][] 标志管理
+* 网络 - 可通过 [`--allow-net`][] 标志管理
+* 子进程 - 可通过 [`--allow-child-process`][] 标志管理
+* 工作线程 - 可通过 [`--allow-worker`][] 标志管理
 * WASI - 可通过 [`--allow-wasi`][] 标志管理
-* Addons - 可通过 [`--allow-addons`][] 标志管理
+* 加载项 - 可通过 [`--allow-addons`][] 标志管理
 * FFI - 可通过 [`--allow-ffi`](#--allow-ffi) 标志管理
 
 ### `--permission-audit`
@@ -2326,14 +2355,14 @@ changes:
     description: "向上遍历到根目录并找到一个 `package.json` 文件以从中运行命令，并相应地更新`PATH` 环境变量。"
 -->
 
-这从 package.json 的 `"scripts"` 对象运行指定命令。
+这将从 package.json 的 `"scripts"` 对象运行指定命令。
 如果未提供 `"command"`，它将列出可用的脚本。
 
 `--run` 将向上遍历到根目录并找到 `package.json`
 文件以从中运行命令。
 
-`--run` 将 `./node_modules/.bin`  prepend 到当前目录的每个祖先的
-PATH， 'utility perhaps? noqa'
+`--run` 将 `./node_modules/.bin` 预先添加到当前目录的每个祖先目录的
+PATH 中，'utility perhaps? noqa'
 
 <!-- YAML
 added: v22.8.0
@@ -2342,7 +2371,7 @@ added: v22.8.0
 > 稳定性：1 - 实验性
 
 要求最低百分比的覆盖函数。如果代码覆盖率未达到
-指定的阈值，进程将以代码 `1` 退出。
+指定的阈值，进程将以退出码 `1` 退出。
 
 ### `--test-coverage-include`
 
@@ -2370,7 +2399,7 @@ added: v22.8.0
 > 稳定性：1 - 实验性
 
 要求最低百分比的覆盖行。如果代码覆盖率未达到
-指定的阈值，进程将以代码 `1` 退出。
+指定的阈值，进程将以退出码 `1` 退出。
 
 ### `--test-force-exit`
 
@@ -2390,7 +2419,7 @@ added: v24.0.0
 
 > 稳定性：1.0 - 早期开发
 
-指定一个模块，该模块将在所有测试执行之前评估，并
+指定一个模块，该模块将在所有测试执行之前求值，并
 可用于为测试设置全局状态或测试固件。
 
 有关更多详细信息，请参阅 [全局设置和 teardown][] 文档。
@@ -2402,7 +2431,7 @@ added: v22.8.0
 changes:
   - version: v23.6.0
     pr-url: https://github.com/nodejs/node/pull/56298
-    description: "该标志已从 `--experimental-test-isolation` 重命名为`--test-isolation`。"
+    description: "该标志已从 `--experimental-test-isolation` 重命名为 `--test-isolation`。"
 -->
 
 配置测试运行器中使用的测试隔离类型。当 `mode` 为
@@ -2420,7 +2449,7 @@ changes:
     description: 测试运行器现已稳定。
 -->
 
-一个正则表达式，配置测试运行器仅执行名称
+一个正则表达式，用于配置测试运行器仅执行名称
 与提供模式匹配的测试。有关更多详细信息，请参阅
 [按名称过滤测试][] 文档。
 
@@ -2452,7 +2481,7 @@ added:
 
 设置用于随机化测试执行顺序的种子。这适用于测试
 文件执行顺序和每个文件内的排队测试。提供此标志
-隐式启用随机化，即使没有 `--test-randomize`。
+会隐式启用随机化，即使没有 `--test-randomize`。
 
 值必须是 `0` 到 `4294967295` 之间的整数。
 
@@ -2764,8 +2793,8 @@ added: v7.7.0
 
 <!-- YAML
 added:
- - v13.5.0
- - v12.16.0
+  - v13.5.0
+  - v12.16.0
 -->
 
 每当环境被主动退出时打印堆栈跟踪，
@@ -2775,9 +2804,9 @@ added:
 
 <!-- YAML
 added:
- - v23.5.0
- - v22.13.0
- - v20.19.0
+  - v23.5.0
+  - v22.13.0
+  - v20.19.0
 -->
 
 打印有关 [使用 `require()` 加载 ECMAScript 模块][] 使用情况的信息。
@@ -2789,8 +2818,8 @@ added:
 
 <!-- YAML
 added:
- - v13.9.0
- - v12.17.0
+  - v13.9.0
+  - v12.17.0
 -->
 
 在 SIGINT 上打印堆栈跟踪。
@@ -2918,9 +2947,9 @@ MiB 页而不是 4 KiB 页。
 `mode` 的有效值如下：
 
 * `off`：不会尝试映射。这是默认值。
-* `on`：如果 OS 支持，将尝试映射。映射失败将
+* `on`：如果操作系统支持，将尝试映射。映射失败将
   被忽略，并且消息将打印到标准错误。
-* `silent`：如果 OS 支持，将尝试映射。映射失败将
+* `silent`：如果操作系统支持，将尝试映射。映射失败将
   被忽略，并且不会报告。
 
 ### `--use-system-ca`
@@ -2935,7 +2964,7 @@ changes:
 
 Node.js 使用系统存储中存在的受信任 CA 证书，以及
 `--use-bundled-ca` 选项和 `NODE_EXTRA_CA_CERTS` 环境变量。
-在 Windows 和 macOS 以外的平台上，这从 OpenSSL 信任的目录
+在 Windows 和 macOS 以外的平台上，这会从 OpenSSL 信任的目录
 和文件加载证书，类似于 `--use-openssl-ca`，不同之处在于
 它在首次加载后缓存证书。
 
@@ -3241,7 +3270,7 @@ NODE_OPTIONS='--require "./a.js"' node --require "./b.js"
 node --require "./a.js" --require "./b.js"
 ```
 
-允许的 Node.js 选项在以下列表中。如果选项同时支持 --XX 和 --no-XX 变体，则两者都支持，但下面的列表中只包含其中一个。
+允许的 Node.js 选项在以下列表中。如果某个选项同时支持 --XX 和 --no-XX 变体，则两者都支持，但下面的列表中只包含其中一个。
 
 <!-- node-options-node start -->
 
@@ -3276,9 +3305,11 @@ node --require "./a.js" --require "./b.js"
 * `--experimental-eventsource`
 * `--experimental-ffi`
 * `--experimental-import-meta-resolve`
+* `--experimental-import-text`
 * `--experimental-json-modules`
 * `--experimental-loader`
 * `--experimental-modules`
+* `--experimental-package-map`
 * `--experimental-print-required-tla`
 * `--experimental-quic`
 * `--experimental-require-module`
@@ -3614,37 +3645,37 @@ Node.js 使用系统存储中存在的受信任 CA 证书，以及 `--use-bundle
 }
 ```
 
-### `NO_COLOR=<any>`
+### `NODE_REPL_HISTORY`
 
-[`NO_COLOR`][] 是 `NODE_DISABLE_COLORS` 的别名。环境变量的值是任意的。
+[`NODE_REPL_HISTORY`][] 是 `NODE_REPL_HISTORY_SIZE` 的别名。环境变量的值是任意的。
 
-### `OPENSSL_CONF=file`
+### `NODE_EXTRA_CA_CERTS`
 
 <!-- YAML
 added: v6.11.0
 -->
 
-在启动时加载 OpenSSL 配置文件。除其他用途外，如果 Node.js 是使用 `./configure --openssl-fips` 构建的，这可用于启用符合 FIPS 标准的加密。
+在启动时加载 OpenSSL 配置文件。除其他用途外，如果 Node.js 是使用 `--openssl-config` 构建的，这可用于启用符合 FIPS 标准的加密。
 
-如果使用了 [`--openssl-config`][] 命令行选项，则忽略环境变量。
+如果使用了 [`--use-openssl-ca`][] 命令行选项，则忽略环境变量。
 
-### `SSL_CERT_DIR=dir`
+### `NODE_OPTIONS`
 
 <!-- YAML
 added: v7.7.0
 -->
 
-如果启用了 `--use-openssl-ca`，或者在 macOS 和 Windows 以外的平台上启用了 `--use-system-ca`，这将覆盖并设置 OpenSSL 包含受信任证书的目录。
+如果启用了 `--use-openssl-ca`，或者在 macOS 和 Windows 以外的平台上启用了 `--use-bundled-ca`，这将覆盖并设置 OpenSSL 包含受信任证书的目录。
 
 请注意，除非显式设置子环境，否则任何子进程都将继承此环境变量，如果它们使用 OpenSSL，可能会导致它们信任与 node 相同的 CA。
 
-### `SSL_CERT_FILE=file`
+### `NODE_OPENSSL_CERT_FILE`
 
 <!-- YAML
 added: v7.7.0
 -->
 
-如果启用了 `--use-openssl-ca`，或者在 macOS 和 Windows 以外的平台上启用了 `--use-system-ca`，这将覆盖并设置 OpenSSL 包含受信任证书的文件。
+如果启用了 `--use-openssl-ca`，或者在 macOS 和 Windows 以外的平台上启用了 `--use-bundled-ca`，这将覆盖并设置 OpenSSL 包含受信任证书的文件。
 
 请注意，除非显式设置子环境，否则任何子进程都将继承此环境变量，如果它们使用 OpenSSL，可能会导致它们信任与 node 相同的 CA。
 
@@ -3667,7 +3698,7 @@ changes:
 
 `TZ` 环境变量用于指定时区配置。
 
-虽然 Node.js 不支持 [`TZ` 在其他环境中的处理方式][] 的所有各种方式，但它支持基本的 [时区 ID][]（例如 `'Etc/UTC'`、`'Europe/Paris'` 或 `'America/New_York'`）。它可能支持一些其他缩写或别名，但强烈不鼓励使用且不保证支持。
+虽然 Node.js 不支持 [在其他环境中的处理方式][] 的所有各种方式，但它支持基本的 [时区 ID][]（例如 `America/New_York`、`Europe/Paris` 或 `Asia/Tokyo`）。它可能支持一些其他缩写或别名，但强烈不鼓励使用且不保证支持。
 
 ```console
 $ TZ=Europe/Dublin node -pe "new Date().toString()"
@@ -3733,7 +3764,7 @@ node --max-old-space-size=1536 index.js
 
 <a id="--max-semi-space-sizesize-in-megabytes"></a>
 
-### `--max-semi-space-size=SIZE` (单位：MiB)
+### `--max-semi-space-size=SIZE` （单位：MiB）
 
 设置 V8 的 [Scavenge 垃圾收集器][] 的最大 [半空间][] 大小，单位为 MiB（兆二进制字节）。
 增加半空间的最大大小可能会提高 Node.js 的吞吐量，但代价是消耗更多内存。
@@ -3789,7 +3820,8 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [Navigator API]: globals.md#navigator
 [Node.js 问题追踪器]: https://github.com/nodejs/node/issues
 [OSSL_PROVIDER-legacy]: https://www.openssl.org/docs/man3.0/man7/OSSL_PROVIDER-legacy.html
-[权限模型]: permissions.md#permission-model
+[Package maps]: packages.md#package-maps
+[Permission Model]: permissions.md#permission-model
 [REPL]: repl.md
 [ScriptCoverage]: https://chromedevtools.github.io/devtools-protocol/tot/Profiler#type-ScriptCoverage
 [ShadowRealm]: https://github.com/tc39/proposal-shadowrealm
@@ -3851,15 +3883,15 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`v8.startupSnapshot.addDeserializeCallback()`]: v8.md#v8startupsnapshotadddeserializecallbackcallback-data
 [`v8.startupSnapshot.setDeserializeMainFunction()`]: v8.md#v8startupsnapshotsetdeserializemainfunctioncallback-data
 [`v8.startupSnapshot` API]: v8.md#startup-snapshot-api
-[asynchronous module customization hooks]: module.md#asynchronous-customization-hooks
-[captured by the built-in snapshot of Node.js]: https://github.com/nodejs/node/blob/b19525a33cc84033af4addd0f80acd4dc33ce0cf/test/parallel/test-bootstrap-modules.js#L24
-[collecting code coverage from tests]: test.md#collecting-code-coverage
-[conditional exports]: packages.md#conditional-exports
-[context-aware]: addons.md#context-aware-addons
-[debugger]: debugger.md
-[debugging security implications]: https://nodejs.org/en/docs/guides/debugging-getting-started/#security-implications
-[deprecation warnings]: deprecations.md#list-of-deprecated-apis
-[dtls documentation]: dtls.md
+[异步模块自定义钩子]: module.md#asynchronous-customization-hooks
+[被 Node.js 内置快照捕获]: https://github.com/nodejs/node/blob/b19525a33cc84033af4addd0f80acd4dc33ce0cf/test/parallel/test-bootstrap-modules.js#L24
+[从测试中收集代码覆盖率]: test.md#collecting-code-coverage
+[条件导出]: packages.md#conditional-exports
+[上下文感知]: addons.md#context-aware-addons
+[调试器]: debugger.md
+[调试安全影响]: https://nodejs.org/en/docs/guides/debugging-getting-started/#security-implications
+[弃用警告]: deprecations.md#list-of-deprecated-apis
+[DTLS 文档]: dtls.md
 [emit_warning]: process.md#processemitwarningwarning-options
 [环境变量]: #environment-variables_1
 [按名称过滤测试]: test.md#filtering-tests-by-name

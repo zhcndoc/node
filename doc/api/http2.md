@@ -59,13 +59,13 @@ try {
 
 ## 核心 API
 
-核心 API 提供了一个专门围绕 HTTP/2 协议功能支持设计的底层接口。它 specifically _not_ 设计用于与现有的 [HTTP/1][] 模块 API 兼容。但是，[兼容性 API][] 是设计的。
+核心 API 提供了一个专门围绕 HTTP/2 协议功能支持设计的底层接口。它特别不是为与现有的 [HTTP/1][] 模块 API 兼容而设计的。但是，[兼容性 API][] 是按这种思路设计的。
 
 `http2` 核心 API 在客户端和服务器之间比 `http` API 更加对称。例如，大多数事件，如 `'error'`、`'connect'` 和 `'stream'`，既可以由客户端代码发出，也可以由服务器端代码发出。
 
 ### 服务器端示例
 
-以下说明了使用核心 API 的简单 HTTP/2 服务器。由于没有已知支持 [未加密 HTTP/2][HTTP/2 Unencrypted] 的浏览器，因此在与浏览器客户端通信时必须使用 [`http2.createSecureServer()`][]。
+以下说明了使用核心 API 的简单 HTTP/2 服务器。由于没有已知支持 [未加密 HTTP/2][HTTP/2 Unencrypted] 的浏览器，因此在与浏览器客户端通信时必须使用 [`http2.createSecureServer()`][].
 
 ```mjs
 import { createSecureServer } from 'node:http2';
@@ -185,7 +185,7 @@ added: v8.4.0
 
 * 继承：{EventEmitter}
 
-`http2.Http2Session` 类的实例表示 HTTP/2 客户端和服务器之间的活动通信会话。此类的实例 _not_ 旨在由用户代码直接构造。
+`http2.Http2Session` 类的实例表示 HTTP/2 客户端和服务器之间的活动通信会话。此类的实例 _不是_ 旨在由用户代码直接构造。
 
 每个 `Http2Session` 实例将根据其是作为服务器还是客户端运行而表现出略微不同的行为。`http2session.type` 属性可用于确定 `Http2Session` 运行的模式。在服务器端，用户代码很少有机会直接使用 `Http2Session` 对象，大多数操作通常通过与 `Http2Server` 或 `Http2Stream` 对象的交互进行。
 
@@ -392,7 +392,7 @@ added: v9.4.0
 
 * 类型：{string|undefined}
 
-如果 `Http2Session` 尚未连接到套接字，值将为 `undefined`，如果 `Http2Session` 未连接到 `TLSSocket`，则为 `h2c`，否则将返回连接的 `TLSSocket` 自身的 `alpnProtocol` 属性的值。
+如果 `Http2Session` 尚未连接到套接字，值将为 `undefined`；如果 `Http2Session` 未连接到 `TLSSocket`，则为 `h2c`；否则将返回已连接的 `TLSSocket` 自身的 `alpnProtocol` 属性值。
 
 #### `http2session.close([callback])`
 
@@ -459,7 +459,7 @@ added: v9.4.0
 
 * 类型：{boolean|undefined}
 
-如果 `Http2Session` 会话套接字尚未连接，则值为 `undefined`，如果 `Http2Session` 与 `TLSSocket` 连接，则为 `true`，如果 `Http2Session` 连接到任何其他类型的套接字或流，则为 `false`。
+如果 `Http2Session` 会话套接字尚未连接，则值为 `undefined`；如果 `Http2Session` 与 `TLSSocket` 连接，则为 `true`；如果 `Http2Session` 连接到任何其他类型的套接字或流，则为 `false`。
 
 #### `http2session.goaway([code[, lastStreamID[, opaqueData]]])`
 
@@ -738,17 +738,17 @@ server.on('stream', (stream) => {
 
 发送带有特定流 ID 的 `ALTSVC` 帧表示替代服务与给定 `Http2Stream` 的源关联。
 
-`alt` 和源字符串 _must_ 仅包含 ASCII 字节，并严格解释为 ASCII 字节序列。特殊值 `'clear'` 可用于清除先前为给定域设置的任何替代服务。
+`alt` 和源字符串 _必须_ 仅包含 ASCII 字节，并严格解释为 ASCII 字节序列。特殊值 `'clear'` 可用于清除先前为给定域设置的任何替代服务。
 
 当为 `originOrStream` 参数传递字符串时，它将被解析为 URL 并派生源。例如，HTTP URL `'https://example.org/foo/bar'` 的源是 ASCII 字符串 `'https://example.org'`。如果给定字符串无法解析为 URL 或无法派生有效源，将抛出错误。
 
-`URL` 对象或任何具有 `origin` 属性的对象都可以作为 `originOrStream` 传递，在这种情况下，将使用 `origin` 属性的值。`origin` 属性的值 _must_ 是正确序列化的 ASCII 源。
+`URL` 对象或任何具有 `origin` 属性的对象都可以作为 `originOrStream` 传递，在这种情况下，将使用 `origin` 属性的值。`origin` 属性的值 _必须_ 是正确序列化的 ASCII 源。
 
 #### 指定替代服务
 
 `alt` 参数的格式由 [RFC 7838][] 严格定义为 ASCII 字符串，包含与特定主机和端口关联的“替代”协议的逗号分隔列表。
 
-例如，值 `'h2="example.org:81"'` 表示 HTTP/2 协议在主机 `'example.org'` 的 TCP/IP 端口 81 上可用。主机和端口 _must_ 包含在引号（`"`）字符内。
+例如，值 `'h2="example.org:81"'` 表示 HTTP/2 协议在主机 `'example.org'` 的 TCP/IP 端口 81 上可用。主机和端口 _必须_ 包含在引号（`"`）字符内。
 
 可以指定多个替代方案，例如：`'h2="example.org:81", h2=":82"'`。
 
@@ -899,14 +899,16 @@ client.on('origin', (origins) => {
 <!-- YAML
 added: v8.4.0
 changes:
-  - version: v24.2.0
+  - version:
+     - v24.2.0
+     - v22.23.0
     pr-url: https://github.com/nodejs/node/pull/58293
     description: weight 选项现在被忽略，设置它将触发运行时警告。
   - version:
       - v24.2.0
       - v22.17.0
       - v20.19.6
-    pr-url: https://github.com/nodejs/node/pull/58313
+    pr-url: __TRANSD_LOCK_3__
     description: 遵循 RFC 9113 中优先级信令的弃用，weight 选项已弃用。
   - version:
       - v24.0.0
@@ -918,7 +920,7 @@ changes:
 * `headers` {HTTP/2 头对象|HTTP/2 原始头}
 
 * `options` {Object}
-  * `endStream` {boolean} 如果 `Http2Stream` _writable_ 端应最初关闭，则为 `true`，例如发送不应期望负载主体的 `GET` 请求时。
+  * `endStream` {boolean} 如果 `Http2Stream` _可写_ 端应最初关闭，则为 `true`，例如发送不应期望负载主体的 `GET` 请求时。
   * `exclusive` {boolean} 当为 `true` 且 `parent` 标识父流时，创建的流成为父流的唯一直接依赖项，所有其他现有依赖项成为新创建流的依赖项。**默认：** `false`。
   * `parent` {number} 指定新创建的流所依赖的流的数字标识符。
   * `waitForTrailers` {boolean} 当为 `true` 时，`Http2Stream` 将在发送最终 `DATA` 帧后发出 `'wantTrailers'` 事件。
@@ -928,13 +930,10 @@ changes:
 
 仅对于 HTTP/2 客户端 `Http2Session` 实例，`http2session.request()` 创建并返回一个 `Http2Stream` 实例，可用于向连接的服务器发送 HTTP/2 请求。
 
-When a `ClientHttp2Session` is first created, the socket may not yet be
-connected. If `clienthttp2session.request()` is called during this time, the
-actual request will be deferred until the socket is ready to go.
+当首次创建 `ClientHttp2Session` 时，套接字可能尚未连接。如果在此期间调用 `clienthttp2session.request()`，实际请求将推迟到套接字准备就绪为止。
 
-If the session becomes unavailable before the request can be created, the
-returned stream will emit `ERR_HTTP2_GOAWAY_SESSION` or
-`ERR_HTTP2_INVALID_SESSION` asynchronously.
+如果会话在请求创建之前变得不可用，返回的流将异步发出 `ERR_HTTP2_GOAWAY_SESSION` 或
+`ERR_HTTP2_INVALID_SESSION`。
 
 此方法仅在 `http2session.type` 等于 `http2.constants.NGHTTP2_SESSION_CLIENT` 时可用。
 
@@ -1021,23 +1020,15 @@ stream.respond({
 
 ##### 销毁
 
-All [`Http2Stream`][] instances are destroyed when one of the following
-happens:
+当发生以下情况之一时，所有 [`Http2Stream`][] 实例都会被销毁：
 
-* Both sides send `END_STREAM` (a clean exchange).
-* The peer sends an `RST_STREAM` frame.
-* `http2stream.close()`, `http2stream.destroy()`, or `http2session.destroy()`
-  is called locally.
+* 双方发送 `END_STREAM`（一次干净交换）。
+* 对端发送 `RST_STREAM` 帧。
+* 本地调用 `http2stream.close()`、`http2stream.destroy()` 或 `http2session.destroy()`。
 
-For clean exchanges and clean cancels, the destroy is deferred until any
-pending `'end'` and `'finish'` events have fired. When destroyed, an
-attempt is made to send an `RST_STREAM` frame to the connected peer if
-one hasn't already been sent.
+对于干净交换和干净取消，销毁会延迟到所有待处理的 `'end'` 和 `'finish'` 事件触发之后。销毁时，如果尚未发送，会尝试向已连接的对端发送 `RST_STREAM` 帧。
 
-`'close'` is always emitted on destroy. `'end'` and `'finish'` fire if
-their respective halves completed before destroy. `'error'` fires when
-the destroy carries an error — either via `http2stream.destroy(err)`,
-or when the peer reset the stream before sending `END_STREAM`.
+销毁时总会发出 `'close'`。如果各自的一半在销毁前已完成，则会触发 `'end'` 和 `'finish'`。当销毁携带错误时会触发 `'error'`——要么通过 `http2stream.destroy(err)`，要么在对端在发送 `END_STREAM` 之前重置了流。
 
 在 `Http2Stream` 被销毁后，`http2stream.destroyed` 属性将为 `true`，`http2stream.rstCode` 属性将指定 `RST_STREAM` 错误代码。`Http2Stream` 实例一旦销毁就不再可用。
 
@@ -1051,12 +1042,10 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-> Stability: 0 - Deprecated. Use `'close'` and `'error'` plus
-> `stream.destroyed`.
+> 稳定性：0 - 已弃用。请改用 `'close'` 和 `'error'`，再加上
+> `stream.destroyed`。
 
-Emitted when an `Http2Stream` is closed before the writable side has
-been ended (via `.end()` or auto-ended via `respond({ endStream: true })`).
-Listeners receive no arguments.
+当 `Http2Stream` 在可写侧通过 `.end()` 结束之前关闭时，会发出此事件（或通过 `respond({ endStream: true })` 自动结束）。监听器不接收任何参数。
 
 #### 事件：`'close'`
 
@@ -1066,8 +1055,7 @@ added: v8.4.0
 
 当 `Http2Stream` 被销毁时，会发出 `'close'` 事件。一旦发出此事件，`Http2Stream` 实例就不再可用。
 
-The HTTP/2 error code used when closing the stream can be retrieved using
-the `http2stream.rstCode` property.
+关闭流时使用的 HTTP/2 错误代码可以通过 `http2stream.rstCode` 属性获取。
 
 #### 事件：`'error'`
 
@@ -1077,19 +1065,15 @@ changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63249
     description: >-
-      Also emitted on peer-initiated resets that arrive before
-      `END_STREAM` (`ERR_HTTP2_STREAM_ABORTED` for clean codes,
-      `ERR_HTTP2_STREAM_ERROR` otherwise). Locally-initiated resets
-      without an explicit error remain silent.
+      也会在对端发起的重置在 `END_STREAM` 之前到达时发出（对于干净代码使用
+      `ERR_HTTP2_STREAM_ABORTED`，否则使用 `ERR_HTTP2_STREAM_ERROR`）。本地发起且没有显式错误的重置
+      仍保持静默。
 -->
 
 * `error` {Error}
 
-Emitted when an error occurs processing the `Http2Stream`. This includes
-peer-initiated resets that arrive before the readable side has been
-fully delivered: a clean reset code (`NGHTTP2_NO_ERROR` or
-`NGHTTP2_CANCEL`) surfaces as [`ERR_HTTP2_STREAM_ABORTED`][], any other
-code as [`ERR_HTTP2_STREAM_ERROR`][].
+当处理 `Http2Stream` 时发生错误，会发出此事件。这包括在可读侧尚未完全传递时到达的对端发起重置：干净的重置代码（`NGHTTP2_NO_ERROR` 或
+`NGHTTP2_CANCEL`）会表现为 [`ERR_HTTP2_STREAM_ABORTED`][]，其他任何代码则表现为 [`ERR_HTTP2_STREAM_ERROR`][]。
 
 #### 事件：`'frameError'`
 
@@ -1125,15 +1109,13 @@ added: v8.4.0
 added: v8.4.0
 -->
 
-* `headers` {HTTP/2 Headers Object} An object describing the headers
-* `flags` {number} The associated numeric flags
+* `headers` {HTTP/2 Headers Object} 一个描述这些标头的对象
+* `flags` {number} 相关的数值标志
 * `rawHeaders` {HTTP/2 Raw Headers}
 
-The `'trailers'` event is emitted when a block of headers associated with
-trailing header fields is received. The listener callback is passed the [HTTP/2 Headers Object][], flags associated
-with the headers, and the headers in raw format (see [HTTP/2 Raw Headers][]).
+当收到与尾随头字段相关联的一组标头时，会发出 `'trailers'` 事件。监听器回调会接收 [HTTP/2 Headers Object][]、与标头关联的标志，以及原始格式的标头（参见 [HTTP/2 Raw Headers][]）。
 
-如果在收到尾随头之前调用 `http2stream.end()` 且未读取或监听传入数据，则可能不会发出此事件。
+如果在收到尾随头之前调用 `http2stream.end()`，且未读取或监听传入数据，则可能不会发出此事件。
 
 ```js
 stream.on('trailers', (headers, flags) => {
@@ -1157,8 +1139,7 @@ added: v8.4.0
 
 * 类型：{boolean}
 
-`true` if the `Http2Stream` was closed while the writable side was
-still open. When set, the `'aborted'` event was emitted.
+如果 `true` 在可写侧仍然打开时已关闭。设置后，会发出 `'aborted'` 事件。
 
 #### `http2stream.bufferSize`
 
@@ -1170,7 +1151,7 @@ added:
 
 * 类型：{number}
 
-此属性显示当前缓冲要写入的字符数。有关详细信息，请参阅 [`net.Socket.bufferSize`][]。
+此属性显示当前缓冲区中待写入的字符数。有关详细信息，请参阅 [`net.Socket.bufferSize`][]。
 
 #### `http2stream.close(code[, callback])`
 
@@ -1215,7 +1196,7 @@ added: v10.11.0
 
 * 类型：{boolean}
 
-如果在收到的请求或响应 HEADERS 帧中设置了 `END_STREAM` 标志，则设置为 `true`，表示不应接收额外数据，并且 `Http2Stream` 的 readable 端将关闭。
+如果在收到的请求或响应 HEADERS 帧中设置了 `END_STREAM` 标志，则设置为 `true`，表示不应接收额外数据，并且 `Http2Stream` 的可读端将关闭。
 
 #### `http2stream.id`
 
@@ -1246,7 +1227,9 @@ deprecated:
  - v22.17.0
  - v20.19.6
 changes:
-  - version: v24.2.0
+  - version:
+     - v24.2.0
+     - v22.23.0
     pr-url: https://github.com/nodejs/node/pull/58293
     description: 此方法不再设置流的优先级。使用它现在会触发运行时警告。
 -->
@@ -1343,7 +1326,9 @@ req.setTimeout(5000, () => req.close(NGHTTP2_CANCEL));
 <!-- YAML
 added: v8.4.0
 changes:
-  - version: v24.2.0
+  - version:
+     - v24.2.0
+     - v22.23.0
     pr-url: https://github.com/nodejs/node/pull/58293
     description: state.weight 属性现在始终设置为 16，sumDependencyWeight 始终设置为 0。
   - version:
@@ -1374,7 +1359,7 @@ added: v10.0.0
 
 * `headers` {HTTP/2 头对象}
 
-向连接的 HTTP/2 对等方发送尾随 `HEADERS` 帧。此方法将导致 `Http2Stream` 立即关闭，并且必须仅在发出 `'wantTrailers'` 事件后调用。发送请求或发送响应时，必须设置 `options.waitForTrailers` 选项，以便在最终 `DATA` 帧后保持 `Http2Stream` 打开，以便可以发送尾随头。
+向连接的 HTTP/2 对等方发送尾随头帧。此方法将导致 `Http2Stream` 立即关闭，并且必须仅在发出 `'wantTrailers'` 事件后调用。发送请求或发送响应时，必须设置 `options.waitForTrailers` 选项，以便在最终 `DATA` 帧后保持 `Http2Stream` 打开，以便可以发送尾随头。
 
 ```mjs
 import { createServer } from 'node:http2';
@@ -1446,11 +1431,9 @@ added: v8.4.0
 
 * `headers` {HTTP/2 头对象}
 * `flags` {number}
-* `rawHeaders` {HTTP/2 Raw Headers}
+* `rawHeaders` {HTTP/2 原始头部}
 
-The `'push'` event is emitted when response headers for a Server Push stream
-are received. The listener callback is passed the [HTTP/2 Headers Object][], flags associated
-with the headers, and the headers in raw format (see [HTTP/2 Raw Headers][]).
+当收到 Server Push 流的响应头时，会触发 `'push'` 事件。监听器回调会接收 [HTTP/2 Headers Object][]、与这些头部相关联的标志，以及原始格式的头部（请参见 [HTTP/2 Raw Headers][]）。
 
 ```js
 stream.on('push', (headers, flags) => {
@@ -1466,9 +1449,7 @@ changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63249
     description: >-
-      If no `'response'` listener is attached when the response headers
-      arrive, the response body is now silently discarded - matching
-      the `lib/http` client behaviour.
+      如果在响应头到达时未附加 `'response'` 监听器，则响应体现在会被静默丢弃——这与 `lib/http` 客户端行为一致。
 -->
 
 * `headers` {HTTP/2 头对象}
@@ -1486,15 +1467,7 @@ req.on('response', (headers, flags) => {
 });
 ```
 
-If no `'response'` listener is attached at the moment the response
-arrives, the response body will be entirely discarded (the stream is
-silently resumed). However, if a `'response'` listener is added, the
-data from the response object **must** be consumed — either by calling
-`response.read()` whenever there is a `'readable'` event, by adding a
-`'data'` handler, or by calling the `.resume()` method. Until the data
-is consumed, the `'end'` event will not fire. Also, until the data is
-read, it will consume memory that can eventually lead to a "process
-out of memory" error.
+如果在响应到达时没有附加 `'response'` 监听器，响应体将会被完全丢弃（流会在不发出提示的情况下继续恢复）。但是，如果添加了 `'response'` 监听器，则必须消费来自响应对象的数据——可以在每次发生 `'readable'` 事件时调用 `response.read()`，也可以添加 `'data'` 处理器，或者调用 `.resume()` 方法。在数据被消费之前，`'end'` 事件不会触发。另外，在数据被读取之前，它会占用内存，最终可能导致“进程内存不足”错误。
 
 ```cjs
 const http2 = require('node:http2');
@@ -1652,15 +1625,9 @@ server.on('stream', (stream) => {
 });
 ```
 
-Initiates a response. When the `options.waitForTrailers` option is set, the
-`'wantTrailers'` event will be emitted immediately after queuing the last chunk
-of payload data to be sent. The `http2stream.sendTrailers()` method can then be
-used to send trailing header fields to the peer.
+发起响应。当设置了 `options.waitForTrailers` 选项时，在将要发送的最后一个负载数据块入队后，会立即触发 `'wantTrailers'` 事件。随后可以使用 `http2stream.sendTrailers()` 方法向对端发送尾随标头字段。
 
-当设置了 `options.waitForTrailers` 时，`Http2Stream` 不会在传输最终
-`DATA` 帧时自动关闭。用户代码必须调用
-`http2stream.sendTrailers()` 或 `http2stream.close()` 来关闭
-`Http2Stream`。
+当设置了 `options.waitForTrailers` 时，`Http2Stream` 不会在传输最终 `DATA` 帧时自动关闭。用户代码必须调用 `http2stream.sendTrailers()` 或 `http2stream.close()` 来关闭 `Http2Stream`。
 
 ```mjs
 import { createServer } from 'node:http2';
@@ -1770,10 +1737,9 @@ server.on('stream', (stream) => {
 不支持并发地对多个流使用相同的文件描述符，
 这可能会导致数据丢失。支持在流完成后重用文件描述符。
 
-When the `options.waitForTrailers` option is set, the `'wantTrailers'` event
-will be emitted immediately after queuing the last chunk of payload data to be
-sent. The `http2stream.sendTrailers()` method can then be used to send trailing
-header fields to the peer.
+当设置了 `options.waitForTrailers` 选项时，`'wantTrailers'` 事件
+会在将要发送的最后一个负载数据块排队后立即触发。随后可以使用
+`http2stream.sendTrailers()` 方法向对端发送尾部头字段。
 
 当设置了 `options.waitForTrailers` 时，`Http2Stream` 不会在传输最终
 `DATA` 帧时自动关闭。用户代码_必须_调用
@@ -1966,10 +1932,10 @@ server.on('stream', (stream) => {
 `options.onError` 函数也可用于处理在开始交付文件之前可能发生的
 所有错误。默认行为是销毁流。
 
-When the `options.waitForTrailers` option is set, the `'wantTrailers'` event
-will be emitted immediately after queuing the last chunk of payload data to be
-sent. The `http2stream.sendTrailers()` method can then be used to send trailing
-header fields to the peer.
+当设置了 `options.waitForTrailers` 选项时，`'wantTrailers'` 事件
+将在将最后一个有效负载数据块排队发送后立即触发。`http2stream.sendTrailers()`
+方法随后可用于向对端发送尾随
+头字段。
 
 当设置了 `options.waitForTrailers` 时，`Http2Stream` 不会在传输最终
 `DATA` 帧时自动关闭。用户代码必须调用
@@ -2098,7 +2064,7 @@ added: v8.4.0
 当与服务器关联的 `Http2Session` 发出 `'stream'` 事件时，
 发出 `'stream'` 事件。
 
-另请参阅 [`Http2Session` 的 `'stream'` 事件][]。
+另请参阅 [`Http2Session` 的 `'stream'` 事件][].
 
 ```mjs
 import { createServer, constants } from 'node:http2';
@@ -2347,7 +2313,7 @@ added: v8.4.0
 当与服务器关联的 `Http2Session` 发出 `'stream'` 事件时，
 发出 `'stream'` 事件。
 
-另请参阅 [`Http2Session` 的 `'stream'` 事件][]。
+另请参阅 [`Http2Session` 的 `'stream'` 事件][].
 
 ```mjs
 import { createSecureServer, constants } from 'node:http2';
@@ -2573,116 +2539,69 @@ changes:
 -->
 
 * `options` {Object}
-  * `maxDeflateDynamicTableSize` {number} Sets the maximum dynamic table size
-    for deflating header fields. **Default:** `4Kib`.
-  * `maxSettings` {number} Sets the maximum number of settings entries per
-    `SETTINGS` frame. The minimum value allowed is `1`. **Default:** `32`.
-  * `maxSessionMemory`{number} Sets the maximum memory that the `Http2Session`
-    is permitted to use. The value is expressed in terms of number of megabytes,
-    e.g. `1` equal 1 megabyte. The minimum value allowed is `1`.
-    This is a credit based limit, existing `Http2Stream`s may cause this
-    limit to be exceeded, but new `Http2Stream` instances will be rejected
-    while this limit is exceeded. The current number of `Http2Stream` sessions,
-    the current memory use of the header compression tables, header blocks
-    retained by open streams, current data queued to be sent, and
-    unacknowledged `PING` and `SETTINGS` frames are all counted towards the
-    current limit. **Default:** `10`.
-  * `maxHeaderListPairs` {number} Sets the maximum number of header entries.
-    This is similar to [`server.maxHeadersCount`][] or
-    [`request.maxHeadersCount`][] in the `node:http` module. The minimum value
-    is `4`. **Default:** `128`.
-  * `maxOutstandingPings` {number} Sets the maximum number of outstanding,
-    unacknowledged pings. **Default:** `10`.
-  * `maxSendHeaderBlockLength` {number} Sets the maximum allowed size for a
-    serialized, compressed block of headers. Attempts to send headers that
-    exceed this limit will result in a `'frameError'` event being emitted
-    and the stream being closed and destroyed.
-    While this sets the maximum allowed size to the entire block of headers,
-    `nghttp2` (the internal http2 library) has a limit of `65536`
-    for each decompressed key/value pair.
-  * `paddingStrategy` {number} The strategy used for determining the amount of
-    padding to use for `HEADERS` and `DATA` frames. **Default:**
-    `http2.constants.PADDING_STRATEGY_NONE`. Value may be one of:
-    * `http2.constants.PADDING_STRATEGY_NONE`: No padding is applied.
-    * `http2.constants.PADDING_STRATEGY_MAX`: The maximum amount of padding,
-      determined by the internal implementation, is applied.
-    * `http2.constants.PADDING_STRATEGY_ALIGNED`: Attempts to apply enough
-      padding to ensure that the total frame length, including the 9-byte
-      header, is a multiple of 8. For each frame, there is a maximum allowed
-      number of padding bytes that is determined by current flow control state
-      and settings. If this maximum is less than the calculated amount needed to
-      ensure alignment, the maximum is used and the total frame length is not
-      necessarily aligned at 8 bytes.
-  * `peerMaxConcurrentStreams` {number} Sets the maximum number of concurrent
-    streams for the remote peer as if a `SETTINGS` frame had been received. Will
-    be overridden if the remote peer sets its own value for
-    `maxConcurrentStreams`. **Default:** `100`.
-  * `maxSessionInvalidFrames` {integer} Sets the maximum number of invalid
-    frames that will be tolerated before the session is closed.
-    **Default:** `1000`.
-  * `maxSessionRejectedStreams` {integer} Sets the maximum number of rejected
-    upon creation streams that will be tolerated before the session is closed.
-    Each rejection is associated with an `NGHTTP2_ENHANCE_YOUR_CALM`
-    error that should tell the peer to not open any more streams, continuing
-    to open streams is therefore regarded as a sign of a misbehaving peer.
-    **Default:** `100`.
-  * `settings` {HTTP/2 Settings Object} The initial settings to send to the
-    remote peer upon connection.
-  * `streamResetBurst` {number} and `streamResetRate` {number} Sets the rate
-    limit for the incoming stream reset (RST\_STREAM frame). Both settings must
-    be set to have any effect, and default to 1000 and 33 respectively.
-  * `remoteCustomSettings` {Array} The array of integer values determines the
-    settings types, which are included in the `CustomSettings`-property of
-    the received remoteSettings. Please see the `CustomSettings`-property of
-    the `Http2Settings` object for more information,
-    on the allowed setting types.
-  * `Http1IncomingMessage` {http.IncomingMessage} Specifies the
-    `IncomingMessage` class to used for HTTP/1 fallback. Useful for extending
-    the original `http.IncomingMessage`. **Default:** `http.IncomingMessage`.
-    **Deprecated.** Use `http1Options.IncomingMessage` instead. See
-    [DEP0202][].
-  * `Http1ServerResponse` {http.ServerResponse} Specifies the `ServerResponse`
-    class to used for HTTP/1 fallback. Useful for extending the original
-    `http.ServerResponse`. **Default:** `http.ServerResponse`.
-    **Deprecated.** Use `http1Options.ServerResponse` instead. See
-    [DEP0202][].
-  * `http1Options` {Object} An options object for configuring the HTTP/1
-    fallback when `allowHTTP1` is `true`. These options are passed to the
-    underlying HTTP/1 server. See [`http.createServer()`][] for available
-    options. Among others, the following are supported:
-    * `IncomingMessage` {http.IncomingMessage} Specifies the
-      `IncomingMessage` class to use for HTTP/1 fallback.
-      **Default:** `http.IncomingMessage`.
-    * `ServerResponse` {http.ServerResponse} Specifies the `ServerResponse`
-      class to use for HTTP/1 fallback.
-      **Default:** `http.ServerResponse`.
-    * `keepAliveTimeout` {number} The number of milliseconds of inactivity
-      a server needs to wait for additional incoming data, after it has
-      finished writing the last response, before a socket will be destroyed.
-      **Default:** `5000`.
-  * `Http2ServerRequest` {http2.Http2ServerRequest} Specifies the
-    `Http2ServerRequest` class to use.
-    Useful for extending the original `Http2ServerRequest`.
-    **Default:** `Http2ServerRequest`.
-  * `Http2ServerResponse` {http2.Http2ServerResponse} Specifies the
-    `Http2ServerResponse` class to use.
-    Useful for extending the original `Http2ServerResponse`.
-    **Default:** `Http2ServerResponse`.
-  * `unknownProtocolTimeout` {number} Specifies a timeout in milliseconds that
-    a server should wait when an [`'unknownProtocol'`][] is emitted. If the
-    socket has not been destroyed by that time the server will destroy it.
-    **Default:** `10000`.
-  * `strictFieldWhitespaceValidation` {boolean} If `true`, it turns on strict leading
-    and trailing whitespace validation for HTTP/2 header field names and values
-    as per [RFC-9113](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.2.1).
-    **Default:** `true`.
-  * `strictSingleValueFields` {boolean} If `true`, strict validation is used
-    for headers and trailers defined as having only a single value, such that
-    an error is thrown if multiple values are provided.
-    **Default:** `true`.
-  * `...options` {Object} Any [`net.createServer()`][] option can be provided.
-* `onRequestHandler` {Function} See [Compatibility API][]
-* Returns: {Http2Server}
+  * `maxDeflateDynamicTableSize` {number} 设置用于压缩头字段的最大动态表大小。**默认值：**`4Kib`。
+  * `maxSettings` {number} 设置每个 `SETTINGS` 帧的最大设置条目数。允许的最小值为 `1`。**默认值：**`32`。
+  * `maxSessionMemory`{number} 设置 `Http2Session` 允许使用的最大内存。该值以兆字节数量表示，例如 `1` 等于 1 兆字节。允许的最小值为 `1`。这是一个基于信用额度的限制，现有的 `Http2Stream`s 可能会导致超过此限制，但当超过此限制时，新的 `Http2Stream` 实例将被拒绝。当前的 `Http2Stream` 会话、头部压缩表当前占用的内存、由打开的流保留的头块、当前排队等待发送的数据，以及未确认的 `PING` 和 `SETTINGS` 帧，都会计入当前限制。**默认值：**`10`。
+  * `maxHeaderListPairs` {number} 设置最大头部条目数。这与 `node:http` 模块中的 [`server.maxHeadersCount`][] 或 [`request.maxHeadersCount`][] 类似。最小值为 `4`。**默认值：**`128`。
+  * `maxOutstandingPings` {number} 设置允许未完成、未确认的 ping 的最大数量。**默认值：**`10`。
+  * `maxSendHeaderBlockLength` {number} 设置序列化后压缩头块的最大允许大小。尝试发送超过此限制的头部将导致发出一个 `'frameError'` 事件，并且流将被关闭并销毁。
+    虽然这会将整个头块的最大允许大小设为上限，但 `nghttp2`（内部 http2 库）对每个解压后的键/值对都有 `65536` 的限制。
+  * `paddingStrategy` {number} 用于确定 `HEADERS` 和 `DATA` 帧所使用填充量的策略。**默认值：**
+    `http2.constants.PADDING_STRATEGY_NONE`。取值可以是以下之一：
+    * `http2.constants.PADDING_STRATEGY_NONE`: 不应用填充。
+    * `http2.constants.PADDING_STRATEGY_MAX`: 应用由内部实现确定的最大填充量。
+    * `http2.constants.PADDING_STRATEGY_ALIGNED`: 尝试应用足够的填充，以确保包括 9 字节
+      帧头在内的总帧长度是 8 的倍数。对于每个帧，可允许的最大填充字节数由当前流控状态和设置决定。如果此最大值小于为确保对齐所需的计算值，则使用最大值，并且总帧长度不一定会对齐到 8 字节。
+  * `peerMaxConcurrentStreams` {number} 设置远程对等方的最大并发
+    流数量，就像已收到一个 `SETTINGS` 帧一样。如果远程对等方为
+    `maxConcurrentStreams` 设置了自己的值，则该值将被覆盖。**默认值：**`100`。
+  * `maxSessionInvalidFrames` {integer} 设置在会话关闭前可容忍的无效
+    帧最大数量。**默认值：**`1000`。
+  * `maxSessionRejectedStreams` {integer} 设置在会话关闭前可容忍的因创建时
+    被拒绝的流最大数量。每次拒绝都会关联一个 `NGHTTP2_ENHANCE_YOUR_CALM`
+    错误，该错误应告知对端不要再打开任何流，因此继续打开流被视为对端行为异常的迹象。**默认值：**`100`。
+  * `settings` {HTTP/2 Settings Object} 连接建立时发送给远程对等方的初始设置。
+  * `streamResetBurst` {number} 和 `streamResetRate` {number} 设置传入流重置（RST\_STREAM 帧）的速率限制。两个设置都必须同时设置才会生效，默认值分别为 1000 和 33。
+  * `remoteCustomSettings` {Array} 该整数值数组决定设置类型，这些类型会包含在接收到的 remoteSettings 的 `CustomSettings` 属性中。有关允许的设置类型，请参阅 `Http2Settings` 对象的 `CustomSettings` 属性。
+  * `Http1IncomingMessage` {http.IncomingMessage} 指定用于 HTTP/1 回退的 `IncomingMessage` 类。用于扩展原始的 `http.IncomingMessage` 很有用。**默认值：**`http.IncomingMessage`。
+    **已弃用。**请改用 `http1Options.IncomingMessage`。参见
+    [DEP0202][]。
+  * `Http1ServerResponse` {http.ServerResponse} 指定用于 HTTP/1 回退的 `ServerResponse` 类。用于扩展原始的
+    `http.ServerResponse` 很有用。**默认值：**`http.ServerResponse`。
+    **已弃用。**请改用 `http1Options.ServerResponse`。参见
+    [DEP0202][]。
+  * `http1Options` {Object} 用于在 `allowHTTP1` 为 `true` 时配置 HTTP/1
+    回退的选项对象。这些选项会传递给
+    underlying HTTP/1 服务器。有关可用选项，请参见 [`http.createServer()`][]。除此之外，还支持以下选项：
+    * `IncomingMessage` {http.IncomingMessage} 指定用于 HTTP/1 回退的
+      `IncomingMessage` 类。
+      **默认值：** `http.IncomingMessage`。
+    * `ServerResponse` {http.ServerResponse} 指定用于 HTTP/1 回退的 `ServerResponse`
+      类。
+      **默认值：** `http.ServerResponse`。
+    * `keepAliveTimeout` {number} 服务器在最后一个响应写入完成后，
+      在销毁套接字之前，等待后续传入数据的空闲时间（毫秒）。
+      **默认值：** `5000`。
+  * `Http2ServerRequest` {http2.Http2ServerRequest} 指定要使用的
+    `Http2ServerRequest` 类。
+    适用于扩展原始的 `Http2ServerRequest`。
+    **默认值：** `Http2ServerRequest`。
+  * `Http2ServerResponse` {http2.Http2ServerResponse} 指定要使用的
+    `Http2ServerResponse` 类。
+    适用于扩展原始的 `Http2ServerResponse`。
+    **默认值：** `Http2ServerResponse`。
+  * `unknownProtocolTimeout` {number} 指定当触发 [`'unknownProtocol'`][] 时服务器应等待的超时时间（毫秒）。如果
+    到时套接字尚未被销毁，服务器将销毁它。
+    **默认值：** `10000`。
+  * `strictFieldWhitespaceValidation` {boolean} 如果为 `true`，则会为 HTTP/2 标头字段名称和值启用严格的前导
+    和尾随空白验证，遵循 [RFC-9113](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.2.1) 的规定。
+    **默认值：** `true`。
+  * `strictSingleValueFields` {boolean} 如果为 `true`，则对定义为仅允许单个值的标头和尾随标头使用严格验证，
+    这样当提供多个值时会抛出错误。
+    **默认值：** `true`。
+  * `...options` {Object} 可提供任意 [`net.createServer()`][] 选项。
+* `onRequestHandler` {Function} 参见 [兼容性 API][]
+* 返回：{Http2Server}
 
 返回一个 `net.Server` 实例，该实例创建和管理 `Http2Session`
 实例。
@@ -2783,101 +2702,79 @@ changes:
 -->
 
 * `options` {Object}
-  * `allowHTTP1` {boolean} Incoming client connections that do not support
-    HTTP/2 will be downgraded to HTTP/1.x when set to `true`.
-    See the [`'unknownProtocol'`][] event. See [ALPN negotiation][].
-    **Default:** `false`.
-  * `maxDeflateDynamicTableSize` {number} Sets the maximum dynamic table size
-    for deflating header fields. **Default:** `4Kib`.
-  * `maxSettings` {number} Sets the maximum number of settings entries per
-    `SETTINGS` frame. The minimum value allowed is `1`. **Default:** `32`.
-  * `maxSessionMemory`{number} Sets the maximum memory that the `Http2Session`
-    is permitted to use. The value is expressed in terms of number of megabytes,
-    e.g. `1` equal 1 megabyte. The minimum value allowed is `1`. This is a
-    credit based limit, existing `Http2Stream`s may cause this
-    limit to be exceeded, but new `Http2Stream` instances will be rejected
-    while this limit is exceeded. The current number of `Http2Stream` sessions,
-    the current memory use of the header compression tables, header blocks
-    retained by open streams, current data queued to be sent, and
-    unacknowledged `PING` and `SETTINGS` frames are all counted towards the
-    current limit. **Default:** `10`.
-  * `maxHeaderListPairs` {number} Sets the maximum number of header entries.
-    This is similar to [`server.maxHeadersCount`][] or
-    [`request.maxHeadersCount`][] in the `node:http` module. The minimum value
-    is `4`. **Default:** `128`.
-  * `maxOutstandingPings` {number} Sets the maximum number of outstanding,
-    unacknowledged pings. **Default:** `10`.
-  * `maxSendHeaderBlockLength` {number} Sets the maximum allowed size for a
-    serialized, compressed block of headers. Attempts to send headers that
-    exceed this limit will result in a `'frameError'` event being emitted
-    and the stream being closed and destroyed.
-  * `paddingStrategy` {number} Strategy used for determining the amount of
-    padding to use for `HEADERS` and `DATA` frames. **Default:**
-    `http2.constants.PADDING_STRATEGY_NONE`. Value may be one of:
-    * `http2.constants.PADDING_STRATEGY_NONE`: No padding is applied.
-    * `http2.constants.PADDING_STRATEGY_MAX`: The maximum amount of padding,
-      determined by the internal implementation, is applied.
-    * `http2.constants.PADDING_STRATEGY_ALIGNED`: Attempts to apply enough
-      padding to ensure that the total frame length, including the
-      9-byte header, is a multiple of 8. For each frame, there is a maximum
-      allowed number of padding bytes that is determined by current flow control
-      state and settings. If this maximum is less than the calculated amount
-      needed to ensure alignment, the maximum is used and the total frame length
-      is not necessarily aligned at 8 bytes.
-  * `peerMaxConcurrentStreams` {number} Sets the maximum number of concurrent
-    streams for the remote peer as if a `SETTINGS` frame had been received. Will
-    be overridden if the remote peer sets its own value for
-    `maxConcurrentStreams`. **Default:** `100`.
-  * `maxSessionInvalidFrames` {integer} Sets the maximum number of invalid
-    frames that will be tolerated before the session is closed.
-    **Default:** `1000`.
-  * `maxSessionRejectedStreams` {integer} Sets the maximum number of rejected
-    upon creation streams that will be tolerated before the session is closed.
-    Each rejection is associated with an `NGHTTP2_ENHANCE_YOUR_CALM`
-    error that should tell the peer to not open any more streams, continuing
-    to open streams is therefore regarded as a sign of a misbehaving peer.
-    **Default:** `100`.
-  * `settings` {HTTP/2 Settings Object} The initial settings to send to the
-    remote peer upon connection.
-  * `streamResetBurst` {number} and `streamResetRate` {number} Sets the rate
-    limit for the incoming stream reset (RST\_STREAM frame). Both settings must
-    be set to have any effect, and default to 1000 and 33 respectively.
-  * `remoteCustomSettings` {Array} The array of integer values determines the
-    settings types, which are included in the `customSettings`-property of the
-    received remoteSettings. Please see the `customSettings`-property of the
-    `Http2Settings` object for more information, on the allowed setting types.
-  * `...options` {Object} Any [`tls.createServer()`][] options can be provided.
-    For servers, the identity options (`pfx` or `key`/`cert`) are usually required.
-  * `origins` {string\[]} An array of origin strings to send within an `ORIGIN`
-    frame immediately following creation of a new server `Http2Session`.
-  * `unknownProtocolTimeout` {number} Specifies a timeout in milliseconds that
-    a server should wait when an [`'unknownProtocol'`][] event is emitted. If
-    the socket has not been destroyed by that time the server will destroy it.
-    **Default:** `10000`.
-  * `strictFieldWhitespaceValidation` {boolean} If `true`, it turns on strict leading
-    and trailing whitespace validation for HTTP/2 header field names and values
-    as per [RFC-9113](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.2.1).
-    **Default:** `true`.
-  * `strictSingleValueFields` {boolean} If `true`, strict validation is used
-    for headers and trailers defined as having only a single value, such that
-    an error is thrown if multiple values are provided.
-    **Default:** `true`.
-  * `http1Options` {Object} An options object for configuring the HTTP/1
-    fallback when `allowHTTP1` is `true`. These options are passed to the
-    underlying HTTP/1 server. See [`http.createServer()`][] for available
-    options. Among others, the following are supported:
-    * `IncomingMessage` {http.IncomingMessage} Specifies the
-      `IncomingMessage` class to use for HTTP/1 fallback.
-      **Default:** `http.IncomingMessage`.
-    * `ServerResponse` {http.ServerResponse} Specifies the `ServerResponse`
-      class to use for HTTP/1 fallback.
-      **Default:** `http.ServerResponse`.
-    * `keepAliveTimeout` {number} The number of milliseconds of inactivity
-      a server needs to wait for additional incoming data, after it has
-      finished writing the last response, before a socket will be destroyed.
-      **Default:** `5000`.
-* `onRequestHandler` {Function} See [Compatibility API][]
-* Returns: {Http2SecureServer}
+  * `allowHTTP1` {boolean} 当设置为 `true` 时，不支持
+    HTTP/2 的传入客户端连接将降级为 HTTP/1.x。
+    请参见 [`'unknownProtocol'`][] 事件。另请参见 [ALPN 协商][]。
+    **默认值：** `false`。
+  * `maxDeflateDynamicTableSize` {number} 设置用于压缩头字段的最大动态表大小。
+    **默认值：** `4Kib`。
+  * `maxSettings` {number} 设置每个 `SETTINGS` 帧的最大设置条目数。
+    允许的最小值为 `1`。**默认值：** `32`。
+  * `maxSessionMemory`{number} 设置 `Http2Session` 允许使用的最大内存。
+    该值以兆字节数表示，例如，`1` 等于 1 兆字节。
+    允许的最小值为 `1`。这是一个基于信用额度的限制，现有的 `Http2Stream`s 可能会导致
+    超出此限制，但在超出限制期间将拒绝新的 `Http2Stream` 实例。
+    当前的 `Http2Stream` 会话数、头部压缩表的当前内存使用量、由打开的流保留的头部块、
+    当前排队待发送的数据，以及未确认的 `PING` 和 `SETTINGS` 帧都会计入
+    当前限制。**默认值：** `10`。
+  * `maxHeaderListPairs` {number} 设置头部条目的最大数量。
+    这与 `node:http` 模块中的 [`server.maxHeadersCount`][] 或
+    [`request.maxHeadersCount`][] 类似。允许的最小值
+    为 `4`。**默认值：** `128`。
+  * `maxOutstandingPings` {number} 设置允许未完成、未确认的 ping 的最大数量。**默认值：** `10`。
+  * `maxSendHeaderBlockLength` {number} 设置已序列化、压缩后的头部块的最大允许大小。尝试发送
+    超出此限制的头部将导致触发 `'frameError'` 事件，并且该流将被关闭并销毁。
+  * `paddingStrategy` {number} 用于确定 `HEADERS` 和 `DATA` 帧所使用填充量的策略。**默认值：**
+    `http2.constants.PADDING_STRATEGY_NONE`。可选值可以是：
+    * `http2.constants.PADDING_STRATEGY_NONE`: 不应用填充。
+    * `http2.constants.PADDING_STRATEGY_MAX`: 应用由内部实现确定的最大填充量。
+    * `http2.constants.PADDING_STRATEGY_ALIGNED`: 尝试应用足够的
+      填充，以确保包括 9 字节头部在内的总帧长度为 8 的倍数。对于每个帧，都有一个允许的最大填充字节数，
+      该值由当前流控制状态和设置决定。如果此最大值小于为确保对齐所需的计算量，则使用最大值，
+      且总帧长度不一定会与 8 字节对齐。
+  * `peerMaxConcurrentStreams` {number} 设置远程对端的最大并发
+    流数量，就好像已接收到一个 `SETTINGS` 帧一样。如果远程对端为
+    `maxConcurrentStreams` 设置了自己的值，则该值会被覆盖。**默认值：** `100`。
+  * `maxSessionInvalidFrames` {integer} 设置在会话关闭前可容忍的无效
+    帧最大数量。**默认值：** `1000`。
+  * `maxSessionRejectedStreams` {integer} 设置在会话关闭前可容忍的、创建时被拒绝的流最大数量。
+    每次拒绝都会关联一个 `NGHTTP2_ENHANCE_YOUR_CALM`
+    错误，该错误应告知对端不要再打开任何流，因此继续打开流会被视为对端行为异常的迹象。
+    **默认值：** `100`。
+  * `settings` {HTTP/2 Settings Object} 连接建立时发送给远程对端的初始设置。
+  * `streamResetBurst` {number} 和 `streamResetRate` {number} 设置传入流重置（RST_STREAM 帧）的速率
+    限制。必须同时设置这两个选项才会生效，默认值分别为 1000 和 33。
+  * `remoteCustomSettings` {Array} 该整数值数组决定包含在接收到的 remoteSettings 的
+    `customSettings` 属性中的设置类型。有关允许的设置类型，请参阅
+    `Http2Settings` 对象的 `customSettings` 属性。
+  * `...options` {Object} 可以提供任何 [`tls.createServer()`][] 选项。
+    对于服务器，通常需要身份选项（`pfx` 或 `key`/`cert`）。
+  * `origins` {string\[]} 一个原点字符串数组，会在创建新的服务器 `Http2Session` 之后立即随一个 `ORIGIN`
+    帧发送。
+  * `unknownProtocolTimeout` {number} 指定服务器在触发 [`'unknownProtocol'`][] 事件时应等待的超时时间（毫秒）。如果
+    到那时 socket 仍未被销毁，服务器将销毁它。
+    **默认值：** `10000`。
+  * `strictFieldWhitespaceValidation` {boolean} 如果为 `true`，则会启用严格的前导
+    and 针对 HTTP/2 标头字段名称和值的尾随空白验证
+    根据 [RFC-9113](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.2.1)。
+    **默认值：** `true`。
+  * `strictSingleValueFields` {boolean} 如果 `true`，则对被定义为仅有单个值的标头和尾部字段使用严格验证，
+    这样一来，如果提供了多个值，就会抛出错误。
+    **默认值：** `true`。
+  * `http1Options` {Object} 用于在 `allowHTTP1` 为 `true` 时配置 HTTP/1
+    回退的选项对象。这些选项会传递给底层的 HTTP/1 服务器。可用选项请参见 [`http.createServer()`][]。
+    其中支持以下选项：
+    * `IncomingMessage` {http.IncomingMessage} 指定用于 HTTP/1 回退的
+      `IncomingMessage` 类。
+      **默认值：** `http.IncomingMessage`。
+    * `ServerResponse` {http.ServerResponse} 指定用于 HTTP/1 回退的 `ServerResponse`
+      类。
+      **默认值：** `http.ServerResponse`。
+    * `keepAliveTimeout` {number} 在服务器完成写入最后一个响应之后，
+      需要等待额外传入数据的空闲毫秒数；超过该时间后，将销毁套接字。
+      **默认值：** `5000`。
+* `onRequestHandler` {Function} 参见 [兼容性 API][]
+* 返回值：{Http2SecureServer}
 
 返回一个 `tls.Server` 实例，该实例创建和管理 `Http2Session`
 实例。
@@ -2958,60 +2855,42 @@ changes:
     description: "添加了 `maxHeaderListPairs` 选项，默认限制为128 个头部对。"
 -->
 
-* `authority` {string|URL} 要连接到的远程 HTTP/2 服务器。这必须
+* `authority` {string|URL} 要连接的远程 HTTP/2 服务器。这必须
   是带有 `http://` 或 `https://`
   前缀、主机名和 IP 端口（如果使用非默认端口）的最小有效 URL 形式。用户信息
   （用户 ID 和密码）、路径、查询字符串和 URL 中的片段详情将被忽略。
 * `options` {Object}
-  * `maxDeflateDynamicTableSize` {number} Sets the maximum dynamic table size
-    for deflating header fields. **Default:** `4Kib`.
-  * `maxSettings` {number} Sets the maximum number of settings entries per
-    `SETTINGS` frame. The minimum value allowed is `1`. **Default:** `32`.
-  * `maxSessionMemory`{number} Sets the maximum memory that the `Http2Session`
-    is permitted to use. The value is expressed in terms of number of megabytes,
-    e.g. `1` equal 1 megabyte. The minimum value allowed is `1`.
-    This is a credit based limit, existing `Http2Stream`s may cause this
-    limit to be exceeded, but new `Http2Stream` instances will be rejected
-    while this limit is exceeded. The current number of `Http2Stream` sessions,
-    the current memory use of the header compression tables, header blocks
-    retained by open streams, current data queued to be sent, and
-    unacknowledged `PING` and `SETTINGS` frames are all counted towards the
-    current limit. **Default:** `10`.
-  * `maxHeaderListPairs` {number} Sets the maximum number of header entries.
-    This is similar to [`server.maxHeadersCount`][] or
-    [`request.maxHeadersCount`][] in the `node:http` module. The minimum value
-    is `1`. **Default:** `128`.
-  * `maxOutstandingPings` {number} Sets the maximum number of outstanding,
-    unacknowledged pings. **Default:** `10`.
-  * `maxReservedRemoteStreams` {number} Sets the maximum number of reserved push
-    streams the client will accept at any given time. Once the current number of
-    currently reserved push streams exceeds reaches this limit, new push streams
-    sent by the server will be automatically rejected. The minimum allowed value
-    is 0. The maximum allowed value is 2<sup>32</sup>-1. A negative value sets
-    this option to the maximum allowed value. **Default:** `200`.
-  * `maxSendHeaderBlockLength` {number} Sets the maximum allowed size for a
-    serialized, compressed block of headers. Attempts to send headers that
-    exceed this limit will result in a `'frameError'` event being emitted
-    and the stream being closed and destroyed.
-  * `paddingStrategy` {number} Strategy used for determining the amount of
-    padding to use for `HEADERS` and `DATA` frames. **Default:**
-    `http2.constants.PADDING_STRATEGY_NONE`. Value may be one of:
-    * `http2.constants.PADDING_STRATEGY_NONE`: No padding is applied.
-    * `http2.constants.PADDING_STRATEGY_MAX`: The maximum amount of padding,
-      determined by the internal implementation, is applied.
-    * `http2.constants.PADDING_STRATEGY_ALIGNED`: Attempts to apply enough
-      padding to ensure that the total frame length, including the
-      9-byte header, is a multiple of 8. For each frame, there is a maximum
-      allowed number of padding bytes that is determined by current flow control
-      state and settings. If this maximum is less than the calculated amount
-      needed to ensure alignment, the maximum is used and the total frame length
-      is not necessarily aligned at 8 bytes.
-  * `peerMaxConcurrentStreams` {number} Sets the maximum number of concurrent
-    streams for the remote peer as if a `SETTINGS` frame had been received. Will
-    be overridden if the remote peer sets its own value for
-    `maxConcurrentStreams`. **Default:** `100`.
-  * `protocol` {string} The protocol to connect with, if not set in the
-    `authority`. Value may be either `'http:'` or `'https:'`. **Default:**
+  * `maxDeflateDynamicTableSize` {number} 设置用于压缩头字段的最大动态表大小。**默认值：** `4Kib`。
+  * `maxSettings` {number} 设置每个 `SETTINGS` 帧中的最大设置项数量。允许的最小值是 `1`。**默认值：** `32`。
+  * `maxSessionMemory`{number} 设置 `Http2Session` 允许使用的最大内存。该值以兆字节数表示，
+    例如 `1` 等于 1 兆字节。允许的最小值是 `1`。
+    这是一个基于额度的限制，现有的 `Http2Stream`s 可能会导致此
+    限制被超过，但在超过该限制时，新的 `Http2Stream` 实例将被拒绝。
+    当前 `Http2Stream` 会话数量、头部压缩表当前使用的内存、由打开的流保留的头部块、
+    当前排队等待发送的数据，以及未确认的 `PING` 和 `SETTINGS` 帧都会计入
+    当前限制。**默认值：** `10`。
+  * `maxHeaderListPairs` {number} 设置头部项的最大数量。
+    这类似于 `server.maxHeadersCount`[] 或
+    `request.maxHeadersCount`[] 模块中的 `node:http`。允许的最小值
+    是 `1`。**默认值：** `128`。
+  * `maxOriginSetSize` {number} 设置服务器可以通过 ORIGIN 帧发送的唯一来源的最大数量。**默认值：** `128`。
+  * `maxOutstandingPings` {number} 设置未完成、未确认的 ping 的最大数量。**默认值：** `10`。
+  * `maxReservedRemoteStreams` {number} 设置客户端在任何给定时间可接受的保留推送流的最大数量。一旦当前已保留的推送流数量超过
+    达到此限制，服务器发送的新推送流将被自动拒绝。允许的最小值
+    是 0。允许的最大值是 2<sup>32</sup>-1。负值会将
+    此选项设置为允许的最大值。**默认值：** `200`。
+  * `maxSendHeaderBlockLength` {number} 设置序列化后的压缩头部块的最大允许大小。尝试发送超过此限制的头部将导致触发一个 `'frameError'` 事件，并且流将被关闭并销毁。
+  * `paddingStrategy` {number} 用于确定 `HEADERS` 和 `DATA` 帧所使用填充量的策略。**默认值：**
+    `http2.constants.PADDING_STRATEGY_NONE`。取值可以是以下之一：
+    * `http2.constants.PADDING_STRATEGY_NONE`: 不应用填充。
+    * `http2.constants.PADDING_STRATEGY_MAX`: 应用由内部实现确定的最大填充量。
+    * `http2.constants.PADDING_STRATEGY_ALIGNED`: 尝试应用足够的
+      填充，以确保包括 9 字节帧头在内的总帧长度是 8 的倍数。对于每个帧，可允许的最大填充字节数由当前流控制
+      状态和设置决定。如果该最大值小于确保对齐所需的计算量，则使用最大值，并且总帧长度不一定会对齐到 8 字节。
+  * `peerMaxConcurrentStreams` {number} 为远程对等端设置最大并发
+    流数量，就像已收到一个 `SETTINGS` 帧一样。如果远程对等端为
+    `maxConcurrentStreams` 设置了自己的值，则将覆盖此设置。**默认值：** `100`。
+  * `protocol` {string} 如果未在 `authority` 中设置，则用于连接的协议。取值可以是 `'http:'` 或 `'https:'`。**默认值：**
     `'https:'`
   * `settings` {HTTP/2 Settings Object} 连接时发送给远程对等端的初始设置。
   * `remoteCustomSettings` {Array} 整数值数组确定设置类型，这些类型包含在接收到的
@@ -3049,13 +2928,13 @@ const client = http2.connect('https://localhost:1234');
 client.close();
 ```
 
-### `http2.constants`
+### HTTP/2
 
 <!-- YAML
 added: v8.4.0
 -->
 
-#### `RST_STREAM` 和 `GOAWAY` 的错误码
+#### HTTP/2 和 HTTP/3 的错误码
 
 | Value  | Name                | Constant                                      |
 | ------ | ------------------- | --------------------------------------------- |
@@ -3074,9 +2953,9 @@ added: v8.4.0
 | `0x0c` | 安全性不足 | `http2.constants.NGHTTP2_INADEQUATE_SECURITY` |
 | `0x0d` | 需要 HTTP/1.1   | `http2.constants.NGHTTP2_HTTP_1_1_REQUIRED`   |
 
-当服务器使用 `http2server.setTimeout()` 设置的给定毫秒数内没有活动时，将发出 `'timeout'` 事件。
+当服务器在由 `http2server.setTimeout()` 设置的给定毫秒数内没有活动时，将发出 `'timeout'` 事件。
 
-### `http2.getDefaultSettings()`
+### 默认设置
 
 <!-- YAML
 added: v8.4.0
@@ -3084,9 +2963,9 @@ added: v8.4.0
 
 * 返回：{HTTP/2 Settings Object}
 
-返回一个包含 `Http2Session` 实例默认设置的对象。此方法每次调用时都返回一个新的对象实例，因此返回的实例可以安全地修改以供使用。
+返回一个包含 `Http2Session` 实例默认设置的对象。此方法每次调用时都会返回一个新的对象实例，因此返回的实例可以安全地修改以供使用。
 
-### `http2.getPackedSettings([settings])`
+### 序列化设置
 
 <!-- YAML
 added: v8.4.0
@@ -3124,7 +3003,7 @@ added: v8.4.0
 * `buf` {Buffer|TypedArray} 打包的设置。
 * 返回：{HTTP/2 Settings Object}
 
-返回一个 [HTTP/2 Settings Object][]，其中包含从给定的 `Buffer` 反序列化的设置，该 `Buffer` 由 `http2.getPackedSettings()` 生成。
+返回一个 [HTTP/2 设置对象][]，其中包含从给定的 `Buffer` 反序列化的设置，该 `Buffer` 由 `http2.getPackedSettings()` 生成。
 
 ### `http2.performServerHandshake(socket[, options])`
 
@@ -3208,11 +3087,11 @@ server.on('stream', (stream, headers) => {
 
 #### 原始头部
 
-在某些 API 中，除了对象格式外，头部还可以作为原始扁平数组传递或访问，保留排序和重复键的详细信息以匹配原始传输格式。
+在某些 API 中，除了对象格式外，头部还可以作为原始扁平数组传递或访问，保留排序和重复键的详细信息，以匹配原始传输格式。
 
-在这种格式中，键和值在同一个列表中。它 _不是_ 元组列表。因此，偶数偏移量是键值，奇数偏移量是关联的值。重复的头部不会合并，因此每个键值对将单独出现。
+在这种格式中，键和值位于同一个列表中。它 _不是_ 元组列表。因此，偶数偏移量是键，奇数偏移量是对应的值。重复的头部不会合并，因此每个键值对都会单独出现。
 
-这对于代理等情况很有用，其中现有头部应完全按接收到的方式转发，或者当头部已经以原始格式可用时作为性能优化。
+这对于代理等情况很有用，在这些情况下，现有头部应完全按照接收到的方式转发，或者当头部已经以原始格式可用时，可作为一种性能优化。
 
 ```js
 const rawHeaders = [
@@ -3640,8 +3519,7 @@ added: v8.4.0
 added: v8.4.0
 -->
 
-The `'aborted'` event is emitted whenever a `Http2ServerRequest` instance
-is closed while the underlying writable side is still open.
+当底层可写端仍处于打开状态时，如果 `Http2ServerRequest` 实例被关闭，就会触发 `'aborted'` 事件。
 
 #### 事件：`'close'`
 
@@ -3791,7 +3669,7 @@ added: v8.4.0
 
 * 类型：{string\[]}
 
-原始请求/响应 trailer 键和值，完全按照接收到的样子。仅在 `'end'` 事件处填充。
+原始请求/响应尾部字段键和值，完全按照接收到的样子。仅在 `'end'` 事件处填充。
 
 #### `request.scheme`
 
@@ -3878,7 +3756,7 @@ Accept: text/plain
 "/status?name=ryan"
 ```
 
-要将 url 解析为其部分，可以使用 `new URL()`：
+要将 URL 解析为其部分，可以使用 `new URL()`：
 
 ```console
 $ node
@@ -3988,7 +3866,7 @@ added: v8.4.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "Passing an invalid callback to the `callback` argumentnow throws `ERR_INVALID_ARG_TYPE` instead of`ERR_INVALID_CALLBACK`."
+    description: "传递给 `callback` 参数的无效回调现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `headers` {HTTP/2 头对象} 描述头的对象
@@ -4005,7 +3883,7 @@ added: v8.4.0
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18780
-    description: "This method now returns a reference to `ServerResponse`."
+    description: "此方法现在返回对 `ServerResponse` 的引用。"
 -->
 
 * `data` {string|Buffer|Uint8Array}
@@ -4111,7 +3989,7 @@ added: v8.4.0
 
 * 类型：{boolean}
 
-如果已发送头则为 True，否则为 false（只读）。
+如果已发送头则为真，否则为假（只读）。
 
 #### `response.removeHeader(name)`
 
@@ -4345,22 +4223,24 @@ response.writeEarlyHints({
 #### `response.writeInformation(statusCode[, headers])`
 
 <!-- YAML
-added: v26.2.0
+added:
+  - v26.2.0
+  - v24.18.0
 -->
 
-* `statusCode` {number} An HTTP 1xx informational status code, between `100`
-  and `199` inclusive, excluding `101` (Switching Protocols) which is not
-  allowed in HTTP/2.
-* `headers` {Object} An optional object of headers to send with the
-  informational response.
+* `statusCode` {number} 一个 HTTP 1xx 信息性状态码，范围为 `100`
+  到 `199`（含）之间，不包括 `101`（切换协议），该状态码
+  在 HTTP/2 中不允许使用。
+* `headers` {Object} 一个可选的响应头对象，用于与
+  信息性响应一起发送。
 
-Sends an arbitrary HTTP 1xx informational response, equivalent in HTTP/2 to a
-`HEADERS` frame whose `:status` pseudo-header is a 1xx code. May be called
-multiple times before the final response. After the final response headers
-have been sent, this method is a no-op and returns `false`.
+发送一个任意的 HTTP 1xx 信息性响应；在 HTTP/2 中等同于一个
+`HEADERS` 帧，其 `:status` 伪头字段为 1xx 状态码。可在
+最终响应之前多次调用。最终响应头
+发送后，此方法将不执行任何操作并返回 `false`。
 
-This is the generic equivalent of [`response.writeContinue()`][] and
-[`response.writeEarlyHints()`][].
+这是 [`response.writeContinue()`][] 和
+[`response.writeEarlyHints()`][] 的通用等价形式。
 
 ```js
 response.writeInformation(110, { 'X-Progress': '50%' });
@@ -4375,7 +4255,7 @@ changes:
      - v11.10.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/25974
-    description: "Return `this` from `writeHead()` to allow chaining with`end()`."
+    description: "从 `writeHead()` 返回 `this`，以便与 `end()` 进行链式调用。"
 -->
 
 * `statusCode` {number}

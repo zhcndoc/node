@@ -2,7 +2,7 @@
 
 <!--introduced_in=v12.20.0-->
 
-<!-- type=misc -->
+<!-- type:misc -->
 
 <!-- YAML
 changes:
@@ -187,7 +187,7 @@ import 'commonjs-package/src/index.mjs';
 added: v12.0.0
 -->
 
-当设置了 `--input-type=module` 标志时，作为参数传递给 `--eval`（或 `-e`）的字符串，或通过 `STDIN` 管道传输给 `node` 的字符串，被视为 [ES 模块][]。
+当设置了 `--input-type=module` 标志时，作为参数传递给 `--eval`（或 `-e`）的字符串，或通过 `STDIN` 管道传输给 `node` 的字符串，被视为 [ES 模块][].
 
 ```bash
 node --input-type=module --eval "import { sep } from 'node:path'; console.log(sep);"
@@ -209,7 +209,7 @@ echo "import { sep } from 'node:path'; console.log(sep);" | node --input-type=mo
 
 [条件导出][] 可用于 [`"exports"`][] 内，以定义每个环境的不同包入口点，包括包是通过 `require` 还是通过 `import` 引用。有关在单个包中支持 CommonJS 和 ES 模块的更多信息，请参阅 [双重 CommonJS/ES 模块包部分][]。
 
-引入 [`"exports"`][] 字段的现有包将阻止包的使用者使用任何未定义的入口点，包括 [`package.json`][]（例如 `require('your-package/package.json')`）。**这很可能是一个破坏性变更。**
+引入 [`"exports"`][] 字段的现有包将阻止包的使用者使用任何未定义的入口点，包括 [`package.json`]（例如 `require('your-package/package.json')`）。**这很可能是一个破坏性变更。**
 
 为了使 [`"exports"`][] 的引入不造成破坏，请确保导出以前支持的每个入口点。最好显式指定入口点，以便包的公共 API 定义明确。例如，以前导出 `main`、`lib`、`feature` 和 `package.json` 的项目可以使用以下 `package.exports`：
 
@@ -229,7 +229,7 @@ echo "import { sep } from 'node:path'; console.log(sep);" | node --input-type=mo
 }
 ```
 
-或者，项目可以选择使用导出模式导出整个文件夹，包括带和不带扩展名的子路径：
+或者，项目可以选择使用导出模式来导出整个文件夹，包括带扩展名和不带扩展名的子路径：
 
 ```json
 {
@@ -401,7 +401,7 @@ changes:
      - v25.4.0
      - v24.14.0
     pr-url: https://github.com/nodejs/node/pull/60864
-    description: "Allow subpath imports that start with `#/`."
+    description: "允许以 `#/` 开头的子路径导入。"
 -->
 
 除了 [`"exports"`][] 字段外，还有一个包 `"imports"` 字段，用于创建仅适用于包内部导入说明符的私有映射。
@@ -442,12 +442,12 @@ changes:
     - v16.10.0
     - v14.19.0
     pr-url: https://github.com/nodejs/node/pull/40041
-    description: Support pattern trailers in "imports" field.
+    description: 支持 "imports" 字段中的模式尾缀。
   - version:
     - v16.9.0
     - v14.19.0
     pr-url: https://github.com/nodejs/node/pull/39635
-    description: Support pattern trailers.
+    description: 支持模式尾缀。
 -->
 
 对于只有少量导出或导入的包，我们建议显式列出每个导出子路径条目。但对于具有大量子路径的包，这可能会导致 `package.json` 膨胀和维护问题。
@@ -516,7 +516,7 @@ changes:
     - v13.7.0
     - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/31001
-    description: Unflag conditional exports.
+    description: 取消条件导出的标志。
 -->
 
 条件导出提供了一种根据某些条件映射到不同路径的方法。它们支持 CommonJS 和 ES 模块导入。
@@ -585,7 +585,7 @@ Node.js 实现了以下条件，按条件应定义的从最具体到最不具体
 }
 ```
 
-条件继续按顺序匹配，就像平面条件一样。如果嵌套条件没有任何映射，它将继续检查父条件的剩余条件。这样，嵌套条件的行为类似于嵌套的 JavaScript `if` 语句。
+条件会继续按顺序匹配，就像平面条件一样。如果嵌套条件没有任何映射，它将继续检查父条件的剩余条件。这样，嵌套条件的行为类似于嵌套的 JavaScript `if` 语句。
 
 ### 解析用户条件
 
@@ -605,7 +605,7 @@ node --conditions=development index.js
 
 可以使用重复标志设置任意数量的自定义条件。
 
-典型条件应仅包含字母数字字符，必要时使用 ":"、"-" 或 "=" 作为分隔符。其他任何内容可能会在 node 之外遇到兼容性问题。
+典型条件应仅包含字母数字字符，必要时可使用 ":", "-" 或 "=" 作为分隔符。其他任何字符都可能在 node 之外引发兼容性问题。
 
 在 node 中，条件的限制很少，但具体包括：
 
@@ -651,7 +651,7 @@ changes:
     - v13.6.0
     - v12.16.0
     pr-url: https://github.com/nodejs/node/pull/31002
-    description: Unflag self-referencing a package using its name.
+    description: 使用包名进行自引用包时取消标志。
 -->
 
 在包内，可以通过包名引用包的 `package.json` [`"exports"`][] 字段中定义的值。例如，假设 `package.json` 是：
@@ -692,7 +692,7 @@ import { another } from 'a-package/m.mjs';
 const { something } = require('a-package/foo.js'); // 从 ./foo.js 加载。
 ```
 
-最后，自引用也适用于作用域包。例如，此代码也将工作：
+最后，自引用也适用于作用域包。例如，此代码也将起作用：
 
 ```json
 // package.json
@@ -720,6 +720,168 @@ $ node other.js
 ## 双 CommonJS/ES 模块包
 
 详见 [包示例仓库][]。
+
+## 包映射
+
+<!-- YAML
+added: v26.4.0
+-->
+
+> 稳定性：1 - 实验性。使用 [`--experimental-package-map`][] 启用此 API。
+
+包映射提供了一种在不依赖 `node_modules` 文件夹结构的情况下控制包解析的机制。当通过 [`--experimental-package-map`][] 标志启用时，Node.js 会使用一个 JSON 配置文件来确定裸标识符的解析方式。
+
+此功能适用于：
+
+* **单体仓库**：在不依赖符号链接或提升复杂度的情况下，为工作区包定义明确的依赖关系。
+* **依赖隔离**：防止包访问未声明的依赖项（幽灵依赖）。
+* **低文件系统耦合**：包解析算法在运行时不检查文件系统，而是依赖静态数据表。
+
+### 配置文件格式
+
+包映射配置文件是一个带有 `packages` 对象的 JSON 文件。`packages` 中的每个键称为一个包 ID，并且是包条目的唯一标识符：
+
+```json
+{
+  "packages": {
+    "app": {
+      "url": "./packages/app",
+      "dependencies": {
+        "@myorg/utils": "utils",
+        "@myorg/ui-lib": "ui-lib"
+      }
+    },
+    "utils": {
+      "url": "./packages/utils"
+    },
+    "ui-lib": {
+      "url": "./packages/ui-lib",
+      "dependencies": {
+        "@myorg/utils": "utils"
+      }
+    }
+  }
+}
+```
+
+每个包条目都包含以下字段：
+
+* `url` {string} **必填。** 绝对或相对 URL。此项使用
+  WHATWG [`URL`][] API 进行解析，并以配置文件 URL 作为基准。仅支持
+  `file:` 协议。允许多个包共享
+  同一个 URL；消费者必须同时以模块 URL 和包 ID 作为模块实例的键，
+  以便区分它们。
+* `dependencies` {Object} 一个将裸导入标识符映射到包键的对象。
+  每个键都是源代码中使用的导入名，而每个值都是
+  `packages` 对象中对应的包键。默认为空
+  对象。
+
+### 解析算法
+
+当遇到裸导入标识符时：
+
+1. Node.js 确定由哪个包执行解析请求。
+   * 如果可能，应将导入者文件的包 ID 提供给解析算法。
+   * 如果做不到，解析将检查文件路径是否位于从其 `url` 解码出的任一
+     包位置之内。
+2. 如果未提供包 ID，且导入文件不在任何已映射包内，则会抛出
+   [`ERR_PACKAGE_MAP_EXTERNAL_FILE`][] 错误。
+3. Node.js 在导入包的 `dependencies` 对象中查找该导入标识符的包名，以找到对应的包键。
+4. 如果找到，解析算法会从包映射中该包的 `url` 字段定位目标包位置。
+5. 如果该导入标识符不在 `dependencies` 中，则会抛出一个
+   `MODULE_NOT_FOUND` 错误。
+6. 包位置会被传递给常规的 Node.js 解析算法，以完成解析（`index.js`、exports 字段等）。
+
+更多细节可参见 [解析算法伪代码][]。
+
+### 多个包版本
+
+不同的包可以依赖同一个包的不同版本。
+因为 `dependencies` 会将裸导入标识符映射到包键，所以两个包可以
+将同一个导入标识符映射到不同的目标：
+
+```json
+{
+  "packages": {
+    "app": {
+      "url": "./app",
+      "dependencies": {
+        "component": "component-v2"
+      }
+    },
+    "legacy": {
+      "url": "./legacy",
+      "dependencies": {
+        "component": "component-v1"
+      }
+    },
+    "component-v1": {
+      "url": "./vendor/component-1.0.0"
+    },
+    "component-v2": {
+      "url": "./vendor/component-2.0.0"
+    }
+  }
+}
+```
+
+`app` 和 `legacy` 都可以 `import 'component'`，但它们会根据各自声明的依赖关系解析到不同的路径。
+
+### 指向同一 URL 的多个包
+
+为了解决复杂的提升场景，多个包可能共享同一个 URL，这会在确定某个导入来自哪个包时引入歧义：
+
+```json
+{
+  "packages": {
+    "app-old": {
+      "url": "./app-old",
+      "dependencies": {
+        "lib": "lib-old"
+      }
+    },
+    "app-new": {
+      "url": "./app-new",
+      "dependencies": {
+        "lib": "lib-new"
+      }
+    },
+    "lib-old": {
+      "url": "./lib",
+      "dependencies": {
+        "react": "react-15"
+      }
+    },
+    "lib-new": {
+      "url": "./lib",
+      "dependencies": {
+        "react": "react-18"
+      }
+    }
+  }
+}
+```
+
+在上面的示例中，`lib-old` 和 `lib-new` 都使用同一个 `./lib` 文件夹来
+存储它们的源文件，唯一的区别在于它们在执行 `require` 调用或使用 `import` 时会访问哪个版本的 `react`。
+
+由于多个包条目共享同一个 URL，因此除非已知来源包 ID，否则从该 URL 内的文件解析裸 specifier 会产生歧义。如果无法确定包 ID（例如，因为调用方没有从先前的解析中传递它），Node.js 会直接抛出错误，而不是进行猜测。
+
+为了支持这种模式，实现者必须按包 ID 为模块实例建立键，并将其从每个解析结果传播到后续的解析请求。这样可以确保当 `lib` 需要 `react` 时，运行时能够知道该请求来自 `lib-old` 还是 `lib-new`，并选择正确的依赖项。
+
+### 与其他解析方式的交互
+
+包映射仅适用于不是 Node.js 内置模块的裸 specifier。以下情况不受包映射影响，并继续使用标准解析：
+
+* 相对路径或 URL（`./` 或 `../`）。
+* 绝对路径或 URL。
+* Node.js 内置模块（`node:fs` 等）。
+
+### 限制
+
+* 包映射必须是单个静态文件；不支持动态配置。
+* 包映射解析器不会执行循环依赖检测。
+* 包映射文件会在启动时同步加载。
 
 ## Node.js `package.json` 字段定义
 
@@ -878,7 +1040,7 @@ changes:
 }
 ```
 
-`"exports"` 字段允许定义包的 [入口点][]，当
+``"exports"`` 字段允许定义包的 [入口点][]，当
 通过 `node_modules` 查找或 [自引用][] 其自身名称导入时。它在 Node.js 12+ 中作为
 [`"main"`][] 的替代方案受支持，可以支持定义 [子路径导出][]
 和 [条件导出][]，同时封装内部未导出的模块。
@@ -937,9 +1099,12 @@ imports 字段中的条目必须是以 `#` 开头的字符串。
 [`"type"`]: #type
 [`--conditions` / `-C` 标志]: #resolving-user-conditions
 [`--experimental-addon-modules`]: cli.md#--experimental-addon-modules
-[`--no-addons` 标志]: cli.md#--no-addons
+[`--experimental-package-map`]: cli.md#--experimental-package-mappath
+[`--no-addons` flag]: cli.md#--no-addons
+[`ERR_PACKAGE_MAP_EXTERNAL_FILE`]: errors.md#err_package_map_external_file
 [`ERR_PACKAGE_PATH_NOT_EXPORTED`]: errors.md#err_package_path_not_exported
 [`ERR_UNKNOWN_FILE_EXTENSION`]: errors.md#err_unknown_file_extension
+[`URL`]: url.md#the-whatwg-url-api
 [`package.json`]: #nodejs-packagejson-field-definitions
 [自定义钩子]: module.md#customization-hooks
 [入口点]: #package-entry-points
@@ -947,10 +1112,11 @@ imports 字段中的条目必须是以 `#` 开头的字符串。
 [导入映射]: https://github.com/WICG/import-maps
 [从 CommonJS 模块加载 ECMAScript 模块]: modules.md#loading-ecmascript-modules-using-require
 [merve]: https://github.com/anonrig/merve
-[包文件夹映射]: https://github.com/WICG/import-maps#packages-via-trailing-slashes
-[自引用]: #self-referencing-a-package-using-its-name
-[子路径导出]: #subpath-exports
-[子路径导入]: #subpath-imports
-[双 CommonJS/ES 模块包部分]: #dual-commonjses-module-packages
-[完整标识符路径]: esm.md#mandatory-file-extensions
-[包示例仓库]: https://github.com/nodejs/package-examples
+[packages folder mapping]: https://github.com/WICG/import-maps#packages-via-trailing-slashes
+[resolution algorithm pseudo-code]: modules.md#all-together
+[self-reference]: #self-referencing-a-package-using-its-name
+[subpath exports]: #subpath-exports
+[subpath imports]: #subpath-imports
+[the dual CommonJS/ES module packages section]: #dual-commonjses-module-packages
+[the full specifier path]: esm.md#mandatory-file-extensions
+[the package examples repository]: https://github.com/nodejs/package-examples

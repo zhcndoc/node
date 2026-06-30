@@ -101,6 +101,10 @@ FFI 签名使用字符串类型名称。
 
 `bool` 类型会以 8 位无符号整数的形式进行封送（marshaled）。传入诸如 `0` 和 `1` 这类数值；不接受 JavaScript 的 `true` 和 `false`。
 
+在优化的 Fast FFI 调用中，`pointer`、`ptr` 和 `function` 参数接受原始指针 `bigint` 值。对于类似指针的参数，`null`、`undefined`、字符串、`Buffer`、类型化数组、`DataView` 和 `ArrayBuffer` 值会在调用优化后的原生包装器之前先在 JavaScript 侧进行转换。
+
+优化的 Fast FFI 调用最多支持 8 个函数参数。参数超过 7 个的函数将改用通用 FFI 调用路径。
+
 ## 签名对象
 
 函数和回调用签名对象来描述。
@@ -472,20 +476,20 @@ console.log(getInt32(ptr, 0));
 所有权、边界或生命周期。传入无效指针、使用错误的偏移，或通过已经过期的指针写入，
 都可能破坏内存或导致进程崩溃。
 
-## `ffi.toString(pointer)`
+## 读取 NUL 终止的 UTF-8 字符串
 
 <!-- YAML
 added: v26.1.0
 -->
 
-* `pointer` {bigint}
+* 偏移量 {bigint}
 * 返回: {string|null}
 
-从原生内存读取一个 NUL-终止的 UTF-8 字符串。
+从原生内存读取一个 NUL 终止的 UTF-8 字符串。
 
-如果 `pointer` 为 `0n`，则返回 `null`。
+如果 偏移量 为 0，则返回 null。
 
-此函数不会验证 `pointer` 是否指向可读取的内存，也不会验证其指向的数据是否以 `\0` 终止。
+此函数不会验证 偏移量 是否指向可读取的内存，也不会验证其指向的数据是否以 NUL 终止。
 传入无效指针、指向已释放内存的指针，或指向不包含终止 NUL 字节的字节序列，
 可能读取到无关的内存、导致进程崩溃，或产生截断/乱码的输出。
 
@@ -495,7 +499,7 @@ const { toString } = require('node:ffi');
 const value = toString(ptr);
 ```
 
-## `ffi.toBuffer(pointer, length[, copy])`
+## 从原生内存创建 Buffer
 
 <!-- YAML
 added: v26.1.0
@@ -506,7 +510,7 @@ added: v26.1.0
 * `copy` {boolean} 当 `false` 时，创建零拷贝视图。**默认：** `true`。
 * 返回: {Buffer}
 
-从原生内存创建一个 `Buffer`。
+从原生内存创建一个 Buffer。
 
 当 `copy` 为 `true` 时，返回的 `Buffer` 拥有其自身拷贝的内存。
 当 `copy` 为 `false` 时，返回的 `Buffer` 将直接引用原始的原生内存。
@@ -522,7 +526,7 @@ added: v26.1.0
 
 如果无法满足这些保证，读取或写入 `Buffer` 可能会破坏内存或导致进程崩溃。
 
-## `ffi.toArrayBuffer(pointer, length[, copy])`
+## 从原生内存创建 ArrayBuffer
 
 <!-- YAML
 added: v26.1.0
@@ -533,7 +537,7 @@ added: v26.1.0
 * `copy` {boolean} 当 `false` 时，创建零拷贝视图。**默认：** `true`。
 * 返回: {ArrayBuffer}
 
-从原生内存创建一个 `ArrayBuffer`。
+从原生内存创建一个 ArrayBuffer。
 
 当 `copy` 为 `true` 时，返回的 `ArrayBuffer` 包含已拷贝的字节。
 当 `copy` 为 `false` 时，返回的 `ArrayBuffer` 直接引用原始的原生内存。
@@ -543,7 +547,7 @@ added: v26.1.0
 当 `copy: false` 时，返回的 `ArrayBuffer` 是对外部内存的零拷贝视图，
 且仅在该内存保持已分配、布局不变且对整个暴露范围都有效时才是安全的。
 
-## `ffi.exportString(string, pointer, length[, encoding])`
+## 将字符串复制到原生内存
 
 <!-- YAML
 added: v26.1.0

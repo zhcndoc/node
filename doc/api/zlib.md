@@ -415,13 +415,13 @@ zlib.unzip(
   });
 ```
 
-这不会改变其他抛出错误的情况下的行为，例如当输入数据格式无效时。使用此方法，将无法确定输入是否过早结束或缺少完整性检查，因此需要手动检查解压缩结果是否有效。
+这不会改变其他抛出错误时的行为，例如当输入数据格式无效时。使用此方法时，将无法判断输入是过早结束，还是缺少完整性检查，因此需要手动检查解压结果是否有效。
 
 ## 内存使用调优
 
 <!--type=misc-->
 
-### 对于基于 zlib 的流
+### 适用于基于 zlib 的流
 
 出自 `zlib/zconf.h`，已修改为适用于 Node.js：
 
@@ -774,6 +774,9 @@ const stream = zlib.createZstdCompress({
 <!-- YAML
 added: v0.11.1
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64023
+    description: 添加了 `rejectGarbageAfterEnd` 选项。
   - version:
     - v14.5.0
     - v12.19.0
@@ -796,18 +799,20 @@ changes:
 
 某些选项仅在压缩时相关，会被解压缩类忽略。
 
-* `flush` {整数} **默认：** `zlib.constants.Z_NO_FLUSH`
-* `finishFlush` {整数} **默认：** `zlib.constants.Z_FINISH`
-* `chunkSize` {整数} **默认：** `16 * 1024`
-* `windowBits` {整数}
-* `level` {整数}（仅压缩）
-* `memLevel` {整数}（仅压缩）
-* `strategy` {整数}（仅压缩）
+* `flush` {integer} **默认值:** `zlib.constants.Z_NO_FLUSH`
+* `finishFlush` {integer} **默认值:** `zlib.constants.Z_FINISH`
+* `chunkSize` {integer} **默认值:** `16 * 1024`
+* `windowBits` {integer}
+* `level` {integer}（仅压缩时）
+* `memLevel` {integer}（仅压缩时）
+* `strategy` {integer}（仅压缩时）
 * `dictionary` {Buffer|TypedArray|DataView|ArrayBuffer}（仅 deflate/inflate，
   默认为空字典）
-* `info` {布尔值}（如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。）
-* `maxOutputLength` {整数} 使用
-  [便捷方法][] 时限制输出大小。**默认：** [`buffer.kMaxLength`][]
+* `info` {boolean}（如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。）
+* `maxOutputLength` {integer} 使用
+  [convenience methods][]. 时限制输出大小。**默认值:** [`buffer.kMaxLength`][]
+* `rejectGarbageAfterEnd` {boolean} 如果为 `true`，则在压缩流结束后检测到尾随输入时，解压将失败。这
+  包括不可读字节，以及在解压 gzip 时，紧随第一个成员之后的其他 gzip 成员。**默认值:** `false`
 
 有关更多信息，请参阅 [`deflateInit2` 和 `inflateInit2`][] 文档。
 
@@ -816,6 +821,9 @@ changes:
 <!-- YAML
 added: v11.7.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64023
+    description: 添加了 `rejectGarbageAfterEnd` 选项。
   - version:
     - v14.5.0
     - v12.19.0
@@ -827,13 +835,14 @@ changes:
 
 每个基于 Brotli 的类都接受一个 `options` 对象。所有选项都是可选的。
 
-* `flush` {整数} **默认：** `zlib.constants.BROTLI_OPERATION_PROCESS`
-* `finishFlush` {整数} **默认：** `zlib.constants.BROTLI_OPERATION_FINISH`
-* `chunkSize` {整数} **默认：** `16 * 1024`
-* `params` {对象} 包含索引 [Brotli 参数][] 的键值对象。
-* `maxOutputLength` {整数} 使用
-  [便捷方法][] 时限制输出大小。**默认：** [`buffer.kMaxLength`][]
-* `info` {布尔值} 如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。**默认：** `false`
+* `flush` {integer} **默认值：** `zlib.constants.BROTLI_OPERATION_PROCESS`
+* `finishFlush` {integer} **默认值：** `zlib.constants.BROTLI_OPERATION_FINISH`
+* `chunkSize` {integer} **默认值：** `16 * 1024`
+* `params` {Object} 包含已索引 [Brotli 参数][] 的键值对象。
+* `maxOutputLength` {integer} 在使用
+  [便捷方法][] 时限制输出大小。**默认值：** [`buffer.kMaxLength`][]
+* `info` {boolean} 如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。**默认值：** `false`
+* `rejectGarbageAfterEnd` {boolean} 如果为 `true`，则当第一个完整压缩流之后输入仍有剩余时，解压会失败。**默认值：** `false`
 
 例如：
 
@@ -1044,20 +1053,25 @@ added: v0.7.0
 added:
   - v23.8.0
   - v22.15.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64023
+    description: 已添加 `rejectGarbageAfterEnd` 选项。
 -->
 
 <!--type=misc-->
 
 每个基于 Zstd 的类都接受一个 `options` 对象。所有选项都是可选的。
 
-* `flush` {整数} **默认：** `zlib.constants.ZSTD_e_continue`
-* `finishFlush` {整数} **默认：** `zlib.constants.ZSTD_e_end`
-* `chunkSize` {整数} **默认：** `16 * 1024`
-* `params` {对象} 包含索引 [Zstd 参数][] 的键值对象。
-* `maxOutputLength` {整数} 使用
-  [便捷方法][] 时限制输出大小。**默认：** [`buffer.kMaxLength`][]
-* `info` {布尔值} 如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。**默认：** `false`
-* `dictionary` {Buffer} 可选字典，用于在与字典共享常见模式的数据压缩或解压缩时提高压缩效率。
+* `flush` {integer} **默认值：** `zlib.constants.ZSTD_e_continue`
+* `finishFlush` {integer} **默认值：** `zlib.constants.ZSTD_e_end`
+* `chunkSize` {integer} **默认值：** `16 * 1024`
+* `params` {Object} 包含已索引 [Zstd 参数][] 的键值对象。
+* `maxOutputLength` {integer} 在使用
+  [便捷方法][] 时限制输出大小。**默认值：** [`buffer.kMaxLength`][]
+* `info` {boolean} 如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。**默认值：** `false`
+* `dictionary` {Buffer} 可选字典，用于在压缩或解压缩与该字典共享常见模式的数据时提高压缩效率。
+* `rejectGarbageAfterEnd` {boolean} 如果为 `true`，则在第一个完整压缩流之后仍有输入残留时，解压缩会失败。**默认值：** `false`
 
 例如：
 
@@ -1101,7 +1115,7 @@ added:
 added: v7.0.0
 -->
 
-提供一个枚举 Zlib 相关常量的对象。
+提供一个用于枚举 Zlib 相关常量的对象。
 
 ## `zlib.crc32(data[, value])`
 
@@ -1683,7 +1697,7 @@ added: v25.9.0
 
 此模块仅在启用 `--experimental-stream-iter` CLI 标志时可用。
 
-每种算法都有异步变体（有状态异步生成器，用于 [`pull()`][] 和 [`pipeTo()`][]）以及同步变体（有状态同步生成器，用于 `pullSync()` 和 `pipeToSync()`）。
+每种算法都有异步变体（有状态异步生成器，用于 [`pull()`][] 和 [`pipeTo()`][])以及同步变体（有状态同步生成器，用于 `pullSync()` 和 `pipeToSync()`）。
 
 异步转换会在 libuv 线程池上执行压缩，将 I/O 与 JavaScript 执行重叠。同步转换则直接在主线程上执行压缩。
 
@@ -1749,7 +1763,7 @@ added: v25.9.0
     * `BROTLI_PARAM_LGBLOCK` -- 输入块大小（log2）。
       请参阅 zlib 文档中的 [Brotli compressor options][] 了解完整列表。
   * `dictionary` {Buffer|TypedArray|DataView}
-* Returns: {Object} 一个有状态转换。
+* 返回：{Object} 一个有状态转换。
 
 创建一个 Brotli 压缩转换。输出与 `zlib.brotliDecompress()` 以及 `decompressBrotli()`/`decompressBrotliSync()` 兼容。
 
@@ -1768,7 +1782,7 @@ added: v25.9.0
   * `memLevel` {number} **默认：** `9`。
   * `strategy` {number} **默认：** `Z_DEFAULT_STRATEGY`。
   * `dictionary` {Buffer|TypedArray|DataView}
-* Returns: {Object} 一个有状态转换。
+* 返回：{Object} 一个有状态转换。
 
 创建一个 deflate 压缩转换。输出与 `zlib.inflate()` 以及 `decompressDeflate()`/`decompressDeflateSync()` 兼容。
 
@@ -1787,7 +1801,7 @@ added: v25.9.0
   * `memLevel` {number} **默认：** `9`。
   * `strategy` {number} **默认：** `Z_DEFAULT_STRATEGY`。
   * `dictionary` {Buffer|TypedArray|DataView}
-* Returns: {Object} 一个有状态转换。
+* 返回：{Object} 一个有状态转换。
 
 创建一个 gzip 压缩转换。输出与 `zlib.gunzip()` 以及 `decompressGzip()`/`decompressGzipSync()` 兼容。
 
@@ -1808,7 +1822,7 @@ added: v25.9.0
       请参阅 zlib 文档中的 [Zstd compressor options][] 了解完整列表。
   * `pledgedSrcSize` {number} 预期未压缩大小（可选提示）。
   * `dictionary` {Buffer|TypedArray|DataView}
-* Returns: {Object} 一个有状态转换。
+* 返回：{Object} 一个有状态转换。
 
 创建一个 Zstandard 压缩转换。输出与 `zlib.zstdDecompress()` 以及 `decompressZstd()`/`decompressZstdSync()` 兼容。
 
@@ -1827,7 +1841,7 @@ added: v25.9.0
     * `BROTLI_DECODER_PARAM_LARGE_WINDOW` -- 启用“Large Window Brotli”模式的布尔标志（与 [RFC 7932][] 不兼容）。
       请参阅 zlib 文档中的 [Brotli decompressor options][] 了解详细信息。
   * `dictionary` {Buffer|TypedArray|DataView}
-* Returns: {Object} 一个有状态转换。
+* 返回：{Object} 一个有状态转换。
 
 创建一个 Brotli 解压转换。
 
@@ -1843,7 +1857,7 @@ added: v25.9.0
   * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
   * `windowBits` {number} **默认：** `Z_DEFAULT_WINDOWBITS`（15）。
   * `dictionary` {Buffer|TypedArray|DataView}
-* Returns: {Object} 一个有状态转换。
+* 返回：{Object} 一个有状态转换。
 
 创建一个 deflate 解压转换。
 
@@ -1859,7 +1873,7 @@ added: v25.9.0
   * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
   * `windowBits` {number} **默认：** `Z_DEFAULT_WINDOWBITS`（15）。
   * `dictionary` {Buffer|TypedArray|DataView}
-* Returns: {Object} 一个有状态转换。
+* 返回：{Object} 一个有状态转换。
 
 创建一个 gzip 解压转换。
 
@@ -1877,7 +1891,7 @@ added: v25.9.0
     * `ZSTD_d_windowLogMax` -- 解压器将分配的最大窗口大小（log2）。限制恶意输入导致的内存使用。
       请参阅 zlib 文档中的 [Zstd decompressor options][] 了解详细信息。
   * `dictionary` {Buffer|TypedArray|DataView}
-* Returns: {Object} 一个有状态转换。
+* 返回：{Object} 一个有状态转换。
 
 创建一个 Zstandard 解压转换。
 
@@ -1890,7 +1904,7 @@ added: v25.9.0
 [Streams API]: stream.md
 [Zstd compressor options]: #compressor-options-1
 [Zstd decompressor options]: #decompressor-options-1
-[Zstd parameters]: #zstd-constants
+[Zstd 参数]: #zstd-constants
 [`.flush()`]: #zlibflushkind-callback
 [`Accept-Encoding`]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
 [`BrotliCompress`]: #class-zlibbrotlicompress
@@ -1912,6 +1926,6 @@ added: v25.9.0
 [`pipeTo()`]: stream_iter.md#pipetosource-transforms-writer-options
 [`pull()`]: stream_iter.md#pullsource-transforms-options
 [`stream.Transform`]: stream.md#class-streamtransform
-[convenience methods]: #convenience-methods
+[convenience methods]: #便捷方法
 [zlib documentation]: https://zlib.net/manual.html#Constants
 [zlib.createGzip example]: #zlib

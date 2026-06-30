@@ -159,7 +159,7 @@ const endpoint = await listen(onSession, {
 
 黑名单是动态评估的——在 endpoint 创建后添加或移除的规则会立即生效。`endpoint.stats.packetsBlocked` 计数器会跟踪有多少数据包被过滤器丢弃。
 
-### 应用程序
+### 应用
 
 每个 `QuicSession` 都与单一的应用协议相关联，该协议在 TLS 握手期间通过 ALPN 协商。`quic` 模块总体上被设计为与应用无关，但内置支持 HTTP/3 这一特定应用协议。使用 HTTP/3 时，`quic` 模块提供额外的 API 来处理 HTTP/3 特有的功能，如 headers、trailers 和优先级。对于其他应用协议，用户可以在核心 QUIC 传输功能之上实现自己的消息分帧和多路复用。
 
@@ -345,7 +345,7 @@ QUIC 会话，请传递 `endpoint` 选项，
 ## `quic.listEndpoints([options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 * `options` {object}
@@ -708,7 +708,7 @@ added: v23.8.0
 added: v23.8.0
 -->
 
-`QuicSession` 代表 QUIC 连接的本地端。
+`QuicSession` 表示 QUIC 连接的本地端。
 
 ### `session.applicationOptions`
 
@@ -716,9 +716,10 @@ added: v23.8.0
 added: v26.3.0
 -->
 
-* Type: {quic.ApplicationOptions}
+* 类型：{quic.ApplicationOptions}
 
-此会话当前的应用层选项。这些选项包括特定于协商后的应用协议（例如 HTTP/3）的设置，并且可能会与传输参数分别协商。只读。
+此会话当前的应用层选项。这些选项包括特定于已协商应用协议（例如 HTTP/3）的设置，并且可能与传输参数分开协商。只读。
+你可以使用回调 [`session.onapplication`][] 来在远端设置到达时收到通知。
 
 ### `session.close([options])`
 
@@ -847,6 +848,16 @@ added: REPLACEME
 
 创建此会话的端点。如果会话已被销毁，则返回 `null`。只读。
 
+### `session.onapplication`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+* Type: {quic.OnApplicationCallback}
+
+当新的应用程序选项（例如 HTTP/3 设置）到达时要调用的回调。
+
 ### `session.onerror`
 
 <!-- YAML
@@ -857,7 +868,7 @@ added: v26.2.0
 
 当会话因错误而被销毁时调用的可选回调。这包括
 由抛出或拒绝的用户回调引起的错误（参见
-[Callback error handling][]）。该回调接收一个参数：
+[回调错误处理][]）。该回调接收一个参数：
 触发销毁的错误。如果 `onerror` 回调本身抛出
 错误，或返回一个被拒绝的 promise，则该错误将作为未捕获
 异常暴露。读/写。
@@ -883,7 +894,7 @@ added: v23.8.0
 
 * 类型：{quic.OnDatagramCallback}
 
-当从远程对等发收到新数据报时调用的回调。读/写。
+当从远程对等方收到新数据报时调用的回调。读/写。
 
 ### `session.ondatagramstatus`
 
@@ -989,7 +1000,7 @@ added: v26.2.0
  关闭），但未指定流边界。所有现有流仍可继续处理。
 * 当 `lastStreamId` `>= 0n` 时，它是对等方可能已处理的
  最高流 ID。ID 高于此值的流未被处理，
-  并且可以在新连接上安全重试。
+ 并且可以在新连接上安全重试。
 
 收到 GOAWAY 后，`session.createBidirectionalStream()` 将
 抛出 `ERR_INVALID_STATE`。现有流将继续，直到它们
@@ -1007,7 +1018,7 @@ added: v26.2.0
 
 当 TLS 密钥材料可用时调用的回调。要求
 [`sessionOptions.keylog`][] 为 `true`。每次调用接收一行
-[NSS Key Log Format][] 文本（包括尾随换行符）。这对于使用
+[NSS 密钥日志格式][] 文本（包括尾随换行符）。这对于使用
 Wireshark 等工具解密数据包捕获非常有用。读/写。
 
 也可以通过 [`quic.connect()`][] 或
@@ -1176,10 +1187,12 @@ added: v23.8.0
 added: v26.2.0
 -->
 
-* 类型：{Object|undefined}
+* Type: {crypto.X509Certificate|undefined}
 
-本地证书，以对象形式提供，包含 `subject`、`issuer`、`valid_from`、`valid_to`、`fingerprint` 等属性。
-如果会话已销毁或没有可用证书，则返回 `undefined`。
+本地证书作为 [`crypto.X509Certificate`][] 实例。服务器
+会话返回为协商出的 SNI 主机配置的证书。
+客户端会话返回 `undefined`，除非已发送客户端证书。
+如果会话已销毁，则返回 `undefined`。
 
 ### `session.peerCertificate`
 
@@ -1187,10 +1200,10 @@ added: v26.2.0
 added: v26.2.0
 -->
 
-* 类型：{Object|undefined}
+* 类型：{crypto.X509Certificate|undefined}
 
-对等方证书，以对象形式提供，包含 `subject`、`issuer`、`valid_from`、`valid_to`、`fingerprint` 等属性。
-如果会话已销毁或对等方未提供证书，则返回 `undefined`。
+对等方的证书，作为 [`crypto.X509Certificate`][] 实例。若对等方未提供证书或会话
+已销毁，则返回 `undefined`。
 
 ### `session.ephemeralKeyInfo`
 
@@ -1227,7 +1240,7 @@ added: v26.2.0
 * **默认：** `128`
 
 可排队等待发送的数据报最大数量。调用 `sendDatagram()` 时，数据报会被排队，
-并由数据包序列化循环与流数据一起 opportunistically 发送。当队列已满时，
+并由数据包序列化循环与流数据一起机会性发送。当队列已满时，
 [`sessionOptions.datagramDropPolicy`][] 决定丢弃最旧还是最新的数据报。
 被丢弃的数据报会通过 `ondatagramstatus` 回调报告为丢失。
 
@@ -1474,7 +1487,7 @@ import { QuicError } from 'node:quic';
 const { QuicError } = require('node:quic');
 ```
 
-当将 `QuicError` 传递给会发出线上的帧的 API
+当将 `QuicError` 传递给会发出线上帧的 API
 （[`writer.fail()`][]、[`stream.destroy()`][]）时，QUIC 栈会使用
 [`error.errorCode`][] 作为结果帧的线上错误码。
 当传入任何其他值（例如普通 `Error`）时，实现会回退到协商出的应用协议
@@ -1632,7 +1645,7 @@ added: v26.2.0
 
 * 类型：{boolean}
 
-如果该流上的任何数据是在 TLS 握手完成前作为 0-RTT（早期数据）接收的，则为 True。
+如果该流上的任何数据是在 TLS 握手完成前作为 0-RTT（早期数据）接收的，则为 真。
 早期数据安全性较低，攻击者可能会重放。应用程序应当以适当谨慎的方式对待早期数据。
 
 此属性仅在服务端有意义。在客户端，它始终为 `false`。
@@ -1882,7 +1895,7 @@ const text = await Stream.text(stream);
 await Stream.pipeTo(stream, someWriter);
 ```
 
-### `stream.writer`
+### 写入器
 
 <!-- YAML
 added: v26.2.0
@@ -1917,7 +1930,7 @@ Writer 具有以下方法：
 因此调用方的源缓冲区不会改变，并且可在调用返回后立即复用或修改。希望确保源缓冲区在交出后不能被修改的调用方，
 可以在传入缓冲区之前自行调用 `ArrayBuffer.prototype.transfer()`。
 
-### `stream.setBody(body)`
+### 出站主体源
 
 <!-- YAML
 added: v26.2.0
@@ -1945,7 +1958,7 @@ added: v26.2.0
 
 如果出站已配置或已访问 writer，则抛出 `ERR_INVALID_STATE`。
 
-### `stream.session`
+### 会话
 
 <!-- YAML
 added: v23.8.0
@@ -1955,7 +1968,7 @@ added: v23.8.0
 
 创建此流的会话；如果流已被销毁，则为 `null`。只读。
 
-### `stream.stats`
+### 统计信息
 
 <!-- YAML
 added: v23.8.0
@@ -2089,7 +2102,7 @@ added: v23.8.0
 
 ## 类型
 
-### type: `ApplicationOptions`
+### 类型：`ApplicationOptions`
 
 <!-- YAML
 added: v26.3.0
@@ -2145,7 +2158,7 @@ QPACK 编码器动态表最大容量。**默认值：** `4096`
 
 * 类型：{boolean}
 
-启用 HTTP/3 datagram（RFC 9297）。**默认值：** `false`
+启用 HTTP/3 数据报（RFC 9297）。**默认值：** `false`
 
 ### 类型：`EndpointOptions`
 
@@ -2233,7 +2246,9 @@ added: v23.8.0
 #### `endpointOptions.reusePort`
 
 <!-- YAML
-added: v26.3.0
+added:
+  - v26.3.0
+  - v24.18.0
 -->
 
 * 类型：{boolean}
@@ -3011,11 +3026,12 @@ added: v26.3.0
 所有会话和流回调都可以是同步函数或异步函数。如果回调同步抛出错误或返回一个被拒绝的 promise，则该错误会被捕获，并且所属会话或流会因该错误而被销毁：
 
 * 流回调（`onblocked`、`onreset`、`onheaders`、`ontrailers`、
-  `oninfo`、`onwanttrailers`）：流会被销毁。
-* 会话回调（`onstream`、`ondatagram`、`ondatagramstatus`、
-  `onpathvalidation`、`onsessionticket`、`onnewtoken`、
-  `onversionnegotiation`、`onorigin`、`ongoaway`、`onhandshake`、
-  `onkeylog`、`onqlog`）：会话及其所有流都会被销毁。
+  `oninfo`、`onwanttrailers`）：流将被销毁。
+* 会话回调（`onapplication`、`onstream`、`ondatagram`、
+  `ondatagramstatus`、`onpathvalidation`、`onsessionticket`、
+  `onnewtoken`、`onversionnegotiation`、`onorigin`、`ongoaway`、
+  `onhandshake`、`onkeylog`、`onqlog`）：会话将被销毁，
+  其所有流也会一并销毁。
 
 在销毁之前，会先调用可选的 [`session.onerror`][] 或
 [`stream.onerror`][] 回调（如果已设置），让应用有机会观察或记录该错误。`session.closed` 或 `stream.closed`
@@ -3067,6 +3083,18 @@ added: v23.8.0
   数据报已发送但在网络中丢失。`'abandoned'` 表示
   数据报从未在链路上传输（由于队列溢出、
   超过发送尝试限制或帧大小被拒绝而被丢弃）。
+
+### 回调：`OnApplicationCallback`
+
+<!-- YAML
+added: v23.8.0
+-->
+
+* `this` {quic.QuicSession}
+* `applicationoption` {quic.QuicSession}
+
+当应用选项发生变化时调用的回调函数。例如，对于 http/3，
+设置会包含在应用选项中，并且可能在连接建立后才到达。
 
 ### 回调：`OnPathValidationCallback`
 
@@ -3156,7 +3184,7 @@ added: v26.2.0
 -->
 
 * `this` {quic.QuicSession}
-* `line` {string} [NSS Key Log Format][] 文本的一行，
+* `line` {string} [NSS 密钥日志格式][] 文本的一行，
   包括末尾的换行符。
 
 当 TLS 密钥材料可用时调用。仅当
@@ -3230,7 +3258,7 @@ added: v26.2.0
 * `headers` {Object} 信息性标头对象。
 
 当从服务器接收到信息性（1xx）标头时调用
-（例如，103 Early Hints）。
+（例如，103 早期提示）。
 
 ## HTTP/3 支持
 
@@ -3533,7 +3561,18 @@ obs.observe({ entryTypes: ['quic'] });
 
 在端点的繁忙状态发生变化时发布。
 
-### 通道：`quic.session.created.client`
+### Channel: `quic.session.application`
+
+<!-- YAML
+added: v23.8.0
+-->
+
+* `applicationoptions` {quic.ApplicationOptions} 当前应用程序选项。
+* `session` {quic.QuicSession}
+
+在本地发起的流打开时发布。
+
+### Channel: `quic.session.created.client`
 
 <!-- YAML
 已添加：v23.8.0
@@ -3755,9 +3794,9 @@ GOAWAY 帧时）。
 -->
 
 * `session` {quic.QuicSession}
-* `lastStreamId` {bigint} 对等方可能已处理的最高流 ID。
+* `lastStreamId` {bigint} 对端可能已处理的最高流 ID。
 
-在对等方发送 HTTP/3 GOAWAY 帧时发布。ID 高于
+在对端发送 HTTP/3 GOAWAY 帧时触发。ID 高于
 `lastStreamId` 的流未被处理，可在新的
 连接上重试。`lastStreamId` 为 `-1n` 表示在没有
 流边界的情况下发出的关闭通知。
@@ -3770,7 +3809,7 @@ GOAWAY 帧时）。
 
 * `session` {quic.QuicSession}
 
-在服务器拒绝 0-RTT 早期数据时发布。在 0-RTT 阶段打开的所有流都已被销毁。用于在预期
+在服务器拒绝 0-RTT 早期数据时触发。在 0-RTT 阶段打开的所有流都已被销毁。用于在预期
 0-RTT 应该成功时诊断延迟回退。
 
 ### 通道：`quic.stream.closed`
@@ -3784,7 +3823,7 @@ GOAWAY 帧时）。
 * `error` {any} 导致关闭的错误；如果是正常关闭则为 `undefined`。
 * `stats` {quic.QuicStream.Stats} 最终流统计信息。
 
-在流被销毁时发布。`stats` 对象是销毁时刻最终统计
+在流被销毁时触发。`stats` 对象是销毁时刻最终统计
 信息的快照。
 
 ### 通道：`quic.stream.headers`
@@ -3797,7 +3836,7 @@ GOAWAY 帧时）。
 * `session` {quic.QuicSession}
 * `headers` {Object} 初始请求或响应头。
 
-在流上接收到初始头时发布。对于 HTTP/3
+在流上接收到初始头时触发。对于 HTTP/3
 服务器端流，这包含请求伪首部（`:method`、
 `:path` 等）。对于客户端流，这包含响应头
 （`:status` 等）。
@@ -3812,7 +3851,7 @@ GOAWAY 帧时）。
 * `session` {quic.QuicSession}
 * `trailers` {Object} 尾部标头。
 
-在流上接收到尾部标头时发布。
+在流上接收到尾部标头时触发。
 
 ### 通道：`quic.stream.info`
 
@@ -3824,7 +3863,7 @@ GOAWAY 帧时）。
 * `session` {quic.QuicSession}
 * `headers` {Object} 信息性标头。
 
-在流上接收到信息性（1xx）标头时发布
+在流上接收到信息性（1xx）标头时触发
 （例如 103 Early Hints）。
 
 ### 通道：`quic.stream.reset`
@@ -3837,8 +3876,8 @@ GOAWAY 帧时）。
 * `session` {quic.QuicSession}
 * `error` {any} 与重置相关的 QUIC 错误。
 
-在流从对等方接收到 STOP_SENDING 或 RESET_STREAM 帧
-时发布，表示对等方已中止该流。这是
+在流从对端接收到 STOP_SENDING 或 RESET_STREAM 帧
+时触发，表示对端已中止该流。这是
 诊断应用层问题（例如已取消的
 请求）的关键信号。
 
@@ -3851,8 +3890,8 @@ GOAWAY 帧时）。
 * `stream` {quic.QuicStream}
 * `session` {quic.QuicSession}
 
-在流因流控而被阻塞、且在对等方增加流控窗口
-之前无法发送数据时发布。用于诊断由流控导致的吞吐量问题。
+在流因流控而被阻塞、且在对端增加流控窗口
+之前无法发送数据时触发。用于诊断由流控导致的吞吐量问题。
 
 [中止流]: #aborting-a-stream
 [回调错误处理]: #callback-error-handling
@@ -3885,9 +3924,10 @@ GOAWAY 帧时）。
 [`application.enableConnectProtocol`]: #sessionoptionsapplication
 [`application.enableDatagrams`]: #sessionoptionsapplication
 [`application.qpackMaxDTableCapacity`]: #sessionoptionsapplication
+[`crypto.X509Certificate`]: crypto.md#class-x509certificate
 [`endpoint.busy`]: #endpointbusy
 [`endpoint.maxConnectionsPerHost`]: #endpointmaxconnectionsperhost
-[`endpoint.maxConnectionsTotal`]: #endpointmaxconnectionstotal
+[`endpoint.maxConnectionsTotal`]: #endpointmaxconnectionsperhosttotal
 [`endpointOptions.blockListPolicy`]: #endpointoptionsblocklistpolicy
 [`endpointOptions.blockList`]: #endpointoptionsblocklist
 [`endpointOptions.immediateCloseBurst`]: #endpointoptionsimmediatecloseburst
@@ -3911,6 +3951,7 @@ GOAWAY 帧时）。
 [`session.createUnidirectionalStream()`]: #sessioncreateunidirectionalstreamoptions
 [`session.destroy()`]: #sessiondestroyerror-options
 [`session.maxPendingDatagrams`]: #sessionmaxpendingdatagrams
+[`session.onapplication`]: #sessiononapplication
 [`session.ondatagram`]: #sessionondatagram
 [`session.ondatagramstatus`]: #sessionondatagramstatus
 [`session.onearlyrejected`]: #sessiononearlyrejected

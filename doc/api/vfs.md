@@ -1,18 +1,17 @@
 # 虚拟文件系统
 
-<!--introduced_in=REPLACEME-->
+<!--introduced_in=v26.4.0-->
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 > 稳定性：1 - 实验性
 
 <!-- source_link=lib/vfs.js -->
 
-`node:vfs` 模块提供了一个以内存为基础的虚拟文件系统，拥有类似
-`node:fs` 的 API。它适用于测试、夹具、内嵌资源，以及其他需要
-独立文件系统而不接触实际文件系统的场景。
+`node:vfs` 模块提供了一个具有 `node:fs` 式 API 的虚拟文件系统。
+它适用于测试、测试夹具、内嵌资源，以及其他需要自包含文件系统而无需接触实际文件系统的场景。
 
 访问方式：
 
@@ -26,6 +25,17 @@ const vfs = require('node:vfs');
 
 该模块仅在 `node:` 方案下可用，并且仅当 Node.js 以
 `--experimental-vfs` 标志启动时可用。
+
+## 安全
+
+VFS API 不是沙箱、权限系统或访问控制机制。
+它不会将不受信任的代码与宿主文件系统或其他 Node.js 能力隔离开来。能够访问 [`VirtualFileSystem`][] 实例、
+挂载它、选择其提供程序或向其传递路径的代码，都是受信任的应用程序代码。
+
+挂载 VFS 只会重定向解析后路径位于挂载点下的受支持 [`node:fs`][] 调用。它不会阻止代码使用其他路径或
+其他 Node.js API 访问进程可用的资源。
+[`RealFSProvider`][] 会将 VFS 路径映射到其配置的根目录下，并拒绝解析到该根目录之外的路径，但这种检查并不是安全边界。不要依赖 VFS 来运行不受信任的代码；当需要安全
+边界时，请使用操作系统级隔离，例如独立用户、容器或平台沙箱。
 
 ## 基本用法
 
@@ -47,7 +57,7 @@ console.log(myVfs.readFileSync('/dir/hello.txt', 'utf8')); // 'Hello, VFS!'
 ## `vfs.create([provider][, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 * `provider` {VirtualProvider} 要使用的提供者。**默认值：**
@@ -57,7 +67,7 @@ added: REPLACEME
     警告。**默认值：** `true`。
 * 返回：{VirtualFileSystem}
 
-便捷工厂函数，等价于 `new VirtualFileSystem(provider, options)`。
+便捷工厂函数，等价于 `new VirtualFileSystem(provider, options)`】【。
 
 ```cjs
 const vfs = require('node:vfs');
@@ -65,14 +75,14 @@ const vfs = require('node:vfs');
 // 默认内存提供者
 const memoryVfs = vfs.create();
 
-// 显式指定提供者
-const realVfs = vfs.create(new vfs.RealFSProvider('/tmp/sandbox'));
+// Explicit provider
+const realVfs = vfs.create(new vfs.RealFSProvider('/tmp/vfs-root'));
 ```
 
 ## 类：`VirtualFileSystem`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 `VirtualFileSystem` 封装了一个 [`VirtualProvider`][] 并公开
@@ -81,7 +91,7 @@ added: REPLACEME
 ### `new VirtualFileSystem([provider][, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 * `provider` {VirtualProvider} 要使用的提供者。**默认值：**
@@ -93,7 +103,7 @@ added: REPLACEME
 ### `vfs.provider`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 * {VirtualProvider}
@@ -103,7 +113,7 @@ added: REPLACEME
 ### `vfs.readonly`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 * {boolean}
@@ -180,7 +190,7 @@ example();
 ## 类：`VirtualProvider`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 所有 VFS 提供者的基类。子类实现核心
@@ -214,7 +224,7 @@ class StaticProvider extends VirtualProvider {
 ## 类：`MemoryProvider`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 默认的内存提供者。使用 `Map` 支持的树结构存储文件、目录和符号链接，
@@ -223,7 +233,7 @@ added: REPLACEME
 ### `memoryProvider.setReadOnly()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 将提供者锁定为只读模式。之后通过使用此提供者的任何
@@ -244,17 +254,15 @@ myVfs.writeFileSync('/x.txt', 'fail'); // 抛出 EROFS
 ## 类：`RealFSProvider`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
-一种封装某个目录（即实际文件系统中的一个目录）并通过 VFS API 公开其
-内容的提供者。所有 VFS 路径都相对于根目录解析，并会验证其始终位于根目录内部；
-解析到根目录外部的符号链接会被拒绝。
+一个包装目录（即实际文件系统上的目录）并通过 VFS API 暴露其内容的提供者。所有 VFS 路径都会相对于根目录进行解析，并验证其始终位于根目录内；解析到根目录外的符号链接会被拒绝。此路径映射不是沙箱或访问控制机制。
 
 ### `new RealFSProvider(rootPath)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 * `rootPath` {string} 用作根目录的绝对文件系统路径。
@@ -263,14 +271,14 @@ added: REPLACEME
 ```cjs
 const vfs = require('node:vfs');
 
-const realVfs = vfs.create(new vfs.RealFSProvider('/tmp/sandbox'));
-realVfs.writeFileSync('/file.txt', 'hello'); // 写入 /tmp/sandbox/file.txt
+const realVfs = vfs.create(new vfs.RealFSProvider('/tmp/vfs-root'));
+realVfs.writeFileSync('/file.txt', 'hello'); // writes /tmp/vfs-root/file.txt
 ```
 
 ### `realFSProvider.rootPath`
 
 <!-- YAML
-added: REPLACEME
+added: v26.4.0
 -->
 
 * {string}
@@ -291,6 +299,7 @@ VFS 的 `Stats` 对象是真正的 [`fs.Stats`][] 实例（如果请求 `{ bigin
 * 时间默认设置为条目创建/最后修改的时刻。
 
 [`MemoryProvider`]: #class-memoryprovider
+[`RealFSProvider`]: #class-realfsprovider
 [`VirtualFileSystem`]: #class-virtualfilesystem
 [`VirtualProvider`]: #class-virtualprovider
 [`fs.BigIntStats`]: fs.md#class-fsbigintstats

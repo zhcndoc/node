@@ -1295,11 +1295,10 @@ added: v0.5.0
 生成私钥和公钥 Diffie-Hellman 密钥值（除非它们已经生成或计算过），并以指定的 `encoding` 返回公钥。此密钥应传输给另一方。
 如果提供了 `encoding`，则返回字符串；否则返回 [`Buffer`][]。
 
-This function is a thin wrapper around [`DH_generate_key()`][]. In particular,
-once a private key has been generated or set, calling this function only
-recomputes the public key from the existing private key. Since the public key is
-determined by the private key, the result will be the same unless the private key
-has been changed via [`diffieHellman.setPrivateKey()`][].
+此函数是对 [`DH_generate_key()`][] 的轻量封装。特别是，
+一旦私钥已生成或已设置，调用此函数只会
+根据现有私钥重新计算公钥。由于公钥是由私钥
+决定的，除非通过 [`diffieHellman.setPrivateKey()`][] 更改了私钥，否则结果将保持不变。
 
 ### `diffieHellman.getGenerator([encoding])`
 
@@ -2073,6 +2072,9 @@ Node.js 使用 `KeyObject` 类来表示对称或非对称密钥，并且每种�
 <!-- YAML
 added: v15.0.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 不再支持将不可提取的 CryptoKey 作为 `key` 传递。
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "将不可提取的 CryptoKey 作为 `key` 传递已弃用。"
@@ -2081,7 +2083,8 @@ changes:
 * `key` {CryptoKey}
 * 返回：{KeyObject}
 
-返回 {CryptoKey} 底层的 {KeyObject}。返回的 {KeyObject} 不保留原始 {CryptoKey} 上 Web Crypto API 施加的任何限制，例如允许的密钥用法、算法或哈希算法绑定，以及可提取性标志。特别是，返回的 {KeyObject} 的底层密钥材料总是可以导出的。
+返回可提取的 {CryptoKey} 的底层密钥材料的 {KeyObject} 表示。
+返回的 {KeyObject} 不会保留 Web Crypto API 对原始 {CryptoKey} 施加的任何限制，例如允许的密钥用途、算法或哈希算法绑定。
 
 ```mjs
 const { KeyObject } = await import('node:crypto');
@@ -2115,7 +2118,7 @@ const { subtle } = globalThis.crypto;
 })();
 ```
 
-### `keyObject.asymmetricKeyDetails`
+### 证书对象
 
 <!-- YAML
 added: v15.7.0
@@ -2140,7 +2143,7 @@ changes:
 
 其他密钥详细信息可能会通过其他属性通过此 API 公开。
 
-### `keyObject.asymmetricKeyType`
+### 密钥类型
 
 <!-- YAML
 added: v11.6.0
@@ -2179,7 +2182,7 @@ changes:
 
 对于无法识别的 `KeyObject` 类型和对称密钥，此属性为 `undefined`。
 
-### `keyObject.equals(otherKeyObject)`
+### 生成相等性检查
 
 <!-- YAML
 added:
@@ -2192,12 +2195,14 @@ added:
 
 根据密钥是否具有完全相同的类型、值和参数返回 `true` 或 `false`。此方法不是 [恒定时间](https://en.wikipedia.org/wiki/Timing_attack)。
 
-### `keyObject.export([options])`
+### 导出密钥
 
 <!-- YAML
 added: v11.6.0
 changes:
-  - version: v26.1.0
+  - version:
+    - v26.1.0
+    - v24.18.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: 为 ML-KEM 和 SLH-DSA 密钥类型添加了 JWK 格式支持。
   - version: v26.0.0
@@ -2239,7 +2244,7 @@ PKCS#1 和 SEC1 仅在使用 PEM `format` 时可以加密。
 由于 PKCS#8 定义了自己的加密机制，加密 PKCS#8 密钥时不支持 PEM 级加密。
 请参阅 [RFC 5208][] 了解 PKCS#8 加密，[RFC 1421][] 了解 PKCS#1 和 SEC1 加密。
 
-### `keyObject.symmetricKeySize`
+### 密钥大小
 
 <!-- YAML
 added: v11.6.0
@@ -2249,7 +2254,7 @@ added: v11.6.0
 
 对于密钥，此属性表示密钥的大小（单位字节）。此属性对于非对称密钥为 `undefined`。
 
-### `keyObject.toCryptoKey(algorithm, extractable, keyUsages)`
+### 导入密钥
 
 <!-- YAML
 added:
@@ -2269,7 +2274,7 @@ added:
 
 将 `KeyObject` 实例转换为 `CryptoKey`。
 
-### `keyObject.type`
+### 密钥用途
 
 <!-- YAML
 added: v11.6.0
@@ -2395,6 +2400,9 @@ console.log(verify.verify(publicKey, signature));
 <!-- YAML
 added: v0.1.92
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 将 CryptoKey 作为 `privateKey` 传入已不再受支持。
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: privateKey 也可以是 ArrayBuffer 和 CryptoKey。
@@ -2416,7 +2424,7 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
   * `dsaEncoding` {string}
   * `padding` {integer}
   * `saltLength` {integer}
@@ -2502,6 +2510,9 @@ changes:
 <!-- YAML
 added: v0.1.92
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 不再支持将 CryptoKey 作为 `key` 传入。
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: key 也可以是 ArrayBuffer 和 CryptoKey。
@@ -2523,7 +2534,7 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
   * `dsaEncoding` {string}
   * `padding` {integer}
   * `saltLength` {integer}
@@ -2581,7 +2592,7 @@ const x509 = new X509Certificate('{... pem encoded cert ...}');
 console.log(x509.subject);
 ```
 
-### `new X509Certificate(buffer)`
+### 颁发者证书
 
 <!-- YAML
 added: v15.6.0
@@ -2590,7 +2601,7 @@ added: v15.6.0
 * `buffer` {string|TypedArray|Buffer|DataView} 一个 PEM 或 DER 编码的
   X509 证书。
 
-### `x509.ca`
+### 主题备用名称
 
 <!-- YAML
 added: v15.6.0
@@ -2598,7 +2609,7 @@ added: v15.6.0
 
 * 类型：{boolean} 如果这是一个证书颁发机构 (CA) 证书，则为 `true`。
 
-### `x509.checkEmail(email[, options])`
+### 检查电子邮件地址是否匹配
 
 <!-- YAML
 added: v15.6.0
@@ -2632,7 +2643,7 @@ changes:
 
 如果 `'subject'` 选项设置为 `'never'`，则从不考虑证书主题，即使证书不包含主题备用名称。
 
-### `x509.checkHost(name[, options])`
+### 检查主机名是否匹配
 
 <!-- YAML
 added: v15.6.0
@@ -2667,7 +2678,7 @@ changes:
 
 如果 `'subject'` 选项设置为 `'never'`，则从不考虑证书主题，即使证书不包含主题备用名称。
 
-### `x509.checkIP(ip)`
+### 检查 IP 地址是否匹配
 
 <!-- YAML
 added: v15.6.0
@@ -2686,7 +2697,7 @@ changes:
 
 仅考虑 [RFC 5280][] `iPAddress` 主题备用名称，并且它们必须与给定的 `ip` 地址完全匹配。其他主题备用名称以及证书的主题字段将被忽略。
 
-### `x509.checkIssued(otherCert)`
+### 颁发者检查
 
 <!-- YAML
 added: v15.6.0
@@ -2973,37 +2984,35 @@ added: v15.6.0
 
 验证此证书是否由给定的公钥签署。不对证书执行任何其他验证检查。
 
-## `node:crypto` 模块的方法和属性
+## crypto 模块的方法和属性
 
-### `crypto.argon2(algorithm, parameters, callback)`
+### argon2
 
 <!-- YAML
 added: v24.7.0
 -->
 
-> 稳定性：1.2 - 发布候选版本
-
-* `algorithm` {string} Argon2 的变体，`"argon2d"`、`"argon2i"` 或 `"argon2id"` 之一。
-* `parameters` {Object}
-  * `message` {string|ArrayBuffer|Buffer|TypedArray|DataView} 必需，这是 Argon2 密码哈希应用中的密码。
-  * `nonce` {string|ArrayBuffer|Buffer|TypedArray|DataView} 必需，长度必须至少为 8 字节。这是 Argon2 密码哈希应用中的盐值。
-  * `parallelism` {number} 必需，并行度决定可运行多少条计算链（lane）。必须至少为 `1`，且至多为 `2**24-1`。
-  * `tagLength` {number} 必需，要生成的密钥长度。必须至少为 `4`，且至多为 `2**32-1`。
-  * `memory` {number} 必需，以 1KiB 块为单位的内存成本。必须至少为 `8 * parallelism`，且至多为 `2**32-1`。实际块数会向下取整到最接近的 `4 * parallelism` 的倍数。
-  * `passes` {number} 必需，遍数（迭代次数）。必须至少为 `1`，且至多为 `2**32-1`。
-  * `secret` {string|ArrayBuffer|Buffer|TypedArray|DataView|undefined} 可选，随机附加输入，类似于盐值，但**不应**与派生密钥一起存储。在密码哈希应用中这称为 pepper。如果使用，其长度不得超过 `2**32-1` 字节。
-  * `associatedData` {string|ArrayBuffer|Buffer|TypedArray|DataView|undefined} 可选，要添加到哈希中的附加数据，功能上等同于盐值或 secret，但用于非随机数据。如果使用，其长度不得超过 `2**32-1` 字节。
-* `callback` {Function}
-  * `err` {Error}
-  * `derivedKey` {Buffer}
+* type {string} Argon2 的变体，取值为 argon2d、argon2i 或 argon2id。
+* options {Object}
+  * passphrase {string|ArrayBuffer|Buffer|TypedArray|DataView} 必需，这是 Argon2 密码哈希应用中的密码。
+  * salt {string|ArrayBuffer|Buffer|TypedArray|DataView} 必需，长度必须至少为 8 字节。这是 Argon2 密码哈希应用中的盐值。
+  * parallelism {number} 必需，并行度决定可运行多少条计算链（lane）。必须至少为 1，且至多为 4。
+  * keyLength {number} 必需，要生成的密钥长度。必须至少为 4，且至多为 4294967295。
+  * memory {number} 必需，以 1KiB 块为单位的内存成本。必须至少为 8192，且至多为 4294967295。实际块数会向下取整到最接近的 4 的倍数。
+  * iterations {number} 必需，遍数（迭代次数）。必须至少为 1，且至多为 4294967295。
+  * secret {string|ArrayBuffer|Buffer|TypedArray|DataView|undefined} 可选，随机附加输入，类似于盐值，但**不应**与派生密钥一起存储。在密码哈希应用中这称为 pepper。如果使用，其长度不得超过 4294967295 字节。
+  * associatedData {string|ArrayBuffer|Buffer|TypedArray|DataView|undefined} 可选，要添加到哈希中的附加数据，功能上等同于盐值或 secret，但用于非随机数据。如果使用，其长度不得超过 4294967295 字节。
+* callback {Function}
+  * error {Error}
+  * result {Buffer}
 
 提供异步 [Argon2][] 实现。Argon2 是一种基于密码的密钥派生函数，旨在在计算和内存方面都很昂贵，以使暴力破解攻击无利可图。
 
-`nonce` 应尽可能唯一。建议 nonce 是随机的且至少 16 字节长。详见 [NIST SP 800-132][]。
+nonce 应尽可能唯一。建议 nonce 是随机的且至少 16 字节长。详见 [NIST SP 800-132][]。
 
-当为 `message`、`nonce`、`secret` 或 `associatedData` 传递字符串时，请考虑 [使用字符串作为加密 API 输入时的注意事项][]。
+当为 passphrase、salt、secret 或 associatedData 传递字符串时，请考虑 [使用字符串作为加密 API 输入时的注意事项][]。
 
-`callback` 函数带有两个参数：`err` 和 `derivedKey`。如果密钥派生失败，`err` 是一个异常对象，否则 `err` 为 `null`。`derivedKey` 作为 [`Buffer`][] 传递给回调。
+callback 函数带有两个参数：error 和 result。如果密钥派生失败，error 是一个异常对象，否则 result 为 Buffer。error 作为 [err][] 传递给回调。
 
 当任何输入参数指定无效的值或类型时，将抛出异常。
 
@@ -3049,9 +3058,7 @@ argon2('argon2id', parameters, (err, derivedKey) => {
 added: v24.7.0
 -->
 
-> 稳定性：1.2 - 发布候选版本
-
-* `algorithm` {string} Argon2 的变体，`"argon2d"`、`"argon2i"` 或 `"argon2id"` 之一。
+* `algorithm` {string} Argon2 的变体，取值可以是 `"argon2d"`、`"argon2i"` 或 `"argon2id"`。
 * `parameters` {Object}
   * `message` {string|ArrayBuffer|Buffer|TypedArray|DataView} 必需，这是 Argon2 密码哈希应用中的密码。
   * `nonce` {string|ArrayBuffer|Buffer|TypedArray|DataView} 必需，长度必须至少为 8 字节。这是 Argon2 密码哈希应用中的盐值。
@@ -3154,6 +3161,9 @@ added: v6.3.0
 <!-- YAML
 added: v0.1.94
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "传递 CryptoKey 作为 `key` 已弃用。"
@@ -3185,7 +3195,7 @@ changes:
 -->
 
 * `algorithm` {string}
-* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `iv` {string|ArrayBuffer|Buffer|TypedArray|DataView|null}
 * `options` {Object} [`stream.transform` 选项][]
 * 返回：{Cipheriv}
@@ -3207,6 +3217,9 @@ changes:
 <!-- YAML
 added: v0.1.94
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: Passing a CryptoKey as `key` is no longer supported.
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "传递 CryptoKey 作为 `key` 已弃用。"
@@ -3235,7 +3248,7 @@ changes:
 -->
 
 * `algorithm` {string}
-* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `iv` {string|ArrayBuffer|Buffer|TypedArray|DataView|null}
 * `options` {Object} [`stream.transform` 选项][]
 * 返回：{Decipheriv}
@@ -3322,6 +3335,9 @@ added: v0.11.14
 <!-- YAML
 added: v0.1.92
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64000
+    description: XOF 哈希函数若没有默认输出长度，则现在需要 `outputLength` 选项。
   - version: v12.8.0
     pr-url: https://github.com/nodejs/node/pull/28805
     description: "为 XOF 哈希函数添加了 `outputLength` 选项。"
@@ -3331,7 +3347,7 @@ changes:
 * `options` {Object} [`stream.transform` 选项][]
 * 返回：{Hash}
 
-创建并返回一个 `Hash` 对象，可用于使用给定的 `algorithm` 生成哈希摘要。可选 `options` 参数控制流行为。对于 XOF 哈希函数（如 `'shake256'`），`outputLength` 选项可用于指定所需的输出长度（以字节为单位）。
+创建并返回一个 `Hash` 对象，可用于使用给定的 `algorithm` 生成哈希摘要。可选的 `options` 参数控制流行为。对于诸如 `'shake256'` 之类的 XOF 哈希函数，`outputLength` 选项指定所需的输出长度（以字节为单位）。对于没有默认输出长度的 XOF 哈希函数，这是必需的。
 
 `algorithm` 取决于平台上 OpenSSL 版本支持的可用算法。示例有 `'sha256'`、`'sha512'` 等。在最近的 OpenSSL 版本上，`openssl list -digest-algorithms` 将显示可用的摘要算法。
 
@@ -3392,6 +3408,9 @@ input.on('readable', () => {
 <!-- YAML
 added: v0.1.94
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 传递 CryptoKey 作为 `key` 不再受支持。
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "传递 CryptoKey 作为 `key` 已弃用。"
@@ -3404,8 +3423,8 @@ changes:
 -->
 
 * `algorithm` {string}
-* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
-* `options` {Object} [`stream.transform` 选项][]
+* `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+* `options` {Object} [`stream.transform` options][]
   * `encoding` {string} 当 `key` 是字符串时使用的字符串编码。
 * 返回：{Hmac}
 
@@ -3472,10 +3491,14 @@ input.on('readable', () => {
 <!-- YAML
 added: v11.6.0
 changes:
-  - version: v26.1.0
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 以 CryptoKey 作为 `key` 传递不再受支持。
+  - version:
+    - v26.1.0
+    - v24.18.0
     pr-url: https://github.com/nodejs/node/pull/62706
-    description: Added JWK format support for ML-KEM and SLH-DSA
-                 key types.
+    description: 为 ML-KEM 和 SLH-DSA 密钥类型新增了 JWK 格式支持。
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: 将 CryptoKey 作为 `key` 传递已弃用。
@@ -3517,10 +3540,14 @@ changes:
 <!-- YAML
 added: v11.6.0
 changes:
-  - version: v26.1.0
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 以 CryptoKey 作为 `key` 传递不再受支持。
+  - version:
+    - v26.1.0
+    - v24.18.0
     pr-url: https://github.com/nodejs/node/pull/62706
-    description: Added JWK format support for ML-KEM and SLH-DSA
-                 key types.
+    description: 为 ML-KEM 和 SLH-DSA 密钥类型新增了 JWK 格式支持。
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: 将 CryptoKey 作为 `key` 传递已弃用。
@@ -3595,38 +3622,36 @@ added: v0.1.92
 * `options` {Object} [`stream.Writable` 选项][]
 * 返回：{Sign}
 
-创建并返回一个 `Sign` 对象，使用给定的 `algorithm`。使用 [`crypto.getHashes()`][] 获取可用摘要算法的名称。可选 `options` 参数控制 `stream.Writable` 行为。
+创建并返回一个 Verify 对象，使用给定的摘要算法。使用 [crypto.getHashes][] 获取可用摘要算法的名称。可选的 callback 参数控制异步行为。
 
-在某些情况下，可以使用签名算法的名称（如 `'RSA-SHA256'`）而不是摘要算法来创建 `Sign` 实例。这将使用相应的摘要算法。这不适用于所有签名算法，例如 `'ecdsa-with-SHA256'`，因此最好始终使用摘要算法名称。
+在某些情况下，可以使用签名算法的名称（如 RSA-SHA256）而不是摘要算法来创建 Verify 实例。这将使用相应的摘要算法。这不适用于所有签名算法，例如 RSA-SHA1，因此最好始终使用摘要算法名称。
 
-### `crypto.createVerify(algorithm[, options])`
+### crypto.createVerify(algorithm)
 
 <!-- YAML
 added: v0.1.92
 -->
 
-* `algorithm` {string}
-* `options` {Object} [`stream.Writable` 选项][]
+* algorithm {string}
+* options {Object} [options 选项][]
 * 返回：{Verify}
 
-创建并返回一个 `Verify` 对象，使用给定的算法。使用 [`crypto.getHashes()`][] 获取可用签名算法名称的数组。可选 `options` 参数控制 `stream.Writable` 行为。
+创建并返回一个 Verify 对象，使用给定的算法。使用 [crypto.getHashes][] 获取可用签名算法名称的数组。可选的 callback 参数控制异步行为。
 
-在某些情况下，可以使用签名算法的名称（如 `'RSA-SHA256'`）而不是摘要算法来创建 `Verify` 实例。这将使用相应的摘要算法。这不适用于所有签名算法，例如 `'ecdsa-with-SHA256'`，因此最好始终使用摘要算法名称。
+在某些情况下，可以使用签名算法的名称（如 RSA-SHA256）而不是摘要算法来创建 Verify 实例。这将使用相应的摘要算法。这不适用于所有签名算法，例如 RSA-SHA1，因此最好始终使用摘要算法名称。
 
-### `crypto.decapsulate(key, ciphertext[, callback])`
+### crypto.createHash(algorithm)
 
 <!-- YAML
 added: v24.7.0
 -->
 
-> 稳定性：1.2 - 发布候选版本
-
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject} 私钥
-* `ciphertext` {ArrayBuffer|Buffer|TypedArray|DataView}
-* `callback` {Function}
-  * `err` {Error}
-  * `sharedKey` {Buffer}
-* 返回：{Buffer} 如果未提供 `callback` 函数。
+* key {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject} Private Key
+* ciphertext {ArrayBuffer|Buffer|TypedArray|DataView}
+* callback {Function}
+  * error {Error}
+  * plaintext {Buffer}
+* 返回：{Buffer} 如果未提供 callback 函数。
 
 <!--lint enable maximum-line-length remark-lint-->
 
@@ -3634,26 +3659,28 @@ added: v24.7.0
 
 支持的密钥类型及其 KEM 算法有：
 
-* `'rsa'`[^openssl30] RSA 秘密值封装
-* `'ec'`[^openssl32] DHKEM(P-256, HKDF-SHA256), DHKEM(P-384, HKDF-SHA256), DHKEM(P-521, HKDF-SHA256)
-* `'x25519'`[^openssl32] DHKEM(X25519, HKDF-SHA256)
-* `'x448'`[^openssl32] DHKEM(X448, HKDF-SHA512)
-* `'ml-kem-512'`[^openssl35] ML-KEM
-* `'ml-kem-768'`[^openssl35] ML-KEM
-* `'ml-kem-1024'`[^openssl35] ML-KEM
+* RSA-OAEP[^openssl30] RSA 密钥封装
+* P-256[^openssl32] DHKEM(P-256, HKDF-SHA256), DHKEM(P-384, HKDF-SHA256), DHKEM(P-521, HKDF-SHA256)
+* X25519[^openssl32] DHKEM(X25519, HKDF-SHA256)
+* X448[^openssl32] DHKEM(X448, HKDF-SHA512)
+* ML-KEM-512[^openssl35] ML-KEM
+* ML-KEM-768[^openssl35] ML-KEM
+* ML-KEM-1024[^openssl35] ML-KEM
 
-如果 `key` 不是 [`KeyObject`][]，此函数的行为就像 `key` 已传递给 [`crypto.createPrivateKey()`][]。
+如果 ciphertext 不是 [Buffer][]，此函数的行为就像 encoding 已传递给 [Buffer.from][]。
 
-如果提供了 `callback` 函数，此函数使用 libuv 的线程池。
+如果提供了 callback 函数，此函数使用 libuv 的线程池。
 
-### `crypto.diffieHellman(options[, callback])`
+### crypto.diffieHellman(key)
 
 <!-- YAML
 added:
  - v13.9.0
  - v12.17.0
 changes:
-  - version: v26.1.0
+  - version:
+    - v26.1.0
+    - v24.18.0
     pr-url: https://github.com/nodejs/node/pull/62527
     description: 除了 KeyObject 实例外，还接受密钥数据。
   - version: v23.11.0
@@ -3661,42 +3688,37 @@ changes:
     description: 添加了可选的 callback 参数。
 -->
 
-* `options` {Object}
-  * `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
-  * `publicKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
-* `callback` {Function}
-  * `err` {Error}
-  * `secret` {Buffer}
-* 返回：{Buffer} 如果未提供 `callback` 函数。
+* key {Object}
+  * privateKey {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+  * publicKey {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+* callback {Function}
+  * error {Error}
+  * sharedSecret {Buffer}
+* 返回：{Buffer} 如果未提供 callback 函数。
 
-基于 `privateKey` 和 `publicKey` 计算 Diffie-Hellman 共享秘密。
+基于 privateKey 和 publicKey 计算 Diffie-Hellman 共享秘密。
 两个密钥必须表示相同的非对称密钥类型，并且必须支持 DH 或 ECDH 操作。
 
-如果 `options.privateKey` 不是 [`KeyObject`][]，此函数的行为就像
-`options.privateKey` 已传递给 [`crypto.createPrivateKey()`][]。
+如果 privateKey 不是 [KeyObject][]，此函数的行为就像 encoding 已传递给 [Buffer.from][]。
 
-如果 `options.publicKey` 不是 [`KeyObject`][]，此函数的行为就像
-`options.publicKey` 已传递给 [`crypto.createPublicKey()`][]。
+如果 publicKey 不是 [KeyObject][]，此函数的行为就像 encoding 已传递给 [Buffer.from][]。
 
-如果提供了 `callback` 函数，此函数使用 libuv 的线程池。
+如果提供了 callback 函数，此函数使用 libuv 的线程池。
 
-### `crypto.encapsulate(key[, callback])`
+### crypto.encapsulate(publicKey)
 
 <!-- YAML
 added: v24.7.0
 -->
 
-> 稳定性：1.2 - 发布候选版本
-
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject} 公钥
-* `callback` {Function}
-  * `err` {Error}
-  * `result` {Object}
-    * `sharedKey` {Buffer}
-    * `ciphertext` {Buffer}
-* 返回：{Object} 如果未提供 `callback` 函数。
-  * `sharedKey` {Buffer}
-  * `ciphertext` {Buffer}
+* publicKey {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject} Public Key
+* callback {Function}
+  * error {Error}
+  * sharedSecret {Buffer}
+  * ciphertext {Buffer}
+* 返回：{Object} 如果未提供 callback 函数。
+  * sharedSecret {Buffer}
+  * ciphertext {Buffer}
 
 <!--lint enable maximum-line-length remark-lint-->
 
@@ -3704,19 +3726,19 @@ added: v24.7.0
 
 支持的密钥类型及其 KEM 算法有：
 
-* `'rsa'`[^openssl30] RSA 秘密值封装
-* `'ec'`[^openssl32] DHKEM(P-256, HKDF-SHA256), DHKEM(P-384, HKDF-SHA256), DHKEM(P-521, HKDF-SHA256)
-* `'x25519'`[^openssl32] DHKEM(X25519, HKDF-SHA256)
-* `'x448'`[^openssl32] DHKEM(X448, HKDF-SHA512)
-* `'ml-kem-512'`[^openssl35] ML-KEM
-* `'ml-kem-768'`[^openssl35] ML-KEM
-* `'ml-kem-1024'`[^openssl35] ML-KEM
+* RSA-OAEP[^openssl30] RSA 密钥封装
+* P-256[^openssl32] DHKEM(P-256, HKDF-SHA256), DHKEM(P-384, HKDF-SHA256), DHKEM(P-521, HKDF-SHA256)
+* X25519[^openssl32] DHKEM(X25519, HKDF-SHA256)
+* X448[^openssl32] DHKEM(X448, HKDF-SHA512)
+* ML-KEM-512[^openssl35] ML-KEM
+* ML-KEM-768[^openssl35] ML-KEM
+* ML-KEM-1024[^openssl35] ML-KEM
 
-如果 `key` 不是 [`KeyObject`][]，此函数的行为就像 `key` 已传递给 [`crypto.createPublicKey()`][]。
+如果 publicKey 不是 [KeyObject][]，此函数的行为就像 encoding 已传递给 [Buffer.from][]。
 
-如果提供了 `callback` 函数，此函数使用 libuv 的线程池。
+如果提供了 callback 函数，此函数使用 libuv 的线程池。
 
-### `crypto.fips`
+### crypto.fips
 
 <!-- YAML
 added: v6.0.0
@@ -3727,28 +3749,28 @@ deprecated: v10.0.0
 
 用于检查和控制当前是否正在使用符合 FIPS 的加密提供程序的属性。设置为 true 需要 Node.js 的 FIPS 构建。
 
-此属性已弃用。请改用 `crypto.setFips()` 和 `crypto.getFips()`。
+此属性已弃用。请改用 crypto.getFips() 和 crypto.setFips()。
 
-### `crypto.generateKey(type, options, callback)`
+### crypto.generateKey(type, options)
 
 <!-- YAML
 added: v15.0.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
+    description: "向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是 ERR_INVALID_CALLBACK。"
 -->
 
-* `type` {string} 生成的密钥的预期用途。当前接受的值为 `'hmac'` 和 `'aes'`。
-* `options` {Object}
-  * `length` {number} 要生成的密钥的位长度。这必须是大于 0 的值。
-    * 如果 `type` 是 `'hmac'`，最小值为 8，最大长度为 2<sup>31</sup>-1。如果值不是 8 的倍数，生成的密钥将被截断为 `Math.floor(length / 8)`。
-    * 如果 `type` 是 `'aes'`，长度必须是 `128`、`192` 或 `256` 之一。
-* `callback` {Function}
-  * `err` {Error}
-  * `key` {KeyObject}
+* type {string} 生成的密钥的预期用途。当前接受的值为 'hmac' 和 'aes'。
+* options {Object}
+  * length {number} 要生成的密钥的位长度。这必须是大于 0 的值。
+    * 如果 type 是 'hmac'，最小值为 8，最大长度为 2<sup>31</sup>-1。如果值不是 8 的倍数，生成的密钥将被截断为长度。
+    * 如果 type 是 'aes'，长度必须是 128、192 或 256 之一。
+* callback {Function}
+  * error {Error}
+  * key {KeyObject}
 
-异步生成给定 `length` 的新随机密钥。`type` 将决定对 `length` 执行哪些验证。
+异步生成给定类型的新随机密钥。options 将决定对 type 执行哪些验证。
 
 ```mjs
 const {
@@ -3996,7 +4018,7 @@ const {
 });
 ```
 
-返回值 `{ publicKey, privateKey }` 代表生成的密钥对。选择 PEM 编码时，相应的密钥将是字符串，否则它将是包含编码为 DER 的数据的 buffer。
+返回值 `{ publicKey, privateKey }` 代表生成的密钥对。选择 PEM 编码时，相应的密钥将是字符串，否则它将是包含编码为 DER 的数据的缓冲区。
 
 ### `crypto.generateKeySync(type, options)`
 
@@ -4153,7 +4175,7 @@ console.log(getCiphers()); // ['aes-128-cbc', 'aes-128-ccm', ...]
 added: v2.3.0
 -->
 
-* Returns: {string\[]} 包含支持的椭圆曲线名称的数组。
+* 返回值：{string\[]} 包含支持的椭圆曲线名称的数组。
 
 ```mjs
 const {
@@ -4171,18 +4193,19 @@ const {
 console.log(getCurves()); // ['Oakley-EC2N-3', 'Oakley-EC2N-4', ...]
 ```
 
-### `crypto.getDiffieHellman(groupName)`
+### `crypto.createDiffieHellmanGroup(name)`
+
 
 <!-- YAML
 added: v0.7.5
 -->
 
-* `groupName` {string}
-* Returns: {DiffieHellmanGroup}
+* `name` {string}
+* 返回：{DiffieHellmanGroup}
 
-创建一个预定义的 `DiffieHellmanGroup` 密钥交换对象。支持的组列在 [`DiffieHellmanGroup`][] 文档中。
+创建一个预定义的 `Diffie-Hellman` 密钥交换对象。支持的组列在 [`crypto.getDiffieHellman`][] 文档中。
 
-返回的对象模仿由 [`crypto.createDiffieHellman()`][] 创建的对象的接口，但不允许更改密钥（例如使用 [`diffieHellman.setPublicKey()`][]）。使用此方法的优势在于，各方不必事先生成或交换组模数，从而节省了处理器和通信时间。
+返回的对象模仿由 [`crypto.createDiffieHellman`][] 创建的对象的接口，但不允许更改密钥（例如使用 [`diffieHellman.setPublicKey()`][]）。使用此方法的优势在于，各方不必事先生成或交换组模数，从而节省了处理器和通信时间。
 
 示例（获取共享秘密）：
 
@@ -4227,7 +4250,7 @@ console.log(aliceSecret === bobSecret);
 added: v10.0.0
 -->
 
-* Returns: {number} 当且仅当当前正在使用符合 FIPS 的加密提供程序时为 `1`，否则为 `0`。未来的 semver-major 版本可能会将此 API 的返回类型更改为 {boolean}。
+* 返回：{number} 当且仅当当前正在使用符合 FIPS 的加密提供程序时为 `1`，否则为 `0`。未来的 semver-major 版本可能会将此 API 的返回类型更改为 {boolean}。
 
 ### `crypto.getHashes()`
 
@@ -4235,7 +4258,7 @@ added: v10.0.0
 added: v0.9.3
 -->
 
-* Returns: {string\[]} 支持的哈希算法名称数组，例如 `'RSA-SHA256'`。哈希算法也称为“摘要”算法。
+* 返回：{string\[]} 支持的哈希算法名称数组，例如 `'RSA-SHA256'`。哈希算法也称为“摘要”算法。
 
 ```mjs
 const {
@@ -4260,7 +4283,7 @@ added: v17.4.0
 -->
 
 * `typedArray` {Buffer|TypedArray|DataView|ArrayBuffer}
-* Returns: {Buffer|TypedArray|DataView|ArrayBuffer} 返回 `typedArray`。
+* 返回：{Buffer|TypedArray|DataView|ArrayBuffer} 返回 `typedArray`。
 
 [`crypto.webcrypto.getRandomValues()`][] 的便捷别名。此实现不符合 Web Crypto 规范，要编写 Web 兼容代码，请改用 [`crypto.webcrypto.getRandomValues()`][]。
 
@@ -4271,6 +4294,9 @@ added:
  - v21.7.0
  - v20.12.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64000
+    description: 对于没有默认输出长度的 XOF 哈希函数，现在必须提供 `outputLength` 选项。
   - version:
      - v25.5.0
      - v24.13.1
@@ -4284,11 +4310,11 @@ changes:
 * `algorithm` {string|undefined}
 * `data` {string|Buffer|TypedArray|DataView} 当 `data` 是字符串时，它将在被哈希之前编码为 UTF-8。如果希望字符串输入使用不同的输入编码，用户可以使用 `TextEncoder` 或 `Buffer.from()` 将字符串编码为 `TypedArray`，并将编码后的 `TypedArray` 传递到此 API 中。
 * `options` {Object|string}
-  * `outputEncoding` {string} 用于编码返回摘要的 [Encoding][encoding]。**默认：** `'hex'`。
-  * `outputLength` {number} 对于 'shake256' 等 XOF 哈希函数，outputLength 选项可用于指定所需的输出长度（字节）。
-* Returns: {string|Buffer}
+  * `outputEncoding` {string} [Encoding][encoding] 用于对返回的摘要进行编码。**默认值：** `'hex'`。
+  * `outputLength` {number} 对于诸如 'shake256' 之类的 XOF 哈希函数，指定所需的输出长度（以字节为单位）。对于没有默认输出长度的 XOF 哈希函数，此选项是必需的。
+* 返回：{string|Buffer}
 
-用于创建数据一次性哈希摘要的实用程序。当哈希少量现成数据（<= 5MB）时，它可能比基于对象的 `crypto.createHash()` 更快。如果数据可能很大或是流式的，仍建议使用 `crypto.createHash()`。
+用于创建数据一次性哈希摘要的实用工具。当哈希少量现成数据（<= 5MB）时，它可能比基于对象的 `crypto.createHash()` 更快。如果数据可能很大或是流式的，仍建议使用 `crypto.createHash()`。
 
 `algorithm` 取决于平台上 OpenSSL 版本支持的可用算法。例如 `'sha256'`、`'sha512'` 等。在最新版本的 OpenSSL 上，`openssl list -digest-algorithms` 将显示可用的摘要算法。
 
@@ -4344,9 +4370,9 @@ changes:
 -->
 
 * `digest` {string} 要使用的摘要算法。
-* `ikm` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject} 输入密钥材料。必须提供但可以是零长度。
-* `salt` {string|ArrayBuffer|Buffer|TypedArray|DataView} 盐值。必须提供但可以是零长度。
-* `info` {string|ArrayBuffer|Buffer|TypedArray|DataView} 附加信息值。必须提供但可以是零长度，且不能超过 1024 字节。
+* `ikm` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject} 输入密钥材料。必须提供，但可以是零长度。
+* `salt` {string|ArrayBuffer|Buffer|TypedArray|DataView} 盐值。必须提供，但可以是零长度。
+* `info` {string|ArrayBuffer|Buffer|TypedArray|DataView} 附加信息值。必须提供，但可以是零长度，且不能超过 1024 字节。
 * `keylen` {number} 要生成的密钥长度。必须大于 0。最大允许值是所选摘要函数产生的字节数的 `255` 倍（例如 `sha512` 生成 64 字节哈希，使最大 HKDF 输出为 16320 字节）。
 * `callback` {Function}
   * `err` {Error}
@@ -4425,7 +4451,7 @@ const derivedKey = hkdfSync('sha512', 'key', 'salt', 'info', 64);
 console.log(Buffer.from(derivedKey).toString('hex'));  // '24156e2...5391653'
 ```
 
-### `crypto.pbkdf2(password, salt, iterations, keylen, digest, callback)`
+### 密钥派生函数 2（PBKDF2）
 
 <!-- YAML
 added: v0.5.5
@@ -4459,7 +4485,7 @@ changes:
   * `err` {Error}
   * `derivedKey` {Buffer}
 
-提供异步基于密码的密钥派生函数 2 (PBKDF2) 实现。应用由 `digest` 指定的选定 HMAC 摘要算法，从 `password`、`salt` 和 `iterations` 派生请求字节长度 (`keylen`) 的密钥。
+提供异步基于密码的密钥派生函数 2（PBKDF2）实现。应用由 `digest` 指定的选定 HMAC 摘要算法，从 `password`、`salt` 和 `iterations` 派生请求字节长度（`keylen`）的密钥。
 
 提供的 `callback` 函数使用两个参数调用：`err` 和 `derivedKey`。如果派生密钥时发生错误，`err` 将被设置；否则 `err` 将为 `null`。默认情况下，成功生成的 `derivedKey` 将作为 [`Buffer`][] 传递给回调。如果任何输入参数指定了无效的值或类型，将抛出错误。
 
@@ -4553,6 +4579,9 @@ console.log(key.toString('hex'));  // '3745e48...08d59ae'
 <!-- YAML
 added: v0.11.14
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 传入 CryptoKey 作为 `privateKey` 已不再受支持。
   - version:
       - v21.6.2
       - v20.11.1
@@ -4575,10 +4604,15 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
-  * `oaepHash` {string} 用于 OAEP 填充和 MGF1 的哈希函数。**默认：** `'sha1'`
-  * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于 OAEP 填充的标签。如果未指定，则不使用标签。
-  * `padding` {crypto.constants} `crypto.constants` 中定义的可选填充值，可以是：`crypto.constants.RSA_NO_PADDING`、`crypto.constants.RSA_PKCS1_PADDING` 或 `crypto.constants.RSA_PKCS1_OAEP_PADDING`。
+* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+  * `oaepHash` {string} 用于 OAEP 填充和 MGF1 的哈希函数。
+    **默认值：** `'sha1'`
+  * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于 OAEP 填充的标签。
+    如果未指定，则不使用标签。
+  * `padding` {crypto.constants} 在
+    `crypto.constants` 中定义的可选填充值，可能是：`crypto.constants.RSA_NO_PADDING`、
+    `crypto.constants.RSA_PKCS1_PADDING` 或
+    `crypto.constants.RSA_PKCS1_OAEP_PADDING`。
 * `buffer` {string|ArrayBuffer|Buffer|TypedArray|DataView}
 * 返回：{Buffer} 包含解密内容的新 `Buffer`。
 
@@ -4595,6 +4629,9 @@ changes:
 <!-- YAML
 added: v1.1.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 传入 CryptoKey 作为 `privateKey` 已不再受支持。
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: 添加了 string、ArrayBuffer 和 CryptoKey 作为允许的密钥类型。passphrase 可以是 ArrayBuffer。buffer 可以是 string 或 ArrayBuffer。所有接受 buffer 的类型限制为最大 2 ** 31 - 1 字节。
@@ -4605,11 +4642,16 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
-  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey} PEM 编码的私钥。
-  * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} 私钥的可选密码短语。
-  * `padding` {crypto.constants} `crypto.constants` 中定义的可选填充值，可以是：`crypto.constants.RSA_NO_PADDING` 或 `crypto.constants.RSA_PKCS1_PADDING`。
-  * `encoding` {string} 当 `buffer`、`key` 或 `passphrase` 是字符串时使用的字符串编码。
+* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+    PEM 编码的私钥。
+  * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} 私钥的可选
+    口令。
+  * `padding` {crypto.constants} 在
+    `crypto.constants` 中定义的可选填充值，可能是：`crypto.constants.RSA_NO_PADDING` 或
+    `crypto.constants.RSA_PKCS1_PADDING`。
+  * `encoding` {string} 当 `buffer`、`key` 或
+    `passphrase` 为字符串时使用的字符串编码。
 * `buffer` {string|ArrayBuffer|Buffer|TypedArray|DataView}
 * 返回：{Buffer} 包含加密内容的新 `Buffer`。
 
@@ -4624,6 +4666,9 @@ changes:
 <!-- YAML
 added: v1.1.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 传入 CryptoKey 作为 `key` 已不再受支持。
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: 添加了 string、ArrayBuffer 和 CryptoKey 作为允许的密钥类型。passphrase 可以是 ArrayBuffer。buffer 可以是 string 或 ArrayBuffer。所有接受 buffer 的类型限制为最大 2 ** 31 - 1 字节。
@@ -4634,10 +4679,14 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
-  * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} 私钥的可选密码短语。
-  * `padding` {crypto.constants} `crypto.constants` 中定义的可选填充值，可以是：`crypto.constants.RSA_NO_PADDING` 或 `crypto.constants.RSA_PKCS1_PADDING`。
-  * `encoding` {string} 当 `buffer`、`key` 或 `passphrase` 是字符串时使用的字符串编码。
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+  * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} 私钥的可选
+    密码短语。
+  * `padding` {crypto.constants} 在
+    `crypto.constants` 中定义的可选填充值，可能是：`crypto.constants.RSA_NO_PADDING` 或
+    `crypto.constants.RSA_PKCS1_PADDING`。
+  * `encoding` {string} 当 `buffer`、`key`、
+    或 `passphrase` 为字符串时使用的字符串编码。
 * `buffer` {string|ArrayBuffer|Buffer|TypedArray|DataView}
 * 返回：{Buffer} 包含解密内容的新 `Buffer`。
 
@@ -4654,6 +4703,9 @@ changes:
 <!-- YAML
 added: v0.11.14
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 作为 `key` 传递 CryptoKey 已不再受支持。
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: 添加了 string、ArrayBuffer 和 CryptoKey 作为允许的密钥类型。oaepLabel 和 passphrase 可以是 ArrayBuffer。buffer 可以是 string 或 ArrayBuffer。所有接受 buffer 的类型限制为最大 2 ** 31 - 1 字节。
@@ -4670,13 +4722,21 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
-  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey} PEM 编码的公钥或私钥，{KeyObject} 或 {CryptoKey}。
-  * `oaepHash` {string} 用于 OAEP 填充和 MGF1 的哈希函数。**默认：** `'sha1'`
-  * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于 OAEP 填充的标签。如果未指定，则不使用标签。
-  * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} 私钥的可选密码短语。
-  * `padding` {crypto.constants} `crypto.constants` 中定义的可选填充值，可以是：`crypto.constants.RSA_NO_PADDING`、`crypto.constants.RSA_PKCS1_PADDING` 或 `crypto.constants.RSA_PKCS1_OAEP_PADDING`。
-  * `encoding` {string} 当 `buffer`、`key`、`oaepLabel` 或 `passphrase` 是字符串时使用的字符串编码。
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+    PEM 编码的公钥或私钥，或者 {KeyObject}。
+  * `oaepHash` {string} 用于 OAEP 填充和 MGF1 的哈希函数。
+    **默认值：** `'sha1'`
+  * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于
+    OAEP 填充的标签。如果未指定，则不使用标签。
+  * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} 私钥的可选
+    密码短语。
+  * `padding` {crypto.constants} 在
+    `crypto.constants` 中定义的可选填充值，可能是：`crypto.constants.RSA_NO_PADDING`、
+    `crypto.constants.RSA_PKCS1_PADDING`，或
+    `crypto.constants.RSA_PKCS1_OAEP_PADDING`。
+  * `encoding` {string} 当 `buffer`、`key`、
+    `oaepLabel` 或 `passphrase` 为字符串时使用的字符串编码。
 * `buffer` {string|ArrayBuffer|Buffer|TypedArray|DataView}
 * 返回：{Buffer} 包含加密内容的新 `Buffer`。
 
@@ -4707,9 +4767,9 @@ changes:
   * `buf` {Buffer}
 * Returns: {Buffer} 如果未提供 `callback` 函数。
 
-生成加密强的伪随机数据。`size` 参数是一个数字，指示要生成的字节数。
+生成加密强度高的伪随机数据。`size` 参数是一个数字，表示要生成的字节数。
 
-如果提供了 `callback` 函数，则字节是异步生成的，并且 `callback` 函数使用两个参数调用：`err` 和 `buf`。如果发生错误，`err` 将是一个 `Error` 对象；否则它为 `null`。`buf` 参数是一个包含生成字节的 [`Buffer`][]。
+如果提供了 `callback` 函数，则字节会异步生成，并且 `callback` 函数会使用两个参数调用：`err` 和 `buf`。如果发生错误，`err` 将是一个 `Error` 对象；否则它为 `null`。`buf` 参数是一个包含生成字节的 [`Buffer`][].
 
 ```mjs
 // 异步
@@ -5060,7 +5120,7 @@ const n = randomInt(1, 7);
 console.log(`掷出的骰子点数：${n}`);
 ```
 
-### `crypto.randomUUID([options])`
+### `crypto.randomUUID()`
 
 <!-- YAML
 added:
@@ -5070,11 +5130,11 @@ added:
 
 * `options` {Object}
   * `disableEntropyCache` {boolean} 默认情况下，为了提高性能，Node.js 会生成并缓存足够的随机数据，以生成最多 128 个随机 UUID。要生成不使用缓存的 UUID，请将 `disableEntropyCache` 设置为 `true`。**默认：** `false`。
-* Returns: {string}
+* 返回：{string}
 
 生成一个随机 [RFC 4122][] 版本 4 UUID。UUID 使用加密伪随机数生成器生成。
 
-### `crypto.randomUUIDv7([options])`
+### `crypto.randomUUID()`
 
 <!-- YAML
 added:
@@ -5084,11 +5144,11 @@ added:
 
 * `options` {Object}
   * `disableEntropyCache` {boolean} 默认情况下，为了提高性能，Node.js 会生成并缓存足够的随机数据，以生成最多 128 个随机 UUID。要生成不使用缓存的 UUID，请将 `disableEntropyCache` 设置为 `true`。**默认：** `false`。
-* Returns: {string}
+* 返回：{string}
 
 生成一个随机的 [RFC 9562] 版本 7 UUID。该 UUID 在最高 48 位包含一个以毫秒为精度的 Unix 时间戳，随后在其余字段中包含加密安全的随机比特，因此适合作为带有基于时间排序能力的数据库键。嵌入的时间戳依赖于非单调时钟，并不保证严格递增。
 
-### `crypto.scrypt(password, salt, keylen[, options], callback)`
+### `crypto.scrypt(password, salt, keylen, options, callback)`
 
 <!-- YAML
 added: v10.5.0
@@ -5103,7 +5163,7 @@ changes:
      - v12.8.0
      - v10.17.0
     pr-url: https://github.com/nodejs/node/pull/28799
-    description: "`maxmem` 值现在可以是任何安全整数。"
+    description: "`cost` 值现在可以是任何安全整数。"
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21525
     description: "添加了 `cost`、`blockSize` 和 `parallelization` 选项名称。"
@@ -5116,7 +5176,7 @@ changes:
   * `cost` {number} CPU/内存成本参数。必须是大于 1 的 2 的幂。**默认：** `16384`。
   * `blockSize` {number} 块大小参数。**默认：** `8`。
   * `parallelization` {number} 并行化参数。**默认：** `1`。
-  * `N` {number} `cost` 的别名。只能指定其中之一。
+  * `n` {number} `cost` 的别名。只能指定其中之一。
   * `r` {number} `blockSize` 的别名。只能指定其中之一。
   * `p` {number} `parallelization` 的别名。只能指定其中之一。
   * `maxmem` {number} 内存上限。当（大约）`128 * N * r > maxmem` 时为错误。**默认：** `32 * 1024 * 1024`。
@@ -5130,7 +5190,7 @@ changes:
 
 当为 `password` 或 `salt` 传递字符串时，请考虑 [将字符串用作加密 API 输入时的注意事项][]。
 
-`callback` 函数使用两个参数调用：`err` 和 `derivedKey`。`err` 是密钥派生失败时的异常对象，否则 `err` 为 `null`。`derivedKey` 作为 [`Buffer`][] 传递给回调。
+`callback` 函数使用两个参数调用：`err` 和 `derivedKey`。`err` 是密钥派生失败时的异常对象，否则 `err` 为 `null`。`derivedKey` 作为 [callback][] 传递给回调。
 
 当任何输入参数指定无效的值或类型时，将抛出异常。
 
@@ -5183,26 +5243,26 @@ changes:
     description: "添加了 `cost`、`blockSize` 和 `parallelization` 选项名称。"
 -->
 
-* `password` {string|Buffer|TypedArray|DataView}
-* `salt` {string|Buffer|TypedArray|DataView}
-* `keylen` {number}
-* `options` {Object}
-  * `cost` {number} CPU/内存成本参数。必须是大于 1 的 2 的幂。**默认：** `16384`。
-  * `blockSize` {number} 块大小参数。**默认：** `8`。
-  * `parallelization` {number} 并行化参数。**默认：** `1`。
-  * `N` {number} `cost` 的别名。只能指定其中之一。
-  * `r` {number} `blockSize` 的别名。只能指定其中之一。
-  * `p` {number} `parallelization` 的别名。只能指定其中之一。
-  * `maxmem` {number} 内存上限。当（大约）`128 * N * r > maxmem` 时为错误。**默认：** `32 * 1024 * 1024`。
-* Returns: {Buffer}
+* password {string|Buffer|TypedArray|DataView}
+* salt {string|Buffer|TypedArray|DataView}
+* keylen {number}
+* options {Object}
+  * cost {number} CPU/内存成本参数。必须是大于 1 的 2 的幂。**默认：** 16384。
+  * blockSize {number} 块大小参数。**默认：** 8。
+  * parallelization {number} 并行化参数。**默认：** 1。
+  * N {number} cost 的别名。只能指定其中之一。
+  * r {number} blockSize 的别名。只能指定其中之一。
+  * p {number} parallelization 的别名。只能指定其中之一。
+  * maxmem {number} 内存上限。当（大约）1024 ** 3 * 32 时为错误。**默认：** 33554432。
+* 返回：{Buffer}
 
 提供同步 [scrypt][] 实现。Scrypt 是一种基于密码的密钥派生函数，旨在在计算和内存方面都很昂贵，从而使暴力破解攻击无利可图。
 
-`salt` 应尽可能唯一。建议 salt 是随机的且至少 16 字节长。详见 [NIST SP 800-132][]。
+salt 应尽可能唯一。建议 salt 是随机的且至少 16 字节长。详见 [NIST SP 800-132][]。
 
-当为 `password` 或 `salt` 传递字符串时，请考虑 [将字符串用作加密 API 输入时的注意事项][]。
+当为 password 或 salt 传递字符串时，请考虑 [将字符串用作加密 API 输入时的注意事项][]。
 
-当密钥派生失败时抛出异常，否则派生密钥作为 [`Buffer`][] 返回。
+当密钥派生失败时抛出异常，否则派生密钥作为 [Buffer][] 返回。
 
 当任何输入参数指定无效的值或类型时，将抛出异常。
 
@@ -5232,23 +5292,26 @@ const key2 = scryptSync('password', 'salt', 64, { N: 1024 });
 console.log(key2.toString('hex'));  // '3745e48...aa39b34'
 ```
 
-### `crypto.secureHeapUsed()`
+### 安全堆统计信息
 
 <!-- YAML
 added: v15.6.0
 -->
 
-* Returns: {Object}
+* 返回：{Object}
   * `total` {number} 使用 `--secure-heap=n` 命令行标志指定的已分配安全堆总大小。
   * `min` {number} 使用 `--secure-heap-min` 命令行标志指定的安全堆最小分配。
   * `used` {number} 当前从安全堆分配的总字节数。
   * `utilization` {number} 计算得到的 `used` 与 `total` 分配字节数的比率。
 
-### `crypto.setEngine(engine[, flags])`
+### setEngine
 
 <!-- YAML
 added: v0.11.11
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63966
+    description: 运行时弃用。
   - version:
     - v22.4.0
     - v20.16.0
@@ -5256,10 +5319,13 @@ changes:
     description: OpenSSL 3 中的自定义引擎支持已弃用。
 -->
 
+> 稳定性：0 - 已弃用
+
 * `engine` {string}
 * `flags` {crypto.constants} **默认：** `crypto.constants.ENGINE_METHOD_ALL`
 
-加载并设置 `engine` 以用于部分或全部 OpenSSL 函数（由标志选择）。从 OpenSSL 3 开始，对 OpenSSL 中自定义引擎的支持已弃用。
+加载并为部分或全部 OpenSSL 函数设置 `engine`（由标志选择）。
+由于自定义引擎支持自 OpenSSL 3 起已弃用，因此此 API 也已弃用。
 
 `engine` 可以是 id 或引擎共享库的路径。
 
@@ -5277,7 +5343,7 @@ changes:
 * `crypto.constants.ENGINE_METHOD_ALL`
 * `crypto.constants.ENGINE_METHOD_NONE`
 
-### `crypto.setFips(bool)`
+### enableFips
 
 <!-- YAML
 added: v10.0.0
@@ -5287,11 +5353,14 @@ added: v10.0.0
 
 在启用 FIPS 的 Node.js 构建中启用符合 FIPS 的加密提供程序。如果 FIPS 模式不可用，则抛出错误。
 
-### `crypto.sign(algorithm, data, key[, callback])`
+### sign
 
 <!-- YAML
 added: v12.0.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 不再支持将 CryptoKey 作为 `key` 传入。
   - version:
      - v26.1.0
      - v24.16.0
@@ -5323,11 +5392,11 @@ changes:
 
 * `algorithm` {string | null | undefined}
 * `data` {ArrayBuffer|Buffer|SharedArrayBuffer|TypedArray|DataView|string}
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `callback` {Function}
   * `err` {Error}
   * `signature` {Buffer}
-* Returns: {Buffer} 如果未提供 `callback` 函数。
+* 返回：{Buffer} 如果未提供 `callback` 函数。
 
 <!--lint enable maximum-line-length remark-lint-->
 
@@ -5351,17 +5420,17 @@ changes:
 
 如果提供了 `callback` 函数，此函数使用 libuv 的线程池。
 
-### `crypto.subtle`
+### subtle
 
 <!-- YAML
 added: v17.4.0
 -->
 
-* Type: {SubtleCrypto}
+* 类型：{SubtleCrypto}
 
 [`crypto.webcrypto.subtle`][] 的便捷别名。
 
-### `crypto.timingSafeEqual(a, b)`
+### timingSafeEqual
 
 <!-- YAML
 added: v6.6.0
@@ -5373,7 +5442,7 @@ changes:
 
 * `a` {ArrayBuffer|Buffer|TypedArray|DataView}
 * `b` {ArrayBuffer|Buffer|TypedArray|DataView}
-* Returns: {boolean}
+* 返回：{boolean}
 
 此函数使用恒定时间算法比较给定
 `ArrayBuffer`、`TypedArray` 或 `DataView` 实例所表示的底层字节。
@@ -5405,6 +5474,9 @@ changes:
 <!-- YAML
 added: v12.0.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 传递 CryptoKey 作为 `key` 已不再支持。
   - version:
      - v26.1.0
      - v24.16.0
@@ -5439,7 +5511,7 @@ changes:
 
 * `algorithm` {string|null|undefined}
 * `data` {ArrayBuffer|Buffer|SharedArrayBuffer|TypedArray|DataView|string}
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|CryptoKey}
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `signature` {ArrayBuffer|Buffer|SharedArrayBuffer|TypedArray|DataView}
 * `callback` {Function}
   * `err` {Error}
@@ -5997,7 +6069,7 @@ default_properties = fips=yes
   </tr>
   <tr>
     <td><code>RSA_PSS_SALTLEN_AUTO</code></td>
-    <td>导致在验证签名时自动确定 <code>RSA_PKCS1_PSS_PADDING</code> 的
+    <td>会导致在验证签名时自动确定 <code>RSA_PKCS1_PSS_PADDING</code> 的
         盐长度。</td>
   </tr>
   <tr>

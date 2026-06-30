@@ -324,6 +324,37 @@ socket.bind({
 });
 ```
 
+### `socket.bindSync([options])`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+* `options` {Object}
+  * `port` {integer} 如果省略或为 `0`，操作系统将分配一个
+    任意的未使用端口。**默认值：**`0`。
+  * `address` {string} 要绑定的数值型 IP 地址。与
+    [`socket.bind()`][] 不同，不会执行 DNS 解析，因此不接受主机名。如果省略，操作系统会绑定到所有地址
+    （`'0.0.0.0'` 用于 `udp4` 套接字，`'::'` 用于 `udp6`）。
+* 返回值：{Object} 由 [`socket.address()`][] 返回的已绑定地址。
+
+[`socket.bind()`][] 的同步对应方法。`bind(2)` 是一个本地的、
+非阻塞系统调用，因此绑定会内联执行，并立即返回解析后的
+地址，包括当 `port` 为 `0` 时操作系统分配的
+临时端口：
+
+```js
+const dgram = require('node:dgram');
+
+const socket = dgram.createSocket('udp4');
+const address = socket.bindSync({ address: '0.0.0.0', port: 0 });
+console.log(address); // e.g. { address: '0.0.0.0', family: 'IPv4', port: 53124 }
+```
+
+绑定失败（例如 `EADDRINUSE`）会同步抛出，而不是作为 `'error'` 事件发出。`bindSync()` 返回后，[`socket.address()`][] 会立即同步有效，而 `'listening'` 事件会在下一个 tick 发出。
+
+`address` 必须是数值型 IP 字面量；`bindSync()` 从不执行 DNS 解析（异步名称解析才是绑定过程中真正会阻塞的部分）。传入的数据报会继续通过 [`'message'`][] 事件异步传递。`bindSync()` 始终绑定套接字自身的句柄，并且不参与 [`cluster`][] 句柄共享。
+
 ### `socket.close([callback])`
 
 <!-- YAML
@@ -366,6 +397,29 @@ added: v12.0.0
 如果未提供 `address`，默认将使用 `'127.0.0.1'`（对于 `udp4` 套接字）或 `'::1'`（对于 `udp6` 套接字）。
 连接完成后，会发出 `'connect'` 事件并调用可选的 `callback` 函数。
 如果失败，将调用 `callback`，如果失败，则发出 `'error'` 事件。
+
+### `socket.connectSync(port[, address])`
+
+<!-- YAML
+added: v26.4.0
+-->
+
+* `port` {integer}
+* `address` {string} 要连接到的数值型 IP 地址。与 [`socket.connect()`][] 不同，这里不会执行 DNS 解析，因此不接受主机名。如果省略，则使用 `'127.0.0.1'`（对于 `udp4` 套接字）或 `'::1'`（对于 `udp6` 套接字）。
+
+[`socket.connect()`][] 的同步对应方法。对于 UDP 套接字，`connect(2)` 只会记录默认对等地址，并且是一个本地的、非阻塞的系统调用，因此关联会在当前行内完成。调用本身引发的任何错误（例如地址族不匹配时的 `EAFNOSUPPORT`）都会同步抛出，而不是通过 `'error'` 事件报告。因为 `connect(2)` 不会探测可达性，所以像 `ECONNREFUSED` 这样的错误仍会像 [`socket.connect()`][] 一样，在之后的发送或接收操作中异步显现：
+
+```js
+const dgram = require('node:dgram');
+
+const socket = dgram.createSocket('udp4');
+socket.connectSync(41234, '127.0.0.1');
+console.log(socket.remoteAddress()); // { address: '127.0.0.1', family: 'IPv4', port: 41234 }
+```
+
+如果套接字仍未绑定，则会先同步绑定。调用 `connectSync()` 后，[`socket.remoteAddress()`][] 会同步变为有效状态，而 `'connect'` 事件会在下一轮事件循环中触发。尝试在已连接的套接字上调用 `connectSync()` 会抛出 [`ERR_SOCKET_DGRAM_IS_CONNECTED`][] 异常，而在异步 [`socket.bind()`][] 仍在进行时调用它则会抛出 [`ERR_SOCKET_ALREADY_BOUND`][] 异常。
+
+`address` 必须是数字形式的 IP 字面量；`connectSync()` 从不执行 DNS 解析（异步名称解析是连接过程中唯一真正会阻塞的部分）。
 
 ### `socket.disconnect()`
 
@@ -659,7 +713,7 @@ added: v8.6.0
 
 * `multicastInterface` {string}
 
-_本节中对 scope 的所有引用均指 [IPv6 区域索引][]，其由 [RFC 4007][] 定义。在字符串形式中，带有范围索引的 IP 写为 `'IP%scope'`，其中 scope 是接口名称或接口编号。_
+_本节中对范围的所有引用均指 [IPv6 区域索引][]，其由 [RFC 4007][] 定义。在字符串形式中，带有范围索引的 IP 写为 `'IP%scope'`，其中范围是接口名称或接口编号。_
 
 将套接字的默认传出多播接口设置为所选接口或返回系统接口选择。
 `multicastInterface` 必须是来自套接字族的 IP 的有效字符串表示。
@@ -696,7 +750,7 @@ socket.bind(1234, () => {
 
 #### 示例：IPv4 传出多播接口
 
-所有系统使用所需物理接口上的主机 IP：
+所有系统都使用所需物理接口上的主机 IP：
 
 ```js
 const socket = dgram.createSocket('udp4');
@@ -708,7 +762,7 @@ socket.bind(1234, () => {
 
 #### 调用结果
 
-对尚未准备好发送或不再打开的套接字的调用可能会抛出 _Not running_ [`Error`][]。
+对尚未准备好发送或不再打开的套接字的调用可能会抛出 _未运行_ [`Error`][]。
 
 如果 `multicastInterface` 无法解析为 IP，则抛出 _EINVAL_ [`System Error`][]。
 
@@ -883,6 +937,8 @@ added: v0.1.99
 [IPv6 Zone Indexes]: https://en.wikipedia.org/wiki/IPv6_address#Scoped_literal_IPv6_addresses
 [RFC 4007]: https://tools.ietf.org/html/rfc4007
 [`'close'`]: #event-close
+[`'message'`]: #event-message
+[`ERR_SOCKET_ALREADY_BOUND`]: errors.md#err_socket_already_bound
 [`ERR_SOCKET_BAD_PORT`]: errors.md#err_socket_bad_port
 [`ERR_SOCKET_BUFFER_SIZE`]: errors.md#err_socket_buffer_size
 [`ERR_SOCKET_DGRAM_IS_CONNECTED`]: errors.md#err_socket_dgram_is_connected
@@ -896,6 +952,9 @@ added: v0.1.99
 [`dns.lookup()`]: dns.md#dnslookuphostname-options-callback
 [`socket.address().address`]: #socketaddress
 [`socket.address().port`]: #socketaddress
+[`socket.address()`]: #socketaddress
 [`socket.bind()`]: #socketbindport-address-callback
 [`socket.close()`]: #socketclosecallback
+[`socket.connect()`]: #socketconnectport-address-callback
+[`socket.remoteAddress()`]: #socketremoteaddress
 [byte length]: buffer.md#static-method-bufferbytelengthstring-encoding

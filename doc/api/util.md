@@ -95,7 +95,7 @@ callbackFunction((err, ret) => {
 });
 ```
 
-## `util.convertProcessSignalToExitCode(signal)`
+## process.signalName()
 
 <!-- YAML
 added:
@@ -103,12 +103,12 @@ added:
  - v24.14.0
 -->
 
-* `signal` {string} 信号名称（例如 `'SIGTERM'`）
-* 返回值：{number} 对应于 `signal` 的退出码
+* `signalName` {string} 信号名称（例如 `SIGINT`）
+* 返回值：{number} 对应于 `signalName` 的退出码
 
-`util.convertProcessSignalToExitCode()` 方法将信号名称转换为其对应的 POSIX 退出码。遵循 POSIX 标准，被信号终止的进程的退出码计算为 `128 + 信号编号`。
+`process.signalName()` 方法将信号名称转换为其对应的 POSIX 退出码。遵循 POSIX 标准，被信号终止的进程的退出码计算为 `128 + signal number`。
 
-如果 `signal` 不是有效的信号名称，则将抛出错误。参见 [`signal(7)`][] 获取有效信号列表。
+如果 `signalName` 不是有效的信号名称，则将抛出错误。参见 [信号事件][] 获取有效信号列表。
 
 ```mjs
 import { convertProcessSignalToExitCode } from 'node:util';
@@ -436,19 +436,25 @@ changes:
 `util.format()` 方法使用第一个参数作为 `printf` 风格的格式字符串返回一个格式化字符串，
 该字符串可以包含零个或多个格式说明符。每个说明符都被替换为相应参数的转换值。支持的说明符有：
 
-* `%s`: `String` 将用于转换除 `BigInt`、`Object` 和 `-0` 之外的所有值。`BigInt` 值将用 `n` 表示，
-  既没有用户定义的 `toString` 函数也没有 `Symbol.toPrimitive` 函数的对象将使用选项 `{ depth: 0, colors: false, compact: 3 }` 通过 `util.inspect()` 进行检查。
-* `%d`: `Number` 将用于转换除 `BigInt` 和 `Symbol` 之外的所有值。
-* `%i`: `parseInt(value, 10)` 用于除 `BigInt` 和 `Symbol` 之外的所有值。
-* `%f`: `parseFloat(value)` 用于除 `Symbol` 之外的所有值。
-* `%j`: JSON。如果参数包含循环引用，则替换为字符串 `'[Circular]'`。
-* `%o`: `Object`。具有通用 JavaScript 对象格式化的对象的字符串表示。类似于使用选项 `{ showHidden: true, showProxy: true }` 的 `util.inspect()`。
-  这将显示完整对象，包括不可枚举属性和代理。
-* `%O`: `Object`。具有通用 JavaScript 对象格式化的对象的字符串表示。类似于不带选项的 `util.inspect()`。
-  这将显示完整对象，不包括不可枚举属性和代理。
-* `%c`: `CSS`。此说明符被忽略，将跳过任何传入的 CSS。
-* `%%`: 单个百分号 (`'%'`)。这不消耗参数。
-* 返回：{string} 格式化后的字符串
+* `%s`: 将使用 `String` 来转换除 `BigInt`、`Object`
+  和 `-0` 之外的所有值。`BigInt` 值将以 `n` 表示，而没有用户定义的 `toString` 函数或 `Symbol.toPrimitive` 函数的对象将使用 `util.inspect()`
+  进行检查，并带有 `{ depth: 0, colors: false, compact: 3 }` 选项。
+* `%d`: 将使用 `Number` 来转换除 `BigInt` 和
+  `Symbol` 之外的所有值。
+* `%i`: 除 `BigInt` 和
+  `Symbol` 之外的所有值都使用 `parseInt(value, 10)`。
+* `%f`: 除 `Symbol` 之外的所有值都使用 `parseFloat(value)`。
+* `%j`: JSON。如果参数包含
+  循环引用，则替换为字符串 `'[Circular]'`。
+* `%o`: `Object`。使用通用 JavaScript
+  对象格式化方式表示对象的字符串。类似于带有 `{ showHidden: true, showProxy: true }` 选项的 `util.inspect()`。这将显示完整对象，
+  包括不可枚举属性和代理。
+* `%O`: `Object`。使用通用 JavaScript
+  对象格式化方式表示对象的字符串。类似于不带选项的 `util.inspect()`。这将显示完整对象，
+  但不包括不可枚举属性和代理。
+* `%c`: `CSS`。此说明符会被忽略，并会跳过传入的任何 CSS。
+* `%%`: 单个百分号（`'%'`）。这不会消耗参数。
+* Returns: {string} 格式化后的字符串
 
 如果说明符没有相应的参数，则不会被替换：
 
@@ -1242,17 +1248,17 @@ console.log(inspect(bigDecimal, { numericSeparator: true }));
 修饰符支持因不同终端而异。如果不支持，它们大多会被忽略。
 
 * `reset` - 将所有（颜色）修饰符重置为默认值
-* **bold** - 使文本加粗
-* _italic_ - 使文本倾斜
-* <span style="border-bottom: 1px solid;">underline</span> - 使文本下划线
-* ~~strikethrough~~ - 在文本中心画一条水平线（别名：`strikeThrough`, `crossedout`, `crossedOut`）
+* **加粗** - 使文本加粗
+* _斜体_ - 使文本倾斜
+* <span style="border-bottom: 1px solid;">下划线</span> - 使文本下划线
+* ~~删除线~~ - 在文本中心画一条水平线（别名：`strikeThrough`, `crossedout`, `crossedOut`）
 * `hidden` - 打印文本，但使其不可见（别名：conceal）
-* <span style="opacity: 0.5;">dim</span> - 降低颜色强度（别名：`faint`）
-* <span style="border-top: 1px solid;">overlined</span> - 使文本上划线
-* blink - 以间隔隐藏和显示文本
-* <span style="filter: invert(100%);">inverse</span> - 交换前景和背景颜色（别名：`swapcolors`, `swapColors`）
-* <span style="border-bottom: 1px double;">doubleunderline</span> - 使文本双下划线（别名：`doubleUnderline`）
-* <span style="border: 1px solid;">framed</span> - 在文本周围绘制边框
+* <span style="opacity: 0.5;">变淡</span> - 降低颜色强度（别名：`faint`）
+* <span style="border-top: 1px solid;">上划线</span> - 使文本上划线
+* 闪烁 - 以间隔隐藏和显示文本
+* <span style="filter: invert(100%);">反显</span> - 交换前景和背景颜色（别名：`swapcolors`, `swapColors`）
+* <span style="border-bottom: 1px double;">双下划线</span> - 使文本双下划线（别名：`doubleUnderline`）
+* <span style="border: 1px solid;">加框</span> - 在文本周围绘制边框
 
 #### 前景色
 
@@ -1410,10 +1416,7 @@ changes:
 
 除了可以通过 `util.inspect.custom` 访问外，此符号还在 [全局符号注册表][global symbol registry] 中注册，可以在任何环境中作为 `Symbol.for('nodejs.util.inspect.custom')` 访问。
 
-Using this allows code to be written in a portable fashion, so that the custom
-inspect function is used in a Node.js environment and ignored in the browser.
-The `util.inspect()` function itself is passed as third argument to the custom
-inspect function to allow further portability.
+使用此方式可以让代码以可移植的方式编写，从而使自定义检查函数在 Node.js 环境中生效，而在浏览器中被忽略。`util.inspect()` 函数本身会作为第三个参数传递给自定义检查函数，以进一步提升可移植性。
 
 ```js
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
@@ -1524,7 +1527,7 @@ changes:
     - v23.11.0
     - v22.15.0
    pr-url: https://github.com/nodejs/node/pull/57510
-   description: 标记 API 为稳定版。
+   description: 将 API 标记为稳定版。
 -->
 
 [MIMEType 类](https://bmeck.github.io/node-proposal-mime-api/) 的实现。
@@ -1950,7 +1953,7 @@ console.log(values, positionals);
 返回的令牌具有描述以下内容的属性：
 
 * 所有令牌
-  * `kind` {string} 'option'、'positional' 或 'option-terminator' 之一。
+  * `kind` {string} `'option'`、`'positional'` 或 `'option-terminator'` 之一。
   * `index` {number} `args` 中包含令牌的元素的索引。因此令牌的源参数是 `args[token.index]`。
 * 选项令牌
   * `name` {string} 选项的长名称。
@@ -2078,7 +2081,7 @@ parseEnv('HELLO=world\nHELLO=oh my\n');
 // 返回：{ HELLO: 'oh my' }
 ```
 
-## `util.promisify(original)`
+## 将函数转换为返回 Promise 的版本
 
 <!-- YAML
 added: v8.0.0
@@ -2453,7 +2456,7 @@ console.log(decoder.decode(u8arr)); // Hello
 | `'koi8-r'`         | `'cskoi8r'`, `'koi'`, `'koi8'`, `'koi8_r'`                                                                                                                                                                                          |
 | `'koi8-u'`         | `'koi8-ru'`                                                                                                                                                                                                                         |
 | `'macintosh'`      | `'csmacintosh'`, `'mac'`, `'x-mac-roman'`                                                                                                                                                                                           |
-| `'windows-874'`    | `'dos-874'`, `'iso-8859-11'`, `'iso8859-11'`, `'iso885911'`, `'tis-620'`                                                                                                                                                            |
+| `'windows-874'`    | `'dos-874'`, `'iso-8859-11'`, `'iso8859-11'`, `'iso885911'`, `'tis-620'`
 | `'windows-1250'`   | `'cp1250'`, `'x-cp1250'`                                                                                                                                                                                                            |
 | `'windows-1251'`   | `'cp1251'`, `'x-cp1251'`                                                                                                                                                                                                            |
 | `'windows-1252'`   | `'ansi_x3.4-1968'`, `'ascii'`, `'cp1252'`, `'cp819'`, `'csisolatin1'`, `'ibm819'`, `'iso-8859-1'`, `'iso-ir-100'`, `'iso8859-1'`, `'iso88591'`, `'iso_8859-1'`, `'iso_8859-1:1987'`, `'l1'`, `'latin1'`, `'us-ascii'`, `'x-cp1252'` |
@@ -2576,13 +2579,13 @@ const dest = new Uint8Array(10);
 const { read, written } = encoder.encodeInto(src, dest);
 ```
 
-### `textEncoder.encoding`
+### 字符串
 
 * 类型：{string}
 
-`TextEncoder` 实例支持的编码。始终设置为 `'utf-8'`。
+此实例支持的编码。始终设置为 utf8。
 
-## `util.toUSVString(string)`
+## 规范化
 
 <!-- YAML
 added:
@@ -2590,11 +2593,11 @@ added:
   - v14.18.0
 -->
 
-* `string` {string}
+* 返回值 {string}
 
-返回将任何代理码点（或等价地，任何未配对的代理代码单元）替换为 Unicode“替换字符”U+FFFD 后的 `string`。
+返回将任何代理码点（或等价地，任何未配对的代理代码单元）替换为 Unicode“替换字符”U+FFFD 后的字符串。
 
-## `util.transferableAbortController()`
+## 创建 AbortController
 
 <!-- YAML
 added: v18.11.0
@@ -2608,7 +2611,7 @@ changes:
 
 创建并返回一个 {AbortController} 实例，其 {AbortSignal} 被标记为可转移，并可与 `structuredClone()` 或 `postMessage()` 一起使用。
 
-## `util.transferableAbortSignal(signal)`
+## 标记 AbortSignal 为可转移
 
 <!-- YAML
 added: v18.11.0
@@ -2741,7 +2744,7 @@ added: v10.0.0
 * `value` {any}
 * 返回：{boolean}
 
-如果值是 {ArrayBuffer} 视图之一的实例，例如类型化数组对象或 {DataView}，则返回 `true`。等同于 [`ArrayBuffer.isView()`][]。
+如果值是 {ArrayBuffer} 视图之一的实例，例如类型化数组对象或 {DataView}，则返回 `true`。等同于 [`ArrayBuffer.isView()`][].
 
 ```js
 util.types.isArrayBufferView(new Int8Array());  // 返回 true
@@ -2860,7 +2863,7 @@ added: v10.0.0
 -->
 
 * `value` {any}
-* 返回：{boolean}
+* 返回：{布尔值}
 
 如果值是布尔对象，例如由 `new Boolean()` 创建，则返回 `true`。
 
@@ -2939,18 +2942,18 @@ added: v10.0.0
 util.types.isDate(new Date());  // 返回 true
 ```
 
-### `util.types.isExternal(value)`
+### 其他
 
 <!-- YAML
 added: v10.0.0
 -->
 
-* `value` {any}
+* 值 {any}
 * 返回：{boolean}
 
-如果值是原生 `External` 值，则返回 `true`。
+如果值是原生 对象，则返回 true。
 
-原生 `External` 值是一种特殊类型的对象，包含一个用于原生代码访问的原始 C++ 指针 (`void*`)，没有其他属性。此类对象由 Node.js 内部或原生 addon 创建。在 JavaScript 中，它们是带有 `null` 原型的 [冻结][`Object.freeze()`] 对象。
+原生 对象是一种特殊类型的对象，包含一个用于原生代码访问的原始 C++ 指针 (void*)，没有其他属性。此类对象由 Node.js 内部或原生 addon 创建。在 JavaScript 中，它们是带有 Object 原型的 [冻结][冻结对象] 对象。
 
 ```c
 #include <js_native_api.h>
@@ -3523,7 +3526,7 @@ util.types.isWeakSet(new WeakSet());  // 返回 true
 
 ## 已弃用的 API
 
-以下 API 已弃用，不应再使用。现有的应用程序和模块应更新以寻找替代方案。
+以下 API 已弃用，不应再使用。现有的应用程序和模块应更新为寻找替代方案。
 
 ### `util._extend(target, source)`
 
@@ -3534,8 +3537,8 @@ util.types.isWeakSet(new WeakSet());  // 返回 true
 
 > 稳定性：0 - 已弃用：请改用 [`Object.assign()`][]。
 
-* `target` {Object}
-* `source` {Object}
+* `target` {对象}
+* `source` {对象}
 
 `util._extend()` 方法从未打算在内部 Node.js 模块之外使用。但社区还是发现并使用了它。
 

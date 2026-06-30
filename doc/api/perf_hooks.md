@@ -210,12 +210,12 @@ changes:
     description: 添加了 bodyInfo、responseStatus 和 deliveryType 参数。
 -->
 
-* `timingInfo` {Object} [Fetch Timing Info][]
-* `requestedUrl` {string} 资源 url
+* `timingInfo` {Object} [获取时序信息][]
+* `requestedUrl` {string} 资源 URL
 * `initiatorType` {string} 发起者名称，例如：'fetch'
 * `global` {Object}
 * `cacheMode` {string} 缓存模式必须是空字符串 ('') 或 'local'
-* `bodyInfo` {Object} [Fetch Response Body Info][]
+* `bodyInfo` {Object} [获取响应正文信息][]
 * `responseStatus` {number} 响应的状态码
 * `deliveryType` {string} 交付类型。**默认值：** `''`。
 
@@ -361,7 +361,7 @@ added: v18.8.0
 added: v8.5.0
 -->
 
-此类的构造函数不直接暴露给用户。
+此类的构造函数不直接向用户暴露。
 
 ### `performanceEntry.duration`
 
@@ -370,12 +370,12 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: "此属性 getter 必须使用`PerformanceEntry` 对象作为接收者来调用。"
+    description: "此属性的 getter 必须以 `PerformanceEntry` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
 
-此条目经过的总毫秒数。此值对于所有性能条目类型并不都有意义。
+该条目经过的总毫秒数。此值对所有性能条目类型并不都适用。
 
 ### `performanceEntry.entryType`
 
@@ -384,7 +384,7 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: "此属性 getter 必须使用`PerformanceEntry` 对象作为接收者来调用。"
+    description: "此属性的 getter 必须以 `PerformanceEntry` 对象作为接收者调用。"
 -->
 
 * 类型：{string}
@@ -409,7 +409,7 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: "此属性 getter 必须使用`PerformanceEntry` 对象作为接收者来调用。"
+    description: "此属性的 getter 必须以 `PerformanceEntry` 对象作为接收者调用。"
 -->
 
 * 类型：{string}
@@ -423,7 +423,7 @@ added: v8.5.0
 changes:
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44483
-    description: "此属性 getter 必须使用`PerformanceEntry` 对象作为接收者来调用。"
+    description: "此属性的 getter 必须以 `PerformanceEntry` 对象作为接收者调用。"
 -->
 
 * 类型：{number}
@@ -556,6 +556,7 @@ changes:
 
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_MAJOR`
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_MINOR`
+* `perf_hooks.constants.NODE_PERFORMANCE_GC_MINOR_MARK_SWEEP`
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_INCREMENTAL`
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_WEAKCB`
 
@@ -566,6 +567,7 @@ changes:
 * `kind` {number} 以下之一：
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_MAJOR`
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_MINOR`
+  * `perf_hooks.constants.NODE_PERFORMANCE_GC_MINOR_MARK_SWEEP`
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_INCREMENTAL`
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_WEAKCB`
 * `flags` {number} 以下之一：
@@ -642,7 +644,7 @@ added: v8.5.0
 
 _此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
 
-提供 Node.js 本身的计时详情。此类的构造函数不对用户暴露。
+提供 Node.js 本身的计时详情。此类的构造函数不向用户暴露。
 
 ### `performanceNodeTiming.bootstrapComplete`
 
@@ -662,7 +664,7 @@ added: v8.5.0
 
 * 类型：{number}
 
-Node.js 环境初始化的分辨率毫秒时间戳。
+Node.js 环境初始化的高分辨率毫秒时间戳。
 
 ### `performanceNodeTiming.idleTime`
 
@@ -1477,17 +1479,28 @@ setImmediate(() => {
 
 <!-- YAML
 added: v11.10.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62935
+    description: 新增了 `samplePerIteration` 选项。
 -->
 
 * `options` {Object}
-  * `resolution` {number} 采样分辨率（毫秒）。必须大于零。**默认值：** `10`。
-* 返回：{IntervalHistogram}
+  * `samplePerIteration` {boolean} 当为 `true` 时，样本会在每次
+    事件循环迭代时采集一次。**默认值：** `false`。
+  * `resolution` {number} 基于间隔采样时，以毫秒为单位的采样频率。
+    必须大于零。当前选项为 `samplePerIteration` 时会忽略此选项。**默认值：** `10`。
+* 返回：{ELDHistogram}
 
 _此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
 
-创建一个 `IntervalHistogram` 对象，该对象随时间采样并报告事件循环延迟。延迟将以纳秒为单位报告。
+创建一个直方图对象，用于随时间采样并报告事件循环延迟。
+延迟将以纳秒为单位报告。
 
-使用计时器检测近似事件循环延迟之所以有效，是因为计时器的执行与 libuv 事件循环的生命周期具体绑定。也就是说，循环中的延迟会导致计时器执行的延迟，而这些延迟正是此 API 旨在检测的。
+默认情况下，直方图会通过使用已配置的 `resolution` 的计时器进行更新。
+当 `samplePerIteration` 为 `true` 时，样本会使用 `uv_prepare_t` 和 `uv_check_t` 钩子在每次事件循环迭代时采集一次。
+在该模式下，直方图不会保持事件循环存活，也不会在应用空闲时强制额外迭代。
+这两种采样模式产生的结果差异很大，不应直接比较。
 
 ```mjs
 import { monitorEventLoopDelay } from 'node:perf_hooks';
@@ -1534,7 +1547,7 @@ added:
 
 _此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
 
-将函数包装在一个新函数中，该函数测量被包装函数的运行时间。必须将 `PerformanceObserver` 订阅到 `'function'` 事件类型才能访问计时详细信息。
+将函数包装在一个新函数中，该函数会测量被包装函数的运行时间。必须将 `PerformanceObserver` 订阅到 `'function'` 事件类型才能访问计时详细信息。
 
 ```mjs
 import { timerify, performance, PerformanceObserver } from 'node:perf_hooks';
@@ -1584,9 +1597,9 @@ obs.observe({ entryTypes: ['function'] });
 wrapped();
 ```
 
-如果被包装的函数返回一个 promise，则将附加一个 finally 处理程序到该 promise，并且一旦调用 finally 处理程序就会报告持续时间。
+如果被包装的函数返回一个 promise，则会向该 promise 附加一个 finally 处理程序，并且一旦调用 finally 处理程序就会报告持续时间。
 
-## Class: `Histogram`
+## 类：`Histogram`
 
 <!-- YAML
 added: v11.10.0
@@ -1668,7 +1681,7 @@ added: v11.10.0
 
 * 类型：{number}
 
-记录的事件循环延迟的平均值。
+记录的事件循环延迟平均值。
 
 ### `histogram.min`
 
@@ -1754,11 +1767,12 @@ added: v11.10.0
 
 * 类型：{number}
 
-记录的事件循环延迟的标准差。
+记录的事件循环延迟标准差。
 
-## Class: `IntervalHistogram extends Histogram`
+## 类：`ELDHistogram extends Histogram`
 
-一个在给定间隔上定期更新的 `Histogram`。
+一种记录事件循环延迟的 `Histogram`，由
+[`perf_hooks.monitorEventLoopDelay()`][] 返回。
 
 ### `histogram.disable()`
 
@@ -1768,7 +1782,7 @@ added: v11.10.0
 
 * 返回：{boolean}
 
-禁用更新间隔计时器。如果计时器被停止则返回 `true`，如果它已经停止则返回 `false`。
+禁用事件循环延迟采样。如果采样已停止，则返回 `true`；如果它本来就已停止，则返回 `false`。
 
 ### `histogram.enable()`
 
@@ -1778,7 +1792,7 @@ added: v11.10.0
 
 * 返回：{boolean}
 
-启用更新间隔计时器。如果计时器已启动则返回 `true`，如果它已经启动则返回 `false`。
+启用事件循环延迟采样。如果采样已启动，则返回 `true`；如果它本来就已启动，则返回 `false`。
 
 ### `histogram[Symbol.dispose]()`
 
@@ -1786,7 +1800,7 @@ added: v11.10.0
 added: v24.2.0
 -->
 
-当直方图被处置时禁用更新间隔计时器。
+在直方图被释放时禁用事件循环延迟采样。
 
 ```js
 const { monitorEventLoopDelay } = require('node:perf_hooks');
@@ -1797,11 +1811,13 @@ const { monitorEventLoopDelay } = require('node:perf_hooks');
 }
 ```
 
-### 克隆 `IntervalHistogram`
+### 克隆一个 `ELDHistogram`
 
-{IntervalHistogram} 实例可以通过 {MessagePort} 克隆。在接收端，直方图被克隆为一个普通的 {Histogram} 对象，该对象不实现 `enable()` 和 `disable()` 方法。
+{ELDHistogram} 实例可以通过 {MessagePort} 进行克隆。在接收端，
+该直方图会被克隆为一个普通的 {Histogram} 对象，它不实现
+`enable()` 和 `disable()` 方法。
 
-## Class: `RecordableHistogram extends Histogram`
+## 类：`RecordableHistogram extends Histogram`
 
 <!-- YAML
 added:
@@ -2087,18 +2103,19 @@ dns.lookup('localhost', () => {});
 dns.promises.resolve('localhost');
 ```
 
-[Async Hooks]: async_hooks.md
-[Fetch Response Body Info]: https://fetch.spec.whatwg.org/#response-body-info
-[Fetch Timing Info]: https://fetch.spec.whatwg.org/#fetch-timing-info
-[High Resolution Time]: https://www.w3.org/TR/hr-time-2
-[Performance Timeline]: https://w3c.github.io/performance-timeline/
-[Resource Timing]: https://www.w3.org/TR/resource-timing-2/
-[User Timing]: https://www.w3.org/TR/user-timing/
-[Web Performance APIs]: https://w3c.github.io/perf-timing-primer/
-[Worker threads]: worker_threads.md#worker-threads
+[异步钩子]: async_hooks.md
+[获取响应正文信息]: https://fetch.spec.whatwg.org/#response-body-info
+[获取计时信息]: https://fetch.spec.whatwg.org/#fetch-timing-info
+[高分辨率时间]: https://www.w3.org/TR/hr-time-2
+[性能时间线]: https://w3c.github.io/performance-timeline/
+[资源计时]: https://www.w3.org/TR/resource-timing-2/
+[用户计时]: https://www.w3.org/TR/user-timing/
+[Web 性能 API]: https://w3c.github.io/perf-timing-primer/
+[工作线程]: worker_threads.md#worker-threads
 [`'exit'`]: process.md#event-exit
 [`child_process.spawnSync()`]: child_process.md#child_processspawnsynccommand-args-options
 [`perf_hooks.eventLoopUtilization()`]: #perf_hookseventlooputilizationutilization1-utilization2
+[`perf_hooks.monitorEventLoopDelay()`]: #perf_hooksmonitoreventloopdelayoptions
 [`perf_hooks.timerify()`]: #perf_hookstimerifyfn-options
 [`process.hrtime()`]: process.md#processhrtimetime
 [`timeOrigin`]: https://w3c.github.io/hr-time/#dom-performance-timeorigin

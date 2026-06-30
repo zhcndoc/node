@@ -200,7 +200,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 `node:constants` 模块已弃用。当需要访问与特定 Node.js 内置模块相关的常量时，开发者应参考相关模块暴露的 `constants` 属性。例如，`require('node:fs').constants` 和 `require('node:os').constants`。
 
@@ -225,7 +225,7 @@ changes:
     description: "运行时弃用（针对 `digest === undefined`）。"
 -->
 
-Type: End-of-Life
+类型：结束生命周期
 
 在 Node.js 6.0 中，未指定 digest 使用 [`crypto.pbkdf2()`][] API 已被弃用，因为该方法默认使用不推荐的 `'SHA1'` digest。此前，会打印弃用警告。从 Node.js 8.0.0 开始，使用 `digest` 设置为 `undefined` 调用 `crypto.pbkdf2()` 或 `crypto.pbkdf2Sync()` 将抛出 `TypeError`。
 
@@ -250,7 +250,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：结束生命周期
 
 `crypto.createCredentials()` API 已被移除。请改用 [`tls.createSecureContext()`][]。
 
@@ -271,7 +271,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：结束生命周期
 
 `crypto.Credentials` 类已被移除。请改用 [`tls.SecureContext`][]。
 
@@ -292,7 +292,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：结束生命周期
 
 `Domain.dispose()` 已被移除。请改为通过设置在域上的错误事件处理程序显式地从失败的 I/O 操作恢复。
 
@@ -308,7 +308,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：结束生命周期
 
 从 Node.js 10.0.0 开始，调用不带回调的异步函数会抛出 `TypeError`。参见 <https://github.com/nodejs/node/pull/12562>。
 
@@ -332,7 +332,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：结束生命周期
 
 [`fs.read()`][] 遗留 `String` 接口已弃用。请改用文档中提到的 `Buffer` API。
 
@@ -356,7 +356,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：结束生命周期
 
 [`fs.readSync()`][] 遗留 `String` 接口已弃用。请改用文档中提到的 `Buffer` API。
 
@@ -375,7 +375,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：结束生命周期
 
 `global` 属性的 `GLOBAL` 和 `root` 别名在 Node.js 6.0.0 中被弃用，此后已被移除。
 
@@ -391,7 +391,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `Intl.v8BreakIterator` 是一个非标准扩展，已被移除。参见 [`Intl.Segmenter`](https://github.com/tc39/proposal-intl-segmenter)。
 
@@ -407,7 +407,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 未处理的 Promise 拒绝已弃用。默认情况下，未处理的 Promise 拒绝会以非零退出码终止 Node.js 进程。要更改 Node.js 处理未处理拒绝的方式，请使用 [`--unhandled-rejections`][] 命令行选项。
 
@@ -428,7 +428,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 在某些情况下，`require('.')` 可能解析到包目录外部。此行为已被移除。
 
@@ -449,7 +449,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `Server.connections` 属性在 Node.js 0.9.7 中被弃用，此后已被移除。请改用 [`Server.getConnections()`][] 方法。
 
@@ -470,7 +470,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `Server.listenFD()` 方法已弃用并被移除。请改用 [`Server.listen({fd: <number>})`][]。
 
@@ -486,7 +486,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `os.tmpDir()` API 在 Node.js 7.0.0 中被弃用，此后已被移除。请改用 [`os.tmpdir()`][]。
 
@@ -513,7 +513,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `os.getNetworkInterfaces()` 方法已弃用。请改用 [`os.networkInterfaces()`][] 方法。
 
@@ -529,7 +529,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `REPLServer.prototype.convertToContext()` API 已被移除。
 
@@ -547,7 +547,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
 `node:sys` 模块已弃用。请改用 [`util`][] 模块。
 
@@ -568,7 +568,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.print()` 已被移除。请改用 [`console.log()`][]。
 
@@ -595,11 +595,11 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.puts()` 已被移除。请改用 [`console.log()`][]。
 
-自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-print-to-console-log)）：
+可用自动迁移工具（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-print-to-console-log)）：
 
 ```bash
 npx codemod@latest @nodejs/util-print-to-console-log
@@ -622,7 +622,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.debug()` 已被移除。请改用 [`console.error()`][]。
 
@@ -649,7 +649,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.error()` 已被移除。请改用 [`console.error()`][]。
 
@@ -677,7 +677,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `SlowBuffer` 类已被移除。请改用 [`Buffer.allocUnsafeSlow(size)`][]。
 
@@ -743,12 +743,9 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Revoked
+Type: 已撤销弃用
 
-The [`events.listenerCount(emitter, eventName)`][] API was deprecated, as it
-provided identical functionality to [`emitter.listenerCount(eventName)`][]. The
-deprecation was revoked because this function has been repurposed to also
-accept {EventTarget} arguments.
+[`events.listenerCount(emitter, eventName)`][] API 曾被弃用，因为它与 [`emitter.listenerCount(eventName)`][] 提供了相同的功能。弃用已被撤销，因为此函数已重新用于同时接受 {EventTarget} 参数。
 
 ### DEP0034: `fs.exists(path, callback)`
 
@@ -818,9 +815,9 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Deprecation revoked
+Type: 弃用已撤销
 
-[`fs.lchown(path, uid, gid, callback)`][] API 曾被弃用。弃用被撤销，因为必要的支持 API 已添加到 libuv 中。
+[`fs.lchown(path, uid, gid, callback)`][] API 曾被弃用。弃用已撤销，因为必要的支持 API 已添加到 libuv 中。
 
 ### DEP0038: `fs.lchownSync(path, uid, gid)`
 
@@ -838,9 +835,9 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Deprecation revoked
+Type: 弃用已撤销
 
-[`fs.lchownSync(path, uid, gid)`][] API 曾被弃用。弃用被撤销，因为必要的支持 API 已添加到 libuv 中。
+[`fs.lchownSync(path, uid, gid)`][] API 曾被弃用。弃用已撤销，因为必要的支持 API 已添加到 libuv 中。
 
 ### DEP0039: `require.extensions`
 
@@ -880,7 +877,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Application (non-`node_modules` code only)
+Type: 应用程序（仅非 `node_modules` 代码）
 
 [`punycode`][] 模块已弃用。请改用用户空间的替代方案。
 
@@ -901,7 +898,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+Type: 结束生命周期
 
 `NODE_REPL_HISTORY_FILE` 环境变量已被移除。请改用 `NODE_REPL_HISTORY`。
 
@@ -922,7 +919,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `tls.CryptoStream` 类已被移除。请改用 [`tls.TLSSocket`][]。
 
@@ -952,7 +949,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `tls.SecurePair` 类已弃用。请改用 [`tls.TLSSocket`][]。
 
@@ -975,7 +972,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
 [`util.isArray()`][] API 已弃用。请改用 `Array.isArray()`。
 
@@ -1007,7 +1004,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isBoolean()` API 已被移除。请改用 `typeof arg === 'boolean'`。
 
@@ -1039,7 +1036,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isBuffer()` API 已被移除。请改用 [`Buffer.isBuffer()`][]。
 
@@ -1071,7 +1068,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isDate()` API 已被移除。请改用 `arg instanceof Date`。
 
@@ -1107,7 +1104,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isError()` API 已被移除。请改用 `Error.isError(arg)`。
 
@@ -1139,7 +1136,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isFunction()` API 已被移除。请改用 `typeof arg === 'function'`。
 
@@ -1171,7 +1168,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isNull()` API 已被移除。请改用 `arg === null`。
 
@@ -1203,7 +1200,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isNullOrUndefined()` API 已被移除。请改用 `arg === null || arg === undefined`。
 
@@ -1235,7 +1232,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isNumber()` API 已被移除。请改用 `typeof arg === 'number'`。
 
@@ -1267,7 +1264,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isObject()` API 已被移除。请改用 `arg && typeof arg === 'object'`。
 
@@ -1299,7 +1296,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isPrimitive()` API 已被移除。请改用 `Object(arg) !== arg`。
 
@@ -1331,7 +1328,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isRegExp()` API 已被移除。请改用 `arg instanceof RegExp`。
 
@@ -1363,7 +1360,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isString()` API 已被移除。请改用 `typeof arg === 'string'`。
 
@@ -1395,7 +1392,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isSymbol()` API 已被移除。请改用 `typeof arg === 'symbol'`。
 
@@ -1427,7 +1424,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.isUndefined()` API 已被移除。请改用 `arg === undefined`。
 
@@ -1455,15 +1452,15 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
-`util.log()` API 已被移除，因为它是一个意外暴露给用户空间的未维护的遗留 API。相反，根据您的具体需求考虑以下替代方案：
+`util.log()` API 已被移除，因为它是一个意外暴露给用户空间的未维护遗留 API。相反，请根据您的具体需求考虑以下替代方案：
 
 * **第三方日志库**
 
 * **使用 `console.log(new Date().toLocaleString(), message)`**
 
-通过采用这些替代方案之一，您可以过渡远离 `util.log()` 并选择符合您应用程序特定要求和复杂性的日志策略。
+通过采用这些替代方案之一，您可以逐步远离 `util.log()`，并选择符合您应用程序特定要求和复杂性的日志策略。
 
 自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-log-to-console-log)）：
 
@@ -1486,9 +1483,9 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
-[`util._extend()`][] API 已弃用，因为它是一个意外暴露给用户空间的未维护的遗留 API。
+[`util._extend()`][] API 已弃用，因为它是一个意外暴露给用户空间的未维护遗留 API。
 请改用 `target = Object.assign(target, source)`。
 
 自动迁移工具可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/util-extend-to-object-assign)）：
@@ -1514,7 +1511,7 @@ changes:
 
 Type: End-of-Life
 
-`fs.SyncWriteStream` 类从未打算成为 publicly accessible API，已被移除。没有可用的替代 API。请使用用户空间的替代方案。
+`fs.SyncWriteStream` 类从未打算成为公开可访问的 API，已被移除。没有可用的替代 API。请使用用户空间中的替代方案。
 
 ### DEP0062: `node --debug`
 
@@ -1530,7 +1527,7 @@ changes:
 
 Type: End-of-Life
 
-`--debug` 激活遗留的 V8 调试器接口，该接口自 V8 5.8 起已被移除。它已被 Inspector 取代，后者改用 `--inspect` 激活。
+`--debug` 激活了遗留的 V8 调试器接口，该接口自 V8 5.8 起已被移除。它已被 Inspector 取代，后者通过 `--inspect` 激活。
 
 ### DEP0063: `ServerResponse.prototype.writeHeader()`
 
@@ -1549,7 +1546,7 @@ changes:
 
 Type: End-of-Life
 
-`node:http` 模块 `ServerResponse.prototype.writeHeader()` API 已弃用。请改用 `ServerResponse.prototype.writeHead()`。
+`node:http` 模块的 `ServerResponse.prototype.writeHeader()` API 已弃用。请改用 `ServerResponse.prototype.writeHead()`。
 
 `ServerResponse.prototype.writeHeader()` 方法从未被记录为官方支持的 API。
 
@@ -1618,7 +1615,7 @@ changes:
 
 Type: End-of-Life
 
-`node:http` 模块 `OutgoingMessage.prototype._headers` 和 `OutgoingMessage.prototype._headerNames` 属性已弃用。使用公共方法之一（例如 `OutgoingMessage.prototype.getHeader()`、`OutgoingMessage.prototype.getHeaders()`、`OutgoingMessage.prototype.getHeaderNames()`、`OutgoingMessage.prototype.getRawHeaderNames()`、`OutgoingMessage.prototype.hasHeader()`、`OutgoingMessage.prototype.removeHeader()`、`OutgoingMessage.prototype.setHeader()`）来处理传出 header。
+`node:http` 模块的 `OutgoingMessage.prototype._headers` 和 `OutgoingMessage.prototype._headerNames` 属性已弃用。使用公共方法之一（例如 `OutgoingMessage.prototype.getHeader()`、`OutgoingMessage.prototype.getHeaders()`、`OutgoingMessage.prototype.getHeaderNames()`、`OutgoingMessage.prototype.getRawHeaderNames()`、`OutgoingMessage.prototype.hasHeader()`、`OutgoingMessage.prototype.removeHeader()`、`OutgoingMessage.prototype.setHeader()`）来处理传出的 header。
 
 `OutgoingMessage.prototype._headers` 和 `OutgoingMessage.prototype._headerNames` 属性从未被记录为官方支持的属性。
 
@@ -1637,7 +1634,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 `node:http` 模块 `OutgoingMessage.prototype._renderHeaders()` API 已弃用。
 
@@ -1655,7 +1652,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期终止
 
 `node debug` 对应于传统的 CLI 调试器，它已被基于 V8-inspector 的 CLI 调试器取代，后者可通过 `node inspect` 使用。
 
@@ -1674,7 +1671,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期终止
 
 DebugContext 已在 V8 中被移除，在 Node.js 10+ 中不可用。
 
@@ -1692,7 +1689,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期终止
 
 `async_hooks.currentId()` 已重命名为 `async_hooks.executionAsyncId()` 以提高清晰度。
 
@@ -1710,7 +1707,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期终止
 
 `async_hooks.triggerId()` 已重命名为 `async_hooks.triggerAsyncId()` 以提高清晰度。
 
@@ -1728,7 +1725,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期终止
 
 `async_hooks.AsyncResource.triggerId()` 已重命名为
 `async_hooks.AsyncResource.triggerAsyncId()` 以提高清晰度。
@@ -1747,7 +1744,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期终止
 
 访问 `net.Server` 实例的几个具有不适当名称的内部、未文档化属性已弃用。
 
@@ -1765,7 +1762,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期终止
 
 `REPLServer.bufferedCommand` 属性已弃用，推荐使用
 [`REPLServer.clearBufferedCommand()`][]。
@@ -1782,7 +1779,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期终止
 
 `REPLServer.parseREPLKeyword()` 已从用户空间可见性中移除。
 
@@ -1801,7 +1798,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期终止
 
 `tls.parseCertString()` 是一个简单的解析辅助函数，被错误地公开了。虽然它应该解析证书主题和颁发者字符串，
 但它从未正确处理多值相对区分名称（Relative Distinguished Names）。
@@ -1821,7 +1818,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期终止
 
 `Module._debug()` 已被移除。
 
@@ -1839,7 +1836,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期终止
 
 `REPLServer.turnOffEditorMode()` 已从用户空间可见性中移除。
 
@@ -1858,7 +1855,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 在对象上使用名为 `inspect` 的属性来为 [`util.inspect()`][] 指定自定义检查函数已弃用。请改用 [`util.inspect.custom`][]。为了与 6.4.0 版本之前的 Node.js 保持向后兼容，两者都可以指定。
 
@@ -1871,7 +1868,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 内部 `path._makeLong()` 并非 intended 供公开使用。然而，
 用户空间模块发现它很有用。内部 API 已弃用
@@ -1889,7 +1886,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `fs.truncate()` `fs.truncateSync()` 与文件描述符一起使用已
 弃用。请使用 `fs.ftruncate()` 或 `fs.ftruncateSync()` 来处理
@@ -1913,7 +1910,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `REPLServer.prototype.memory()` 仅对 `REPLServer` 本身的内部机制是必要的。不要使用此函数。
 
@@ -1929,7 +1926,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `tls.createSecureContext()` 和 `tls.TLSSocket` 的 `ecdhCurve` 选项可以
 设置为 `false` 以仅在服务器上完全禁用 ECDH。此模式已
@@ -1947,7 +1944,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 自 Node.js 版本 4.4.0 和 5.2.0 以来，几个仅用于
 内部使用的模块被错误地通过 `require()` 暴露给用户代码。这些模块是：
@@ -1984,7 +1981,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 AsyncHooks 敏感 API 从未被文档化，并且存在各种小问题。
 请改用 `AsyncResource` API。参见
@@ -2004,7 +2001,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `runInAsyncIdScope` 不发出 `'before'` 或 `'after'` 事件，因此可能导致
 很多问题。参见 <https://github.com/nodejs/node/issues/14328>。
@@ -2027,7 +2024,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Deprecation revoked
+类型：弃用已撤销
 
 直接导入 assert 不被推荐，因为暴露的函数使用
 松散相等性检查。弃用已被撤销，因为使用
@@ -2045,7 +2042,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 Node.js 曾经支持调用 [`decipher.setAuthTag()`][] 时 OpenSSL 接受的所有 GCM 身份验证标签长度。从 Node.js
 v11.0.0 开始，只允许 128、120、112、104、96、64 和 32
@@ -2064,7 +2061,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `crypto.DEFAULT_ENCODING` 属性仅为了与
 0.9.3 版本之前的 Node.js 发布版本兼容而存在，现已移除。
@@ -2078,7 +2075,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档弃用
 
 将属性分配给顶层 `this` 作为
 `module.exports` 的替代方案已弃用。开发者应改用 `exports`
@@ -2096,7 +2093,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
 [`crypto.fips`][] 属性已弃用。请改用 `crypto.setFips()`
 和 `crypto.getFips()`。
@@ -2119,10 +2116,10 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 使用多个参数调用 `assert.fail()` 已弃用。请仅使用
-一个参数调用 `assert.fail()` 或使用不同的 `node:assert` 模块
+一个参数调用 `assert.fail()`，或使用不同的 `node:assert` 模块
 方法。
 
 ### DEP0095: `timers.enroll()`
@@ -2137,7 +2134,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `timers.enroll()` 已被移除。请改用公开文档化的
 [`setTimeout()`][] 或 [`setInterval()`][]。
@@ -2154,7 +2151,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `timers.unenroll()` 已被移除。请改用公开文档化的
 [`clearTimeout()`][] 或 [`clearInterval()`][]。
@@ -2163,16 +2160,20 @@ Type: End-of-Life
 
 <!-- YAML
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/61095
+    description: 生命周期结束。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/17417
     description: 运行时弃用。
 -->
 
-Type: Runtime
+类型：生命周期结束
 
-添加 `domain` 属性以携带上下文的 `MakeCallback` 用户，
-应开始使用 `MakeCallback` 的 `async_context` 变体或
-`CallbackScope`，或高级 `AsyncResource` 类。
+异步资源和 `MakeCallback` 上的 `domain` 属性已被移除。
+domain 模块现在使用 `AsyncLocalStorage` 进行上下文传播，
+而不是 `async_hooks`。访问 `AsyncResource` 上的 `domain` 属性将抛出
+错误。请改用 `AsyncLocalStorage` 进行上下文传播。
 
 ### DEP0098: AsyncHooks 嵌入器 `AsyncResource.emitBefore` 和 `AsyncResource.emitAfter` API
 
@@ -2189,7 +2190,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 AsyncHooks 提供的嵌入 API 暴露了 `.emitBefore()` 和
 `.emitAfter()` 方法，这些方法非常容易被错误使用，从而导致
@@ -2208,7 +2209,7 @@ changes:
     description: 编译时弃用。
 -->
 
-Type: Compile-time
+类型：编译时
 
 某些版本的 `node::MakeCallback` API（可供原生插件使用）已
 弃用。请使用接受 `async_context` 参数的 API 版本。
@@ -2227,11 +2228,11 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `process.assert()` 已弃用。请改用 [`assert`][] 模块。
 
-这从未是一个文档化的功能。
+这从未是一个有文档记录的功能。
 
 自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/process-assert-to-node-assert)）。
 
@@ -2263,7 +2264,7 @@ changes:
 
 Type: End-of-Life
 
-使用 `noAssert` 参数不再有任何功能。无论 `noAssert` 的值如何，所有输入都会
+使用 `noAssert` 参数不再有任何作用。无论 `noAssert` 的值如何，所有输入都会
 被验证。跳过验证可能导致难以发现的错误和崩溃。
 
 ### DEP0103: `process.binding('util').is[...]` 类型检查
@@ -2398,7 +2399,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 一些以前支持（但严格无效）的 URL 被 [`http.request()`][]、[`http.get()`][]、[`https.request()`][]、
 [`https.get()`][] 和 [`tls.checkServerIdentity()`][] API 接受，因为这些 URL 被传统的 `url.parse()` API 接受。提到的 API 现在使用 WHATWG
@@ -2414,7 +2415,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档弃用
 
 `produceCachedData` 选项已弃用。请改用
 [`script.createCachedData()`][]。
@@ -2431,7 +2432,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档弃用（支持 [`--pending-deprecation`][]）
 
 `process.binding()` 仅供 Node.js 内部代码使用。
 
@@ -2449,7 +2450,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `node:dgram` 模块以前包含几个从未 intended
 在 Node.js 核心之外访问的 API：`Socket.prototype._handle`、
@@ -2470,7 +2471,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `Cipher.setAuthTag()` 和 `Decipher.getAuthTag()` 不再可用。它们
 从未被文档化，并且在调用时会抛出错误。
@@ -2487,7 +2488,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `crypto._toBuf()` 函数并非 designed 供 Node.js 核心之外的模块使用，已被移除。
 
@@ -2504,7 +2505,7 @@ changes:
     description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档弃用（支持 [`--pending-deprecation`][]）
 
 <!--lint enable nodejs-yaml-comments -->
 
@@ -2535,7 +2536,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Deprecation revoked
+类型：已撤销弃用
 
 [传统 URL API][] 已弃用。这包括 [`url.format()`][]、
 [`url.parse()`][]、[`url.resolve()`][] 和 [传统 `urlObject`][]。请改用 [WHATWG URL API][]。
@@ -2558,7 +2559,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 早期版本的 Node.js 通过 `Cipher`、`Decipher`、`DiffieHellman`、
 `DiffieHellmanGroup`、`ECDH`、`Hash`、`Hmac`、`Sign` 和 `Verify` 类的 `_handle` 属性暴露了内部原生对象的句柄。
@@ -2577,7 +2578,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 早期版本的 Node.js 支持使用假值主机名（如 `dns.lookup(false)`）调用 `dns.lookup()`，这是出于向后兼容性考虑。此支持已被移除。
 
@@ -2587,10 +2588,10 @@ Type: End-of-Life
 changes:
   - version: v11.0.0
     pr-url: https://github.com/nodejs/node/pull/23597
-    description: "支持 `--pending-deprecation` 的仅文档弃用。"
+    description: "`--pending-deprecation` 的支持仅文档弃用。"
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
 `process.binding('uv').errname()` 已弃用。请改用
 [`util.getSystemErrorName()`][]。
@@ -2607,7 +2608,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 Windows 性能计数器支持已从 Node.js 中移除。
 未文档化的 `COUNTER_NET_SERVER_CONNECTION()`、
@@ -2627,7 +2628,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 未文档化的 `net._setSimultaneousAccepts()` 函数最初
 intended 用于在 Windows 上使用 `node:child_process` 和 `node:cluster` 模块时进行调试和性能调优。该函数通常
@@ -2646,7 +2647,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 请改用 `Server.prototype.setSecureContext()`。
 
@@ -2662,7 +2663,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 [RFC 6066][] 不允许将 TLS ServerName 设置为 IP 地址。
 
@@ -2678,7 +2679,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 此属性是对实例本身的引用。
 
@@ -2694,7 +2695,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `node:_stream_wrap` 模块已弃用。
 
@@ -2710,7 +2711,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 以前未文档化的 `timers.active()` 已被移除。
 请改用公开文档化的 [`timeout.refresh()`][]。
@@ -2728,7 +2729,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 以前未文档化且“私有”的 `timers._unrefActive()` 已被移除。
 请改用公开文档化的 [`timeout.refresh()`][]。
@@ -2746,7 +2747,7 @@ changes:
     description: 仅文档。
 -->
 
-Type: Runtime
+类型：运行时
 
 具有无效 `main` 入口（例如 `./does-not-exist.js`）且
 在顶层目录中也有 `index.js` 文件的模块将解析
@@ -2768,7 +2769,7 @@ changes:
     description: 仅文档。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `spawn()` 和类似函数返回的子进程对象的 `_channel` 属性不 intended 供公开使用。请改用 `ChildProcess.channel`。
 
@@ -2787,7 +2788,7 @@ changes:
     description: 仅文档。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 请改用 [`module.createRequire()`][]。
 
@@ -2812,7 +2813,7 @@ changes:
     description: 仅文档。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 传统 HTTP 解析器在 12.0.0 版本之前的 Node.js 版本中默认使用，
 已弃用并在 v13.0.0 中移除。在 v13.0.0 之前，
@@ -2830,7 +2831,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 传递回调给 [`worker.terminate()`][] 已弃用。请改用返回的
 `Promise`，或监听 worker 的 `'exit'` 事件。
@@ -2844,7 +2845,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 首选 [`response.socket`][] 而不是 [`response.connection`][]，
 首选 [`request.socket`][] 而不是 [`request.connection`][]。
@@ -2858,7 +2859,7 @@ changes:
     description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
 `process._tickCallback` 属性从未被文档化为
 官方支持的 API。
@@ -2875,7 +2876,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 [`WriteStream.open()`][] 和 [`ReadStream.open()`][] 是未文档化的内部
 API，在用户空间中使用没有意义。文件流应始终通过其相应的工厂方法 [`fs.createWriteStream()`][]
@@ -2892,7 +2893,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 [`response.finished`][] 指示是否已调用 [`response.end()`][],
 而不是是否已发出 `'finish'` 且底层数据
@@ -2916,7 +2917,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 允许 [`fs.FileHandle`][] 对象在垃圾回收时关闭曾经是
 允许的，但现在会抛出错误。
@@ -2946,16 +2947,16 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
-[`process.mainModule`][] 是仅 CommonJS 的功能，而 `process` 全局
-对象与非 CommonJS 环境共享。它在 ECMAScript
+[`process.mainModule`][] 是仅限 CommonJS 的功能，而 `process` 全局
+对象会与非 CommonJS 环境共享。它在 ECMAScript
 模块中的使用不受支持。
 
-它已弃用，推荐使用 [`require.main`][]，因为它服务于相同的
+它已弃用，推荐使用 [`require.main`][]，因为它用于相同的
 目的，且仅在 CommonJS 环境中可用。
 
-自动迁移可用（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/process-main-module)）：
+可使用自动迁移（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/process-main-module)）：
 
 ```bash
 npx codemod@latest @nodejs/process-main-module
@@ -2972,7 +2973,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 调用无参数的 `process.umask()` 会导致进程范围的 umask 被
 写入两次。这在线程之间引入了竞态条件，并且是一个
@@ -2990,7 +2991,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 请改用 [`request.destroy()`][] 而不是 [`request.abort()`][]。
 
@@ -3003,7 +3004,7 @@ changes:
     description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
 `node:repl` 模块导出了输入和输出流两次。请改用 `.input`
 而不是 `.inputStream`，改用 `.output` 而不是 `.outputStream`。
@@ -3017,7 +3018,7 @@ changes:
     description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
 `node:repl` 模块导出了一个包含内置模块数组的 `_builtinLibs` 属性。它目前不完整，最好依赖
 `require('node:module').builtinModules`。
@@ -3028,7 +3029,7 @@ Type: Documentation-only (supports [`--pending-deprecation`][])
 npx codemod@latest @nodejs/repl-builtin-modules
 ```
 
-### DEP0143: `Transform._transformState`
+### DEP0143: 生命周期结束的废弃项
 
 <!-- YAML
 changes:
@@ -3040,7 +3041,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+Type: 终止支持
 
 `Transform._transformState` 将在未来版本中移除，届时由于实现的简化，它将不再需要。
 
@@ -3055,7 +3056,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+Type: 仅文档（支持 [`--pending-deprecation`][]）
 
 CommonJS 模块可以使用 `module.parent` 访问第一个 require 它的模块。此功能已弃用，因为它在存在 ECMAScript 模块的情况下不能一致地工作，并且因为它给出了 CommonJS 模块图的不准确表示。
 
@@ -3085,7 +3086,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+Type: 仅文档
 
 [`socket.bufferSize`][] 只是 [`writable.writableLength`][] 的别名。
 
@@ -3098,7 +3099,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+Type: 仅文档
 
 [`crypto.Certificate()` 构造函数][] 已弃用。请改用
 [`crypto.Certificate()` 的静态方法][]。
@@ -3121,7 +3122,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+Type: 生命周期结束
 
 `fs.rmdir`、`fs.rmdirSync` 和 `fs.promises.rmdir` 方法曾经
 支持 `recursive` 选项。该选项已被移除。
@@ -3154,7 +3155,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 不再支持在 [子路径导出][] 或 [子路径导入][] 字段中使用尾部 `"/"` 来定义子路径文件夹映射。
 请改用 [子路径模式][]。
@@ -3168,7 +3169,7 @@ changes:
     description: 仅文档弃用。
  -->
 
-Type: Documentation-only
+类型：仅文档弃用
 
 首选 [`message.socket`][] 而不是 [`message.connection`][]。
 
@@ -3184,7 +3185,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `process.config` 属性提供对 Node.js 编译时设置的访问。
 然而，该属性是可变的，因此易受篡改。更改值的能力
@@ -3204,7 +3205,7 @@ changes:
     description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
-Type: Runtime
+类型：运行时弃用
 
 以前，`index.js` 和扩展名搜索查找会应用于
 `import 'pkg'` 主入口点解析，即使在解析 ES 模块时也是如此。
@@ -3224,7 +3225,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `'gc'`、`'http2'` 和 `'http'` {PerformanceEntry} 对象类型曾经有
 分配给它们的额外属性，提供额外信息。
@@ -3246,7 +3247,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 在 [`dns.lookup()`][] 和 [`dnsPromises.lookup()`][] 中对 `family` 选项使用非空值非整数值，对 `hints` 选项使用非空值非数字值，对 `all` 选项使用非空值非布尔值，或对 `verbatim` 选项使用非空值非布尔值，将抛出
 `ERR_INVALID_ARG_TYPE` 错误。
@@ -3266,7 +3267,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 请使用 `'hashAlgorithm'` 而不是 `'hash'`，使用 `'mgf1HashAlgorithm'` 而不是 `'mgf1Hash'`。
 
@@ -3288,7 +3289,7 @@ changes:
     description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
-Type: Runtime
+Type: 运行时
 
 对于包 `"exports"` 和 `"imports"` 模式解析，以 `"/"` 结尾的标识符（如 `import 'pkg/x/'`）的重映射已弃用。
 
@@ -3303,7 +3304,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+Type: 仅文档
 
 请改用 {Stream} API，因为 [`http.ClientRequest`][]、
 [`http.ServerResponse`][] 和 [`http.IncomingMessage`][] 都是基于流的。
@@ -3331,7 +3332,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+Type: 生命周期结束
 
 Node.js 流的一个未文档化功能是在
 实现方法中支持 thenables。这现已弃用，请改用回调，并避免
@@ -3359,7 +3360,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 此方法已被弃用，因为它与 `Uint8Array.prototype.slice()` 不兼容，而后者是 `Buffer` 的超类。
 
@@ -3374,7 +3375,7 @@ changes:
     description: 生命周期结束。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 此错误代码已被移除，因为它给用于值类型验证的错误增加了更多的混淆。
 
@@ -3395,7 +3396,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 此事件已被弃用并移除，因为它不适用于 V8 Promise 组合器，从而降低了其有用性。
 
@@ -3410,7 +3411,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 `process._getActiveHandles()` 和 `process._getActiveRequests()` 函数并非 intended 供公开使用，并可能在未来的版本中被移除。
 
@@ -3433,7 +3434,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 在 [`fs.write()`][]、[`fs.writeFile()`][]、[`fs.appendFile()`][]、[`fs.writeFileSync()`][] 和 [`fs.appendFileSync()`][] 中作为第二个参数传递的具有自有 `toString` 属性的对象的隐式强制转换已被弃用。请将它们转换为原始字符串。
 
@@ -3453,7 +3454,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Deprecation revoked
+类型：弃用已撤销
 
 这些方法已被弃用，因为如果用户没有强引用它们，它们的使用可能会使 channel 对象容易被垃圾回收。弃用已被撤销，因为当 channel 有活动订阅者时，channel 对象现在可以抵抗垃圾回收。
 
@@ -3479,7 +3480,7 @@ changes:
     description: "`process.exit(code)` 整数强制转换的仅文档弃用。"
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 除了 `undefined`、`null`、整数和整数字符串（例如 `'1'`）之外的值，作为 [`process.exit()`][] 中 `code` 参数的值以及分配给 [`process.exitCode`][] 的值已被弃用。
 
@@ -3500,7 +3501,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `--trace-atomics-wait` 标志已被移除，因为它使用了 V8 钩子 `SetAtomicsWaitCallback`，该钩子将在未来的 V8 版本中被移除。
 
@@ -3516,7 +3517,7 @@ changes:
     description: "仅文档弃用，支持 `--pending-deprecation`。"
 -->
 
-Type: Runtime
+类型：运行时
 
 包导入和导出目标映射到包含双斜杠（`"/"` 或 `"\\"`）的路径已被弃用，并将在未来的版本中因解析验证错误而失败。此弃用同样适用于以斜杠开头或结尾的模式匹配。
 
@@ -3531,7 +3532,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 众所周知的 MODP 组 `modp1`、`modp2` 和 `modp5` 已被弃用，因为它们无法抵御实际攻击。详见 [RFC 8247 第 2.4 节][]。
 
@@ -3548,7 +3549,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
 Node-API 回调中未捕获异常的隐式抑制现已弃用。
 
@@ -3574,7 +3575,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Application (non-`node_modules` code only)
+类型：应用程序（仅限非 `node_modules` 代码）
 
 [`url.parse()`][] 行为未标准化且容易出错，具有安全隐患。请改用 [WHATWG URL API][]。不会为 `url.parse()` 漏洞发布 CVE。
 
@@ -3598,7 +3599,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 [`url.parse()`][] 过去接受端口不是数字的 URL。此行为可能导致主机名欺骗和意外输入。这些 URL 将抛出错误（[WHATWG URL API][] 也会这样做）。
 
@@ -3613,7 +3614,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 在未来的 Node.js 版本中，[`message.headers`][]、[`message.headersDistinct`][]、[`message.trailers`][] 和 [`message.trailersDistinct`][] 将是只读的。
 
@@ -3629,7 +3630,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 旧版本的 Node.js 会在函数绑定到 `AsyncResource` 时添加 `asyncResource`。现在不再这样做。
 
@@ -3645,7 +3646,7 @@ changes:
     description: 运行时弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `assert.CallTracker` API 已被移除。
 
@@ -3661,7 +3662,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
 对返回 `Promise` 的函数调用 [`util.promisify`][] 将忽略该 Promise 的结果，这可能导致未处理的 Promise 拒绝。
 
@@ -3674,7 +3675,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 [`util.toUSVString()`][] API 已弃用。请改用 [`String.prototype.toWellFormed`][]。
 
@@ -3693,7 +3694,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 直接暴露在 `node:fs` 上的 `F_OK`、`R_OK`、`W_OK` 和 `X_OK` 获取器已被移除。请改为从 `fs.constants` 或 `fs.promises.constants` 获取它们。
 
@@ -3722,7 +3723,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `util.types.isWebAssemblyCompiledModule` API 已被移除。请改用 `value instanceof WebAssembly.Module`。
 
@@ -3744,7 +3745,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: End-of-Life
+类型：生命周期结束
 
 `dirent.path` 属性已被移除，因为其在发布版本之间缺乏一致性。请改用 [`dirent.parentPath`][]。
 
@@ -3827,6 +3828,9 @@ Type: End-of-Life
 
 <!-- YAML
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63966
+    description: 运行时弃用。
   - version:
     - v22.4.0
     - v20.16.0
@@ -3834,7 +3838,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+Type: Runtime
 
 OpenSSL 3 已弃用对自定义引擎的支持，并建议切换到其新的提供者模型。`https.request()`、[`tls.createSecureContext()`][] 和 [`tls.createServer()`][] 的 `clientCertEngine` 选项；[`tls.createSecureContext()`][] 的 `privateKeyEngine` 和 `privateKeyIdentifier`；以及 [`crypto.setEngine()`][] 都依赖于 OpenSSL 的此功能。
 
@@ -3900,7 +3904,7 @@ changes:
     description: 仅文档。
 -->
 
-Type: Runtime
+类型：运行时
 
 传递不支持的参数类型已被弃用，并且在未来的版本中将抛出错误，而不是返回 `false`。
 
@@ -3915,7 +3919,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 这些属性无条件为 `true`。基于这些属性的任何检查都是多余的。
 
@@ -3930,7 +3934,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 `process.features.tls_alpn`、`process.features.tls_ocsp` 和 `process.features.tls_sni` 已弃用，因为它们的值保证与 `process.features.tls` 的值相同。
 
@@ -3948,7 +3952,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
 当将 `args` 数组传递给 [`child_process.execFile`][] 或 [`child_process.spawn`][] 并带有选项 `{ shell: true }` 或 `{ shell: '/path/to/shell' }` 时，值不会被转义，仅以空格分隔，这可能导致 Shell 注入。
 
@@ -3963,7 +3967,7 @@ changes:
     description: "仅文档弃用，支持 `--pending-deprecation`。"
 -->
 
-Type: Documentation-only (supports [`--pending-deprecation`][])
+类型：仅文档（支持 [`--pending-deprecation`][]）
 
 `node:repl` 模块导出一个 `builtinModules` 属性，其中包含内置模块数组。这是不完整的，并且匹配已弃用的 `repl._builtinLibs` ([DEP0142][])，最好依赖 `require('node:module').builtinModules`。
 
@@ -4012,7 +4016,9 @@ Type: End-of-Life
 
 <!-- YAML
 changes:
-  - version: v24.2.0
+  - version:
+     - v24.2.0
+     - v22.23.0
     pr-url: https://github.com/nodejs/node/pull/58293
     description: 生命周期结束。
   - version:
@@ -4059,7 +4065,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 使用 `{ shell: '' }` 调用进程生成函数几乎肯定是有意的，并且可能导致异常行为。
 
@@ -4077,7 +4083,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 [`util.types.isNativeError`][] API 已弃用。请改用 [`Error.isError`][]。
 
@@ -4091,6 +4097,9 @@ npx codemod@latest @nodejs/types-is-native-error
 
 <!-- YAML
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64000
+    description: 结束生命周期。
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/59008
     description: 运行时弃用。
@@ -4102,9 +4111,10 @@ changes:
     description: "仅文档弃用，支持 `--pending-deprecation`。"
 -->
 
-Type: Runtime
+类型：生命周期结束
 
-创建 SHAKE-128 和 SHAKE-256 摘要时没有显式 `options.outputLength` 已被弃用。
+创建 SHAKE-128 和 SHAKE-256 摘要时，如果没有显式的
+`options.outputLength`，则不再受支持。
 
 ### DEP0199: `require('node:_http_*')`
 
@@ -4117,7 +4127,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 `node:_http_agent`、`node:_http_client`、`node:_http_common`、`node:_http_incoming`、`node:_http_outgoing` 和 `node:_http_server` 模块已弃用，因为它们应被视为内部 nodejs 实现而不是公开 API，请改用 `node:http`。
 
@@ -4130,7 +4140,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 允许 [`fs.Dir`][] 对象在垃圾回收时关闭已被弃用。在未来，这样做可能会导致抛出错误并终止进程。
 
@@ -4178,7 +4188,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Runtime
+类型：运行时
 
 传递 `type` 选项给 [`Duplex.toWeb()`][] 已被弃用。要指定构造的可读 - 可写对的可读部分的类型，请改用 `readableType` 选项。
 
@@ -4193,7 +4203,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+类型：仅文档
 
 [`http2.createServer()`][] 和 [`http2.createSecureServer()`][] 的 `Http1IncomingMessage` 和 `Http1ServerResponse` 选项已弃用。请改用 `http1Options.IncomingMessage` 和 `http1Options.ServerResponse`。
 
@@ -4221,6 +4231,9 @@ const server = http2.createSecureServer({
 
 <!-- YAML
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 终止支持。
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: 运行时弃用。
@@ -4231,14 +4244,17 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Runtime
+Type: End-of-Life
 
-传递 [`CryptoKey`][] 给 `node:crypto` 函数已被弃用，并将在未来的版本中抛出错误。这包括 [`crypto.createPublicKey()`][]、[`crypto.createPrivateKey()`][]、[`crypto.sign()`][]、[`crypto.verify()`][]、[`crypto.publicEncrypt()`][]、[`crypto.publicDecrypt()`][]、[`crypto.privateEncrypt()`][]、[`crypto.privateDecrypt()`][]、[`Sign.prototype.sign()`][]、[`Verify.prototype.verify()`][]、[`crypto.createHmac()`][]、[`crypto.createCipheriv()`][]、[`crypto.createDecipheriv()`][]、[`crypto.encapsulate()`][] 和 [`crypto.decapsulate()`][]。
+向 `node:crypto` 函数传递 [`CryptoKey`][] 已不再受支持。
 
 ### DEP0204: `KeyObject.from()` 与不可提取的 `CryptoKey`
 
 <!-- YAML
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63188
+    description: 终止支持。
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: 运行时弃用。
@@ -4249,9 +4265,10 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: Runtime
+Type: End-of-Life
 
-传递不可提取的 [`CryptoKey`][] 给 [`KeyObject.from()`][] 已被弃用，并将在未来的版本中抛出错误。
+向 [`KeyObject.from()`][] 传递不可提取的 [`CryptoKey`][] 已
+不再受支持。
 
 ### DEP0205: `module.register()`
 
@@ -4278,33 +4295,38 @@ Type: Runtime
 
 <!-- YAML
 changes:
-  - version: v26.2.0
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63624
+    description: 运行时弃用。
+  - version:
+    - v26.2.0
+    - v24.18.0
     pr-url: https://github.com/nodejs/node/pull/63121
     description: 仅文档弃用。
 -->
 
-Type: Documentation-only
+Type: Runtime
 
 多次调用 `hmac.digest()` 会返回一个空缓冲区，而不是抛出错误。此行为与 `hash.digest()` 不一致，并可能导致隐蔽的错误。在已完成最终化的 `Hmac` 实例上调用 `hmac.digest()` 将在未来版本中抛出错误。
 
-### DEP0207: `.aborted` property and `'aborted'` event in `http2`
+### DEP0207: `.aborted` 属性和 `'aborted'` 事件在 `http2` 中
 
 <!-- YAML
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63249
-    description: Documentation-only deprecation.
+    description: 仅文档弃用。
 -->
 
 Type: Documentation-only
 
-Use standard stream events and state checks instead. Read-side aborts
-(peer cancelled before sending `END_STREAM`) now surface as `'error'`
-with code `ERR_HTTP2_STREAM_ABORTED` (clean peer reset code) or
-`ERR_HTTP2_STREAM_ERROR` (non-clean code). Write-side aborts (peer
-cancelled while we still had writes in flight) are detectable from
-`'close'` by checking `writableFinished`. Parallels [DEP0156][] for
-`http`.
+请改用标准流事件和状态检查。读取端中止
+（对端在发送 `END_STREAM` 之前取消）现在会表现为 `'error'`
+，并带有代码 `ERR_HTTP2_STREAM_ABORTED`（干净的对端重置代码）或
+`ERR_HTTP2_STREAM_ERROR`（非干净代码）。写入端中止（在我们仍有写入
+在飞行中时对端取消）可以通过检查
+`'close'` 的 `writableFinished` 来检测。与 [DEP0156][]
+在 `http` 上的情况类似。
 
 ```cjs
 // Deprecated
@@ -4334,12 +4356,8 @@ server.on('stream', (stream) => {
 });
 ```
 
-The same patterns apply to the compatibility API (`req` / `res` on
-`http2.createServer((req, res) => …)`). On the read-side, errors on the
-underlying stream are emitted from `req`. On the write-side you can use
-`res.on('close', …)` to hear about client aborts by checking
-`res.writableFinished` to confirm whether the response was written
-successfully before the response closed.
+兼容性 API 也适用相同的模式（在 `http2.createServer((req, res) => …)` 上的 `req` / `res`）。在读取端，底层流中的错误会从 `req` 发出。在写入端，你可以使用
+`res.on('close', …)` 通过检查 `res.writableFinished` 来获知客户端中止，以确认响应在关闭之前是否已成功写入。
 
 [DEP0142]: #dep0142-repl_builtinlibs
 [DEP0156]: #dep0156-aborted-property-and-abort-aborted-event-in-http
@@ -4368,9 +4386,7 @@ successfully before the response closed.
 [`ReadStream.open()`]: fs.md#class-fsreadstream
 [`Server.getConnections()`]: net.md#servergetconnectionscallback
 [`Server.listen({fd: <number>})`]: net.md#serverlistenhandle-backlog-callback
-[`Sign.prototype.sign()`]: crypto.md#signsignprivatekey-outputencoding
 [`String.prototype.toWellFormed`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toWellFormed
-[`Verify.prototype.verify()`]: crypto.md#verifyverifyobject-signature-signatureencoding
 [`WriteStream.open()`]: fs.md#class-fswritestream
 [`assert`]: assert.md
 [`asyncResource.runInAsyncScope()`]: async_context.md#asyncresourceruninasyncscopefn-thisarg-args
@@ -4388,21 +4404,11 @@ successfully before the response closed.
 [`crypto.createDecipheriv()`]: crypto.md#cryptocreatedecipherivalgorithm-key-iv-options
 [`crypto.createHash()`]: crypto.md#cryptocreatehashalgorithm-options
 [`crypto.createHmac()`]: crypto.md#cryptocreatehmacalgorithm-key-options
-[`crypto.createPrivateKey()`]: crypto.md#cryptocreateprivatekeykey
-[`crypto.createPublicKey()`]: crypto.md#cryptocreatepublickeykey
-[`crypto.decapsulate()`]: crypto.md#cryptodecapsulatekey-ciphertext-callback
-[`crypto.encapsulate()`]: crypto.md#cryptoencapsulatekey-callback
 [`crypto.fips`]: crypto.md#cryptofips
 [`crypto.pbkdf2()`]: crypto.md#cryptopbkdf2password-salt-iterations-keylen-digest-callback
-[`crypto.privateDecrypt()`]: crypto.md#cryptoprivatedecryptprivatekey-buffer
-[`crypto.privateEncrypt()`]: crypto.md#cryptoprivateencryptprivatekey-buffer
-[`crypto.publicDecrypt()`]: crypto.md#cryptopublicdecryptkey-buffer
-[`crypto.publicEncrypt()`]: crypto.md#cryptopublicencryptkey-buffer
 [`crypto.randomBytes()`]: crypto.md#cryptorandombytessize-callback
 [`crypto.scrypt()`]: crypto.md#cryptoscryptpassword-salt-keylen-options-callback
 [`crypto.setEngine()`]: crypto.md#cryptosetengineengine-flags
-[`crypto.sign()`]: crypto.md#cryptosignalgorithm-data-key-callback
-[`crypto.verify()`]: crypto.md#cryptoverifyalgorithm-data-key-signature-callback
 [`decipher.final()`]: crypto.md#decipherfinaloutputencoding
 [`decipher.setAuthTag()`]: crypto.md#deciphersetauthtagbuffer-encoding
 [`dirent.parentPath`]: fs.md#direntparentpath

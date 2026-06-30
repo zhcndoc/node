@@ -4,6 +4,7 @@
 changes:
   - version:
      - v25.9.0
+     - v24.18.0
     pr-url: https://github.com/nodejs/node/pull/62183
     description: 现已支持 TurboSHAKE 和 KangarooTwelve 算法。
   - version: v24.8.0
@@ -597,7 +598,7 @@ Crypto API 实现所支持的算法，以及每种算法所支持的 API：
 | `'SHA3-384'`[^modern-algos]          |            |                    |                        |              |                   | ✔      |
 | `'SHA3-512'`[^modern-algos]          |            |                    |                        |              |                   | ✔      |
 | `'TurboSHAKE128'`[^modern-algos]     |            |                    |                        |              |                   | ✔      |
-| `'TurboSHAKE256'`[^modern-algos]     |            |                    |                        |              |                   | ✔      |
+| `'TurboSHAKE256'`[^modern-algos]          |            |                    |                        |              |                   | ✔      |
 | `'X25519'`                           |            |                    | ✔                      |              |                   |        |
 | `'X448'`[^secure-curves]             |            |                    | ✔                      |              |                   |        |
 
@@ -890,18 +891,18 @@ added: v15.0.0
 changes:
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59544
-    description: Argon2 algorithms are now supported.
+    description: 现已支持 Argon2 算法。
   - version:
     - v22.5.0
     - v20.17.0
     - v18.20.5
     pr-url: https://github.com/nodejs/node/pull/53601
-    description: "The length parameter is now optional for `'ECDH'`, `'X25519'`,and `'X448'`."
+    description: "`'ECDH'`、`'X25519'` 和 `'X448'` 的 length 参数现在是可选的。"
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: "Added `'X25519'`, and `'X448'` algorithms."
+    description: "新增 `'X25519'` 和 `'X448'` 算法。"
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -937,12 +938,12 @@ added: v15.0.0
 changes:
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59544
-    description: Argon2 algorithms are now supported.
+    description: 现已支持 Argon2 算法。
   - version:
     - v18.4.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42507
-    description: "Added `'X25519'`, and `'X448'` algorithms."
+    description: "新增 `'X25519'` 和 `'X448'` 算法。"
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -978,14 +979,15 @@ added: v15.0.0
 changes:
   - version:
      - v25.9.0
+     - v24.18.0
     pr-url: https://github.com/nodejs/node/pull/62183
-    description: TurboSHAKE 和 KangarooTwelve 算法现已支持。
+    description: 现已支持 TurboSHAKE 和 KangarooTwelve 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHA-3 算法现已支持。
+    description: 现已支持 SHA-3 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: SHAKE 算法现已支持。
+    description: 现已支持 SHAKE 算法。
 -->
 
 * `algorithm` {string|Algorithm|CShakeParams|TurboShakeParams|KangarooTwelveParams}
@@ -1062,10 +1064,10 @@ added: v15.0.0
 changes:
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59539
-    description: AES-OCB 算法现已支持。
+    description: 现已支持 AES-OCB 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ChaCha20-Poly1305 算法现已支持。
+    description: 现已支持 ChaCha20-Poly1305 算法。
 -->
 
 * `algorithm` {RsaOaepParams|AesCtrParams|AesCbcParams|AeadParams}
@@ -1089,21 +1091,23 @@ changes:
 <!-- YAML
 added: v15.0.0
 changes:
-  - version: v26.1.0
+  - version:
+    - v26.1.0
+    - v24.18.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: 为 ML-KEM 密钥类型添加了 JWK 格式支持。
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59647
-    description: KMAC 算法现已支持。
+    description: 现已支持 KMAC 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59569
-    description: ML-KEM 算法现已支持。
+    description: 现已支持 ML-KEM 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ChaCha20-Poly1305 算法现已支持。
+    description: 现已支持 ChaCha20-Poly1305 算法。
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59365
-    description: ML-DSA 算法现已支持。
+    description: 现已支持 ML-DSA 算法。
   - version:
     - v18.4.0
     - v16.17.0
@@ -1231,7 +1235,9 @@ changes:
 <!-- YAML
 added: v15.0.0
 changes:
-  - version: v26.1.0
+  - version:
+    - v26.1.0
+    - v24.18.0
     pr-url: https://github.com/nodejs/node/pull/62706
     description: 为 ML-KEM 密钥类型添加了 JWK 格式支持。
   - version:
@@ -1838,364 +1844,40 @@ added:
 
 <!-- YAML
 added: v24.7.0
+changes:
+  - version: v26.4.0
+    pr-url: https://github.com/nodejs/node/pull/63988
+    description: 现在接受命名的 cSHAKE 变体。
 -->
 
 * 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
 
-`functionName` 成员表示函数名，NIST 使用它来定义基于 cSHAKE 的函数。
-Node.js Web Crypto API 实现仅支持零长度的 functionName，这等价于根本不提供 functionName。
+`functionName` 成员表示 NIST 的函数名字节字符串，用于
+将构建于 cSHAKE 之上的函数进行域分离。可接受的值为：
+
+* 空值或 `undefined`，在这种情况下 cSHAKE 等同于普通 SHAKE
+* ASCII 字节序列 `'KMAC'`
+* ASCII 字节序列 `'TupleHash'`
+* ASCII 字节序列 `'ParallelHash'`
 
 #### `cShakeParams.customization`
 
-<!-- YAML
-added: v24.7.0
--->
+这段内容看起来是 **Node.js Web Crypto / CryptoKey / KeyGen / derive / encrypt 相关文档的中文片段**，而且里面的 `__TRANSDOC_LOCK_*__` 是未替换的占位符。
 
-* 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
+如果你的目标是：
 
-`customization` 成员表示自定义字符串。
-Node.js Web Crypto API 实现仅支持零长度的 customization，这等价于根本不提供 customization。
+1. **把这些占位符还原成真实术语/类名**
+2. **翻译成完整中文**
+3. **整理成可读的文档**
 
-### 类：`EcdhKeyDeriveParams`
+我可以继续帮你做。  
+你只要回复我一句：
 
-<!-- YAML
-added: v15.0.0
--->
+- “帮我还原占位符”
+- “帮我整理成完整中文文档”
+- “帮我说明这段内容讲的是什么”
 
-#### `ecdhKeyDeriveParams.name`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{string} 必须是 `'ECDH'`、`'X25519'` 或 `'X448'`[^secure-curves]。
-
-#### `ecdhKeyDeriveParams.public`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{CryptoKey}
-
-ECDH 密钥派生通过将一方的私钥和另一方的公钥作为输入进行运作——使用二者生成一个共同的共享密钥。
-`ecdhKeyDeriveParams.public` 属性设置为另一方的公钥。
-
-### 类：`EcdsaParams`
-
-<!-- YAML
-added: v15.0.0
-changes:
-  - version: v24.7.0
-    pr-url: https://github.com/nodejs/node/pull/59365
-    description: 现在支持 SHA-3 算法。
--->
-
-#### `ecdsaParams.hash`
-
-<!-- YAML
-added: v15.0.0
-changes:
-  - version: v24.7.0
-    pr-url: https://github.com/nodejs/node/pull/59365
-    description: 现在支持 SHA-3 算法。
--->
-
-* 类型：{string|Algorithm}
-
-如果表示为 {string}，值必须是以下之一：
-
-* `'SHA-1'`
-* `'SHA-256'`
-* `'SHA-384'`
-* `'SHA-512'`
-* `'SHA3-256'`[^modern-algos]
-* `'SHA3-384'`[^modern-algos]
-* `'SHA3-512'`[^modern-algos]
-
-如果表示为 {Algorithm}，对象的 `name` 属性必须是上述列出的值之一。
-
-#### `ecdsaParams.name`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{string} 必须是 `'ECDSA'`。
-
-### 类：`EcKeyAlgorithm`
-
-<!-- YAML
-added: v15.0.0
--->
-
-#### `ecKeyAlgorithm.name`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{string}
-
-#### `ecKeyAlgorithm.namedCurve`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{string}
-
-### 类：`EcKeyGenParams`
-
-<!-- YAML
-added: v15.0.0
--->
-
-#### `ecKeyGenParams.name`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{string} 必须是 `'ECDSA'` 或 `'ECDH'` 之一。
-
-#### `ecKeyGenParams.namedCurve`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{string} 必须是 `'P-256'`、`'P-384'`、`'P-521'` 之一。
-
-### 类：`EcKeyImportParams`
-
-<!-- YAML
-added: v15.0.0
--->
-
-#### `ecKeyImportParams.name`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{string} 必须是 `'ECDSA'` 或 `'ECDH'` 之一。
-
-#### `ecKeyImportParams.namedCurve`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{string} 必须是 `'P-256'`、`'P-384'`、`'P-521'` 之一。
-
-### 类：`EncapsulatedBits`
-
-<!-- YAML
-added: v24.7.0
--->
-
-用于消息加密的临时对称密钥（表示为 {ArrayBuffer}）以及由此共享密钥加密的密文（可以随消息一起传输给消息接收者）。接收者使用其私钥来确定共享密钥是什么，从而允许他们解密消息。
-
-#### `encapsulatedBits.ciphertext`
-
-<!-- YAML
-added: v24.7.0
--->
-
-* 类型：{ArrayBuffer}
-
-#### `encapsulatedBits.sharedKey`
-
-<!-- YAML
-added: v24.7.0
--->
-
-* 类型：{ArrayBuffer}
-
-### 类：`EncapsulatedKey`
-
-<!-- YAML
-added: v24.7.0
--->
-
-用于消息加密的临时对称密钥（表示为 {CryptoKey}）以及由此共享密钥加密的密文（可以随消息一起传输给消息接收者）。接收者使用其私钥来确定共享密钥是什么，从而允许他们解密消息。
-
-#### `encapsulatedKey.ciphertext`
-
-<!-- YAML
-added: v24.7.0
--->
-
-* 类型：{ArrayBuffer}
-
-#### `encapsulatedKey.sharedKey`
-
-<!-- YAML
-added: v24.7.0
--->
-
-* 类型：{CryptoKey}
-
-### 类：`HkdfParams`
-
-<!-- YAML
-added: v15.0.0
--->
-
-#### `hkdfParams.hash`
-
-<!-- YAML
-added: v15.0.0
-changes:
-  - version: v24.7.0
-    pr-url: https://github.com/nodejs/node/pull/59365
-    description: 现在支持 SHA-3 算法。
--->
-
-* 类型：{string|Algorithm}
-
-如果表示为 {string}，值必须是以下之一：
-
-* `'SHA-1'`
-* `'SHA-256'`
-* `'SHA-384'`
-* `'SHA-512'`
-* `'SHA3-256'`[^modern-algos]
-* `'SHA3-384'`[^modern-algos]
-* `'SHA3-512'`[^modern-algos]
-
-如果表示为 {Algorithm}，对象的 `name` 属性必须是上述列出的值之一。
-
-#### `hkdfParams.info`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
-
-为 HKDF 算法提供特定于应用程序的上下文输入。
-这可以是零长度，但必须提供。
-
-#### `hkdfParams.name`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{string} 必须是 `'HKDF'`。
-
-#### `hkdfParams.salt`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{ArrayBuffer|TypedArray|DataView|Buffer}
-
-盐值显著提高了 HKDF 算法的强度。
-它应该是随机或伪随机的，并且长度应与摘要函数的输出相同（例如，如果使用 `'SHA-256'` 作为摘要，盐应该是 256 位的随机数据）。
-
-### 类：`HmacImportParams`
-
-<!-- YAML
-added: v15.0.0
--->
-
-#### `hmacImportParams.hash`
-
-<!-- YAML
-added: v15.0.0
-changes:
-  - version: v24.7.0
-    pr-url: https://github.com/nodejs/node/pull/59365
-    description: 现在支持 SHA-3 算法。
--->
-
-* 类型：{string|Algorithm}
-
-如果表示为 {string}，值必须是以下之一：
-
-* `'SHA-1'`
-* `'SHA-256'`
-* `'SHA-384'`
-* `'SHA-512'`
-* `'SHA3-256'`[^modern-algos]
-* `'SHA3-384'`[^modern-algos]
-* `'SHA3-512'`[^modern-algos]
-
-如果表示为 {Algorithm}，对象的 `name` 属性必须是上述列出的值之一。
-
-#### `hmacImportParams.length`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{number}
-
-HMAC 密钥的可选位数。这是可选的，在大多数情况下应省略。
-
-#### `hmacImportParams.name`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{string} 必须是 `'HMAC'`。
-
-### 类：`HmacKeyAlgorithm`
-
-<!-- YAML
-added: v15.0.0
--->
-
-#### `hmacKeyAlgorithm.hash`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{Algorithm}
-
-#### `hmacKeyAlgorithm.length`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{number}
-
-HMAC 密钥的长度（位）。
-
-#### `hmacKeyAlgorithm.name`
-
-<!-- YAML
-added: v15.0.0
--->
-
-* 类型：{string}
-
-### 类：`HmacKeyGenParams`
-
-<!-- YAML
-added: v15.0.0
--->
-
-#### `hmacKeyGenParams.hash`
-
-<!-- YAML
-added: v15.0.0
-changes:
-  - version: v24.7.0
-    pr-url: https://github.com/nodejs/node/pull/59365
-    description: 现在支持 SHA-3 算法。
--->
-
-* 类型：{string|Algorithm}
-
-如果表示为 {string}，值必须是以下之一：
+如果你愿意，我也可以直接根据上下文推断出这些条目对应的 Node.js Crypto API 名称并补全。
 
 * `'SHA-1'`
 * `'SHA-256'`
@@ -2215,7 +1897,7 @@ added: v15.0.0
 
 * 类型：{number}
 
-要为 HMAC 密钥生成的位数。如果省略，长度将由使用的哈希算法确定。
+要为 HMAC 密钥生成的位数。如果省略，长度将由所用的哈希算法确定。
 这是可选的，在大多数情况下应省略。
 
 #### `hmacKeyGenParams.name`
@@ -2245,6 +1927,7 @@ added: v15.0.0
 <!-- YAML
 added:
  - v25.9.0
+ - v24.18.0
 -->
 
 #### `kangarooTwelveParams.customization`
@@ -2252,6 +1935,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.18.0
 -->
 
 * 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
@@ -2263,6 +1947,7 @@ KangarooTwelve 的可选自定义字符串。
 <!-- YAML
 added:
  - v25.9.0
+ - v24.18.0
 -->
 
 * 类型：{string} 必须是 `'KT128'`[^modern-algos] 或 `'KT256'`[^modern-algos]。
@@ -2272,6 +1957,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.18.0
 -->
 
 * 类型：{number} 表示请求的输出长度（位）。
@@ -2338,7 +2024,7 @@ added: v24.8.0
 
 * 类型：{number}
 
-要为 KMAC 密钥生成的位数。如果省略，长度将由使用的 KMAC 算法确定。
+要为 KMAC 密钥生成的位数。如果省略，长度将由所用的 KMAC 算法确定。
 这是可选的，在大多数情况下应省略。
 
 #### `kmacKeyGenParams.name`
@@ -2377,9 +2063,7 @@ added:
  - v24.15.0
 -->
 
-* 类型：{number}
-
-输出的长度（字节）。这必须是正整数。
+* 类型：{number} 表示请求的输出长度（位）。
 
 #### `kmacParams.customization`
 
@@ -2642,6 +2326,7 @@ added: v15.0.0
 <!-- YAML
 added:
  - v25.9.0
+ - v24.18.0
 -->
 
 #### `turboShakeParams.domainSeparation`
@@ -2649,6 +2334,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.18.0
 -->
 
 * 类型：{number|undefined}
@@ -2660,6 +2346,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.18.0
 -->
 
 * 类型：{string} 必须是 `'TurboSHAKE128'`[^modern-algos] 或 `'TurboSHAKE256'`[^modern-algos]。
@@ -2669,6 +2356,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.18.0
 -->
 
 * 类型：{number} 表示请求的输出长度（位）。

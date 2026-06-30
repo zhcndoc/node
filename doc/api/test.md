@@ -329,7 +329,7 @@ it.skip('应该做这件事', { expectFailure: true }, () => {
 });
 ```
 
-这些测试将被标记为 "todo"（静默错误）：
+这些测试将被标记为“todo”（静默错误）：
 
 ```js
 it.expectFailure('应该做这件事', { todo: true }, () => {
@@ -669,7 +669,7 @@ Randomized test order seed: 12345
 node --test --test-random-seed=12345
 ```
 
-在大多数测试文件中，随机化会自动工作。一个重要的例外是当子测试被逐个等待时。在这种模式下，每个子测试仅在前一个完成后才开始，因此运行器保持声明顺序而不是随机化它。
+在大多数测试文件中，随机化会自动生效。一个重要的例外是子测试逐个等待的情况。在这种模式下，每个子测试只有在前一个完成后才会开始，因此运行器会保持声明顺序，而不是对其进行随机化。
 
 示例：这是顺序运行的，**未**随机化。
 
@@ -782,7 +782,7 @@ if (anAlwaysFalseCondition) {
 
 ### 覆盖率报告器
 
-tap 和 spec 报告器将打印覆盖率统计信息的摘要。还有一个 lcov 报告器，它将生成一个 lcov 文件，可用作深度覆盖率报告。
+tap 和 spec 报告器将打印覆盖率统计信息的摘要。还有一个 lcov 报告器，它将生成一个 lcov 文件，可用作更详细的覆盖率报告。
 
 ```bash
 node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=lcov.info
@@ -791,7 +791,7 @@ node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-de
 * 此报告器不报告任何测试结果。
 * 理想情况下，此报告器应与另一个报告器一起使用。
 
-## 模拟 (Mocking)
+## 模拟
 
 `node:test` 模块支持通过顶层 `mock` 对象在测试期间进行模拟。以下示例创建一个函数的间谍，该函数将两个数字相加。然后使用间谍来断言该函数是否按预期被调用。
 
@@ -1120,8 +1120,8 @@ test('setTime does not execute timers', (context) => {
 const assert = require('node:assert');
 const { test } = require('node:test');
 
-test('runs timers as setTime passes ticks', (context) => {
-  // 可选地选择要模拟的内容
+test('setTime does not execute timers', (context) => {
+  // Optionally choose what to mock
   context.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
   const fn = context.mock.fn();
   setTimeout(fn, 1000);
@@ -1132,7 +1132,10 @@ test('runs timers as setTime passes ticks', (context) => {
   assert.strictEqual(Date.now(), 800);
 
   context.mock.timers.setTime(1200);
-  // 计时器已执行，因为时间现已到达
+  // Timer is still not executed
+  assert.strictEqual(fn.mock.callCount(), 0);
+  // Advance in time to execute the timer
+  context.mock.timers.tick(0);
   assert.strictEqual(fn.mock.callCount(), 1);
   assert.strictEqual(Date.now(), 1200);
 });
@@ -1492,12 +1495,12 @@ added:
 changes:
   - version: v26.2.0
     pr-url: https://github.com/nodejs/node/pull/63221
-    description: Added the `testTagFilters` option.
+    description: 添加了 `testTagFilters` 选项。
   - version:
      - v25.6.0
      - v24.14.0
     pr-url: https://github.com/nodejs/node/pull/61367
-    description: "添加 `env` 选项。"
+    description: "添加了 `env` 选项。"
   - version: v24.7.0
     pr-url: https://github.com/nodejs/node/pull/59443
     description: 添加了 rerunFailuresFilePath 选项。
@@ -1647,7 +1650,7 @@ run({ files: [path.resolve('./tests/test.js')] })
  .pipe(process.stdout);
 ```
 
-## `suite([name][, options][, fn])`
+## 测试套件
 
 <!-- YAML
 added:
@@ -1663,7 +1666,7 @@ added:
 
 `suite()` 函数从 `node:test` 模块导入。
 
-## `suite.skip([name][, options][, fn])`
+## 跳过套件
 
 <!-- YAML
 added:
@@ -1673,7 +1676,7 @@ added:
 
 用于跳过套件的简写。这与 [`suite([name], { skip: true }[, fn])`][suite options] 相同。
 
-## `suite.todo([name][, options][, fn])`
+## 仅运行此套件
 
 <!-- YAML
 added:
@@ -1683,7 +1686,7 @@ added:
 
 用于将套件标记为 `TODO` 的简写。这与 [`suite([name], { todo: true }[, fn])`][suite options] 相同。
 
-## `suite.only([name][, options][, fn])`
+## 仅运行此套件
 
 <!-- YAML
 added:
@@ -1693,7 +1696,7 @@ added:
 
 用于将套件标记为 `only` 的简写。这与 [`suite([name], { only: true }[, fn])`][suite options] 相同。
 
-## `test([name][, options][, fn])`
+## 测试
 
 <!-- YAML
 added:
@@ -1702,22 +1705,22 @@ added:
 changes:
   - version: v26.2.0
     pr-url: https://github.com/nodejs/node/pull/63221
-    description: Added the `tags` option.
+    description: 添加了 `tags` 选项。
   - version:
     - v20.2.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47909
-    description: "Added `skip`, `todo`, and `only` shorthands."
+    description: "添加了 `skip`、`todo` 和 `only` 简写。"
   - version:
     - v18.8.0
     - v16.18.0
     pr-url: https://github.com/nodejs/node/pull/43554
-    description: "Added `signal` option."
+    description: "添加了 `signal` 选项。"
   - version:
     - v18.7.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/43505
-    description: "Added `timeout` option."
+    description: "添加了 `timeout` 选项。"
 -->
 
 * `name` {string} 测试的名称，在报告测试结果时显示。**默认：** `fn` 的 `name` 属性；如果 `fn` 没有名称，则为 `'<anonymous>'`。
@@ -1737,7 +1740,7 @@ changes:
   * `skip` {boolean|string} 如果为真值，则测试会被跳过。如果提供字符串，则该字符串会在测试结果中显示为跳过测试的原因。**默认：** `false`。
   * `tags` {string\[]} 与测试关联的字符串标签数组。
     与 [`--experimental-test-tag-filter`][] 一起用于筛选要运行的测试。标签会通过并集从套件继承到嵌套测试。参见
-    [Test tags][]。**默认：** `[]`。
+    [测试标签][]。**默认：** `[]`。
   * `todo` {boolean|string} 如果为真值，则测试会被标记为 `TODO`。如果提供字符串，则该字符串会在测试结果中显示为测试为何为 `TODO` 的原因。**默认：** `false`。
   * `timeout` {number} 测试在多少毫秒后失败。
     如果未指定，子测试会从其父级继承此值。
@@ -1837,17 +1840,17 @@ changes:
 
 `it()` 函数从 `node:test` 模块导入。
 
-## `it.skip([name][, options][, fn])`
+## 仅运行
 
 用于跳过测试的简写，
-这与 [`it([name], { skip: true }[, fn])`][it options] 相同。
+这与 [仅][it options] 相同。
 
-## `it.todo([name][, options][, fn])`
+## 跳过
 
-用于将测试标记为 `TODO` 的简写，
-这与 [`it([name], { todo: true }[, fn])`][it options] 相同。
+用于将测试标记为 已跳过 的简写，
+这与 [跳过][it options] 相同。
 
-## `it.only([name][, options][, fn])`
+## 仅运行（异步）
 
 <!-- YAML
 added:
@@ -1855,10 +1858,10 @@ added:
   - v18.15.0
 -->
 
-用于将测试标记为 `only` 的简写，
-这与 [`it([name], { only: true }[, fn])`][it options] 相同。
+用于将测试标记为 仅运行 的简写，
+这与 [仅][it options] 相同。
 
-## `before([fn][, options])`
+## 钩子
 
 <!-- YAML
 added:
@@ -1866,14 +1869,14 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} 钩子函数。
+* 钩子 {Function|AsyncFunction} 钩子函数。
   如果钩子使用回调，
   则回调函数作为第二个参数传入。**默认：** 无操作函数。
-* `options` {Object} 钩子的配置项。支持以下属性：
-  * `signal` {AbortSignal} 允许中止正在进行中的钩子。
-  * `timeout` {number} 钩子在多少毫秒后失败。
+* 选项 {Object} 钩子的配置项。支持以下属性：
+  * signal {AbortSignal} 允许中止正在进行中的钩子。
+  * timeout {number} 钩子在多少毫秒后失败。
     如果未指定，子测试会从其父级继承此值。
-    **默认：** `Infinity`。
+    **默认：** 0。
 
 此函数创建一个在执行套件之前运行的钩子。
 
@@ -1903,7 +1906,7 @@ added:
     如果未指定，子测试会从其父级继承此值。
     **默认：** `Infinity`。
 
-此函数创建一个在执行套件之后运行的钩子。
+此函数会创建一个在执行套件之后运行的钩子。
 
 ```js
 describe('tests', async () => {
@@ -1974,7 +1977,7 @@ describe('tests', async () => {
 });
 ```
 
-## `assert`
+## 断言
 
 <!-- YAML
 added:
@@ -1982,11 +1985,11 @@ added:
   - v22.14.0
 -->
 
-一个对象，其方法用于配置当前进程中 `TestContext` 对象可用的断言。默认情况下，`node:assert` 中的方法和快照测试函数可用。
+一个对象，其方法用于配置当前进程中 `node:assert` 对象可用的断言。默认情况下，`node:assert` 中的方法和快照测试函数可用。
 
-可以通过将通用配置代码放入通过 `--require` 或 `--import` 预加载的模块中，将相同的配置应用于所有文件。
+可以通过将通用配置代码放入通过 `--import` 或 `--require` 预加载的模块中，将相同的配置应用于所有文件。
 
-### `assert.register(name, fn)`
+### 断言函数
 
 <!-- YAML
 added:
@@ -1996,36 +1999,36 @@ added:
 
 使用给定的名称和函数定义一个新的断言函数。如果同名断言已存在，则会被替换。
 
-## `snapshot`
+## 快照
 
 <!-- YAML
 added: v22.3.0
 -->
 
-一个对象，其方法用于配置当前进程中的默认快照设置。可以通过将通用配置代码放入通过 `--require` 或 `--import` 预加载的模块中，将相同的配置应用于所有文件。
+一个对象，其方法用于配置当前进程中的默认快照设置。可以通过将通用配置代码放入通过 `--import` 或 `--require` 预加载的模块中，将相同的配置应用于所有文件。
 
-### `snapshot.setDefaultSnapshotSerializers(serializers)`
-
-<!-- YAML
-added: v22.3.0
--->
-
-* `serializers` {Array} 作为快照测试默认序列化器使用的同步函数数组。
-
-此函数用于自定义测试运行器使用的默认序列化机制。默认情况下，测试运行器通过对提供的值调用 `JSON.stringify(value, null, 2)` 来序列化值。`JSON.stringify()` 在循环结构和支持的数据类型方面确实存在限制。如果需要更强大的序列化机制，应使用此函数。
-
-### `snapshot.setResolveSnapshotPath(fn)`
+### 默认序列化器
 
 <!-- YAML
 added: v22.3.0
 -->
 
-* `fn` {Function} 用于计算快照文件位置的函数。
-  此函数接收测试文件的路径作为唯一参数。如果测试未关联文件，例如在 REPL 中，则输入为 undefined。`fn()` 必须返回一个指定快照文件位置的字符串。
+* `add` {Array} 作为快照测试默认序列化器使用的同步函数数组。
 
-此函数用于自定义快照测试所使用的快照文件位置。默认情况下，快照文件的名称与入口文件相同，扩展名为 `.snapshot`。
+此函数用于自定义测试运行器使用的默认序列化机制。默认情况下，测试运行器通过对提供的值调用 `util.inspect` 来序列化值。`util.inspect` 在循环结构和支持的数据类型方面确实存在限制。如果需要更强大的序列化机制，应使用此函数。
 
-## Class: `MockFunctionContext`
+### 快照文件名
+
+<!-- YAML
+added: v22.3.0
+-->
+
+* `resolveSnapshotPath` {Function} 用于计算快照文件位置的函数。
+  此函数接收测试文件的路径作为唯一参数。如果测试未关联文件，例如在 REPL 中，则输入为 undefined。`resolveSnapshotPath` 必须返回一个指定快照文件位置的字符串。
+
+此函数用于自定义快照测试所使用的快照文件位置。默认情况下，快照文件的名称与入口文件相同，扩展名为 `.snap`。
+
+## 类：MockTracker
 
 <!-- YAML
 added:
@@ -2033,9 +2036,9 @@ added:
   - v18.13.0
 -->
 
-`MockFunctionContext` 类用于检查或操纵通过 [`MockTracker`][] API 创建的 mock 的行为。
+`MockTracker` 类用于检查或操纵通过 [`node:test`][] API 创建的 mock 的行为。
 
-### `ctx.calls`
+### 调用记录
 
 <!-- YAML
 added:
@@ -2043,7 +2046,7 @@ added:
   - v18.13.0
 -->
 
-* Type: {Array}
+* 类型：{Array}
 
 一个 getter，返回用于跟踪对 mock 调用的内部数组副本。数组中的每个条目都是一个具有以下属性的对象。
 
@@ -2051,11 +2054,11 @@ added:
 * `error` {any} 如果被 mock 的函数抛出了错误，则此属性包含抛出的值。**默认值：** `undefined`。
 * `result` {any} 被 mock 函数返回的值。
 * `stack` {Error} 一个 `Error` 对象，其堆栈可用于确定被 mock 函数调用的调用站点。
-* `target` {Function|undefined} 如果被 mock 的函数是构造函数，则此字段包含正在构造的类。否则，它将是
+* `this` {Function|undefined} 如果被 mock 的函数是构造函数，则此字段包含正在构造的类。否则，它将是
   `undefined`。
-* `this` {any} 被 mock 函数的 `this` 值。
+* `type` {any} 被 mock 函数的 `this` 值。
 
-### `ctx.callCount()`
+### 调用次数
 
 <!-- YAML
 added:
@@ -2065,9 +2068,9 @@ added:
 
 * 返回：{integer} 此 mock 被调用的次数。
 
-此函数返回此 mock 被调用的次数。此函数比检查 `ctx.calls.length` 更高效，因为 `ctx.calls` 是一个会创建内部调用跟踪数组副本的 getter。
+此函数返回此 mock 被调用的次数。此函数比检查 `calls` 更高效，因为 `calls` 是一个会创建内部调用跟踪数组副本的 getter。
 
-### `ctx.mockImplementation(implementation)`
+### 重置实现
 
 <!-- YAML
 added:
@@ -2079,7 +2082,7 @@ added:
 
 此函数用于更改现有 mock 的行为。
 
-以下示例使用 `t.mock.fn()` 创建一个 mock 函数，调用该 mock 函数，然后将 mock 实现更改为另一个函数。
+以下示例使用 `MockTracker` 创建一个 mock 函数，调用该 mock 函数，然后将 mock 实现更改为另一个函数。
 
 ```js
 test('更改 mock 行为', (t) => {
@@ -2246,15 +2249,15 @@ test('更改一次 mock 行为', (t) => {
 
 #### 注意
 
-为了与其余 mocking API 保持一致，此函数将属性的 get 和 set 都视为访问。如果在相同的访问索引处发生属性 set，那么“once”值会被 set 操作消费，并且被 mock 的属性值将被更改为“once”值。如果你打算仅将“once”值用于 get 操作，这可能会导致意外行为。
+为了与其余模拟 API 保持一致，此函数将属性的 get 和 set 都视为访问。如果在相同的访问索引处发生属性 set，那么“once”值会被 set 操作消费，并且被模拟的属性值将被更改为“once”值。如果你打算仅将“once”值用于 get 操作，这可能会导致意外行为。
 
 ### `ctx.resetAccesses()`
 
-重置被 mock 属性的访问历史。
+重置被模拟属性的访问历史。
 
 ### `ctx.restore()`
 
-将被 mock 属性实现重置为其原始行为。调用此函数后，mock 仍然可以继续使用。
+将被模拟属性实现重置为其原始行为。调用此函数后，mock 仍然可以继续使用。
 
 ## 类：`MockTracker`
 
@@ -2309,7 +2312,7 @@ test('模拟一个计数函数', (t) => {
 });
 ```
 
-### `mock.getter(object, methodName[, implementation][, options])`
+### `mock.method()`
 
 <!-- YAML
 added:
@@ -2320,7 +2323,7 @@ added:
 此函数是 [`MockTracker.method`][] 的语法糖，其中 `options.getter`
 被设为 `true`。
 
-### `mock.method(object, methodName[, implementation][, options])`
+### `mock.method(object, methodName[, implementation[, options]])`
 
 <!-- YAML
 added:
@@ -2385,9 +2388,9 @@ changes:
 
 > 稳定性：1.0 - 早期开发阶段
 
-* `specifier` {string|URL} 标识要 mock 的模块的字符串。
+* `specifier` {string|URL} 标识要模拟的模块的字符串。
 * `options` {Object} mock 模块的可选配置项。支持以下属性：
-  * `cache` {boolean} 如果为 `false`，每次调用 `require()` 或 `import()` 都会生成一个新的 mocked 模块。如果为 `true`，后续调用将返回相同的模块 mock，并且该 mock 模块将被插入 CommonJS 缓存。
+  * `cache` {boolean} 如果为 `false`，每次调用 `require()` 或 `import()` 都会生成一个新的模拟模块。如果为 `true`，后续调用将返回相同的模块 mock，并且该 mock 模块将被插入 CommonJS 缓存。
     **默认：** false。
   * `exports` {Object} 可选的 mock 导出。如果提供了 `default` 属性，它将被用作 mock 模块的默认导出。其他所有自有可枚举属性都作为具名导出使用。
     **此选项不能与 `defaultExport` 或 `namedExports` 一起使用。**
@@ -2410,7 +2413,7 @@ changes:
     请改用 `options.exports`。
 * 返回：{MockModuleContext} 可用于操纵该 mock 的对象。
 
-此函数用于 mock ECMAScript 模块、CommonJS 模块、JSON 模块和
+此函数用于模拟 ECMAScript 模块、CommonJS 模块、JSON 模块和
 Node.js 内置模块的导出。在 mock 之前对原始模块的任何引用都不会受到影响。要
 启用模块 mock，Node.js 必须使用 [`--experimental-test-module-mocks`][] 命令行标志运行。
 
@@ -2433,8 +2436,8 @@ test('模拟内置模块在两种模块系统中的行为', async (t) => {
   // cursorTo() 是原始 'node:readline' 模块的一个导出。
   assert.strictEqual(esmImpl.cursorTo, undefined);
   assert.strictEqual(cjsImpl.cursorTo, undefined);
-  assert.strictEqual(esmImpl.fn(), 42);
-  assert.strictEqual(cjsImpl.fn(), 42);
+  assert.strictEqual(esmImpl.foo(), 42);
+  assert.strictEqual(cjsImpl.foo(), 42);
 
   mock.restore();
 
@@ -2444,8 +2447,8 @@ test('模拟内置模块在两种模块系统中的行为', async (t) => {
 
   assert.strictEqual(typeof esmImpl.cursorTo, 'function');
   assert.strictEqual(typeof cjsImpl.cursorTo, 'function');
-  assert.strictEqual(esmImpl.fn, undefined);
-  assert.strictEqual(cjsImpl.fn, undefined);
+  assert.strictEqual(esmImpl.foo, undefined);
+  assert.strictEqual(cjsImpl.foo, undefined);
 });
 ```
 
@@ -2534,7 +2537,7 @@ added:
 changes:
   - version: v23.1.0
     pr-url: https://github.com/nodejs/node/pull/55398
-    description: Mock timers are now stable.
+    description: 模拟定时器现已稳定。
 -->
 
 Mock timers 是软件测试中常用的一种技术，用于模拟和控制定时器（例如 `setInterval` 和 `setTimeout`）的行为，而无需实际等待指定的时间间隔。
@@ -2554,7 +2557,7 @@ changes:
     - v21.2.0
     - v20.11.0
     pr-url: https://github.com/nodejs/node/pull/48638
-    description: "Updated parameters to an options object that contains available APIs and a default initial epoch."
+    description: "将参数更新为一个选项对象，其中包含可用的 API 和默认初始纪元。"
 -->
 
 为指定的定时器启用定时器模拟。
@@ -3483,7 +3486,7 @@ added:
 #### 通道：`'tracing:node.test:start'`
 
 * `data` {Object}
-  * `name` {string} 测试的名称。
+  * `name` {string} 测试名称。
   * `nesting` {number} 测试的嵌套级别。
   * `file` {string|undefined} 测试文件的路径，或在 REPL 中运行时为 `undefined`。
   * `type` {string} 测试类型。`'test'` 或 `'suite'`。
@@ -3493,7 +3496,7 @@ added:
 #### 通道：`'tracing:node.test:end'`
 
 * `data` {Object}
-  * `name` {string} 测试的名称。
+  * `name` {string} 测试名称。
   * `nesting` {number} 测试的嵌套级别。
   * `file` {string|undefined} 测试文件的路径，或在 REPL 中运行时为 `undefined`。
   * `type` {string} 测试类型。`'test'` 或 `'suite'`。
@@ -3503,7 +3506,7 @@ added:
 #### 通道：`'tracing:node.test:error'`
 
 * `data` {Object}
-  * `name` {string} 测试的名称。
+  * `name` {string} 测试名称。
   * `nesting` {number} 测试的嵌套级别。
   * `file` {string|undefined} 测试文件的路径，或在 REPL 中运行时为 `undefined`。
   * `type` {string} 测试类型。`'test'` 或 `'suite'`。
@@ -3840,7 +3843,7 @@ test('数据库操作', async (t) => {
 });
 ```
 
-### `context.plan(count[,options])`
+### 断言计划
 
 <!-- YAML
 added:
@@ -3969,7 +3972,7 @@ added:
 
 * `message` {string} 可选的跳过消息。
 
-此函数使测试的输出指示测试被跳过。如果提供了 `message`，则将其包含在输出中。调用 `skip()` 不会终止测试函数的执行。此函数不返回值。
+此函数会让测试输出表明测试已被跳过。如果提供了 `message`，则会将其包含在输出中。调用 `skip()` 不会终止测试函数的执行。此函数不返回值。
 
 ```js
 test('顶级测试', (t) => {
@@ -4064,13 +4067,13 @@ added:
   - v22.14.0
 -->
 
-* `condition` {Function|AsyncFunction} 一个断言函数，定期调用该函数，直到它成功完成或定义的轮询超时过去。成功完成定义为不抛出或不拒绝。此函数不接受任何参数，并允许返回任何值。
+* `condition` {Function|AsyncFunction} 一个断言函数，会定期调用该函数，直到它成功完成或定义的轮询超时过去。成功完成定义为不抛出或不拒绝。此函数不接受任何参数，并且可以返回任意值。
 * `options` {Object} 轮询操作的可选配置对象。支持以下属性：
-  * `interval` {number} 在 `condition` 调用 unsuccessful 后重试之前等待的毫秒数。**默认值：** `50`。
-  * `timeout` {number} 轮询超时（毫秒）。如果在此时间过去之前 `condition` 尚未成功，则发生错误。**默认值：** `1000`。
+  * `interval` {number} 在 `condition` 调用失败后、再次重试前等待的毫秒数。**默认值：** `50`。
+  * `timeout` {number} 轮询超时（毫秒）。如果在此时间过去之前 `condition` 仍未成功，则会发生错误。**默认值：** `1000`。
 * 返回值：{Promise} fulfilled 为 `condition` 返回的值。
 
-此方法轮询 `condition` 函数，直到该函数成功返回或操作超时。
+此方法会轮询 `condition` 函数，直到该函数成功返回或操作超时。
 
 ## 类：`SuiteContext`
 
@@ -4164,53 +4167,11 @@ test.describe('my suite', (suite) => {
 });
 ```
 
-[TAP]: https://testanything.org/
-[Test tags]: #test-tags
-[`--experimental-test-coverage`]: cli.md#--experimental-test-coverage
-[`--experimental-test-module-mocks`]: cli.md#--experimental-test-module-mocks
-[`--experimental-test-tag-filter`]: cli.md#--experimental-test-tag-filterexpr
-[`--import`]: cli.md#--importmodule
-[`--no-strip-types`]: cli.md#--no-strip-types
-[`--test-concurrency`]: cli.md#--test-concurrency
-[`--test-coverage-exclude`]: cli.md#--test-coverage-exclude
-[`--test-coverage-include`]: cli.md#--test-coverage-include
-[`--test-name-pattern`]: cli.md#--test-name-pattern
-[`--test-only`]: cli.md#--test-only
-[`--test-reporter-destination`]: cli.md#--test-reporter-destination
-[`--test-reporter`]: cli.md#--test-reporter
-[`--test-rerun-failures`]: cli.md#--test-rerun-failures
-[`--test-skip-pattern`]: cli.md#--test-skip-pattern
-[`--test-update-snapshots`]: cli.md#--test-update-snapshots
-[`--test`]: cli.md#--test
-[`MockFunctionContext`]: #class-mockfunctioncontext
-[`MockPropertyContext`]: #class-mockpropertycontext
-[`MockTimers`]: #class-mocktimers
-[`MockTracker.method`]: #mockmethodobject-methodname-implementation-options
-[`MockTracker`]: #class-mocktracker
-[`NODE_V8_COVERAGE`]: cli.md#node_v8_coveragedir
-[`SuiteContext`]: #class-suitecontext
-[`TestContext`]: #class-testcontext
-[`TracingChannel`]: diagnostics_channel.md#class-tracingchannel
-[`assert.throws`]: assert.md#assertthrowsfn-error-message
-[`context.diagnostic`]: #contextdiagnosticmessage
-[`context.skip`]: #contextskipmessage
-[`context.tags`]: #contexttags
-[`context.todo`]: #contexttodomessage
-[`describe()`]: #describename-options-fn
-[`diagnostics_channel`]: diagnostics_channel.md
-[`glob(7)`]: https://man7.org/linux/man-pages/man7/glob.7.html
-[`it()`]: #itname-options-fn
-[`run()`]: #runoptions
-[`suite()`]: #suitename-options-fn
-[`test()`]: #testname-options-fn
-[代码覆盖率]: #collecting-code-coverage
-[配置文件]: cli.md#--experimental-config-filepath---experimental-config-file
-[describe 选项]: #describename-options-fn
-[it 选项]: #testname-options-fn
-[模块自定义钩子]: module.md#customization-hooks
-[从命令行运行测试]: #running-tests-from-the-command-line
-[stream.compose]: stream.md#streamcomposestreams
-[子测试]: #subtests
-[suite 选项]: #suitename-options-fn
-[测试报告器]: #test-reporters
-[测试运行器执行模型]: #test-runner-execution-model
+我已收到这段文档锁引用内容。请告诉我你希望我对它做什么，例如：
+
+- 翻译
+- 解释/总结
+- 提取链接与标题
+- 检查引用是否缺失或断链
+- 生成目录或索引
+- 其他具体处理

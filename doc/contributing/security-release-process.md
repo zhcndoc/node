@@ -29,6 +29,7 @@
 | NodeSource              | Rafael          | 2025-Jul-15  |
 | HeroDevs and NodeSource | Marco / Rafael  | 2026-Jan-13  |
 | NodeSource              | Rafael          | 2026-Mar-24  |
+| Platformatic            | Antoine         | 2026-Jun-18  |
 | Datadog                 | Bryan           |              |
 | IBM                     | Joe             |              |
 | Platformatic            | Matteo          |              |
@@ -74,14 +75,14 @@
 
 ## 公告（计划发布日期前一周）
 
-* [ ] 1\. **发布发布前博客文章：**
+* [ ] 1\. **发布前博客文章：**
   * 在 `nodejs/nodejs.org` 仓库中发布发布前博客文章。
 
 * [ ] 2\. **发送发布前公告：**
   * 通知社区即将到来的安全发布：
 
     * [ ] `git node security --notify-pre-release`
-      除下面列表中注明的项外，这将自动创建通知所需的 issues 和邮件。
+      除下面列表中注明的项外，这将自动创建通知所需的 issue 和邮件。
     * [docker-node](https://github.com/nodejs/docker-node/issues)
     * [build-wg](https://github.com/nodejs/build/issues)
     * [ ] （尚未自动化 - 请手动执行）[Google Groups](https://groups.google.com/g/nodejs-sec)

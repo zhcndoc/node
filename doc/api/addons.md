@@ -4,14 +4,15 @@
 
 <!-- type=misc -->
 
-_插件_ 是动态链接的共享对象，可以通过 [`require()`][] 函数作为普通的 Node.js 模块加载。
+_插件_ 是动态链接的共享对象，可以通过 [注册函数][]
+作为普通的 Node.js 模块加载。
 插件提供了 JavaScript 和本地代码之间的外部函数接口。
 
 实现插件有三种选项：
 
 * [Node-API][]（推荐）
-* `nan`（[Native Abstractions for Node.js][]）
-* 直接使用内部的 V8、libuv 和 Node.js 库
+* `nan` ([Node.js 的原生抽象][])
+* 直接使用公开的 V8、libuv 和 Node.js 接口
 
 本文档的其余部分侧重于后者，需要了解多个组件和 API：
 
@@ -30,8 +31,8 @@ _插件_ 是动态链接的共享对象，可以通过 [`require()`][] 函数作
   卸载到非阻塞系统操作、工作线程，
   或自定义使用 libuv 线程。
 
-* 内部 Node.js 库：Node.js 本身导出插件可以
-  使用的 C++ API，其中最重要的是 `node::ObjectWrap` 类。
+* 公共 Node.js 接口：Node.js 本身导出 C++ API，
+  插件和嵌入器都可以使用。
 
 * 其他静态链接库（包括 OpenSSL）：这些
   其他库位于 Node.js 源代码树中的 `deps/` 目录中。只有 libuv、OpenSSL、V8 和 zlib 符号是 Node.js 有意
@@ -43,7 +44,7 @@ _插件_ 是动态链接的共享对象，可以通过 [`require()`][] 函数作
 
 ## 你好世界
 
-这个"Hello world"示例是一个简单的插件，用 C++ 编写，相当于以下 JavaScript 代码：
+这个“Hello world”示例是一个简单的插件，用 C++ 编写，相当于以下 JavaScript 代码：
 
 ```js
 module.exports.hello = () => 'world';
@@ -563,7 +564,7 @@ NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 }  // namespace demo
 ```
 
-编译完成后，可以在 Node.js 中要求并使用示例插件：
+编译完成后，可以在 Node.js 中 require 并使用示例插件：
 
 <!-- addon-verify-file function_arguments/test.js -->
 
@@ -699,7 +700,7 @@ console.log(obj1.msg, obj2.msg);
 
 ### 函数工厂
 
-另一种常见的情景是创建包装 C++
+另一种常见的场景是创建用于包装 C++
 函数的 JavaScript 函数，并将它们返回给 JavaScript：
 
 <!-- addon-verify-file function_factory/addon.cc -->
@@ -788,7 +789,8 @@ NODE_MODULE(NODE_GYP_MODULE_NAME, InitAll)
 }  // namespace demo
 ```
 
-然后，在 `myobject.h` 中，包装类继承自 `node::ObjectWrap`：
+然后，在 `myobject.h` 中，包装类继承自一个辅助 `ObjectWrap`
+它负责将 C++ 对象的生命周期与暴露的 JS 对象绑定：
 
 <!-- addon-verify-file wrapping_c_objects/myobject.h -->
 
@@ -798,11 +800,11 @@ NODE_MODULE(NODE_GYP_MODULE_NAME, InitAll)
 #define MYOBJECT_H
 
 #include <node.h>
-#include <node_object_wrap.h>
+#include "object_wrap.h"
 
 namespace demo {
 
-class MyObject : public node::ObjectWrap {
+class MyObject : public ObjectWrap {
  public:
   static void Init(v8::Local<v8::Object> exports);
 
@@ -821,9 +823,71 @@ class MyObject : public node::ObjectWrap {
 #endif
 ```
 
+其中 `ObjectWrap` 定义为
+
+<!-- addon-verify-file wrapping_c_objects/object_wrap.h factory_of_wrapped_objects/object_wrap.h passing_wrapped_objects_around/object_wrap.h -->
+
+```cpp
+// object_wrap.h
+#ifndef OBJECTWRAP_H
+#define OBJECTWRAP_H
+
+#include <node.h>
+
+namespace demo {
+
+class ObjectWrap {
+ public:
+  ObjectWrap() : isolate_(v8::Isolate::GetCurrent()) {
+    node::AddEnvironmentCleanupHook(isolate_, CleanupHook, this);
+  }
+
+  virtual ~ObjectWrap() {
+    node::RemoveEnvironmentCleanupHook(isolate_, CleanupHook, this);
+  }
+
+  template <class T>
+  static T* Unwrap(v8::Local<v8::Object> handle) {
+    void* ptr = handle->GetAlignedPointerFromInternalField(
+        0, v8::kEmbedderDataTypeTagDefault);
+    ObjectWrap* wrap = static_cast<ObjectWrap*>(ptr);
+    return static_cast<T*>(wrap);
+  }
+
+  v8::Local<v8::Object> object() {
+    return handle_.Get(isolate_);
+  }
+
+ protected:
+  inline void Wrap(v8::Local<v8::Object> handle) {
+    handle->SetAlignedPointerInInternalField(
+        0, this, v8::kEmbedderDataTypeTagDefault);
+    handle_.Reset(isolate_, handle);
+  }
+
+  inline void MakeWeak() {
+    handle_.SetWeak(this, WeakCallback, v8::WeakCallbackType::kParameter);
+  }
+
+ private:
+  static void WeakCallback(
+      const v8::WeakCallbackInfo<ObjectWrap>& data) {
+    delete data.GetParameter();
+  }
+
+  static void CleanupHook(void* arg) { delete static_cast<ObjectWrap*>(arg); }
+
+  v8::Global<v8::Object> handle_;
+  v8::Isolate* isolate_;
+};
+
+}  // namespace demo
+#endif
+```
+
 在 `myobject.cc` 中，实现要暴露的各种方法。
-在以下代码中，通过将 `plusOne()` 方法添加到
-构造函数的原型中来暴露它：
+在下面的代码中，通过将方法 `plusOne()` 添加到
+构造函数的原型来将其暴露：
 
 <!-- addon-verify-file wrapping_c_objects/myobject.cc -->
 
@@ -885,6 +949,7 @@ void MyObject::New(const FunctionCallbackInfo<Value>& args) {
         0 : args[0]->NumberValue(context).FromMaybe(0);
     MyObject* obj = new MyObject(value);
     obj->Wrap(args.This());
+    obj->MakeWeak();
     args.GetReturnValue().Set(args.This());
   } else {
     // 作为普通函数 `MyObject(...)` 调用，转为构造调用。
@@ -928,9 +993,7 @@ void MyObject::PlusOne(const FunctionCallbackInfo<Value>& args) {
 }
 ```
 
-测试它：
-
-<!-- addon-verify-file wrapping_c_objects/test.js -->
+<!-- 附加组件验证文件 wrapping_c_objects/test.js -->
 
 ```js
 // test.js
@@ -1012,11 +1075,11 @@ JavaScript 中使用 `new`：
 #define MYOBJECT_H
 
 #include <node.h>
-#include <node_object_wrap.h>
+#include "object_wrap.h"
 
 namespace demo {
 
-class MyObject : public node::ObjectWrap {
+class MyObject : public ObjectWrap {
  public:
   static void Init();
   static void NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -1036,7 +1099,8 @@ class MyObject : public node::ObjectWrap {
 #endif
 ```
 
-`myobject.cc` 中的实现与前面的示例类似：
+我们的 `ObjectWrap` 辅助函数与前一个示例中的保持一致，
+而在 `myobject.cc` 中的实现也类似：
 
 <!-- addon-verify-file factory_of_wrapped_objects/myobject.cc -->
 
@@ -1098,6 +1162,7 @@ void MyObject::New(const FunctionCallbackInfo<Value>& args) {
         0 : args[0]->NumberValue(context).FromMaybe(0);
     MyObject* obj = new MyObject(value);
     obj->Wrap(args.This());
+    obj->MakeWeak();
     args.GetReturnValue().Set(args.This());
   } else {
     // 作为普通函数 `MyObject(...)` 调用，转为构造调用。
@@ -1152,9 +1217,7 @@ void MyObject::PlusOne(const FunctionCallbackInfo<Value>& args) {
 }
 ```
 
-测试它：
-
-<!-- addon-verify-file factory_of_wrapped_objects/test.js -->
+<!-- 附加组件-验证文件 包装对象工厂/test.js -->
 
 ```js
 // test.js
@@ -1179,10 +1242,7 @@ console.log(obj2.plusOne());
 
 ### 传递包装对象
 
-除了包装和返回 C++ 对象外，还可以通过使用 Node.js 辅助函数
-`node::ObjectWrap::Unwrap` 解包它们来传递
-包装对象。以下示例显示了一个函数 `add()`，
-它可以接受两个 `MyObject` 对象作为输入参数：
+除了包装并返回 C++ 对象之外，还可以通过使用 Node.js 辅助函数 `ObjectWrap::Unwrap` 解包对象，再将这些包装对象传来传去。下面的示例展示了一个函数 `add()`，它可以接受两个 `MyObject` 对象作为输入参数：
 
 <!-- addon-verify-file passing_wrapped_objects_around/addon.cc -->
 
@@ -1211,9 +1271,9 @@ void Add(const FunctionCallbackInfo<Value>& args) {
   Isolate* isolate = args.GetIsolate();
   Local<Context> context = isolate->GetCurrentContext();
 
-  MyObject* obj1 = node::ObjectWrap::Unwrap<MyObject>(
+  MyObject* obj1 = ObjectWrap::Unwrap<MyObject>(
       args[0]->ToObject(context).ToLocalChecked());
-  MyObject* obj2 = node::ObjectWrap::Unwrap<MyObject>(
+  MyObject* obj2 = ObjectWrap::Unwrap<MyObject>(
       args[1]->ToObject(context).ToLocalChecked());
 
   double sum = obj1->value() + obj2->value();
@@ -1242,11 +1302,11 @@ NODE_MODULE(NODE_GYP_MODULE_NAME, InitAll)
 #define MYOBJECT_H
 
 #include <node.h>
-#include <node_object_wrap.h>
+#include "object_wrap.h"
 
 namespace demo {
 
-class MyObject : public node::ObjectWrap {
+class MyObject : public ObjectWrap {
  public:
   static void Init();
   static void NewInstance(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -1266,7 +1326,8 @@ class MyObject : public node::ObjectWrap {
 #endif
 ```
 
-`myobject.cc` 的实现与之前的版本类似：
+我们的 `ObjectWrap` 助手与前面的示例保持一致，
+而 `myobject.cc` 中的实现也同样类似：
 
 <!-- addon-verify-file passing_wrapped_objects_around/myobject.cc -->
 
@@ -1324,6 +1385,7 @@ void MyObject::New(const FunctionCallbackInfo<Value>& args) {
         0 : args[0]->NumberValue(context).FromMaybe(0);
     MyObject* obj = new MyObject(value);
     obj->Wrap(args.This());
+    obj->MakeWeak();
     args.GetReturnValue().Set(args.This());
   } else {
     // 作为普通函数 `MyObject(...)` 调用，转为构造调用。
@@ -1352,9 +1414,7 @@ void MyObject::NewInstance(const FunctionCallbackInfo<Value>& args) {
 }  // namespace demo
 ```
 
-测试它：
-
-<!-- addon-verify-file passing_wrapped_objects_around/test.js -->
+<!-- 附加组件-验证-文件 通过_wrapped_objects_around/test.js -->
 
 ```js
 // test.js
