@@ -1039,9 +1039,13 @@ It is possible to run code containing inline types unless the
 added:
   - v23.6.0
   - v22.20.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64221
+    description: This is enabled by default.
 -->
 
-> Stability: 1.0 - Early development
+> Stability: 1.2 - Release candidate
 
 Enable experimental import support for `.node` addons.
 
@@ -1356,11 +1360,14 @@ resolution algorithm.
 added:
   - v22.0.0
   - v20.17.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64154
+    description: Print the top-level awaits without evaluating the modules.
 -->
 
-If the ES module being `require()`'d contains top-level `await`, this flag
-allows Node.js to evaluate the module, try to locate the
-top-level awaits, and print their location to help users find them.
+If the ES module graph cannot be `require()`'d because it contains any top-level `await`,
+this flag allows Node.js to locate and print their locations.
 
 ### `--experimental-quic`
 
