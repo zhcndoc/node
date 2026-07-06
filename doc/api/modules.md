@@ -253,7 +253,9 @@ console.log(distance); // [函数：distance]
 如果被 `require()` 的模块包含顶层 `await`，或者它 `import` 的模块图包含顶层 `await`，
 将抛出 [`ERR_REQUIRE_ASYNC_MODULE`][]。在这种情况下，用户应使用 [`import()`][] 加载异步模块。
 
-如果启用了 `--experimental-print-required-tla`，Node.js 将在评估之前不会抛出 `ERR_REQUIRE_ASYNC_MODULE`，而是评估模块，尝试定位顶层 await，并打印它们的位置以帮助用户修复它们。
+如果启用了 `--experimental-print-required-tla` 且错误未被捕获，
+Node.js 将尝试定位 `require()` 的模块图中的顶层 `await`
+并将其位置打印到 stderr。
 
 如果使用 `require()` 加载 ES 模块的支持导致意外的破坏，可以使用 `--no-require-module` 禁用它。
 要打印此功能的使用位置，使用 [`--trace-require-module`][]。
@@ -380,13 +382,13 @@ LOAD_PACKAGE_IMPORTS(X, DIR)
 6. RESOLVE_ESM_MATCH(MATCH)。
 
 LOAD_PACKAGE_EXPORTS(SUBPATH, PACKAGE_DIR)
-1. Parse PACKAGE_DIR/package.json, and look for "exports" field.
-2. If "exports" is null or undefined, return.
-3. If `--no-require-module` is not enabled
-  a. let CONDITIONS = ["node", "require", "module-sync"]
-  b. Else, let CONDITIONS = ["node", "require"]
-4. let MATCH = PACKAGE_EXPORTS_RESOLVE(pathToFileURL(PACKAGE_DIR), "." + SUBPATH,
-   `package.json` "exports", CONDITIONS) defined in the ESM resolver.
+1. 解析 PACKAGE_DIR/package.json，并查找 "exports" 字段。
+2. 如果 "exports" 为 null 或 undefined，则返回。
+3. 如果未启用 `--no-require-module`
+  a. 设 CONDITIONS = ["node", "require", "module-sync"]
+  b. 否则，设 CONDITIONS = ["node", "require"]
+4. 设 MATCH = ESM 解析器中定义的 PACKAGE_EXPORTS_RESOLVE(pathToFileURL(PACKAGE_DIR), "." + SUBPATH,
+   `package.json` "exports", CONDITIONS)。
 5. RESOLVE_ESM_MATCH(MATCH)
 
 LOAD_PACKAGE_SELF(X, DIR)
@@ -501,7 +503,7 @@ console.log('in main, a.done = %j, b.done = %j', a.done, b.done);
 
 当 `main.js` 加载 `a.js` 时，`a.js` 转而加载 `b.js`。此时，`b.js` 尝试加载 `a.js`。为了防止无限循环，一个 **未完成的副本** 的 `a.js` 导出对象被返回给 `b.js` 模块。然后 `b.js` 完成加载，其 `exports` 对象被提供给 `a.js` 模块。
 
-当 `main.js` 加载完两个模块时，它们都已 finished。
+当 `main.js` 加载完两个模块时，它们都已完成。
 因此，该程序的输出将是：
 
 ```console
@@ -1048,7 +1050,7 @@ added: v0.5.1
 本节已移至
 [模块：`module` 核心模块](module.md#the-module-object)。
 
-<!-- Anchors to make sure old links find a target -->
+<!-- 锚点，用于确保旧链接能够找到目标 -->
 
 * <a id="modules_module_builtinmodules" href="module.html#modulebuiltinmodules">`module.builtinModules`</a>
 * <a id="modules_module_createrequire_filename" href="module.html#modulecreaterequirefilename">`module.createRequire(filename)`</a>

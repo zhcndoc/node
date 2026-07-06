@@ -4,21 +4,19 @@ Node.js 项目目前有若干战略倡议正在推进。对当前倡议的审查
 
 ## 当前倡议
 
-| 倡议                    | 负责人                           | 链接                                              |
-| ----------------------- | -------------------------------- | ------------------------------------------------- |
-| QUIC / HTTP3            | [James M Snell][jasnell]         | <https://github.com/nodejs/quic>                  |
-| Shadow Realm            | [Chengzhong Wu][legendecas]      | <https://github.com/nodejs/node/issues/42528>     |
-| 启动快照                | [Joyee Cheung][joyeecheung]      | <https://github.com/nodejs/node/issues/35711>     |
-| V8 货币化               | [Michaël Zasso][targos]          |                                                   |
-| Next-10                 | [Michael Dawson][mhdawson]       | <https://github.com/nodejs/next-10>               |
-| 单文件可执行应用        | [Darshan Sen][RaisinTen]         | <https://github.com/nodejs/single-executable>     |
-| 性能                    | [Rafael Gonzaga][RafaelGSS]      | <https://github.com/nodejs/performance>           |
-| 原始对象                | [Benjamin Gruenbaum][benjamingr] | <https://github.com/nodejs/primordials-use-cases> |
+| 倡议                   | 负责人                             | 链接                                          |
+| ---------------------- | -------------------------------- | --------------------------------------------- |
+| QUIC / HTTP3           | [James M Snell][jasnell]         | <https://github.com/nodejs/quic>              |
+| Shadow Realm           | [Chengzhong Wu][legendecas]      | <https://github.com/nodejs/node/issues/42528> |
+| V8 Currency            | [Michaël Zasso][targos]          |                                               |
+| Next-10                | [Jacob Smith][JakobJingleheimer] | <https://github.com/nodejs/next-10>           |
+| Single executable apps | [Darshan Sen][RaisinTen]         | <https://github.com/nodejs/single-executable> |
+| Performance            | [Rafael Gonzaga][RafaelGSS]      | <https://github.com/nodejs/performance>       |
 
 <details>
-<summary>已完成倡议列表</summary>
+<summary>过去倡议列表</summary>
 
-## 已完成倡议
+## 过去的倡议
 
 | 倡议               | 负责人                         | 链接                                                                |
 | ------------------ | -------------------------------- | -------------------------------------------------------------------- |
@@ -31,17 +29,19 @@ Node.js 项目目前有若干战略倡议正在推进。对当前倡议的审查
 | N-API              | Michael Dawson                   | <https://github.com/nodejs/abi-stable-node>                          |
 | npm 集成           | Myles Borins                     | <https://github.com/nodejs/node/pull/21594>                          |
 | OpenSSL 演进       | Rod Vagg                         | <https://github.com/nodejs/TSC/issues/677>                           |
-| 开放 Web 标准      | Myles Borins, Joyee Cheung       | <https://github.com/nodejs/open-standards>                           |
+| 开放网络标准       | Myles Borins, Joyee Cheung       | <https://github.com/nodejs/open-standards>                           |
+| Primordials        | [Benjamin Gruenbaum][benjamingr] | <https://github.com/nodejs/primordials-use-cases>                    |
+| 启动快照           | [Joyee Cheung][joyeecheung]      | <https://github.com/nodejs/node/issues/35711>                        |
 | VM 模块修复       | Franziska Hinkelmann             | <https://github.com/nodejs/node/issues/6283>                         |
 | Worker            | Anna Henningsen                  | <https://github.com/nodejs/worker>                                   |
 
 </details>
 
+[JakobJingleheimer]: https://github.com/JakobJingleheimer
 [RafaelGSS]: https://github.com/RafaelGSS
 [RaisinTen]: https://github.com/RaisinTen
 [benjamingr]: https://github.com/benjamingr
 [jasnell]: https://github.com/jasnell
 [joyeecheung]: https://github.com/joyeecheung
 [legendecas]: https://github.com/legendecas
-[mhdawson]: https://github.com/mhdawson
 [targos]: https://github.com/targos

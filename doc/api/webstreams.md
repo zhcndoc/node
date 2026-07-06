@@ -101,6 +101,22 @@ Node.js 流可以通过 [`stream.Readable`][]、[`stream.Writable`][] 和 [`stre
 
 ## API
 
+### `ReadableStreamTee(stream[, cloneForBranch2])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+* `stream` {ReadableStream}
+* `cloneForBranch2` {boolean} 当为 `true` 时，排入第二个分支的块会从排入第一个分支的块中克隆。**默认：** `false`。
+* 返回：{ReadableStream\[]} 两个 {ReadableStream} 分支。
+
+对 `stream` 执行 WHATWG `ReadableStreamTee` 抽象操作。
+
+这与 `readableStream.tee()` 的区别仅在于 `cloneForBranch2` 为 `true` 时。`tee()` 方法始终传入 `false`，而其他 Web 平台规范（例如 Fetch 的主体克隆）则传入 `true`，以便第二个分支接收克隆的块，并且对一个分支的消费不会修改另一个分支看到的块。
+
 ### 类：`ReadableStream`
 
 <!-- YAML
@@ -232,7 +248,7 @@ const transformedStream = stream.pipeThrough(transform);
 
 for await (const chunk of transformedStream)
   console.log(chunk);
-  // 打印：A
+  // 输出：A
 ```
 
 ```cjs
@@ -258,7 +274,7 @@ const transformedStream = stream.pipeThrough(transform);
 (async () => {
   for await (const chunk of transformedStream)
     console.log(chunk);
-    // 打印：A
+    // 输出：A
 })();
 ```
 
@@ -439,10 +455,10 @@ added: v16.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42225
-    description: 此类现在暴露于全局对象上。
+    description: This class is now exposed on the global object.
 -->
 
-默认情况下，调用 `readableStream.getReader()` 而不带参数将返回 `ReadableStreamDefaultReader` 的实例。默认读取器将流经流的数据块视为不透明值，这允许 {ReadableStream} 与通常任何 JavaScript 值一起工作。
+By default, calling `readableStream.getReader()` without a parameter will return an instance of `ReadableStreamDefaultReader`. The default reader treats chunks of data flowing through the stream as opaque values, which allows {ReadableStream}s to work with essentially any JavaScript value.
 
 #### `new ReadableStreamDefaultReader(stream)`
 
@@ -452,7 +468,7 @@ added: v16.5.0
 
 * `stream` {ReadableStream}
 
-创建一个新的 {ReadableStreamDefaultReader}，锁定到给定的 {ReadableStream}。
+Creates a new {ReadableStreamDefaultReader}, locked to the given {ReadableStream}.
 
 #### `readableStreamDefaultReader.cancel([reason])`
 
@@ -461,9 +477,9 @@ added: v16.5.0
 -->
 
 * `reason` {any}
-* 返回：一个兑现值为 `undefined` 的 promise。
+* Returns: A promise fulfilled with `undefined`.
 
-取消 {ReadableStream} 并返回一个 promise，当底层流被取消时该 promise 被兑现。
+Cancels the {ReadableStream} and returns a promise that is fulfilled when the underlying stream is canceled.
 
 #### `readableStreamDefaultReader.closed`
 
@@ -471,7 +487,7 @@ added: v16.5.0
 added: v16.5.0
 -->
 
-* 类型：{Promise} 当关联的 {ReadableStream} 关闭时兑现为 `undefined`，如果流出错或读取器的锁在流完成关闭之前被释放，则被拒绝。
+* Type: {Promise} Fulfills with `undefined` when the associated {ReadableStream} is closed, or rejects if the stream errors or if the reader’s lock is released before the stream finishes closing.
 
 #### `readableStreamDefaultReader.read()`
 
@@ -479,11 +495,11 @@ added: v16.5.0
 added: v16.5.0
 -->
 
-* 返回：一个兑现为一个对象的 promise：
+* Returns: A promise fulfilled with an object:
   * `value` {any}
   * `done` {boolean}
 
-从底层 {ReadableStream} 请求下一个数据块，并返回一个 promise，一旦数据可用，该 promise 将被兑现。
+Requests the next chunk from the underlying {ReadableStream} and returns a promise that is fulfilled once the data is available.
 
 #### `readableStreamDefaultReader.releaseLock()`
 
@@ -491,7 +507,7 @@ added: v16.5.0
 added: v16.5.0
 -->
 
-释放此读取器对底层 {ReadableStream} 的锁。
+Releases the lock on the underlying {ReadableStream} held by this reader.
 
 ### 类：`ReadableStreamBYOBReader`
 
@@ -505,7 +521,7 @@ changes:
 
 `ReadableStreamBYOBReader` 是面向字节的 {ReadableStream}（即在创建 `ReadableStream` 时将 `underlyingSource.type` 设置为 `'bytes'` 的流）的替代消费者。
 
-`BYOB` 是"bring your own buffer"（自带缓冲区）的缩写。这是一种模式，允许更有效地读取面向字节的数据，避免额外的复制。
+`BYOB` 是"自带缓冲区"（bring your own buffer）的缩写。这是一种模式，允许更有效地读取面向字节的数据，避免额外的复制。
 
 ```mjs
 import {
@@ -684,7 +700,7 @@ changes:
     description: 支持处理来自已释放读取器的 BYOB 拉取请求。
 -->
 
-每个 {ReadableStream} 都有一个控制器，负责流的队列的内部状态和管理。
+每个 {ReadableStream} 都有一个控制器，负责流队列的内部状态和管理。
 `ReadableByteStreamController` 用于面向字节的 `ReadableStream`。
 
 #### `readableByteStreamController.byobRequest`
@@ -721,7 +737,7 @@ added: v16.5.0
 
 * `chunk` {Buffer|TypedArray|DataView}
 
-将新的数据块附加到 {ReadableStream} 的队列。
+将新的数据块附加到 {ReadableStream} 的队列中。
 
 #### `readableByteStreamController.error([error])`
 
@@ -733,20 +749,20 @@ added: v16.5.0
 
 发出一个错误信号，导致 {ReadableStream} 出错并关闭。
 
-### 类：`ReadableStreamBYOBRequest`
+### Class: `ReadableStreamBYOBRequest`
 
 <!-- YAML
 added: v16.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42225
-    description: 此类现在暴露于全局对象上。
+    description: This class is now exposed on the global object.
 -->
 
-当在面向字节的流中使用 `ReadableByteStreamController`，以及使用 `ReadableStreamBYOBReader` 时，
-`readableByteStreamController.byobRequest` 属性提供对 `ReadableStreamBYOBRequest` 实例的访问，
-该实例代表当前的读取请求。该对象用于访问为读取请求提供的 `ArrayBuffer`/`TypedArray` 以进行填充，
-并提供用于信号数据已提供的方法。
+When using `ReadableByteStreamController` in a byte-oriented stream, and using `ReadableStreamBYOBReader`,
+the `readableByteStreamController.byobRequest` property provides access to a `ReadableStreamBYOBRequest` instance,
+which represents the current read request. This object is used to access the `ArrayBuffer`/`TypedArray` provided for the read request
+in order to fill it, and provides methods for signaling that data has been provided.
 
 #### `readableStreamBYOBRequest.respond(bytesWritten)`
 
@@ -756,7 +772,7 @@ added: v16.5.0
 
 * `bytesWritten` {number}
 
-信号表明已将 `bytesWritten` 数量的字节写入 `readableStreamBYOBRequest.view`。
+Signals that `bytesWritten` number of bytes have been written to `readableStreamBYOBRequest.view`.
 
 #### `readableStreamBYOBRequest.respondWithNewView(view)`
 
@@ -766,7 +782,7 @@ added: v16.5.0
 
 * `view` {Buffer|TypedArray|DataView}
 
-信号表明请求已 fulfilled，字节已写入新的 `Buffer`、`TypedArray` 或 `DataView`。
+Signals that the request has been fulfilled and bytes have been written to a new `Buffer`, `TypedArray`, or `DataView`.
 
 #### `readableStreamBYOBRequest.view`
 
@@ -978,7 +994,7 @@ added: v16.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42225
-    description: 此类现在暴露于全局对象上。
+    description: This class is now exposed on the global object.
 -->
 
 `WritableStreamDefaultController` 管理 {WritableStream} 的内部状态。
@@ -991,7 +1007,7 @@ added: v16.5.0
 
 * `error` {any}
 
-由用户代码调用，以信号表明在处理 `WritableStream` 数据时发生了错误。调用时，{WritableStream} 将被中止，当前待处理的写入将被取消。
+由用户代码调用，用于发出信号，表示在处理 `WritableStream` 数据时发生了错误。调用时，{WritableStream} 将被中止，当前待处理的写入将被取消。
 
 #### `writableStreamDefaultController.signal`
 

@@ -16,21 +16,21 @@ import dgram from 'node:dgram';
 const server = dgram.createSocket('udp4');
 
 server.on('error', (err) => {
-  console.error(`server error:\n${err.stack}`);
+  console.error(`服务器错误：\n${err.stack}`);
   server.close();
 });
 
 server.on('message', (msg, rinfo) => {
-  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+  console.log(`服务器收到：${msg} 来自 ${rinfo.address}:${rinfo.port}`);
 });
 
 server.on('listening', () => {
   const address = server.address();
-  console.log(`server listening ${address.address}:${address.port}`);
+  console.log(`服务器正在监听 ${address.address}:${address.port}`);
 });
 
 server.bind(41234);
-// 输出：server listening 0.0.0.0:41234
+// 输出：服务器正在监听 0.0.0.0:41234
 ```
 
 ```cjs
@@ -38,21 +38,21 @@ const dgram = require('node:dgram');
 const server = dgram.createSocket('udp4');
 
 server.on('error', (err) => {
-  console.error(`server error:\n${err.stack}`);
+  console.error(`服务器错误：\n${err.stack}`);
   server.close();
 });
 
 server.on('message', (msg, rinfo) => {
-  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+  console.log(`服务器收到：${msg} 来自 ${rinfo.address}:${rinfo.port}`);
 });
 
 server.on('listening', () => {
   const address = server.address();
-  console.log(`server listening ${address.address}:${address.port}`);
+  console.log(`服务器正在监听 ${address.address}:${address.port}`);
 });
 
 server.bind(41234);
-// 输出：server listening 0.0.0.0:41234
+// 输出：服务器正在监听 0.0.0.0:41234
 ```
 
 ## 类：`dgram.Socket`
@@ -140,7 +140,7 @@ added: v0.6.9
 * `multicastAddress` {string}
 * `multicastInterface` {string}
 
-告诉内核使用 `IP_ADD_MEMBERSHIP` 套接字选项加入给定 `multicastAddress` 和 `multicastInterface` 处的多播组。
+告知内核使用 `IP_ADD_MEMBERSHIP` 套接字选项加入给定 `multicastAddress` 和 `multicastInterface` 处的多播组。
 如果未指定 `multicastInterface` 参数，操作系统将选择一个接口并将成员资格添加到该接口。
 要将成员资格添加到每个可用接口，请多次调用 `addMembership`，每个接口一次。
 
@@ -190,11 +190,11 @@ added:
 * `groupAddress` {string}
 * `multicastInterface` {string}
 
-告诉内核使用 `multicastInterface` 和 `IP_ADD_SOURCE_MEMBERSHIP` 套接字选项加入给定 `sourceAddress` 和 `groupAddress` 处的源特定多播通道。
-如果未指定 `multicastInterface` 参数，操作系统将选择一个接口并将成员资格添加到该接口。
-要将成员资格添加到每个可用接口，请多次调用 `socket.addSourceSpecificMembership()`，每个接口一次。
+Tell the kernel to join the source-specific multicast channel at the given `sourceAddress` and `groupAddress` using `multicastInterface` and the `IP_ADD_SOURCE_MEMBERSHIP` socket option.
+If the `multicastInterface` parameter is not specified, the operating system will choose an interface and add the membership to that interface.
+To add the membership to every available interface, call `socket.addSourceSpecificMembership()` multiple times, once for each interface.
 
-当在未绑定的套接字上调用时，此方法将隐式绑定到随机端口，监听所有接口。
+When called on an unbound socket, this method will implicitly bind to a random port and listen on all interfaces.
 
 ### `socket.address()`
 
@@ -242,21 +242,21 @@ import dgram from 'node:dgram';
 const server = dgram.createSocket('udp4');
 
 server.on('error', (err) => {
-  console.error(`server error:\n${err.stack}`);
+  console.error(`服务器错误：\n${err.stack}`);
   server.close();
 });
 
 server.on('message', (msg, rinfo) => {
-  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+  console.log(`服务器收到：${msg} 来自 ${rinfo.address}:${rinfo.port}`);
 });
 
 server.on('listening', () => {
   const address = server.address();
-  console.log(`server listening ${address.address}:${address.port}`);
+  console.log(`服务器监听 ${address.address}:${address.port}`);
 });
 
 server.bind(41234);
-// 输出：server listening 0.0.0.0:41234
+// 输出：服务器监听 0.0.0.0:41234
 ```
 
 ```cjs
@@ -264,21 +264,21 @@ const dgram = require('node:dgram');
 const server = dgram.createSocket('udp4');
 
 server.on('error', (err) => {
-  console.error(`server error:\n${err.stack}`);
+  console.error(`服务器错误：\n${err.stack}`);
   server.close();
 });
 
 server.on('message', (msg, rinfo) => {
-  console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+  console.log(`服务器收到：${msg} 来自 ${rinfo.address}:${rinfo.port}`);
 });
 
 server.on('listening', () => {
   const address = server.address();
-  console.log(`server listening ${address.address}:${address.port}`);
+  console.log(`服务器监听 ${address.address}:${address.port}`);
 });
 
 server.bind(41234);
-// 输出：server listening 0.0.0.0:41234
+// 输出：服务器监听 0.0.0.0:41234
 ```
 
 ### `socket.bind(options[, callback])`
@@ -348,7 +348,7 @@ const dgram = require('node:dgram');
 
 const socket = dgram.createSocket('udp4');
 const address = socket.bindSync({ address: '0.0.0.0', port: 0 });
-console.log(address); // e.g. { address: '0.0.0.0', family: 'IPv4', port: 53124 }
+console.log(address); // 例如 { address: '0.0.0.0', family: 'IPv4', port: 53124 }
 ```
 
 绑定失败（例如 `EADDRINUSE`）会同步抛出，而不是作为 `'error'` 事件发出。`bindSync()` 返回后，[`socket.address()`][] 会立即同步有效，而 `'listening'` 事件会在下一个 tick 发出。
@@ -405,7 +405,7 @@ added: v26.4.0
 -->
 
 * `port` {integer}
-* `address` {string} 要连接到的数值型 IP 地址。与 [`socket.connect()`][] 不同，这里不会执行 DNS 解析，因此不接受主机名。如果省略，则使用 `'127.0.0.1'`（对于 `udp4` 套接字）或 `'::1'`（对于 `udp6` 套接字）。
+* `address` {string} 要连接到的数字形式 IP 地址。与 [`socket.connect()`][] 不同，这里不会执行 DNS 解析，因此不接受主机名。如果省略，则使用 `'127.0.0.1'`（对于 `udp4` 套接字）或 `'::1'`（对于 `udp6` 套接字）。
 
 [`socket.connect()`][] 的同步对应方法。对于 UDP 套接字，`connect(2)` 只会记录默认对等地址，并且是一个本地的、非阻塞的系统调用，因此关联会在当前行内完成。调用本身引发的任何错误（例如地址族不匹配时的 `EAFNOSUPPORT`）都会同步抛出，而不是通过 `'error'` 事件报告。因为 `connect(2)` 不会探测可达性，所以像 `ECONNREFUSED` 这样的错误仍会像 [`socket.connect()`][] 一样，在之后的发送或接收操作中异步显现：
 
@@ -427,8 +427,8 @@ console.log(socket.remoteAddress()); // { address: '127.0.0.1', family: 'IPv4', 
 added: v12.0.0
 -->
 
-一个同步函数，用于将已连接的 `dgram.Socket` 与其远程地址解除关联。
-尝试在未绑定或已断开的套接字上调用 `disconnect()` 将导致 [`ERR_SOCKET_DGRAM_NOT_CONNECTED`][] 异常。
+A synchronous function used to disassociate a connected `dgram.Socket` from its remote address.
+Attempting to call `disconnect()` on an unbound or already disconnected socket will result in an [`ERR_SOCKET_DGRAM_NOT_CONNECTED`][] exception.
 
 ### `socket.dropMembership(multicastAddress[, multicastInterface])`
 
@@ -479,7 +479,7 @@ added: v8.7.0
 
 * 返回：{number} `SO_SNDBUF` 套接字发送缓冲区大小（字节）。
 
-如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][]。
+如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][].
 
 ### `socket.getSendQueueSize()`
 
@@ -793,15 +793,15 @@ added: v0.3.8
 
 * `ttl` {integer}
 
-设置 `IP_MULTICAST_TTL` 套接字选项。
-虽然 TTL 通常代表“生存时间”，但在此上下文中，它指定数据包允许通过的 IP 跳数，特别是对于多播流量。
-每个转发数据包的路由器或网关都会递减 TTL。
-如果路由器将 TTL 递减到 0，则不会转发它。
+Sets the `IP_MULTICAST_TTL` socket option.
+Although TTL usually stands for "time to live", in this context it specifies the number of IP hops a packet is allowed to traverse, especially for multicast traffic.
+Each router or gateway that forwards a packet decrements the TTL.
+If a router decrements the TTL to 0, it is not forwarded.
 
-`ttl` 参数可能在 0 到 255 之间。
-大多数系统上的默认值为 `1`。
+The `ttl` argument may be between 0 and 255.
+The default on most systems is `1`.
 
-如果在未绑定的套接字上调用此方法，将抛出 `EBADF`。
+If this method is called on an unbound socket, an `EBADF` error is thrown.
 
 ### `socket.setRecvBufferSize(size)`
 
@@ -814,7 +814,7 @@ added: v8.7.0
 设置 `SO_RCVBUF` 套接字选项。
 设置最大套接字接收缓冲区（字节）。
 
-如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][]。
+如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][].
 
 ### `socket.setSendBufferSize(size)`
 
@@ -827,7 +827,7 @@ added: v8.7.0
 设置 `SO_SNDBUF` 套接字选项。
 设置最大套接字发送缓冲区（字节）。
 
-如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][]。
+如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][].
 
 ### `socket.setTTL(ttl)`
 
@@ -889,19 +889,35 @@ changes:
     description: "支持 `lookup` 选项。"
 -->
 
-* `options` {Object} 可用选项包括：
-  * `type` {string} 套接字族。必须是 `'udp4'` 或 `'udp6'`。必填。
-  * `reuseAddr` {boolean} 当为 `true` 时，[`socket.bind()`][] 将复用地址，即使另一个进程已经在该地址上绑定了套接字，但只有一个套接字可以接收数据。
-    **默认值：** `false`。
-  * `reusePort` {boolean} 当为 `true` 时，[`socket.bind()`][] 将复用端口，即使另一个进程已经在该端口上绑定了套接字。传入的数据报将分发给监听套接字。该选项仅在某些平台上可用，例如 Linux 3.9+、DragonFlyBSD 3.6+、FreeBSD 12.0+、Solaris 11.4 和 AIX 7.2.5+。在不支持的平台上，当绑定套接字时此选项会抛出错误。
-    **默认值：** `false`。
-  * `ipv6Only` {boolean} 将 `ipv6Only` 设置为 `true` 将禁用双栈支持，即，绑定到地址 `::` 不会导致 `0.0.0.0` 被绑定。**默认值：** `false`。
+* `options` {Object} 可用选项如下：
+  * `type` {string} 套接字的族。必须是 `'udp4'` 或 `'udp6'`。
+    必填。
+  * `reuseAddr` {boolean} 当为 `true` 时，[`socket.bind()`][] 将重用该
+    地址，即使另一个进程已经在其上绑定了一个套接字，但
+    只有一个套接字可以接收数据。
+    **默认：** `false`。
+  * `reusePort` {boolean} 当为 `true` 时，[`socket.bind()`][] 将重用该
+    端口，即使另一个进程已经在其上绑定了一个套接字。传入
+    数据报会分发到监听套接字。该选项仅在某些平台上可用，例如 Linux 3.9+、DragonFlyBSD 3.6+、FreeBSD 12.0+、
+    Solaris 11.4 和 AIX 7.2.5+。在不支持的平台上，此选项在套接字绑定时会抛出
+    错误。
+    **默认：** `false`。
+  * `ipv6Only` {boolean} 将 `ipv6Only` 设为 `true` 会
+    禁用双栈支持，也就是说，绑定到 `::` 不会使
+    `0.0.0.0` 也被绑定。**默认：** `false`。
   * `recvBufferSize` {number} 设置 `SO_RCVBUF` 套接字值。
   * `sendBufferSize` {number} 设置 `SO_SNDBUF` 套接字值。
-  * `lookup` {Function} 自定义查找函数。**默认值：** [`dns.lookup()`][]。
-  * `signal` {AbortSignal} 一个可用于关闭套接字的 AbortSignal。
-  * `receiveBlockList` {net.BlockList} `receiveBlockList` 可用于丢弃发往特定 IP 地址、IP 范围或 IP 子网的入站数据报。如果服务器位于反向代理、NAT 等后面，则此功能不起作用，因为针对阻止列表检查的地址是代理的地址，或 NAT 指定的地址。
-  * `sendBlockList` {net.BlockList} `sendBlockList` 可用于禁用对特定 IP 地址、IP 范围或 IP 子网的出站访问。
+  * `lookup` {Function} 自定义查找函数。**默认：** [`dns.lookup()`][]。
+    当使用默认值时，套接字族的字面 IP 地址
+    会直接解析为其自身，而不会调用 [`dns.lookup()`][]。
+  * `signal` {AbortSignal} 可用于关闭套接字的 AbortSignal。
+  * `receiveBlockList` {net.BlockList} `receiveBlockList` 可用于丢弃
+    来自特定 IP 地址、IP 范围或 IP 子网的入站数据报。这在服务器位于反向代理、NAT 等之后时
+    不起作用，因为与阻止列表进行比对的地址是代理的地址，或者是
+    由 NAT 指定的地址。
+  * `sendBlockList` {net.BlockList} `sendBlockList` 可用于禁用
+    到特定 IP 地址、IP 范围或 IP 子网的出站
+    访问。
 * `callback` {Function} 作为 `'message'` 事件的监听器附加。可选。
 * 返回：{dgram.Socket}
 

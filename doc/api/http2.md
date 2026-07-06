@@ -2134,9 +2134,7 @@ added: v8.4.0
 
 * `callback` {Function}
 
-停止服务器建立新会话。由于 HTTP/2
-会话的持久性，这并不能防止创建新的请求流。要优雅地关闭服务器，
-请在所有活动会话上调用 [`http2session.close()`][]。
+Stops the server from establishing new sessions and streams.
 
 如果提供了 `callback`，则直到所有活动会话都已关闭才会调用它，
 尽管服务器已经停止允许新会话。有关更多详细信息，请参阅
@@ -2411,9 +2409,7 @@ added: v8.4.0
 
 * `callback` {Function}
 
-停止服务器建立新会话。由于 HTTP/2
-会话的持久性，这并不能防止创建新的请求流。要优雅地关闭服务器，
-请在所有活动会话上调用 [`http2session.close()`][]。
+Stops the server from establishing new sessions and streams.
 
 如果提供了 `callback`，则直到所有活动会话都已关闭才会调用它，
 尽管服务器已经停止允许新会话。有关更多详细信息，请参阅
@@ -4399,7 +4395,6 @@ HTTP/2 要求请求具有 `:authority` 伪头部或 `host` 头部。直接构建
 [`http2.Server`]: #class-http2server
 [`http2.createSecureServer()`]: #http2createsecureserveroptions-onrequesthandler
 [`http2.createServer()`]: #http2createserveroptions-onrequesthandler
-[`http2session.close()`]: #http2sessionclosecallback
 [`http2stream.pushStream()`]: #http2streampushstreamheaders-options-callback
 [`import()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import
 [`net.Server.close()`]: net.md#serverclosecallback

@@ -214,7 +214,8 @@ TSC 成员以及其他协作者提出的修改。在合并到代码库之前，�
   `npm install && npm test`。这对于检查某项变更是否会导致生态系统出现破坏非常有用。
 
 * [`node-stress-single-test`](https://ci.nodejs.org/job/node-stress-single-test/)
-  可以在特定平台上反复运行一组测试。用它来检查测试是否可靠。
+  can run a group of tests over and over on a specific platform. Use it to check
+  that the tests are reliable (i.e. not flaky).
 
 * [`node-test-commit-v8-linux`](https://ci.nodejs.org/job/node-test-commit-v8-linux/)
   运行标准 V8 测试。当在 Node.js 中更新 V8 或在 V8 上应用新的补丁时，请运行它。

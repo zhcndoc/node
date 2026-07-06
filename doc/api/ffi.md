@@ -103,7 +103,7 @@ FFI 签名使用字符串类型名称。
 
 在优化的 Fast FFI 调用中，`pointer`、`ptr` 和 `function` 参数接受原始指针 `bigint` 值。对于类似指针的参数，`null`、`undefined`、字符串、`Buffer`、类型化数组、`DataView` 和 `ArrayBuffer` 值会在调用优化后的原生包装器之前先在 JavaScript 侧进行转换。
 
-优化的 Fast FFI 调用最多支持 8 个函数参数。参数超过 7 个的函数将改用通用 FFI 调用路径。
+优化后的 Fast FFI 调用最多支持 8 个函数参数，但具体限制取决于架构和参数类型，因为每个参数都必须适配平台跳板所使用的寄存器。整数和指针参数在 AArch64 上最多为 7 个，在 x86-64 上最多为 6 个，而浮点参数在两者上都最多可用 8 个。超过这些限制的函数，包括任何参数多于 8 个的函数，都会改用通用 FFI 调用路径。
 
 ## 签名对象
 
@@ -174,7 +174,7 @@ import { dlopen } from 'node:ffi';
     add_i32: { arguments: ['i32', 'i32'], return: 'i32' },
   });
   console.log(handle.functions.add_i32(20, 22));
-} // 此处会自动调用 handle.lib.close()。
+} // This automatically calls handle.lib.close().
 ```
 
 ```mjs
@@ -207,9 +207,9 @@ added: v26.1.0
 
 * `handle` {DynamicLibrary}
 
-关闭一个动态库。
+Close a dynamic library.
 
-这等价于调用 `handle.close()`。
+This is equivalent to calling `handle.close()`.
 
 ## `ffi.dlsym(handle, symbol)`
 
@@ -452,7 +452,8 @@ JavaScript `number` 值。
 * `ffi.setFloat64(pointer, offset, value)`
 
 这些辅助函数执行直接的内存读取和写入。`pointer` 必须是一个
-`bigint`，指向有效的可读或可写的原生内存。若提供 `offset`，则将其解释为相对于 `pointer` 的字节偏移。
+`bigint`，指向有效的可读或可写的原生内存。若提供 `offset`，则将其解释为相对于
+`pointer` 的字节偏移。
 
 用于读取的辅助函数会对 8 位、16 位和 32 位整数类型以及浮点类型返回 JavaScript 的
 `number` 值。对于 64 位整数类型，它们返回 `bigint` 值。

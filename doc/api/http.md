@@ -320,7 +320,7 @@ added: v8.1.0
 
 * `socket` {stream.Duplex}
 
-当 `socket` 从请求分离并可由
+当 `socket` 从请求中分离并可由
 `Agent` 持久化时调用。默认行为是：
 
 ```js
@@ -330,7 +330,7 @@ return true;
 ```
 
 此方法可被特定的 `Agent` 子类重写。如果此
-方法返回假值，套接字将被销毁而不是持久化
+方法返回假值，套接字将被销毁，而不是被持久化
 以供下一个请求使用。
 
 `socket` 参数可以是 {net.Socket} 的实例，即
@@ -419,10 +419,10 @@ HTTPS/TLS 特定选项。
 added: v0.11.7
 -->
 
-* 类型：{number}
+* Type: {number}
 
-默认设置为 256。对于启用了 `keepAlive` 的 agent，这
-设置了将保持在空闲状态的最大套接字数。
+Defaults to 256. For agents with `keepAlive` enabled, this
+sets the maximum number of sockets that will remain open in the free state.
 
 ### `agent.maxSockets`
 
@@ -524,7 +524,7 @@ added: v0.5.4
 ### 事件：`'connect'`
 
 <!-- YAML
-added: v0.7.0
+已添加：v0.7.0
 -->
 
 * `response` {http.IncomingMessage}
@@ -746,7 +746,7 @@ added: v0.7.8
 
 当底层 socket 因无活动而超时时触发。这仅通知 socket 处于空闲状态。必须手动销毁请求。
 
-另见：[`request.setTimeout()`][]。
+另见：[`request.setTimeout()`][].
 
 ### 事件：`'upgrade'`
 
@@ -900,7 +900,7 @@ added:
  - v12.16.0
 -->
 
-参见 [`writable.cork()`][]。
+参见 [`writable.cork()`][].
 
 ### 结束请求
 
@@ -955,7 +955,7 @@ added:
 
 在调用 [`request.destroy()`][] 后为 `true`。
 
-详见 [`writable.destroyed`][]。
+详见 [`writable.destroyed`][].
 
 ### 服务器消息已发送
 
@@ -1161,13 +1161,13 @@ http
   .listen(3000);
 
 setInterval(() => {
-  // 适配一个 keep-alive agent
+  // 使用一个 keep-alive agent
   http.get('http://localhost:3000', { agent }, (res) => {
     res.on('data', (data) => {
       // 什么都不做
     });
   });
-}, 5000); // 每 5 秒发送一次请求，以便容易触发空闲超时
+}, 5000); // 每 5 秒发送一次请求，以便更容易触发空闲超时
 ```
 
 ```cjs
@@ -1183,13 +1183,13 @@ http
   .listen(3000);
 
 setInterval(() => {
-  // 适配一个 keep-alive agent
+  // 使用一个 keep-alive agent
   http.get('http://localhost:3000', { agent }, (res) => {
     res.on('data', (data) => {
       // 什么都不做
     });
   });
-}, 5000); // 每 5 秒发送一次请求，以便容易触发空闲超时
+}, 5000); // 每 5 秒发送一次请求，以便更容易触发空闲超时
 ```
 
 通过标记请求是否重用了套接字，我们可以据此进行自动错误重试。
@@ -1272,7 +1272,7 @@ added: v0.5.9
 
 * `noDelay` {boolean}
 
-一旦将 socket 分配给此请求并完成连接，[`socket.setNoDelay()`][] 将被调用。
+Once a socket is assigned to this request and the connection is established, [`socket.setNoDelay()`][] will be called.
 
 ### `request.setSocketKeepAlive([enable][, initialDelay])`
 
@@ -1371,7 +1371,7 @@ added: v12.7.0
 
 * 类型：{boolean}
 
-如果在 [`'finish'`][] 事件触发之前，所有数据已冲刷到底层系统，则为 `true`。
+如果在 [`'finish'`][] 事件触发之前，所有数据已刷写到底层系统，则为 `true`。
 
 ### `request.write(chunk[, encoding][, callback])`
 
@@ -1575,7 +1575,7 @@ added: v0.1.0
 * `request` {http.IncomingMessage}
 * `response` {http.ServerResponse}
 
-每次发出请求时都会触发。在一个连接中可能会有多个请求（在 HTTP Keep-Alive 连接的情况下）。
+每当收到请求时都会触发。在一个连接中可能会有多个请求（在 HTTP Keep-Alive 连接的情况下）。
 
 ### 事件：`'upgrade'`
 
@@ -1640,10 +1640,10 @@ const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
 });
 
 server.listen(8000);
-// Close the server after 10 seconds
+// 10 秒后关闭服务器
 setTimeout(() => {
   server.close(() => {
-    console.log('Server on port 8000 successfully closed');
+    console.log('8000 端口上的服务器已成功关闭');
   });
 }, 10000);
 ```
@@ -1667,17 +1667,17 @@ const http = require('node:http');
 const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({
-    data: 'Hello World!',
+    data: '你好，世界！',
   }));
 });
 
 server.listen(8000);
-// Close the server after 10 seconds
+// 10 秒后关闭服务器
 setTimeout(() => {
   server.close(() => {
-    console.log('Server on port 8000 successfully closed');
+    console.log('8000 端口上的服务器已成功关闭');
   });
-  // Close all connections to ensure the server closes successfully
+  // 关闭所有连接以确保服务器成功关闭
   server.closeAllConnections();
 }, 10000);
 ```
@@ -1705,12 +1705,12 @@ const server = http.createServer({ keepAliveTimeout: 60000 }, (req, res) => {
 });
 
 server.listen(8000);
-// Close the server after 10 seconds
+// 10 秒后关闭服务器
 setTimeout(() => {
   server.close(() => {
-    console.log('Server on port 8000 successfully closed');
+    console.log('端口 8000 上的服务器已成功关闭');
   });
-  // Close idle connections, such as keep-alive connections. Once the remaining active connections end, the server will close
+  // 关闭空闲连接，例如 keep-alive 连接。一旦剩余的活动连接结束，服务器将关闭
   server.closeIdleConnections();
 }, 10000);
 ```
@@ -1969,7 +1969,7 @@ added:
  - v12.16.0
 -->
 
-参见 [`writable.cork()`][]。
+参见 [`writable.cork()`][].
 
 ### `response.end([data[, encoding]][, callback])`
 
@@ -2016,7 +2016,7 @@ deprecated:
 added: v1.6.0
 -->
 
-刷新响应头部。另参见：[`request.flushHeaders()`][]。
+Flush the response headers. See also: [`request.flushHeaders()`][].
 
 ### `response.getHeader(name)`
 
@@ -2102,7 +2102,7 @@ added: v0.9.3
 
 * 类型：{boolean}
 
-布尔值（只读）。如果已发送头部则为 true，否则为 false。
+A boolean. Read-only. True if the headers were sent, false otherwise.
 
 ### `response.removeHeader(name)`
 
@@ -2112,7 +2112,7 @@ added: v0.4.0
 
 * `name` {string}
 
-移除排队等待隐式发送的头部。
+移除等待隐式发送的头部。
 
 ```js
 response.removeHeader('Content-Encoding');
@@ -2143,7 +2143,7 @@ added: v0.7.5
 ### `response.setHeader(name, value)`
 
 <!-- YAML
-added: v0.4.0
+已添加：v0.4.0
 -->
 
 * `name` {string}
@@ -2178,7 +2178,7 @@ const server = http.createServer((req, res) => {
 });
 ```
 
-如果调用了 [`response.writeHead()`][] 方法且未调用此方法，它将直接把提供的头部值写入网络通道而不内部缓存，并且对该头部的 [`response.getHeader()`][] 将不会产生预期结果。如果希望逐步填充头部以便将来检索和修改，请使用 [`response.setHeader()`][] 而不是 [`response.writeHead()`][]。
+如果调用了 [`response.writeHead()`][] 方法且未调用此方法，它将直接把提供的头部值写入网络通道而不内部缓存，并且对该头部的 [`response.getHeader()`][] 将不会产生预期结果。如果希望逐步填充头部以便将来检索和修改，请使用 [`response.setHeader()`][] 而不是 [`response.writeHead()`][]】【。
 
 ### `response.setTimeout(msecs[, callback])`
 
@@ -2266,7 +2266,7 @@ added:
 
 * 类型：{boolean} **默认：** `false`
 
-如果设置为 `true`，Node.js 将检查 `Content-Length` 头部值与主体大小（以字节为单位）是否相等。`Content-Length` 头部值不匹配将导致抛出 `Error`，标识为 `code:` [`'ERR_HTTP_CONTENT_LENGTH_MISMATCH'`][]。
+如果设置为 `true`，Node.js 将检查 `Content-Length` 头部值与主体大小（以字节为单位）是否相等。`Content-Length` 头部值不匹配将导致抛出 `Error`，标识为 `code:` [`'ERR_HTTP_CONTENT_LENGTH_MISMATCH'`][].
 
 ### `response.uncork()`
 
@@ -2276,7 +2276,7 @@ added:
  - v12.16.0
 -->
 
-参见 [`writable.uncork()`][]。
+参见 [`writable.uncork()`][].
 
 ### `response.writableEnded`
 
@@ -2286,7 +2286,7 @@ added: v12.9.0
 
 * 类型：{boolean}
 
-在调用 [`response.end()`][] 之后为 `true`。此属性不指示数据是否已刷新，为此请使用 [`response.writableFinished`][]。
+在调用 [`response.end()`][] 之后为 `true`。此属性不表示数据是否已刷新；为此请使用 [`response.writableFinished`][]】【。
 
 ### `response.writableFinished`
 
@@ -2315,7 +2315,7 @@ changes:
 
 如果调用了此方法且尚未调用 [`response.writeHead()`][]，它将切换到隐式头部模式并刷新隐式头部。
 
-这发送响应主体的一块。可以多次调用此方法以提供主体的连续部分。
+这会发送响应主体的一块。可以多次调用此方法以提供主体的连续部分。
 
 如果在 `createServer` 中将 `rejectNonStandardBodyWrites` 设置为 true，则当请求方法或响应状态不支持内容时，不允许写入主体。如果尝试为 HEAD 请求写入主体或作为 `204` 或 `304` 响应的一部分写入主体，则会抛出代码为 `ERR_HTTP_BODY_NOT_ALLOWED` 的同步 `Error`。
 
@@ -2434,7 +2434,7 @@ const server = http.createServer((req, res) => {
 
 `Content-Length` 以字节为单位读取，而不是字符。使用 [`Buffer.byteLength()`][] 确定主体的字节长度。Node.js 将检查 `Content-Length` 与已传输的主体长度是否相等。
 
-尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][]。
+尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][].
 
 ### `response.writeInformation(statusCode[, headers][, callback])`
 
@@ -2462,7 +2462,7 @@ response.writeInformation(110, { 'X-Progress': '50%' });
 added: v10.0.0
 -->
 
-向客户端发送 HTTP/1.1 102 Processing 消息，表示请求主体应该被发送。
+向客户端发送 HTTP/1.1 102 Processing 消息，表示应发送请求主体。
 
 ## 类：`http.IncomingMessage`
 
@@ -3299,7 +3299,7 @@ added: v0.1.22
 
 * 类型：{Object}
 
-所有标准 HTTP 响应状态码及其简短描述的集合。例如，`http.STATUS_CODES[404] === 'Not Found'`。
+所有标准 HTTP 响应状态码及其简短描述的集合。例如，`http.STATUS_CODES[404] === '未找到'`。
 
 ## `http.createServer([options][, requestListener])`
 
@@ -3646,42 +3646,50 @@ changes:
   * `agent` {http.Agent | boolean} 控制 [`Agent`][] 的行为。可能的值：
     * `undefined`（默认）：对该主机和端口使用 [`http.globalAgent`][]。
     * `Agent` 对象：显式使用传入的 `Agent`。
-    * `false`：将使用带默认值的新 `Agent`。
-  * `auth` {string} 基本认证（`'user:password'`），用于计算 Authorization 头部。
-  * `createConnection` {Function} 当未使用 `agent` 选项时，用于创建套接字/流供请求使用的函数。这可用于避免仅仅为了覆盖默认的 `createConnection` 函数而创建自定义 `Agent` 类。详情参见 [`agent.createConnection()`][]。任何 [`Duplex`][] 流都是有效的返回值。
+    * `false`：会导致使用一个带有默认值的新 `Agent`。
+  * `auth` {string} 用于计算 Authorization 头部的基本认证（`'user:password'`）。
+  * `createConnection` {Function} 当不使用 `agent` 选项时，用于生成套接字/流以供请求使用的函数。这可用于避免仅仅为了覆盖默认的 `createConnection` 函数而创建自定义 `Agent` 类。更多详情参见 [`agent.createConnection()`][]。任何 [`Duplex`][] 流都是有效的返回值。
   * `defaultPort` {number} 协议的默认端口。**默认：**
-    使用 `Agent` 时为 `agent.defaultPort`，否则为 `undefined`。
-  * `family` {number} 解析 `host` 或 `hostname` 时要使用的 IP 地址族。有效值为 `4` 或 `6`。未指定时，将同时使用 IPv4 和 IPv6。
-  * `headers` {Object|Array} 包含请求头部的对象或字符串数组。数组格式与 [`message.rawHeaders`][] 相同。
-  * `hints` {number} 可选的 [`dns.lookup()` hints][]。
-  * `host` {string} 发出请求的服务器域名或 IP 地址。**默认：** `'localhost'`。
-  * `hostname` {string} `host` 的别名。为支持 [`url.parse()`][]，如果同时指定了 `host` 和 `hostname`，将使用 `hostname`。
-  * `httpValidation` {string} 控制传出请求的 HTTP 头部值校验严格程度。可接受的值为：
-    * `'strict'`：最严格的校验；拒绝头部值中的任何非 ASCII 或控制字符。
-    * `'relaxed'`：允许头部值中有限的一组非 ASCII 字符，与 [Fetch 规范](https://fetch.spec.whatwg.org/) 保持一致。
-    * `'insecure'`：禁用所有头部值校验（等同于 `insecureHTTPParser: true`）。
-      不能与 `insecureHTTPParser` 一起使用。**默认：** `'strict'`。
-  * `insecureHTTPParser` {boolean} 如果设为 `true`，将使用启用了宽松标志的 HTTP 解析器。应避免使用不安全的解析器。更多信息请参见 [`--insecure-http-parser`][]。
+    如果使用了 `Agent`，则为 `agent.defaultPort`，否则为 `undefined`。
+  * `family` {number} 在解析 `host` 或 `hostname` 时使用的 IP 地址族。有效值为 `4` 或 `6`。未指定时，将同时使用 IPv4 和 IPv6。
+  * `headers` {Object|Array} 一个对象或一个包含请求头的字符串数组。该数组格式与 [`message.rawHeaders`][] 相同。
+  * `hints` {number} 可选的 [`dns.lookup()` 提示][]。
+  * `host` {string} 发出请求的服务器的域名或 IP 地址。**默认：** `'localhost'`。
+  * `hostname` {string} `host` 的别名。为了支持 [`url.parse()`][]，如果同时指定了 `host` 和 `hostname`，则将使用 `hostname`。
+  * `httpValidation` {string} 控制传出请求的 HTTP 头部值验证严格程度。可接受的值有：
+    * `'strict'`：最严格的验证；拒绝头部值中的任何非 ASCII 字符或控制字符。
+    * `'relaxed'`：允许头部值中有限集合的非 ASCII 字符，与 [Fetch 规范](https://fetch.spec.whatwg.org/) 保持一致。
+    * `'insecure'`：禁用所有头部值验证（等同于 `insecureHTTPParser: true`）。
+      不能与 `insecureHTTPParser` 同时使用。**默认：** `'strict'`。
+  * `insecureHTTPParser` {boolean} 如果设为 `true`，将使用启用了宽松标志的 HTTP 解析器。不应使用不安全的解析器。
+    更多信息参见 [`--insecure-http-parser`][]。
     **默认：** `false`
-  * `joinDuplicateHeaders` {boolean} 它会将请求中多个头部的字段行值用 `, ` 连接起来，而不是丢弃重复项。更多信息请参见 [`message.headers`][]。
+  * `joinDuplicateHeaders` {boolean} 它会将请求中多个头部的字段行值以 `, ` 连接起来，而不是丢弃重复项。更多信息参见 [`message.headers`][]。
     **默认：** `false`。
-  * `localAddress` {string} 用于绑定网络连接的本地接口。
-  * `localPort` {number} 本地连接端口。
+  * `localAddress` {string} 用于网络连接绑定的本地接口。
+  * `localPort` {number} 要从中连接的本地端口。
   * `lookup` {Function} 自定义查找函数。**默认：** [`dns.lookup()`][]。
-  * `maxHeaderSize` {number} 可选地覆盖从服务器接收的响应的 [`--max-http-header-size`][]（响应头部的最大长度，以字节计）值。
+  * `maxHeaderSize` {number} 可选择覆盖接收自服务器的响应所使用的 [`--max-http-header-size`][] 值（响应头部的最大长度，以字节为单位）。
     **默认：** 16384（16 KiB）。
   * `method` {string} 指定 HTTP 请求方法的字符串。**默认：**
     `'GET'`。
   * `path` {string} 请求路径。如果有查询字符串，也应包含在内。
-    例如 `'/index.html?page=12'`。当请求路径包含非法字符时会抛出异常。目前仅拒绝空格，但这在未来可能会改变。**默认：** `'/'`。
+    例如 `'/index.html?page=12'`。当请求路径包含非法字符时会抛出异常。目前只会拒绝空格，但未来可能会变化。**默认：** `'/'`。
+    `path` 中的内容会作为 HTTP 1.1 消息中的 [request target][] 发送。
+    当 `path` 是绝对 URL 时，这意味着消息中的请求目标是 [absolute form][]。
+    如果接收服务器是代理服务器，服务器通常会将请求转发到请求目标中指定的目的地，并忽略 `Host` 头部。
+    用户需要确保 `path`、`host` 和 Host 头部符合 HTTP 规范中 [request target][] 的要求。
+    当由于请求通过 [Built-in Proxy Support][] 路由而已知接收服务器是代理服务器时，`http.request` 还会在请求的初始构造阶段尽最大努力检查 `host` 选项或 `headers` 中的 `Host` 是否与 `path` 中的 authority 一致。如果它们不匹配，它会放弃为代理重写请求目标，并在请求构造时抛出错误，不过对于用户之后对头部做的修改则不会再检查。
   * `port` {number} 远程服务器的端口。**默认：** 如果设置了 `defaultPort`，则使用它，否则为 `80`。
   * `protocol` {string} 要使用的协议。**默认：** `'http:'`。
-  * `setDefaultHeaders` {boolean}：指定是否自动添加默认头部，如 `Connection`、`Content-Length`、`Transfer-Encoding` 和 `Host`。如果设为 `false`，则必须手动添加所有必要的头部。默认值为 `true`。
+  * `setDefaultHeaders` {boolean}：指定是否自动添加默认头部，例如 `Connection`、`Content-Length`、`Transfer-Encoding` 和 `Host`。如果设为 `false`，则必须手动添加所有必需的头部。
+    默认值为 `true`。
   * `setHost` {boolean}：指定是否自动添加 `Host` 头部。如果提供此项，将覆盖 `setDefaultHeaders`。默认值为 `true`。
   * `signal` {AbortSignal}：可用于中止正在进行的请求的 AbortSignal。
-  * `socketPath` {string} Unix 域套接字。若已指定 `host` 或 `port` 之一，则不能使用，因为它们指定的是 TCP 套接字。
-  * `timeout` {number}：指定套接字超时时间（毫秒）的数字。这会在套接字连接之前设置超时。
-  * `uniqueHeaders` {Array} 只应发送一次的请求头部列表。如果头部值是数组，这些项将使用 `; ` 连接。
+  * `socketPath` {string} Unix 域套接字。如果指定了 `host` 或 `port` 中的任意一个，则不能使用此项，因为它们指定的是 TCP 套接字。
+  * `timeout` {number}：以毫秒为单位指定套接字超时的数字。
+    这会在套接字连接之前设置超时。
+  * `uniqueHeaders` {Array} 只应发送一次的请求头列表。如果头部值是数组，则这些项将使用 `; ` 连接。
 * `callback` {Function}
 * 返回：{http.ClientRequest}
 
@@ -3894,19 +3902,19 @@ changes:
     - v19.5.0
     - v18.14.0
     pr-url: https://github.com/nodejs/node/pull/46143
-    description: "添加了 `label` 参数。"
+    description: "Added the `label` parameter."
 -->
 
 * `name` {string}
-* `label` {string} 错误消息的标签。**默认值：** `'Header name'`。
+* `label` {string} Label for error message. **Default:** `'Header name'`.
 
-对提供的 `name` 执行低级验证，这些验证会在调用 `res.setHeader(name, value)` 时进行。
+Performs the low-level validations on the provided `name` that are done when calling `res.setHeader(name, value)`.
 
-传递非法的 `name` 值将导致抛出 [`TypeError`][]，标识为 `code: 'ERR_INVALID_HTTP_TOKEN'`。
+Passing illegal value as `name` will result in a [`TypeError`][] being thrown, identified by `code: 'ERR_INVALID_HTTP_TOKEN'`.
 
-在将头信息传递给 HTTP 请求或响应之前，不必使用此方法。HTTP 模块将自动验证此类头信息。
+It is not necessary to use this method before passing headers to an HTTP request or response. The HTTP module will automatically validate such headers.
 
-示例：
+Example:
 
 ```mjs
 import { validateHeaderName } from 'node:http';
@@ -3916,7 +3924,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code); // --> 'ERR_INVALID_HTTP_TOKEN'
-  console.error(err.message); // --> 'Header 名称必须是有效的 HTTP 令牌 [""]'
+  console.error(err.message); // --> 'Header name must be a valid HTTP token [""]'
 }
 ```
 
@@ -3928,7 +3936,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code); // --> 'ERR_INVALID_HTTP_TOKEN'
-  console.error(err.message); // --> 'Header 名称必须是有效的 HTTP 令牌 [""]'
+  console.error(err.message); // --> 'Header name must be a valid HTTP token [""]'
 }
 ```
 
@@ -4012,12 +4020,12 @@ added:
   - v24.14.0
 -->
 
-* `proxyEnv` {Object} 包含代理配置的对象。它接受与 [`Agent`][] 接受的 `proxyEnv` 选项相同的选项。**默认值：** `process.env`。
-* 返回：{Function} 一个函数，用于将原始 agent 和 dispatcher 设置恢复到此 `http.setGlobalProxyFromEnv()` 被调用之前的状态。
+* `proxyEnv` {Object} 一个包含代理配置的对象。它接受与 [`Agent`][] 接受的 `proxyEnv` 选项相同的选项。**默认值：** `process.env`。
+* 返回：{Function} 一个函数，用于将原始 agent 和 dispatcher 的设置恢复到调用 `http.setGlobalProxyFromEnv()` 之前的状态。
 
 动态重置全局配置，以便在运行时为 `fetch()` 和 `http.request()`/`https.request()` 启用内置代理支持，作为使用 `--use-env-proxy` 标志或 `NODE_USE_ENV_PROXY` 环境变量的替代方案。它也可用于覆盖从环境变量配置的设置。
 
-由于此函数重置全局配置，任何之前配置的 `http.globalAgent`、`https.globalAgent` 或 undici 全局 dispatcher 在此函数被调用后将被覆盖。建议在发出任何请求之前调用它，并避免在任何请求中间调用它。
+由于此函数会重置全局配置，任何之前配置的 `http.globalAgent`、`https.globalAgent` 或 undici 全局 dispatcher 都会在调用此函数后被覆盖。建议在发出任何请求之前调用它，并避免在任何请求进行中间调用它。
 
 有关代理 URL 格式和 `NO_PROXY` 语法的详细信息，请参阅 [内置代理支持][]。
 
@@ -4292,5 +4300,7 @@ const agent2 = new http.Agent({ proxyEnv: process.env });
 [`writable.destroyed`]: stream.md#writabledestroyed
 [`writable.uncork()`]: stream.md#writableuncork
 [`writable.write()`]: stream.md#writablewritechunk-encoding-callback
-[信息事件]: #event-information
-[初始延迟]: net.md#socketsetkeepaliveenable-initialdelay-interval-count
+[absolute form]: https://datatracker.ietf.org/doc/html/rfc9112#section-3.2.2
+[information event]: #event-information
+[initial delay]: net.md#socketsetkeepaliveenable-initialdelay-interval-count
+[request target]: https://datatracker.ietf.org/doc/html/rfc9112#section-3.2
