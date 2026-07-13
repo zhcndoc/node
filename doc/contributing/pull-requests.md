@@ -321,7 +321,19 @@ git push --force-with-lease origin my-branch
 
 请注意，你在反馈中 _如何_ 传达请求和审查意见，可能会对拉取请求的成功产生重大影响。是的，我们也许会合并某个让 Node.js 变得更好的变更，但这个人可能再也不想和 Node.js 有任何关系了。目标不只是拥有好的代码。
 
-### 尊重评论的最低等待时间
+CI access is only available to collaborators and members of the platform
+teams.  If you are not yet in one of those teams then you will need someone
+to relay the results to you.  If a CI has been completed and failed and a
+day or so has passed, it will be worth commenting in the issue to say you
+cannot see what failed and to politely request in the PR that someone gives
+you that information.
+
+Ideally, the code change will pass ("be green") on all platform configurations
+supported by Node.js. This means that all tests pass and there are no linting
+errors. In reality, however, it is not uncommon for the CI infrastructure itself
+to fail on specific platforms or for so-called "flaky" tests to fail ("be red").
+It is vital to visually inspect the results of all failed ("red") tests to
+determine whether the failure was caused by the changes in the pull request.
 
 对于非平凡变更，我们会尽量遵守一个最低等待时间，以便在这样一个分布式项目中可能有重要意见的人能够回应。
 

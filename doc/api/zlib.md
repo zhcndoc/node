@@ -173,7 +173,7 @@ do_unzip(buffer)
   });
 ```
 
-## 线程池用法和性能注意事项
+## 线程池使用和性能注意事项
 
 所有 `zlib` API，除了那些明确同步的 API 外，都使用 Node.js 内部线程池。这可能会导致某些应用程序中出现意想不到的效果和性能限制。
 
@@ -511,12 +511,12 @@ http.createServer((request, response) => {
       // 并记录错误。
       clearInterval(i);
       response.end();
-      console.error('An error occurred:', err);
+      console.error('发生错误：', err);
     }
   });
 
   i = setInterval(() => {
-    output.write(`The current time is ${Date()}\n`, () => {
+    output.write(`当前时间是 ${Date()}\n`, () => {
       // 数据已传递给 zlib，但压缩算法可能
       // 决定缓冲数据以更有效地压缩。
       // 调用 .flush() 将使数据在客户端
@@ -547,12 +547,12 @@ http.createServer((request, response) => {
       // 并记录错误。
       clearInterval(i);
       response.end();
-      console.error('An error occurred:', err);
+      console.error('发生错误：', err);
     }
   });
 
   i = setInterval(() => {
-    output.write(`The current time is ${Date()}\n`, () => {
+    output.write(`当前时间是 ${Date()}\n`, () => {
       // 数据已传递给 zlib，但压缩算法可能
       // 决定缓冲数据以更有效地压缩。
       // 调用 .flush() 将使数据在客户端
@@ -774,7 +774,7 @@ const stream = zlib.createZstdCompress({
 <!-- YAML
 added: v0.11.1
 changes:
-  - version: REPLACEME
+  - version: v26.5.0
     pr-url: https://github.com/nodejs/node/pull/64023
     description: 添加了 `rejectGarbageAfterEnd` 选项。
   - version:
@@ -821,7 +821,7 @@ changes:
 <!-- YAML
 added: v11.7.0
 changes:
-  - version: REPLACEME
+  - version: v26.5.0
     pr-url: https://github.com/nodejs/node/pull/64023
     description: 添加了 `rejectGarbageAfterEnd` 选项。
   - version:
@@ -865,7 +865,7 @@ added:
  - v10.16.0
 -->
 
-* 继承自：[`ZlibBase`][]
+* 继承自：[`ZlibBase`]()
 
 使用 Brotli 算法压缩数据。
 
@@ -931,19 +931,19 @@ added: v0.5.8
 
 使用 gzip 压缩数据。
 
-## 类：`zlib.Inflate`
+## Class: `zlib.Inflate`
 
 <!-- YAML
 added: v0.5.8
 changes:
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2595
-    description: "截断的输入流现在将导致 `'error'` 事件。"
+    description: "Truncated input streams will now cause an `'error'` event."
 -->
 
-* 继承自：[`ZlibBase`][]
+* Inherits from: [`ZlibBase`][]
 
-解压缩 deflate 流。
+Decompresses a deflate stream.
 
 ## 类：`zlib.InflateRaw`
 
@@ -958,7 +958,7 @@ changes:
     description: "截断的输入流现在将导致 `'error'` 事件。"
 -->
 
-* 继承自：[`ZlibBase`][]
+* 继承自：[`ZlibBase`] []
 
 解压缩 raw deflate 流。
 
@@ -981,7 +981,7 @@ changes:
      - v11.7.0
      - v10.16.0
     pr-url: https://github.com/nodejs/node/pull/24939
-    description: "此类已从 `Zlib` 重命名为 `ZlibBase`。"
+    description: "该类已从 `Zlib` 重命名为 `ZlibBase`。"
 -->
 
 * 继承自：[`stream.Transform`][]
@@ -1054,7 +1054,7 @@ added:
   - v23.8.0
   - v22.15.0
 changes:
-  - version: REPLACEME
+  - version: v26.5.0
     pr-url: https://github.com/nodejs/node/pull/64023
     description: 已添加 `rejectGarbageAfterEnd` 选项。
 -->
@@ -1202,7 +1202,7 @@ added: v0.5.8
 added: v0.5.8
 -->
 
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 创建并返回一个新的 [`DeflateRaw`][] 对象。
 

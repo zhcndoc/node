@@ -107,7 +107,7 @@ Error: 无法加载原生插件，因为加载插件已被禁用。
     at require (node:internal/modules/helpers:130:16)
     at Object.<anonymous> (/home/index.js:1:15)
     at Module._compile (node:internal/modules/cjs/loader:1233:14)
-    at Module._extensions..js (node:internal/modules/cjs/loader:1287:10)
+    at Module._extensions..node (node:internal/modules/cjs/loader:1287:10)
     at Module.load (node:internal/modules/cjs/loader:1091:32)
     at Module._load (node:internal/modules/cjs/loader:938:12) {
   code: 'ERR_DLOPEN_DISABLED'
@@ -313,7 +313,7 @@ req.on('error', (err) => {
 
 ```console
 $ node --permission index.js
-Error: connect ERR_ACCESS_DENIED Access to this API has been restricted. Use --allow-net to manage permissions.
+错误：connect ERR_ACCESS_DENIED 对此 API 的访问已被限制。使用 --allow-net 来管理权限。
   code: 'ERR_ACCESS_DENIED',
 }
 ```
@@ -442,7 +442,7 @@ I am from the snapshot
 
 由于确保所有内置模块的可序列化性很复杂，而且这些模块也在不断增长，因此只有一部分内置模块经过充分测试，可以在快照构建过程中序列化。
 Node.js 核心测试套件检查了几个相当复杂的应用程序是否可以快照化。被 [__TRANSDOC_LOCK_14__][] 的内置模块列表被视为受支持。
-当快照构建器遇到无法序列化的内置模块时，它可能会导致快照构建过程崩溃。在这种情况下，典型的解决方法是延迟加载该模块直到运行时，使用 [`v8.startupSnapshot.setDeserializeMainFunction()`][] 或 [`v8.startupSnapshot.addDeserializeCallback()`][]。如果需要在快照构建过程中为额外的模块进行序列化，请在 [Node.js 问题跟踪器][] 中提交请求，并将其链接到 [用户态快照的跟踪问题][]。
+当快照构建器遇到无法序列化的内置模块时，它可能会导致快照构建过程崩溃。在这种情况下，典型的解决方法是延迟加载该模块直到运行时，使用 [`v8.startupSnapshot.setDeserializeMainFunction()`][] 或 [`v8.startupSnapshot.addDeserializeCallback()`][]。如果需要在快照构建过程中为额外的模块进行序列化，请在 [Node.js 问题跟踪器][] 中提交请求，并将其链接到 [用户态快照的跟踪问题][].
 
 ### `--build-snapshot-config`
 
@@ -487,7 +487,7 @@ changes:
 added: v10.12.0
 -->
 
-打印可 source 的 Node.js bash 补全脚本。
+Print a sourceable Node.js bash completion script.
 
 ```bash
 node --completion-bash > node_bash_completion
@@ -593,7 +593,7 @@ changes:
     - v22.4.0
     - v20.16.0
     pr-url: https://github.com/nodejs/node/pull/53343
-    description: "`--cpu-prof` flag is now stable."
+    description: "`--cpu-prof` 标志现已稳定。"
 -->
 
 指定由 `--cpu-prof` 生成的 CPU 配置文件的文件名。
@@ -747,7 +747,7 @@ changes:
       - v15.11.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37362
-    description: This API is no longer experimental.
+    description: 此 API 不再处于实验阶段。
 -->
 
 启用堆栈跟踪的 [Source Map][] 支持。
@@ -759,7 +759,7 @@ changes:
 ```js
 const originalPrepareStackTrace = Error.prepareStackTrace;
 Error.prepareStackTrace = (error, trace) => {
-  // Modify the error and trace and use the original Error.prepareStackTrace to format the stack trace.
+  // 修改错误和跟踪，并使用原始的 Error.prepareStackTrace 来格式化堆栈跟踪。
   return originalPrepareStackTrace(error, trace);
 };
 ```
@@ -892,7 +892,7 @@ added:
   - v23.6.0
   - v22.20.0
 changes:
-  - version: REPLACEME
+  - version: v26.5.0
     pr-url: https://github.com/nodejs/node/pull/64221
     description: 这已默认启用。
 -->
@@ -1040,7 +1040,7 @@ added:
 
 > 稳定性：1.0 - 早期开发
 
-此标志是 `--experimental-config-file` 不带参数的别名。
+此标志是 `--experimental-config-file` 不带参数的别名。  
 如果存在，Node.js 将在当前工作目录中查找 `node.config.json` 文件并将其作为配置文件加载。
 
 ### `--experimental-dtls`
@@ -1098,7 +1098,7 @@ changes:
 
 <!-- YAML
 added:
-  - REPLACEME
+  - v26.5.0
 -->
 
 > 稳定性：1.0 - 早期开发
@@ -1115,7 +1115,7 @@ added:
 
 > 稳定性：1.1 - 积极开发中
 
-启用检查器网络资源的实验性支持。
+启用对检查器网络资源的实验性支持。
 
 ### `--experimental-loader=module`
 
@@ -1169,7 +1169,7 @@ node --experimental-package-map=./package-map.json app.js
 启用后，裸说明符解析会查询包映射以进行解析。
 这使得可以显式控制哪些包可以导入哪些依赖项。
 
-有关配置文件格式和解析算法的详细信息，请参阅 [包映射][]。
+有关配置文件格式和解析算法的详细信息，请参阅 [包映射][].
 
 ### `--experimental-print-required-tla`
 
@@ -1178,7 +1178,7 @@ added:
   - v22.0.0
   - v20.17.0
 changes:
-  - version: REPLACEME
+  - version: v26.5.0
     pr-url: https://github.com/nodejs/node/pull/64154
     description: 在不执行模块的情况下打印顶层 await。
 -->
@@ -1325,7 +1325,7 @@ changes:
     description: "不再需要此选项，因为 WASI 已默认启用，但仍可以传递。"
   - version: v13.6.0
     pr-url: https://github.com/nodejs/node/pull/30980
-    description: "从 `--experimental-wasi-unstable-preview0` 更改为`--experimental-wasi-unstable-preview1`。"
+    description: "从 `--experimental-wasi-unstable-preview0` 更改为 `--experimental-wasi-unstable-preview1`。"
 -->
 
 启用实验性的 WebAssembly 系统接口（WASI）支持。
@@ -1366,7 +1366,7 @@ if (globalThis.gc) {
 added: v12.12.0
 -->
 
-禁用加载不是 [context-aware][] 的原生插件。
+Disable loading native addons that are not [context-aware][].
 
 ### `--force-fips`
 
@@ -1438,7 +1438,7 @@ changes:
     description: "`--heap-prof` 标志现已稳定。"
 -->
 
-指定放置由 `--heap-prof` 生成的堆配置文件的目录。
+指定放置由 `--heap-prof` 生成的堆分析文件的目录。
 
 默认值由 [`--diagnostic-dir`][] 命令行选项控制。
 
@@ -1505,7 +1505,7 @@ Wrote snapshot to Heap.20200430.100038.49580.0.003.heapsnapshot
 
 <--- JS stacktrace --->
 
-FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+FATAL ERROR: 接近堆限制时的无效标记压缩，分配失败 - JavaScript 堆内存不足
 ....
 ```
 
@@ -1628,9 +1628,9 @@ added: v7.6.0
 
 在 `host:port` 激活检查器并在用户脚本开始时中断。默认 `host:port` 为 `127.0.0.1:9229`。如果指定端口 `0`，则将使用随机可用端口。
 
-有关 Node.js 调试器的进一步解释，请参阅 [V8 Inspector integration for Node.js][]。
+有关 Node.js 调试器的进一步说明，请参阅 [V8 Inspector integration for Node.js][]。
 
-有关 `host` 参数使用的 [security warning][]，请参阅下文。
+有关 `host` 参数使用的 [安全警告][]，请参阅下文。
 
 ### `--inspect-port=[host:]port`
 
@@ -1646,9 +1646,9 @@ added: v7.6.0
 
 ### `--inspect-publish-uid=stderr,http`
 
-指定检查器 web socket URL 暴露的方式。
+指定检查器 WebSocket URL 暴露的方式。
 
-默认情况下，检查器 websocket URL 在 stderr 中可用，并在 `http://host:port/json/list` 上的 `/json/list` 端点下可用。
+默认情况下，检查器 WebSocket URL 可在 stderr 中获取，并可在 `http://host:port/json/list` 上的 `/json/list` 端点下获取。
 
 ### `--inspect-wait[=[host:]port]`
 
@@ -1662,17 +1662,17 @@ added:
 
 有关 Node.js 调试器的进一步说明，请参阅 [V8 Inspector integration for Node.js][]。
 
-有关 `host` 参数使用的 [security warning][]，请参阅下文。
+有关 `host` 参数使用的 [安全警告][]，请参阅下文。
 
 ### `--inspect[=[host:]port]`
 
 <!-- YAML
-已添加：v6.3.0
+Added in: v6.3.0
 -->
 
-在 `host:port` 激活检查器。默认值为 `127.0.0.1:9229`。如果指定端口 `0`，则将使用随机可用端口。
+激活 `host:port` 上的检查器。默认值为 `127.0.0.1:9229`。如果指定端口 `0`，则将使用随机可用端口。
 
-V8 检查器集成允许 Chrome DevTools 和 IDE 等工具调试和配置 Node.js 实例。工具通过 tcp 端口附加到 Node.js 实例，并使用 [Chrome DevTools Protocol][] 进行通信。有关 Node.js 调试器的进一步解释，请参阅 [V8 Inspector integration for Node.js][]。
+V8 检查器集成允许 Chrome DevTools 和 IDE 等工具调试和配置 Node.js 实例。工具通过 tcp 端口附加到 Node.js 实例，并使用 [Chrome DevTools Protocol][] 进行通信。有关 Node.js 调试器的进一步说明，请参阅 [V8 Inspector integration for Node.js][]。
 
 <!-- 锚点，用于确保旧链接能找到目标 -->
 
@@ -1680,7 +1680,7 @@ V8 检查器集成允许 Chrome DevTools 和 IDE 等工具调试和配置 Node.j
 
 #### 警告：将检查器绑定到公共 IP:port 组合是不安全的
 
-将检查器绑定到公共 IP（包括 `0.0.0.0`）并开放端口是不安全的，因为它允许外部主机连接到检查器并执行 [远程代码执行][] 攻击。
+将检查器绑定到公共 IP（包括 `0.0.0.0`）并开放端口是不安全的，因为这允许外部主机连接到检查器并执行 [远程代码执行][] 攻击。
 
 如果指定主机，请确保：
 
@@ -1735,7 +1735,7 @@ changes:
 
 ### `--max-old-space-size-percentage=percentage`
 
-将 V8 旧内存区（old memory section）的最大内存大小设置为可用系统内存的百分比。
+将 V8 旧内存区（old memory section）的最大内存大小设置为可用系统内存的百分比。  
 当同时指定此标志和 `--max-old-space-size` 时，此标志优先。
 
 `percentage` 参数必须是大于 0 且不超过 100 的数字，表示分配给 V8 堆的可用系统内存百分比。
@@ -1749,14 +1749,6 @@ node --max-old-space-size-percentage=50 index.js
 # 使用 75% 的可用系统内存
 node --max-old-space-size-percentage=75 index.js
 ```
-
-### `--napi-modules`
-
-<!-- YAML
-added: v7.10.0
--->
-
-此选项无操作（no-op）。保留它是为了兼容性。
 
 ### `--network-family-autoselection-attempt-timeout`
 
@@ -1793,7 +1785,7 @@ added: v24.0.0
 added: v0.8.0
 -->
 
-Silence deprecation warnings.
+屏蔽弃用警告。
 
 ### `--no-experimental-detect-module`
 
@@ -1819,7 +1811,7 @@ added: v21.2.0
 
 > 稳定性：1 - 实验性
 
-禁用在全局作用域上暴露 [Navigator API][]。
+禁用在全局作用域上暴露 [Navigator API][].
 
 ### `--no-experimental-repl-await`
 
@@ -1903,7 +1895,7 @@ added: v17.0.0
 added: v9.0.0
 -->
 
-禁用 `async_hooks` 的运行时检查。当启用 `async_hooks` 时，这些检查仍会动态启用。
+Disable the runtime checks of `async_hooks`. When `async_hooks` is enabled, these checks are still dynamically enabled.
 
 ### `--no-global-search-paths`
 
@@ -1911,7 +1903,7 @@ added: v9.0.0
 added: v16.10.0
 -->
 
-Do not search for modules from global paths (such as `$HOME/.node_modules` and `$NODE_PATH`).
+不要从全局路径中搜索模块（例如 `$HOME/.node_modules` 和 `$NODE_PATH`）。
 
 ### `--no-network-family-autoselection`
 
@@ -1920,7 +1912,7 @@ added: v19.4.0
 changes:
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/46790
-    description: "该标志已从 `--no-enable-network-family-autoselection`重命名为 `--no-network-family-autoselection`。旧名称仍可作为别名工作。"
+    description: "该标志已从 `--no-enable-network-family-autoselection` 重命名为 `--no-network-family-autoselection`。旧名称仍可作为别名工作。"
 -->
 
 除非连接选项显式启用，否则禁用族自动选择算法。
@@ -2039,13 +2031,14 @@ OpenSSL 配置文件中读取。默认配置文件名为
 added: v8.0.0
 -->
 
-发出待决弃用警告。
+Emit pending deprecation warnings.
 
-待决弃用通常与运行时弃用相同，但
-显著例外的是它们默认处于_关闭_状态，除非设置了 `--pending-deprecation` 命令行标志或
-`NODE_PENDING_DEPRECATION=1` 环境变量，否则不会发出。待决弃用
-用于提供一种选择性“早期警告”机制，
-开发人员可利用它来检测已弃用的 API 使用情况。
+Pending deprecations are generally identical to runtime deprecations with
+the notable exception that they are off by default and will not be emitted
+unless either the `--pending-deprecation` command-line flag or the
+`NODE_PENDING_DEPRECATION=1` environment variable is set. Pending deprecations
+are used to provide a selective "early warning" mechanism that
+developers may leverage to detect use of deprecated APIs.
 
 ### `--permission`
 
@@ -2136,7 +2129,7 @@ added: v10.2.0
 不希望在使用相对路径解析之前跟随符号链接时，请除了
 `--preserve-symlinks` 外还使用 `--preserve-symlinks-main`。
 
-更多信息请参阅 [`--preserve-symlinks`][]。
+更多信息请参阅 [`--preserve-symlinks`][].
 
 ### `-p`, `--print "script"`
 
@@ -2156,7 +2149,7 @@ changes:
 added: v2.0.0
 -->
 
-生成 V8 性能分析器输出。
+Generate V8 profiler output.
 
 ### `--prof-process`
 
@@ -2187,7 +2180,7 @@ added:
  - v12.17.0
 -->
 
-Write reports in a compact format, a single-line JSON, which is easier for log processing systems to consume than the default multi-line format (designed for human consumption).
+以紧凑格式写入报告，即单行 JSON，这比默认的多行格式（为人类阅读而设计）更便于日志处理系统消费。
 
 ### `--report-dir=directory`, `--report-directory=directory`
 
@@ -2201,7 +2194,7 @@ changes:
     description: 此选项不再是实验性的。
   - version: v12.0.0
     pr-url: https://github.com/nodejs/node/pull/27312
-    description: "从 `--diagnostic-report-directory` 更改为`--report-directory`。"
+    description: "从 `--diagnostic-report-directory` 更改为 `--report-directory`。"
 -->
 
 生成报告的位置。
@@ -2214,8 +2207,8 @@ added:
   - v22.13.0
 -->
 
-When `--report-exclude-env` is passed, the generated diagnostic report will not include the
-`environmentVariables` data.
+当传入 `--report-exclude-env` 时，生成的诊断报告将不会包含
+`environmentVariables` 数据。
 
 ### `--report-exclude-network`
 
@@ -2359,7 +2352,7 @@ changes:
     description: 添加了 NODE_RUN_PACKAGE_JSON_PATH 环境变量。
   - version: v22.3.0
     pr-url: https://github.com/nodejs/node/pull/53154
-    description: "向上遍历到根目录并找到一个 `package.json` 文件以从中运行命令，并相应地更新`PATH` 环境变量。"
+    description: "向上遍历到根目录并找到一个 `package.json` 文件以从中运行命令，并相应地更新 `PATH` 环境变量。"
 -->
 
 这将从 package.json 的 `"scripts"` 对象运行指定命令。
@@ -2416,7 +2409,7 @@ added:
   - v20.14.0
 -->
 
-配置测试运行器在所有已知测试完成执行后退出进程，即使事件循环否则将保持活动。
+Configure the test runner to exit the process after all known tests have finished running, even if the event loop would otherwise remain active.
 
 ### `--test-global-setup=module`
 
@@ -2506,7 +2499,7 @@ added:
 和每个文件内的排队测试。这有助于检测依赖
 共享状态或执行顺序的测试。
 
-用于随机化的种子打印在测试摘要中，并可以
+用于随机化的种子会打印在测试摘要中，并且可以
 与 `--test-random-seed` 一起重用。
 
 有关详细行为和示例，请参阅
@@ -2587,11 +2580,11 @@ added:
   - v22.1.0
 -->
 
-A regular expression configuring the test runner to skip tests whose names match the provided pattern. For more details, see the
+用于配置测试运行器跳过名称与所提供模式匹配的测试的正则表达式。有关更多详细信息，请参阅
 [按名称过滤测试][] 文档。
 
-If both `--test-name-pattern` and `--test-skip-pattern` are provided,
-tests must satisfy **both** requirements to run.
+如果同时提供了 `--test-name-pattern` 和 `--test-skip-pattern`，
+测试必须同时满足**两个**条件才能运行。
 
 ### `--test-timeout`
 
@@ -2632,7 +2625,7 @@ added: v0.11.14
 added: v10.7.0
 -->
 
-在启动时设置 `process.title`。
+Set `process.title` on startup.
 
 ### `--tls-cipher-list=list`
 
@@ -2758,7 +2751,7 @@ added:
   - v22.13.0
 -->
 
-除了 `--trace-env` 所做的之外，这还打印访问的 JavaScript 堆栈跟踪。
+除了 `--trace-env` 所做的之外，这还会打印访问的 JavaScript 堆栈跟踪。
 
 ### `--trace-env-native-stack`
 
@@ -2776,7 +2769,7 @@ added:
 added: v7.7.0
 -->
 
-A comma-separated list of categories that should be traced when trace event tracing is enabled with `--trace-events-enabled`.
+启用 `--trace-events-enabled` 后，应进行跟踪的类别列表，以逗号分隔。
 
 ### `--trace-event-file-pattern`
 
@@ -2793,7 +2786,7 @@ added: v9.8.0
 added: v7.7.0
 -->
 
-启用跟踪事件跟踪信息的收集。
+Enable the collection of trace event tracing information.
 
 ### `--trace-exit`
 
@@ -2931,12 +2924,12 @@ added:
 
 > 稳定性：1.1 - 积极开发
 
-启用时，Node.js 在启动期间解析 `HTTP_PROXY`、`HTTPS_PROXY` 和 `NO_PROXY`
-环境变量，并通过
-指定代理隧道传输请求。
+启用后，Node.js 会在启动期间解析 `HTTP_PROXY`、`HTTPS_PROXY` 和 `NO_PROXY`
+环境变量，并通过指定的代理路由请求。
 
-这等效于设置 [`NODE_USE_ENV_PROXY=1`][] 环境变量。
-当两者都设置时，`--use-env-proxy` 优先。
+仅将此选项用于部署中受信任且已授权的代理。代理支持旨在通过授权的代理服务器访问外部网络，例如防火墙需要代理时。它不用于隐藏流量或规避网络策略。另请参阅 [内置代理支持][]。
+
+这等同于设置 [`NODE_USE_ENV_PROXY=1`][] 环境变量。两者同时设置时，`--use-env-proxy` 优先生效。
 
 ### `--use-largepages=mode`
 
@@ -3109,7 +3102,7 @@ changes:
     - v22.0.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52074
-    description: Watch mode is now stable.
+    description: 监视模式现已稳定。
 -->
 
 以监视模式启动 Node.js 并指定要监视的路径。
@@ -3151,7 +3144,7 @@ node --watch --watch-preserve-output test.js
 added: v6.0.0
 -->
 
-Automatically zero-fill all newly allocated [`Buffer`][] instances.
+自动将所有新分配的 [`Buffer`][] 实例填充为零。
 
 ## 环境变量
 
@@ -3178,7 +3171,7 @@ changes:
      - v25.4.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/60971
-    description: This feature is no longer experimental.
+    description: 此功能不再处于实验阶段。
 -->
 
 为 Node.js 实例启用 [模块编译缓存][]。有关详细信息，请参阅 [模块编译缓存][] 的文档。
@@ -3205,7 +3198,7 @@ added: v0.1.32
 added: v0.3.0
 -->
 
-When set, color is not used in the REPL.
+设置后，REPL 中不使用颜色。
 
 ### `NODE_DISABLE_COMPILE_CACHE=1`
 
@@ -3237,7 +3230,7 @@ added: v7.3.0
 added: v0.11.15
 -->
 
-ICU（`Intl` 对象）数据的数据路径。当编译为支持 small-icu 时，将扩展链接的数据。
+ICU (`Intl` 对象) 数据的数据路径。当编译为支持 small-icu 时，将扩展链接的数据。
 
 ### `NODE_NO_WARNINGS=1`
 
@@ -3245,7 +3238,7 @@ ICU（`Intl` 对象）数据的数据路径。当编译为支持 small-icu 时�
 added: v6.11.0
 -->
 
-When set to `1`, process warnings are silenced.
+当设置为 `1` 时，进程警告将被静默。
 
 ### `NODE_OPTIONS=options...`
 
@@ -3253,9 +3246,9 @@ When set to `1`, process warnings are silenced.
 added: v8.0.0
 -->
 
-空格分隔的命令行选项列表。`options...` 在命令行选项之前解释，因此命令行选项将覆盖或在 `options...` 中的任何内容之后组合。如果使用了环境中不允许的选项（例如 `-p` 或脚本文件），Node.js 将退出并报错。
+以空格分隔的命令行选项列表。`options...` 会先于命令行选项进行解析，因此命令行选项会覆盖 `options...` 中的任何内容，或与其之后的内容组合。如果使用了环境中不允许的选项（例如 `-p` 或脚本文件），Node.js 将退出并报错。
 
-如果选项值包含空格，可以使用双引号转义：
+如果选项值包含空格，可以使用双引号进行转义：
 
 ```bash
 NODE_OPTIONS='--require "./my path/file.js"'
@@ -3268,7 +3261,7 @@ NODE_OPTIONS='--require "./my path/file.js"'
 NODE_OPTIONS='--inspect=localhost:4444' node --inspect=localhost:5555
 ```
 
-可以多次传递的标志将被视为先传递其 `NODE_OPTIONS` 实例，然后再传递其命令行实例：
+可以多次传递的标志将按先传递其 `NODE_OPTIONS` 实例、再传递其命令行实例的顺序处理：
 
 ```bash
 NODE_OPTIONS='--require "./a.js"' node --require "./b.js"
@@ -3276,7 +3269,7 @@ NODE_OPTIONS='--require "./a.js"' node --require "./b.js"
 node --require "./a.js" --require "./b.js"
 ```
 
-允许的 Node.js 选项在以下列表中。如果某个选项同时支持 --XX 和 --no-XX 变体，则两者都支持，但下面的列表中只包含其中一个。
+允许的 Node.js 选项如下。如果某个选项同时支持 --XX 和 --no-XX 变体，则两者都支持，但下面的列表中只包含其中一个。
 
 <!-- node-options-node start -->
 
@@ -3350,7 +3343,6 @@ node --require "./a.js" --require "./b.js"
 * `--localstorage-file`
 * `--max-http-header-size`
 * `--max-old-space-size-percentage`
-* `--napi-modules`
 * `--network-family-autoselection-attempt-timeout`
 * `--no-addons`
 * `--no-async-context-frame`
@@ -3500,7 +3492,7 @@ added: v8.0.0
 
 ### `NODE_PENDING_PIPE_INSTANCES=instances`
 
-设置管道服务器等待连接时的待处理管道实例句柄数。此设置仅适用于 Windows。
+Sets the number of pending pipe instance handles for a pipe server while waiting for connections. This setting only applies to Windows.
 
 ### `NODE_PRESERVE_SYMLINKS=1`
 
@@ -3508,7 +3500,7 @@ added: v8.0.0
 added: v7.1.0
 -->
 
-当设置为 `1` 时，指示模块加载器在解析和缓存模块时保留符号链接。
+When set to `1`, instructs the module loader to preserve symbolic links when resolving and caching modules.
 
 ### `NODE_REDIRECT_WARNINGS=file`
 
@@ -3533,7 +3525,7 @@ changes:
       删除了将此环境变量与 kDisableNodeOptionsEnv 一起用于嵌入器的可能性。
 -->
 
-将在内置 REPL 的位置加载的 Node.js 模块的路径。将此值覆盖为空字符串 (`''`) 将使用内置 REPL。
+用于加载内置 REPL 位置的 Node.js 模块路径。将此值覆盖为空字符串 (`''`) 将使用内置 REPL。
 
 ### `NODE_REPL_HISTORY=file`
 
@@ -3541,7 +3533,7 @@ changes:
 added: v3.0.0
 -->
 
-Path to the file used to store persistent REPL history. The default path is `~/.node_repl_history`, and this variable will override that path. Setting the value to an empty string (`''` or `' '`) will disable persistent REPL history.
+用于存储持久化 REPL 历史记录的文件路径。默认路径是 `~/.node_repl_history`，此变量将覆盖该路径。将该值设置为空字符串（`''` 或 `' '`）将禁用持久化 REPL 历史记录。
 
 ### `NODE_SKIP_PLATFORM_CHECK=value`
 
@@ -3549,15 +3541,15 @@ Path to the file used to store persistent REPL history. The default path is `~/.
 added: v14.5.0
 -->
 
-If `value` is `'1'`, skip the check for supported platforms during Node.js startup. Node.js may not execute correctly. Any issues encountered on unsupported platforms will not be fixed.
+如果 `value` 为 `'1'`，则在 Node.js 启动期间跳过对受支持平台的检查。Node.js 可能无法正常执行。在不受支持的平台上遇到的任何问题都不会得到修复。
 
 ### `NODE_TEST_CONTEXT=value`
 
-If `value` is equal to `'child'`, the test reporter options will be overridden, and test output will be sent to stdout in TAP format. If any other value is provided, Node.js does not guarantee the reporter format used or its stability.
+如果 `value` 等于 `'child'`，则会覆盖测试报告器选项，并且测试输出将以 TAP 格式发送到 stdout。如果提供了其他任何值，Node.js 不保证所使用的报告器格式或其稳定性。
 
 ### `NODE_TLS_REJECT_UNAUTHORIZED=value`
 
-如果 `value` 等于 `'0'`，则禁用 TLS 连接的证书验证。这使得 TLS 以及扩展的 HTTPS 变得不安全。强烈不鼓励使用此环境变量。
+If `value` is equal to `'0'`, certificate verification for TLS connections is disabled. This makes TLS and, by extension, HTTPS insecure. The use of this environment variable is strongly discouraged.
 
 ### `NODE_USE_ENV_PROXY=1`
 
@@ -3569,9 +3561,15 @@ added:
 
 > 稳定性：1.1 - 积极开发中
 
-启用后，Node.js 将在启动期间解析 `HTTP_PROXY`、`HTTPS_PROXY` 和 `NO_PROXY` 环境变量，并通过指定的代理隧道请求。
+启用后，Node.js 会在启动期间解析 `HTTP_PROXY`、`HTTPS_PROXY` 和 `NO_PROXY`
+环境变量，并通过指定的代理路由请求。
 
-也可以使用 [`--use-env-proxy`][] 命令行标志启用此功能。当两者都设置时，`--use-env-proxy` 优先。
+仅在代理是受信任且经授权用于该部署时才使用此功能。代理支持旨在通过授权的
+代理服务器访问外部网络，例如防火墙要求使用代理时。它并不是用于隐藏
+流量或规避网络策略。参见 [内置代理支持][]。
+
+这也可以通过 [`--use-env-proxy`][] 命令行标志启用。
+当两者都设置时，`--use-env-proxy` 优先。
 
 ### `NODE_USE_SYSTEM_CA=1`
 
@@ -3660,9 +3658,9 @@ Node.js 使用系统存储中存在的受信任 CA 证书，以及 `--use-bundle
 added: v6.11.0
 -->
 
-Load the OpenSSL configuration file at startup. Among other uses, this can be used to enable FIPS-compliant cryptography if Node.js was built with `--openssl-config`.
+启动时加载 OpenSSL 配置文件。除其他用途外，这可用于在 Node.js 使用 `--openssl-config` 构建时启用符合 FIPS 的加密。
 
-If the [`--use-openssl-ca`][] command-line option is used, the environment variable is ignored.
+如果使用了 [`--use-openssl-ca`][] 命令行选项，则会忽略该环境变量。
 
 ### `NODE_OPTIONS`
 
@@ -3812,11 +3810,12 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 <!-- v8-options end -->
 
 [#42511]: https://github.com/nodejs/node/issues/42511
-[Chrome DevTools 协议]: https://chromedevtools.github.io/devtools-protocol/
-[Chromium 关于本地信任证书的策略]: https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store/faq.md#does-the-chrome-certificate-verifier-consider-local-trust-decisions
-[CommonJS 模块]: modules.md
-[DEP0025 警告]: deprecations.md#dep0025-requirenodesys
-[ECMAScript 模块]: esm.md#modules-ecmascript-modules
+[Built-in Proxy Support]: http.md#built-in-proxy-support
+[Chrome DevTools Protocol]: https://chromedevtools.github.io/devtools-protocol/
+[Chromium's policy for locally trusted certificates]: https://chromium.googlesource.com/chromium/src/+/main/net/data/ssl/chrome_root_store/faq.md#does-the-chrome-certificate-verifier-consider-local-trust-decisions
+[CommonJS module]: modules.md
+[DEP0025 warning]: deprecations.md#dep0025-requirenodesys
+[ECMAScript module]: esm.md#modules-ecmascript-modules
 [EventSource Web API]: https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events
 [ExperimentalWarning: `vm.measureMemory` 是一个实验性功能]: vm.md#vmmeasurememoryoptions
 [文件系统权限]: permissions.md#file-system-permissions

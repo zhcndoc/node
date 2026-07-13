@@ -129,13 +129,13 @@ added: v26.1.0
 
 * {string}
 
-当前平台的原生共享库后缀：
+The native shared library suffix for the current platform:
 
-* macOS：`'dylib'`
-* 类 Unix 平台：`'so'`
-* Windows：`'dll'`
+* macOS: `'dylib'`
+* Unix-like platforms: `'so'`
+* Windows: `'dll'`
 
-这可用于构建可移植的库路径：
+This can be used to build portable library paths:
 
 ```cjs
 const { suffix } = require('node:ffi');
@@ -174,7 +174,7 @@ import { dlopen } from 'node:ffi';
     add_i32: { arguments: ['i32', 'i32'], return: 'i32' },
   });
   console.log(handle.functions.add_i32(20, 22));
-} // This automatically calls handle.lib.close().
+} // 这会自动调用 handle.lib.close()。
 ```
 
 ```mjs
@@ -207,9 +207,9 @@ added: v26.1.0
 
 * `handle` {DynamicLibrary}
 
-Close a dynamic library.
+关闭一个动态库。
 
-This is equivalent to calling `handle.close()`.
+这相当于调用 `handle.close()`。
 
 ## `ffi.dlsym(handle, symbol)`
 
@@ -484,7 +484,7 @@ added: v26.1.0
 -->
 
 * 偏移量 {bigint}
-* 返回: {string|null}
+* 返回值: {string|null}
 
 从原生内存读取一个 NUL 终止的 UTF-8 字符串。
 
@@ -598,12 +598,12 @@ added: v26.1.0
 * `pointer` {bigint}
 * `length` {number}
 
-将字节从一个 `ArrayBuffer` 复制到原生内存。
+Copies bytes from an `ArrayBuffer` to native memory.
 
-`length` 至少必须等于 `arrayBuffer.byteLength`。
+`length` must be at least equal to `arrayBuffer.byteLength`.
 
-`pointer` 必须指向可写的原生内存，并且可用存储至少为 `length` 字节。
-此函数不会自行分配内存。
+`pointer` must point to writable native memory, and the available storage must be at least `length` bytes.
+This function does not allocate memory on its own.
 
 ## `ffi.exportArrayBufferView(arrayBufferView, pointer, length)`
 
@@ -635,6 +635,20 @@ added: v26.1.0
 
 这不安全且危险。如果底层内存被分离、重新调整大小、传递到别处或以其他方式失效，返回的指针可能会变得无效。
 使用过期指针可能导致内存损坏或进程崩溃。
+
+## `ffi.getCurrentEventLoop()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 返回：{bigint}
+
+返回当前线程的 `uv_loop_t` 地址，类型为 `bigint`。
+
+返回的地址对应当前 Node.js 环境。在主线程中，这就是主线程事件循环。在工作线程中，这就是该工作线程的事件循环。
+
+这不安全且危险。返回的指针仅在当前环境的生命周期内有效。在环境退出后使用它，或者从假定不同线程或生命周期的原生代码中使用它，都可能导致进程崩溃或内存损坏。
 
 ## 安全说明
 

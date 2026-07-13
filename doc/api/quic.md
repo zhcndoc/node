@@ -1055,34 +1055,40 @@ added: v23.8.0
 * `options` {Object}
   * `body` {string | ArrayBuffer | SharedArrayBuffer | ArrayBufferView |
     Blob | FileHandle | AsyncIterable | Iterable | Promise | null}
-    出站主体来源。有关支持的类型，请参见 [`stream.setBody()`][]。
-    省略时，流以半关闭状态开始（可写侧打开，没有排队的主体）。
-  * `headers` {Object} 要发送的初始请求或响应头。仅在会话
-    支持标头时使用（例如 HTTP/3）。如果未指定 `body` 且
-    提供了 `headers`，则该流被视为仅标头（终结）。
-  * `priority` {string} 流的优先级。可选 `'high'`、`'default'` 或
-    `'low'`。**默认：** `'default'`。
-  * `incremental` {boolean} 当为 `true` 时，此流的数据可与
-    同优先级的其他流数据交错。当为 `false` 时，
-    应在同优先级对等流之前完成该流。**默认：** `false`。
-  * `highWaterMark` {number} 写入器在 `writeSync()` 返回 `false` 之前可缓冲的最大字节数。
-    当缓冲数据超过此限制时，调用方应等待 drain 后再写入更多数据。
-    **默认：** `65536`（64 KB）。
-  * `onheaders` {Function} 接收到初始响应头时的回调。
-    以 `(headers)` 调用。
-  * `ontrailers` {Function} 接收到尾随头时的回调。
-    以 `(trailers)` 调用。
-  * `oninfo` {Function} 接收到信息性（1xx）头时的回调。
-    以 `(headers)` 调用。
-  * `onwanttrailers` {Function} 需要发送尾随头时的回调。
-    不带参数调用；在回调中使用 [`stream.sendTrailers()`][]。
-* 返回：{Promise} 一个关于 {quic.QuicStream} 的 promise
+    The outbound body source. See [`stream.setBody()`][] for details on
+    supported types. When omitted, the stream's outgoing side remains
+    writable with no body queued; no FIN is sent immediately.
+  * `headers` {Object} Initial request or response headers to send. Only
+    used when the session supports headers (e.g. HTTP/3). If `body` is not
+    specified and `headers` is provided, the stream is treated as
+    headers-only (terminal).
+  * `priority` {string} The priority level of the stream. One of `'high'`,
+    `'default'`, or `'low'`. **Default:** `'default'`.
+  * `incremental` {boolean} When `true`, data from this stream may be
+    interleaved with data from other streams of the same priority level.
+    When `false`, the stream should be completed before same-priority peers.
+    **Default:** `false`.
+  * `highWaterMark` {number} The maximum number of bytes that the writer
+    will buffer before `writeSync()` returns `false`. When the buffered
+    data exceeds this limit, the caller should wait for drain before
+    writing more. **Default:** `65536` (64 KB).
+  * `onheaders` {Function} Callback for received initial response headers.
+    Called with `(headers)`.
+  * `ontrailers` {Function} Callback for received trailing headers.
+    Called with `(trailers)`.
+  * `oninfo` {Function} Callback for received informational (1xx) headers.
+    Called with `(headers)`.
+  * `onwanttrailers` {Function} Callback when trailers should be sent.
+    Called with no arguments; use [`stream.sendTrailers()`][] within the
+    callback.
+* Returns: {Promise} for a {quic.QuicStream}
 
-打开一个新的双向流。如果未指定 `body` 选项，
-出站流将处于半关闭状态。`priority` 和 `incremental`
-选项仅在会话支持优先级时使用（例如 HTTP/3）。
-`headers`、`onheaders`、`ontrailers`、`oninfo` 和 `onwanttrailers`
-选项仅在会话支持标头时使用（例如 HTTP/3）。
+Open a new bidirectional stream. If the `body` option is not specified,
+the stream's outgoing side remains writable and no FIN is sent
+immediately. The `priority` and `incremental`
+options are only used when the session supports priority (e.g. HTTP/3).
+The `headers`, `onheaders`, `ontrailers`, `oninfo`, and `onwanttrailers`
+options are only used when the session supports headers (e.g. HTTP/3).
 
 ### `session.createUnidirectionalStream([options])`
 
@@ -1093,29 +1099,33 @@ added: v23.8.0
 * `options` {Object}
   * `body` {string | ArrayBuffer | SharedArrayBuffer | ArrayBufferView |
     Blob | FileHandle | AsyncIterable | Iterable | Promise | null}
-    出站主体来源。有关支持的类型，请参见 [`stream.setBody()`][]。省略时，
-    流会立即关闭。
-  * `headers` {Object} 要发送的初始请求头。
-  * `priority` {string} 流的优先级。可选 `'high'`、`'default'` 或
-    `'low'`。**默认：** `'default'`。
-  * `incremental` {boolean} 当为 `true` 时，此流的数据可与
-    同优先级的其他流数据交错。当为 `false` 时，
-    应在同优先级对等流之前完成该流。**默认：** `false`。
-  * `highWaterMark` {number} 写入器在 `writeSync()` 返回 `false` 之前可缓冲的最大字节数。
-    当缓冲数据超过此限制时，调用方应等待 drain 后再写入更多数据。
-    **默认：** `65536`（64 KB）。
-  * `onheaders` {Function} 接收到初始响应头时的回调。
-    以 `(headers)` 调用。
-  * `ontrailers` {Function} 接收到尾随头时的回调。
-    以 `(trailers)` 调用。
-  * `oninfo` {Function} 接收到信息性（1xx）头时的回调。
-    以 `(headers)` 调用。
-  * `onwanttrailers` {Function} 需要发送尾随头时的回调。
-* 返回：{Promise} 一个关于 {quic.QuicStream} 的 promise
+    The outbound body source. See [`stream.setBody()`][] for details on
+    supported types. When omitted, the stream's outgoing side remains
+    writable with no body queued; no FIN is sent immediately.
+  * `headers` {Object} Initial request headers to send.
+  * `priority` {string} The priority level of the stream. One of `'high'`,
+    `'default'`, or `'low'`. **Default:** `'default'`.
+  * `incremental` {boolean} When `true`, data from this stream may be
+    interleaved with data from other streams of the same priority level.
+    When `false`, the stream should be completed before same-priority peers.
+    **Default:** `false`.
+  * `highWaterMark` {number} The maximum number of bytes that the writer
+    will buffer before `writeSync()` returns `false`. When the buffered
+    data exceeds this limit, the caller should wait for drain before
+    writing more. **Default:** `65536` (64 KB).
+  * `onheaders` {Function} Callback for received initial response headers.
+    Called with `(headers)`.
+  * `ontrailers` {Function} Callback for received trailing headers.
+    Called with `(trailers)`.
+  * `oninfo` {Function} Callback for received informational (1xx) headers.
+    Called with `(headers)`.
+  * `onwanttrailers` {Function} Callback when trailers should be sent.
+* Returns: {Promise} for a {quic.QuicStream}
 
-打开一个新的单向流。如果未指定 `body` 选项，
-出站流将被关闭。`priority` 和 `incremental`
-选项仅在会话支持优先级时使用（例如 HTTP/3）。
+Open a new unidirectional stream. If the `body` option is not specified,
+the stream's outgoing side remains writable and no FIN is sent
+immediately. The `priority` and `incremental`
+options are only used when the session supports priority (e.g. HTTP/3).
 
 ### `session.path`
 

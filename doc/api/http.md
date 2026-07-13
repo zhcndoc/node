@@ -144,7 +144,11 @@ changes:
 
 [`socket.connect()`][] 中的 `options` 也受支持。
 
-要配置其中任何一项，必须创建自定义 [`http.Agent`][] 实例。
+### 使用连接复用时的响应排序
+
+在复用的 HTTP/1.1 keep-alive 连接上，响应会按照该连接上的请求顺序与请求关联。HTTP/1.1 keep-alive 除了这种顺序之外，不提供按请求的响应归属。需要为每个请求隔离连接的应用程序可以使用单独的 `Agent`，禁用 keep-alive，或传入 `agent: false`。
+
+当连接被客户端或服务器关闭时，它会从连接池中移除。连接池中的任何未使用套接字都会被取消引用（unref），以便在没有未完成请求时不会让 Node.js 进程继续运行。（参见 [`socket.unref()`][]）。
 
 ```mjs
 import { Agent, request } from 'node:http';
@@ -159,6 +163,8 @@ const keepAliveAgent = new http.Agent({ keepAlive: true });
 options.agent = keepAliveAgent;
 http.request(options, onResponseCallback);
 ```
+
+使用 `agent: false` 可避免某个请求复用连接。
 
 ### `new Agent([options])`
 
@@ -419,10 +425,9 @@ HTTPS/TLS 特定选项。
 added: v0.11.7
 -->
 
-* Type: {number}
+* 类型: {number}
 
-Defaults to 256. For agents with `keepAlive` enabled, this
-sets the maximum number of sockets that will remain open in the free state.
+默认值为 256。对于启用了 `keepAlive` 的 agent，此值设置将保持处于空闲状态的套接字最大数量。
 
 ### `agent.maxSockets`
 
@@ -661,7 +666,7 @@ added: v0.3.2
 added: v0.3.6
 -->
 
-当请求已发送时触发。更具体地说，当请求头部和主体的最后一段已移交操作系统以便通过网络传输时，会触发此事件。这并不意味着服务器已经收到了任何内容。
+当请求已发送时触发。更具体地说，当请求头部和主体的最后一段已移交给操作系统以便通过网络传输时，会触发此事件。这并不意味着服务器已经收到了任何内容。
 
 ### 事件：`'information'`
 
@@ -779,7 +784,7 @@ server.on('upgrade', (req, stream, head) => {
                'Connection: Upgrade\r\n' +
                '\r\n');
 
-  stream.pipe(stream); // 回显
+  stream.pipe(stream); // Echo
 });
 
 // 现在服务器正在运行
@@ -820,7 +825,7 @@ server.on('upgrade', (req, stream, head) => {
                'Connection: Upgrade\r\n' +
                '\r\n');
 
-  stream.pipe(stream); // 回显
+  stream.pipe(stream); // Echo
 });
 
 // 现在服务器正在运行
@@ -1272,7 +1277,7 @@ added: v0.5.9
 
 * `noDelay` {boolean}
 
-Once a socket is assigned to this request and the connection is established, [`socket.setNoDelay()`][] will be called.
+一旦将套接字分配给此请求并且连接已建立，便会调用 [`socket.setNoDelay()`][]。
 
 ### `request.setSocketKeepAlive([enable][, initialDelay])`
 
@@ -1946,7 +1951,7 @@ response.addTrailers({ 'Content-MD5': '7895bf4b8828b55ceaf47747b4bca667' });
 response.end();
 ```
 
-尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][]。
+尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][].
 
 ### `response.connection`
 
@@ -1959,7 +1964,7 @@ deprecated: v13.0.0
 
 * 类型：{stream.Duplex}
 
-参见 [`response.socket`][]。
+参见 [`response.socket`][].
 
 ### `response.cork()`
 
@@ -2016,7 +2021,7 @@ deprecated:
 added: v1.6.0
 -->
 
-Flush the response headers. See also: [`request.flushHeaders()`][].
+刷新响应头。另请参见：[`request.flushHeaders()`][].
 
 ### `response.getHeader(name)`
 
@@ -2102,7 +2107,7 @@ added: v0.9.3
 
 * 类型：{boolean}
 
-A boolean. Read-only. True if the headers were sent, false otherwise.
+布尔值。只读。如果已发送标头，则为 true；否则为 false。
 
 ### `response.removeHeader(name)`
 
@@ -2112,7 +2117,7 @@ added: v0.4.0
 
 * `name` {string}
 
-移除等待隐式发送的头部。
+移除即将隐式发送的头部。
 
 ```js
 response.removeHeader('Content-Encoding');
@@ -2143,33 +2148,33 @@ added: v0.7.5
 ### `response.setHeader(name, value)`
 
 <!-- YAML
-已添加：v0.4.0
+Added in: v0.4.0
 -->
 
 * `name` {string}
 * `value` {number | string | string\[]}
-* 返回：{http.ServerResponse}
+* Returns: {http.ServerResponse}
 
-返回响应对象。
+Returns the response object.
 
-为隐式头部设置单个头部值。如果此头部已存在于待发送的头部中，其值将被替换。此处使用字符串数组来发送多个具有相同名称的头部。非字符串值将未经修改地存储。因此，[`response.getHeader()`][] 可能返回非字符串值。但是，非字符串值将在网络传输时转换为字符串。返回相同的响应对象给调用者，以启用链式调用。
+Sets a single header value for implicit headers. If this header already exists in the to-be-sent headers, its value will be replaced. Use an array of strings here to send multiple headers with the same name. Non-string values will be stored without modification. Therefore, [`response.getHeader()`][] may return non-string values. However, non-string values will be converted to strings for network transmission. Returns the same response object to the caller to enable chaining.
 
 ```js
 response.setHeader('Content-Type', 'text/html');
 ```
 
-或
+or
 
 ```js
 response.setHeader('Set-Cookie', ['type=ninja', 'language=javascript']);
 ```
 
-尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][]。
+Attempting to set a header field name or value containing invalid characters will throw a [`TypeError`][].
 
-当使用 [`response.setHeader()`][] 设置头部时，它们将与传递给 [`response.writeHead()`][] 的任何头部合并，传递给 [`response.writeHead()`][] 的头部具有优先级。
+When headers are set using [`response.setHeader()`][], they will be merged with any headers passed to [`response.writeHead()`][], with the headers passed to [`response.writeHead()`][] taking precedence.
 
 ```js
-// 返回 content-type = text/plain
+// returns content-type = text/plain
 const server = http.createServer((req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Foo', 'bar');
@@ -2178,7 +2183,7 @@ const server = http.createServer((req, res) => {
 });
 ```
 
-如果调用了 [`response.writeHead()`][] 方法且未调用此方法，它将直接把提供的头部值写入网络通道而不内部缓存，并且对该头部的 [`response.getHeader()`][] 将不会产生预期结果。如果希望逐步填充头部以便将来检索和修改，请使用 [`response.setHeader()`][] 而不是 [`response.writeHead()`][]】【。
+If [`response.writeHead()`][] method is called and this method is not called, it will directly write the provided header values to the network channel without internal caching, and [`response.getHeader()`][] for that header will not produce the expected result. If you want to incrementally populate headers for future retrieval and modification, use [`response.setHeader()`][] instead of [`response.writeHead()`][].
 
 ### `response.setTimeout(msecs[, callback])`
 
@@ -2190,9 +2195,9 @@ added: v0.9.12
 * `callback` {Function}
 * 返回：{http.ServerResponse}
 
-将 Socket 的超时值设置为 `msecs`。如果提供了 callback，则它作为监听器添加到响应对象的 `'timeout'` 事件上。
+将 Socket 的超时时间设置为 `msecs`。如果提供了 callback，则它会作为监听器添加到响应对象的 `'timeout'` 事件上。
 
-如果未将 `'timeout'` 监听器添加到请求、响应或服务器，则套接字在超时时会被销毁。如果处理程序分配给了请求、响应或服务器的 `'timeout'` 事件，则必须显式处理超时的套接字。
+如果未将 `'timeout'` 监听器添加到请求、响应或服务器，则套接字在超时时会被销毁。如果处理程序已分配给请求、响应或服务器的 `'timeout'` 事件，则必须显式处理超时的套接字。
 
 ### `response.socket`
 
@@ -2286,7 +2291,7 @@ added: v12.9.0
 
 * 类型：{boolean}
 
-在调用 [`response.end()`][] 之后为 `true`。此属性不表示数据是否已刷新；为此请使用 [`response.writableFinished`][]】【。
+在调用 [`response.end()`][] 之后为 `true`。此属性不表示数据是否已刷新；为此请使用 [`response.writableFinished`][].
 
 ### `response.writableFinished`
 
@@ -2420,7 +2425,7 @@ response
 
 当使用 [`response.setHeader()`][] 设置头部时，它们将与传递给 [`response.writeHead()`][] 的任何头部合并，传递给 [`response.writeHead()`][] 的头部具有优先级。
 
-如果调用了此方法且未调用 [`response.setHeader()`][]，它将直接把提供的头部值写入网络通道而不内部缓存，并且对该头部的 [`response.getHeader()`][] 将不会产生预期结果。如果希望逐步填充头部以便将来检索和修改，请使用 [`response.setHeader()`][]】【。
+如果调用了此方法且未调用 [`response.setHeader()`][]，它将直接把提供的头部值写入网络通道而不内部缓存，并且对该头部的 [`response.getHeader()`][] 将不会产生预期结果。如果希望逐步填充头部以便将来检索和修改，请使用 [`response.setHeader()`][]。
 
 ```js
 // 返回 content-type = text/plain
@@ -2444,7 +2449,7 @@ added:
   - v24.18.0
 -->
 
-* `statusCode` {number} 一个 HTTP 1xx 信息性状态码，范围在 `100` 到 `199`（含）之间，不包括 `101`（Switching Protocols），该状态仅可通过 [`'upgrade'`][] 事件获取。
+* `statusCode` {number} 一个 HTTP 1xx 信息性状态码，范围在 `100` 到 `199`（含）之间，不包括 `101`（协议切换），该状态仅可通过 [`'upgrade'`][] 事件获取。
 * `headers` {Object|Array} 随信息性响应发送的可选头部集合。接受与 [`response.writeHead()`][] 相同的形式。
 * `callback` {Function} 可选，在消息写入 socket 后调用一次。
 
@@ -3533,8 +3538,8 @@ http.get('http://localhost:8000/', (res) => {
   const contentType = res.headers['content-type'];
 
   let error;
-  // 任何 2xx 状态码都表示响应成功，但
-  // 这里我们只检查 200。
+  // Any 2xx status code indicates a successful response, but
+  // here we're only checking for 200.
   if (statusCode !== 200) {
     error = new Error('Request Failed.\n' +
                       `Status Code: ${statusCode}`);
@@ -3544,7 +3549,7 @@ http.get('http://localhost:8000/', (res) => {
   }
   if (error) {
     console.error(error.message);
-    // 消耗响应数据以释放内存
+    // Consume response data to free up memory
     res.resume();
     return;
   }
@@ -3564,7 +3569,7 @@ http.get('http://localhost:8000/', (res) => {
   console.error(`Got error: ${e.message}`);
 });
 
-// 创建一个本地服务器来接收数据
+// Create a local server to receive data
 const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({
@@ -3725,11 +3730,11 @@ const options = {
 };
 
 const req = http.request(options, (res) => {
-  console.log(`STATUS: ${res.statusCode}`);
-  console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+  console.log(`状态码：${res.statusCode}`);
+  console.log(`头部：${JSON.stringify(res.headers)}`);
   res.setEncoding('utf8');
   res.on('data', (chunk) => {
-    console.log(`BODY: ${chunk}`);
+    console.log(`主体：${chunk}`);
   });
   res.on('end', () => {
     console.log('响应中没有更多数据。');
@@ -3764,11 +3769,11 @@ const options = {
 };
 
 const req = http.request(options, (res) => {
-  console.log(`STATUS: ${res.statusCode}`);
-  console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+  console.log(`状态码：${res.statusCode}`);
+  console.log(`头部：${JSON.stringify(res.headers)}`);
   res.setEncoding('utf8');
   res.on('data', (chunk) => {
-    console.log(`BODY: ${chunk}`);
+    console.log(`主体：${chunk}`);
   });
   res.on('end', () => {
     console.log('响应中没有更多数据。');
@@ -3902,19 +3907,19 @@ changes:
     - v19.5.0
     - v18.14.0
     pr-url: https://github.com/nodejs/node/pull/46143
-    description: "Added the `label` parameter."
+    description: "添加了 `label` 参数。"
 -->
 
 * `name` {string}
-* `label` {string} Label for error message. **Default:** `'Header name'`.
+* `label` {string} 错误消息的标签。**默认值：** `'Header name'`.
 
-Performs the low-level validations on the provided `name` that are done when calling `res.setHeader(name, value)`.
+对提供的 `name` 执行低级校验，这些校验与调用 `res.setHeader(name, value)` 时执行的校验相同。
 
-Passing illegal value as `name` will result in a [`TypeError`][] being thrown, identified by `code: 'ERR_INVALID_HTTP_TOKEN'`.
+将非法值作为 `name` 传入会导致抛出 [`TypeError`][]，其特征为 `code: 'ERR_INVALID_HTTP_TOKEN'`。
 
-It is not necessary to use this method before passing headers to an HTTP request or response. The HTTP module will automatically validate such headers.
+在将标头传递给 HTTP 请求或响应之前，无需使用此方法。HTTP 模块会自动验证这些标头。
 
-Example:
+示例：
 
 ```mjs
 import { validateHeaderName } from 'node:http';
@@ -3968,7 +3973,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code === 'ERR_HTTP_INVALID_HEADER_VALUE'); // --> true
-  console.error(err.message); // --> '头信息 "x-my-header" 的值 "undefined" 无效'
+  console.error(err.message); // --> '标头 "x-my-header" 的值 "undefined" 无效'
 }
 
 try {
@@ -3976,7 +3981,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code === 'ERR_INVALID_CHAR'); // --> true
-  console.error(err.message); // --> '头信息内容中的字符无效 ["x-my-header"]'
+  console.error(err.message); // --> '标头内容中的字符无效 ["x-my-header"]'
 }
 ```
 
@@ -3988,7 +3993,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code === 'ERR_HTTP_INVALID_HEADER_VALUE'); // --> true
-  console.error(err.message); // --> '头信息 "x-my-header" 的值 "undefined" 无效'
+  console.error(err.message); // --> '标头 "x-my-header" 的值 "undefined" 无效'
 }
 
 try {
@@ -3996,7 +4001,7 @@ try {
 } catch (err) {
   console.error(err instanceof TypeError); // --> true
   console.error(err.code === 'ERR_INVALID_CHAR'); // --> true
-  console.error(err.message); // --> '头信息内容中的字符无效 ["x-my-header"]'
+  console.error(err.message); // --> '标头内容中的字符无效 ["x-my-header"]'
 }
 ```
 
@@ -4020,14 +4025,14 @@ added:
   - v24.14.0
 -->
 
-* `proxyEnv` {Object} 一个包含代理配置的对象。它接受与 [`Agent`][] 接受的 `proxyEnv` 选项相同的选项。**默认值：** `process.env`。
-* 返回：{Function} 一个函数，用于将原始 agent 和 dispatcher 的设置恢复到调用 `http.setGlobalProxyFromEnv()` 之前的状态。
+* `proxyEnv` {Object} An object containing proxy configuration. It accepts the same options as the `proxyEnv` option accepted by [`Agent`][]. **Default:** `process.env`.
+* Returns: {Function} A function that restores the original agent and dispatcher settings to the state they were in before `http.setGlobalProxyFromEnv()` was called.
 
-动态重置全局配置，以便在运行时为 `fetch()` 和 `http.request()`/`https.request()` 启用内置代理支持，作为使用 `--use-env-proxy` 标志或 `NODE_USE_ENV_PROXY` 环境变量的替代方案。它也可用于覆盖从环境变量配置的设置。
+Dynamically reset global configuration to enable built-in proxy support for `fetch()` and `http.request()`/`https.request()` at runtime, as an alternative to using the `--use-env-proxy` flag or the `NODE_USE_ENV_PROXY` environment variable. It can also be used to override settings configured from environment variables.
 
-由于此函数会重置全局配置，任何之前配置的 `http.globalAgent`、`https.globalAgent` 或 undici 全局 dispatcher 都会在调用此函数后被覆盖。建议在发出任何请求之前调用它，并避免在任何请求进行中间调用它。
+Because this function resets global configuration, any previously configured `http.globalAgent`, `https.globalAgent`, or undici global dispatcher will be overwritten after calling this function. It is recommended to call it before making any requests and to avoid calling it while any request is in progress.
 
-有关代理 URL 格式和 `NO_PROXY` 语法的详细信息，请参阅 [内置代理支持][]。
+For details on proxy URL formats and `NO_PROXY` syntax, see [Built-in Proxy Support][].
 
 ## 类：`WebSocket`
 
@@ -4061,6 +4066,12 @@ added:
 * `NO_PROXY` 或 `no_proxy`：绕过代理的主机逗号分隔列表。如果两者都设置，`no_proxy` 优先。
 
 如果请求是发往 Unix 域套接字的，代理设置将被忽略。
+
+### 代理安全注意事项
+
+内置代理支持会将出站请求通过 HTTP(S) 代理路由，通常是因为防火墙要求使用代理才能访问外部网络。它不是匿名或隐藏流量的功能，也不会试图向代理、局域网络、网络运营商或管理部署的机构隐藏流量。
+
+仅配置在该部署中可信且被授权的代理。代理可以观察连接元数据；对于普通 HTTP 请求，或者当 TLS 由代理终止或拦截时，它也可以观察请求和响应内容。Node.js 不支持将不可信代理视为隐私边界。部署运营者负责控制代理配置，并满足部署特定的网络策略和法律要求。
 
 ### 代理 URL 格式
 

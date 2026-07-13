@@ -203,7 +203,7 @@ if (isMainThread) {
   // 这会在 Worker 实例中重新加载当前文件。
   new Worker(new URL(import.meta.url));
 } else {
-  console.log('Inside Worker!');
+  console.log('在 Worker 内部!');
   console.log(isMainThread);  // 打印 'false'.
 }
 ```
@@ -215,7 +215,7 @@ if (isMainThread) {
   // 这会在 Worker 实例中重新加载当前文件。
   new Worker(__filename);
 } else {
-  console.log('Inside Worker!');
+  console.log('在 Worker 内部!');
   console.log(isMainThread);  // 打印 'false'.
 }
 ```
@@ -228,7 +228,7 @@ added:
   - v12.19.0
 -->
 
-* `object` {any} 任何任意的 JavaScript 值。
+* `object` {any} 任意的 JavaScript 值。
 
 将对象标记为不可传输。如果 `object` 出现在 [`port.postMessage()`][] 调用的传输列表中，则会抛出错误。如果 `object` 是原始值，则此操作无效。
 
@@ -329,7 +329,7 @@ added:
  - v22.10.0
 -->
 
-* `object` {any} 任何任意的 JavaScript 值。
+* `object` {any} 任意 JavaScript 值。
 
 将对象标记为不可克隆。如果 `object` 在 [`port.postMessage()`][] 调用中用作 [`message`](#event-message)，则会抛出错误。如果 `object` 是原始值，则此操作无效。
 
@@ -435,7 +435,7 @@ if (isMainThread) {
 ## `worker_threads.postMessageToThread(threadId, value[, transferList][, timeout])`
 
 <!-- YAML
-added:
+添加于：
 - v22.5.0
 - v20.19.0
 -->
@@ -718,7 +718,7 @@ added: v24.5.0
 
 * {LockManager}
 
-一个 [`LockManager`][LockManager] 实例，可用于协调访问同一进程内多个线程之间可能共享的资源。该 API 镜像了
+一个 [`LockManager`][LockManager] 实例，可用于协调同一进程内多个线程之间可能共享的资源访问。该 API 镜像了
 [浏览器 `LockManager`][] 的语义。
 
 ### 类：`Lock`
@@ -814,7 +814,7 @@ added: v24.5.0
 
 * 返回：{Promise}
 
-解决为一个 `LockManagerSnapshot`，描述当前进程当前持有和待处理的锁。
+解析为一个 `LockManagerSnapshot`，描述当前进程当前持有和待处理的锁。
 
 ```mjs
 import { locks } from 'node:worker_threads';
@@ -1013,9 +1013,9 @@ const { port1, port2 } = new MessageChannel();
 
 // 打印：
 //   foobar
-//   closed!
+//   关闭！
 port2.on('message', (message) => console.log(message));
-port2.once('close', () => console.log('closed!'));
+port2.once('close', () => console.log('关闭！'));
 
 port1.postMessage('foobar');
 port1.close();
@@ -1027,9 +1027,9 @@ const { port1, port2 } = new MessageChannel();
 
 // 打印：
 //   foobar
-//   closed!
+//   关闭！
 port2.on('message', (message) => console.log(message));
-port2.once('close', () => console.log('closed!'));
+port2.once('close', () => console.log('关闭！'));
 
 port1.postMessage('foobar');
 port1.close();
@@ -1118,17 +1118,19 @@ changes:
 
 * `value` 可能包含循环引用。
 * `value` 可能包含内置 JS 类型的实例，例如 `RegExp`、`BigInt`、`Map`、`Set` 等。
-* `value` 可能包含类型化数组，使用 `ArrayBuffer` 和 `SharedArrayBuffer`。
+* `value` 可能包含类型化数组，既可以使用 `ArrayBuffer`，也可以使用 `SharedArrayBuffer`。
 * `value` 可能包含 [`WebAssembly.Module`][] 实例。
-* `value` 可能不包含原生（C++ 支持）对象，除了：
-  * {CryptoKey}，
-  * {FileHandle}，
-  * {Histogram}，
-  * {KeyObject}，
-  * {MessagePort}，
-  * {net.BlockList}，
-  * {net.SocketAddress}，
-  * {X509Certificate}。
+* `value` 不能包含原生（C++ 支持的）对象，以下对象除外：
+  * {CryptoKey}s,
+  * {FileHandle}s,
+  * {Histogram}s,
+  * {KeyObject}s,
+  * {MessagePort}s,
+  * {net.BlockList}s,
+  * {net.Server}s（仅 TCP，且在 `transferList` 中列出时）,
+  * {net.Socket}s（仅 TCP，且在 `transferList` 中列出时）,
+  * {net.SocketAddress}es,
+  * {X509Certificate}s.
 
 ```mjs
 import { MessageChannel } from 'node:worker_threads';
@@ -1154,8 +1156,13 @@ circularData.foo = circularData;
 port2.postMessage(circularData);
 ```
 
-`transferList` 可以是 {ArrayBuffer}、[`MessagePort`][] 和 [`FileHandle`][] 对象的列表。
-传输后，它们在通道的发送端不再可用（即使它们不包含在 `value` 中）。与 [子进程][] 不同，目前不支持传输网络套接字等句柄。
+`transferList` 可能是 {ArrayBuffer}、[`MessagePort`][]、[`FileHandle`][]、{net.Server} 和 {net.Socket} 对象的列表。
+传输后，它们在通道发送端将不再可用（即使它们不包含在 `value` 中也是如此）。
+
+传输 {net.Server} 会将其监听套接字——以及接受队列中的任何待处理连接——移动到接收线程的事件循环中。
+传输 {net.Socket} 会移动单个连接；该套接字必须是新近接受或创建的、尚未开始读取且没有缓冲数据的 TCP 连接，否则 `postMessage()` 会抛出
+`ERR_WORKER_HANDLE_NOT_TRANSFERABLE`。这使得可以在一个线程上接受连接，并将它们分发到一个 worker 线程池中。
+仅支持 TCP 句柄，并且仅在类 Unix 平台上支持；在 Windows 上，`postMessage()` 会抛出 `ERR_WORKER_HANDLE_TRANSFER_UNSUPPORTED`。
 
 如果 `value` 包含 {SharedArrayBuffer} 实例，则它们可从任一线程访问。它们不能列在 `transferList` 中。
 
@@ -1834,11 +1841,11 @@ added:
 -->
 
 * `options` {Object}
-  * `sampleInterval` {number} 以字节为单位的平均采样间隔。
+  * `sampleInterval` {number} 平均采样间隔（以字节为单位）。
     **默认：** `524288`（512 KiB）。
   * `stackDepth` {integer} 样本的最大栈深度。
     **默认：** `16`。
-  * `forceGC` {boolean} 在获取性能分析之前强制进行垃圾回收。
+  * `forceGC` {boolean} 在获取性能分析之前强制执行垃圾回收。
     **默认：** `false`。
   * `includeObjectsCollectedByMajorGC` {boolean} 包含由主要 GC 回收的对象。
     **默认：** `false`。
@@ -1987,8 +1994,8 @@ added:
 
 * {string|null}
 
-引用线程的字符串标识符，如果线程未运行则为 null。
-在 worker 线程内部，它作为 [`require('node:worker_threads').threadName`][] 可用。
+A string identifier for the referenced thread, or null if the thread is not running.
+Within the worker thread, it is available as [`require('node:worker_threads').threadName`][].
 
 ### `worker.unref()`
 
@@ -2122,9 +2129,8 @@ if (isMainThread) {
 [`worker.threadId`]: #workerthreadid
 [`worker.threadName`]: #workerthreadname
 [async-resource-worker-pool]: async_context.md#using-asyncresource-for-a-worker-thread-pool
-[浏览器 `LockManager`]: https://developer.mozilla.org/en-US/docs/Web/API/LockManager
-[浏览器 `MessagePort`]: https://developer.mozilla.org/en-US/docs/Web/API/MessagePort
-[子进程]: child_process.md
-[上下文化]: vm.md#what-does-it-mean-to-contextify-an-object
+[browser `LockManager`]: https://developer.mozilla.org/en-US/docs/Web/API/LockManager
+[browser `MessagePort`]: https://developer.mozilla.org/en-US/docs/Web/API/MessagePort
+[contextified]: vm.md#what-does-it-mean-to-contextify-an-object
 [locks.request()]: #locksrequestname-options-callback
 [v8.serdes]: v8.md#serialization-api

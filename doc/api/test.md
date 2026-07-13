@@ -403,9 +403,9 @@ describe.only('一个套件', () => {
 
 ## 按名称过滤测试
 
-[`--test-name-pattern`][] 命令行选项可用于仅运行名称与提供模式匹配的测试，而 [`--test-skip-pattern`][] 选项可用于跳过名称与提供模式匹配的测试。测试名称模式被解释为 JavaScript 正则表达式。`--test-name-pattern` 和 `--test-skip-pattern` 选项可以指定多次以运行嵌套测试。对于执行的每个测试，任何相应的测试钩子（如 `beforeEach()`）也会运行。未执行的测试将从测试运行器输出中省略。
+[`--test-name-pattern`][] 命令行选项可用于仅运行名称与所提供模式匹配的测试，而 [`--test-skip-pattern`][] 选项可用于跳过名称与所提供模式匹配的测试。测试名称模式会被解释为 JavaScript 正则表达式。`--test-name-pattern` 和 `--test-skip-pattern` 选项可以指定多次，以运行嵌套测试。对于执行的每个测试，任何相应的测试钩子（如 `beforeEach()`）也会运行。未执行的测试将从测试运行器输出中省略。
 
-给定以下测试文件，使用 `--test-name-pattern="test [1-3]"` 选项启动 Node.js 将导致测试运行器执行 `test 1`、`test 2` 和 `test 3`。如果 `test 1` 不匹配测试名称模式，则其子测试将不会执行，即使它们匹配模式。也可以通过多次传递 `--test-name-pattern` 来执行同一组测试（例如 `--test-name-pattern="test 1"`、`--test-name-pattern="test 2"` 等）。
+给定以下测试文件，使用 `--test-name-pattern="test [1-3]"` 选项启动 Node.js 将导致测试运行器执行 `test 1`、`test 2` 和 `test 3`。如果 `test 1` 不匹配测试名称模式，则其子测试将不会执行，即使它们匹配该模式。也可以通过多次传递 `--test-name-pattern` 来执行同一组测试（例如 `--test-name-pattern="test 1"`、`--test-name-pattern="test 2"` 等）。
 
 ```js
 test('test 1', async (t) => {
@@ -419,9 +419,9 @@ test('Test 4', async (t) => {
 });
 ```
 
-测试名称模式也可以使用正则表达式字面量指定。这允许使用正则表达式标志。在前面的示例中，使用 `--test-name-pattern="/test [4-5]/i"`（或 `--test-skip-pattern="/test [4-5]/i"`）启动 Node.js 将匹配 `Test 4` 和 `Test 5`，因为模式不区分大小写。
+测试名称模式也可以使用正则表达式字面量指定。这允许使用正则表达式标志。在前面的示例中，使用 `--test-name-pattern="/test [4-5]/i"`（或 `--test-skip-pattern="/test [4-5]/i"`）启动 Node.js 将匹配 `Test 4` 和 `Test 5`，因为该模式不区分大小写。
 
-要使用模式匹配单个测试，你可以使用前缀所有祖先测试名称（用空格分隔），以确保它是唯一的。
+要使用模式匹配单个测试，你可以使用其所有祖先测试名称作为前缀（用空格分隔），以确保它是唯一的。
 例如，给定以下测试文件：
 
 ```js
@@ -607,15 +607,15 @@ export async function globalTeardown() {
 如果全局设置函数抛出错误，将不会运行任何测试，进程将以非零退出码退出。
 在这种情况下，全局清理函数不会被调用。
 
-## 从命令行运行测试
+## Running tests from the command line
 
-可以通过传递 [`--test`][] 标志从命令行调用 Node.js 测试运行器：
+The Node.js test runner can be invoked from the command line by passing the [`--test`][] flag:
 
 ```bash
 node --test
 ```
 
-默认情况下，Node.js 将运行所有匹配以下模式的文件：
+By default, Node.js will run all files matching the following patterns:
 
 * `**/*.test.{cjs,mjs,js}`
 * `**/*-test.{cjs,mjs,js}`
@@ -624,7 +624,7 @@ node --test
 * `**/test.{cjs,mjs,js}`
 * `**/test/**/*.{cjs,mjs,js}`
 
-除非提供 [`--no-strip-types`][]，否则还会匹配以下附加模式：
+Unless [`--no-strip-types`][] is provided, the following additional patterns are also matched:
 
 * `**/*.test.{cts,mts,ts}`
 * `**/*-test.{cts,mts,ts}`
@@ -633,15 +633,15 @@ node --test
 * `**/test.{cts,mts,ts}`
 * `**/test/**/*.{cts,mts,ts}`
 
-或者，可以将一个或多个 glob 模式作为 Node.js 命令的最终参数提供，如下所示。
-Glob 模式遵循 [`glob(7)`][] 的行为。
-在命令行上，glob 模式应包含在双引号中，以防止 shell 扩展，这可以减少跨系统的可移植性问题。
+Alternatively, one or more glob patterns can be provided as the final arguments to the Node.js command, as shown below.
+Glob patterns follow the behavior of [`glob(7)`][].
+On the command line, glob patterns should be enclosed in double quotes to prevent shell expansion, which can reduce portability issues across systems.
 
 ```bash
 node --test "**/*.test.js" "**/*.spec.js"
 ```
 
-### 随机化测试执行顺序
+### Randomizing the test execution order
 
 <!-- YAML
 added:
@@ -649,36 +649,36 @@ added:
  - v24.16.0
 -->
 
-> 稳定性：1.0 - 早期开发
+> Stability: 1.0 - Early development
 
-测试运行器可以随机化执行顺序以帮助检测依赖顺序的测试。启用时，运行器会随机化发现的文件以及每个文件内排队的测试。使用 `--test-randomize` 启用此模式。
+The test runner can randomize the execution order to help detect tests that depend on order. When enabled, the runner randomizes the discovered files and the queued tests within each file. Use `--test-randomize` to enable this mode.
 
 ```bash
 node --test --test-randomize
 ```
 
-启用随机化时，测试运行器会将用于运行的种子作为诊断消息打印出来：
+When randomization is enabled, the test runner prints the seed used for the run as a diagnostic message:
 
 ```text
 Randomized test order seed: 12345
 ```
 
-使用 `--test-random-seed=<number>` 以确定性地重放相同的随机顺序。提供 `--test-random-seed` 也会启用随机化，因此提供种子时 `--test-randomize` 是可选的：
+Use `--test-random-seed=<number>` to deterministically replay the same random order. Providing `--test-random-seed` also enables randomization, so `--test-randomize` is optional when a seed is provided:
 
 ```bash
 node --test --test-random-seed=12345
 ```
 
-在大多数测试文件中，随机化会自动生效。一个重要的例外是子测试逐个等待的情况。在这种模式下，每个子测试只有在前一个完成后才会开始，因此运行器会保持声明顺序，而不是对其进行随机化。
+In most test files, randomization takes effect automatically. One important exception is when subtests are awaited one by one. In this mode, each subtest starts only after the previous one completes, so the runner preserves declaration order instead of randomizing it.
 
-示例：这是顺序运行的，**未**随机化。
+Example: this runs in order, and is **not** randomized.
 
 ```mjs
 import test from 'node:test';
 
 test('math', async (t) => {
   for (const name of ['adds', 'subtracts', 'multiplies']) {
-    // 顺序等待每个子测试会保留声明顺序。
+    // Awaiting each subtest sequentially preserves declaration order.
     await t.test(name, async () => {});
   }
 });
@@ -689,15 +689,15 @@ const test = require('node:test');
 
 test('math', async (t) => {
   for (const name of ['adds', 'subtracts', 'multiplies']) {
-    // 顺序等待每个子测试会保留声明顺序。
+    // Awaiting each subtest sequentially preserves declaration order.
     await t.test(name, async () => {});
   }
 });
 ```
 
-使用套件风格的 API（如 `describe()`/`it()` 或 `suite()`/`test()`）仍然允许随机化，因为兄弟测试是一起排队的。
+Using suite-style APIs such as `describe()`/`it()` or `suite()`/`test()` still allows randomization because sibling tests are queued together.
 
-示例：这仍然符合随机化条件。
+Example: this is still eligible for randomization.
 
 ```mjs
 import { describe, it } from 'node:test';
@@ -719,35 +719,35 @@ describe('math', () => {
 });
 ```
 
-`--test-randomize` 和 `--test-random-seed` 不支持与 `--watch` 模式一起使用。
+`--test-randomize` and `--test-random-seed` are not supported together with `--watch` mode.
 
-匹配的文件作为测试文件执行。
-有关测试文件执行的更多信息，可以在 [测试运行器执行模型][] 部分找到。
+Matching files are executed as test files.
+For more information about test file execution, see the [Test runner execution model][] section.
 
-### 测试运行器执行模型
+### Test runner execution model
 
-当启用进程级测试隔离时，每个匹配的测试文件都在单独的子进程中执行。任何时间运行的子进程的最大数量由 [`--test-concurrency`][] 标志控制。如果子进程以退出码 0 结束，则测试视为通过。否则，测试视为失败。测试文件必须可由 Node.js 执行，但不需要在内部使用 `node:test` 模块。
+When process-level test isolation is enabled, each matching test file is executed in a separate child process. The maximum number of child processes running at any one time is controlled by the [`--test-concurrency`][] flag. If a child process exits with code 0, the test is considered passed. Otherwise, the test is considered failed. The test file must be executable by Node.js, but it does not need to use the `node:test` module internally.
 
-每个测试文件的执行都好像它是一个常规脚本。也就是说，如果测试文件本身使用 `node:test` 来定义测试，则所有这些测试都将在单个应用程序线程内执行，无论 [`test()`][] 的 `concurrency` 选项值如何。
+Each test file is executed as though it were a regular script. That is, if the test file itself uses `node:test` to define tests, then all such tests are executed within a single application thread, regardless of the `concurrency` option value of [`test()`][].
 
-当禁用进程级测试隔离时，每个匹配的测试文件都导入到测试运行器进程中。加载所有测试文件后，顶层测试以并发数 1 执行。因为所有测试文件都在同一上下文中运行，所以测试可能以启用隔离时不可能的方式相互交互。例如，如果测试依赖于全局状态，则该状态可能被源自另一个文件的测试修改。
+When process-level test isolation is disabled, each matching test file is imported into the test runner process. After all test files have been loaded, top-level tests are executed with a concurrency of 1. Because all test files run in the same context, tests may interact with each other in ways that are not possible when isolation is enabled. For example, if tests depend on global state, that state may be modified by tests originating from another file.
 
-#### 子进程选项继承
+#### Child process option inheritance
 
-在进程隔离模式下运行测试时（默认情况），生成的子进程会从父进程继承 Node.js 选项，包括 [配置文件][] 中指定的选项。但是，某些标志会被过滤掉以启用正确的测试运行器功能：
+When running tests in process isolation mode (the default), spawned child processes inherit Node.js options from the parent process, including those specified in the [configuration file][]. However, certain flags are filtered out to enable correct test runner functionality:
 
-* `--test` - 防止递归测试执行
-* `--experimental-test-coverage` - 由测试运行器管理
-* `--experimental-test-tag-filter` - 筛选值由父进程验证并重新发送到子进程
-* `--watch` - 监视模式由父级处理
-* `--experimental-default-config-file` - 配置文件加载由父级处理
-* `--test-reporter` - 报告由父进程管理
-* `--test-reporter-destination` - 输出目标由父级控制
-* `--experimental-config-file` - 配置文件路径由父级管理
-* `--test-randomize` - 随机化由父进程管理并传播到子进程
-* `--test-random-seed` - 随机化种子由父进程管理并传播到子进程
+* `--test` - Prevents recursive test execution
+* `--experimental-test-coverage` - Managed by the test runner
+* `--experimental-test-tag-filter` - Filter values are validated by the parent process and re-sent to the child process
+* `--watch` - Watch mode is handled by the parent
+* `--experimental-default-config-file` - Configuration file loading is handled by the parent
+* `--test-reporter` - Reporting is managed by the parent process
+* `--test-reporter-destination` - Output destination is controlled by the parent
+* `--experimental-config-file` - Configuration file path is managed by the parent
+* `--test-randomize` - Randomization is managed by the parent process and propagated to child processes
+* `--test-random-seed` - Randomization seed is managed by the parent process and propagated to child processes
 
-来自命令行参数、环境变量和配置文件的所有其他 Node.js 选项都由子进程继承。
+All other Node.js options from command-line arguments, environment variables, and configuration files are inherited by the child processes.
 
 ## 收集代码覆盖率
 
@@ -799,7 +799,7 @@ node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-de
 import assert from 'node:assert';
 import { mock, test } from 'node:test';
 
-test('spies on a function', () => {
+test('spy on a function', () => {
   const sum = mock.fn((a, b) => {
     return a + b;
   });
@@ -822,7 +822,7 @@ test('spies on a function', () => {
 const assert = require('node:assert');
 const { mock, test } = require('node:test');
 
-test('spies on a function', () => {
+test('spy on a function', () => {
   const sum = mock.fn((a, b) => {
     return a + b;
   });
@@ -844,7 +844,7 @@ test('spies on a function', () => {
 相同的模拟功能也暴露在每个测试的 [`TestContext`][] 对象上。以下示例使用 `TestContext` 上暴露的 API 创建对象方法的间谍。通过测试上下文进行模拟的好处是，一旦测试完成，测试运行器将自动恢复所有模拟的功能。
 
 ```js
-test('spies on an object method', (t) => {
+test('spy on an object method', (t) => {
   const number = {
     value: 5,
     add(a) {
@@ -1121,7 +1121,7 @@ const assert = require('node:assert');
 const { test } = require('node:test');
 
 test('setTime does not execute timers', (context) => {
-  // Optionally choose what to mock
+  // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
   const fn = context.mock.fn();
   setTimeout(fn, 1000);
@@ -1132,9 +1132,9 @@ test('setTime does not execute timers', (context) => {
   assert.strictEqual(Date.now(), 800);
 
   context.mock.timers.setTime(1200);
-  // Timer is still not executed
+  // 计时器仍然未执行
   assert.strictEqual(fn.mock.callCount(), 0);
-  // Advance in time to execute the timer
+  // 推进时间以执行计时器
   context.mock.timers.tick(0);
   assert.strictEqual(fn.mock.callCount(), 1);
   assert.strictEqual(Date.now(), 1200);
@@ -1782,8 +1782,8 @@ test('顶层测试', async (t) => {
 
 ## `test.skip([name][, options][, fn])`
 
-用于跳过测试的简写，
-这与 [`test([name], { skip: true }[, fn])`][it options] 相同。
+A shorthand for skipping tests,  
+this is the same as [`test([name], { skip: true }[, fn])`][it options].
 
 ## `test.todo([name][, options][, fn])`
 
@@ -1928,22 +1928,22 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} 钩子函数。
-  如果钩子使用回调，
-  则回调函数作为第二个参数传入。**默认：** 无操作函数。
-* `options` {Object} 钩子的配置项。支持以下属性：
-  * `signal` {AbortSignal} 允许中止正在进行中的钩子。
-  * `timeout` {number} 钩子在多少毫秒后失败。
-    如果未指定，子测试会从其父级继承此值。
-    **默认：** `Infinity`。
+* `fn` {Function|AsyncFunction} Hook function.
+  If the hook uses a callback,
+  the callback function is passed as the second argument. **Default:** No-op function.
+* `options` {Object} Hook options. Supports the following properties:
+  * `signal` {AbortSignal} Allows aborting an in-progress hook.
+  * `timeout` {number} The number of milliseconds after which the hook fails.
+    If not specified, subtests inherit this value from their parent.
+    **Default:** `Infinity`.
 
-此函数创建一个在当前套件中每个测试之前运行的钩子。
+This function creates a hook that runs before each test in the current suite.
 
 ```js
 describe('tests', async () => {
-  beforeEach(() => console.log('即将运行一个测试'));
+  beforeEach(() => console.log('A test is about to run'));
   it('is a subtest', () => {
-    // 这里有一些相关断言
+    // There are some relevant assertions here
   });
 });
 ```
@@ -1956,23 +1956,23 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} 钩子函数。
-  如果钩子使用回调，
-  则回调函数作为第二个参数传入。**默认值：** 一个空操作函数。
-* `options` {Object} 钩子的配置选项。支持以下属性：
-  * `signal` {AbortSignal} 允许中止正在进行的钩子。
-  * `timeout` {number} 钩子失败前的毫秒数。
-    如果未指定，子测试会从其父级继承此值。
-    **默认值：** `Infinity`。
+* `fn` {Function|AsyncFunction} Hook function.
+  If the hook uses a callback,
+  the callback function is passed as the second argument. **Default:** A no-op function.
+* `options` {Object} Hook configuration options. Supports the following properties:
+  * `signal` {AbortSignal} Allows the ongoing hook to be aborted.
+  * `timeout` {number} The number of milliseconds before the hook fails.
+    If not specified, subtests inherit this value from their parent.
+    **Default:** `Infinity`.
 
-此函数创建一个在当前测试套件中每个测试之后运行的钩子。
-即使测试失败，`afterEach()` 钩子也会运行。
+This function creates a hook that runs after each test in the current test suite.
+The `afterEach()` hook runs even if a test fails.
 
 ```js
 describe('tests', async () => {
   afterEach(() => console.log('测试运行完成'));
-  it('是一个子测试', () => {
-    // 相关断言写在这里
+  it('is a subtest', () => {
+    // Related assertions go here
   });
 });
 ```
@@ -2152,8 +2152,7 @@ test('只更改一次 mock 行为', (t) => {
 <!-- YAML
 added:
   - v19.3.0
-  - v18.13.0
--->
+  - v18.13.0-->
 
 重置 mock 函数的调用历史。
 
@@ -2162,8 +2161,7 @@ added:
 <!-- YAML
 added:
   - v19.1.0
-  - v18.13.0
--->
+  - v18.13.0-->
 
 将 mock 函数实现重置为其原始行为。调用此函数后仍可继续使用 mock。
 
@@ -3112,6 +3110,10 @@ added:
   - v18.9.0
   - v16.19.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64309
+    description: Added `entryFile` to events forwarded from child processes
+                 when tests run with process isolation.
   - version: v26.3.0
     pr-url: https://github.com/nodejs/node/pull/63435
     description: 为携带 `testId` 的测试事件添加了 `parentId`。
@@ -3129,6 +3131,43 @@ changes:
 `TestsStream` 将按测试定义的顺序发出事件。
 
 某些事件保证按测试定义的顺序发出，而其他事件则按测试执行的顺序发出。
+
+下表按作用域总结了所有事件。
+
+测试作用域事件会在每个测试或套件中发出一次。它们中的大多数成对出现：一个按声明顺序的事件，会被缓冲，以便事件按测试定义的顺序发出；以及一个或多个对应的按执行顺序的事件，会在测试执行时立即发出。
+
+| 声明顺序（缓冲）           | 执行顺序（立即）                                  |
+| -------------------------- | -------------------------------------------------- |
+| [`'test:start'`][]         | [`'test:enqueue'`][] 后跟 [`'test:dequeue'`][]    |
+| [`'test:pass'`][]          | [`'test:complete'`][] (`details.passed` 为 `true`) |
+| [`'test:fail'`][]          | [`'test:complete'`][] (`details.passed` 为 `false`) |
+| [`'test:plan'`][]          |                                                    |
+| [`'test:diagnostic'`][]    |                                                    |
+|                            | [`'test:log'`][]                                   |
+
+[`'test:log'`][] 特意只按执行顺序发出：它是 [`'test:diagnostic'`][] 的缓冲报告的实时对应项。
+
+文件作用域和全局事件总是会立即按执行顺序发出。
+
+文件作用域事件会在每个测试文件中发出一次：
+
+| 事件                 | 说明                                           |
+| -------------------- | ---------------------------------------------- |
+| [`'test:stderr'`][]  | 仅在传入 `--test` 标志时发出。                |
+| [`'test:stdout'`][]  | 仅在传入 `--test` 标志时发出。                |
+| [`'test:summary'`][] | 每个文件一次，仅在使用进程隔离时发出。         |
+
+全局事件会在每次测试运行中发出一次：
+
+| 事件                       | 说明                               |
+| -------------------------- | ---------------------------------- |
+| [`'test:summary'`][]       | 最终的累计摘要。                   |
+| [`'test:coverage'`][]      | 仅在启用代码覆盖率时。             |
+| [`'test:interrupted'`][]    | 仅在运行接收到 `SIGINT` 时。       |
+| [`'test:watch:drained'`][]  | 仅限监视模式。                     |
+| [`'test:watch:restarted'`][] | 仅限监视模式。                    |
+
+根测试还会在运行结束时发出 [`'test:plan'`][] 和 [`'test:diagnostic'`][] 事件，以报告运行级别的总计。
 
 ### 事件：`'test:coverage'`
 
@@ -3177,31 +3216,27 @@ changes:
 ### 事件：`'test:complete'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 定义测试所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
   * `details` {Object} 额外的执行元数据。
     * `passed` {boolean} 测试是否通过。
     * `duration_ms` {number} 测试持续时间，单位为毫秒。
-    * `error` {Error|undefined} 对测试抛出的错误进行包装的错误，
-      如果测试未通过，则会有此值。
+    * `error` {Error|undefined} 如果测试未通过，则为一个封装了测试抛出错误的错误对象。
       * `cause` {Error} 测试实际抛出的错误。
-    * `type` {string|undefined} 测试的类型，用于表示这是否为套件。
-  * `file` {string|undefined} 测试文件的路径，
-    如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，或者
-    如果测试是通过 REPL 运行的，则为 `undefined`。
+    * `type` {string|undefined} 测试的类型，用于表示这是否是一个测试套件。
+  * `entryFile` {string|undefined} 作为触发此事件的子进程入口点执行的测试文件路径。
+    仅在测试使用进程隔离运行时存在。当测试定义在由入口文件导入的模块中时，可能与 `file` 不同。
+  * `file` {string|undefined} 测试文件的路径，如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `line` {number|undefined} 定义测试所在的行号，如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
-  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
-    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
-    让自定义报告器能够跟踪谱系。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
-    按声明顺序排列。未标记测试为空。
+  * `nesting` {number} 测试的嵌套层级。
+  * `parentId` {number|undefined} 包含该测试的 `testId`，顶层测试则为 `undefined`。用于在同一嵌套层级的并发兄弟测试交错执行时，让自定义报告器跟踪继承关系。
+  * `tags` {string\[]} 测试及其祖先套件上声明的、已展平并转为小写的标签，按声明顺序排列。未标记的测试为空。
     参见 [Test tags][]。
   * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
-    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
+    在同一测试实例的所有事件中保持一致，便于自定义报告器可靠关联。
   * `testNumber` {number} 测试的序号。
-  * `todo` {string|boolean|undefined} 当调用 [`context.todo`][] 时存在
-  * `skip` {string|boolean|undefined} 当调用 [`context.skip`][] 时存在
+  * `todo` {string|boolean|undefined} 当调用 [`context.todo`][] 时存在。
+  * `skip` {string|boolean|undefined} 当调用 [`context.skip`][] 时存在。
 
 当测试完成执行时发出。
 此事件的发出顺序与测试定义的顺序不一致。
@@ -3210,34 +3245,30 @@ changes:
 ### 事件：`'test:dequeue'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `file` {string|undefined} 测试文件的路径，
-    如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，或者
-    如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 定义测试的列号；如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `entryFile` {string|undefined} 作为触发此事件的子进程入口点而执行的测试文件路径。仅在测试使用进程隔离运行时存在。当测试定义在由入口文件导入的模块中时，可能与 `file` 不同。
+  * `file` {string|undefined} 测试文件路径；如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `line` {number|undefined} 定义测试所在的行号；如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
-  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
-    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
-    让自定义报告器能够跟踪谱系。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
-    按声明顺序排列。未标记测试为空。
-    参见 [Test tags][]。
-  * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
-    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
+  * `nesting` {number} 测试的嵌套层级。
+  * `parentId` {number|undefined} 所包含测试的 `testId`；顶层测试为 `undefined`。用于在同一嵌套层级的并发同级测试交错执行时，让自定义报告器跟踪继承关系。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展开后并小写化的标签，按声明顺序排列。未标记的测试为空。参见 [Test tags][]。
+  * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。对于同一测试实例，在所有事件中保持一致，使自定义报告器能够可靠地关联。
   * `type` {string} 测试类型。可以是 `'suite'` 或 `'test'`。
 
-当测试出队时发出，就在执行之前。
+当测试出队时发出，即在执行之前。
 此事件不保证按测试定义的顺序发出。对应的声明顺序事件是 `'test:start'`。
 
 ### 事件：`'test:diagnostic'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 定义测试的列号，或者如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `entryFile` {string|undefined} 作为触发此事件的子进程入口点执行的测试文件路径。
+    仅在测试使用进程隔离运行时存在。如果测试定义在入口文件导入的模块中，可能与 `file` 不同。
   * `file` {string|undefined} 测试文件的路径，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `line` {number|undefined} 定义测试的行号，或者如果测试是通过 REPL 运行的，则为 `undefined`。
   * `message` {string} 诊断消息。
-  * `nesting` {number} 测试的嵌套级别。
+  * `nesting` {number} 测试的嵌套层级。
   * `level` {string} 诊断消息的严重级别。
     可能的值有：
     * `'info'`：信息性消息。
@@ -3250,50 +3281,47 @@ changes:
 ### 事件：`'test:enqueue'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `file` {string|undefined} 测试文件的路径，
-    如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，或者
-    如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 定义测试所在的列号；如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `entryFile` {string|undefined} 作为触发此事件的子进程入口点执行的测试文件路径。仅在测试以进程隔离方式运行时存在。若测试定义在由入口文件导入的模块中，则可能与 `file` 不同。
+  * `file` {string|undefined} 测试文件的路径；如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `line` {number|undefined} 定义测试所在的行号；如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
-  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
-    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
-    让自定义报告器能够跟踪谱系。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
-    按声明顺序排列。未标记测试为空。
-    参见 [Test tags][]。
-  * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
-    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
-  * `type` {string} 测试类型。可以是 `'suite'` 或 `'test'`。
+  * `nesting` {number} 测试的嵌套层级。
+  * `parentId` {number|undefined} 外层测试的 `testId`；顶层测试为 `undefined`。当同一嵌套层级的并发同级测试交错执行时，可帮助自定义报告器跟踪来源关系。
+  * `tags` {string\[]} 按声明顺序展开并转为小写后的标签，包含测试及其祖先套件上声明的标签。未标记的测试为空。另见 [Test tags][]。
+  * `testId` {number} 此测试实例的数值标识符，在该测试文件的进程内唯一。对同一测试实例的所有事件保持一致，便于自定义报告器可靠关联。
+  * `type` {string} 测试类型。为 `'suite'` 或 `'test'`。
 
 当测试入队等待执行时发出。
 
 ### 事件：`'test:fail'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 测试定义所在的列号，或者
+    如果测试是通过 REPL 运行的，则为 `undefined`。
   * `details` {Object} 额外的执行元数据。
-    * `duration_ms` {number} 测试持续时间，单位为毫秒。
+    * `duration_ms` {number} 测试持续的毫秒数。
     * `error` {Error} 对测试抛出的错误进行包装的错误。
       * `cause` {Error} 测试实际抛出的错误。
-    * `type` {string|undefined} 测试的类型，用于表示这是否为套件。
+    * `type` {string|undefined} 测试的类型，用于表示
+      这是否是一个测试套件。
     * `attempt` {number|undefined} 测试运行的尝试次数，
       仅在使用 [`--test-rerun-failures`][] 标志时存在。
+  * `entryFile` {string|undefined} 作为发出此事件的子进程入口点
+    执行的测试文件路径。
+    仅在测试使用进程隔离运行时存在。当测试定义在由入口文件导入的模块中时，它可能与 `file` 不同。
   * `file` {string|undefined} 测试文件的路径，
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `line` {number|undefined} 测试定义所在的行号，或者
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
-  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
-    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
-    让自定义报告器能够跟踪谱系。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
-    按声明顺序排列。未标记测试为空。
+  * `nesting` {number} 测试的嵌套层级。
+  * `parentId` {number|undefined} 包含该测试的 `testId`，或者
+    对于顶层测试为 `undefined`。当同一嵌套层级的并发同级测试交错执行时，允许自定义报告器跟踪其来源关系。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展开并转为小写的标签，按声明顺序排列。未打标签的测试为空。
     参见 [Test tags][]。
-  * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
-    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
+  * `testId` {number} 该测试实例的数字标识符，在测试文件的进程内唯一。
+    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地关联。
   * `testNumber` {number} 测试的序号。
   * `todo` {string|boolean|undefined} 当调用 [`context.todo`][] 时存在
   * `skip` {string|boolean|undefined} 当调用 [`context.skip`][] 时存在
@@ -3322,31 +3350,43 @@ added:
 
 当使用进程隔离（默认）时，测试名称将是文件路径，因为父运行器只知道文件级别的测试。当使用 `--test-isolation=none` 时，将显示实际的测试名称。
 
+### 事件：`'test:log'`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `data` {Object}
+  * `column` {number|undefined} 定义测试所在的列号；如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `data` {any} 传递给 [`context.log`][] 的结构化载荷；如果未提供，则为 `undefined`。测试运行器不会解释此值。
+  * `entryFile` {string|undefined} 作为触发此事件的子进程入口点执行的测试文件路径。仅在测试使用进程隔离运行时存在。如果测试定义在由入口文件导入的模块中，它可能与 `file` 不同。
+  * `file` {string|undefined} 测试文件的路径；如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `line` {number|undefined} 定义测试所在的行号；如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `message` {string} 日志消息。
+  * `name` {string} 测试名称。
+  * `nesting` {number} 测试的嵌套层级。
+  * `parentId` {number|undefined} 外层测试的 `testId`；顶层测试为 `undefined`。
+  * `testId` {number} 生成该日志消息的测试实例的数字标识符。
+
+当调用 [`context.log`][] 时触发。不同于 [`'test:diagnostic'`][], 此事件会立即按测试执行顺序触发，因此适合用于以无缓冲方式渲染测试输出的报告器。
+
 ### 事件：`'test:pass'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 定义测试所在的列号；如果测试是通过 REPL 运行的，则为 `undefined`。
   * `details` {Object} 额外的执行元数据。
-    * `duration_ms` {number} 测试持续时间，单位为毫秒。
-    * `type` {string|undefined} 测试的类型，用于表示这是否为套件。
-    * `attempt` {number|undefined} 测试运行的尝试次数，
-      仅在使用 [`--test-rerun-failures`][] 标志时存在。
-    * `passed_on_attempt` {number|undefined} 测试通过时所处的尝试次数，
-      仅在使用 [`--test-rerun-failures`][] 标志时存在。
-  * `file` {string|undefined} 测试文件的路径，
-    如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，或者
-    如果测试是通过 REPL 运行的，则为 `undefined`。
+    * `duration_ms` {number} 测试持续的毫秒数。
+    * `type` {string|undefined} 测试的类型，用于表示这是否为一个测试套件。
+    * `attempt` {number|undefined} 测试运行的尝试次数，仅在使用 [`--test-rerun-failures`][] 标志时存在。
+    * `passed_on_attempt` {number|undefined} 测试通过时所处的尝试次数，仅在使用 [`--test-rerun-failures`][] 标志时存在。
+  * `entryFile` {string|undefined} 作为触发此事件的子进程入口点而执行的测试文件路径。仅在测试通过进程隔离运行时存在。当测试定义在由入口文件导入的模块中时，它可能与 `file` 不同。
+  * `file` {string|undefined} 测试文件的路径；如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `line` {number|undefined} 定义测试所在的行号；如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
-  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
-    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
-    让自定义报告器能够跟踪谱系。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
-    按声明顺序排列。未标记测试为空。
-    参见 [Test tags][]。
-  * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
-    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
+  * `nesting` {number} 测试的嵌套层级。
+  * `parentId` {number|undefined} 包含该测试的父测试的 `testId`；对于顶层测试为 `undefined`。可让自定义报告器在同一嵌套层级的并发同级测试交错执行时跟踪其血缘关系。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平后的小写标签，按声明顺序排列。未加标签的测试为空。参见 [Test tags][]。
+  * `testId` {number} 此测试实例的数值标识符，在测试文件的进程内唯一。对于同一测试实例，在所有事件中保持一致，便于自定义报告器进行可靠关联。
   * `testNumber` {number} 测试的序号。
   * `todo` {string|boolean|undefined} 当调用 [`context.todo`][] 时存在
   * `skip` {string|boolean|undefined} 当调用 [`context.skip`][] 时存在
@@ -3358,9 +3398,15 @@ added:
 ### 事件：`'test:plan'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `file` {string|undefined} 测试文件的路径，如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 定义测试所在的列号，或者
+    如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `entryFile` {string|undefined} 作为发出此事件的子进程入口点执行的测试文件路径。
+    仅在测试以进程隔离方式运行时存在。当测试定义在由入口文件导入的模块中时，它可能与
+    `file` 不同。
+  * `file` {string|undefined} 测试文件的路径，
+    如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `line` {number|undefined} 定义测试所在的行号，或者
+    如果测试是通过 REPL 运行的，则为 `undefined`。
   * `nesting` {number} 测试的嵌套级别。
   * `count` {number} 已运行的子测试数量。
 
@@ -3370,29 +3416,32 @@ added:
 ### 事件：`'test:start'`
 
 * `data` {Object}
-  * `column` {number|undefined} 测试定义所在的列号，如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `column` {number|undefined} 定义测试的列号，或者
+    如果测试是通过 REPL 运行的，则为 `undefined`。
+  * `entryFile` {string|undefined} 作为触发此事件的子进程入口点而执行的测试文件路径。
+    仅在测试以进程隔离方式运行时存在。当测试定义在由入口文件导入的模块中时，它可能与 `file` 不同。
   * `file` {string|undefined} 测试文件的路径，
     如果测试是通过 REPL 运行的，则为 `undefined`。
-  * `line` {number|undefined} 测试定义所在的行号，或者
+  * `line` {number|undefined} 定义测试的行号，或者
     如果测试是通过 REPL 运行的，则为 `undefined`。
   * `name` {string} 测试名称。
-  * `nesting` {number} 测试的嵌套级别。
-  * `parentId` {number|undefined} 封闭测试的 `testId`，或者
-    对于顶层测试则为 `undefined`。当同一嵌套级别的并发兄弟测试交错执行时，
-    让自定义报告器能够跟踪谱系。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并小写化后的标签，
-    按声明顺序排列。未标记测试为空。
+  * `nesting` {number} 测试的嵌套层级。
+  * `parentId` {number|undefined} 包含该测试的父测试的 `testId`，或者
+    顶层测试为 `undefined`。即使同一嵌套层级的并发兄弟测试交错执行，也能帮助自定义报告器跟踪谱系。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并转为小写的标签，按声明顺序排列。未加标签的测试为空。
     参见 [Test tags][]。
   * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
-    对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地进行关联。
+    对同一测试实例的所有事件保持一致，使自定义报告器能够可靠关联。
 
-当测试开始报告自身及其子测试的状态时发出。
+当测试开始报告其自身及其子测试的状态时发出。
 此事件保证按测试定义的顺序发出。
 对应的执行顺序事件是 `'test:dequeue'`。
 
 ### 事件：`'test:stderr'`
 
 * `data` {Object}
+  * `entryFile` {string|undefined} 作为触发此事件的子进程入口点而执行的测试文件路径。
+    仅在测试以进程隔离方式运行时存在。
   * `file` {string} 测试文件的路径。
   * `message` {string} 写入 `stderr` 的消息。
 
@@ -3403,6 +3452,7 @@ added:
 ### 事件：`'test:stdout'`
 
 * `data` {Object}
+  * `entryFile` {string|undefined} 作为发出此事件的子进程入口点而执行的测试文件路径。仅在测试以进程隔离方式运行时存在。
   * `file` {string} 测试文件的路径。
   * `message` {string} 写入 `stdout` 的消息。
 
@@ -3568,12 +3618,12 @@ added:
   - v18.17.0
 -->
 
-* `fn` {Function|AsyncFunction} 钩子函数。此函数的第一个参数是 [`TestContext`][] 对象。如果钩子使用回调，则回调函数作为第二个参数传递。**默认值：** 一个空操作函数。
-* `options` {Object} 钩子的配置选项。支持以下属性：
-  * `signal` {AbortSignal} 允许中止进行中的钩子。
-  * `timeout` {number} 钩子将在多少毫秒后失败。如果未指定，子测试将从其父级继承此值。**默认值：** `Infinity`。
+* `fn` {Function|AsyncFunction} Hook function. The first argument to this function is the [`TestContext`][] object. If the hook uses a callback, the callback function is passed as the second argument. **Default:** A no-op function.
+* `options` {Object} Configuration options for the hook. The following properties are supported:
+  * `signal` {AbortSignal} Allows aborting an in-progress hook.
+  * `timeout` {number} The number of milliseconds after which the hook will fail. If not specified, child tests inherit this value from their parent. **Default:** `Infinity`.
 
-此函数用于创建一个钩子，在当前测试的子测试之前运行。
+This function is used to create a hook that runs before the current test's subtests.
 
 ### `context.beforeEach([fn][, options])`
 
@@ -3596,7 +3646,7 @@ test('顶级测试', async (t) => {
   await t.test(
     '这是一个子测试',
     (t) => {
-      // 此处进行相关的断言
+      // 在此处进行相关的断言
     },
   );
 });
@@ -3632,12 +3682,12 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} 钩子函数。此函数的第一个参数是 [`TestContext`][] 对象。如果钩子使用回调，则回调函数作为第二个参数传递。**默认值：** 一个空操作函数。
-* `options` {Object} 钩子的配置选项。支持以下属性：
-  * `signal` {AbortSignal} 允许中止进行中的钩子。
-  * `timeout` {number} 钩子将在多少毫秒后失败。如果未指定，子测试将从其父级继承此值。**默认值：** `Infinity`。
+* `fn` {Function|AsyncFunction} Hook function. The first argument to this function is the [`TestContext`][] object. If the hook uses a callback, the callback function is passed as the second argument. **Default:** A no-op function.
+* `options` {Object} Configuration options for the hook. The following properties are supported:
+  * `signal` {AbortSignal} Allows the in-progress hook to be aborted.
+  * `timeout` {number} The number of milliseconds before the hook fails. If unspecified, subtests inherit this value from their parent. **Default:** `Infinity`.
 
-此函数用于创建一个钩子，在当前测试的每个子测试之后运行。
+This function is used to create a hook that runs after each child test of the current test.
 
 ```js
 test('顶级测试', async (t) => {
@@ -3739,6 +3789,24 @@ test('顶级测试', (t) => {
 });
 ```
 
+### `context.log(message[, data])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `message` {string} 要报告的消息。
+* `data` {any} 可选的结构化负载，附加到消息上。测试运行器会原样传递它。在使用进程隔离运行测试时，该值必须与 [HTML structured clone algorithm][] 兼容。
+
+此函数用于向输出写入日志消息。与 [`context.diagnostic`][] 不同，生成的 [`'test:log'`][] 事件会立即发出，按照测试执行的顺序进行，而不是缓冲到测试报告结果时才发出。此函数不返回值。
+
+```js
+test('top level test', (t) => {
+  t.log('fetched user', { userId: 42 });
+  t.log('retrying flaky endpoint', { attempt: 3 });
+});
+```
+
 ### `context.filePath`
 
 <!-- YAML
@@ -3801,7 +3869,7 @@ added: v25.0.0
 
 * 类型：{number}
 
-测试的尝试次数。此值基于零，因此第一次尝试是 `0`，第二次尝试是 `1`，依此类推。此属性与 `--test-rerun-failures` 选项结合使用很有用，可确定测试当前正在运行哪次尝试。
+测试的尝试次数。此值基于零，因此第一次尝试是 `0`，第二次尝试是 `1`，依此类推。此属性与 `--test-rerun-failures` 选项结合使用很有用，可用于确定测试当前正在运行第几次尝试。
 
 ### `context.tags`
 
@@ -3813,7 +3881,7 @@ added: v26.2.0
 
 * 类型：{string\[]}
 
-测试扁平化后的小写标签数组，按声明顺序排列，包括从祖先套件继承的任何标签。若测试没有标签，则为空。参见 [Test tags][]。
+An array of lowercase tags after flattening, ordered by declaration order, including any tags inherited from ancestor suites. If the test has no tags, it is empty. See [Test tags][].
 
 ### `context.workerId`
 
@@ -3884,7 +3952,7 @@ test('顶级测试', (t) => {
 当使用异步代码时，`plan` 函数可用于确保运行正确数量的断言：
 
 ```js
-test('planning with streams', (t, done) => {
+test('使用流进行计划', (t, done) => {
   function* generate() {
     yield 'a';
     yield 'b';
@@ -3929,9 +3997,9 @@ added:
   - v16.17.0
 -->
 
-* `shouldRunOnlyTests` {boolean} 是否仅运行 `only` 测试。
+* `shouldRunOnlyTests` {boolean} Whether to run only `only` tests.
 
-如果 `shouldRunOnlyTests` 为真值，则测试上下文将仅运行设置了 `only` 选项的测试。否则，将运行所有测试。如果 Node.js 未使用 [`--test-only`][] 命令行选项启动，则此函数为空操作。
+If `shouldRunOnlyTests` is truthy, the test context will only run tests that are set with the `only` option. Otherwise, all tests will run. If Node.js was not started with the [`--test-only`][] command-line option, this function is a no-op.
 
 ```js
 test('顶级测试', (t) => {
@@ -4053,7 +4121,7 @@ test('顶级测试', async (t) => {
     '这是一个子测试',
     { only: false, skip: false, concurrency: 1, todo: false, plan: 1 },
     (t) => {
-      t.assert.ok('some relevant assertion here');
+      t.assert.ok('这里有一些相关的断言');
     },
   );
 });
@@ -4067,13 +4135,13 @@ added:
   - v22.14.0
 -->
 
-* `condition` {Function|AsyncFunction} 一个断言函数，会定期调用该函数，直到它成功完成或定义的轮询超时过去。成功完成定义为不抛出或不拒绝。此函数不接受任何参数，并且可以返回任意值。
-* `options` {Object} 轮询操作的可选配置对象。支持以下属性：
-  * `interval` {number} 在 `condition` 调用失败后、再次重试前等待的毫秒数。**默认值：** `50`。
-  * `timeout` {number} 轮询超时（毫秒）。如果在此时间过去之前 `condition` 仍未成功，则会发生错误。**默认值：** `1000`。
-* 返回值：{Promise} fulfilled 为 `condition` 返回的值。
+* `condition` {Function|AsyncFunction} A predicate function that will be invoked periodically until it completes successfully or the configured polling timeout elapses. Successful completion is defined as not throwing or rejecting. This function takes no arguments and may return any value.
+* `options` {Object} Optional configuration object for the polling operation. The following properties are supported:
+  * `interval` {number} The number of milliseconds to wait after a failed `condition` call before retrying. **Default:** `50`.
+  * `timeout` {number} The polling timeout, in milliseconds. If `condition` has not completed successfully before this time elapses, an error occurs. **Default:** `1000`.
+* Returns: {Promise} fulfilled with the value returned by `condition`.
 
-此方法会轮询 `condition` 函数，直到该函数成功返回或操作超时。
+This method polls the `condition` function until it completes successfully or the operation times out.
 
 ## 类：`SuiteContext`
 
@@ -4167,11 +4235,88 @@ test.describe('my suite', (suite) => {
 });
 ```
 
-我已收到这段文档锁引用内容。请告诉我你希望我对它做什么，例如：
+### `context.log(message[, data])`
 
-- 翻译
-- 解释/总结
-- 提取链接与标题
-- 检查引用是否缺失或断链
-- 生成目录或索引
-- 其他具体处理
+<!-- YAML
+added: REPLACEME
+-->
+
+* `message` {string} 要报告的消息。
+* `data` {any} 可选的结构化载荷，附加到消息上。测试运行器会原样传递它。
+
+向输出写入日志消息。生成的 [`'test:log'`][] 事件会立即发出，顺序与测试执行顺序一致。
+
+```js
+test.describe('my suite', (suite) => {
+  suite.log('套件日志消息');
+});
+```
+
+[HTML structured clone algorithm]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+[TAP]: https://testanything.org/
+[Test tags]: #test-tags
+[`'test:complete'`]: #event-testcomplete
+[`'test:coverage'`]: #event-testcoverage
+[`'test:dequeue'`]: #event-testdequeue
+[`'test:diagnostic'`]: #event-testdiagnostic
+[`'test:enqueue'`]: #event-testenqueue
+[`'test:fail'`]: #event-testfail
+[`'test:interrupted'`]: #event-testinterrupted
+[`'test:log'`]: #event-testlog
+[`'test:pass'`]: #event-testpass
+[`'test:plan'`]: #event-testplan
+[`'test:start'`]: #event-teststart
+[`'test:stderr'`]: #event-teststderr
+[`'test:stdout'`]: #event-teststdout
+[`'test:summary'`]: #event-testsummary
+[`'test:watch:drained'`]: #event-testwatchdrained
+[`'test:watch:restarted'`]: #event-testwatchrestarted
+[`--experimental-test-coverage`]: cli.md#--experimental-test-coverage
+[`--experimental-test-module-mocks`]: cli.md#--experimental-test-module-mocks
+[`--experimental-test-tag-filter`]: cli.md#--experimental-test-tag-filterexpr
+[`--import`]: cli.md#--importmodule
+[`--no-strip-types`]: cli.md#--no-strip-types
+[`--test-concurrency`]: cli.md#--test-concurrency
+[`--test-coverage-exclude`]: cli.md#--test-coverage-exclude
+[`--test-coverage-include`]: cli.md#--test-coverage-include
+[`--test-name-pattern`]: cli.md#--test-name-pattern
+[`--test-only`]: cli.md#--test-only
+[`--test-reporter-destination`]: cli.md#--test-reporter-destination
+[`--test-reporter`]: cli.md#--test-reporter
+[`--test-rerun-failures`]: cli.md#--test-rerun-failures
+[`--test-skip-pattern`]: cli.md#--test-skip-pattern
+[`--test-update-snapshots`]: cli.md#--test-update-snapshots
+[`--test`]: cli.md#--test
+[`MockFunctionContext`]: #class-mockfunctioncontext
+[`MockPropertyContext`]: #class-mockpropertycontext
+[`MockTimers`]: #class-mocktimers
+[`MockTracker.method`]: #mockmethodobject-methodname-implementation-options
+[`MockTracker`]: #class-mocktracker
+[`NODE_V8_COVERAGE`]: cli.md#node_v8_coveragedir
+[`SuiteContext`]: #class-suitecontext
+[`TestContext`]: #class-testcontext
+[`TracingChannel`]: diagnostics_channel.md#class-tracingchannel
+[`assert.throws`]: assert.md#assertthrowsfn-error-message
+[`context.diagnostic`]: #contextdiagnosticmessage
+[`context.log`]: #contextlogmessage-data
+[`context.skip`]: #contextskipmessage
+[`context.tags`]: #contexttags
+[`context.todo`]: #contexttodomessage
+[`describe()`]: #describename-options-fn
+[`diagnostics_channel`]: diagnostics_channel.md
+[`glob(7)`]: https://man7.org/linux/man-pages/man7/glob.7.html
+[`it()`]: #itname-options-fn
+[`run()`]: #runoptions
+[`suite()`]: #suitename-options-fn
+[`test()`]: #testname-options-fn
+[code coverage]: #collecting-code-coverage
+[configuration files]: cli.md#--experimental-config-filepath---experimental-config-file
+[describe options]: #describename-options-fn
+[it options]: #testname-options-fn
+[module customization hooks]: module.md#customization-hooks
+[running tests from the command line]: #running-tests-from-the-command-line
+[stream.compose]: stream.md#streamcomposestreams
+[subtests]: #subtests
+[suite options]: #suitename-options-fn
+[test reporters]: #test-reporters
+[test runner execution model]: #test-runner-execution-model

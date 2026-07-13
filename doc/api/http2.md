@@ -2367,11 +2367,15 @@ server.on('stream', (stream, headers, flags) => {
 
 <!-- YAML
 added: v8.4.0
+changes:
+  - version: v13.0.0
+    pr-url: https://github.com/nodejs/node/pull/27558
+    description: The default timeout changed from 120s to 0 (no timeout).
 -->
 
-当服务器在 `http2secureServer.setTimeout()` 设置的给定毫秒数内没有活动时，
-发出 `'timeout'` 事件。
-**默认值：** 2 分钟。
+The `'timeout'` event is emitted when there is no activity on the Server for
+a given number of milliseconds set using `http2secureServer.setTimeout()`.
+**Default:** 0 (no timeout)
 
 #### 事件：`'unknownProtocol'`
 
@@ -3811,7 +3815,11 @@ added: v8.4.0
 
 此方法将 HTTP 尾部头（消息末尾的头）添加到响应中。
 
-尝试设置包含无效字符的头字段名称或值将导致抛出 [`TypeError`][]。
+Trailers must be added before calling [`response.end()`][]; trailers added
+afterwards are silently dropped.
+
+Attempting to set a header field name or value that contains invalid characters
+will result in a [`TypeError`][] being thrown.
 
 #### `response.appendHeader(name, value)`
 

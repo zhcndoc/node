@@ -75,18 +75,18 @@ const vfs = require('node:vfs');
 // 默认内存提供者
 const memoryVfs = vfs.create();
 
-// Explicit provider
+// 显式提供者
 const realVfs = vfs.create(new vfs.RealFSProvider('/tmp/vfs-root'));
 ```
 
-## 类：`VirtualFileSystem`
+## Class: `VirtualFileSystem`
 
 <!-- YAML
 added: v26.4.0
 -->
 
-`VirtualFileSystem` 封装了一个 [`VirtualProvider`][] 并公开
-类似 `node:fs` 的 API。每个实例都维护自己的文件树。
+`VirtualFileSystem` wraps a [`VirtualProvider`][] and exposes a
+`node:fs`-like API. Each instance maintains its own file tree.
 
 ### `new VirtualFileSystem([provider][, options])`
 
@@ -94,11 +94,11 @@ added: v26.4.0
 added: v26.4.0
 -->
 
-* `provider` {VirtualProvider} 要使用的提供者。**默认值：**
-  `new MemoryProvider()`。
+* `provider` {VirtualProvider} The provider to use. **Default:**  
+  `new MemoryProvider()`.
 * `options` {Object}
-  * `emitExperimentalWarning` {boolean} 是否发出实验性
-    警告。**默认值：** `true`。
+  * `emitExperimentalWarning` {boolean} Whether to emit an experimental
+    warning. **Default:** `true`.
 
 ### `vfs.provider`
 
@@ -108,7 +108,7 @@ added: v26.4.0
 
 * {VirtualProvider}
 
-支持此 VFS 实例的提供者。
+The provider backing this VFS instance.
 
 ### `vfs.readonly`
 
@@ -118,13 +118,13 @@ added: v26.4.0
 
 * {boolean}
 
-当底层提供者为只读时为 `true`。
+`true` when the underlying provider is read-only.
 
 ### API
 
-`VirtualFileSystem` 实现了以下方法，其签名与对应的 [`node:fs`][] 方法一致：
+`VirtualFileSystem` implements the following methods, with signatures matching the corresponding [`node:fs`][] methods:
 
-#### 同步 API
+#### Synchronous API
 
 * `existsSync(path)`
 * `statSync(path[, options])`
@@ -153,21 +153,21 @@ added: v26.4.0
 * `mkdtempSync(prefix)`
 * `opendirSync(path[, options])`
 * `openAsBlob(path[, options])`
-* 文件描述符操作：`openSync`、`closeSync`、`readSync`、`writeSync`、
+* File descriptor operations: `openSync`, `closeSync`, `readSync`, `writeSync`,
   `fstatSync`
-* 流：`createReadStream`、`createWriteStream`
-* 监视器：`watch`、`watchFile`、`unwatchFile`
+* Streams: `createReadStream`, `createWriteStream`
+* Watchers: `watch`, `watchFile`, `unwatchFile`
 
-#### 回调 API
+#### Callback API
 
 `readFile`、`writeFile`、`stat`、`lstat`、`readdir`、`realpath`、`readlink`、
 `access`、`open`、`close`、`read`、`write`、`rm`、`fstat`、`truncate`、
-`ftruncate`、`link`、`mkdtemp`、`opendir`。每个方法都接受一个 Node.js 风格的
-回调 `(err, ...result) => {}`。
+`ftruncate`、`link`、`mkdtemp`、`opendir`。Each method accepts a Node.js-style
+callback `(err, ...result) => {}`.
 
 #### Promise API
 
-`vfs.promises` 提供基于 promise 的变体：
+`vfs.promises` provides promise-based variants:
 
 ```cjs
 const vfs = require('node:vfs');
@@ -181,11 +181,11 @@ async function example() {
 example();
 ```
 
-该 promise 命名空间与 `fs.promises` 对应，并包含 `readFile`、
-`writeFile`、`appendFile`、`stat`、`lstat`、`readdir`、`mkdir`、`rmdir`、
-`unlink`、`rename`、`copyFile`、`realpath`、`readlink`、`symlink`、
-`access`、`rm`、`truncate`、`link`、`mkdtemp`、`chmod`、`chown`、`lchown`、
-`utimes`、`lutimes`、`open`、`lchmod` 和 `watch`。
+This promise namespace corresponds to `fs.promises`, and includes `readFile`,
+`writeFile`, `appendFile`, `stat`, `lstat`, `readdir`, `mkdir`, `rmdir`,
+`unlink`, `rename`, `copyFile`, `realpath`, `readlink`, `symlink`,
+`access`, `rm`, `truncate`, `link`, `mkdtemp`, `chmod`, `chown`, `lchown`,
+`utimes`, `lutimes`, `open`, `lchmod`, and `watch`.
 
 ## 类：`VirtualProvider`
 
@@ -193,9 +193,7 @@ example();
 added: v26.4.0
 -->
 
-所有 VFS 提供者的基类。子类实现核心
-原语（如 `open`、`stat`、`readdir`、`mkdir`、`rmdir`、`unlink`、
-`rename` 等），并继承派生方法的默认实现（如 `readFile`、`writeFile`、`exists`、`copyFile`、`access` 等）。
+所有 VFS 提供者的基类。子类实现基本原语（例如 `open`、`stat`、`readdir`、`mkdir`、`rmdir`、`unlink`、`rename` 等），并继承派生方法（例如 `readFile`、`writeFile`、`exists`、`copyFile`、`access` 等）的默认实现。
 
 ### 能力标志
 
@@ -272,7 +270,7 @@ added: v26.4.0
 const vfs = require('node:vfs');
 
 const realVfs = vfs.create(new vfs.RealFSProvider('/tmp/vfs-root'));
-realVfs.writeFileSync('/file.txt', 'hello'); // writes /tmp/vfs-root/file.txt
+realVfs.writeFileSync('/file.txt', 'hello'); // 写入 /tmp/vfs-root/file.txt
 ```
 
 ### `realFSProvider.rootPath`
@@ -285,18 +283,17 @@ added: v26.4.0
 
 用作根目录的已解析绝对路径。
 
-## 实现细节
+## Implementation Details
 
-### `Stats` 对象
+### `Stats` Object
 
-VFS 的 `Stats` 对象是真正的 [`fs.Stats`][] 实例（如果请求 `{ bigint: true }`，则为
-[`fs.BigIntStats`][] 实例）。其字段使用合成但稳定的值：
+The VFS `Stats` object is a real [`fs.Stats`][] instance (or an [`fs.BigIntStats`][] instance if `{ bigint: true }` is requested). Its fields use synthesized but stable values:
 
-* `dev` 为 `4085`（VFS 设备 ID）。
-* `ino` 在进程内单调递增。
-* `blksize` 为 `4096`。
-* `blocks` 为 `Math.ceil(size / 512)`。
-* 时间默认设置为条目创建/最后修改的时刻。
+* `dev` is `4085` (the VFS device ID).
+* `ino` is monotonically increasing within the process.
+* `blksize` is `4096`.
+* `blocks` is `Math.ceil(size / 512)`.
+* Times are set by default to the moment the entry was created/last modified.
 
 [`MemoryProvider`]: #class-memoryprovider
 [`RealFSProvider`]: #class-realfsprovider

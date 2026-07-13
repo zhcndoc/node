@@ -74,7 +74,7 @@ added:
 -->
 
 `BlockList` 对象可与某些网络 API 一起使用，以指定规则
-禁用对特定 IP 地址、IP 范围或
+阻止对特定 IP 地址、IP 范围或
 IP 子网的入站或出站访问。
 
 ### `blockList.addAddress(address[, type])`
@@ -250,6 +250,10 @@ added:
 <!-- YAML
 added:
   - v15.14.0
+  - v14.18.0-->
+<!-- YAML
+added:
+  - v15.14.0
   - v14.18.0
 -->
 
@@ -296,6 +300,11 @@ added: v0.1.90
 * 继承：{EventEmitter}
 
 此类用于创建 TCP 或 [IPC][] 服务器。
+
+一个正在监听的 TCP `net.Server` 可以通过将其列入
+[`worker_threads`][] 的 `postMessage()` 调用中的 `transferList`，转移到工作线程。
+这会将底层监听套接字移到接收线程，在那里它会继续
+接受连接。参见 [将 TCP 句柄转移到其他线程][]。
 
 ### `new net.Server([options][, connectionListener])`
 
@@ -359,7 +368,7 @@ added:
 TCP 服务器，参数如下；否则参数为 `undefined`。
 
 * `data` {Object} 传递给事件监听器的参数。
-  * `localAddress` {string}  本地地址。
+  * `localAddress` {string} 本地地址。
   * `localPort` {number} 本地端口。
   * `localFamily` {string} 本地族。
   * `remoteAddress` {string} 远程地址。
@@ -389,11 +398,11 @@ changes:
 const server = net.createServer((socket) => {
   socket.end('goodbye\n');
 }).on('error', (err) => {
-  // Handle errors here.
+  // 在这里处理错误。
   throw err;
 });
 
-// Grab an arbitrary unused port.
+// 获取一个任意未使用的端口。
 server.listen(() => {
   console.log('opened server on', server.address());
 });
@@ -466,7 +475,7 @@ added: v0.9.7
 ```js
 server.on('error', (e) => {
   if (e.code === 'EADDRINUSE') {
-    console.error('Address in use, retrying...');
+    console.error('地址正在使用中，正在重试...');
     setTimeout(() => {
       server.close();
       server.listen(PORT, HOST);
@@ -579,7 +588,7 @@ server.listen({
   port: 80,
   signal: controller.signal,
 });
-// Later, when you want to close the server.
+// 稍后，当你想关闭服务器时。
 controller.abort();
 ```
 
@@ -687,19 +696,41 @@ added: v0.9.1
 活动服务器时退出。如果服务器已经 `unref`，再次调用
 `unref()` 将没有效果。
 
-## 类：`net.Socket`
+## Class: `net.Socket`
 
 <!-- YAML
 added: v0.3.4
 -->
 
-* 继承自：{stream.Duplex}
+* Extends: {stream.Duplex}
 
-此类是 TCP Socket 或流式 [IPC][] 端点（在 Windows 上使用命名管道，在其他系统上使用 Unix 域套接字）的抽象。它也是一个 [`EventEmitter`][]。
+This class is an abstraction of a TCP socket or a streaming [IPC][] endpoint (using named pipes on Windows, and Unix domain sockets on other systems). It is also an [`EventEmitter`][].
 
-`net.Socket` 可以由用户创建并直接用于与服务器交互。例如，它由 [`net.createConnection()`][] 返回，因此用户可以使用它与服务器通信。
+`net.Socket` can be created by users and used directly to interact with a server. For example, it is returned by [`net.createConnection()`][], so users can use it to communicate with a server.
 
-它也可以由 Node.js 创建并在收到连接时传递给用户。例如，它被传递给 [`net.Server`][] 上发出的 [`'connection'`][] 事件的监听器，因此用户可以使用它与客户端交互。
+It can also be created by Node.js and passed to users upon receiving a connection. For example, it is passed to listeners of the [`'connection'`][] event emitted on [`net.Server`][] so users can use it to interact with clients.
+
+### 将 TCP 句柄传递到其他线程
+
+一个已连接的 TCP `net.Socket` 可以通过将其列入 [`worker_threads`][] 的 `postMessage()` 调用的 `transferList` 中，移动到另一个线程。传输后，源 socket 会在发送线程上被销毁（后续使用会失败并返回 `ERR_STREAM_DESTROYED`，而不是静默丢弃数据），并且该 socket 会继续在接收线程上工作。这使得可以在一个线程上接受连接，然后将它们分发到一个 worker 线程池中，例如在 worker 线程之上构建类似 `node:cluster` 的模型。
+
+该 socket 必须是一个新近接受或创建的 TCP 连接：它仍然必须绑定到一个存活的句柄，不能处于连接中或已销毁状态，也不能已经开始读取或缓存任何数据。否则 `postMessage()` 会抛出 `ERR_WORKER_HANDLE_NOT_TRANSFERABLE`。仅支持 TCP socket，并且仅限于类 Unix 平台；在 Windows 上，`postMessage()` 会抛出 `ERR_WORKER_HANDLE_TRANSFER_UNSUPPORTED`。
+
+```cjs
+const net = require('node:net');
+const { Worker } = require('node:worker_threads');
+
+// worker.js 接收 `{ socket }` 消息并处理每个连接。
+const worker = new Worker('./worker.js');
+
+const server = net.createServer((socket) => {
+  // 将新接受的连接交给 worker 线程。
+  worker.postMessage({ socket }, [socket]);
+});
+server.listen(8000);
+```
+
+监听中的 [`net.Server`][] 也可以用相同的方式传递，这会将监听 socket 本身（以及其待处理的 accept 队列）移动到接收线程。
 
 ### `new net.Socket([options])`
 
@@ -759,7 +790,7 @@ added: v0.1.90
 -->
 
 在 Socket 连接成功建立时发出。
-详见 [`net.createConnection()`][]。
+详见 [`net.createConnection()`][].
 
 ### 事件：`'connectionAttempt'`
 
@@ -883,7 +914,7 @@ added: v0.1.90
 
 如果 Socket 因不活动而超时时发出。这仅用于通知 Socket 处于空闲状态。用户必须手动关闭连接。
 
-另见：[`socket.setTimeout()`][]。
+另见：[`socket.setTimeout()`][]】【。
 
 ### `socket.address()`
 
@@ -929,9 +960,9 @@ deprecated:
 
 * 类型：{integer}
 
-此属性显示缓冲用于写入的字符数。缓冲区可能包含编码后长度未知的字符串。因此这个数字只是缓冲区中字节数的近似值。
+此属性显示用于写入的缓冲字符数。缓冲区可能包含编码后长度未知的字符串。因此，这个数字只是缓冲区中字节数的近似值。
 
-`net.Socket` 具有 `socket.write()` 始终有效的属性。这是为了帮助用户快速上手。计算机无法总是跟上写入 Socket 的数据量。网络连接可能只是 太慢。Node.js 将在内部队列化写入 Socket 的数据，并在可能时通过线路发送出去。
+`net.Socket` 具有 `socket.write()` 始终有效的属性。这是为了帮助用户快速上手。计算机无法总是跟上写入 Socket 的数据量。网络连接可能只是太慢。Node.js 将在内部队列化写入 Socket 的数据，并在可能时通过线路发送出去。
 
 此内部缓冲的后果是内存可能会增长。遇到大型或不断增长的 `bufferSize` 的用户应尝试使用 [`socket.pause()`][] 和 [`socket.resume()`][] 在其程序中“限制”数据流。
 
@@ -941,7 +972,7 @@ deprecated:
 added: v0.5.3
 -->
 
-* 类型：{integer}
+* 类型：{整数}
 
 接收的字节数。
 
@@ -995,7 +1026,7 @@ changes:
     - v17.7.0
     - v16.15.0
     pr-url: https://github.com/nodejs/node/pull/41310
-    description: "现在支持 `noDelay`、`keepAlive` 和 `keepAliveInitialDelay`选项。"
+    description: "现在支持 `noDelay`、`keepAlive` 和 `keepAliveInitialDelay` 选项。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/6021
     description: "现在所有情况下 `hints` 选项的默认值均为 `0`。以前，在没有 `family` 选项的情况下，它默认为 `dns.ADDRCONFIG | dns.V4MAPPED`。"
@@ -1196,7 +1227,7 @@ added: v0.11.14
 
 * 类型：{string}
 
-远程 IP 族的字符串表示。`'IPv4'` 或 `'IPv6'`。如果 Socket 已销毁（例如，如果客户端断开连接），值可能为 `undefined`。
+远程 IP 家族的字符串表示。`'IPv4'` 或 `'IPv6'`。如果 Socket 已销毁（例如，如果客户端断开连接），值可能为 `undefined`。
 
 ### `socket.remotePort`
 
@@ -1308,7 +1339,7 @@ changes:
 * 返回：{net.Socket} Socket 本身。
 
 使用位置参数配置保持活动。有关每个参数的说明，请参见
-[`socket.setKeepAlive()`][]。
+[`socket.setKeepAlive()`][].
 
 ### `socket.setNoDelay([noDelay])`
 
@@ -1382,15 +1413,15 @@ added:
  - v24.15.0
 -->
 
-* `tos` {integer} 要设置的 TOS 值 (0-255)。
-* 返回：{net.Socket} Socket 本身。
+* `tos` {integer} The TOS value to set (0-255).
+* Returns: {net.Socket} The Socket itself.
 
-设置从此 Socket 发送的 IPv4 数据包的服务类型 (TOS) 字段或 IPv6 数据包的流量类别。这可用于优先处理网络流量。
+Sets the Type of Service (TOS) field for IPv4 packets or the traffic class for IPv6 packets sent from this Socket. This can be used to prioritize network traffic.
 
-`setTypeOfService()` 可以在 Socket 连接之前调用；值将被缓存并在 Socket 建立连接时应用。
-`getTypeOfService()` 甚至在连接之前也会返回当前设置的值。
+`setTypeOfService()` can be called before the Socket is connected; the value will be cached and applied when the Socket establishes a connection.
+`getTypeOfService()` returns the current setting even before connection.
 
-在某些平台（例如，Linux）上，某些 TOS/ECN 位可能被屏蔽或忽略，并且行为在 IPv4 和 IPv6 或双栈 Socket 之间可能不同。调用者应验证特定于平台的语义。
+On some platforms, such as Linux, certain TOS/ECN bits may be masked or ignored, and behavior may differ between IPv4 and IPv6 or dual-stack sockets. Callers should verify platform-specific semantics.
 
 ### `socket.timeout`
 
@@ -1462,10 +1493,10 @@ import net from 'node:net';
 
 const bound = new net.BoundSocket();
 const { port } = bound.address();
-console.log(`Reserved port ${port} for server`);
+console.log(`为服务器预留端口 ${port}`);
 
 const server = net.createServer();
-server.listen(bound); // Adopt as a server, or pass to new net.Socket() instead.
+server.listen(bound); // 作为服务器接管，或者改为传给 new net.Socket()。
 ```
 
 ### `new net.BoundSocket([options])`
@@ -1518,7 +1549,7 @@ added: v26.4.0
 
 释放已绑定的套接字。仅在句柄从未被接管时需要。
 
-### `boundSocket[Symbol.dispose]()`
+### `boundSocket[Symbol.dispose]()``
 
 <!-- YAML
 added: v26.4.0
@@ -1543,8 +1574,8 @@ added: v26.4.0
 added: v0.7.0
 -->
 
-* `options` {Object}
-* `connectListener` {Function}
+* `options` {对象}
+* `connectListener` {函数}
 * 返回：{net.Socket}
 
 别名于
@@ -1556,8 +1587,8 @@ added: v0.7.0
 added: v0.1.90
 -->
 
-* `path` {string}
-* `connectListener` {Function}
+* `path` {字符串}
+* `connectListener` {函数}
 * 返回：{net.Socket}
 
 别名于
@@ -1569,13 +1600,13 @@ added: v0.1.90
 added: v0.1.90
 -->
 
-* `port` {number}
-* `host` {string}
-* `connectListener` {Function}
+* `port` {数字}
+* `host` {字符串}
+* `connectListener` {函数}
 * 返回：{net.Socket}
 
 别名于
-[`net.createConnection(port[, host][, connectListener])`][`net.createConnection(port, host)`]。
+[`net.createConnection(port[, host][, connectListener])`][`net.createConnection(port, host)`]】【。
 
 ## `net.createConnection()`
 
@@ -1627,7 +1658,7 @@ added: v0.1.90
 import net from 'node:net';
 const client = net.createConnection({ port: 8124 }, () => {
   // `'connect'` 监听器。
-  console.log('connected to server!');
+  console.log('已连接到服务器！');
   client.write('world!\r\n');
 });
 client.on('data', (data) => {
@@ -1635,7 +1666,7 @@ client.on('data', (data) => {
   client.end();
 });
 client.on('end', () => {
-  console.log('disconnected from server');
+  console.log('已与服务器断开连接');
 });
 ```
 
@@ -1643,7 +1674,7 @@ client.on('end', () => {
 const net = require('node:net');
 const client = net.createConnection({ port: 8124 }, () => {
   // `'connect'` 监听器。
-  console.log('connected to server!');
+  console.log('已连接到服务器！');
   client.write('world!\r\n');
 });
 client.on('data', (data) => {
@@ -1651,7 +1682,7 @@ client.on('data', (data) => {
   client.end();
 });
 client.on('end', () => {
-  console.log('disconnected from server');
+  console.log('已与服务器断开连接');
 });
 ```
 
@@ -1958,7 +1989,8 @@ net.isIPv6('fhqwhgads'); // 返回 false
 [IPC]: #ipc-support
 [识别 IPC 连接的路径]: #identifying-paths-for-ipc-connections
 [RFC 8305]: https://www.rfc-editor.org/rfc/rfc8305.txt
-[可读流]: stream.md#class-streamreadable
+[Readable Stream]: stream.md#class-streamreadable
+[Transferring TCP handles to other threads]: #transferring-tcp-handles-to-other-threads
 [`'close'`]: #event-close
 [`'connect'`]: #event-connect
 [`'connection'`]: #event-connection
@@ -2015,6 +2047,7 @@ net.isIPv6('fhqwhgads'); // 返回 false
 [`socket.setTimeout()`]: #socketsettimeouttimeout-callback
 [`socket.setTimeout(timeout)`]: #socketsettimeouttimeout-callback
 [`stream.getDefaultHighWaterMark()`]: stream.md#streamgetdefaulthighwatermarkobjectmode
+[`worker_threads`]: worker_threads.md
 [`writable.destroy()`]: stream.md#writabledestroyerror
 [`writable.destroyed`]: stream.md#writabledestroyed
 [`writable.end()`]: stream.md#writableendchunk-encoding-callback

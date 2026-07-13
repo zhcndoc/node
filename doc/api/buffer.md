@@ -189,7 +189,7 @@ Buffer.from('1634', 'hex');
 changes:
   - version: v3.0.0
     pr-url: https://github.com/nodejs/node/pull/2002
-    description: "The `Buffer` class now inherits from `Uint8Array`."
+    description: "Buffer 类现在继承自 `Uint8Array`。"
 -->
 
 `Buffer` 实例也是 JavaScript {Uint8Array} 和 {TypedArray} 实例。所有 {TypedArray} 方法和属性在 `Buffer` 上都可用。但是，`Buffer` API 和 {TypedArray} API 之间存在细微的不兼容性。
@@ -212,7 +212,7 @@ const uint32array = new Uint32Array(buf);
 
 console.log(uint32array);
 
-// 打印：Uint32Array(4) [ 1, 2, 3, 4 ]
+// 输出：Uint32Array(4) [ 1, 2, 3, 4 ]
 ```
 
 ```cjs
@@ -223,7 +223,7 @@ const uint32array = new Uint32Array(buf);
 
 console.log(uint32array);
 
-// 打印：Uint32Array(4) [ 1, 2, 3, 4 ]
+// 输出：Uint32Array(4) [ 1, 2, 3, 4 ]
 ```
 
 * 传递 `Buffer` 底层的 {ArrayBuffer} 将创建一个与 `Buffer` 共享内存的 {TypedArray}。
@@ -239,7 +239,7 @@ const uint16array = new Uint16Array(
 
 console.log(uint16array);
 
-// 打印：Uint16Array(5) [ 104, 101, 108, 108, 111 ]
+// 输出：Uint16Array(5) [ 104, 101, 108, 108, 111 ]
 ```
 
 ```cjs
@@ -253,7 +253,7 @@ const uint16array = new Uint16Array(
 
 console.log(uint16array);
 
-// 打印：Uint16Array(5) [ 104, 101, 108, 108, 111 ]
+// 输出：Uint16Array(5) [ 104, 101, 108, 108, 111 ]
 ```
 
 可以通过相同方式使用 `TypedArray` 对象的 `.buffer` 属性创建一个与 {TypedArray} 实例共享相同分配内存的新 `Buffer`。[`Buffer.from()`][`Buffer.from(arrayBuf)`] 在此上下文中行为类似于 `new Uint8Array()`。
@@ -273,16 +273,16 @@ const buf1 = Buffer.from(arr);
 const buf2 = Buffer.from(arr.buffer);
 
 console.log(buf1);
-// 打印：<Buffer 88 a0>
+// 输出：<Buffer 88 a0>
 console.log(buf2);
-// 打印：<Buffer 88 13 a0 0f>
+// 输出：<Buffer 88 13 a0 0f>
 
 arr[1] = 6000;
 
 console.log(buf1);
-// 打印：<Buffer 88 a0>
+// 输出：<Buffer 88 a0>
 console.log(buf2);
-// 打印：<Buffer 88 13 70 17>
+// 输出：<Buffer 88 13 70 17>
 ```
 
 ```cjs
@@ -300,16 +300,16 @@ const buf1 = Buffer.from(arr);
 const buf2 = Buffer.from(arr.buffer);
 
 console.log(buf1);
-// 打印：<Buffer 88 a0>
+// 输出：<Buffer 88 a0>
 console.log(buf2);
-// 打印：<Buffer 88 13 a0 0f>
+// 输出：<Buffer 88 13 a0 0f>
 
 arr[1] = 6000;
 
 console.log(buf1);
-// 打印：<Buffer 88 a0>
+// 输出：<Buffer 88 a0>
 console.log(buf2);
-// 打印：<Buffer 88 13 70 17>
+// 输出：<Buffer 88 13 70 17>
 ```
 
 使用 {TypedArray} 的 `.buffer` 创建 `Buffer` 时，可以通过传入 `byteOffset` 和 `length` 参数只使用底层 {ArrayBuffer} 的一部分。
@@ -321,7 +321,7 @@ const arr = new Uint16Array(20);
 const buf = Buffer.from(arr.buffer, 0, 16);
 
 console.log(buf.length);
-// 打印：16
+// 输出：16
 ```
 
 ```cjs
@@ -331,7 +331,7 @@ const arr = new Uint16Array(20);
 const buf = Buffer.from(arr.buffer, 0, 16);
 
 console.log(buf.length);
-// 打印：16
+// 输出：16
 ```
 
 `Buffer.from()` 和 [`TypedArray.from()`][] 具有不同的签名和实现。具体来说，{TypedArray} 变体接受第二个参数，这是一个映射函数，在类型化数组的每个元素上调用：
@@ -360,7 +360,7 @@ write.call(uint8array, 'hello', 0, 5, 'utf8'); // 5
 toString.call(uint8array, 'utf8'); // 'hello'
 ```
 
-## 缓冲区和迭代
+## Buffer 和迭代
 
 `Buffer` 实例可以使用 `for..of` 语法进行迭代：
 
@@ -522,14 +522,12 @@ UTF-8 字符串的 `Blob` 内容。
 ### 流文本
 
 <!-- YAML
-added: REPLACEME
+added: v26.5.0
 -->
 
-* Returns: {ReadableStream}
+* 返回：{ReadableStream}
 
-Returns a new `ReadableStream` that allows the content of the `Blob` to be read
-as a stream of UTF-8 decoded strings. It is equivalent to piping
-[`blob.stream()`][] through a [`TextDecoderStream`][] set up with UTF-8.
+返回一个新的 `ReadableStream`，允许将 `Blob` 的内容作为 UTF-8 解码字符串的流来读取。它等同于通过一个设置为 UTF-8 的 [`TextDecoderStream`][] 对 [`blob.stream()`][] 进行管道传输。
 
 ### 类型
 
@@ -1100,7 +1098,7 @@ added: v5.10.0
   **默认值：** `arrayBuffer.byteLength - byteOffset`。
 * 返回：{Buffer}
 
-这创建了 {ArrayBuffer} 的视图而不复制底层
+这会创建 {ArrayBuffer} 的视图，而不会复制底层
 内存。例如，当传递 {TypedArray} 实例的 `.buffer` 属性的引用时，新创建的 `Buffer` 将与 {TypedArray} 的底层 `ArrayBuffer` 共享相同的
 分配内存。
 
@@ -1391,7 +1389,7 @@ added: v0.9.1
 * `encoding` {string} 要检查的字符编码名称。
 * 返回：{boolean}
 
-如果 `encoding` 是支持的字符编码名称则返回 `true`，
+如果 `encoding` 是受支持的字符编码名称，则返回 `true`，
 否则返回 `false`。
 
 ```mjs
@@ -1459,8 +1457,8 @@ changes:
 import { Buffer } from 'node:buffer';
 
 // 一次一个字节地将 ASCII 字符串复制到 `Buffer` 中。
-// (这仅适用于仅 ASCII 的字符串。通常，应该使用
-// `Buffer.from()` 来执行此转换。)
+// （这仅适用于仅 ASCII 的字符串。通常，应该使用
+// `Buffer.from()` 来执行此转换。）
 
 const str = 'Node.js';
 const buf = Buffer.allocUnsafe(str.length);
@@ -1477,8 +1475,8 @@ console.log(buf.toString('utf8'));
 const { Buffer } = require('node:buffer');
 
 // 一次一个字节地将 ASCII 字符串复制到 `Buffer` 中。
-// (这仅适用于仅 ASCII 的字符串。通常，应该使用
-// `Buffer.from()` 来执行此转换。)
+// （这仅适用于仅 ASCII 的字符串。通常，应该使用
+// `Buffer.from()` 来执行此转换。）
 
 const str = 'Node.js';
 const buf = Buffer.allocUnsafe(str.length);
@@ -1667,7 +1665,7 @@ console.log(buf1.compare(buf2, 5, 6, 5));
 
 如果 `targetStart < 0`、`sourceStart < 0`、
 `targetEnd > target.byteLength` 或 `sourceEnd > source.byteLength`，
-将抛出 [`ERR_OUT_OF_RANGE`][]。
+将抛出 [`ERR_OUT_OF_RANGE`][].
 
 ### `buf.copy(target[, targetStart[, sourceStart[, sourceEnd]]])`
 
@@ -1894,7 +1892,7 @@ changes:
   **默认值：** `'utf8'`。
 * 返回：{Buffer} 对 `buf` 的引用。
 
-用指定的 `value` 填充 `buf`。如果未给定 `offset` 和 `end`，
+使用指定的 `value` 填充 `buf`。如果未提供 `offset` 和 `end`，
 整个 `buf` 将被填充：
 
 ```mjs
@@ -1932,11 +1930,11 @@ console.log(c.fill(''));
 ```
 
 如果 `value` 不是字符串、`Buffer` 或
-整数，则被强制转换为 `uint32` 值。如果结果整数大于 `255`（十进制），`buf` 将
-用 `value & 255` 填充。
+整数，则会被强制转换为 `uint32` 值。如果结果整数大于 `255`（十进制），`buf` 将
+使用 `value & 255` 进行填充。
 
 如果 `fill()` 操作的最后一次写入落在多字节字符上，
-则只有该字符适合 `buf` 的字节被写入：
+则只会写入该字符中适合 `buf` 的字节：
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -1956,8 +1954,8 @@ console.log(Buffer.allocUnsafe(5).fill('\u0222'));
 // 输出：<Buffer c8 a2 c8 a2 c8>
 ```
 
-如果 `value` 包含无效字符，它将被截断；如果没有有效的
-填充数据剩余，将抛出异常：
+如果 `value` 包含无效字符，它将被截断；如果没有剩余的有效
+填充数据，将抛出异常：
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -2060,7 +2058,7 @@ added: v1.5.0
 changes:
   - version: v26.1.0
     pr-url: https://github.com/nodejs/node/pull/62390
-    description: 增加了 `end` 参数。
+    description: 添加了 `end` 参数。
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/10236
     description: "`value` 现在可以是 `Uint8Array`。"
@@ -2087,7 +2085,7 @@ changes:
 * 字符串，`value` 根据 `encoding` 中的字符编码进行解释。
 * `Buffer` 或 {Uint8Array}，`value` 将整体使用。
   要比较部分 `Buffer`，使用 [`buf.subarray`][]。
-*数字，`value` 将被解释为 `0` 和 `255` 之间的无符号 8 位整数
+* 数字，`value` 将被解释为 `0` 和 `255` 之间的无符号 8 位整数
   值。
 
 ```mjs
@@ -2196,7 +2194,7 @@ added: v1.1.0
 
 * 返回值：{Iterator}
 
-创建并返回一个 [iterator][]，包含 `buf` 的键（索引）。
+创建并返回一个 [iterator][]，其中包含 `buf` 的键（索引）。
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -2456,15 +2454,15 @@ changes:
     - v14.10.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34960
-    description: 此函数也可作为 buf.readBigUint64BE() 使用。
+    description: This function is also available as buf.readBigUint64BE().
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足：`0 <= offset <= buf.length - 8`。**默认值：** `0`。
-* 返回值：{bigint}
+* `offset` {integer} Bytes to skip before starting to read. Must satisfy: `0 <= offset <= buf.length - 8`. **Default:** `0`.
+* Return value: {bigint}
 
-从 `buf` 中指定的 `offset` 处读取一个无符号的大端 64 位整数。
+Reads an unsigned big-endian 64-bit integer from `buf` at the specified `offset`.
 
-此函数也可通过 `readBigUint64BE` 别名使用。
+This function can also be accessed using the `readBigUint64BE` alias.
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -2472,7 +2470,7 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff]);
 
 console.log(buf.readBigUInt64BE(0));
-// 打印：4294967295n
+// Prints: 4294967295n
 ```
 
 ```cjs
@@ -2481,7 +2479,7 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff]);
 
 console.log(buf.readBigUInt64BE(0));
-// 打印：4294967295n
+// Prints: 4294967295n
 ```
 
 ### `buf.readBigUInt64LE([offset])`
@@ -2530,13 +2528,13 @@ added: v0.11.15
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: 移除了 noAssert，并且不再将 offset 隐式强制转换为 uint32。
+    description: Removed noAssert, and no longer coerces offset to uint32 implicitly.
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 8`。**默认值：** `0`。
-* 返回值：{number}
+* `offset` {integer} The number of bytes to skip before starting to read. Must satisfy `0 <= offset <= buf.length - 8`. **Default:** `0`.
+* Returns: {number}
 
-从 `buf` 中指定的 `offset` 处读取一个 64 位大端 double 值。
+Reads a 64-bit, big-endian double value from `buf` at the specified `offset`.
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -2544,7 +2542,7 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]);
 
 console.log(buf.readDoubleBE(0));
-// 打印：8.20788039913184e-304
+// Prints: 8.20788039913184e-304
 ```
 
 ```cjs
@@ -2553,7 +2551,7 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]);
 
 console.log(buf.readDoubleBE(0));
-// 打印：8.20788039913184e-304
+// Prints: 8.20788039913184e-304
 ```
 
 ### `buf.readDoubleLE([offset])`
@@ -2577,7 +2575,7 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]);
 
 console.log(buf.readDoubleLE(0));
-// 打印：5.447603722011605e-270
+// 输出：5.447603722011605e-270
 console.log(buf.readDoubleLE(1));
 // 抛出 ERR_OUT_OF_RANGE。
 ```
@@ -2588,7 +2586,7 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8]);
 
 console.log(buf.readDoubleLE(0));
-// 打印：5.447603722011605e-270
+// 输出：5.447603722011605e-270
 console.log(buf.readDoubleLE(1));
 // 抛出 ERR_OUT_OF_RANGE。
 ```
@@ -2633,13 +2631,13 @@ added: v0.11.15
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: 移除了 noAssert，并且不再将 offset 隐式强制转换为 uint32。
+    description: Removed noAssert, and no longer implicitly coerces offset to uint32.
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 4`。**默认值：** `0`。
-* 返回值：{number}
+* `offset` {integer} The number of bytes to skip before starting to read. Must satisfy `0 <= offset <= buf.length - 4`. **Default:** `0`.
+* Returns: {number}
 
-从 `buf` 中指定的 `offset` 处读取一个 32 位小端 float 值。
+Reads a 32-bit, little-endian float value from `buf` at the specified `offset`.
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -2647,9 +2645,9 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([1, 2, 3, 4]);
 
 console.log(buf.readFloatLE(0));
-// 打印：1.539989614439558e-36
+// Prints: 1.539989614439558e-36
 console.log(buf.readFloatLE(1));
-// 抛出 ERR_OUT_OF_RANGE。
+// Throws ERR_OUT_OF_RANGE.
 ```
 
 ```cjs
@@ -2658,9 +2656,9 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([1, 2, 3, 4]);
 
 console.log(buf.readFloatLE(0));
-// 打印：1.539989614439558e-36
+// Prints: 1.539989614439558e-36
 console.log(buf.readFloatLE(1));
-// 抛出 ERR_OUT_OF_RANGE。
+// Throws ERR_OUT_OF_RANGE.
 ```
 
 ### `buf.readInt8([offset])`
@@ -2713,15 +2711,15 @@ added: v0.5.5
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: 移除了 noAssert，并且不再将 offset 隐式强制转换为 uint32。
+    description: Removed noAssert, and no implicit coercion of the offset to uint32 anymore.
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 2`。**默认值：** `0`。
-* 返回值：{integer}
+* `offset` {integer} The number of bytes to skip before starting to read. Must satisfy `0 <= offset <= buf.length - 2`. **Default:** `0`.
+* Returns: {integer}
 
-从 `buf` 中指定的 `offset` 处读取一个有符号的大端 16 位整数。
+Reads a signed, big-endian 16-bit integer from `buf` at the specified `offset`.
 
-从 `Buffer` 读取的整数被解释为二进制补码有符号值。
+Integers read from a `Buffer` are interpreted as two's complement signed values.
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -2729,7 +2727,7 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([0, 5]);
 
 console.log(buf.readInt16BE(0));
-// 打印：5
+// Prints: 5
 ```
 
 ```cjs
@@ -2738,7 +2736,7 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([0, 5]);
 
 console.log(buf.readInt16BE(0));
-// 打印：5
+// Prints: 5
 ```
 
 ### `buf.readInt16LE([offset])`
@@ -2787,15 +2785,15 @@ added: v0.5.5
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: 移除了 noAssert，并且不再将 offset 隐式强制转换为 uint32。
+    description: Removed noAssert and no longer coerces offset to uint32 implicitly.
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 4`。**默认值：** `0`。
-* 返回值：{integer}
+* `offset` {integer} The number of bytes to skip before starting to read. Must satisfy `0 <= offset <= buf.length - 4`. **Default:** `0`.
+* Returns: {integer}
 
-从 `buf` 中指定的 `offset` 处读取一个有符号的大端 32 位整数。
+Reads a signed, big-endian 32-bit integer from `buf` at the specified `offset`.
 
-从 `Buffer` 读取的整数被解释为二进制补码有符号值。
+Integers read from a `Buffer` are interpreted as two's complement signed values.
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -2803,7 +2801,7 @@ import { Buffer } from 'node:buffer';
 const buf = Buffer.from([0, 0, 0, 5]);
 
 console.log(buf.readInt32BE(0));
-// 打印：5
+// Prints: 5
 ```
 
 ```cjs
@@ -2812,7 +2810,7 @@ const { Buffer } = require('node:buffer');
 const buf = Buffer.from([0, 0, 0, 5]);
 
 console.log(buf.readInt32BE(0));
-// 打印：5
+// Prints: 5
 ```
 
 ### `buf.readInt32LE([offset])`
@@ -3272,7 +3270,7 @@ added: v3.0.0
 * `end` {integer} 新 `Buffer` 的结束位置（不包含）。**默认值：** [`buf.length`][]。
 * 返回值：{Buffer}
 
-返回一个新的 `Buffer`，它引用与原始对象相同的内存，但由 `start` 和 `end` 索引进行偏移和裁剪。
+返回一个新的 `Buffer`，它引用与原始对象相同的内存，但根据 `start` 和 `end` 索引进行偏移和裁剪。
 
 指定大于 [`buf.length`][] 的 `end` 将返回与 `end` 等于 [`buf.length`][] 相同的结果。
 
@@ -3283,7 +3281,7 @@ added: v3.0.0
 ```mjs
 import { Buffer } from 'node:buffer';
 
-// 创建一个包含 ASCII 字母表的 Buffer，取一个切片，并修改原始 Buffer 中的一个字节。
+// 创建一个包含 ASCII 字母表的 Buffer，获取一个切片，并修改原始 Buffer 中的一个字节。
 
 const buf1 = Buffer.allocUnsafe(26);
 
@@ -3306,7 +3304,7 @@ console.log(buf2.toString('ascii', 0, buf2.length));
 ```cjs
 const { Buffer } = require('node:buffer');
 
-// 创建一个包含 ASCII 字母表的 Buffer，取一个切片，并修改原始 Buffer 中的一个字节。
+// 创建一个包含 ASCII 字母表的 Buffer，获取一个切片，并修改原始 Buffer 中的一个字节。
 
 const buf1 = Buffer.allocUnsafe(26);
 
@@ -3930,16 +3928,16 @@ changes:
     - v14.10.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34960
-    description: 此函数也可作为 buf.writeBigUint64BE() 使用。
+    description: This function is also available as buf.writeBigUint64BE().
 -->
 
-* `value` {bigint} 要写入 `buf` 的数字。
-* `offset` {integer} 开始写入前要跳过的字节数。必须满足：`0 <= offset <= buf.length - 8`。**默认值：** `0`。
-* 返回值：{integer} `offset` 加上写入的字节数。
+* `value` {bigint} The number to write into `buf`.
+* `offset` {integer} The number of bytes to skip before starting to write. Must satisfy: `0 <= offset <= buf.length - 8`. **Default:** `0`.
+* Return value: {integer} `offset` plus the number of bytes written.
 
-将 `value` 以大端格式写入 `buf` 的指定 `offset` 处。
+Writes `value` to `buf` at the specified `offset` in big-endian format.
 
-此函数也可通过 `writeBigUint64BE` 别名使用。
+This function is also available under the `writeBigUint64BE` alias.
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -3949,7 +3947,7 @@ const buf = Buffer.allocUnsafe(8);
 buf.writeBigUInt64BE(0xdecafafecacefaden, 0);
 
 console.log(buf);
-// 打印：<Buffer de ca fa fe ca ce fa de>
+// Prints: <Buffer de ca fa fe ca ce fa de>
 ```
 
 ```cjs
@@ -3960,7 +3958,7 @@ const buf = Buffer.allocUnsafe(8);
 buf.writeBigUInt64BE(0xdecafafecacefaden, 0);
 
 console.log(buf);
-// 打印：<Buffer de ca fa fe ca ce fa de>
+// Prints: <Buffer de ca fa fe ca ce fa de>
 ```
 
 ### `buf.writeBigUInt64LE(value[, offset])`
@@ -3977,7 +3975,7 @@ changes:
     description: 此函数也可作为 buf.writeBigUint64LE() 使用。
 -->
 
-* `value` {bigint} 要写入 `buf` 的数字。
+* `value` {bigint} 要写入 `buf` 的值。
 * `offset` {integer} 开始写入前要跳过的字节数。必须满足：`0 <= offset <= buf.length - 8`。**默认值：** `0`。
 * 返回值：{integer} `offset` 加上写入的字节数。
 
@@ -4014,14 +4012,14 @@ added: v0.11.15
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: 移除了 noAssert，并且不再将 offset 隐式强制转换为 uint32。
+    description: Removed noAssert, and no implicit coercion of offset to uint32 anymore.
 -->
 
-* `value` {number} 要写入 `buf` 的数字。
-* `offset` {integer} 开始写入前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 8`。**默认值：** `0`。
-* 返回值：{integer} `offset` 加上写入的字节数。
+* `value` {number} The number to write to `buf`.
+* `offset` {integer} The number of bytes to skip before starting to write. Must satisfy `0 <= offset <= buf.length - 8`. **Default:** `0`.
+* Returns: {integer} `offset` plus the number of bytes written.
 
-将 `value` 以大端格式写入 `buf` 的指定 `offset` 处。`value` 必须是 JavaScript 数字。当 `value` 不是 JavaScript 数字时，行为未定义。
+Writes `value` to `buf` at the specified `offset` as big-endian. `value` must be a JavaScript number. Behavior is undefined when `value` is not a JavaScript number.
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -4031,7 +4029,7 @@ const buf = Buffer.allocUnsafe(8);
 buf.writeDoubleBE(123.456, 0);
 
 console.log(buf);
-// 打印：<Buffer 40 5e dd 2f 1a 9f be 77>
+// Prints: <Buffer 40 5e dd 2f 1a 9f be 77>
 ```
 
 ```cjs
@@ -4042,7 +4040,7 @@ const buf = Buffer.allocUnsafe(8);
 buf.writeDoubleBE(123.456, 0);
 
 console.log(buf);
-// 打印：<Buffer 40 5e dd 2f 1a 9f be 77>
+// Prints: <Buffer 40 5e dd 2f 1a 9f be 77>
 ```
 
 ### `buf.writeDoubleLE(value[, offset])`
@@ -4471,22 +4469,22 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: 此函数也可使用 `buf.writeUint8()`。
+    description: This function is also available as `buf.writeUint8()`.
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
+    description: "`noAssert` has been removed and no implicit coercion of the offset to `uint32` no longer takes place."
 -->
 
-* `value` {integer} 要写入 `buf` 的数字。
-* `offset` {integer} 开始写入之前要跳过的字节数。必须
-  满足 `0 <= offset <= buf.length - 1`。**默认值：** `0`。
-* 返回：{integer} `offset` 加上已写入的字节数。
+* `value` {integer} The number to be written to `buf`.
+* `offset` {integer} The number of bytes to skip before starting to write into `buf`. Must
+  satisfy `0 <= offset <= buf.length - 1`. **Default:** `0`.
+* Returns: {integer} `offset` plus the number of bytes written.
 
-将 `value` 写入 `buf` 中指定的 `offset` 处。`value` 必须是
-有效的无符号 8 位整数。当 `value` 不是无符号 8 位整数时，
-行为未定义。
+Writes `value` to `buf` at the specified `offset`. `value` must be a valid
+unsigned 8-bit integer. Behavior is undefined when `value` is anything other
+than an unsigned 8-bit integer.
 
-此函数也可使用 `writeUint8` 别名。
+This function is also available as `writeUint8`.
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -4673,22 +4671,22 @@ changes:
     - v14.9.0
     - v12.19.0
     pr-url: https://github.com/nodejs/node/pull/34729
-    description: 此函数也可使用 `buf.writeUint32LE()`。
+    description: This function can also be used as `buf.writeUint32LE()`.
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18395
-    description: 已移除 `noAssert`，且不再隐式将 offset 强制转换为 `uint32`。
+    description: "`noAssert` has been removed, and `offset` is no longer implicitly coerced to `uint32`."
 -->
 
-* `value` {integer} 要写入 `buf` 的数字。
-* `offset` {integer} 开始写入之前要跳过的字节数。必须
-  满足 `0 <= offset <= buf.length - 4`。**默认值：** `0`。
-* 返回：{integer} `offset` 加上已写入的字节数。
+* `value` {integer} The number to write to `buf`.
+* `offset` {integer} The number of bytes to skip before starting to write. Must
+  satisfy `0 <= offset <= buf.length - 4`. **Default:** `0`.
+* Returns: {integer} `offset` plus the number of bytes written.
 
-将 `value` 以小端序写入 `buf` 中指定的 `offset` 处。`value`
-必须是有效的无符号 32 位整数。当 `value` 不是
-无符号 32 位整数时，行为未定义。
+Writes `value` to `buf` at the specified `offset` in little-endian format. `value`
+must be a valid unsigned 32-bit integer. Behavior is undefined when `value` is
+anything other than a unsigned 32-bit integer.
 
-此函数也可使用 `writeUint32LE` 别名。
+This function can also be used as `writeUint32LE`.
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -4832,7 +4830,7 @@ changes:
 
 * `array` {integer\[]} 要复制的字节数组。
 
-参见 [`Buffer.from(array)`][]。
+参见 [`Buffer.from(array)`][].
 
 ### `new Buffer(arrayBuffer[, byteOffset[, length]])`
 
@@ -4888,7 +4886,7 @@ changes:
 * `buffer` {Buffer|Uint8Array} 现有的 `Buffer` 或 {Uint8Array}，从中
   复制数据。
 
-参见 [`Buffer.from(buffer)`][]。
+参见 [`Buffer.from(buffer)`][].
 
 ### `new Buffer(size)`
 
@@ -4939,7 +4937,7 @@ changes:
 * `string` {string} 要编码的字符串。
 * `encoding` {string} `string` 的编码。**默认值：** `'utf8'`。
 
-参见 [`Buffer.from(string[, encoding])`][`Buffer.from(string)`]】【。
+参见 [`Buffer.from(string[, encoding])`][`Buffer.from(string)`]。
 
 ## 类：`File`
 

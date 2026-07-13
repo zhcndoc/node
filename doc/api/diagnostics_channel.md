@@ -311,7 +311,7 @@ added:
  - v14.17.0
 -->
 
-`Channel` 类代表数据管道中的独立命名通道。它用于跟踪订阅者，并在有订阅者时发布消息。它作为单独的对象存在，以避免在发布时进行通道查找，从而实现非常快的发布速度，并允许大量使用而产生极小的开销。通道是使用 [`diagnostics_channel.channel(name)`][] 创建的，不支持直接使用 `new Channel(name)` 构造通道。
+`Channel` 类表示数据管道中的一个独立命名通道。它用于跟踪订阅者，并在存在订阅者时发布消息。它作为一个单独的对象存在，以避免在发布时进行通道查找，从而实现非常快的发布速度，并允许大量使用而产生极小的开销。通道是使用 [`diagnostics_channel.channel(name)`][] 创建的，不支持直接使用 `new Channel(name)` 构造通道。
 
 #### `channel.hasSubscribers`
 
@@ -577,7 +577,7 @@ added:
 * `thisArg` {any} 用于函数调用的接收者。
 * `...args` {any} 传递给函数的可选参数。
 
-将给定数据应用于绑定到通道的任何 AsyncLocalStorage 实例，持续给定函数的持续时间，然后在数据应用于存储的范围内发布到通道。
+将给定数据应用于绑定到通道的任何 AsyncLocalStorage 实例，持续给定函数的执行期间，然后在数据应用于存储的范围内发布到通道。
 
 如果给 [`channel.bindStore(store)`][] 提供了 transform 函数，它将在消息数据成为存储的上下文值之前应用于转换消息数据。在需要上下文链接的情况下，先前的存储上下文可在 transform 函数内访问。
 
@@ -874,7 +874,7 @@ added:
  - v19.9.0
  - v18.19.0
 changes:
-  - version: REPLACEME
+  - version: v26.5.0
     pr-url: https://github.com/nodejs/node/pull/62407
     description: 非原生 Promise 的 thenable 现在会按原样返回，
                  保留其原始类型和方法。

@@ -23,14 +23,14 @@ const obs = new PerformanceObserver((items) => {
   performance.clearMarks();
 });
 obs.observe({ type: 'measure' });
-performance.measure('Start to Now');
+performance.measure('从开始到现在');
 
 performance.mark('A');
 doSomeLongRunningProcess(() => {
-  performance.measure('A to Now', 'A');
+  performance.measure('A 到现在', 'A');
 
   performance.mark('B');
-  performance.measure('A to B', 'A', 'B');
+  performance.measure('A 到 B', 'A', 'B');
 });
 ```
 
@@ -41,15 +41,15 @@ const obs = new PerformanceObserver((items) => {
   console.log(items.getEntries()[0].duration);
 });
 obs.observe({ type: 'measure' });
-performance.measure('Start to Now');
+performance.measure('从开始到现在');
 
 performance.mark('A');
 (async function doSomeLongRunningProcess() {
   await new Promise((r) => setTimeout(r, 5000));
-  performance.measure('A to Now', 'A');
+  performance.measure('A 到现在', 'A');
 
   performance.mark('B');
-  performance.measure('A to B', 'A', 'B');
+  performance.measure('A 到 B', 'A', 'B');
 })();
 ```
 
@@ -59,7 +59,7 @@ performance.mark('A');
 added: v8.5.0
 -->
 
-一个可用于从当前 Node.js 实例收集性能指标的对象。它类似于浏览器中的 [`window.performance`][]。
+一个对象，可用于从当前 Node.js 实例收集性能指标。它类似于浏览器中的 [`window.performance`][]。
 
 ### `performance.clearMarks([name])`
 
@@ -375,7 +375,7 @@ changes:
 
 * 类型：{number}
 
-该条目经过的总毫秒数。此值对所有性能条目类型并不都适用。
+该条目经过的总毫秒数。此值并不适用于所有性能条目类型。
 
 ### `performanceEntry.entryType`
 
@@ -1480,7 +1480,7 @@ setImmediate(() => {
 <!-- YAML
 added: v11.10.0
 changes:
-  - version: REPLACEME
+  - version: v26.5.0
     pr-url: https://github.com/nodejs/node/pull/62935
     description: 新增了 `samplePerIteration` 选项。
 -->
@@ -1543,11 +1543,11 @@ added:
 
 * `fn` {Function}
 * `options` {Object}
-  * `histogram` {RecordableHistogram} 使用 `perf_hooks.createHistogram()` 创建的直方图对象，用于记录纳秒级的运行时持续时间。
+  * `histogram` {RecordableHistogram} A histogram object created using `perf_hooks.createHistogram()`, used to record runtime durations in nanoseconds.
 
-_此属性是 Node.js 的扩展。它在 Web 浏览器中不可用。_
+_This property is an extension of Node.js. It is not available in Web browsers._
 
-将函数包装在一个新函数中，该函数会测量被包装函数的运行时间。必须将 `PerformanceObserver` 订阅到 `'function'` 事件类型才能访问计时详细信息。
+Wraps the function in a new function that measures the wrapped function’s runtime. A `PerformanceObserver` must be subscribed to the `'function'` entry type to access the timing details.
 
 ```mjs
 import { timerify, performance, PerformanceObserver } from 'node:perf_hooks';
@@ -1567,7 +1567,7 @@ const obs = new PerformanceObserver((list) => {
 });
 obs.observe({ entryTypes: ['function'] });
 
-// 将创建一个性能时间线条目
+// A performance timeline entry will be created
 wrapped();
 ```
 
@@ -1593,11 +1593,11 @@ const obs = new PerformanceObserver((list) => {
 });
 obs.observe({ entryTypes: ['function'] });
 
-// 将创建一个性能时间线条目
+// A performance timeline entry will be created
 wrapped();
 ```
 
-如果被包装的函数返回一个 promise，则会向该 promise 附加一个 finally 处理程序，并且一旦调用 finally 处理程序就会报告持续时间。
+If the wrapped function returns a promise, a finally handler will be attached to the promise and the duration will be reported once the finally handler is invoked.
 
 ## 类：`Histogram`
 

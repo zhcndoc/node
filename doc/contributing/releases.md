@@ -7,7 +7,7 @@
 
 * [谁可以发布？](#谁可以发布)
   * [1. Jenkins 发布访问权限](#1-jenkins-发布访问权限)
-  * [2. \<nodejs.org> 访问权限](#2-nodejsorg-访问权限)
+  * [2. <nodejs.org> 访问权限](#2-nodejsorg-访问权限)
   * [3. 公开列出的 GPG 密钥](#3-公开列出的-gpg-密钥)
 * [如何创建发布](#如何创建发布)
   * [0. 发布前步骤](#0-发布前步骤)
@@ -37,38 +37,47 @@
 
 ## 谁可以发布？
 
-发布授权由 Node.js TSC 授予。获得授权后，个人必须具备以下条件：
+可以“准备”发布的人，与可以将发布“发布”到 nodejs.org 的人之间是有区别的。
+
+[backporters team](https://github.com/orgs/nodejs/teams/backporters)（受限链接）的成员可以将内容合并到 staging 分支，并准备发布，包括创建本文档后面将会讨论的 proposal 分支。
+
+发布权限由 Node.js TSC 授予。这是在发布已经准备好之后进行发布所必需的。如果你第一次参与准备发布，你将能够以 backporters team 成员的身份完成大部分步骤，并让已经完成入职的其他人代表你推进发布。一旦被 TSC 授权为 releaser，个人在自行发布时还需要以下条件：
 
 ### 1. Jenkins 发布访问权限
 
-在发布流程中有三个相关的 Jenkins 作业需要使用：
+发布流程中应使用四个相关的 Jenkins job：
 
 **a.** **测试运行：**
 **[node-test-pull-request](https://ci.nodejs.org/job/node-test-pull-request/)** 用于进行最终的全面测试运行，以确保当前的 _HEAD_ 稳定。
 
-**b.** **Nightly 构建：** (可选)
-**[iojs+release](https://ci-release.nodejs.org/job/iojs+release/)** 可用于为当前的 _HEAD_ 创建 nightly 发布，如果需要公开测试发布。通过此作业触发的构建将直接发布到 <https://nodejs.org/download/nightly/>，并可供公众下载。
+**b.** **CitGM:**
+**[citgm-smoker](https://ci.nodejs.org/job/citgm-smoker/)** 用于运行 [CitGM](https://github.com/nodejs/citgm/) 工具，该工具会针对一组预定义的社区模块测试 Node.js 的构建版本。这在发布过程中用于确保 CitGM 所测试的常用模块在新的 Node.js 版本下没有功能回归，从而影响用户。
 
-**c.** **发布构建：**
-**[iojs+release](https://ci-release.nodejs.org/job/iojs+release/)** 将完成构建所有必需发布资产的所有工作。一旦准备就绪，发布文件的推广是一个手动步骤（见下文）。
+**c.** **Nightly builds:**（可选）
+**[iojs+release](https://ci-release.nodejs.org/job/iojs+release/)** 可用于在需要公开测试版本时，为当前的 _HEAD_ 创建 nightly 发布。通过此 job 触发的构建会直接发布到 <https://nodejs.org/download/nightly/>，并可供公开下载。
+
+**d.** **Release builds:**
+**[iojs+release](https://ci-release.nodejs.org/job/iojs+release/)** 会完成构建所有必需发布产物的全部工作。发布文件在准备好之后，推广是一个手动步骤（见下文）。
 
 [Node.js 构建团队](https://github.com/nodejs/build) 能够向 TSC 授权的个人提供此访问权限。
 
 ### 2. \<nodejs.org> 访问权限
 
-nodejs.org 上的 _dist_ 用户控制 <https://nodejs.org/download/> 中可用的资产。<https://nodejs.org/dist/> 是 <https://nodejs.org/download/release/> 的别名。
+`nodejs.org` 主机上的 _dist_ 用户控制着 <https://nodejs.org/download/> 中可用的资源。<https://nodejs.org/dist/> 是 <https://nodejs.org/download/release/> 的别名。
 
-Jenkins 发布构建工作程序以 _staging_ 用户身份将它们的工件上传到 Web 服务器。_dist_ 用户可以访问将这些资产移至公开访问，而 _staging_ 用户则不能。
+Jenkins 发布构建工作程序以 _staging_ 用户身份将它们的工件上传到 Web 服务器。_dist_ 用户可以将这些资源移至公开可访问位置，而 _staging_ 用户则不能。
 
-Nightly 构建由 _dist_ 用户的 cron 任务在服务器上自动推广。
+Nightly 构建由服务器上以 _dist_ 用户身份运行的 cron 任务自动推广。
 
-发布构建需要具有作为 _dist_ 用户访问该服务器的 SSH 权限的个人手动推广。[Node.js 构建团队](https://github.com/nodejs/build) 能够向 TSC 授权的个人提供此访问权限。
+发布构建需要个人使用作为 _dist_ 用户访问该服务器的 SSH 权限进行手动推广。[Node.js 构建团队](https://github.com/nodejs/build) 能够向 TSC 授权的个人提供此访问权限。
 
 ### 3. 公开列出的 GPG 密钥
 
 每个推广的构建、nightly 和发布都会生成一个 `SHASUMS256.txt` 文件。此外，对于发布，此文件将由负责该发布的个人签名。为了能够验证下载的二进制文件，公众应该能够检查 `SHASUMS256.txt` 文件是否已由被授权创建发布的人签名。
 
-公钥应可从已知的第三方密钥服务器获取。推荐使用 <https://keys.openpgp.org/> 上的 OpenPGP 密钥服务器。使用 [提交](https://keys.openpgp.org/upload) 表单提交新公钥，并确保验证关联的电子邮件。您首先需要导出密钥的 ASCII 编码版本：
+如果你目前还没有密钥，那么你应该使用 `gpg --full-generate-key` 创建一个强度合适的密钥。默认选项（当前为“ECC sign and encrypt”和“Curve 25519”）是不错的选择，并且与 [GOVERNANCE.md 文件中的 ssh 密钥建议](https://github.com/nodejs/Release/blob/main/GOVERNANCE.md#ssh-key-guidance) 一致。
+
+公钥应可从已知的第三方 keyserver 获取。推荐使用位于 <https://keys.openpgp.org/> 的 OpenPGP keyserver。使用 [submission](https://keys.openpgp.org/upload) 表单提交新的公钥，并确保验证关联的电子邮件。你需要先对你的密钥进行 ASCII 装甲导出：
 
 ```bash
 gpg --armor --export email@server.com > ~/nodekey.asc
@@ -82,27 +91,39 @@ gpg --keyserver hkps://keys.openpgp.org --recv-keys <FINGERPRINT>
 
 您使用的密钥可能是现有密钥的子密钥。
 
-此外，已授权发布的人员的完整 GPG 密钥指纹应列在 Node.js GitHub README.md 文件中。
+如果你还想将你的密钥上传到常用的 Ubuntu keyserver，可以使用：
 
-> 建议在 Node.js 仓库下签名所有提交。
-> 在 `node` 文件夹内运行：`git config commit.gpgsign true`。
+```bash
+gpg --keyserver keyserver.ubuntu.com --send-keys <FINGERPRINT>
+```
+
+然后通过将上面 `--recv-keys` 操作中的服务器名称切换为 Ubuntu keyserver 来检查它。更多信息请参阅 [Ubuntu GPG howto wiki page](https://help.ubuntu.com/community/GnuPrivacyGuardHowto)。
+
+此外，Node.js GitHub README.md 文件中应列出获得发布授权的个人的完整 GPG 密钥指纹。
+
+> `nodejs/node` 中除 `main` 和 `actions/*` 之外的所有分支上的提交都必须经过签名
+> 否则推送到这些分支将会被 Node.js 项目强制执行的 GitHub 规则拒绝。
+> 运行：在 `node` 文件夹内执行 `git config commit.gpgsign true`，或者在你的 git 操作中使用
+> `-S` 标志（本文档中的示例会明确包含 `-S`）
+
+虽然 GitHub 允许使用 ssh 密钥对单个提交进行签名，
+但这里不涉及这种方式，因为这不能让你对发布进行签名，所以你
+需要在 GitHub 中设置一个 GPG 签名密钥。
 
 ## 如何创建发布
 
 说明：
 
-* 下面列出的日期 _"YYYY-MM-DD"_ 应为发布日期 **UTC 时间**。使用 `date -u +'%Y-%m-%d'` 来确定。
-* 版本字符串下面列出为 _"vx.y.z"_ 或 _"x.y.z"_。替换为发布版本。
+* 下面列出的日期以 _"YYYY-MM-DD"_ 格式表示，应为发布的日期，**按 UTC 计算**。使用 `date -u +'%Y-%m-%d'` 来查找该日期。
+* 下面列出的版本字符串以 _"vx.y.z"_ 或 _"x.y.z"_ 格式表示。请替换为发布版本。
 * 示例将使用虚构的发布版本 `1.2.3`。
-* 准备安全发布时，请遵循详细信息部分中的安全步骤。
+* 在准备 _安全发布_ 时，请遵循详细信息部分中的安全步骤。
 
 ### 0. 发布前步骤
 
 在准备 Node.js 发布之前，必须至少提前一个工作日通知构建工作组预计的发布日期。与构建团队协调至关重要，以确保 CI 工作正常、发布文件已发布，并且发布博客文章可在项目网站上找到。
 
 最好通过在 [构建问题跟踪器][] 上打开一个问题来联系构建团队。
-
-准备安全发布时，请至少提前两个工作日联系构建团队。为确保安全补丁能够得到妥善测试，请在 [CI 锁定程序][] 开始前一两天，在 `nodejs-private/node-private` 仓库的 `main` 分支上运行 `node-test-pull-request` 作业。这是为了确认 Jenkins 是否能够正确访问私有仓库。
 
 ### 1. 更新暂存分支
 
@@ -130,25 +151,42 @@ git reset --hard upstream/v1.x-staging
 
 合并 PR 时，请在每个提交中添加 `Backport-PR-URL:` 行。使用 `Landed in ...` 关闭反向移植 PR。将原始 PR 上的标签从 `backport-requested-vN.x` 更新为 `backported-to-vN.x`。
 
-您可以使用 `--backport` 和 `git node land` 来添加 `Backport-PR-URL` 元数据
+You can add the `Backport-PR-URL` metadata automatically when landing by
+using `--backport` with `git node land`:
 
 ```bash
-git node land --backport $PR-NUMBER
+git node land -S --backport $PR-NUMBER
 ```
 
 要确定相关的提交，请使用
 [`branch-diff`](https://github.com/nodejs/branch-diff)。该工具可在 npm 上找到，应全局安装或使用 `npx` 运行。它依赖于我们的提交元数据，以及诸如 `semver-minor` 和 `semver-major` 之类的 GitHub 标签。一个缺点是，当 `PR-URL` 元数据意外地从提交中省略时，该提交将显示出来，因为它不确定是否是重复项。
 
-要获取可以在 v1.x 上的次要版本发布中合并的提交列表：
+A `branch-diff` run can use a lot of credits and users are
+[limited by default to 5000 per hour](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2026-03-10).
+It is not unusual for a run of branch-diff to
+use around 1000 of these. For this reason it is recommended that when you
+run branch-diff you redirect the output to a file and then process it. You
+can check your current usage with `gh rate_limit` if you have the GitHub CLI
+installed and configured, or using the curl command from
+[this link](https://docs.github.com/en/rest/rate-limit/rate-limit?apiVersion=2026-03-10)
+with authentication e.g.
+
+```bash
+curl -H "Authorization: token $YOURGITHUBTOKEN" -X GET https://api.github.com/rate_limit
+```
+
+对于 v1.x 上可在小版本发布中合并的提交列表：
 
 ```bash
 N=1 sh -c 'branch-diff v$N.x-staging upstream/main --exclude-label=semver-major,dont-land-on-v$N.x,backport-requested-v$N.x,backport-blocked-v$N.x,backport-open-v$N.x,backported-to-v$N.x --filter-release --format=simple'
 ```
 
-如果目标分支是 LTS 系列，您还应排除 `baking-for-lts`：
+如果目标分支是 LTS 线路，您还应排除
+`baking-for-lts`，并使用至少在预计发布日前两周发布的 Current 版本。
+在此示例中，我们使用 25.5.0 作为准备 Node.js 24 发布的基准版本：
 
 ```bash
-N=1 sh -c 'branch-diff v$N.x-staging upstream/main --exclude-label=semver-major,dont-land-on-v$N.x,backport-requested-v$N.x,backport-blocked-v$N.x,backport-open-v$N.x,backported-to-v$N.x,baking-for-lts --filter-release --format=simple'
+N=24 sh -c 'branch-diff v$N.x-staging v26.5.0 --exclude-label=semver-major,dont-land-on-v$N.x,backport-requested-v$N.x,backport-blocked-v$N.x,backport-open-v$N.x,backported-to-v$N.x,baking-for-lts --filter-release --format=simple'
 ```
 
 先前已发布的提交和版本号不需要 cherry-pick。
@@ -160,6 +198,11 @@ N=1 sh -c 'branch-diff v$N.x-staging upstream/main --exclude-label=semver-major,
 * 如果您认为风险较高且更改应等待一段时间，请添加 `baking-for-lts` 标签。
 
 当您准备好 cherry-pick 提交时，可以使用以下命令进行自动化。
+
+Since this is slightly different from the previous branch-diff output - it
+contains only the commit SHAs and in revert order - you may wish to save
+this before piping it directly to `git cherry-pick` in case it does not go
+cleanly.
 
 ```bash
 N=1 sh -c 'branch-diff v$N.x-staging upstream/main --exclude-label=semver-major,dont-land-on-v$N.x,backport-requested-v$N.x,backport-blocked-v$N.x,backport-open-v$N.x,backported-to-v$N.x --filter-release --format=sha --reverse' | xargs git cherry-pick -S
@@ -208,12 +251,7 @@ $ git reset --hard upstream/vN.x
 
 要包含的补丁列表应在 `nodejs-private` 的“下一个安全发布”问题中列出。如果不确定，请咨询安全发布负责人。
 
-To use the `git node land` tool to land Pull Requests in the `nodejs-private`
-organization, you need to specify the full URL to the Pull Request and make sure
-you provide a GitHub token with read permission to the private repository. If
-known, additionally include `CVE-ID: CVE-XXXX-XXXXX` in the commit metadata.
-Make sure to sign and push to resulting commit to the private repository and not
-the public one.
+要使用 `git node land` 工具在 `nodejs-private` 组织中合并 Pull Request，需要指定 Pull Request 的完整 URL，并确保为私有仓库提供具有读取权限的 GitHub token。如果已知，还应在提交元数据中额外包含 `CVE-ID: CVE-XXXX-XXXXX`。请确保对结果提交进行签名，并推送到私有仓库而不是公开仓库。
 
 **注意**：在 CI 锁定之前，请勿在 `nodejs-private` 中的 PR 上运行任何 CI。
 您可以在不运行完整 CI 的情况下将 PR 集成到提案中。
@@ -282,7 +320,9 @@ git cherry-pick  ...  # 将 nodejs-private PR 提交直接 cherry-pick 到提案
 
 ### 3. 更新 `src/node_version.h`
 
-使用以下宏设置拟议发布的版本，这些宏已在 `src/node_version.h` 中定义：
+_（如果你使用的是 `create-release-proposal` 或 `git node release --prepare`，这一步会自动完成）_
+
+使用以下宏来设置拟发布版本，这些宏已经在 `src/node_version.h` 中定义：
 
 ```c
 #define NODE_MAJOR_VERSION x
@@ -298,7 +338,9 @@ git cherry-pick  ...  # 将 nodejs-private PR 提交直接 cherry-pick 到提案
 
 ### 4. 更新变更日志
 
-#### 步骤 1：收集格式化的更改列表
+_(如果您使用的是 `create-release-proposal` 或 `git node release --prepare`，此步骤将自动完成)_
+
+#### 步骤 1：收集格式化后的变更列表
 
 收集自上次发布以来的格式化提交列表。使用
 [`changelog-maker`](https://github.com/nodejs/changelog-maker) 来完成此操作：
@@ -387,13 +429,13 @@ branch-diff upstream/v1.x v1.2.3-proposal --require-label=notable-change --plain
 
 #### 步骤 3：更新文档中的任何 REPLACEME 和 DEP00XX 标签
 
-如果此发布包含新 API，则有必要记录它们在此版本中首次添加。相关提交应已包含 `REPLACEME` 标签（请参阅 [编写文档](./api-documentation.md#writing-documentation)）。使用以下命令检查这些标签：
+如果此版本包含新的 API，则有必要将其文档标注为首次添加于此版本。相关提交应已包含 `REPLACEME` 标签（参见 [编写文档](./api-documentation.md#writing-documentation)）。
 
 ```bash
 grep REPLACEME doc/api/*.md
 ```
 
-并使用以下命令替换此节点版本：
+上述命令将检查这些标签是否存在，并显示需要更新的文件。然后，您可以使用 `sed` 或 `perl` 通过以下命令之一进行替换。在这些示例中，`$VERSION` 必须以 `v` 为前缀：
 
 ```bash
 sed -i "s/REPLACEME/$VERSION/g" doc/api/*.md
@@ -411,14 +453,15 @@ sed -i "" "s/REPLACEME/$VERSION/g" doc/api/*.md
 perl -pi -e "s/REPLACEME/$VERSION/g" doc/api/*.md
 ```
 
-`$VERSION` 应以 `v` 作为前缀。
-
-如果此发布包含任何新的弃用项，则有必要确保它们被分配了正确的静态弃用代码。这些代码列在文档中（请参阅 `doc/api/deprecations.md`）并在源代码中作为 `DEP00XX`。必须为代码分配一个编号（例如 `DEP0012`）。此分配应在 PR 合并时进行，但在运行发布构建时会进行检查。
+如果此版本包含任何新的弃用，则有必要确保它们分配了正确的静态弃用代码。这些代码列在文档中（参见 `doc/api/deprecations.md`）以及源代码中的 `DEP00XX`。该代码必须分配一个编号（例如 `DEP0012`）。此分配应在 PR 合并时完成，但在运行发布构建时会进行检查。
 
 ### 5. 创建发布提交
 
+_(如果您正在使用 `create-release-proposal` 或 `git node release --prepare`，此步骤将自动完成)_
+
 `CHANGELOG.md`、`doc/changelogs/CHANGELOG_Vx.md`、`src/node_version.h` 和
-`REPLACEME` 的更改应为将要标记的发布提交。在 git 中提交这些更改时，请使用以下消息格式：
+`REPLACEME` 的更改应作为最终提交，并在发布时被标记。
+将这些内容提交到 git 时，请使用以下消息格式：
 
 ```text
 YYYY-MM-DD, Version x.y.z (Release Type)
@@ -456,7 +499,9 @@ PR-URL: TBD
 
 ### 6. 在 GitHub 上提议发布
 
-将发布分支推送到 `nodejs/node`，而不是您自己的 fork。这使得发布分支可以轻松地在发布团队成员之间传递（如果需要）。
+_(如果您使用 `create-release-proposal` 或 `git node release --prepare`，这一步将自动完成)_
+
+将发布分支推送到 `nodejs/node`，而不是推送到您自己的 fork。这样可以在必要时更轻松地在发布团队成员之间传递发布分支。
 
 创建一个指向正确发布系列的拉取请求。例如，一个
 `v5.3.0-proposal` PR 应指向 `v5.x`，而不是 `main`。将 CHANGELOG
@@ -466,7 +511,7 @@ PR-URL: TBD
 
 ```markdown
 <details>
-<summary>Commits</summary>
+<summary>提交</summary>
 
 * 完整的提交列表...
 </details>
@@ -494,12 +539,17 @@ PR-URL: TBD
 执行一些烟雾测试。为此目的有一个
 **[`citgm-smoker`](https://ci.nodejs.org/job/citgm-smoker/)** CI 作业。使用基础 `vx.x` 分支作为参考运行一次，然后使用提案分支运行，以检查是否可能引入了新的回归到生态系统中。
 
-使用 `ncu-ci` 比较 `vx.x` 运行（10）和提案分支（11）
+使用 `ncu-ci`，结合来自 `citgm-smoker` 作业的两个构建编号，来
+比较基础 `vx.x` 运行（10）和新的提案分支（11）。
 
 ```bash
 npm i -g @node-core/utils
 ncu-ci citgm 10 11
 ```
+
+CitGM 测试的许多模块并不完全
+可靠，因此比较结果中显示的差异不会立刻成为
+担忧的原因。
 
 <details>
 <summary>安全发布</summary>
@@ -575,7 +625,7 @@ git cherry-pick v1.2.3-proposal-tmp
 
 ### 10. 测试构建
 
-Jenkins 会收集构建的工件，允许您下载和安装新构建。确保构建看起来正确。检查版本号，并执行一些基本检查以确认构建一切正常，然后再继续。使用以下列表作为基准：
+Jenkins 会收集构建的工件，允许您下载并安装新构建。确保构建看起来正确。检查版本号，并执行一些基本检查以确认构建一切正常，然后再继续。使用以下列表作为基准：
 
 * `process.version` 符合预期
 * `process.release` 符合预期
@@ -595,7 +645,7 @@ Jenkins 会收集构建的工件，允许您下载和安装新构建。确保构
 一旦您对生成的构建感到满意，您可以运行 `git node release --promote`：
 
 ```bash
-git node release --promote https://github.com/nodejs/node/pull/XXXX -S
+git node release -S --promote https://github.com/nodejs/node/pull/XXXX
 ```
 
 来自动化直到步骤 16 的其余步骤，或者您可以按照以下步骤手动执行。
@@ -608,11 +658,10 @@ git node release --promote https://github.com/nodejs/node/pull/XXXX -S
 推广多个发布时，可以传递多个 URL：
 
 ```bash
-git node release --promote \
+git node release -S --promote \
   --fetch-from git@github.com:nodejs-private/node-private.git \
   https://github.com/nodejs-private/node-private/pull/XXXX \
-  https://github.com/nodejs-private/node-private/pull/XXXX \
-  -S
+  https://github.com/nodejs-private/node-private/pull/XXXX
 ```
 
 </details>
@@ -881,34 +930,21 @@ GPG 将提示您输入密码。签名文件将命名为 SHASUMS256.txt.sig。
 * 对于发布标题，从变更日志中复制标题。
 * 对于描述，复制变更日志条目的其余部分。
 * 如果您不发布最新的“Current”，请取消选中
-  “Set as the latest release”。
-* 点击“Publish release”按钮。
+  “设为最新发布”。
+* 点击“发布发布”按钮。
 
 ### 18. 创建博客文章
 
 当您推广新构建时，会自动触发一个构建，因此在几分钟内 nodejs.org 将会列出您的新版本作为最新发布，并且会创建一个博客文章草稿 PR。
 
-This is driven by the [`post-release.yml`][] workflow in the `nodejs/node`
-repository, which triggers the [`create-release-post.yml`][] workflow on
-`nodejs/nodejs.org`. The same workflow also triggers a redirect update in the
-[`nodejs/release-cloudflare-worker`](https://github.com/nodejs/release-cloudflare-worker)
-repository. Both steps must complete for the release to be fully available on
-the website.
+这是由 `nodejs/node` 仓库中的 [`post-release.yml`][] 工作流驱动的，它会触发 `nodejs/nodejs.org` 上的 [`create-release-post.yml`][] 工作流。同一个工作流也会触发 `nodejs/release-cloudflare-worker` 仓库中的重定向更新。要使该版本在网站上完全可用，这两个步骤都必须完成。
 
-In the event that [`post-release.yml`][] fails, the **first step should be to
-re-run the failed action** rather than manually triggering workflows in other
-repositories. Skipping steps in the process can result in the blog post being
-published without the release documents being available, or without the
-Cloudflare redirects being updated.
+如果 [`post-release.yml`][] 失败，**第一步应该是重新运行失败的操作**，而不是手动触发其他仓库中的工作流。跳过流程中的步骤可能会导致博客文章已发布，但发布文档尚不可用，或者 Cloudflare 重定向尚未更新。
 
-If the failed action continues to fail after re-running, you can manually
-trigger both of the following:
+如果重新运行后失败操作仍然失败，您可以手动触发以下两项：
 
-1. The [`create-release-post.yml`][] workflow on the `nodejs/nodejs.org`
-   repository.
-2. The release worker update on the
-   [`nodejs/release-cloudflare-worker`](https://github.com/nodejs/release-cloudflare-worker)
-   repository.
+1. `nodejs/nodejs.org` 仓库上的 [`create-release-post.yml`][] 工作流。
+2. `nodejs/release-cloudflare-worker` 仓库上的 release worker 更新。
 
 * 如果您想说一些重要的话，可以在主标题下方添加一个简短的说明，否则文本应准备好发布。
 
@@ -937,15 +973,15 @@ Node.js 也可在 Bluesky 上使用，并且可以使用 [nodejs/bluesky](https:
 ```bash
 # 创建帖子 PR：
 gh workflow run create-pr.yml --repo "https://github.com/nodejs/bluesky" \
-  -F prTitle='vx.x.x release announcement' \
-  -F richText='Node.js vx.x.x is out. Check the blog post at https://nodejs.org/…. TL;DR is
+  -F prTitle='vx.x.x 发布公告' \
+  -F richText='Node.js vx.x.x 已发布。请查看博客文章：https://nodejs.org/…. 简而言之：
 
-- New feature
+- 新功能
 - …'
 
 # 创建转推 PR：
 gh workflow run create-pr.yml --repo "https://github.com/nodejs/bluesky" \
-  -F prTitle='Retweet vx.x.x release announcement' -F postURL=…
+  -F prTitle='转推 vx.x.x 发布公告' -F postURL=…
 ```
 
 <details>
@@ -1156,7 +1192,7 @@ $ branch-diff upstream/vN-1.x upstream/vN.x --exclude-label=semver-major,semver-
 
 Node.js [Snap][] 包有一个“默认”设置，用于用户未指定发布线（在 Snap 术语中称为“track”）的安装。这应该更新为指向最近激活的 LTS。Node.js Build Infrastructure 团队的成员可以执行此切换。一旦新的 LTS 发布线已发布，就应该在 [Node.js Snap management repository][] 上创建一个问题来请求执行此操作。
 
-## FAQ
+## 常见问题
 
 由于 `tools/release.sh` 的工作方式，在发布过程中遇到一些错误是很常见的，因为它依赖于网络通信和机器的可用性。本节旨在指导发布者处理潜在的故障。
 
@@ -1190,7 +1226,6 @@ Emitted 'error' event on DestroyableTransform instance at:
 ```
 
 [Build issue tracker]: https://github.com/nodejs/build/issues/new
-[CI lockdown procedure]: https://github.com/nodejs/build/blob/HEAD/doc/jenkins-guide.md#restricting-access-for-security-releases
 [Node.js Snap management repository]: https://github.com/nodejs/snap
 [Snap]: https://snapcraft.io/node
 [`create-release-post.yml`]: https://github.com/nodejs/nodejs.org/actions/workflows/create-release-post.yml

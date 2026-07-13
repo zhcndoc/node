@@ -20,7 +20,7 @@ changes:
 
 ## 概述
 
-[WHATWG 流标准][]（或"web 流”）定义了一个用于处理流式数据的 API。它类似于 Node.js [流][] API，但出现得较晚，并已成为许多 JavaScript 环境中流式数据的“标准”API。
+[WHATWG 流标准][]（或“web 流”）定义了一个用于处理流式数据的 API。它类似于 Node.js [流][] API，但出现得较晚，并已成为许多 JavaScript 环境中流式数据的“标准”API。
 
 主要有三种类型的对象：
 
@@ -104,7 +104,7 @@ Node.js 流可以通过 [`stream.Readable`][]、[`stream.Writable`][] 和 [`stre
 ### `ReadableStreamTee(stream[, cloneForBranch2])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.5.0
 -->
 
 > 稳定性：1 - 实验性
@@ -322,7 +322,7 @@ added: v16.5.0
   * `preventCancel` {boolean} 当为 `true` 时，防止 {ReadableStream} 在异步迭代器突然终止时被关闭。
     **默认值**：`false`。
 
-创建并返回一个可用于消费此 `ReadableStream` 数据的异步迭代器。
+创建并返回一个可用于消费此 {ReadableStream} 数据的异步迭代器。
 
 在异步迭代器活跃时，导致 `readableStream.locked` 为 `true`。
 
@@ -455,10 +455,10 @@ added: v16.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42225
-    description: This class is now exposed on the global object.
+    description: 该类现在暴露在全局对象上。
 -->
 
-By default, calling `readableStream.getReader()` without a parameter will return an instance of `ReadableStreamDefaultReader`. The default reader treats chunks of data flowing through the stream as opaque values, which allows {ReadableStream}s to work with essentially any JavaScript value.
+默认情况下，不带参数调用 `readableStream.getReader()` 将返回一个 `ReadableStreamDefaultReader` 实例。默认读取器将流中传输的数据块视为不透明值，这使得 {ReadableStream} 能够与几乎任何 JavaScript 值一起工作。
 
 #### `new ReadableStreamDefaultReader(stream)`
 
@@ -468,7 +468,7 @@ added: v16.5.0
 
 * `stream` {ReadableStream}
 
-Creates a new {ReadableStreamDefaultReader}, locked to the given {ReadableStream}.
+创建一个新的 {ReadableStreamDefaultReader}，并将其锁定到给定的 {ReadableStream}。
 
 #### `readableStreamDefaultReader.cancel([reason])`
 
@@ -477,9 +477,9 @@ added: v16.5.0
 -->
 
 * `reason` {any}
-* Returns: A promise fulfilled with `undefined`.
+* 返回：一个以 `undefined` 完成的 promise。
 
-Cancels the {ReadableStream} and returns a promise that is fulfilled when the underlying stream is canceled.
+取消 {ReadableStream}，并返回一个在底层流被取消时完成的 promise。
 
 #### `readableStreamDefaultReader.closed`
 
@@ -487,7 +487,7 @@ Cancels the {ReadableStream} and returns a promise that is fulfilled when the un
 added: v16.5.0
 -->
 
-* Type: {Promise} Fulfills with `undefined` when the associated {ReadableStream} is closed, or rejects if the stream errors or if the reader’s lock is released before the stream finishes closing.
+* 类型：{Promise} 当关联的 {ReadableStream} 关闭时以 `undefined` 完成；如果流出错，或者在流完成关闭之前释放了读取器的锁，则拒绝。
 
 #### `readableStreamDefaultReader.read()`
 
@@ -495,11 +495,11 @@ added: v16.5.0
 added: v16.5.0
 -->
 
-* Returns: A promise fulfilled with an object:
+* 返回：一个以如下对象完成的 promise：
   * `value` {any}
   * `done` {boolean}
 
-Requests the next chunk from the underlying {ReadableStream} and returns a promise that is fulfilled once the data is available.
+请求底层 {ReadableStream} 的下一个数据块，并返回一个在数据可用后完成的 promise。
 
 #### `readableStreamDefaultReader.releaseLock()`
 
@@ -507,7 +507,7 @@ Requests the next chunk from the underlying {ReadableStream} and returns a promi
 added: v16.5.0
 -->
 
-Releases the lock on the underlying {ReadableStream} held by this reader.
+释放此读取器持有的底层 {ReadableStream} 上的锁。
 
 ### 类：`ReadableStreamBYOBReader`
 
@@ -650,7 +650,7 @@ added: v16.5.0
 -->
 
 每个 {ReadableStream} 都有一个控制器，负责流的队列的内部状态和管理。
-`ReadableStreamDefaultController` 是非面向字节的 `ReadableStream` 的默认控制器实现。
+`ReadableStreamDefaultController` 是非字节流 `ReadableStream` 的默认控制器实现。
 
 #### `readableStreamDefaultController.close()`
 
@@ -749,20 +749,20 @@ added: v16.5.0
 
 发出一个错误信号，导致 {ReadableStream} 出错并关闭。
 
-### Class: `ReadableStreamBYOBRequest`
+### 类：`ReadableStreamBYOBRequest`
 
 <!-- YAML
 added: v16.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42225
-    description: This class is now exposed on the global object.
+    description: 此类现在暴露在全局对象上。
 -->
 
-When using `ReadableByteStreamController` in a byte-oriented stream, and using `ReadableStreamBYOBReader`,
-the `readableByteStreamController.byobRequest` property provides access to a `ReadableStreamBYOBRequest` instance,
-which represents the current read request. This object is used to access the `ArrayBuffer`/`TypedArray` provided for the read request
-in order to fill it, and provides methods for signaling that data has been provided.
+当在面向字节的流中使用 `ReadableByteStreamController`，并使用 `ReadableStreamBYOBReader` 时，
+`readableByteStreamController.byobRequest` 属性提供对 `ReadableStreamBYOBRequest` 实例的访问，
+该实例表示当前的读取请求。此对象用于访问为读取请求提供的 `ArrayBuffer`/`TypedArray`，
+以便填充它，并提供用于表示数据已提供的方法。
 
 #### `readableStreamBYOBRequest.respond(bytesWritten)`
 
@@ -772,7 +772,7 @@ added: v16.5.0
 
 * `bytesWritten` {number}
 
-Signals that `bytesWritten` number of bytes have been written to `readableStreamBYOBRequest.view`.
+表示已向 `readableStreamBYOBRequest.view` 写入了 `bytesWritten` 个字节。
 
 #### `readableStreamBYOBRequest.respondWithNewView(view)`
 
@@ -782,7 +782,7 @@ added: v16.5.0
 
 * `view` {Buffer|TypedArray|DataView}
 
-Signals that the request has been fulfilled and bytes have been written to a new `Buffer`, `TypedArray`, or `DataView`.
+表示请求已完成，并且字节已写入新的 `Buffer`、`TypedArray` 或 `DataView`。
 
 #### `readableStreamBYOBRequest.view`
 
@@ -908,7 +908,7 @@ added: v16.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42225
-    description: 此类现在暴露于全局对象上。
+    description: This class is now exposed on the global object.
 -->
 
 #### `new WritableStreamDefaultWriter(stream)`
@@ -994,7 +994,7 @@ added: v16.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42225
-    description: This class is now exposed on the global object.
+    description: 此类现在已暴露在全局对象上。
 -->
 
 `WritableStreamDefaultController` 管理 {WritableStream} 的内部状态。
@@ -1020,7 +1020,7 @@ added: v16.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42225
-    description: 此类现在暴露于全局对象上。
+    description: 该类现在暴露于全局对象上。
 -->
 
 `TransformStream` 由一个 {ReadableStream} 和一个 {WritableStream} 组成，它们连接在一起，使得写入 `WritableStream` 的数据被接收，并可能被转换，然后推送到 `ReadableStream` 的队列。
@@ -1171,7 +1171,7 @@ added: v16.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42225
-    description: 此类现在暴露于全局对象上。
+    description: 该类现在暴露于全局对象上。
 -->
 
 #### `new ByteLengthQueuingStrategy(init)`
@@ -1358,7 +1358,7 @@ added: v17.0.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42225
-    description: 此类现在暴露于全局对象上。
+    description: 该类现在暴露于全局对象上。
 -->
 
 #### `new CompressionStream(format)`
@@ -1490,8 +1490,8 @@ const dataArray = encoder.encode('hello world from consumers!');
 
 const readable = Readable.from(dataArray);
 const data = await arrayBuffer(readable);
-console.log(`from readable: ${data.byteLength}`);
-// 打印：from readable: 76
+console.log(`来自可读流：${data.byteLength}`);
+// 打印：来自可读流：76
 ```
 
 ```cjs
@@ -1503,8 +1503,8 @@ const encoder = new TextEncoder();
 const dataArray = encoder.encode('hello world from consumers!');
 const readable = Readable.from(dataArray);
 arrayBuffer(readable).then((data) => {
-  console.log(`from readable: ${data.byteLength}`);
-  // 打印：from readable: 76
+  console.log(`来自可读流：${data.byteLength}`);
+  // 打印：来自可读流：76
 });
 ```
 
@@ -1524,8 +1524,8 @@ const dataBlob = new Blob(['hello world from consumers!']);
 
 const readable = dataBlob.stream();
 const data = await blob(readable);
-console.log(`from readable: ${data.size}`);
-// 打印：from readable: 27
+console.log(`来自可读流：${data.size}`);
+// 打印：来自可读流：27
 ```
 
 ```cjs
@@ -1535,8 +1535,8 @@ const dataBlob = new Blob(['hello world from consumers!']);
 
 const readable = dataBlob.stream();
 blob(readable).then((data) => {
-  console.log(`from readable: ${data.size}`);
-  // 打印：from readable: 27
+  console.log(`来自可读流：${data.size}`);
+  // 打印：来自可读流：27
 });
 ```
 
@@ -1558,8 +1558,8 @@ const dataBuffer = Buffer.from('hello world from consumers!');
 
 const readable = Readable.from(dataBuffer);
 const data = await buffer(readable);
-console.log(`from readable: ${data.length}`);
-// 打印：from readable: 27
+console.log(`来自可读流：${data.length}`);
+// 打印：来自可读流：27
 ```
 
 ```cjs
@@ -1571,8 +1571,8 @@ const dataBuffer = Buffer.from('hello world from consumers!');
 
 const readable = Readable.from(dataBuffer);
 buffer(readable).then((data) => {
-  console.log(`from readable: ${data.length}`);
-  // 打印：from readable: 27
+  console.log(`来自可读流：${data.length}`);
+  // 打印：来自可读流：27
 });
 ```
 
@@ -1596,8 +1596,8 @@ const dataBuffer = Buffer.from('hello world from consumers!');
 
 const readable = Readable.from(dataBuffer);
 const data = await bytes(readable);
-console.log(`from readable: ${data.length}`);
-// 打印：from readable: 27
+console.log(`来自可读流：${data.length}`);
+// 打印：来自可读流：27
 ```
 
 ```cjs
@@ -1609,8 +1609,8 @@ const dataBuffer = Buffer.from('hello world from consumers!');
 
 const readable = Readable.from(dataBuffer);
 bytes(readable).then((data) => {
-  console.log(`from readable: ${data.length}`);
-  // 打印：from readable: 27
+  console.log(`来自可读流：${data.length}`);
+  // 打印：来自可读流：27
 });
 ```
 
@@ -1638,8 +1638,8 @@ const items = Array.from(
 
 const readable = Readable.from(JSON.stringify(items));
 const data = await json(readable);
-console.log(`from readable: ${data.length}`);
-// 打印：from readable: 100
+console.log(`来自可读流：${data.length}`);
+// 打印：来自可读流：100
 ```
 
 ```cjs
@@ -1657,8 +1657,8 @@ const items = Array.from(
 
 const readable = Readable.from(JSON.stringify(items));
 json(readable).then((data) => {
-  console.log(`from readable: ${data.length}`);
-  // 打印：from readable: 100
+  console.log(`来自可读流：${data.length}`);
+  // 打印：来自可读流：100
 });
 ```
 
@@ -1677,8 +1677,8 @@ import { Readable } from 'node:stream';
 
 const readable = Readable.from('Hello world from consumers!');
 const data = await text(readable);
-console.log(`from readable: ${data.length}`);
-// 打印：from readable: 27
+console.log(`来自可读流：${data.length}`);
+// 打印：来自可读流：27
 ```
 
 ```cjs
@@ -1687,8 +1687,8 @@ const { Readable } = require('node:stream');
 
 const readable = Readable.from('Hello world from consumers!');
 text(readable).then((data) => {
-  console.log(`from readable: ${data.length}`);
-  // 打印：from readable: 27
+  console.log(`来自可读流：${data.length}`);
+  // 打印：来自可读流：27
 });
 ```
 

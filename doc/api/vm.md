@@ -34,7 +34,7 @@ runInContext(code, context);
 console.log(context.x); // 42
 console.log(context.y); // 17
 
-console.log(x); // 1; y 未定义
+console.log(x); // 1；y 未定义
 ```
 
 ```cjs
@@ -53,7 +53,7 @@ runInContext(code, context);
 console.log(context.x); // 42
 console.log(context.y); // 17
 
-console.log(x); // 1; y 未定义
+console.log(x); // 1；y 未定义
 ```
 
 ## 类：`vm.Script`
@@ -914,7 +914,7 @@ added:
  - v22.21.0
 -->
 
-* `modules` {vm.Module\[]} 此模块依赖的 `vm.Module` 对象数组。
+* `modules` {vm.Module[]} 此模块依赖的 `vm.Module` 对象数组。
   数组中模块的顺序是 [`sourceTextModule.moduleRequests`][] 的顺序。
 * 返回：{undefined}
 
@@ -947,7 +947,7 @@ added:
   - v22.20.0
 -->
 
-* 类型：{ModuleRequest\[]} 此模块的依赖项。
+* 类型：{ModuleRequest[]} 此模块的依赖项。
 
 此模块请求的导入依赖项。返回的数组被冻结，不允许对其进行任何更改。
 
@@ -1205,7 +1205,7 @@ added:
 以便 Node.js 使用主上下文的默认 ESM 加载器来加载请求的模块。
 
 详细信息请参阅
-[编译 API 中对动态导入的支持][]。
+[编译 API 中对动态导入的支持][].
 
 ## vm.constants.createContext()
 
@@ -1216,26 +1216,26 @@ changes:
     - v22.8.0
     - v20.18.0
     pr-url: https://github.com/nodejs/node/pull/54394
-    description: "The argument now accepts `vm.constants.DONT_CONTEXTIFY`."
+    description: "该参数现在接受 `vm.constants.DONT_CONTEXTIFY`。"
   - version:
     - v21.7.0
     - v20.12.0
     pr-url: https://github.com/nodejs/node/pull/51244
-    description: "Added support for`vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER`."
+    description: "新增对 `vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER` 的支持。"
   - version:
     - v21.2.0
     - v20.11.0
     pr-url: https://github.com/nodejs/node/pull/50360
-    description: "The `importModuleDynamically` option is supported now."
+    description: "现在支持 `importModuleDynamically` 选项。"
   - version: v14.6.0
     pr-url: https://github.com/nodejs/node/pull/34023
-    description: "The `microtaskMode` option is supported now."
+    description: "现在支持 `microtaskMode` 选项。"
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19398
-    description: The first argument can no longer be a function.
+    description: 第一个参数不能再是函数。
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/19016
-    description: "The `codeGeneration` option is supported now."
+    description: "现在支持 `codeGeneration` 选项。"
 -->
 
 * `contextObject` {Object|vm.constants.DONT\_CONTEXTIFY|undefined}
@@ -1715,7 +1715,7 @@ const code = `
     response.end('Hello World\\n');
   }).listen(8124);
 
-  console.log('Server running at http://127.0.0.1:8124/');
+  console.log('服务器运行于 http://127.0.0.1:8124/');
 })`;
 
 runInThisContext(code)(require);
@@ -1733,7 +1733,7 @@ const code = `
     response.end('Hello World\\n');
   }).listen(8124);
 
-  console.log('Server running at http://127.0.0.1:8124/');
+  console.log('服务器运行于 http://127.0.0.1:8124/');
 })`;
 
 runInThisContext(code)(require);
@@ -1772,7 +1772,7 @@ console.log(runInContext('globalThis', context) === context);  // false
 try {
   runInContext('Object.freeze(globalThis);', context);
 } catch (e) {
-  console.log(`${e.constructor.name}: ${e.message}`); // TypeError: Cannot freeze
+  console.log(`${e.constructor.name}: ${e.message}`); // TypeError: 无法冻结
 }
 console.log(runInContext('globalThis.foo = 1; foo;', context));  // 1
 ```
@@ -1787,7 +1787,7 @@ console.log(runInContext('globalThis', context) === context);  // false
 try {
   runInContext('Object.freeze(globalThis);', context);
 } catch (e) {
-  console.log(`${e.constructor.name}: ${e.message}`); // TypeError: Cannot freeze
+  console.log(`${e.constructor.name}: ${e.message}`); // TypeError: 无法冻结
 }
 console.log(runInContext('globalThis.foo = 1; foo;', context));  // 1
 ```
@@ -1810,7 +1810,7 @@ runInContext('Object.freeze(globalThis);', context);
 try {
   runInContext('bar = 1; bar;', context);
 } catch (e) {
-  console.log(`${e.constructor.name}: ${e.message}`); // ReferenceError: bar is not defined
+  console.log(`${e.constructor.name}: ${e.message}`); // ReferenceError: bar 未定义
 }
 ```
 
@@ -1823,7 +1823,7 @@ runInContext('Object.freeze(globalThis);', context);
 try {
   runInContext('bar = 1; bar;', context);
 } catch (e) {
-  console.log(`${e.constructor.name}: ${e.message}`); // ReferenceError: bar is not defined
+  console.log(`${e.constructor.name}: ${e.message}`); // ReferenceError: bar 未定义
 }
 ```
 
@@ -1852,7 +1852,7 @@ Object.freeze(context);
 try {
   runInContext('baz = 1; baz;', context);
 } catch (e) {
-  console.log(`${e.constructor.name}: ${e.message}`); // ReferenceError: baz is not defined
+  console.log(`${e.constructor.name}: ${e.message}`); // ReferenceError: baz 未定义
 }
 ```
 
@@ -1876,7 +1876,7 @@ Object.freeze(context);
 try {
   runInContext('baz = 1; baz;', context);
 } catch (e) {
-  console.log(`${e.constructor.name}: ${e.message}`); // ReferenceError: baz is not defined
+  console.log(`${e.constructor.name}: ${e.message}`); // ReferenceError: baz 未定义
 }
 ```
 
@@ -1896,7 +1896,7 @@ try {
 import { runInNewContext } from 'node:vm';
 
 function loop() {
-  console.log('entering loop');
+  console.log('进入循环');
   while (1) console.log(Date.now());
 }
 
@@ -1905,15 +1905,15 @@ runInNewContext(
   { loop, console },
   { timeout: 5 },
 );
-// 这行会在 'entering infinite loop' *之前* 打印 (!)
-console.log('done executing');
+// 这行会在 '进入无限循环' *之前* 打印 (!)
+console.log('执行完成');
 ```
 
 ```cjs
 const { runInNewContext } = require('node:vm');
 
 function loop() {
-  console.log('entering loop');
+  console.log('进入循环');
   while (1) console.log(Date.now());
 }
 
@@ -1922,8 +1922,8 @@ runInNewContext(
   { loop, console },
   { timeout: 5 },
 );
-// 这行会在 'entering infinite loop' *之前* 打印 (!)
-console.log('done executing');
+// 这行会在 '进入无限循环' *之前* 打印 (!)
+console.log('执行完成');
 ```
 
 可以通过向创建 `Context` 的代码传递 `microtaskMode: 'afterEvaluate'` 来解决此问题：
@@ -1997,7 +1997,7 @@ const inner_promise = runInContext('Promise.resolve()', inner_context);
 // 由于外层微任务队列为空，外层模块中的执行流程直接穿过，下方的日志语句永远不会执行。
 await inner_promise;
 
-console.log('this will NOT be printed');
+console.log('这不会被打印');
 ```
 
 ```cjs
@@ -2016,7 +2016,7 @@ const inner_context = createContext({}, { microtaskMode: 'afterEvaluate' });
   // 由于外层微任务队列为空，外层模块中的执行流程直接穿过，下方的日志语句永远不会执行。
   await inner_promise;
 
-  console.log('this will NOT be printed');
+  console.log('这不会被打印');
 })();
 ```
 
@@ -2039,7 +2039,7 @@ await inner_promise;
 console.log('OK');
 ```
 
-**注意：** 严格来说，在此模式下，`node:vm` 偏离了 [入队任务][] 的 ECMAScript 规范字面意思，允许来自不同上下文的异步任务以不同于它们入队的顺序运行。
+**注意：** 严格来说，在这种模式下，`node:vm` 在 [入队作业][] 的字面意义上偏离了 ECMAScript 规范，因为它允许来自不同上下文的异步任务以不同于它们入队顺序的顺序运行。
 
 ## 编译 API 中对动态 `import()` 的支持
 
@@ -2255,8 +2255,8 @@ const { Script, SyntheticModule } = require('node:vm');
 [`vm.createContext()`]: #vmcreatecontextcontextobject-options
 [`vm.runInContext()`]: #vmrunincontextcode-contextifiedobject-options
 [`vm.runInThisContext()`]: #vmruninthiscontextcode-options
-[上下文化的]: #what-does-it-mean-to-contextify-an-object
-[入队任务]: https://tc39.es/ecma262/#sec-hostenqueuepromisejob
-[全局对象]: https://tc39.es/ecma262/#sec-global-object
-[间接 `eval()` 调用]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#direct_and_indirect_eval
-[源]: https://developer.mozilla.org/en-US/docs/Glossary/Origin
+[contextified]: #what-does-it-mean-to-contextify-an-object
+[enqueuing jobs]: https://tc39.es/ecma262/#sec-hostenqueuepromisejob
+[global object]: https://tc39.es/ecma262/#sec-global-object
+[indirect `eval()` call]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval#direct_and_indirect_eval
+[origin]: https://developer.mozilla.org/en-US/docs/Glossary/Origin
