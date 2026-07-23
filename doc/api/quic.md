@@ -1296,7 +1296,7 @@ added: v23.8.0
     interleaved with data from other streams of the same priority level.
     When `false`, the stream should be completed before same-priority peers.
     **Default:** `false`.
-  * `highWaterMark` {number} The maximum number of bytes that the writer
+  * `budget` {number} The maximum number of bytes that the writer
     will buffer before `writeSync()` returns `false`. When the buffered
     data exceeds this limit, the caller should wait for drain before
     writing more. **Default:** `65536` (64 KB).
@@ -1337,7 +1337,7 @@ added: v23.8.0
     interleaved with data from other streams of the same priority level.
     When `false`, the stream should be completed before same-priority peers.
     **Default:** `false`.
-  * `highWaterMark` {number} The maximum number of bytes that the writer
+  * `budget` {number} The maximum number of bytes that the writer
     will buffer before `writeSync()` returns `false`. When the buffered
     data exceeds this limit, the caller should wait for drain before
     writing more. **Default:** `65536` (64 KB).
@@ -1424,6 +1424,32 @@ and `0n` will be returned. If the datagram exceeds the peer's limit, it
 will be silently dropped and `0n` returned. The local
 `maxDatagramFrameSize` transport parameter (default: `1200` bytes) controls
 what this endpoint advertises to the peer as its own maximum.
+
+### `session.servername`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {string|boolean|null}
+
+The SNI (Server Name Indication) host name associated with the session. This is
+`null` before the client hello is processed. Once the hello has been
+processed, this is either the host name string or `false` if the handshake
+had no SNI.
+
+### `session.alpnProtocol`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* Type: {string|null}
+
+The negotiated ALPN protocol. This is `null` before the client hello is
+processed. Once ALPN has been negotiated, this is the protocol string. ALPN
+is mandatory in QUIC so this is never `false` on successful connections,
+unlike `node:tls` where this is optional.
 
 ### `session.certificate`
 
@@ -1944,7 +1970,7 @@ added: v23.8.0
 The directionality of the stream, or `null` if the stream has been destroyed
 or is still pending. Read only.
 
-### `stream.highWaterMark`
+### `stream.budget`
 
 <!-- YAML
 added: v26.2.0
@@ -2256,7 +2282,8 @@ The Writer has the following methods:
   the QUIC transport-layer `INTERNAL_ERROR` (`0x1`) for raw QUIC).
   See [`stream.destroy()`][] for a full-stream abort that also resets
   the readable side via `STOP_SENDING`.
-* `desiredSize` — Available capacity in bytes, or `null` if closed/errored.
+* `canWrite` — `true` if writes will be accepted, `false` if at capacity,
+  or `null` if closed/errored.
 
 The bytes from each `writeSync()` / `writevSync()` / `write()` / `writev()`
 input chunk are copied into an internal buffer, so the caller's source
@@ -3598,7 +3625,11 @@ added: v23.8.0
 * `this` {quic.QuicEndpoint}
 * `session` {quic.QuicSession}
 
-The callback function that is invoked when a new session is initiated by a remote peer.
+The callback function that is invoked when a new server session is initiated by
+a remote peer. It is called once the peer's TLS `ClientHello` has been
+processed, so the negotiated TLS parameters are immediately available when
+the callback runs. Sessions whose handshake is rejected before this point are
+never surfaced.
 
 ### Callback: `OnStreamCallback`
 
