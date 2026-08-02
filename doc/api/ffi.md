@@ -62,16 +62,17 @@ FFI signatures use string type names.
 Supported type names:
 
 * `void`
+* `char`
 * `i8`, `int8`
-* `u8`, `uint8`, `bool`, `char`
+* `u8`, `uint8`, `bool`
 * `i16`, `int16`
 * `u16`, `uint16`
 * `i32`, `int32`
 * `u32`, `uint32`
 * `i64`, `int64`
 * `u64`, `uint64`
-* `f32`, `float`
-* `f64`, `double`
+* `f32`, `float`, `float32`
+* `f64`, `double`, `float64`
 * `pointer`, `ptr`
 * `string`, `str`
 * `buffer`
@@ -459,6 +460,10 @@ memory.
 
 Keeps the callback strongly referenced by JavaScript.
 
+Throws `ERR_INVALID_ARG_VALUE` if the callback function has already been
+garbage collected after a previous `library.unrefCallback(pointer)` call, since
+a collected function cannot be referenced again.
+
 ### `library.unrefCallback(pointer)`
 
 * `pointer` {bigint}
@@ -468,6 +473,9 @@ Allows the callback to become weakly referenced by JavaScript.
 If the callback function is later garbage collected, subsequent native
 invocations become a no-op. Non-void return values are zero-initialized before
 returning to native code.
+
+Throws `ERR_INVALID_ARG_VALUE` if the callback function has already been
+garbage collected.
 
 ## Calling native functions
 

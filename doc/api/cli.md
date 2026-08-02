@@ -361,6 +361,25 @@ Error: connect ERR_ACCESS_DENIED Access to this API has been restricted. Use --a
 }
 ```
 
+### `--allow-openssl-store`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> Stability: 1.1 - Active development
+
+When using the [Permission Model][], the process will not be able to use
+OpenSSL STORE loaders by default, for example to load a private key from a
+{URL} passed to [`crypto.createPrivateKey()`][]. Attempts to do so will throw
+an `ERR_ACCESS_DENIED` unless the user explicitly passes the
+`--allow-openssl-store` flag. This permission can be dropped at runtime via
+[`permission.drop()`][].
+
+This flag grants broad authority to configured OpenSSL STORE loaders. A loader
+may access files, devices, tokens, or the network. Access performed by a loader
+is not constrained by the `fs.read`, `fs.write`, or `net` permission scopes.
+
 ### `--allow-wasi`
 
 <!-- YAML
@@ -1059,9 +1078,13 @@ Enable experimental import support for `.node` addons.
 added:
  - v23.10.0
  - v22.16.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64516
+    description: Marked as release candidate.
 -->
 
-> Stability: 1.0 - Early development
+> Stability: 1.2 - Release candidate
 
 If present, Node.js will look for a configuration file at the specified path.
 If the path is not specified, Node.js will look for a `node.config.json` file
@@ -2337,6 +2360,7 @@ following permissions are restricted:
 * WASI - manageable through [`--allow-wasi`][] flag
 * Addons - manageable through [`--allow-addons`][] flag
 * FFI - manageable through [`--allow-ffi`](#--allow-ffi) flag
+* OpenSSL STORE loaders - manageable through [`--allow-openssl-store`][] flag
 
 ### `--permission-audit`
 
@@ -3828,6 +3852,7 @@ one is included in the list below.
 * `--allow-fs-write`
 * `--allow-inspector`
 * `--allow-net`
+* `--allow-openssl-store`
 * `--allow-wasi`
 * `--allow-worker`
 * `--conditions`, `-C`
@@ -4475,6 +4500,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # prints 12
 [`--allow-fs-read`]: #--allow-fs-read
 [`--allow-fs-write`]: #--allow-fs-write
 [`--allow-net`]: #--allow-net
+[`--allow-openssl-store`]: #--allow-openssl-store
 [`--allow-wasi`]: #--allow-wasi
 [`--allow-worker`]: #--allow-worker
 [`--build-snapshot`]: #--build-snapshot
@@ -4505,6 +4531,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # prints 12
 [`NO_COLOR`]: https://no-color.org
 [`Web Storage`]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
 [`YoungGenerationSizeFromSemiSpaceSize`]: https://chromium.googlesource.com/v8/v8.git/+/refs/tags/10.3.129/src/heap/heap.cc#328
+[`crypto.createPrivateKey()`]: crypto.md#cryptocreateprivatekeykey
 [`dns.lookup()`]: dns.md#dnslookuphostname-options-callback
 [`dns.setDefaultResultOrder()`]: dns.md#dnssetdefaultresultorderorder
 [`dnsPromises.lookup()`]: dns.md#dnspromiseslookuphostname-options
@@ -4515,6 +4542,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # prints 12
 [`node:sqlite`]: sqlite.md
 [`node:stream/iter`]: stream_iter.md
 [`node:vfs`]: vfs.md
+[`permission.drop()`]: permissions.md#permissiondropscope-reference
 [`process.setUncaughtExceptionCaptureCallback()`]: process.md#processsetuncaughtexceptioncapturecallbackfn
 [`tls.DEFAULT_MAX_VERSION`]: tls.md#tlsdefault_max_version
 [`tls.DEFAULT_MIN_VERSION`]: tls.md#tlsdefault_min_version
