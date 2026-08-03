@@ -1530,7 +1530,9 @@ those platforms.
 #### `socket.setKeepAlive([options])`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 * `options` {Object}
@@ -1552,7 +1554,9 @@ socket.setKeepAlive({ enable: true, initialDelay: 1000, interval: 1000, count: 1
 <!-- YAML
 added: v0.1.92
 changes:
-  - version: v26.4.0
+  - version:
+     - v26.4.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63825
     description: Added the `interval` and `count` arguments to configure
                  `TCP_KEEPINTVL` and `TCP_KEEPCNT`.
@@ -1737,7 +1741,9 @@ This property represents the state of the connection as a string.
 ## Class: `net.BoundSocket`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 Allows for the synchronous creation of a pre-bound socket, that can be passed
@@ -1779,7 +1785,9 @@ server.listen(bound); // Adopt as a server, or pass to new net.Socket() instead.
 ### `new net.BoundSocket([options])`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/64399
@@ -1806,7 +1814,9 @@ changes:
 ### `boundSocket.address()`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/64399
@@ -1836,7 +1846,9 @@ support.
 ### `boundSocket.fd()`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 * Returns: {integer} The underlying OS file descriptor, or `-1` on platforms
@@ -1851,7 +1863,9 @@ to the adopting [`net.Server`][] or [`net.Socket`][] and `fd()` throws
 ### `boundSocket.close()`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 Releases the bound socket. Only needed when the handle is never adopted.
@@ -1859,7 +1873,9 @@ Releases the bound socket. Only needed when the handle is never adopted.
 ### `boundSocket[Symbol.dispose]()`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 Closes the handle if it has not been adopted or closed; otherwise a no-op.
@@ -2141,7 +2157,7 @@ Creates a new TCP or [IPC][] server.
 If `allowHalfOpen` is set to `true`, when the other end of the socket
 signals the end of transmission, the server will only send back the end of
 transmission when [`socket.end()`][] is explicitly called. For example, in the
-context of TCP, when a FIN packed is received, a FIN packed is sent
+context of TCP, when a FIN packet is received, a FIN packet is sent
 back only when [`socket.end()`][] is explicitly called. Until then the
 connection is half-closed (non-readable but still writable). See [`'end'`][]
 event and [RFC 1122][half-closed] (section 4.2.2.13) for more information.

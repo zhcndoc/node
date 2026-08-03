@@ -482,7 +482,9 @@ tests must satisfy **both** requirements in order to be executed.
 ## Test tags
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.19.0
 -->
 
 > Stability: 1.0 - Early development
@@ -1651,7 +1653,9 @@ added:
   - v18.9.0
   - v16.19.0
 changes:
-  - version: v26.2.0
+  - version:
+     - v26.2.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63221
     description: Added the `testTagFilters` option.
   - version:
@@ -1896,7 +1900,9 @@ added:
   - v18.0.0
   - v16.17.0
 changes:
-  - version: v26.2.0
+  - version:
+     - v26.2.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63221
     description: Added the `tags` option.
   - version:
@@ -3446,11 +3452,13 @@ added:
   - v18.9.0
   - v16.19.0
 changes:
-  - version: REPLACEME
+  - version: v26.6.0
     pr-url: https://github.com/nodejs/node/pull/64309
     description: Added `entryFile` to events forwarded from child processes
                  when tests run with process isolation.
-  - version: v26.3.0
+  - version:
+     - v26.3.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63435
     description: Added `parentId` to test events that carry a `testId`.
   - version:
@@ -3760,7 +3768,7 @@ since the parent runner only knows about file-level tests. When using
 ### Event: `'test:log'`
 
 <!-- YAML
-added: REPLACEME
+added: v26.6.0
 -->
 
 * `data` {Object}
@@ -3944,7 +3952,9 @@ Emitted when one or more tests are restarted due to a file change in watch mode.
 ## `getTestContext()`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.19.0
 -->
 
 * Returns: {TestContext|SuiteContext|undefined}
@@ -4103,8 +4113,8 @@ added:
     If unspecified, subtests inherit this value from their parent.
     **Default:** `Infinity`.
 
-This function is used to create a hook running before
-subtest of the current test.
+This function registers a hook that runs before any subtests of the current
+test.
 
 ### `context.beforeEach([fn][, options])`
 
@@ -4125,8 +4135,8 @@ added:
     If unspecified, subtests inherit this value from their parent.
     **Default:** `Infinity`.
 
-This function is used to create a hook running
-before each subtest of the current test.
+This function registers a hook that runs before each subtest of the current
+test.
 
 ```js
 test('top level test', async (t) => {
@@ -4159,8 +4169,7 @@ added:
     If unspecified, subtests inherit this value from their parent.
     **Default:** `Infinity`.
 
-This function is used to create a hook that runs after the current test
-finishes.
+This function registers a hook that runs after the current test finishes.
 
 ```js
 test('top level test', async (t) => {
@@ -4188,8 +4197,8 @@ added:
     If unspecified, subtests inherit this value from their parent.
     **Default:** `Infinity`.
 
-This function is used to create a hook running
-after each subtest of the current test.
+This function registers a hook that runs after each subtest of the current
+test.
 
 ```js
 test('top level test', async (t) => {
@@ -4317,7 +4326,7 @@ test('top level test', (t) => {
 ### `context.log(message[, data])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.6.0
 -->
 
 * `message` {string} Message to be reported.
@@ -4408,7 +4417,9 @@ the second attempt is `1`, and so on. This property is useful in conjunction wit
 ### `context.tags`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.19.0
 -->
 
 > Stability: 1.0 - Early development
@@ -4636,7 +4647,9 @@ added:
   - v18.0.0
   - v16.17.0
 changes:
-  - version: v26.2.0
+  - version:
+     - v26.2.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63221
     description: Added the `tags` option.
   - version:
@@ -4829,7 +4842,7 @@ test.describe('my suite', (suite) => {
 ### `context.log(message[, data])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.6.0
 -->
 
 * `message` {string} Message to be reported.
