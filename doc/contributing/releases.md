@@ -37,11 +37,11 @@
 
 ## 谁可以发布？
 
-可以“准备”发布的人，与可以将发布“发布”到 nodejs.org 的人之间是有区别的。
+能够通过将提交添加到 GitHub 中的分支来“准备”发布的个人，与能够将发布“推广”到 nodejs.org 的个人之间存在区别。
 
-[backporters team](https://github.com/orgs/nodejs/teams/backporters)（受限链接）的成员可以将内容合并到 staging 分支，并准备发布，包括创建本文档后面将会讨论的 proposal 分支。
+[backporters 团队](https://github.com/orgs/nodejs/teams/backporters)（受限链接）的成员可以将内容合并到 staging 分支，并准备发布，包括创建本文档后面将会讨论的 proposal 分支。
 
-发布权限由 Node.js TSC 授予。这是在发布已经准备好之后进行发布所必需的。如果你第一次参与准备发布，你将能够以 backporters team 成员的身份完成大部分步骤，并让已经完成入职的其他人代表你推进发布。一旦被 TSC 授权为 releaser，个人在自行发布时还需要以下条件：
+发布推广权限由 Node.js TSC 授予。准备好发布后，需要该权限才能推广发布。如果你是第一次参与发布准备工作，那么作为 backporters 团队成员，你可以完成大部分步骤，并请已经完成授权的其他人代表你推广发布。一旦 TSC 授权某人成为发布人员，该个人需要具备以下权限才能自行推广发布：
 
 ### 1. Jenkins 发布访问权限
 
@@ -53,10 +53,10 @@
 **b.** **CitGM:**
 **[citgm-smoker](https://ci.nodejs.org/job/citgm-smoker/)** 用于运行 [CitGM](https://github.com/nodejs/citgm/) 工具，该工具会针对一组预定义的社区模块测试 Node.js 的构建版本。这在发布过程中用于确保 CitGM 所测试的常用模块在新的 Node.js 版本下没有功能回归，从而影响用户。
 
-**c.** **Nightly builds:**（可选）
+**c.** **Nightly 构建：**（可选）
 **[iojs+release](https://ci-release.nodejs.org/job/iojs+release/)** 可用于在需要公开测试版本时，为当前的 _HEAD_ 创建 nightly 发布。通过此 job 触发的构建会直接发布到 <https://nodejs.org/download/nightly/>，并可供公开下载。
 
-**d.** **Release builds:**
+**d.** **发布构建：**
 **[iojs+release](https://ci-release.nodejs.org/job/iojs+release/)** 会完成构建所有必需发布产物的全部工作。发布文件在准备好之后，推广是一个手动步骤（见下文）。
 
 [Node.js 构建团队](https://github.com/nodejs/build) 能够向 TSC 授权的个人提供此访问权限。
@@ -101,10 +101,10 @@ gpg --keyserver keyserver.ubuntu.com --send-keys <FINGERPRINT>
 
 此外，Node.js GitHub README.md 文件中应列出获得发布授权的个人的完整 GPG 密钥指纹。
 
-> `nodejs/node` 中除 `main` 和 `actions/*` 之外的所有分支上的提交都必须经过签名
-> 否则推送到这些分支将会被 Node.js 项目强制执行的 GitHub 规则拒绝。
-> 运行：在 `node` 文件夹内执行 `git config commit.gpgsign true`，或者在你的 git 操作中使用
-> `-S` 标志（本文档中的示例会明确包含 `-S`）
+> `nodejs/node` 中除 `main` 和 `actions/*` 之外的分支上的所有提交都必须进行签名，
+> > 否则，推送到这些分支的操作将被 Node.js 项目强制执行的 GitHub 规则拒绝。
+> > 在 `node` 文件夹中运行：`git config commit.gpgsign true`，或者在 Git 操作中使用
+> > `-S` 标志（本文档中的示例会明确包含 `-S`）
 
 虽然 GitHub 允许使用 ssh 密钥对单个提交进行签名，
 但这里不涉及这种方式，因为这不能让你对发布进行签名，所以你
@@ -151,8 +151,7 @@ git reset --hard upstream/v1.x-staging
 
 合并 PR 时，请在每个提交中添加 `Backport-PR-URL:` 行。使用 `Landed in ...` 关闭反向移植 PR。将原始 PR 上的标签从 `backport-requested-vN.x` 更新为 `backported-to-vN.x`。
 
-You can add the `Backport-PR-URL` metadata automatically when landing by
-using `--backport` with `git node land`:
+您可以在使用 `git node land` 合并时，通过使用 `--backport` 自动添加 `Backport-PR-URL` 元数据：
 
 ```bash
 git node land -S --backport $PR-NUMBER
@@ -161,15 +160,11 @@ git node land -S --backport $PR-NUMBER
 要确定相关的提交，请使用
 [`branch-diff`](https://github.com/nodejs/branch-diff)。该工具可在 npm 上找到，应全局安装或使用 `npx` 运行。它依赖于我们的提交元数据，以及诸如 `semver-minor` 和 `semver-major` 之类的 GitHub 标签。一个缺点是，当 `PR-URL` 元数据意外地从提交中省略时，该提交将显示出来，因为它不确定是否是重复项。
 
-A `branch-diff` run can use a lot of credits and users are
-[limited by default to 5000 per hour](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2026-03-10).
-It is not unusual for a run of branch-diff to
-use around 1000 of these. For this reason it is recommended that when you
-run branch-diff you redirect the output to a file and then process it. You
-can check your current usage with `gh rate_limit` if you have the GitHub CLI
-installed and configured, or using the curl command from
-[this link](https://docs.github.com/en/rest/rate-limit/rate-limit?apiVersion=2026-03-10)
-with authentication e.g.
+一次 `branch-diff` 运行可能会消耗大量配额，用户
+[默认每小时限制为 5000 次](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2026-03-10)。
+一次运行 `branch-diff` 使用其中约 1000 次并不罕见。因此，建议在运行 branch-diff 时将输出重定向到文件，然后再对其进行处理。如果已安装并配置 GitHub CLI，可以使用 `gh rate_limit` 检查当前使用量；也可以使用
+[此链接](https://docs.github.com/en/rest/rate-limit/rate-limit?apiVersion=2026-03-10)
+中的 curl 命令，并进行身份验证，例如：
 
 ```bash
 curl -H "Authorization: token $YOURGITHUBTOKEN" -X GET https://api.github.com/rate_limit
@@ -199,10 +194,7 @@ N=24 sh -c 'branch-diff v$N.x-staging v26.5.0 --exclude-label=semver-major,dont-
 
 当您准备好 cherry-pick 提交时，可以使用以下命令进行自动化。
 
-Since this is slightly different from the previous branch-diff output - it
-contains only the commit SHAs and in revert order - you may wish to save
-this before piping it directly to `git cherry-pick` in case it does not go
-cleanly.
+由于这与之前的 branch-diff 输出略有不同——它只包含提交 SHA，并且顺序为还原顺序——您可能需要在直接将其通过管道传递给 `git cherry-pick` 之前保存它，以防操作无法顺利完成。
 
 ```bash
 N=1 sh -c 'branch-diff v$N.x-staging upstream/main --exclude-label=semver-major,dont-land-on-v$N.x,backport-requested-v$N.x,backport-blocked-v$N.x,backport-open-v$N.x,backported-to-v$N.x --filter-release --format=sha --reverse' | xargs git cherry-pick -S
@@ -464,32 +456,32 @@ _(如果您正在使用 `create-release-proposal` 或 `git node release --prepar
 将这些内容提交到 git 时，请使用以下消息格式：
 
 ```text
-YYYY-MM-DD, Version x.y.z (Release Type)
+YYYY-MM-DD，版本 x.y.z（发布类型）
 
-Notable changes:
+值得注意的更改：
 
 * 将值得注意的更改列表复制到此处，重新格式化为纯文本
 
-PR-URL: TBD
+PR-URL：待定
 ```
 
 <details>
 <summary>安全发布</summary>
 
 对于安全发布，请在提交消息开头加上短语
-`This is a security release.`，以便
+`这是一次安全发布。`，以便
 [分发索引器](https://github.com/nodejs/nodejs-dist-indexer) 可以将其识别为安全发布：
 
 ```text
-YYYY-MM-DD, Version x.y.z (Release Type)
+YYYY-MM-DD，版本 x.y.z（发布类型）
 
-This is a security release.
+这是一次安全发布。
 
-Notable changes:
+值得注意的更改：
 
 * 将值得注意的更改列表复制到此处，重新格式化为纯文本
 
-PR-URL: TBD
+PR-URL：待定
 ```
 
 **注意**：确保将提案分支推送到 nodejs-private 仓库。
@@ -724,7 +716,7 @@ git secure-tag <vx.y.z> <commit-sha> -sm "YYYY-MM-DD Node.js vx.y.z (<release-ty
 使用以下提交消息格式提交此更改：
 
 ```text
-Working on vx.y.z # 其中 'z' 是递增的补丁号
+正在处理 vx.y.z # 其中 'z' 是递增的补丁号
 
 PR-URL: <您的发布提案 PR 的完整 URL>
 ```
@@ -780,7 +772,7 @@ git restore --source=upstream/main src/node_version.h
 <details>
 <summary>主版本发布</summary>
 
-在 main 分支上，而不是撤销对 `src/node_version.h` 所做的更改，而是编辑它并：
+在 main 分支上，不要撤销对 `src/node_version.h` 所做的更改，而是编辑它并：
 
 * 将 `NODE_MAJOR_VERSION` 加一
 * 将 `NODE_PATCH_VERSION` 重置为 `0`
@@ -813,7 +805,7 @@ make lint-md && make lint-cpp
 git push upstream main
 ```
 
-**请勿** 将“Working on vx.y.z”提交 cherry-pick 到 `main`。
+**请勿** 将“正在处理 vx.y.z”提交 cherry-pick 到 `main`。
 
 <details>
 <summary>安全发布</summary>
@@ -1093,7 +1085,7 @@ git node release --prepare --startLTS
 
 ### 发布分支
 
-在大约主要版本发布前两个月，应创建新的 `vN.x` 和 `vN.x-staging` 分支（其中 `N` 表示主要版本），作为 `main` 分支的 fork。直到发布者宣布的截止日期，这些分支都必须与 `main` 保持同步。
+在大约主要版本发布前两个月，应创建新的 `vN.x` 和 `vN.x-staging` 分支（其中 `N` 表示主要版本），作为 `main` 分支的分叉。直到发布者宣布的截止日期，这些分支都必须与 `main` 保持同步。
 
 在发布日期之前，`vN.x` 和 `vN.x-staging` 分支必须保持同步。
 
@@ -1152,7 +1144,7 @@ git push upstream vN.x-staging
 
 始终通过 Canary in the Goldmine 工具运行测试发布和发布候选以进行额外测试。
 
-### Changelogs
+### 变更日志
 
 生成主要版本变更日志比次要和补丁版本变更日志要复杂一些。
 
@@ -1186,11 +1178,11 @@ $ branch-diff upstream/vN-1.x upstream/vN.x --exclude-label=semver-major,semver-
 
 ### 更新预期的资产
 
-推广脚本会检查预期的文件是否存在。在 Build 仓库中打开一个 PR，将新发布线（`v{N}.x`，其中 `{N}` 是发布的主要版本）的预期文件列表作为新文件添加到 [expected assets][] 文件夹中。在发布推广之前，需要由 [build-infra team][] 的成员将更改部署到 Web 服务器上。
+推广脚本会检查预期的文件是否存在。在 Build 仓库中打开一个 PR，将新发布线（`v{N}.x`，其中 `{N}` 是发布的主要版本）的预期文件列表作为新文件添加到 [预期资产][] 文件夹中。在发布推广之前，需要由 [构建基础设施团队][] 的成员将更改部署到 Web 服务器上。
 
 ### Snap
 
-Node.js [Snap][] 包有一个“默认”设置，用于用户未指定发布线（在 Snap 术语中称为“track”）的安装。这应该更新为指向最近激活的 LTS。Node.js Build Infrastructure 团队的成员可以执行此切换。一旦新的 LTS 发布线已发布，就应该在 [Node.js Snap management repository][] 上创建一个问题来请求执行此操作。
+Node.js [Snap][] 包有一个“默认”设置，用于用户未指定发布线（在 Snap 术语中称为“track”）的安装。这应该更新为指向最近激活的 LTS。Node.js 构建基础设施团队的成员可以执行此切换。一旦新的 LTS 发布线已发布，就应该在 [Node.js Snap 管理仓库][] 上创建一个问题来请求执行此操作。
 
 ## 常见问题
 
@@ -1225,12 +1217,12 @@ Emitted 'error' event on DestroyableTransform instance at:
 ./tools/release.sh -s vX.Y.Z
 ```
 
-[Build issue tracker]: https://github.com/nodejs/build/issues/new
-[Node.js Snap management repository]: https://github.com/nodejs/snap
+[构建问题跟踪器]: https://github.com/nodejs/build/issues/new
+[Node.js Snap 管理仓库]: https://github.com/nodejs/snap
 [Snap]: https://snapcraft.io/node
 [`create-release-post.yml`]: https://github.com/nodejs/nodejs.org/actions/workflows/create-release-post.yml
 [`create-release-proposal`]: https://github.com/nodejs/node/actions/workflows/create-release-proposal.yml
 [`post-release.yml`]: https://github.com/nodejs/node/actions/workflows/post-release.yml
-[build-infra team]: https://github.com/orgs/nodejs/teams/build-infra
-[expected assets]: https://github.com/nodejs/build/tree/HEAD/ansible/www-standalone/tools/promote/expected_assets
-[nodejs.org repository]: https://github.com/nodejs/nodejs.org
+[构建基础设施团队]: https://github.com/orgs/nodejs/teams/build-infra
+[预期资源]: https://github.com/nodejs/build/tree/HEAD/ansible/www-standalone/tools/promote/expected_assets
+[nodejs.org 仓库]: https://github.com/nodejs/nodejs.org

@@ -676,7 +676,7 @@ added:
   * 布尔标志，降低压缩率以换取
     解压速度。
 * `BROTLI_PARAM_LARGE_WINDOW`
-  * 启用"Large Window Brotli"模式的布尔标志（与
+  * 启用“超大窗口 Brotli”模式的布尔标志（与
     [RFC 7932][] 中标准化的 Brotli 格式不兼容）。
 * `BROTLI_PARAM_NPOSTFIX`
   * 范围从 `0` 到 `BROTLI_MAX_NPOSTFIX`。
@@ -690,7 +690,7 @@ added:
 * `BROTLI_DECODER_PARAM_DISABLE_RING_BUFFER_REALLOCATION`
   * 影响内部内存分配模式的布尔标志。
 * `BROTLI_DECODER_PARAM_LARGE_WINDOW`
-  * 启用"Large Window Brotli"模式的布尔标志（与
+  * 启用“超大窗口 Brotli”模式的布尔标志（与
     [RFC 7932][] 中标准化的 Brotli 格式不兼容）。
 
 ### Zstd 常量
@@ -755,10 +755,9 @@ const stream = zlib.createZstdCompress({
 
 #### 承诺源大小
 
-可以通过
-`opts.pledgedSrcSize` 指定未压缩输入的预期总大小。
-如果输入结束时大小不匹配，
-压缩将失败，代码为 `ZSTD_error_srcSize_wrong`。
+可以通过 `opts.pledgedSrcSize` 指定未压缩输入的预期总大小，
+该值必须是非负安全整数。如果大小在输入结束时不匹配，
+压缩将失败，并返回代码 `ZSTD_error_srcSize_wrong`。
 
 #### 解压器选项
 
@@ -774,7 +773,9 @@ const stream = zlib.createZstdCompress({
 <!-- YAML
 added: v0.11.1
 changes:
-  - version: v26.5.0
+  - version:
+     - v26.5.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/64023
     description: 添加了 `rejectGarbageAfterEnd` 选项。
   - version:
@@ -821,7 +822,9 @@ changes:
 <!-- YAML
 added: v11.7.0
 changes:
-  - version: v26.5.0
+  - version:
+     - v26.5.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/64023
     description: 添加了 `rejectGarbageAfterEnd` 选项。
   - version:
@@ -931,19 +934,19 @@ added: v0.5.8
 
 使用 gzip 压缩数据。
 
-## Class: `zlib.Inflate`
+## 类：`zlib.Inflate`
 
 <!-- YAML
 added: v0.5.8
 changes:
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2595
-    description: "Truncated input streams will now cause an `'error'` event."
+    description: "截断的输入流现在将触发 `'error'` 事件。"
 -->
 
-* Inherits from: [`ZlibBase`][]
+* 继承自：[`ZlibBase`][]
 
-Decompresses a deflate stream.
+解压 deflate 流。
 
 ## 类：`zlib.InflateRaw`
 
@@ -971,6 +974,908 @@ added: v0.5.8
 * 继承自：[`ZlibBase`][]
 
 通过自动检测头来解压缩 Gzip 或 Deflate 压缩流。
+
+## 类：`zlib.ZipBuffer`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.0 - 早期开发阶段
+
+ZIP 归档 API 处于实验阶段。首次使用其中的任何部分（包括此类）都会发出实验性警告；仅导入 `node:zlib` 不会发出警告。
+
+这是一个位于内存中的、**零拷贝**视图，用于查看已经存放在 `Buffer`、`TypedArray`、`DataView` 或 `ArrayBuffer` 中的 ZIP 归档条目。其条目集合可以编辑——可以添加或删除条目——但是与 [`ZipFile`][] 不同，这些编辑**不会**写入源缓冲区：新添加的条目会作为独立的内存中 [`ZipEntry`][] 保存（传入的缓冲区是固定大小的视图，没有空间追加内容），而删除操作只是将条目从 `ZipBuffer` 的索引中移除。原始字节永远不会被修改。[`zipBuffer.toBuffer()`][] 会将当前的条目集合序列化到一个新的归档中。
+
+`ZipBuffer` 不会复制传入的归档。它会保留对该内存的视图，并直接从中延迟读取每个条目的内容，这使得无论归档大小如何，构造对象的成本都很低。代价是，在 `ZipBuffer` 或从其获取的任何 [`ZipEntry`][] 仍在使用时，**不得修改或重用**该内存——包括作为 `TypedArray`/`DataView` 后备存储的 `ArrayBuffer`：后续读取会观察到变化，并可能失败或返回损坏的数据。如果源数据可能被修改或重用，请传入副本（例如 `Buffer.from(source)`）。
+
+`add()` 和 `toBuffer()` 各自都有对应的 `*Sync` 版本（[`addSync()`][`zipBuffer.addSync()`]、[`toBufferSync()`][`zipBuffer.toBufferSync()`]），会同步执行相同的压缩工作。与同步的 `node:fs` API 一样，这些方法会阻塞 Node.js 事件循环以及进一步的 JavaScript 执行，直到操作完成；仅在适合同步执行的场景中使用它们（例如短期脚本或启动代码），不要在必须保持响应的代码中使用。
+
+```mjs
+import { ZipBuffer } from 'node:zlib';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { Buffer } from 'node:buffer';
+
+const zip = new ZipBuffer(readFileSync('archive.zip'));
+for (const [name, entry] of zip) {
+  console.log(name, entry.size);
+}
+await zip.add('hello.txt', Buffer.from('Hello, world!'));
+zip.delete('unwanted.txt');
+writeFileSync('archive.zip', await zip.toBuffer());
+```
+
+```cjs
+const { ZipBuffer } = require('node:zlib');
+const { readFileSync, writeFileSync } = require('node:fs');
+
+async function main() {
+  const zip = new ZipBuffer(readFileSync('archive.zip'));
+  for (const [name, entry] of zip) {
+    console.log(name, entry.size);
+  }
+  await zip.add('hello.txt', Buffer.from('Hello, world!'));
+  zip.delete('unwanted.txt');
+  writeFileSync('archive.zip', await zip.toBuffer());
+}
+main();
+```
+
+### `new zlib.ZipBuffer(buffer)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `buffer` {Buffer|TypedArray|DataView|ArrayBuffer} 完整的 ZIP 归档。
+
+解析归档的中央目录。如果 `buffer` 不是格式正确且受支持的归档，则抛出 [`ERR_ZIP_INVALID_ARCHIVE`][] 或 [`ERR_ZIP_UNSUPPORTED_FEATURE`][] 错误。
+
+`buffer` **不会被复制**：`ZipBuffer` 会保留对它的零拷贝视图（对于 `TypedArray`、`DataView` 或 `ArrayBuffer`，即对其底层 `ArrayBuffer` 的视图），并按需直接从其中读取条目内容。当 `ZipBuffer` 或从其读取的任何条目仍处于活动状态时，不要修改或重用该内存；如果内存可能发生变化，请传入副本。
+
+### `zipBuffer.add(filename, data[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `filename` {string} 归档中条目的名称。以 `/` 结尾表示目录条目。
+* `data` {Buffer|TypedArray|DataView|ArrayBuffer} 条目的完整、未压缩内容。
+* `options` {Object} 参见 [`zlib.ZipEntry.create()`][]。
+* 返回：{Promise} 兑现后得到所创建的 {ZipEntry}。
+
+等价于 `zipBuffer.addEntry(await zlib.ZipEntry.create(filename, data,
+options))`。
+
+### `zipBuffer.addSync(filename, data[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `filename` {string} 归档中条目的名称。以 `/` 结尾表示目录条目。
+* `data` {Buffer|TypedArray|DataView|ArrayBuffer} 条目的完整、未压缩内容。
+* `options` {Object} 参见 [`zlib.ZipEntry.createSync()`][]。
+* 返回：{ZipEntry} 所创建的条目。
+
+[`zipBuffer.add()`][] 的同步版本。等价于
+`zipBuffer.addEntry(zlib.ZipEntry.createSync(filename, data, options))`。
+
+### `zipBuffer.addEntry(entry)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `entry` {ZipEntry}
+* 返回：{ZipEntry} `entry`。
+
+添加一个已经构建的条目，以其自身的 [`zipEntry.name`][] 为键。如果已存在同名条目，则替换该条目。
+
+### `zipBuffer.clear()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+移除所有条目。
+
+### `zipBuffer.comment`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{string}
+
+归档级注释。在未被覆盖的情况下，该注释会在 [`zipBuffer.toBuffer()`][] 调用之间逐字节保留。当字节是有效的 UTF-8 时，会将其解码为 UTF-8；否则解码为 CP437（该字段自身不携带编码标志）。
+
+### `zipBuffer.delete(name)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string}
+* 返回：{boolean} 如果存在名为 `name` 的条目并已将其移除，则为 `true`。
+
+### `zipBuffer.entries()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 返回：包含 `[name, entry]` 对的 {Iterator}，其中 `entry` 是 [`ZipEntry`][]。
+
+### `zipBuffer.forEach(callback[, thisArg])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `callback` {Function}
+* `thisArg` {any}
+
+按照归档列出条目的顺序，对每个条目调用一次 `callback`。
+
+### `zipBuffer.get(name)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string}
+* 返回：{ZipEntry}
+
+如果归档中不存在名为 `name` 的条目，则抛出 [`ERR_ZIP_ENTRY_NOT_FOUND`][]。
+
+### `zipBuffer.has(name)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string}
+* 返回：{boolean}
+
+### `zipBuffer.keys()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 返回：包含条目名称的 {Iterator}。
+
+### `zipBuffer.size`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{number}
+
+归档中的条目数量。
+
+### `zipBuffer.toBuffer([options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `options` {string|Object} 归档注释，可简写为
+  `{ comment: options }`。
+  * `comment` {string} 归档注释。**默认值：** [`zipBuffer.comment`][]。
+  * `baseOffset` {number} 将归档记录的每个偏移量移动指定的字节数，使序列化后的归档即使写入最终文件的起始位置以外，也能自我描述——例如，写入已经向同一输出中写入的 `baseOffset` 字节其他内容之后。**默认值：** `0`。
+* 返回：{Promise} 兑现后得到包含序列化归档的 {Buffer}。
+
+按照条目被添加或读取的顺序，将当前的条目集合序列化到一个新的归档中，并根据需要自动切换到 Zip64 结构（参见 [`zlib.createZipArchive()`][]）。
+
+### `zipBuffer.toBufferSync([options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `options` {string|Object} 参见 [`zipBuffer.toBuffer()`][]。
+* 返回：{Buffer} 序列化后的归档。
+
+[`zipBuffer.toBuffer()`][] 的同步版本（参见 [`zlib.createZipArchiveSync()`][]）。
+
+### `zipBuffer.values()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 返回：包含 [`ZipEntry`][] 的 {Iterator}。
+
+### `zipBuffer.writable`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{boolean}
+
+始终为 `true`。
+
+## 类：`zlib.ZipEntry`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.0 - 早期开发阶段
+
+ZIP 归档 API 仍处于实验阶段。首次使用其中的任何部分（包括此类）都会发出实验性警告；仅导入 `node:zlib` 不会发出警告。
+
+ZIP 归档中的单个文件或目录。实例由 [`ZipBuffer`][] 和 [`ZipFile`][] 生成，也可以直接通过 `ZipEntry.create()`/`ZipEntry.createStream()` 创建以进行写入。
+
+`create()` 和 `content()` 各自都有对应的 `*Sync` 版本（流式的 `contentIterator()` 没有）。与同步的 `node:fs` API 一样，这些方法会阻塞
+Node.js 事件循环以及后续的 JavaScript 执行，直到操作（包括任何 deflate/inflate 过程）完成；仅应在适合进行同步执行的场景中使用它们（例如短生命周期脚本或启动代码），而不应在必须保持响应的代码中使用。
+
+### 静态方法：`zlib.ZipEntry.create(filename, data[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `filename` {string} 存档中条目的名称。末尾的 `/` 表示目录条目。
+* `data` {Buffer|TypedArray|DataView|ArrayBuffer} 条目的完整未压缩内容。当
+  `filename` 指定目录时必须为空。
+* `options` {Object}
+  * `comment` {string} 条目注释。
+  * `mode` {integer} Unix 权限位。**默认值：** `0o644`（目录为
+    `0o755`）。
+  * `modified` {Date} 条目的修改时间。**默认值：**当前时间。
+  * `method` {string} `'deflate'`、`'store'` 或 `'zstd'` 之一。**默认值：**
+    `'deflate'`，但目录和空内容始终使用存储方式。
+* 返回：{Promise} 兑现时返回一个 {ZipEntry}。
+
+压缩 `data`（除非 `method` 为 `'store'`，或压缩不会减小其大小），并计算其 CRC-32。
+
+当条目最终以未压缩方式存储时（因为 `method` 为 `'store'`，或因为压缩不会减小其大小），条目会保留 `data` 的零拷贝视图，而不是副本，并且其 CRC-32 已经记录。创建条目后不要修改 `data`；如果 `data` 可能发生变化，请传入副本。
+
+ZIP 用于 `modified` 的 MS-DOS 日期/时间字段精度为 2 秒且不包含时区。当 `modified` 不在完整的 2 秒边界上时，还会写入一个 Info-ZIP 扩展时间戳额外字段，记录完整的（UTC）秒数，以便更精确地还原时间（参见 [`zipEntry.modified`][]）。这适用于每一种条目创建路径。
+
+### 静态方法：`zlib.ZipEntry.createStream(filename, source[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `filename` {string} 存档中的条目名称。不得以 `/` 结尾。
+* `source` {AsyncIterable} 以 `Uint8Array` 分块生成条目未压缩的内容。
+* `options` {Object}
+  * `comment` {string} 条目注释。
+  * `mode` {integer} Unix 权限位。**默认值：** `0o644`。
+  * `modified` {Date} 条目的修改时间。**默认值：**当前时间。
+  * `method` {string} 可以是 `'deflate'`、`'store'` 或 `'zstd'` 之一。**默认值：**
+    `'deflate'`。
+* 返回：{ZipEntry}
+
+创建一个条目，在其由 [`zlib.createZipArchive()`][] 序列化时动态压缩其内容，
+不会将 `source` 缓冲在内存中。只有在序列化完成后，其 `size`、`compressedSize`
+和 `crc32` 才可用。没有对应的同步方法：流式条目只有在异步、增量生成的
+`source` 中才有意义。
+
+`source` 仅在序列化期间被准确读取一次。在此之前，该条目没有可读取的内容，因此
+[`zipEntry.content()`][]、[`zipEntry.contentSync()`][] 和
+[`zipEntry.contentIterator()`][] 会抛出 [`ERR_INVALID_STATE`][]。如果通过
+[`zipFile.addEntry()`][]（或 `addEntrySync()`）将该条目添加到可写的
+[`ZipFile`][] 中进行序列化，则它会**原地转换**为一个文件支持的条目，指向刚刚写入的副本，
+因此只要该 [`ZipFile`][] 保持打开状态，它就可以被读取（也可以再次序列化）。
+以任何其他方式序列化它（例如直接通过 [`zlib.createZipArchive()`][]）都会使其
+耗尽且无法读取。
+
+由于 `source` 可能持有操作系统资源（例如文件读取流），流式条目是可释放的：
+如果尚未消费其 `source`，它的 `Symbol.dispose` 和 `Symbol.asyncDispose` 方法会销毁
+该 `source`。传递给存档的条目由该存档负责释放（参见
+[`zlib.createZipArchive()`][]）；只有在条目创建后却从未交给存档时，才应直接释放它。
+对于非流式条目，释放操作不会产生任何效果——尤其是文件支持的条目绝不会关闭其借用的
+[`ZipFile`][] 描述符。
+
+### 静态方法：`zlib.ZipEntry.createSymlink(filename, target[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `filename` {string} 条目在存档中的名称。
+* `target` {string} 符号链接的目标路径。
+* `options` {Object}
+  * `comment` {string} 条目注释。
+  * `mode` {integer} Unix 权限位。**默认值：** `0o777`。
+  * `modified` {Date} 条目的修改时间。**默认值：** 当前时间。
+* 返回：{ZipEntry}
+
+创建一个符号链接条目：该条目为存储条目，其内容为 `target`，且其 Unix
+模式类型位将其标记为符号链接，因此读回后 [`zipEntry.isSymlink`][] 为
+`true`。支持符号链接条目的解压工具会重新创建该链接；请将 `target` 视为
+不受信任的内容（有关路径安全性，请参阅 [`zipEntry.name`][]）。
+
+### 静态方法：`zlib.ZipEntry.createSync(filename, data[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `filename` {string} 归档中的条目名称。末尾的 `/`
+  表示目录条目。
+* `data` {Buffer|TypedArray|DataView|ArrayBuffer} 条目的完整、
+  未压缩内容。当 `filename` 表示目录时必须为空。
+* `options` {Object} 请参阅 [`zlib.ZipEntry.create()`][]。
+* 返回：{ZipEntry}
+
+[`zlib.ZipEntry.create()`][] 的同步版本。
+
+### 静态方法：`zlib.ZipEntry.read(buffer)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `buffer` {Buffer|TypedArray|DataView|ArrayBuffer} 一个完整的 ZIP 归档。
+* 返回：{ZipEntry} 的 {Iterator}。
+
+直接解析 `buffer` 中的每个条目，而不会将其建立索引到
+[`ZipBuffer`][] 中。与 [`ZipBuffer`][] 一样，生成的条目持有的是
+`buffer` 的零拷贝视图，而不是其内容的副本，因此同样适用以下规则：当其中
+任何条目仍在使用时，请勿修改或重新使用 `buffer`。
+
+### `zipEntry.comment`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{string}
+
+### `zipEntry.compressed`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{boolean}
+
+如果条目的内容以压缩形式存储（任何压缩方法，目前为 deflate 或 Zstandard），则为 `true`；如果以未压缩形式存储，则为 `false`。
+
+### `zipEntry.compressedSize`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型: {number}
+
+### `zipEntry.content([options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `options` {Object}
+  * `verify` {boolean} 验证条目的 CRC-32 校验和。**默认值：** `true`。
+  * `maxSize` {number} 在分配任何内容之前，拒绝声明超过此未压缩字节数的内容。**默认值：**
+    [`zlib.getMaxZipContentSize()`][]。
+* 返回值：{Promise} 成功时返回一个包含条目解压缩内容的 {Buffer}。该缓冲区是一个全新副本，与存档或创建条目时所使用的数据不共享任何内存。
+
+如果条目声明的大小超过 `maxSize`，则抛出 [`ERR_ZIP_ENTRY_TOO_LARGE`][] 错误；如果内容未通过 CRC-32 验证或与其声明的大小不匹配，则抛出 [`ERR_ZIP_ENTRY_CORRUPT`][] 错误；对于内容尚不可用的流式条目（[`zlib.ZipEntry.createStream()`][]），则抛出 [`ERR_INVALID_STATE`][] 错误（有关流式条目何时变为可读，请参阅该方法）。
+
+### `zipEntry.contentSync([options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `options` {Object} 参见 [`zipEntry.content()`][]。
+* 返回：{Buffer} 条目的解压缩内容。
+
+[`zipEntry.content()`][] 的同步版本。
+
+### `zipEntry.contentIterator([options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `options` {Object}
+  * `verify` {boolean} 验证条目的 CRC-32 校验和。**默认值：** `true`。
+  * `maxSize` {number} 在解压任何内容之前，拒绝声明包含超过此数量未压缩字节的内容。**默认值：**无限制。
+* 返回：包含条目解压缩内容的 {Buffer} 块的 {AsyncIterator}。
+
+与 [`zipEntry.content()`][] 不同，此方法不会将整个成员缓冲在内存中。对于基于文件的条目（由 [`zipFile.get()`][] 返回的条目），压缩字节会随着迭代器的消耗从磁盘读取，并且不会保留任何内容；该条目仅在其 `ZipFile` 处于打开状态时有效。
+
+由于流式处理是处理任意大型成员时限制内存使用的方式，因此它**不受** [`zlib.getMaxZipContentSize()`][] 限制，这一点不同于 [`zipEntry.content()`][]——该默认值用于防止单次大型分配，而流式处理不会进行此类分配。输出仍会根据声明的未压缩大小按块进行限制；传入 `maxSize` 可设置一个明确的上限。
+
+对于以无压缩方式存储的内存中条目，生成的块是条目所保留内容的零拷贝视图（参见 [`zipEntry.rawContent`][]）；请勿修改它们。
+
+生成的块在迭代器完成之前都是**暂定的**。CRC-32 验证（以及最终的声明大小检查）只有在读取完每个字节后才能执行，因此损坏或截断的条目会在最后一个块之后由迭代器抛出异常来报告，而不是在第一个块之前报告。每个块仍受到限制，因此总大小不会超过声明的大小或 `maxSize`，但如果消费者不得处理未经验证的字节，则应先将它们缓冲起来（或使用 [`zipEntry.content()`][]，该方法会在返回任何内容之前完成验证），而不是在块到达时立即处理。
+
+### `zipEntry.crc32`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{number}
+
+### `zipEntry.flags`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型: {number}
+
+条目的原始通用位标志。
+
+### `zipEntry.isDirectory`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{boolean}
+
+如果该条目是目录（其名称以 `/` 结尾），则为 `true`。
+
+### `zipEntry.isFile`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{boolean}
+
+如果该条目是普通文件，则为 `true`——也就是说，既不是目录，也不是
+符号链接。
+
+### `zipEntry.isSymlink`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{boolean}
+
+如果条目是符号链接（其 Unix 模式类型位为
+`S_IFLNK`），则为 `true`；其内容是链接目标。对于不是在类 Unix 系统上写入的归档文件，始终为
+`false`。提取时，请将符号链接的目标视为不可信内容——有关路径安全性，请参阅
+[`zipEntry.name`][]。
+
+### `zipEntry.mode`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{number}
+
+条目的 Unix 模式权限位，包括 setuid、setgid 和 sticky 位（低 12 位，`0o7777`）；如果归档不是在类 Unix 系统上写入的，则为 `0`。此处不包含文件类型位；请使用
+[`zipEntry.isDirectory`][] / [`zipEntry.isSymlink`][] 获取类型。
+
+### `zipEntry.modified`
+
+<!-- YAML
+added: 待替换
+-->
+
+* 类型：{Date}
+
+条目的最后修改时间。当归档文件在额外字段中携带更高精度的时间戳时——例如 NTFS（`0x000a`）、Info-ZIP 扩展（`0x5455`）或 Info-ZIP Unix（`0x5855`）字段（大多数现代工具都会写入这些字段）——将使用该绝对时间（UTC）；否则使用精度较低的本地时间 MS-DOS 日期/时间字段（精度为 2 秒）。
+
+某些工具仅将高精度时间戳存储在本地文件头中，因此对于基于文件的条目（由 [`zipFile.get()`][] 返回的条目），首次读取此属性时可能会执行一次小型的同步定点磁盘读取，以解析该文件头。如果读取失败，该值将静默回退到中央目录数据。
+
+### `zipEntry.method`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{number}
+
+条目的原始压缩方法：`0` 表示存储，`8` 表示 deflate，`93`
+表示 Zstandard。
+
+### `zipEntry.name`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{string}
+
+条目的名称，从中央目录中解码而来，并以其为准——如果本地文件头中的名称与之不一致，则会被忽略，因此，头部不匹配（“ZIP 混淆”）的归档无法使 `name` 与实际读取的名称不一致。如果存在有效的 Info-ZIP Unicode 路径扩展字段（`0x7075`），则从该字段中解码字节；否则，当语言编码标志（通用用途位 11）被设置**或字节是有效的 UTF-8** 时，按 UTF-8 解码（许多工具写入 UTF-8 名称时从未设置该标志）；仅当字节不满足上述条件时，才按 CP437——历史默认编码——解码。
+参见 [`zipEntry.nameBuffer`][]，了解原始字节。
+
+名称会**原样**返回：绝不会进行规范化；包含 `..`、以 `/` 开头、包含驱动器盘符或反斜杠的名称既不会被改写，也不会被拒绝。`ZipFile`/`ZipBuffer` 永远不会写入磁盘，因此在解压时防范路径遍历（“Zip Slip”）是调用方的责任。
+
+### `zipEntry.nameBuffer`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{Buffer}
+
+条目的原始名称字节，在进行任何字符解码之前的内容。当归档中的名称采用 UTF-8 或 CP437 以外的编码，且调用方希望自行对其进行解码时，此属性非常有用。
+
+### `zipEntry.rawContent`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{Buffer|null}
+
+条目在内存中保存时的原始内容（如果适用，仍为压缩状态）；如果没有可供公开的内存缓冲区，则为
+`null`——例如，对于使用 [`zlib.ZipEntry.createStream()`][] 创建的条目，或由
+[`zipFile.get()`][] 返回的文件支持条目，其字节数据会按需从磁盘读取，而不是保留在内存中。使用
+[`zipEntry.content()`][] 或 [`zipEntry.contentIterator()`][] 来读取文件支持条目。
+
+### `zipEntry.size`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{number}
+
+条目的未压缩大小，以字节为单位。
+
+## 类：`zlib.ZipFile`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.0 - 早期开发
+
+ZIP 归档 API 仍处于实验阶段。首次使用其中任何部分（包括此类）都会发出实验性警告；仅导入 `node:zlib` 不会发出警告。
+
+提供对磁盘上 ZIP 归档条目的随机访问视图。只有归档的尾部和中央目录会预先读取；成员内容会在需要时从磁盘延迟读取。使用 `{ writable: true }` 打开时可写：[`zipFile.addEntry()`][]/ [`zipFile.add()`][] 会将新成员的数据追加到原中央目录所在的位置，然后立即在其后重写中央目录；[`zipFile.delete()`][] 只会重写中央目录。这两种操作都意味着，一旦方法返回的 `Promise` 完成，文件就已被修改。已删除或替换的成员会作为无效空间保留；[`zipFile.compact()`][] 会生成一个不包含这些空间的流。
+
+这些就地编辑操作**不具备崩溃原子性**。中央目录会在原位置重写，因此如果写入过程中途失败——磁盘空间耗尽、设备断开连接、进程被终止——可能会导致磁盘上的归档包含不完整或缺失的中央目录，即变得无法读取，尽管其之前的成员数据仍然完整。被拒绝的调用会传递底层错误，而 `ZipFile` 对象仍可继续使用（其内存中的视图不会被丢弃，因此调用方可以尝试恢复——例如使用 [`zipFile.compact()`][] 将条目重写到其他位置），但该内存视图可能不再与磁盘上的字节匹配。当故障期间的数据持久性很重要时，请写入副本，或将 `compact()` 写入一个新文件。
+
+每个方法都有对应的 `*Sync` 版本。与同步的 `node:fs` API 一样，这些方法会阻塞 Node.js 事件循环以及后续的 JavaScript 执行，直到操作完成；仅应在适合同步执行的场景中使用它们（例如短生命周期脚本或启动代码），不要在必须保持响应的代码中使用。如果同一 `ZipFile` 上的异步 `add()`、`addEntry()`、`delete()` 或 `close()` 尚未完成，就调用同步方法，该方法会抛出 `ERR_INVALID_STATE`，因为让两者交错执行可能会损坏归档。
+
+```mjs
+import { ZipFile } from 'node:zlib';
+import { Buffer } from 'node:buffer';
+
+const zip = await ZipFile.open('archive.zip', { writable: true });
+try {
+  const entry = await zip.get('member.txt');
+  console.log((await entry.content()).toString());
+  for await (const chunk of await zip.stream('huge.bin')) {
+    // 逐个处理每个数据块，而不将整个成员缓冲在内存中。
+  }
+  await zip.add('new.txt', Buffer.from('hello'));
+  await zip.delete('unwanted.txt');
+} finally {
+  await zip.close();
+}
+```
+
+```cjs
+const { ZipFile } = require('node:zlib');
+
+async function main() {
+  const zip = await ZipFile.open('archive.zip', { writable: true });
+  try {
+    const entry = await zip.get('member.txt');
+    console.log((await entry.content()).toString());
+    for await (const chunk of await zip.stream('huge.bin')) {
+      // 逐个处理每个数据块，而不将整个成员缓冲在内存中。
+    }
+    await zip.add('new.txt', Buffer.from('hello'));
+    await zip.delete('unwanted.txt');
+  } finally {
+    await zip.close();
+  }
+}
+main();
+```
+
+### 静态方法：`zlib.ZipFile.open(filename[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `filename` {string}
+* `options` {Object}
+  * `writable` {boolean} 以读写模式（`'r+'`）打开底层文件，从而启用 [`zipFile.addEntry()`][]/ [`zipFile.add()`][]/ [`zipFile.delete()`][]。**默认值：** `false`。
+* 返回：{Promise} 使用 {ZipFile} 履行。
+
+如果归档的中央目录过大，无法缓冲到内存中，则抛出 [`ERR_ZIP_ARCHIVE_TOO_LARGE`][] 错误。
+
+### 静态方法：`zlib.ZipFile.openSync(filename[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `filename` {string}
+* `options` {Object} 参见 [`zlib.ZipFile.open()`][]。
+* 返回：{ZipFile}
+
+[`zlib.ZipFile.open()`][] 的同步版本。
+
+### `zipFile.add(filename, data[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `filename` {string} 存档中文件条目的名称。以 `/` 结尾表示目录条目。
+* `data` {Buffer|TypedArray|DataView|ArrayBuffer} 文件条目的完整未压缩内容。
+* `options` {Object} 请参阅 [`zlib.ZipEntry.create()`][]。
+* 返回值：{Promise} 完成时返回所创建的 {ZipEntry}。
+
+等效于 `zipFile.addEntry(await zlib.ZipEntry.create(filename, data,
+options))`。
+
+### `zipFile.addEntry(entry)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `entry` {ZipEntry}
+* 返回：{Promise} 以 `entry` 完成。
+
+将 `entry` 写入中央目录当前开始的位置，然后重写中央目录以包含该条目；如果已有同名条目，则将其替换。如果 `ZipFile` 未使用 `{ writable: true }` 打开，则抛出 [`ERR_ZIP_NOT_WRITABLE`][]。
+
+返回的（同一个）`entry` 仍可读：使用 [`zlib.ZipEntry.createStream()`][] 创建的流式条目在序列化后通常会失效，但现在会就地提升为一个基于文件的条目，指向刚刚写入的副本（在此 `ZipFile` 保持打开期间有效）。内存中的条目则保持其自身的缓冲区不变。
+
+### `zipFile.addEntrySync(entry)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `entry` {ZipEntry}
+* 返回：{ZipEntry} `entry`。
+
+[`zipFile.addEntry()`][] 的同步版本。`entry` 不得是待处理的流式条目（使用
+[`zlib.ZipEntry.createStream()`][] 创建的条目）——无法以同步方式耗尽其
+异步源。
+
+### `zipFile.addSync(filename, data[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `filename` {string} 条目在存档中的名称。末尾的 `/`
+  表示目录条目。
+* `data` {Buffer|TypedArray|DataView|ArrayBuffer} 条目的完整、
+  未压缩内容。
+* `options` {Object} 请参阅 [`zlib.ZipEntry.createSync()`][]。
+* 返回值：{ZipEntry} 创建的条目。
+
+[`zipFile.add()`][] 的同步版本。等同于
+`zipFile.addEntrySync(zlib.ZipEntry.createSync(filename, data, options))`。
+
+### `zipFile.close()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 返回：{Promise}
+
+关闭底层文件句柄。
+
+关闭不会使现有对象失效：之前由 [`zipFile.get()`][] 返回的 `ZipEntry` 对象以及 `ZipFile` 自身的方法在关闭后使用时将失败并返回系统级错误（例如 `EBADF`），而不是专用的 Node.js 错误代码。[`zipFile.closeSync()`][] 也是如此。
+
+### `zipFile.closeSync()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+[`zipFile.close()`][] 的同步版本。
+
+### `zipFile.comment`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{string}
+
+归档级注释，在调用 [`zipFile.addEntry()`][]/ [`zipFile.delete()`][] 的过程中逐字节保留。字节在属于有效 UTF-8 时按 UTF-8 解码，否则按 CP437 解码（该字段本身不携带编码标志）。
+
+### `zipFile.compact([comment])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `comment` {string} 归档注释。**默认值：**[`zipFile.comment`][]。
+* 返回：{stream.Readable} 当前处于活动状态的条目流，
+  序列化为一个全新的归档，不包含之前调用 [`zipFile.addEntry()`][]/ [`zipFile.delete()`][] 所留下的任何空闲空间。
+
+不会修改已打开的文件；将结果管道传输到一个新文件中：
+
+```mjs
+import { createWriteStream } from 'node:fs';
+zip.compact().pipe(createWriteStream('compacted.zip'));
+```
+
+### `zipFile.compactSync([comment])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `comment` {string} 压缩包注释。**默认值：**[`zipFile.comment`][]。
+* 返回：{Buffer} 当前有效的条目，序列化为一个全新的压缩包，不包含之前调用
+  [`zipFile.addEntry()`][]/[`zipFile.delete()`][] 留下的空白空间。
+
+[`zipFile.compact`][] 的同步版本。不会修改打开的文件。
+
+### `zipFile.delete(name)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string}
+* 返回值：{Promise} 如果存在名为 `name` 的条目并已将其删除，则完成时返回
+  `true`，否则返回 `false`。
+
+在不写入任何新内容的情况下重写中央目录——存档不会增大。如果 `ZipFile` 未以
+`{ writable: true }` 打开，则抛出 [`ERR_ZIP_NOT_WRITABLE`][]。
+
+### `zipFile.deleteSync(name)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string}
+* 返回值：{boolean} 如果存在名为 `name` 的条目并已将其删除，则为 `true`，
+  否则为 `false`。
+
+[`zipFile.delete()`][] 的同步版本。
+
+### `zipFile.entries()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 返回：由 `[name, entry]` 对组成的 {Iterator}，其中 `entry` 是一个
+  兑现为 [`ZipEntry`][] 的 {Promise}。
+
+### `zipFile.entriesSync()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 返回：由 `[name, entry]` 对组成的 {Iterator}，其中 `entry` 是已解析的
+  [`ZipEntry`][]（不是 `Promise`）。
+
+[`zipFile.entries()`][] 的同步版本。
+
+### `zipFile.forEach(callback[, thisArg])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `callback` {Function}
+* `thisArg` {any}
+
+### `zipFile.forEachSync(callback[, thisArg])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `callback` {Function}
+* `thisArg` {any}
+
+[`zipFile.forEach()`][] 的同步版本：`callback` 将接收已解析的 [`ZipEntry`][]，
+而不是 `Promise`。
+
+### `zipFile.get(name)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string}
+* 返回：{Promise}，成功时返回一个 {ZipEntry}。
+
+返回一个针对 `name` 的延迟加载、由文件支持的 [`ZipEntry`][]。此处不会从磁盘读取任何内容，也不会缓存内容：返回的条目会在每次访问时直接从文件中读取其成员（对于 [`zipEntry.content()`][]，还会对其进行解压），而 `ZipFile` 不会保留任何成员内容。该条目仅在此 `ZipFile` 处于打开状态期间有效。稍后读取其内容时，如果成员过大而无法装入单个缓冲区，可能会抛出 [`ERR_ZIP_ENTRY_TOO_LARGE`][]；请改用 [`zipEntry.contentIterator()`][]（或 [`zipFile.stream()`][]）。如果归档中没有名为 `name` 的条目，则抛出 [`ERR_ZIP_ENTRY_NOT_FOUND`][]。
+
+### `zipFile.getSync(name)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string}
+* 返回：{ZipEntry}
+
+[`zipFile.get()`][] 的同步版本。与 `get()` 一样，它不会预先读取任何内容，只会构建延迟句柄，因此其自身不会因 I/O 而阻塞——但之后通过返回的条目执行的读取操作（例如 [`zipEntry.contentSync()`][]）会阻塞；请参阅上文关于同步方法的说明。
+
+### `zipFile.has(name)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string}
+* 返回：{boolean}
+
+### `zipFile.keys()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 返回：包含条目名称的 {Iterator}。
+
+### `zipFile.size`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型: {number}
+
+存档中的条目数量。
+
+### `zipFile.stream(name[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string}
+* `options` {Object}
+  * `verify` {boolean} 验证条目的 CRC-32 校验和。**默认值：** `true`。
+  * `maxSize` {number} 拒绝声明包含超过此字节数的未压缩内容。**默认值：** 无限制。
+* 返回：{Promise} 兑现为一个包含成员解压缩内容的 {stream.Readable}，不会将整个成员缓冲在内存中。
+
+便捷包装器，解析为 [`zipFile.get()`][]`(name)` 的 [`zipEntry.contentIterator()`][] 上的 `Readable`；压缩字节会在流被读取时从磁盘读取。如果归档中没有名为 `name` 的条目，返回的 promise 将因 [`ERR_ZIP_ENTRY_NOT_FOUND`][] 而拒绝。
+
+### `zipFile.values()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 返回：由 {Promise} 对象组成的 {Iterator}，每个对象兑现后得到一个
+  [`ZipEntry`][]。
+
+### `zipFile.valuesSync()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 返回：已解析的 [`ZipEntry`][] 值的 {Iterator}（不是 `Promise`）。
+
+[`zipFile.values()`][] 的同步版本。
+
+### `zipFile.writable`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{boolean}
+
+此 `ZipFile` 是否以 `{ writable: true }` 方式打开。
 
 ## 类：`zlib.ZlibBase`
 
@@ -1054,7 +1959,12 @@ added:
   - v23.8.0
   - v22.15.0
 changes:
-  - version: v26.5.0
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64599
+    description: "`dictionary` 选项可以是 `TypedArray`、`DataView` 或 `ArrayBuffer`。"
+  - version:
+     - v26.5.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/64023
     description: 已添加 `rejectGarbageAfterEnd` 选项。
 -->
@@ -1063,15 +1973,14 @@ changes:
 
 每个基于 Zstd 的类都接受一个 `options` 对象。所有选项都是可选的。
 
-* `flush` {integer} **默认值：** `zlib.constants.ZSTD_e_continue`
-* `finishFlush` {integer} **默认值：** `zlib.constants.ZSTD_e_end`
-* `chunkSize` {integer} **默认值：** `16 * 1024`
-* `params` {Object} 包含已索引 [Zstd 参数][] 的键值对象。
-* `maxOutputLength` {integer} 在使用
-  [便捷方法][] 时限制输出大小。**默认值：** [`buffer.kMaxLength`][]
-* `info` {boolean} 如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。**默认值：** `false`
-* `dictionary` {Buffer} 可选字典，用于在压缩或解压缩与该字典共享常见模式的数据时提高压缩效率。
-* `rejectGarbageAfterEnd` {boolean} 如果为 `true`，则在第一个完整压缩流之后仍有输入残留时，解压缩会失败。**默认值：** `false`
+* `flush` {integer} **Default:** `zlib.constants.ZSTD_e_continue`
+* `finishFlush` {integer} **Default:** `zlib.constants.ZSTD_e_end`
+* `chunkSize` {integer} **Default:** `16 * 1024`
+* `params` {Object} 包含带索引的 [Zstd parameters][] 的键值对象。
+* `maxOutputLength` {integer} 使用[便捷方法][convenience methods][]时限制输出大小。**Default:** [`buffer.kMaxLength`][]
+* `info` {boolean} 如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。**Default:** `false`
+* `dictionary` {Buffer|TypedArray|DataView|ArrayBuffer} 可选的字典，用于在压缩或解压缩与字典具有共同模式的数据时提高压缩效率。
+* `rejectGarbageAfterEnd` {boolean} 如果为 `true`，则当第一个完整的压缩流之后仍有输入时，解压缩会失败。**Default:** `false`
 
 例如：
 
@@ -1170,7 +2079,7 @@ added:
  - v10.16.0
 -->
 
-* `options` {brotli 选项}
+* `options` {brotli options}
 
 创建并返回一个新的 [`BrotliCompress`][] 对象。
 
@@ -1182,7 +2091,7 @@ added:
  - v10.16.0
 -->
 
-* `options` {brotli 选项}
+* `options` {brotli options}
 
 创建并返回一个新的 [`BrotliDecompress`][] 对象。
 
@@ -1192,7 +2101,7 @@ added:
 added: v0.5.8
 -->
 
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 创建并返回一个新的 [`Deflate`][] 对象。
 
@@ -1214,7 +2123,7 @@ zlib 从 1.2.8 升级到 1.2.11 改变了当 `windowBits` 设置为 8 时原始 
 added: v0.5.8
 -->
 
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 创建并返回一个新的 [`Gunzip`][] 对象。
 
@@ -1224,10 +2133,10 @@ added: v0.5.8
 added: v0.5.8
 -->
 
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 创建并返回一个新的 [`Gzip`][] 对象。
-参见 [示例][zlib.createGzip example]。
+参见 [示例][zlib.createGzip example]】【。
 
 ## `zlib.createInflate([options])`
 
@@ -1235,7 +2144,7 @@ added: v0.5.8
 added: v0.5.8
 -->
 
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 创建并返回一个新的 [`Inflate`][] 对象。
 
@@ -1245,7 +2154,7 @@ added: v0.5.8
 added: v0.5.8
 -->
 
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 创建并返回一个新的 [`InflateRaw`][] 对象。
 
@@ -1255,9 +2164,149 @@ added: v0.5.8
 added: v0.5.8
 -->
 
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 创建并返回一个新的 [`Unzip`][] 对象。
+
+## `zlib.createZipArchive(entries[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.0 - 早期开发
+
+ZIP 归档 API 仍处于实验阶段。首次使用其中的任何部分（包括此函数）
+都会发出实验性警告；仅导入 `node:zlib` 不会发出警告。
+
+* `entries` {Iterable|AsyncIterable} [`ZipEntry`][] 的集合。
+* `options` {string|Object} 归档注释；这是 `{ comment: options }` 的简写形式。
+  * `comment` {string} 归档注释。
+  * `baseOffset` {number} 将归档记录的每个本地/中央标头偏移量平移指定的字节数，
+    这样即使归档之前写入了其他内容，生成的流也能自描述——例如，在同一文件中已经写入
+    `baseOffset` 个字节后将归档追加到文件中，而不是写入文件开头。**默认值：** `0`。
+* 返回：{stream.Readable} 序列化归档的字节流。
+
+将 `entries` 序列化为 ZIP 归档；当条目数量、偏移量或大小中的任意一项超过经典
+32/16 位 ZIP 字段所能容纳的范围时，自动切换为 Zip64 结构。返回的 `Readable` 同时也是
+由其流式传输的相同 {Buffer} 块组成的 `AsyncIterable`。
+
+条目按照迭代顺序写入，并且不会对名称进行去重：如果某个可迭代对象生成了两个同名条目，
+则生成的归档会包含这两个条目，而大多数解压工具会保留后出现的条目。
+[`ZipBuffer`][] 和 [`ZipFile`][] 的 `add()` 方法则会按名称替换条目。
+
+条目归返回的流所有：归档生成时会逐个消费每个条目，之后不得再使用这些条目。这一点对流式
+条目（来自 [`zlib.ZipEntry.createStream()`][]）尤其重要，因为它们持有底层源，例如文件
+读取流。如果返回的流在完全消费之前被销毁——例如 [`pipeline()`][] 的目标失败——它会释放
+正在序列化的条目以及其后仍在队列中的每个条目，并销毁它们的源，从而避免描述符泄漏。请将
+流消费至末尾，或将其销毁（直接销毁、通过失败的 [`pipeline()`][] 销毁，或使用
+`await using`），以确保完成清理；既未消费也未销毁的流无法释放任何资源。未交给归档的
+[`ZipEntry`][] 可以直接使用 `Symbol.dispose` / `Symbol.asyncDispose` 释放。
+
+如果归档注释以 UTF-8 编码后超过 65,535 字节，则抛出
+[`ERR_ZIP_ARCHIVE_TOO_LARGE`][] 错误。
+
+```mjs
+import { createWriteStream } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
+import { Buffer } from 'node:buffer';
+import { ZipEntry, createZipArchive } from 'node:zlib';
+
+const entries = [
+  await ZipEntry.create('hello.txt', Buffer.from('Hello, world!')),
+  await ZipEntry.create('data/', Buffer.alloc(0)),
+];
+await pipeline(
+  createZipArchive(entries, 'created by node:zlib'),
+  createWriteStream('archive.zip'),
+);
+```
+
+```cjs
+const { createWriteStream } = require('node:fs');
+const { pipeline } = require('node:stream/promises');
+const { ZipEntry, createZipArchive } = require('node:zlib');
+
+async function main() {
+  const entries = [
+    await ZipEntry.create('hello.txt', Buffer.from('Hello, world!')),
+    await ZipEntry.create('data/', Buffer.alloc(0)),
+  ];
+  await pipeline(
+    createZipArchive(entries, 'created by node:zlib'),
+    createWriteStream('archive.zip'),
+  );
+}
+main();
+```
+
+传入 `options.baseOffset` 后，可以在同一文件中的其他内容之后放置归档，并立即使其有效，
+而无需依赖读取器的自解压归档检测来补偿该偏移：
+
+```mjs
+import { createWriteStream } from 'node:fs';
+import { Buffer } from 'node:buffer';
+import { ZipEntry, createZipArchive } from 'node:zlib';
+
+const prefix = Buffer.from('#!/bin/sh\nexit 0\n');
+const entries = [await ZipEntry.create('hello.txt', Buffer.from('Hello, world!'))];
+const out = createWriteStream('self-extracting.zip');
+out.write(prefix);
+createZipArchive(entries, { baseOffset: prefix.byteLength }).pipe(out);
+```
+
+## `zlib.createZipArchiveSync(entries[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.0 - 早期开发阶段
+
+ZIP 存档 API 尚处于实验阶段。使用其中的任何部分（包括此函数）都会在首次使用时发出实验性警告；仅导入 `node:zlib` 不会发出警告。
+
+* `entries` [`ZipEntry`][] 的 {Iterable}。
+* `options` {string|Object} 参见 [`zlib.createZipArchive()`][]。
+* 返回：由构成序列化存档的 {Buffer} 分块组成的 {Iterator}。
+
+[`zlib.createZipArchive()`][] 的同步版本。在生成整个存档（包括所有 deflate 过程）之前，会阻塞 Node.js 事件循环以及后续的 JavaScript 执行；仅应在适合同步执行的场景中使用（例如短生命周期脚本或启动代码），不要在必须保持响应的代码中使用。`entries` 必须是普通的（同步）`Iterable` —— 使用 [`zlib.ZipEntry.createStream()`][] 创建的流式条目在轮到其进行序列化时会抛出异常，因为排空其异步源没有同步等价方式。
+
+与 [`zlib.createZipArchive()`][] 一样，这些条目归返回的迭代器所有，不得重复使用。如果迭代提前停止——包括因流式条目而抛出异常的情况——导致停止的条目以及其后仍在队列中的每个条目都会被释放，从而释放它们持有的任何源。
+
+## `zlib.zipFiles(files[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.0 - 早期开发阶段
+
+ZIP 归档 API 尚处于实验阶段。首次使用其中任何部分（包括此函数）时都会发出实验性警告；仅导入 `node:zlib` 不会发出警告。
+
+* `files` {Iterable} 由 `[sourcePath, entryName]` 字符串对组成。任何可迭代对象都可以——数组、`Map`、`Object.entries()` 的结果或生成器均可。
+* `options` {string|Object}
+  * `followSymlinks` {boolean} 解析符号链接并归档其指向的文件，而不是存储链接本身。**默认值：** `true`。
+  * `comment` {string} 归档注释；字符串形式的 `options` 是 `{ comment: options }` 的简写。
+  * `baseOffset` {number} 参见 [`zlib.createZipArchive()`][]。
+* 返回：由构成序列化归档的 {Buffer} 分块组成的 {stream.Readable}。
+
+从磁盘上的文件构建归档。对于每个 `[sourcePath, entryName]` 对，它会读取 `sourcePath` 并添加一个名为 `entryName` 的条目，同时记录文件的 Unix 模式和修改时间。目录会成为目录条目；普通文件的内容会以流的形式读入（作为 [`zlib.ZipEntry.createStream()`][] 条目），不会缓冲在内存中。目录内容不会递归遍历——请列出每个想要包含的路径。
+
+当 `followSymlinks` 为 `true`（默认值）时，会解析符号链接并将其目标文件归档；当其为 `false` 时，链接本身会作为符号链接条目存储，其内容为目标路径（参见 [`zlib.ZipEntry.createSymlink()`][]）。
+
+```mjs
+import { zipFiles } from 'node:zlib';
+import { createWriteStream } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
+
+await pipeline(
+  zipFiles([
+    ['/data/report.pdf', 'report.pdf'],
+    ['/data/notes.txt', 'docs/notes.txt'],
+  ]),
+  createWriteStream('archive.zip'),
+);
+```
 
 ## `zlib.createZstdCompress([options])`
 
@@ -1269,7 +2318,7 @@ added:
   - v22.15.0
 -->
 
-* `options` {zstd 选项}
+* `options` {zstd options}
 
 创建并返回一个新的 [`ZstdCompress`][] 对象。
 
@@ -1283,9 +2332,40 @@ added:
   - v22.15.0
 -->
 
-* `options` {zstd 选项}
+* `options` {zstd options}
 
 创建并返回一个新的 [`ZstdDecompress`][] 对象。
+
+## `zlib.getMaxZipContentSize()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.0 - 早期开发阶段
+
+ZIP 归档 API 仍处于实验阶段。首次使用其中的任何部分（包括此函数）都会发出实验性警告；仅导入 `node:zlib` 不会发出警告。
+
+* 返回值：{number}
+
+当未提供显式的 `maxSize` 时，[`zipEntry.content()`][] 所应用的当前默认上限，以字节为单位。**默认值：**`268435456`（256 MiB）。
+
+## `zlib.setMaxZipContentSize(size)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.0 - 早期开发阶段
+
+ZIP 存档 API 仍处于实验阶段。首次使用其中的任何部分（包括此函数）都会发出实验性警告；仅导入
+`node:zlib` 不会发出警告。
+
+* `size` {number}
+
+设置 [`zipEntry.content()`][] 在未提供明确的
+`maxSize` 选项时使用的默认上限。这是防范 ZIP 炸弹的保护措施：如果存档的中央目录声明某个成员的大小超过此上限，则会在为其分配内存之前拒绝该存档。流式读取
+（[`zipEntry.contentIterator()`][]、[`zipFile.stream()`][]）本身采用有界内存设计，不受此设置影响。
 
 ## 便捷方法
 
@@ -1304,7 +2384,7 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {brotli 选项}
+* `options` {brotli options}
 * `callback` {Function}
 
 ### `zlib.brotliCompressSync(buffer[, options])`
@@ -1316,7 +2396,7 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {brotli 选项}
+* `options` {brotli options}
 
 使用 [`BrotliCompress`][] 压缩一块数据。
 
@@ -1329,7 +2409,7 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {brotli 选项}
+* `options` {brotli options}
 * `callback` {Function}
 
 ### `zlib.brotliDecompressSync(buffer[, options])`
@@ -1341,7 +2421,7 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {brotli 选项}
+* `options` {brotli options}
 
 使用 [`BrotliDecompress`][] 解压缩一块数据。
 
@@ -1362,7 +2442,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 * `callback` {Function}
 
 ### `zlib.deflateSync(buffer[, options])`
@@ -1382,7 +2462,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 使用 [`Deflate`][] 压缩一块数据。
 
@@ -1400,7 +2480,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 * `callback` {Function}
 
 ### `zlib.deflateRawSync(buffer[, options])`
@@ -1420,7 +2500,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 使用 [`DeflateRaw`][] 压缩一块数据。
 
@@ -1441,7 +2521,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 * `callback` {Function}
 
 ### `zlib.gunzipSync(buffer[, options])`
@@ -1461,7 +2541,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 使用 [`Gunzip`][] 解压缩一块数据。
 
@@ -1482,7 +2562,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 * `callback` {Function}
 
 ### `zlib.gzipSync(buffer[, options])`
@@ -1502,7 +2582,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 使用 [`Gzip`][] 压缩一块数据。
 
@@ -1523,7 +2603,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 * `callback` {Function}
 
 ### `zlib.inflateSync(buffer[, options])`
@@ -1543,7 +2623,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 使用 [`Inflate`][] 解压缩一块数据。
 
@@ -1564,7 +2644,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 * `callback` {Function}
 
 ### `zlib.inflateRawSync(buffer[, options])`
@@ -1584,7 +2664,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 使用 [`InflateRaw`][] 解压缩一块数据。
 
@@ -1605,7 +2685,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 * `callback` {Function}
 
 ### `zlib.unzipSync(buffer[, options])`
@@ -1625,7 +2705,7 @@ changes:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 使用 [`Unzip`][] 解压缩一块数据。
 
@@ -1640,7 +2720,7 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zstd 选项}
+* `options` {zstd options}
 * `callback` {Function}
 
 ### `zlib.zstdCompressSync(buffer[, options])`
@@ -1654,7 +2734,7 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zstd 选项}
+* `options` {zstd options}
 
 使用 [`ZstdCompress`][] 压缩一块数据。
 
@@ -1667,7 +2747,7 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zstd 选项}
+* `options` {zstd options}
 * `callback` {Function}
 
 ### `zlib.zstdDecompressSync(buffer[, options])`
@@ -1681,7 +2761,7 @@ added:
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer|string}
-* `options` {zstd 选项}
+* `options` {zstd options}
 
 使用 [`ZstdDecompress`][] 解压缩一块数据。
 
@@ -1761,7 +2841,7 @@ added: v25.9.0
     * `BROTLI_PARAM_SIZE_HINT` -- 预期输入大小。**默认：** `0`（未知）。
     * `BROTLI_PARAM_LGWIN` -- 窗口大小（log2）。**默认：** `20`（1 MB）。Brotli 库的默认值是 22（4 MB）；降低后的默认值可以在流式工作负载中节省内存，而不会显著影响压缩效果。
     * `BROTLI_PARAM_LGBLOCK` -- 输入块大小（log2）。
-      请参阅 zlib 文档中的 [Brotli compressor options][] 了解完整列表。
+      请参阅 zlib 文档中的 [Brotli 压缩器选项][] 了解完整列表。
   * `dictionary` {Buffer|TypedArray|DataView}
 * 返回：{Object} 一个有状态转换。
 
@@ -1801,7 +2881,7 @@ added: v25.9.0
   * `memLevel` {number} **默认：** `9`。
   * `strategy` {number} **默认：** `Z_DEFAULT_STRATEGY`。
   * `dictionary` {Buffer|TypedArray|DataView}
-* 返回：{Object} 一个有状态转换。
+* 返回：{Object} 一个有状态的转换。
 
 创建一个 gzip 压缩转换。输出与 `zlib.gunzip()` 以及 `decompressGzip()`/`decompressGzipSync()` 兼容。
 
@@ -1814,13 +2894,16 @@ added: v25.9.0
 -->
 
 * `options` {Object}
-  * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
-  * `params` {Object} 键值对象，其中键和值为 `zlib.constants` 条目。最重要的压缩参数有：
-    * `ZSTD_c_compressionLevel` -- **默认：** `ZSTD_CLEVEL_DEFAULT`（3）。
-    * `ZSTD_c_checksumFlag` -- 生成校验和。**默认：** `0`。
-    * `ZSTD_c_strategy` -- 压缩策略。取值包括 `ZSTD_fast`、`ZSTD_dfast`、`ZSTD_greedy`、`ZSTD_lazy`、`ZSTD_lazy2`、`ZSTD_btlazy2`、`ZSTD_btopt`、`ZSTD_btultra`、`ZSTD_btultra2`。
-      请参阅 zlib 文档中的 [Zstd compressor options][] 了解完整列表。
-  * `pledgedSrcSize` {number} 预期未压缩大小（可选提示）。
+  * `chunkSize` {number} 输出缓冲区大小。**默认值：** `65536`（64 KB）。
+  * `params` {Object} 键值对象，其中键和值均为 `zlib.constants` 条目。最重要的压缩器参数包括：
+    * `ZSTD_c_compressionLevel` -- **默认值：** `ZSTD_CLEVEL_DEFAULT`（3）。
+    * `ZSTD_c_checksumFlag` -- 生成校验和。**默认值：** `0`。
+    * `ZSTD_c_strategy` -- 压缩策略。可选值包括
+      `ZSTD_fast`、`ZSTD_dfast`、`ZSTD_greedy`、`ZSTD_lazy`、
+      `ZSTD_lazy2`、`ZSTD_btlazy2`、`ZSTD_btopt`、`ZSTD_btultra`、
+      `ZSTD_btultra2`。
+      完整列表请参阅 zlib 文档中的 [Zstd 压缩器选项][]。
+  * `pledgedSrcSize` {number} 预期的未压缩大小，必须是非负安全整数（可选提示）。
   * `dictionary` {Buffer|TypedArray|DataView}
 * 返回：{Object} 一个有状态转换。
 
@@ -1838,8 +2921,8 @@ added: v25.9.0
   * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
   * `params` {Object} 键值对象，其中键和值为 `zlib.constants` 条目。可用的解压参数：
     * `BROTLI_DECODER_PARAM_DISABLE_RING_BUFFER_REALLOCATION` -- 影响内部内存分配的布尔标志。
-    * `BROTLI_DECODER_PARAM_LARGE_WINDOW` -- 启用“Large Window Brotli”模式的布尔标志（与 [RFC 7932][] 不兼容）。
-      请参阅 zlib 文档中的 [Brotli decompressor options][] 了解详细信息。
+    * `BROTLI_DECODER_PARAM_LARGE_WINDOW` -- 启用“大窗口 Brotli”模式的布尔标志（与 [RFC 7932][] 不兼容）。
+      请参阅 zlib 文档中的 [Brotli 解压缩器选项][] 了解详细信息。
   * `dictionary` {Buffer|TypedArray|DataView}
 * 返回：{Object} 一个有状态转换。
 
@@ -1857,9 +2940,9 @@ added: v25.9.0
   * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
   * `windowBits` {number} **默认：** `Z_DEFAULT_WINDOWBITS`（15）。
   * `dictionary` {Buffer|TypedArray|DataView}
-* 返回：{Object} 一个有状态转换。
+* 返回：{Object} 一个有状态的转换流。
 
-创建一个 deflate 解压转换。
+创建一个 deflate 解压缩转换流。
 
 ### `decompressGzip([options])`
 
@@ -1873,7 +2956,7 @@ added: v25.9.0
   * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
   * `windowBits` {number} **默认：** `Z_DEFAULT_WINDOWBITS`（15）。
   * `dictionary` {Buffer|TypedArray|DataView}
-* 返回：{Object} 一个有状态转换。
+* 返回：{Object} 一个有状态的转换。
 
 创建一个 gzip 解压转换。
 
@@ -1889,21 +2972,21 @@ added: v25.9.0
   * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
   * `params` {Object} 键值对象，其中键和值为 `zlib.constants` 条目。可用的解压参数：
     * `ZSTD_d_windowLogMax` -- 解压器将分配的最大窗口大小（log2）。限制恶意输入导致的内存使用。
-      请参阅 zlib 文档中的 [Zstd decompressor options][] 了解详细信息。
+      请参阅 zlib 文档中的 [Zstd 解压器选项][] 了解详细信息。
   * `dictionary` {Buffer|TypedArray|DataView}
 * 返回：{Object} 一个有状态转换。
 
 创建一个 Zstandard 解压转换。
 
-[Brotli compressor options]: #compressor-options
-[Brotli decompressor options]: #decompressor-options
-[Brotli parameters]: #brotli-constants
-[Cyclic redundancy check]: https://en.wikipedia.org/wiki/Cyclic_redundancy_check
-[Memory usage tuning]: #memory-usage-tuning
+[Brotli 压缩器选项]: #compressor-options
+[Brotli 解压器选项]: #decompressor-options
+[Brotli 参数]: #brotli-constants
+[循环冗余校验]: https://en.wikipedia.org/wiki/Cyclic_redundancy_check
+[内存使用调优]: #memory-usage-tuning
 [RFC 7932]: https://www.rfc-editor.org/rfc/rfc7932.html
 [Streams API]: stream.md
-[Zstd compressor options]: #compressor-options-1
-[Zstd decompressor options]: #decompressor-options-1
+[Zstd 压缩器选项]: #compressor-options-1
+[Zstd 解压器选项]: #decompressor-options-1
 [Zstd 参数]: #zstd-constants
 [`.flush()`]: #zlibflushkind-callback
 [`Accept-Encoding`]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
@@ -1912,20 +2995,66 @@ added: v25.9.0
 [`Content-Encoding`]: https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.11
 [`DeflateRaw`]: #class-zlibdeflateraw
 [`Deflate`]: #class-zlibdeflate
+[`ERR_INVALID_STATE`]: errors.md#err_invalid_state
+[`ERR_ZIP_ARCHIVE_TOO_LARGE`]: errors.md#err_zip_archive_too_large
+[`ERR_ZIP_ENTRY_CORRUPT`]: errors.md#err_zip_entry_corrupt
+[`ERR_ZIP_ENTRY_NOT_FOUND`]: errors.md#err_zip_entry_not_found
+[`ERR_ZIP_ENTRY_TOO_LARGE`]: errors.md#err_zip_entry_too_large
+[`ERR_ZIP_INVALID_ARCHIVE`]: errors.md#err_zip_invalid_archive
+[`ERR_ZIP_NOT_WRITABLE`]: errors.md#err_zip_not_writable
+[`ERR_ZIP_UNSUPPORTED_FEATURE`]: errors.md#err_zip_unsupported_feature
 [`Gunzip`]: #class-zlibgunzip
 [`Gzip`]: #class-zlibgzip
 [`InflateRaw`]: #class-zlibinflateraw
 [`Inflate`]: #class-zlibinflate
 [`Unzip`]: #class-zlibunzip
+[`ZipBuffer`]: #class-zlibzipbuffer
+[`ZipEntry`]: #class-zlibzipentry
+[`ZipFile`]: #class-zlibzipfile
 [`ZlibBase`]: #class-zlibzlibbase
 [`ZstdCompress`]: #class-zlibzstdcompress
 [`ZstdDecompress`]: #class-zlibzstddecompress
 [`buffer.kMaxLength`]: buffer.md#bufferkmaxlength
-[`deflateInit2` and `inflateInit2`]: https://zlib.net/manual.html#Advanced
+[`deflateInit2` 和 `inflateInit2`]: https://zlib.net/manual.html#Advanced
 [`node:stream/iter`]: stream_iter.md
 [`pipeTo()`]: stream_iter.md#pipetosource-transforms-writer-options
+[`pipeline()`]: stream.md#streampipelinesource-transforms-destination-callback
 [`pull()`]: stream_iter.md#pullsource-transforms-options
 [`stream.Transform`]: stream.md#class-streamtransform
-[convenience methods]: #便捷方法
-[zlib documentation]: https://zlib.net/manual.html#Constants
-[zlib.createGzip example]: #zlib
+[`zipBuffer.add()`]: #zipbufferaddfilename-data-options
+[`zipBuffer.addSync()`]: #zipbufferaddsyncfilename-data-options
+[`zipBuffer.comment`]: #zipbuffercomment
+[`zipBuffer.toBuffer()`]: #zipbuffertobufferoptions
+[`zipBuffer.toBufferSync()`]: #zipbuffertobuffersyncoptions
+[`zipEntry.content()`]: #zipentrycontentoptions
+[`zipEntry.contentIterator()`]: #zipentrycontentiteratoroptions
+[`zipEntry.contentSync()`]: #zipentrycontentsyncoptions
+[`zipEntry.isDirectory`]: #zipentryisdirectory
+[`zipEntry.isSymlink`]: #zipentryissymlink
+[`zipEntry.modified`]: #zipentrymodified
+[`zipEntry.nameBuffer`]: #zipentrynamebuffer
+[`zipEntry.name`]: #zipentryname
+[`zipEntry.rawContent`]: #zipentryrawcontent
+[`zipFile.add()`]: #zipfileaddfilename-data-options
+[`zipFile.addEntry()`]: #zipfileaddentryentry
+[`zipFile.close()`]: #zipfileclose
+[`zipFile.closeSync()`]: #zipfileclosesync
+[`zipFile.comment`]: #zipfilecomment
+[`zipFile.compact()`]: #zipfilecompactcomment
+[`zipFile.delete()`]: #zipfiledeletename
+[`zipFile.entries()`]: #zipfileentries
+[`zipFile.forEach()`]: #zipfileforeachcallback-thisarg
+[`zipFile.get()`]: #zipfilegetname
+[`zipFile.stream()`]: #zipfilestreamname-options
+[`zipFile.values()`]: #zipfilevalues
+[`zlib.ZipEntry.create()`]: #static-method-zlibzipentrycreatefilename-data-options
+[`zlib.ZipEntry.createStream()`]: #static-method-zlibzipentrycreatestreamfilename-source-options
+[`zlib.ZipEntry.createSymlink()`]: #static-method-zlibzipentrycreatesymlinkfilename-target-options
+[`zlib.ZipEntry.createSync()`]: #static-method-zlibzipentrycreatesyncfilename-data-options
+[`zlib.ZipFile.open()`]: #static-method-zlibzipfileopenfilename-options
+[`zlib.createZipArchive()`]: #zlibcreateziparchiveentries-options
+[`zlib.createZipArchiveSync()`]: #zlibcreateziparchivesyncentries-options
+[`zlib.getMaxZipContentSize()`]: #zlibgetmaxzipcontentsize
+[便捷方法]: #convenience-methods
+[zlib 文档]: https://zlib.net/manual.html#Constants
+[zlib.createGzip 示例]: #zlib

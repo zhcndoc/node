@@ -10,12 +10,9 @@ added: REPLACEME
 
 <!-- source_link=lib/dtls.js -->
 
-`node:dtls` 模块提供了在 UDP 之上实现的 Datagram Transport
-Layer Security（DTLS）协议。DTLS 为基于数据报的通信提供与 TLS 等价的
-安全保障，包括机密性、完整性和身份认证。
+`node:dtls` 模块提供了在 UDP 之上实现的数据报传输层安全（DTLS）协议。DTLS 为基于数据报的通信提供与 TLS 等价的安全保障，包括机密性、完整性和身份认证。
 
-要使用此模块，必须在构建时通过 `--experimental-dtls` 配置标志启用，
-并在运行时通过 `--experimental-dtls` CLI 标志启用。
+要使用此模块，必须在构建时通过 `--experimental-dtls` 配置标志启用，并在运行时通过 `--experimental-dtls` CLI 标志启用。
 
 ```bash
 node --experimental-dtls app.mjs
@@ -103,7 +100,7 @@ const endpoint = listen((session) => {
   port: 4433,
 });
 
-console.log('DTLS server listening on', endpoint.address);
+console.log('DTLS 服务器正在监听', endpoint.address);
 ```
 
 ## `dtls.connect(host, port[, options])`
@@ -118,12 +115,13 @@ added: REPLACEME
   * `ca` {string|Buffer|string\[]|Buffer\[]} PEM 格式的 CA 证书。
   * `cert` {string|Buffer} PEM 格式的客户端证书。
   * `key` {string|Buffer} PEM 格式的客户端私钥。
-  * `rejectUnauthorized` {boolean} 拒绝无法验证证书的连接。**默认：** `true`。
-  * `bindHost` {string} 本地绑定地址。**默认：** `'0.0.0.0'`。
-  * `bindPort` {number} 本地绑定端口。**默认：** `0`（临时端口）。
+  * `rejectUnauthorized` {boolean} 为 `true` 时，服务器证书必须同时链接到受信任的 CA，并且与预期的身份（`servername`，或者未设置 `servername` 时的 `host`）匹配；否则握手将中止，且 `session.opened` 将拒绝。为 `false` 时，不验证证书。**默认值：** `true`。
+  * `servername` {string} 用于 SNI（服务器名称指示）扩展以及证书验证期间身份检查的服务器名称。**默认值：** `host` 参数。设置为 `''` 可禁用 SNI。对于 IP 地址字面量，永远不会发送 SNI。
+  * `bindHost` {string} 本地绑定地址。**默认值：** `'0.0.0.0'`。
+  * `bindPort` {number} 本地绑定端口。**默认值：** `0`（临时端口）。
   * `alpn` {string\[]|Buffer} ALPN 协议名称。
   * `srtp` {string} SRTP 保护配置文件名称。
-  * `mtu` {number} 最大传输单元。**默认：** `1200`。
+  * `mtu` {number} 最大传输单元。**默认值：** `1200`。
 * 返回：{DTLSSession}
 
 连接到 DTLS 服务器。返回一个 `DTLSSession`，其 `opened` 属性是一个

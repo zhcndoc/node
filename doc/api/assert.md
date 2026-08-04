@@ -545,19 +545,20 @@ changes:
 
 ### 比较详情
 
-* 原始值使用 [`Object.is()`][] 进行比较。
-* 对象的 [类型标签][Object.prototype.toString()] 应该相同。
-* 对象的 [`[[Prototype]]`][prototype-spec] 使用 [`===` 运算符][] 进行比较。
-* 仅考虑 [可枚举的“自有”属性][]。
-* {Error} 名称、消息、原因和错误总是被比较，即使这些不是可枚举属性。
-  `errors` 也会被比较。
-* 可枚举的自有 {Symbol} 属性也会被比较。
-* [对象包装器][] 既作为对象也比较解包后的值。
-* `Object` 属性无序比较。
-* {Map} 键和 {Set} 项无序比较。
-* 当两侧不同或任一侧遇到循环引用时，递归停止。
-* {WeakMap}、{WeakSet} 和 {Promise} 实例**不**进行结构比较。仅当它们引用同一个对象时才相等。不同 `WeakMap`、`WeakSet` 或 `Promise` 实例之间的任何比较都将导致不相等，即使它们包含相同的内容。
-* {RegExp} 的 lastIndex、flags 和 source 总是被比较，即使这些不是可枚举属性。
+* 基本值使用 [`Object.is()`][] 进行比较。
+* 对象的[类型标签][Object.prototype.toString()]应当相同。
+* 对象的 [`[[Prototype]]`][prototype-spec] 使用 [`=== 运算符`][] 进行比较。
+* 仅考虑[可枚举的“自有”属性][]。
+* 如果对象构造函数可用，也会进行比较。
+* {Error} 的名称、消息、原因和错误始终会进行比较，即使这些不是可枚举属性。
+  `errors` 也会进行比较。
+* 可枚举的自有 {Symbol} 属性也会进行比较。
+* [对象包装器][]既会作为对象进行比较，也会比较解包后的值。
+* `Object` 属性的比较不考虑顺序。
+* {Map} 的键和 {Set} 的项目的比较不考虑顺序。
+* 当两侧不同时，或任一侧遇到循环引用时，递归会停止。
+* {WeakMap}、{WeakSet} 和 {Promise} 实例不会进行结构化比较。只有当它们引用同一个对象时才相等。不同的 {WeakMap}、{WeakSet} 或 {Promise} 实例之间的任何比较都会导致不相等，即使它们包含相同的内容。
+* {RegExp} 的 lastIndex、flags 和 source 始终会进行比较，即使这些不是可枚举属性。
 
 ```mjs
 import assert from 'node:assert/strict';
@@ -1225,7 +1226,7 @@ added: v0.1.21
 changes:
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
+    description: "消息现在可以是 `printf` 风格的格式字符串或函数。"
   - version:
       - v16.0.0
       - v14.18.0
@@ -1346,7 +1347,7 @@ added: v1.2.0
 changes:
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/58849
-    description: "Message 现在可以是 `printf` 风格的格式字符串或函数。"
+    description: "`message` 现在可以是 `printf` 风格的格式字符串或函数。"
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/15398
     description: "`-0` 和 `+0` 不再被视为相等。"

@@ -77,7 +77,7 @@ added:
   - v14.17.0
 -->
 
-* 类型：{AbortSignal}
+* 类型：{AbortSignal}。
 
 ## 类：`AbortSignal`
 
@@ -432,7 +432,7 @@ changes:
     description: "不再受 `--experimental-global-customevent` CLI 标志限制。"
 -->
 
-{CustomEvent} 的与浏览器兼容的实现。
+与浏览器兼容的 {CustomEvent} 实现。
 
 ## 类：`DecompressionStream`
 
@@ -542,9 +542,9 @@ if (res.ok) {
 
 ### 自定义 dispatcher
 
-你可以使用自定义 dispatcher 来分发请求，将其传入 fetch 的选项对象中。
-dispatcher 必须兼容 `undici` 的
-[`Dispatcher` 类](https://undici.nodejs.org/#/docs/api/Dispatcher.md)。
+你可以在 `fetch` 的选项对象中传入自定义 dispatcher，以使用它来调度请求。
+该 dispatcher 必须与 `undici` 的
+[`Dispatcher` 类](https://undici.nodejs.org/api/Dispatcher)兼容。
 
 ```js
 fetch(url, { dispatcher: new MyAgent() });
@@ -659,7 +659,7 @@ changes:
 added: v15.0.0
 -->
 
-`MessageChannel` 类。有关更多详细信息，请参阅 [`MessageChannel`][]。
+`MessageChannel` 类。有关更多详细信息，请参阅 [`MessageChannel`][]】【。
 
 ## 类：`MessageEvent`
 
@@ -910,7 +910,7 @@ added: v0.1.7
 added: v11.0.0
 -->
 
-* `callback` {Function} 要排队等待执行的函数。
+* `callback` {Function} 用于排队等待执行的函数。
 
 `queueMicrotask()` 方法将一个微任务排队以调用 `callback`。如果 `callback` 抛出异常，将发出 [`process` 对象][] 的 `'uncaughtException'` 事件。
 
@@ -1123,7 +1123,7 @@ added: v22.4.0
 added: v17.0.0
 -->
 
-WHATWG [`structuredClone`][] 方法。
+WHATWG 的 [`structuredClone`][] 方法。
 
 ## 类：`SubtleCrypto`
 

@@ -89,7 +89,7 @@ int RunNodeInstance(MultiIsolatePlatform* platform,
                     const std::vector<std::string>& exec_args) {
   int exit_code = 0;
 
-  // 设置一个 libuv 事件循环，v8::Isolate 和 Node.js Environment。
+  // 设置 libuv 事件循环、v8::Isolate 和 Node.js Environment。
   std::vector<std::string> errors;
   std::unique_ptr<CommonEnvironmentSetup> setup =
       CommonEnvironmentSetup::Create(platform, &errors, args, exec_args);

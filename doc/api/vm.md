@@ -466,7 +466,7 @@ rootModule.instantiate();
 
 // 步骤 3
 //
-// 求值模块。evaluate() 方法返回一个 promise，该 promise 将在
+// 求值模块。evaluate() 方法返回一个 Promise，该 Promise 将在
 // 模块完成求值后兑现。
 
 // 打印 42。
@@ -546,7 +546,7 @@ const contextifiedObject = vm.createContext({
 
   // 步骤 3
   //
-  // 求值模块。evaluate() 方法返回一个 promise，该 promise 将在
+  // 求值模块。evaluate() 方法返回一个 Promise，该 Promise 将在
   // 模块完成求值后兑现。
 
   // 打印 42。
@@ -575,41 +575,41 @@ const contextifiedObject = vm.createContext({
 * 返回：{Promise} 成功时兑现为 `undefined`。
 
 评估模块及其依赖项。对应于 ECMAScript 规范中
-[Cyclic Module Record][] 的 [Evaluate() concrete method][] 字段。
+[循环模块记录][] 的 [Evaluate() 具体方法][] 字段。
 
 如果模块是 `vm.SourceTextModule`，则必须在模块实例化后调用 `evaluate()`；
-否则 `evaluate()` 将返回一个被拒绝的 promise。
+否则 `evaluate()` 将返回一个被拒绝的 Promise。
 
-对于 `vm.SourceTextModule`，`evaluate()` 返回的 promise 可以
+对于 `vm.SourceTextModule`，`evaluate()` 返回的 Promise 可以
 同步或异步地兑现：
 
-1. 如果 `vm.SourceTextModule` 本身或其任何依赖中没有顶层 `await`，则 promise 将在
+1. 如果 `vm.SourceTextModule` 本身或其任何依赖中没有顶层 `await`，则 Promise 将在
    模块及其所有依赖求值后_同步_兑现。
-   1. 如果求值成功，promise 将_同步_解决为 `undefined`。
-   2. 如果求值导致异常，promise 将_同步_拒绝，拒绝原因是导致求值失败的异常，
+   1. 如果求值成功，Promise 将_同步_解决为 `undefined`。
+   2. 如果求值导致异常，Promise 将_同步_拒绝，拒绝原因是导致求值失败的异常，
       这与 `module.error` 相同。
-2. 如果 `vm.SourceTextModule` 本身或其任何依赖中有顶层 `await`，则 promise 将在
+2. 如果 `vm.SourceTextModule` 本身或其任何依赖中有顶层 `await`，则 Promise 将在
    模块及其所有依赖求值后_异步_兑现。
-   1. 如果求值成功，promise 将_异步_解决为 `undefined`。
-   2. 如果求值导致异常，promise 将_异步_拒绝，拒绝原因是导致求值失败的异常。
+   1. 如果求值成功，Promise 将_异步_解决为 `undefined`。
+   2. 如果求值导致异常，Promise 将_异步_拒绝，拒绝原因是导致求值失败的异常。
 
-如果模块是 `vm.SyntheticModule`，`evaluate()` 总是返回一个同步兑现的 promise，参见
+如果模块是 `vm.SyntheticModule`，`evaluate()` 总是返回一个同步兑现的 Promise，参见
 [合成模块记录的 Evaluate()][] 规范：
 
 1. 如果传递给其构造函数的 `evaluateCallback` 同步抛出异常，`evaluate()` 返回
-   一个将同步拒绝该异常的 promise。
+   一个将同步拒绝该异常的 Promise。
 2. 如果 `evaluateCallback` 没有抛出异常，`evaluate()` 返回一个将
-   同步解决为 `undefined` 的 promise。
+   同步解决为 `undefined` 的 Promise。
 
 `vm.SyntheticModule` 的 `evaluateCallback` 在 `evaluate()` 调用内同步执行，其
-返回值被丢弃。这意味着如果 `evaluateCallback` 是一个异步函数，`evaluate()` 返回的 promise 将
+返回值被丢弃。这意味着如果 `evaluateCallback` 是一个异步函数，`evaluate()` 返回的 Promise 将
 不会反映其异步行为，并且来自异步
 `evaluateCallback` 的任何拒绝都将丢失。
 
 `evaluate()` 也可以在模块已经求值后再次调用，在这种情况下：
 
 1. 如果初始求值成功结束（`module.status` 是 `'evaluated'`），它将什么都不做
-   并返回一个解决为 `undefined` 的 promise。
+   并返回一个解决为 `undefined` 的 Promise。
 2. 如果初始求值导致异常（`module.status` 是 `'errored'`），它将重新拒绝
    初始求值导致的异常。
 
@@ -670,8 +670,8 @@ changes:
 如果返回的 `Module` 的 `status` 是 `'unlinked'`，此方法将
 使用提供的相同 `linker` 函数递归调用返回的 `Module`。
 
-`link()` 返回一个 `Promise`，当所有链接实例解决为有效的 `Module` 时，该 promise 将得到解决，
-或者如果链接器函数抛出异常或返回无效的 `Module`，则该 promise 将被拒绝。
+`link()` 返回一个 `Promise`，当所有链接实例解决为有效的 `Module` 时，该 Promise 将得到解决，
+或者如果链接器函数抛出异常或返回无效的 `Module`，则该 Promise 将被拒绝。
 
 链接器函数大致对应于 ECMAScript
 规范中实现定义的 [HostResolveImportedModule][] 抽象操作，但有一些关键区别：
@@ -769,6 +769,7 @@ const contextifiedObject = vm.createContext({ secret: 42 });
 const module = new vm.SourceTextModule(
   'Object.getPrototypeOf(import.meta.prop).secret = secret;',
   {
+    context: contextifiedObject,
     initializeImportMeta(meta) {
       // 注意：此对象是在顶层上下文中创建的。因此，
       // Object.getPrototypeOf(import.meta.prop) 指向
@@ -786,8 +787,8 @@ await module.evaluate();
 //
 // 要解决此问题，请将
 //     meta.prop = {};
-// 上方代码替换为
-//     meta.prop = vm.runInContext('{}', contextifiedObject);
+// 上面的代码替换为
+//     meta.prop = vm.runInContext('({})', contextifiedObject);
 ```
 
 ```cjs
@@ -797,6 +798,7 @@ const contextifiedObject = vm.createContext({ secret: 42 });
   const module = new vm.SourceTextModule(
     'Object.getPrototypeOf(import.meta.prop).secret = secret;',
     {
+      context: contextifiedObject,
       initializeImportMeta(meta) {
         // 注意：此对象是在顶层上下文中创建的。因此，
         // Object.getPrototypeOf(import.meta.prop) 指向
@@ -813,8 +815,8 @@ const contextifiedObject = vm.createContext({ secret: 42 });
   //
   // 要解决此问题，请将
   //     meta.prop = {};
-  // 上方代码替换为
-  //     meta.prop = vm.runInContext('{}', contextifiedObject);
+  // 上面的代码替换为
+  //     meta.prop = vm.runInContext('({})', contextifiedObject);
 })();
 ```
 
@@ -1205,7 +1207,7 @@ added:
 以便 Node.js 使用主上下文的默认 ESM 加载器来加载请求的模块。
 
 详细信息请参阅
-[编译 API 中对动态导入的支持][].
+[编译 API 中对动态导入的支持][]。
 
 ## vm.constants.createContext()
 
@@ -2180,7 +2182,7 @@ script.runInThisContext().then(console.log);
   `vm.SourceTextModule`，对于 `vm.createContext()`，它是上下文 `Object`。
 * `importAttributes` {Object} 传递给 [`optionsExpression`][] 可选参数的 `"with"` 值，如果未提供值则为空对象。
 * `phase` {string} 动态导入的阶段（`"source"` 或 `"evaluation"`）。
-* 返回：{Module Namespace Object|vm.Module} 建议返回 `vm.Module` 以利用错误跟踪，并避免命名空间包含 `then` 函数导出的问题。
+* 返回：{Object|vm.Module} 建议返回 `vm.Module` 以利用错误跟踪，并避免命名空间包含 `then` 函数导出的问题。
 
 ```mjs
 // 此脚本必须使用 --experimental-vm-modules 运行。

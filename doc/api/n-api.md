@@ -1559,11 +1559,11 @@ NAPI_EXTERN napi_status napi_remove_async_cleanup_hook(
 
 注销与 `remove_handle` 对应的清理钩子。这将防止钩子被执行，除非它已经开始执行。必须对从 [`napi_add_async_cleanup_hook`][] 获得的任何 `napi_async_cleanup_hook_handle` 值调用此函数。
 
-### 在 Node.js 环境退出时的终结
+### Node.js 环境退出时的终结
 
-Node.js 环境可能在尽可能快的任意时间被销毁，此时禁止执行 JavaScript，例如在请求 [`worker.terminate()`][] 时。当环境被销毁时，注册的 JavaScript 对象、线程安全函数和环境实例数据的 `napi_finalize` 回调会立即且独立地被调用。
+Node.js 环境可能在任意时间被尽可能快速地销毁，此时禁止执行 JavaScript，例如在请求 [`worker.terminate()`][] 时。当环境被销毁时，已注册的 JavaScript 对象、线程安全函数和环境实例数据的 `napi_finalize` 回调会立即且独立地被调用。
 
-`napi_finalize` 回调的调用安排在手动注册的清理钩子之后。为了确保在环境关闭期间插件终结的正确顺序，以避免在 `napi_finalize` 回调中释放后使用，插件应使用 `napi_add_env_cleanup_hook` 和 `napi_add_async_cleanup_hook` 注册清理钩子，以正确的顺序手动释放分配的资源。
+`napi_finalize` 回调的调用安排在手动注册的清理钩子之后。为了确保环境关闭期间插件终结的正确顺序，避免在 `napi_finalize` 回调中释放后继续使用，插件应使用 `napi_add_env_cleanup_hook` 和 `napi_add_async_cleanup_hook` 注册清理钩子，以正确的顺序手动释放分配的资源。
 
 ## 模块注册
 
@@ -1905,7 +1905,7 @@ napi_status napi_create_arraybuffer(napi_env env,
 底层缓冲区选择性地返回给调用者，以防调用者
 想要直接操作缓冲区。此缓冲区只能
 从原生代码直接写入。要从 JavaScript 写入此缓冲区，
-需要创建 typed array 或 `DataView` 对象。
+需要创建类型化数组或 `DataView` 对象。
 
 JavaScript `ArrayBuffer` 对象在 ECMAScript 语言规范的
 [ArrayBuffer 对象部分][Section ArrayBuffer objects] 中描述。
@@ -2842,7 +2842,7 @@ UTF8 编码的 C 字符串创建优化的 JavaScript `string` 值，用作对象
 JavaScript `string` 类型在 ECMAScript 语言规范的
 [字符串类型部分][Section string type] 中描述。
 
-### 从 Node-API 转换为 C 类型的函数
+### 将 Node-API 转换为 C 类型的函数
 
 #### `napi_get_array_length`
 
@@ -2972,17 +2972,17 @@ napi_status napi_get_typedarray_info(napi_env env,
                                      size_t* byte_offset)
 ```
 
-* `[in] env`: API 调用所在的环境。
-* `[in] typedarray`: 表示要查询其属性的 `TypedArray` 的 `napi_value`。
-* `[out] type`: `TypedArray` 中元素的标量数据类型。
-* `[out] length`: `TypedArray` 中的元素数量。
-* `[out] data`: 底层数据缓冲区，已根据 `byte_offset` 值进行调整，以便指向 `TypedArray` 中的第一个元素。如果数组长度为 `0`，则此值可能为 `NULL` 或任何其他指针值。
-* `[out] arraybuffer`: `TypedArray` 底层的 `ArrayBuffer` 或 `SharedArrayBuffer`。
-* `[out] byte_offset`: 底层原生数组中的字节偏移，第一个元素位于该处。`data` 参数的值已经过调整，因此 data 指向数组中的第一个元素。因此，原生数组的第一个字节位于 `data - byte_offset`。
+* `[in] env`：API 调用所在的环境。
+* `[in] typedarray`：表示要查询其属性的 `TypedArray` 的 `napi_value`。
+* `[out] type`：`TypedArray` 中元素的标量数据类型。
+* `[out] length`：`TypedArray` 中的元素数量。
+* `[out] data`：底层数据缓冲区，已根据 `byte_offset` 值进行调整，以便指向 `TypedArray` 中的第一个元素。如果数组长度为 `0`，则此值可能为 `NULL` 或任何其他指针值。
+* `[out] arraybuffer`：`TypedArray` 底层的 `ArrayBuffer` 或 `SharedArrayBuffer`。
+* `[out] byte_offset`：底层原生数组中的字节偏移，第一个元素位于该处。`data` 参数的值已经过调整，因此 data 指向数组中的第一个元素。因此，原生数组的第一个字节位于 `data - byte_offset`。
 
 如果 API 成功则返回 `napi_ok`。
 
-此 API 返回 typed array 的各种属性。
+此 API 返回类型化数组的各种属性。
 
 如果不需要该属性，任何输出参数都可以为 `NULL`。
 
@@ -3059,9 +3059,9 @@ napiVersion: 1
 napi_status napi_get_value_bool(napi_env env, napi_value value, bool* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript `Boolean` 的 `napi_value`。
-* `[out] result`: 给定 JavaScript `Boolean` 对应的 C 布尔原始值。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript `Boolean` 的 `napi_value`。
+* `[out] result`：给定 JavaScript `Boolean` 对应的 C 布尔原始值。
 
 如果 API 成功则返回 `napi_ok`。如果传入非布尔 `napi_value`，则返回 `napi_boolean_expected`。
 
@@ -3080,9 +3080,9 @@ napi_status napi_get_value_double(napi_env env,
                                   double* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript `number` 的 `napi_value`。
-* `[out] result`: 给定 JavaScript `number` 对应的 C double 原始值。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript `number` 的 `napi_value`。
+* `[out] result`：给定 JavaScript `number` 对应的 C double 原始值。
 
 如果 API 成功则返回 `napi_ok`。如果传入非数字 `napi_value`，则返回 `napi_number_expected`。
 
@@ -3102,10 +3102,10 @@ napi_status napi_get_value_bigint_int64(napi_env env,
                                         bool* lossless);
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript `BigInt` 的 `napi_value`。
-* `[out] result`: 给定 JavaScript `BigInt` 对应的 C `int64_t` 原始值。
-* `[out] lossless`: 指示 `BigInt` 值是否被无损转换。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript `BigInt` 的 `napi_value`。
+* `[out] result`：给定 JavaScript `BigInt` 对应的 C `int64_t` 原始值。
+* `[out] lossless`：指示 `BigInt` 值是否被无损转换。
 
 如果 API 成功则返回 `napi_ok`。如果传入非 `BigInt`，则返回 `napi_bigint_expected`。
 
@@ -3125,10 +3125,10 @@ napi_status napi_get_value_bigint_uint64(napi_env env,
                                         bool* lossless);
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript `BigInt` 的 `napi_value`。
-* `[out] result`: 给定 JavaScript `BigInt` 对应的 C `uint64_t` 原始值。
-* `[out] lossless`: 指示 `BigInt` 值是否被无损转换。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript `BigInt` 的 `napi_value`。
+* `[out] result`：给定 JavaScript `BigInt` 对应的 C `uint64_t` 原始值。
+* `[out] lossless`：指示 `BigInt` 值是否被无损转换。
 
 如果 API 成功则返回 `napi_ok`。如果传入非 `BigInt`，则返回 `napi_bigint_expected`。
 
@@ -3149,11 +3149,11 @@ napi_status napi_get_value_bigint_words(napi_env env,
                                         uint64_t* words);
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript `BigInt` 的 `napi_value`。
-* `[out] sign_bit`: 整数，表示 JavaScript `BigInt` 是正数还是负数。
-* `[in/out] word_count`: 必须初始化为 `words` 数组的长度。返回时，它将被设置为存储此 `BigInt` 所需的实际字数。
-* `[out] words`: 指向预分配的 64 位字数组的指针。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript `BigInt` 的 `napi_value`。
+* `[out] sign_bit`：整数，表示 JavaScript `BigInt` 是正数还是负数。
+* `[in/out] word_count`：必须初始化为 `words` 数组的长度。返回时，它将被设置为存储此 `BigInt` 所需的实际字数。
+* `[out] words`：指向预分配的 64 位字数组的指针。
 
 如果 API 成功则返回 `napi_ok`。
 
@@ -3245,11 +3245,11 @@ napi_status napi_get_value_string_latin1(napi_env env,
                                          size_t* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript 字符串的 `napi_value`。
-* `[in] buf`: 用于写入 ISO-8859-1 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以字节为单位，不包括空终止符）将返回到 `result` 中。
-* `[in] bufsize`: 目标缓冲区的大小。当此值不足时，返回的字符串将被截断并以空字符终止。如果此值为零，则不返回字符串，也不对缓冲区进行任何更改。
-* `[out] result`: 复制到缓冲区中的字节数，不包括空终止符。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript 字符串的 `napi_value`。
+* `[in] buf`：用于写入 ISO-8859-1 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以字节为单位，不包括空终止符）将返回到 `result` 中。
+* `[in] bufsize`：目标缓冲区的大小。当此值不足时，返回的字符串将被截断并以空字符终止。如果此值为零，则不返回字符串，也不对缓冲区进行任何更改。
+* `[out] result`：复制到缓冲区中的字节数，不包括空终止符。
 
 如果 API 成功则返回 `napi_ok`。如果传入非 `string` `napi_value`，则返回 `napi_string_expected`。
 
@@ -3270,11 +3270,11 @@ napi_status napi_get_value_string_utf8(napi_env env,
                                        size_t* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript 字符串的 `napi_value`。
-* `[in] buf`: 用于写入 UTF-8 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以字节为单位，不包括空终止符）将返回到 `result` 中。
-* `[in] bufsize`: 目标缓冲区的大小。当此值不足时，返回的字符串将被截断并以空字符终止。如果此值为零，则不返回字符串，也不对缓冲区进行任何更改。
-* `[out] result`: 复制到缓冲区中的字节数，不包括空终止符。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript 字符串的 `napi_value`。
+* `[in] buf`：用于写入 UTF-8 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以字节为单位，不包括空终止符）将返回到 `result` 中。
+* `[in] bufsize`：目标缓冲区的大小。当此值不足时，返回的字符串将被截断并以空字符终止。如果此值为零，则不返回字符串，也不对缓冲区进行任何更改。
+* `[out] result`：复制到缓冲区中的字节数，不包括空终止符。
 
 如果 API 成功则返回 `napi_ok`。如果传入非 `string` `napi_value`，则返回 `napi_string_expected`。
 
@@ -3295,11 +3295,11 @@ napi_status napi_get_value_string_utf16(napi_env env,
                                         size_t* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript 字符串的 `napi_value`。
-* `[in] buf`: 用于写入 UTF-16LE 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以 2 字节代码单元为单位，不包括空终止符）将被返回。
-* `[in] bufsize`: 目标缓冲区的大小。当此值不足时，返回的字符串将被截断并以空字符终止。如果此值为零，则不返回字符串，也不对缓冲区进行任何更改。
-* `[out] result`: 复制到缓冲区中的 2 字节代码单元的数量，不包括空终止符。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript 字符串的 `napi_value`。
+* `[in] buf`：用于写入 UTF-16LE 编码字符串的缓冲区。如果传入 `NULL`，则字符串的长度（以 2 字节代码单元为单位，不包括空终止符）将被返回。
+* `[in] bufsize`：目标缓冲区的大小。当此值不足时，返回的字符串将被截断并以空字符终止。如果此值为零，则不返回字符串，也不对缓冲区进行任何更改。
+* `[out] result`：复制到缓冲区中的 2 字节代码单元的数量，不包括空终止符。
 
 如果 API 成功则返回 `napi_ok`。如果传入非 `string` `napi_value`，则返回 `napi_string_expected`。
 
@@ -3318,9 +3318,9 @@ napi_status napi_get_value_uint32(napi_env env,
                                   uint32_t* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 代表 JavaScript `number` 的 `napi_value`。
-* `[out] result`: 给定 `napi_value` 作为 `uint32_t` 对应的 C 原始值。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：代表 JavaScript `number` 的 `napi_value`。
+* `[out] result`：给定 `napi_value` 作为 `uint32_t` 对应的 C 原始值。
 
 如果 API 成功则返回 `napi_ok`。如果传入非数字 `napi_value`，则返回 `napi_number_expected`。
 
@@ -3719,8 +3719,8 @@ napi_status napi_strict_equals(napi_env env,
 
 如果 API 成功，则返回 `napi_ok`。
 
-此 API 表示调用严格相等算法，如
-ECMAScript 语言规范 [IsStrctEqual 章节][] 中所定义。
+此 API 表示调用 ECMAScript 语言规范
+[IsStrictlyEqual 章节][] 中定义的严格相等算法。
 
 ### `napi_detach_arraybuffer`
 
@@ -4013,15 +4013,13 @@ JavaScript 对象上的属性的行为。除了 `napi_static` 之外，它们
 对应于 [ECMAScript 语言规范][] 的 [属性部分][] 中列出的属性。
 它们可以是以下一个或多个位标志：
 
-* `napi_default`：未在属性上设置显式属性。默认情况下，属性是只读的、不可枚举且不可配置的。
-* `napi_writable`：属性是可写的。
-* `napi_enumerable`：属性是可枚举的。
-* `napi_configurable`：属性是可配置的，如 [ECMAScript 语言规范][] 的 [属性部分][] 中所定义。
-* `napi_static`：属性将被定义为类上的静态属性，而不是实例属性（这是默认值）。这仅由 [`napi_define_class`][] 使用。它被 `napi_define_properties` 忽略。
-* `napi_default_method`：类似于 JS 类中的方法，属性是
-  可配置和可写的，但不可枚举。
-* `napi_default_jsproperty`：类似于通过 JavaScript 中的赋值设置的属性，
-  属性是可写、可枚举和可配置的。
+* `napi_default`：属性未设置任何显式属性。默认情况下，属性为只读、不可枚举且不可配置。
+* `napi_writable`：属性可写。
+* `napi_enumerable`：属性可枚举。
+* `napi_configurable`：属性可配置，具体定义见 [ECMAScript 语言规范][] 的[属性部分][]。
+* `napi_static`：属性将被定义为类的静态属性，而不是实例属性（后者为默认值）。此项仅由 [`napi_define_class`][] 使用。`napi_define_properties` 会忽略此项。
+* `napi_default_method`：类似于 JS 类中的方法，属性可配置且可写，但不可枚举。
+* `napi_default_jsproperty`：类似于通过 JavaScript 中的赋值设置的属性，属性可写、可枚举且可配置。
 
 #### `napi_property_descriptor`
 
@@ -4982,7 +4980,7 @@ napi_status napi_remove_wrap(napi_env env,
 
 如果 API 成功，则返回 `napi_ok`。
 
-检索之前使用 `napi_wrap()` 包装在 JavaScript 对象 `js_object` 中的原生实例，并移除包装。如果终结回调与包装关联，则当 JavaScript 对象变为垃圾回收时，它将不再被调用。
+检索之前使用 `napi_wrap()` 包装在 JavaScript 对象 `js_object` 中的原生实例，并移除包装。如果终结回调与包装关联，则当 JavaScript 对象被垃圾回收时，将不再调用该回调。
 
 ### `napi_type_tag_object`
 
@@ -5584,7 +5582,7 @@ NAPI_EXTERN napi_status napi_run_script(napi_env env,
 此函数会执行一段 JavaScript 代码字符串并返回其结果，但有以下限制：
 
 * 与 `eval` 不同，此函数不允许脚本访问当前词法作用域，因此也不允许访问 [模块作用域][]. 这意味着像 `require` 这样的伪全局变量将不可用。
-* 脚本可以访问 [全局作用域][]。脚本中的函数和 `var` 声明会被添加到 [`global`][] 对象上。使用 `let` 和 `const` 的变量声明在全局可见，但不会被添加到 [`global`][] 对象上。
+* 脚本可以访问 [全局作用域][]. 脚本中的函数和 `var` 声明会被添加到 [`global`][] 对象上。使用 `let` 和 `const` 的变量声明在全局可见，但不会被添加到 [`global`][] 对象上。
 * 脚本中 `this` 的值是 [`global`][]。
 
 ## libuv 事件循环
@@ -5608,7 +5606,7 @@ NAPI_EXTERN napi_status napi_get_uv_event_loop(node_api_basic_env env,
 * `[in] env`：调用该 API 的环境。
 * `[out] loop`：当前的 libuv 循环实例。
 
-注意：虽然 libuv 只在主版本中保证 ABI 稳定性 [ABI stability](https://github.com/libuv/libuv?tab=readme-ov-file#versioning)，
+注意：虽然 libuv 只在主版本中保证 ABI 稳定性 [ABI 稳定性](https://github.com/libuv/libuv?tab=readme-ov-file#versioning)，
 但使用它可能会导致一个无法跨 Node.js 主版本工作的 addon。
 
 [线程安全函数](#asynchronous-thread-safe-function-calls)
@@ -5867,34 +5865,34 @@ node_api_get_module_file_name(node_api_basic_env env, const char** result);
 [Node.js 原生抽象]: https://github.com/nodejs/nan
 [Node-API 媒体]: https://github.com/nodejs/abi-stable-node/blob/HEAD/node-api-media.md
 [对象生命周期管理]: #object-lifetime-management
-[对象包装]: #object-wrap
-[Agents 部分]: https://tc39.es/ecma262/#sec-agents
-[Array 实例 length 部分]: https://tc39.es/ecma262/#sec-properties-of-array-instances-length
-[Array 对象部分]: https://tc39.es/ecma262/#sec-array-objects
-[ArrayBuffer 对象部分]: https://tc39.es/ecma262/#sec-arraybuffer-objects
-[DataView 对象部分]: https://tc39.es/ecma262/#sec-dataview-objects
-[Date 对象部分]: https://tc39.es/ecma262/#sec-date-objects
-[DefineOwnProperty 部分]: https://tc39.es/ecma262/#sec-ordinary-object-internal-methods-and-internal-slots-defineownproperty-p-desc
-[Function 对象部分]: https://tc39.es/ecma262/#sec-function-objects
-[IsArray 部分]: https://tc39.es/ecma262/#sec-isarray
-[IsStrctEqual 部分]: https://tc39.es/ecma262/#sec-strict-equality-comparison
-[Promise 对象部分]: https://tc39.es/ecma262/#sec-promise-objects
-[SharedArrayBuffer 对象部分]: https://tc39.es/ecma262/#sec-sharedarraybuffer-objects
-[ToBoolean 部分]: https://tc39.es/ecma262/#sec-toboolean
-[ToNumber 部分]: https://tc39.es/ecma262/#sec-tonumber
-[ToObject 部分]: https://tc39.es/ecma262/#sec-toobject
-[ToString 部分]: https://tc39.es/ecma262/#sec-tostring
-[TypedArray 对象部分]: https://tc39.es/ecma262/#sec-typedarray-objects
-[detachArrayBuffer 部分]: https://tc39.es/ecma262/#sec-detacharraybuffer
-[instanceof 运算符部分]: https://tc39.es/ecma262/#sec-instanceofoperator
-[isDetachedBuffer 部分]: https://tc39.es/ecma262/#sec-isdetachedbuffer
-[语言类型部分]: https://tc39.es/ecma262/#sec-ecmascript-data-types-and-values
-[number 类型部分]: https://tc39.es/ecma262/#sec-ecmascript-language-types-number-type
-[object 类型部分]: https://tc39.es/ecma262/#sec-object-type
-[属性特性部分]: https://tc39.es/ecma262/#sec-property-attributes
-[string 类型部分]: https://tc39.es/ecma262/#sec-ecmascript-language-types-string-type
-[symbol 类型部分]: https://tc39.es/ecma262/#sec-ecmascript-language-types-symbol-type
-[typeof 运算符部分]: https://tc39.es/ecma262/#sec-typeof-operator
+[对象封装]: #object-wrap
+[代理章节]: https://tc39.es/ecma262/#sec-agents
+[数组实例长度章节]: https://tc39.es/ecma262/#sec-properties-of-array-instances-length
+[数组对象章节]: https://tc39.es/ecma262/#sec-array-objects
+[ArrayBuffer 对象章节]: https://tc39.es/ecma262/#sec-arraybuffer-objects
+[DataView 对象章节]: https://tc39.es/ecma262/#sec-dataview-objects
+[Date 对象章节]: https://tc39.es/ecma262/#sec-date-objects
+[DefineOwnProperty 章节]: https://tc39.es/ecma262/#sec-ordinary-object-internal-methods-and-internal-slots-defineownproperty-p-desc
+[函数对象章节]: https://tc39.es/ecma262/#sec-function-objects
+[IsArray 章节]: https://tc39.es/ecma262/#sec-isarray
+[IsStrictlyEqual 章节]: https://tc39.es/ecma262/#sec-strict-equality-comparison
+[Promise 对象章节]: https://tc39.es/ecma262/#sec-promise-objects
+[SharedArrayBuffer 对象章节]: https://tc39.es/ecma262/#sec-sharedarraybuffer-objects
+[ToBoolean 章节]: https://tc39.es/ecma262/#sec-toboolean
+[ToNumber 章节]: https://tc39.es/ecma262/#sec-tonumber
+[ToObject 章节]: https://tc39.es/ecma262/#sec-toobject
+[ToString 章节]: https://tc39.es/ecma262/#sec-tostring
+[TypedArray 对象章节]: https://tc39.es/ecma262/#sec-typedarray-objects
+[detachArrayBuffer 章节]: https://tc39.es/ecma262/#sec-detacharraybuffer
+[instanceof 运算符章节]: https://tc39.es/ecma262/#sec-instanceofoperator
+[isDetachedBuffer 章节]: https://tc39.es/ecma262/#sec-isdetachedbuffer
+[语言类型章节]: https://tc39.es/ecma262/#sec-ecmascript-data-types-and-values
+[number 类型章节]: https://tc39.es/ecma262/#sec-ecmascript-language-types-number-type
+[object 类型章节]: https://tc39.es/ecma262/#sec-object-type
+[属性特性章节]: https://tc39.es/ecma262/#sec-property-attributes
+[string 类型章节]: https://tc39.es/ecma262/#sec-ecmascript-language-types-string-type
+[symbol 类型章节]: https://tc39.es/ecma262/#sec-ecmascript-language-types-symbol-type
+[typeof 运算符章节]: https://tc39.es/ecma262/#sec-typeof-operator
 [Travis CI]: https://travis-ci.org
 [Visual Studio]: https://visualstudio.microsoft.com
 [使用 JavaScript 属性]: #working-with-javascript-properties

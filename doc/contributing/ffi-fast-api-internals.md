@@ -170,22 +170,22 @@ s390x 的资格规则与 `src/ffi/platforms/s390x.cc` 一致：
 
 内部的 `FastFFIType` 枚举故意比公开的 FFI 类型
 范围更小。它描述了生成的 trampoline 知道如何直接
-进行 marshaling 的 ABI 类别：
+进行编组的 ABI 类别：
 
 * `kVoid`
-* `kBool`
-* 有符号和无符号的 8 位、16 位、32 位和 64 位整数
+* 有符号和无符号 8 位、16 位、32 位和 64 位整数
 * `kFloat32`
 * `kFloat64`
 * `kPointer`
 * `kBuffer`
 
 公开别名会在 `FastScalarTypeFromName()` 和
-`FastArgTypeFromName()` 中被标准化。
+`FastArgTypeFromName()` 中进行规范化。特别是，`bool` 会规范化为
+`kUint8`，以匹配其文档所述的 8 位无符号整数语义。
 
 `pointer`、`ptr`、`string`、`str`、`buffer` 和 `arraybuffer` 都表示
 目标 ABI 边界上的指针大小本地值。它们的区别在于
-在调用目标函数之前，如何接受并转换 JavaScript 值。`function` 对于通用 FFI 接口来说是指针大小的，但当前
+在调用目标函数之前，如何接受并转换 JavaScript 值。对于通用 FFI 接口而言，`function` 也是指针大小的，但当前
 Fast API 资格检查会拒绝它，因此会回退。
 
 ## V8 CFunction 元数据
@@ -338,7 +338,8 @@ Fast API 但仍然可以避免按参数原生转换开销的签名。SharedBuffe
 
 使用 SharedBuffer 的指针签名会在
 `kSbInvokeSlow` 下附加一个慢速调用器。该包装器对 BigInt 和空值
-指针值使用 SharedBuffer 路径，并对需要通用原生转换路径的值回退到慢速调用器。
+指针值使用 SharedBuffer 路径，并对需要通用原生转换路径的值回退到
+慢速调用器。
 
 Fast API 和 SharedBuffer 是相互独立的。一个函数要么使用 Fast API
 路径，要么使用 SharedBuffer 路径，要么使用通用路径，作为其主要原生可调用入口。

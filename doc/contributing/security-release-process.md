@@ -10,26 +10,27 @@
 
 | 公司                     | 人员            | 发布日期       |
 | ------------------------ | --------------- | ------------ |
-| NearForm                | Matteo          | 2021-Oct-12  |
-| Datadog                 | Bryan           | 2022-Jan-10  |
-| RH and IBM              | Joe             | 2022-Mar-18  |
-| NearForm                | Matteo / Rafael | 2022-Jul-07  |
-| Datadog                 | Vladimir        | 2022-Sep-23  |
-| NodeSource              | Juan            | 2022-Nov-04  |
-| RH and IBM              | Michael         | 2023-Feb-16  |
-| NearForm                | Rafael          | 2023-Jun-20  |
-| NearForm                | Rafael          | 2023-Aug-09  |
-| NearForm                | Rafael          | 2023-Oct-13  |
-| NodeSource              | Rafael          | 2024-Feb-14  |
-| NodeSource              | Rafael          | 2024-Apr-03  |
-| NodeSource              | Rafael          | 2024-Apr-10  |
-| NodeSource              | Rafael          | 2024-Jul-08  |
-| NodeSource              | Rafael          | 2025-Jan-21  |
-| NodeSource              | Rafael          | 2025-May-14  |
-| NodeSource              | Rafael          | 2025-Jul-15  |
-| HeroDevs and NodeSource | Marco / Rafael  | 2026-Jan-13  |
-| NodeSource              | Rafael          | 2026-Mar-24  |
-| Platformatic            | Antoine         | 2026-Jun-18  |
+| NearForm                | Matteo          | 2021年10月12日  |
+| Datadog                 | Bryan           | 2022年1月10日  |
+| RH 和 IBM              | Joe             | 2022年3月18日  |
+| NearForm                | Matteo / Rafael | 2022年7月7日  |
+| Datadog                 | Vladimir        | 2022年9月23日  |
+| NodeSource              | Juan            | 2022年11月4日  |
+| RH 和 IBM              | Michael         | 2023年2月16日  |
+| NearForm                | Rafael          | 2023年6月20日  |
+| NearForm                | Rafael          | 2023年8月9日  |
+| NearForm                | Rafael          | 2023年10月13日  |
+| NodeSource              | Rafael          | 2024年2月14日  |
+| NodeSource              | Rafael          | 2024年4月3日  |
+| NodeSource              | Rafael          | 2024年4月10日  |
+| NodeSource              | Rafael          | 2024年7月8日  |
+| NodeSource              | Rafael          | 2025年1月21日  |
+| NodeSource              | Rafael          | 2025年5月14日  |
+| NodeSource              | Rafael          | 2025年7月15日  |
+| HeroDevs 和 NodeSource | Marco / Rafael  | 2026年1月13日  |
+| NodeSource              | Rafael          | 2026年3月24日  |
+| Platformatic            | Antoine         | 2026年6月18日  |
+| NodeSource              | Rafael          | 2026年7月29日  |
 | Datadog                 | Bryan           |              |
 | IBM                     | Joe             |              |
 | Platformatic            | Matteo          |              |
@@ -50,9 +51,10 @@
   * 请务必在发布日期之前提醒 Node.js TSC 团队审查这些 PR。
     * 如果已妥善沟通，添加对报告主题有专业知识的个人也是可行的选择，需同时告知 nodejs/security 和 TSC。
 
-* [ ] 3\. **分配严重程度并撰写团队摘要：**
-  * [ ] 为选入 `vulnerabilities.json` 的报告分配严重程度，并在 HackerOne 上撰写团队摘要。
-  * 运行 `git node security --sync` 以更新 `vulnerabilities.json` 中的严重程度和摘要。
+* [ ] 3\. **分配严重性并撰写团队摘要：**
+  * [ ] 在 HackerOne 上为 `vulnerabilities.json` 中选定的报告分配严重性并撰写团队摘要。
+  * [ ] 如果报告针对的是 Node.js 依赖项，例如 `undici` 或 `llhttp`，请务必更新 HackerOne 上的 `DEPENDENCY` 自定义字段。
+  * 运行 `git node security --sync`，以更新 `vulnerabilities.json` 中的严重性和摘要。
 
 * [ ] 4\. **申请 CVE：**
   * 使用 `git node security --request-cve` 为这些报告申请 CVE。
@@ -129,7 +131,7 @@
     * [ ] [docker-node](https://github.com/nodejs/docker-node/issues)
     * [ ] [build-wg](https://github.com/nodejs/build/issues)
     * [ ] 邮件：通知 [Google Groups](https://groups.google.com/g/nodejs-sec)
-      * 转发到 <oss-security@lists.openwall.com>
+      * 转发到 <oss-security@lists.openwall.com>。
 
 ## 发布后
 
@@ -147,7 +149,7 @@
       ![HackerOne CVE 表单截图](https://github.com/nodejs/node/assets/26234614/e22e4f33-7948-4dd2-952e-2f9166f5568d)
   * 将漏洞的机器可读 JSON 描述提交 PR 到 [core](https://github.com/nodejs/security-wg/tree/HEAD/vuln/core)
     漏洞数据库。
-  * [ ] 在 [Security Release Stewards](https://github.com/nodejs/node/blob/HEAD/doc/contributing/security-release-process.md#security-release-stewards) 中将自己添加为负责人
+  * [ ] 在 [Security Release Stewards](https://github.com/nodejs/node/blob/HEAD/doc/contributing/security-release-process.md#security-release-stewards) 中将自己添加为负责人。
 
 ## 添加安全回退选项
 

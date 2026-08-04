@@ -190,11 +190,11 @@ added:
 * `groupAddress` {string}
 * `multicastInterface` {string}
 
-Tell the kernel to join the source-specific multicast channel at the given `sourceAddress` and `groupAddress` using `multicastInterface` and the `IP_ADD_SOURCE_MEMBERSHIP` socket option.
-If the `multicastInterface` parameter is not specified, the operating system will choose an interface and add the membership to that interface.
-To add the membership to every available interface, call `socket.addSourceSpecificMembership()` multiple times, once for each interface.
+使用 `multicastInterface` 和 `IP_ADD_SOURCE_MEMBERSHIP` 套接字选项，告知内核加入给定 `sourceAddress` 和 `groupAddress` 上的特定源多播通道。
+如果未指定 `multicastInterface` 参数，操作系统将选择一个接口，并将成员关系添加到该接口。
+要将成员关系添加到每个可用接口，请多次调用 `socket.addSourceSpecificMembership()`，每个接口调用一次。
 
-When called on an unbound socket, this method will implicitly bind to a random port and listen on all interfaces.
+在未绑定的套接字上调用时，此方法会隐式绑定到一个随机端口，并监听所有接口。
 
 ### `socket.address()`
 
@@ -327,7 +327,9 @@ socket.bind({
 ### `socket.bindSync([options])`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 * `options` {Object}
@@ -401,7 +403,9 @@ added: v12.0.0
 ### `socket.connectSync(port[, address])`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 * `port` {integer}
@@ -427,8 +431,8 @@ console.log(socket.remoteAddress()); // { address: '127.0.0.1', family: 'IPv4', 
 added: v12.0.0
 -->
 
-A synchronous function used to disassociate a connected `dgram.Socket` from its remote address.
-Attempting to call `disconnect()` on an unbound or already disconnected socket will result in an [`ERR_SOCKET_DGRAM_NOT_CONNECTED`][] exception.
+用于将已连接的 `dgram.Socket` 与其远程地址解除关联的同步函数。
+尝试对未绑定或已断开连接的 socket 调用 `disconnect()` 将导致 [`ERR_SOCKET_DGRAM_NOT_CONNECTED`][] 异常。
 
 ### `socket.dropMembership(multicastAddress[, multicastInterface])`
 
@@ -572,13 +576,13 @@ changes:
 `msg` 参数包含要发送的消息。
 根据其类型，可能适用不同的行为。
 如果 `msg` 是 `Buffer`、任何 `TypedArray` 或 `DataView`，则 `offset` 和 `length` 分别指定 `Buffer` 内消息开始的偏移量和消息中的字节数。
-如果 `msg` 是 `String`，则它会自动转换为具有 `'utf8'` 编码的 `Buffer`。
+如果 `msg` 是字符串，则它会自动转换为具有 `'utf8'` 编码的 `Buffer`。
 对于包含多字节字符的消息，`offset` 和 `length` 将相对于 [字节长度][] 而不是字符位置进行计算。
 如果 `msg` 是数组，则不得指定 `offset` 和 `length`。
 
 `address` 参数是一个字符串。
 如果 `address` 的值是主机名，将使用 DNS 来解析主机的地址。
-如果未提供 `address` 或其他为 nullish，默认将使用 `'127.0.0.1'`（对于 `udp4` 套接字）或 `'::1'`（对于 `udp6` 套接字）。
+如果未提供 `address` 或其他值为空值，默认将使用 `'127.0.0.1'`（对于 `udp4` 套接字）或 `'::1'`（对于 `udp6` 套接字）。
 
 如果套接字之前未通过调用 `bind` 进行绑定，则套接字被分配一个随机端口号并绑定到“所有接口”地址（`udp4` 套接字为 `'0.0.0.0'`，`udp6` 套接字为 `'::0'`）。
 
@@ -589,7 +593,7 @@ DNS 查找会将发送时间延迟至少一个 Node.js 事件循环周期。
 如果发生错误并给出了 `callback`，则错误将作为第一个参数传递给 `callback`。
 如果未给出 `callback`，则错误会作为 `'error'` 事件在 `socket` 对象上发出。
 
-Offset 和 length 是可选的，但如果使用了其中任何一个，则两者都必须设置。
+偏移量和长度是可选的，但如果使用了其中任何一个，则两者都必须设置。
 仅当第一个参数是 `Buffer`、`TypedArray` 或 `DataView` 时才支持它们。
 
 如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BAD_PORT`][]。
@@ -793,15 +797,15 @@ added: v0.3.8
 
 * `ttl` {integer}
 
-Sets the `IP_MULTICAST_TTL` socket option.
-Although TTL usually stands for "time to live", in this context it specifies the number of IP hops a packet is allowed to traverse, especially for multicast traffic.
-Each router or gateway that forwards a packet decrements the TTL.
-If a router decrements the TTL to 0, it is not forwarded.
+设置 `IP_MULTICAST_TTL` 套接字选项。
+尽管 TTL 通常代表“生存时间”（time to live），但在此上下文中，它指定了数据包允许经过的 IP 跳数，尤其适用于多播流量。
+每个转发数据包的路由器或网关都会将 TTL 减 1。
+如果路由器将 TTL 减至 0，则不会转发该数据包。
 
-The `ttl` argument may be between 0 and 255.
-The default on most systems is `1`.
+`ttl` 参数的取值范围可以是 0 到 255。
+大多数系统上的默认值为 `1`。
 
-If this method is called on an unbound socket, an `EBADF` error is thrown.
+如果在未绑定的套接字上调用此方法，则会抛出 `EBADF` 错误。
 
 ### `socket.setRecvBufferSize(size)`
 
@@ -837,16 +841,16 @@ added: v0.1.101
 
 * `ttl` {integer}
 
-设置 `IP_TTL` 套接字选项。
-虽然 TTL 通常代表“生存时间”，但在此上下文中，它指定数据包允许通过的 IP 跳数。
-每个转发数据包的路由器或网关都会递减 TTL。
-如果路由器将 TTL 递减到 0，则不会转发它。
-更改 TTL 值通常用于网络探测或多播时。
+Sets the `IP_TTL` socket option.
+Although TTL usually stands for “time to live,” in this context, it specifies the number of IP hops that a packet is allowed to traverse.
+Each router or gateway that forwards the packet decrements the TTL.
+If a router decrements the TTL to 0, it will not forward the packet.
+Changing the TTL value is commonly used for network probing or multicasting.
 
-`ttl` 参数可能在 1 到 255 之间。
-大多数系统上的默认值为 64。
+The `ttl` parameter may be between 1 and 255.
+The default value on most systems is 64.
 
-如果在未绑定的套接字上调用此方法，将抛出 `EBADF`。
+Calling this method on an unbound socket will throw `EBADF`.
 
 ### `socket.unref()`
 

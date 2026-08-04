@@ -47,7 +47,7 @@ WHATWG URL 的 `origin` 属性包括 `protocol` 和 `host`，但不包括
 ├─────────────┴─────────────────────┴────────────────────────┴──────────┴────────────────┴───────┤
 │                                              href                                              │
 └────────────────────────────────────────────────────────────────────────────────────────────────┘
-(All spaces in the "" line should be ignored. They are purely for formatting.)
+（"" 行中的所有空格都应忽略。它们仅用于格式化。）
 ```
 
 使用 WHATWG API 解析 URL 字符串：
@@ -106,7 +106,7 @@ added:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18281
-    description: The class is now available on the global object.
+    description: 该类现在可在全局对象上使用。
 -->
 
 浏览器兼容的 `URL` 类，遵循 WHATWG URL
@@ -128,7 +128,7 @@ changes:
     - v20.0.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47339
-    description: ICU requirement is removed.
+    description: 已移除对 ICU 的要求。
 -->
 
 * `input` {string} 要解析的绝对或相对输入 URL。如果 `input`
@@ -292,12 +292,12 @@ console.log(myURL.href);
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33325
-    description: "The scheme gopher is no longer special and `url.origin` nowreturns `'null'` for it."
+    description: “gopher” 方案不再是特殊方案，`url.origin` 现在会为其返回 `'null'`。
 -->
 
 * 类型：{string}
 
-获取 URL 源头的只读序列化。
+获取 URL 源的只读序列化表示。
 
 ```js
 const myURL = new URL('https://example.org/foo/bar?baz');
@@ -362,7 +362,7 @@ console.log(myURL.href);
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33325
-    description: The scheme "gopher" is no longer special.
+    description: “gopher” 方案不再是特殊方案。
 -->
 
 * 类型：{string}
@@ -470,7 +470,7 @@ console.log(myURL.href);
 changes:
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/33325
-    description: The scheme "gopher" is no longer special.
+    description: “gopher” 方案不再是特殊方案。
 -->
 
 [WHATWG URL 标准][] 认为少数 URL 协议方案在解析和序列化方面是_特殊_的。当使用这些特殊协议之一解析 URL 时，`url.protocol` 属性
@@ -618,7 +618,7 @@ changes:
     - v24.0.0
     - v22.17.0
    pr-url: https://github.com/nodejs/node/pull/57513
-   description: Marking the API stable.
+   description: 将该 API 标记为稳定。
 -->
 
 * `blob` {Blob}
@@ -658,7 +658,7 @@ changes:
     - v24.0.0
     - v22.17.0
    pr-url: https://github.com/nodejs/node/pull/57513
-   description: Marking the API stable.
+   description: 将该 API 标记为稳定。
 -->
 
 * `id` {string} 先前调用
@@ -724,12 +724,12 @@ console.log(myPattern.exec('https://nodejs.org/docs/latest/api/dns.html'));
 //  "inputs": [
 //    "https://nodejs.org/docs/latest/api/dns.html"
 //  ],
-//  "password": { "groups": { "0": "" }, "input": "" },
-//  "pathname": { "groups": { "0": "dns" }, "input": "/docs/latest/api/dns.html" },
+//  "password": { "groups": {  "0": "" }, "input": "" },
+//  "pathname": { "groups": {  "0": "dns" }, "input": "/docs/latest/api/dns.html" },
 //  "port": { "groups": {}, "input": "" },
 //  "protocol": { "groups": {}, "input": "https" },
-//  "search": { "groups": { "0": "" }, "input": "" },
-//  "username": { "groups": { "0": "" }, "input": "" }
+//  "search": { "groups": {  "0": "" }, "input": "" },
+//  "username": { "groups": {  "0": "" }, "input": "" }
 // }
 
 console.log(myPattern.test('https://nodejs.org/docs/latest/api/dns.html'));
@@ -797,12 +797,12 @@ console.log(myPattern.exec('https://nodejs.org/docs/latest/api/dns.html'));
 //  "inputs": [
 //    "https://nodejs.org/docs/latest/api/dns.html"
 //  ],
-//  "password": { "groups": { "0": "" }, "input": "" },
-//  "pathname": { "groups": { "0": "dns" }, "input": "/docs/latest/api/dns.html" },
+//  "password": { "groups": {  "0": "" }, "input": "" },
+//  "pathname": { "groups": {  "0": "dns" }, "input": "/docs/latest/api/dns.html" },
 //  "port": { "groups": {}, "input": "" },
 //  "protocol": { "groups": {}, "input": "https" },
-//  "search": { "groups": { "0": "" }, "input": "" },
-//  "username": { "groups": { "0": "" }, "input": "" }
+//  "search": { "groups": {  "0": "" }, "input": "" },
+//  "username": { "groups": {  "0": "" }, "input": "" }
 // }
 ```
 
@@ -834,7 +834,7 @@ added:
 changes:
   - version: v10.0.0
     pr-url: https://github.com/nodejs/node/pull/18281
-    description: The class is now available on the global object.
+    description: 该类现在可在全局对象上使用。
 -->
 
 `URLSearchParams` API 提供对 `URL` 查询的读写访问。`URLSearchParams` 类也可以独立使用，具有以下
@@ -1002,7 +1002,7 @@ changes:
       - v20.2.0
       - v18.18.0
     pr-url: https://github.com/nodejs/node/pull/47885
-    description: "Add support for optional `value` argument."
+    description: "增加对可选 `value` 参数的支持。"
 -->
 
 * `name` {string}
@@ -1027,7 +1027,7 @@ changes:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "Passing an invalid callback to the `fn` argumentnow throws `ERR_INVALID_ARG_TYPE` instead of`ERR_INVALID_CALLBACK`."
+    description: "向 `fn` 参数传入无效回调现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `fn` {Function} 为查询中的每个名称 - 值对调用
@@ -1069,7 +1069,7 @@ changes:
       - v20.2.0
       - v18.18.0
     pr-url: https://github.com/nodejs/node/pull/47885
-    description: "Add support for optional `value` argument."
+    description: "增加对可选 `value` 参数的支持。"
 -->
 
 * `name` {string}
@@ -1199,7 +1199,7 @@ changes:
     - v20.0.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47339
-    description: ICU requirement is removed.
+    description: 已移除对 ICU 的要求。
 -->
 
 * `domain` {string}
@@ -1243,7 +1243,7 @@ changes:
     - v20.0.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/47339
-    description: ICU requirement is removed.
+    description: 已移除 ICU 要求。
 -->
 
 * `domain` {string}
@@ -1285,14 +1285,14 @@ changes:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52509
-    description: "The `options` argument can now be used todetermine how to parse the `path` argument."
+    description: "`options` 参数现在可用于确定如何解析 `path` 参数。"
 -->
 
 * `url` {URL | string} 要转换为路径的文件 URL 字符串或 URL 对象。
 * `options` {Object}
   * `windows` {boolean|undefined} 如果 `path` 应该
-    作为 windows 文件路径返回，则为 `true`，如果是 posix 则为 `false`，
-    如果是系统默认值则为 `undefined`。
+    作为 Windows 文件路径返回，则为 `true`，如果是 POSIX，则为 `false`，
+    如果是系统默认值，则为 `undefined`。
     **默认值：** `undefined`。
 * 返回：{string} 完全解析的特定于平台的 Node.js 文件路径。
 
@@ -1356,7 +1356,7 @@ added:
 * `url` {URL | string} 要转换为路径的文件 URL 字符串或 URL 对象。
 * `options` {Object}
   * `windows` {boolean|undefined} 如果 `path` 应该
-    作为 windows 文件路径返回，则为 `true`，如果是 posix 则为 `false`，
+    作为 Windows 文件路径返回，则为 `true`，如果是 POSIX 则为 `false`，
     如果是系统默认值则为 `undefined`。
     **默认值：** `undefined`。
 * 返回：{Buffer} 完全解析的特定于平台的 Node.js 文件路径
@@ -1438,13 +1438,13 @@ changes:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52509
-    description: "The `options` argument can now be used todetermine how to return the `path` value."
+    description: "`options` 参数现在可用于确定如何返回 `path` 值。"
 -->
 
 * `path` {string} 要转换为文件 URL 的路径。
 * `options` {Object}
   * `windows` {boolean|undefined} 如果 `path` 应该
-    被视为 windows 文件路径，则为 `true`，如果是 posix 则为 `false`，
+    被视为 Windows 文件路径，则为 `true`，如果是 POSIX 则为 `false`，
     如果是系统默认值则为 `undefined`。
     **默认值：** `undefined`。
 * 返回：{URL} 文件 URL 对象。
@@ -1487,7 +1487,7 @@ changes:
     - v19.9.0
     - v18.17.0
     pr-url: https://github.com/nodejs/node/pull/46989
-    description: "The returned object will also contain all the own enumerableproperties of the `url` argument."
+    description: "返回的对象还将包含 `url` 参数的所有自有可枚举属性。"
 -->
 
 * `url` {URL} 要转换为选项对象的 [WHATWG URL][] 对象。
@@ -1580,7 +1580,7 @@ changes:
 
 #### `urlObject.auth`
 
-`auth` 属性是 URL 的用户名和密码部分，也称为 _userinfo_。此字符串子集跟随 `protocol` 和双斜杠（如果存在）之后，并在 `host` 组件之前，由 `@` 分隔。该字符串要么是用户名，要么是由 `:` 分隔的用户名和密码。
+`auth` 属性是 URL 的用户名和密码部分，也称为 _用户信息_。此字符串子集跟随 `protocol` 和双斜杠（如果存在）之后，并在 `host` 组件之前，由 `@` 分隔。该字符串要么是用户名，要么是由 `:` 分隔的用户名和密码。
 
 例如：`'user:pass'`。
 
@@ -1654,7 +1654,7 @@ changes:
 
 #### `urlObject.slashes`
 
-如果 `protocol` 中的冒号后面需要两个 ASCII 正斜杠字符（`/`），则 `slashes` 属性是一个值为 `true` 的 `boolean`。
+如果 `protocol` 中的冒号后面需要两个 ASCII 正斜杠字符（`/`），则 `slashes` 属性是一个值为 `true` 的布尔值。
 
 ### `url.format(urlObject)`
 
@@ -1677,7 +1677,8 @@ changes:
     description: "带有 `file:` 方案的 URL 现在将始终使用正确数量的斜杠，无论 `slashes` 选项如何。不带协议且 `slashes` 选项为假值的情况现在也始终受到尊重。"
 -->
 
-* `urlObject` {Object} 一个 URL 对象（由 `url.parse()` 返回或以其他方式构造）。
+* `urlObject` {Object} URL 对象（由 `url.parse()` 返回或以其他方式构造）。
+* 返回值：{string}
 
 `url.format()` 方法返回源自 `urlObject` 的格式化 URL 字符串。
 
@@ -1749,7 +1750,8 @@ changes:
 
 > 稳定性：0 - 已弃用：请改用 WHATWG URL API。
 
-* `urlString` {string} 一个将传递给 `url.parse()` 然后格式化的字符串。
+* `urlString` {string} 将传递给 `url.parse()` 并进行格式化的字符串。
+* 返回值：{string}
 
 `url.format(urlString)` 是 `url.format(url.parse(urlString))` 的简写。
 
@@ -1924,19 +1926,19 @@ URL 只允许包含特定范围的字符。任何超出该范围的字符都必�
 < > " ` \r \n \t { } | \ ^ '
 ```
 
-例如，ASCII 空格字符（`' '`）被编码为 `%20`。ASCII 正斜杠（`/`）字符被编码为 `%3C`。
+例如，ASCII 空格字符（`' '`）被编码为 `%20`。ASCII 正斜杠（`/`）字符被编码为 `%2F`。
 
 ### WHATWG API
 
 [WHATWG URL 标准][] 在选择编码字符方面比遗留 API 使用了更具选择性和更细粒度的方法。
 
-WHATWG 算法定义了四个“百分号编码集”，用于描述必须进行了百分号编码的字符范围：
+WHATWG 算法定义了四个“百分号编码集”，用于描述必须进行百分号编码的字符范围：
 
 * _C0 控制百分号编码集_ 包括范围在 U+0000 到 U+001F（含）之间的代码点以及所有大于 U+007E（\~）的代码点。
 
 * _片段百分号编码集_ 包括 _C0 控制百分号编码集_ 以及代码点 U+0020 SPACE、U+0022 (")、U+003C (<)、U+003E (>) 和 U+0060 (\`)。
 
-* _路径百分号编码集_ 包括 _C0 控制百分号编码集_ 以及代码点 U+0020 SPACE、U+0022 (")、U+0023 (#)、U+003C (<)、U+003E (>)、U+003F (?)、U+0060 (\`)、U+007B ({) 和 U+007D (})。
+* _路径百分号编码集_ 包括 _C0 控制百分号编码集_ 以及代码点 U+0020 SPACE、U+0022 (")、U+0023 (#)、U+003C (<)、U+003E (>)、U+003F (?)、U+0060 (\`)、U+007B (\`{\`) 和 U+007D (\`}\`)。
 
 * _用户信息编码集_ 包括 _路径百分号编码集_ 以及代码点 U+002F (/)、U+003A (:)、U+003B (;)、U+003D (=)、U+0040 (@)、U+005B (\[) 到 U+005E(^) 以及 U+007C (|)。
 

@@ -110,7 +110,7 @@ try {
 }
 ```
 
-## Promises API
+## Promise API
 
 <!-- YAML
 added: v10.0.0
@@ -128,203 +128,9 @@ changes:
     description: "该 API 仅可通过 `require('fs').promises` 访问。"
 -->
 
-`fs/promises` API 提供返回 promises 的异步文件系统方法。
+`fs/promises` API 提供返回 Promise 的异步文件系统方法。
 
 Promise API 使用底层的 Node.js 线程池在事件循环线程之外执行文件系统操作。这些操作不同步也不是线程安全的。在对同一文件执行多个并发修改时必须小心，否则可能会发生数据损坏。
-
-### 类：`FileHandle`
-
-<!-- YAML
-added: v10.0.0
--->
-
-{FileHandle} 对象是数字文件描述符的对象包装器。
-
-{FileHandle} 对象的实例由 `fsPromises.open()` 方法创建。
-
-所有 {FileHandle} 对象都是 {EventEmitter}。
-
-如果未使用 `filehandle.close()` 方法关闭 {FileHandle}，它将尝试自动关闭文件描述符并发出进程警告，有助于防止内存泄漏。请不要依赖此行为，因为它可能不可靠且文件可能未关闭。相反，始终显式关闭 {FileHandle}。Node.js 可能会在未来更改此行为。
-
-#### 事件：`'close'`
-
-<!-- YAML
-added: v15.4.0
--->
-
-当 {FileHandle} 已关闭且不再可用时，会发出 `'close'` 事件。
-
-#### `filehandle.appendFile(data[, options])`
-
-<!-- YAML
-added: v10.0.0
-changes:
-  - version:
-    - v21.1.0
-    - v20.10.0
-    pr-url: https://github.com/nodejs/node/pull/50095
-    description: "现在支持 `flush` 选项。"
-  - version:
-      - v15.14.0
-      - v14.18.0
-    pr-url: https://github.com/nodejs/node/pull/37490
-    description: "`data` 参数支持 `AsyncIterable`、`Iterable` 和 `Stream`。"
-  - version: v14.0.0
-    pr-url: https://github.com/nodejs/node/pull/31030
-    description: "`data` 参数不再将不支持的输入强制转换为字符串。"
--->
-
-* `data` {string|Buffer|TypedArray|DataView|AsyncIterable|Iterable|Stream}
-* `options` {Object|string}
-  * `encoding` {string|null} **默认：** `'utf8'`
-  * `signal` {AbortSignal|undefined} 允许中止进行中的 writeFile。**默认：** `undefined`
-* 返回：{Promise} 成功时 fulfilled 为 `undefined`。
-
-[`filehandle.writeFile()`][] 的别名。
-
-当操作文件句柄时，模式不能更改为 [`fsPromises.open()`][] 所设置的模式。因此，这等同于 [`filehandle.writeFile()`][]。
-
-#### `filehandle.chmod(mode)`
-
-<!-- YAML
-added: v10.0.0
--->
-
-* `mode` {integer} 文件模式位掩码。
-* 返回：{Promise} 成功时 fulfilled 为 `undefined`。
-
-修改文件上的权限。参见 chmod(2)。
-
-#### `filehandle.chown(uid, gid)`
-
-<!-- YAML
-added: v10.0.0
--->
-
-* `uid` {integer} 文件新所有者的用户 id。
-* `gid` {integer} 文件新所属组的组 id。
-* 返回：{Promise} 成功时 fulfilled 为 `undefined`。
-
-更改文件的所有权。chown(2) 的包装器。
-
-#### `filehandle.close()`
-
-<!-- YAML
-added: v10.0.0
--->
-
-* 返回：{Promise} 成功时 fulfilled 为 `undefined`。
-
-在等待句柄上的任何待处理操作完成后关闭文件句柄。
-
-```mjs
-import { open } from 'node:fs/promises';
-
-let filehandle;
-try {
-  filehandle = await open('thefile.txt', 'r');
-} finally {
-  await filehandle?.close();
-}
-```
-
-#### `filehandle.createReadStream([options])`
-
-<!-- YAML
-added: v16.11.0
--->
-
-* `options` {Object}
-  * `encoding` {string} **默认：** `null`
-  * `autoClose` {boolean} **默认：** `true`
-  * `emitClose` {boolean} **默认：** `true`
-  * `start` {integer}
-  * `end` {integer} **默认：** `Infinity`
-  * `highWaterMark` {integer} **默认：** `64 * 1024`
-  * `signal` {AbortSignal|undefined} **默认：** `undefined`
-* 返回：{fs.ReadStream}
-
-`options` 可以包括 `start` 和 `end` 值，以便从文件中读取字节范围而不是整个文件。`start` 和 `end` 都包含在内并从 0 开始计数，允许的值在 \[0, [`Number.MAX_SAFE_INTEGER`][]] 范围内。如果省略 `start` 或为 `undefined`，`filehandle.createReadStream()` 将从当前文件位置顺序读取。`encoding` 可以是 {Buffer} 接受的任何值。
-
-如果 {FileHandle} 指向仅支持阻塞读取的字符设备（例如键盘或声卡），则读取操作直到数据可用才会完成。这可能会阻止进程退出并且流无法自然关闭。
-
-默认情况下，流在被销毁后会发出 `'close'` 事件。将 `emitClose` 选项设置为 `false` 以更改此行为。
-
-```mjs
-import { open } from 'node:fs/promises';
-
-const fd = await open('/dev/input/event0');
-// 从某个字符设备创建流。
-const stream = fd.createReadStream();
-setTimeout(() => {
-  stream.close(); // 这可能不会关闭流。
-  // 人工标记流结束，就好像底层资源本身
-  // 指示了文件结束一样，允许流关闭。
-  // 这不会取消待处理的读取操作，如果存在这样的
-  // 操作，进程可能仍然无法成功退出
-  // 直到它完成。
-  stream.push(null);
-  stream.read(0);
-}, 100);
-```
-
-如果 `autoClose` 为 false，则即使出现错误也不会关闭文件描述符。应用程序有责任关闭它并确保没有文件描述符泄漏。如果 `autoClose` 设置为 true（默认行为），则在 `'error'` 或 `'end'` 时文件描述符将自动关闭。
-
-读取一个 100 字节长的文件的最后 10 字节的示例：
-
-```mjs
-import { open } from 'node:fs/promises';
-
-const fd = await open('sample.txt');
-fd.createReadStream({ start: 90, end: 99 });
-```
-
-#### `filehandle.createWriteStream([options])`
-
-<!-- YAML
-added: v16.11.0
-changes:
-  - version:
-    - v21.0.0
-    - v20.10.0
-    pr-url: https://github.com/nodejs/node/pull/50093
-    description: "现在支持 `flush` 选项。"
--->
-
-* `options` {Object}
-  * `encoding` {string} **默认：** `'utf8'`
-  * `autoClose` {boolean} **默认：** `true`
-  * `emitClose` {boolean} **默认：** `true`
-  * `start` {integer}
-  * `highWaterMark` {number} **默认：** `16384`
-  * `flush` {boolean} 如果为 `true`，则在关闭之前刷新底层文件描述符。**默认：** `false`。
-* 返回：{fs.WriteStream}
-
-`options` 还可以包括一个 `start` 选项，以允许在文件开头之后的某个位置写入数据，允许的值在 \[0, [`Number.MAX_SAFE_INTEGER`][]] 范围内。修改文件而不是替换它可能需要将 `flags` `open` 选项设置为 `r+` 而不是默认的 `r`。`encoding` 可以是 {Buffer} 接受的任何值。
-
-如果 `autoClose` 设置为 true（默认行为），则在 `'error'` 或 `'finish'` 时文件描述符将自动关闭。如果 `autoClose` 为 false，则即使出现错误也不会关闭文件描述符。应用程序有责任关闭它并确保没有文件描述符泄漏。
-
-默认情况下，流在被销毁后会发出 `'close'` 事件。将 `emitClose` 选项设置为 `false` 以更改此行为。
-
-#### `filehandle.datasync()`
-
-<!-- YAML
-added: v10.0.0
--->
-
-* 返回：{Promise} 成功时 fulfilled 为 `undefined`。
-
-强制所有当前排队的与文件关联的 I/O 操作进入操作系统的同步 I/O 完成状态。有关详细信息，请参阅 POSIX fdatasync(2) 文档。
-
-与 `filehandle.sync` 不同，此方法不刷新修改后的元数据。
-
-#### `filehandle.fd`
-
-<!-- YAML
-added: v10.0.0
--->
-
-* 类型：{number} 由 {FileHandle} 对象管理的数字文件描述符。
 
 #### `filehandle.pull([...transforms][, options])`
 
@@ -338,59 +144,18 @@ added:
 * `...transforms` {Function|Object} 可选的转换，通过 [`stream/iter pull()`][] 应用。
 * `options` {Object}
   * `signal` {AbortSignal}
-  * `autoClose` {boolean} 当流结束时关闭文件句柄。**默认：** `false`。
+  * `autoClose` {boolean} 流结束时关闭文件句柄。
+    **默认：** `false`。
   * `start` {number} 开始读取的字节偏移量。指定时，读取使用显式定位（`pread` 语义）。**默认：** 当前文件位置。
-  * `limit` {number} 结束迭代器之前要读取的最大字节数。当已交付 `limit` 字节或到达 EOF 时读取停止，以先到者为准。**默认：** 读取直到 EOF。
-  * `chunkSize` {number} 为每次读取操作分配的缓冲区大小（字节）。**默认：** `131072` (128 KB)。
-* 返回：{AsyncIterable\<Uint8Array\[]>}
+  * `limit` {number} 迭代器结束前读取的最大字节数。当已传递 `limit` 个字节或到达文件末尾时停止读取，以先发生者为准。**默认：** 读取到文件末尾。
+  * `chunkSize` {number} 为每次读取操作分配的缓冲区大小（字节）。**默认：** `131072`（128 KB）。
+* 返回：{AsyncIterable}，其块以 {Uint8Array\[]} fulfilled
 
 使用 [`node:stream/iter`][] pull 模型将文件内容作为异步迭代器返回。读取以 `chunkSize` 字节块（默认 128 KB）执行。如果提供了转换，它们将通过 [`stream/iter pull()`][] 应用。
 
 当迭代器被消费时文件句柄被锁定，当迭代完成、发生错误或消费者中断时解锁。
 
 此函数仅在启用 `--experimental-stream-iter` 标志时可用。
-
-```mjs
-import { open } from 'node:fs/promises';
-import { text } from 'node:stream/iter';
-import { compressGzip } from 'node:zlib/iter';
-
-const fh = await open('input.txt', 'r');
-
-// 读取为文本
-console.log(await text(fh.pull({ autoClose: true })));
-
-// 从字节 100 开始读取 1 KB
-const fh2 = await open('input.txt', 'r');
-console.log(await text(fh2.pull({ start: 100, limit: 1024, autoClose: true })));
-
-// 读取并压缩
-const fh3 = await open('input.txt', 'r');
-const compressed = fh3.pull(compressGzip(), { autoClose: true });
-```
-
-```cjs
-const { open } = require('node:fs/promises');
-const { text } = require('node:stream/iter');
-const { compressGzip } = require('node:zlib/iter');
-
-async function run() {
-  const fh = await open('input.txt', 'r');
-
-  // 读取为文本
-  console.log(await text(fh.pull({ autoClose: true })));
-
-  // 从字节 100 开始读取 1 KB
-  const fh2 = await open('input.txt', 'r');
-  console.log(await text(fh2.pull({ start: 100, limit: 1024, autoClose: true })));
-
-  // 读取并压缩
-  const fh3 = await open('input.txt', 'r');
-  const compressed = fh3.pull(compressGzip(), { autoClose: true });
-}
-
-run().catch(console.error);
-```
 
 #### `filehandle.pullSync([...transforms][, options])`
 
@@ -403,584 +168,18 @@ added:
 
 * `...transforms` {Function|Object} 可选的转换，通过 [`stream/iter pullSync()`][] 应用。
 * `options` {Object}
-  * `autoClose` {boolean} 当流结束时关闭文件句柄。**默认：** `false`。
+  * `autoClose` {boolean} 流结束时关闭文件句柄。
+    **默认：** `false`。
   * `start` {number} 开始读取的字节偏移量。指定时，读取使用显式定位。**默认：** 当前文件位置。
-  * `limit` {number} 结束迭代器之前要读取的最大字节数。**默认：** 读取直到 EOF。
-  * `chunkSize` {number} 为每次读取操作分配的缓冲区大小（字节）。**默认：** `131072` (128 KB)。
-* 返回：{Iterable\<Uint8Array\[]>}
+  * `limit` {number} 迭代器结束前读取的最大字节数。**默认：** 读取到文件末尾。
+  * `chunkSize` {number} 为每次读取操作分配的缓冲区大小（字节）。**默认：** `131072`（128 KB）。
+* 返回：{Iterable}，其块返回 {Uint8Array\[]}
 
 [`filehandle.pull()`][] 的同步对应物。返回一个同步迭代器，使用主线程上的同步 I/O 读取文件。读取以 `chunkSize` 字节块（默认 128 KB）执行。
 
 当迭代器被消费时文件句柄被锁定。与异步 `pull()` 不同，此方法不支持 `AbortSignal`，因为所有操作都是同步的。
 
 此函数仅在启用 `--experimental-stream-iter` 标志时可用。
-
-```mjs
-import { open } from 'node:fs/promises';
-import { textSync, pipeToSync } from 'node:stream/iter';
-import { compressGzipSync, decompressGzipSync } from 'node:zlib/iter';
-
-const fh = await open('input.txt', 'r');
-
-// 读取为文本（同步）
-console.log(textSync(fh.pullSync({ autoClose: true })));
-
-// 同步压缩管道：file -> gzip -> file
-const src = await open('input.txt', 'r');
-const dst = await open('output.gz', 'w');
-pipeToSync(src.pullSync(compressGzipSync(), { autoClose: true }), dst.writer({ autoClose: true }));
-```
-
-```cjs
-const { open } = require('node:fs/promises');
-const { textSync, pipeToSync } = require('node:stream/iter');
-const { compressGzipSync, decompressGzipSync } = require('node:zlib/iter');
-
-async function run() {
-  const fh = await open('input.txt', 'r');
-
-  // 读取为文本（同步）
-  console.log(textSync(fh.pullSync({ autoClose: true })));
-
-  // 同步压缩管道：file -> gzip -> file
-  const src = await open('input.txt', 'r');
-  const dst = await open('output.gz', 'w');
-  pipeToSync(
-    src.pullSync(compressGzipSync(), { autoClose: true }),
-    dst.writer({ autoClose: true }),
-  );
-}
-
-run().catch(console.error);
-```
-
-#### `filehandle.read(buffer, offset, length, position)`
-
-<!-- YAML
-added: v10.0.0
-changes:
-  - version: v21.0.0
-    pr-url: https://github.com/nodejs/node/pull/42835
-    description: "接受 bigint 值作为 `position`。"
--->
-
-* `buffer` {Buffer|TypedArray|DataView} 将填充读取的文件数据的缓冲区。
-* `offset` {integer} 开始在缓冲区中填充的位置。**默认：** `0`
-* `length` {integer} 要读取的字节数。**默认：** `buffer.byteLength - offset`
-* `position` {integer|bigint|null} 开始从文件读取数据的位置。如果为 `null` 或 `-1`，将从当前文件位置读取数据，并且位置将更新。如果 `position` 是非负整数，则当前文件位置将保持不变。**默认：** `null`
-* 返回：{Promise} 成功时 fulfilled 为一个包含两个属性的对象：
-  * `bytesRead` {integer} 读取的字节数
-  * `buffer` {Buffer|TypedArray|DataView} 对传入的 `buffer` 参数的引用。
-
-从文件读取数据并将其存储在给定的缓冲区中。
-
-如果文件未并发修改，则当读取的字节数为零时到达文件末尾。
-
-#### `filehandle.read([options])`
-
-<!-- YAML
-added:
- - v13.11.0
- - v12.17.0
-changes:
-  - version: v21.0.0
-    pr-url: https://github.com/nodejs/node/pull/42835
-    description: "接受 bigint 值作为 `position`。"
--->
-
-* `options` {Object}
-  * `buffer` {Buffer|TypedArray|DataView} 将填充读取的文件数据的缓冲区。**默认：** `Buffer.alloc(16384)`
-  * `offset` {integer} 开始在缓冲区中填充的位置。**默认：** `0`
-  * `length` {integer} 要读取的字节数。**默认：** `buffer.byteLength - offset`
-  * `position` {integer|bigint|null} 开始从文件读取数据的位置。如果为 `null` 或 `-1`，将从当前文件位置读取数据，并且位置将更新。如果 `position` 是非负整数，则当前文件位置将保持不变。**默认：**: `null`
-* 返回：{Promise} 成功时 fulfilled 为一个包含两个属性的对象：
-  * `bytesRead` {integer} 读取的字节数
-  * `buffer` {Buffer|TypedArray|DataView} 对传入的 `buffer` 参数的引用。
-
-从文件读取数据并将其存储在给定的缓冲区中。
-
-如果文件未并发修改，则当读取的字节数为零时到达文件末尾。
-
-#### `filehandle.read(buffer[, options])`
-
-<!-- YAML
-added:
-  - v18.2.0
-  - v16.17.0
-changes:
-  - version: v21.0.0
-    pr-url: https://github.com/nodejs/node/pull/42835
-    description: "接受 bigint 值作为 `position`。"
--->
-
-* `buffer` {Buffer|TypedArray|DataView} 将填充读取的文件数据的缓冲区。
-* `options` {Object}
-  * `offset` {integer} 开始在缓冲区中填充的位置。**默认：** `0`
-  * `length` {integer} 要读取的字节数。**默认：** `buffer.byteLength - offset`
-  * `position` {integer|bigint|null} 开始从文件读取数据的位置。如果为 `null` 或 `-1`，将从当前文件位置读取数据，并且位置将更新。如果 `position` 是非负整数，则当前文件位置将保持不变。**默认：**: `null`
-* 返回：{Promise} 成功时 fulfilled 为一个包含两个属性的对象：
-  * `bytesRead` {integer} 读取的字节数
-  * `buffer` {Buffer|TypedArray|DataView} 对传入的 `buffer` 参数的引用。
-
-从文件读取数据并将其存储在给定的缓冲区中。
-
-如果文件未并发修改，则当读取的字节数为零时到达文件末尾。
-
-#### `filehandle.readableWebStream([options])`
-
-<!-- YAML
-added: v17.0.0
-changes:
-
-  - version:
-      - v24.0.0
-      - v22.17.0
-    pr-url: https://github.com/nodejs/node/pull/57513
-    description: 标记 API 为稳定。
-  - version:
-    - v23.8.0
-    - v22.15.0
-    pr-url: https://github.com/nodejs/node/pull/55461
-    description: 移除了创建 'bytes' 流的选项。流现在始终是 'bytes' 流。
-  - version:
-    - v20.0.0
-    - v18.17.0
-    pr-url: https://github.com/nodejs/node/pull/46933
-    description: 添加了创建 'bytes' 流的选项。
--->
-
-* `options` {Object}
-  * `autoClose` {boolean} 当为 true 时，导致 {FileHandle} 在流关闭时关闭。**默认：** `false`
-* 返回：{ReadableStream}
-
-返回一个面向字节的 `ReadableStream`，可用于读取文件的内容。
-
-如果多次调用此方法或在 `FileHandle` 关闭或正在关闭后调用，将抛出错误。
-
-```mjs
-import {
-  open,
-} from 'node:fs/promises';
-
-const file = await open('./some/file/to/read');
-
-for await (const chunk of file.readableWebStream())
-  console.log(chunk);
-
-await file.close();
-```
-
-```cjs
-const {
-  open,
-} = require('node:fs/promises');
-
-(async () => {
-  const file = await open('./some/file/to/read');
-
-  for await (const chunk of file.readableWebStream())
-    console.log(chunk);
-
-  await file.close();
-})();
-```
-
-虽然 `ReadableStream` 会将文件读取到完成，但它不会自动关闭 `FileHandle`。除非 `autoClose` 选项设置为 `true`，否则用户代码仍必须调用 `fileHandle.close()` 方法。
-
-#### `filehandle.readFile(options)`
-
-<!-- YAML
-added: v10.0.0
-changes:
-  - version: v26.4.0
-    pr-url: https://github.com/nodejs/node/pull/63634
-    description: 已新增对 `buffer` 选项的支持。
--->
-
-* `options` {Object|string}
-  * `encoding` {string|null} **默认值：** `null`
-  * `signal` {AbortSignal} 允许中止正在进行中的 readFile 读取
-  * `buffer` {Buffer|TypedArray|DataView|Function} 要读取到其中的缓冲区，或一个根据文件大小调用并返回缓冲区的函数。
-* 返回值：{Promise} 成功读取后会以文件内容完成。若未指定编码（使用 `options.encoding`），数据将作为 {Buffer} 对象返回。否则，数据将是字符串。
-
-异步读取文件的全部内容。
-
-如果 `options` 是字符串，则它指定 `encoding`。
-
-如果提供了 `buffer` 且未指定编码，返回的 {Buffer} 将是所提供缓冲区上的一个视图，其中只包含已读取的字节。如果所提供的缓冲区太小，无法容纳整个文件，操作将失败。
-
-{FileHandle} 必须支持读取。
-
-如果在文件句柄上进行了一次或多次 `filehandle.read()` 调用，然后进行了 `filehandle.readFile()` 调用，则数据将从当前位置读取到文件末尾。它并不总是从文件开头读取。
-
-以下示例展示了使用带预分配缓冲区的 `buffer` 选项：
-
-```mjs
-import { Buffer } from 'node:buffer';
-import { open } from 'node:fs/promises';
-
-const file = await open('./some/file/to/read');
-try {
-  const buf = Buffer.alloc(16384);
-  const contents = await file.readFile({ buffer: buf });
-  console.log(contents); // A view over `buf` containing only the bytes read
-} finally {
-  await file.close();
-}
-```
-
-使用返回缓冲区的函数时，使用 `buffer` 选项的示例：
-
-```mjs
-import { Buffer } from 'node:buffer';
-import { open } from 'node:fs/promises';
-
-const file = await open('./some/file/to/read');
-try {
-  const contents = await file.readFile({
-    buffer: (size) => Buffer.alloc(size),
-  });
-  console.log(contents);
-} finally {
-  await file.close();
-}
-```
-
-#### `filehandle.readLines([options])`
-
-<!-- YAML
-added: v18.11.0
--->
-
-* `options` {Object}
-  * `encoding` {string} **默认：** `null`
-  * `autoClose` {boolean} **默认：** `true`
-  * `emitClose` {boolean} **默认：** `true`
-  * `start` {integer}
-  * `end` {integer} **默认：** `Infinity`
-  * `highWaterMark` {integer} **默认：** `64 * 1024`
-* 返回：{readline.InterfaceConstructor}
-
-创建 `readline` 接口并通过文件流式传输的便捷方法。有关选项，请参阅 [`filehandle.createReadStream()`][].
-
-```mjs
-import { open } from 'node:fs/promises';
-
-const file = await open('./some/file/to/read');
-
-for await (const line of file.readLines()) {
-  console.log(line);
-}
-```
-
-```cjs
-const { open } = require('node:fs/promises');
-
-(async () => {
-  const file = await open('./some/file/to/read');
-
-  for await (const line of file.readLines()) {
-    console.log(line);
-  }
-})();
-```
-
-#### `filehandle.readv(buffers[, position])`
-
-<!-- YAML
-added:
- - v13.13.0
- - v12.17.0
--->
-
-* `buffers` {Buffer\[]|TypedArray\[]|DataView\[]}
-* `position` {integer|null} 应从文件开头偏移的位置读取数据。如果 `position` 不是 `number`，则将从当前位置读取数据。**默认：** `null`
-* 返回：{Promise} 成功时 fulfilled 为一个包含两个属性的对象：
-  * `bytesRead` {integer} 读取的字节数
-  * `buffers` {Buffer\[]|TypedArray\[]|DataView\[]} 包含对 `buffers` 输入的引用的属性。
-
-从文件读取并写入 {ArrayBufferView} 数组
-
-#### `filehandle.stat([options])`
-
-<!-- YAML
-added: v10.0.0
-changes:
-  - version:
-     - v26.1.0
-     - v24.16.0
-    pr-url: https://github.com/nodejs/node/pull/57775
-    description: 现在接受额外的 `signal` 属性以允许中止操作。
-  - version: v10.5.0
-    pr-url: https://github.com/nodejs/node/pull/20220
-    description: 接受一个额外的 `options` 对象以指定返回的数值是否应为 bigint。
--->
-
-* `options` {Object}
-  * `bigint` {boolean} 返回的 {fs.Stats} 对象中的数值是否应为 `bigint`。**默认:** `false`.
-  * `signal` {AbortSignal} 用于取消操作的 AbortSignal。**默认:** `undefined`.
-* 返回：{Promise} 对文件兑现为一个 {fs.Stats}。
-
-#### `filehandle.sync()`
-
-<!-- YAML
-added: v10.0.0
--->
-
-* 返回：{Promise} 成功时 fulfilled 为 `undefined`。
-
-请求将打开的文件描述符的所有数据刷新到存储设备。具体实现取决于操作系统和设备。有关更多详细信息，请参阅 POSIX fsync(2) 文档。
-
-#### `filehandle.truncate(len)`
-
-<!-- YAML
-added: v10.0.0
--->
-
-* `len` {integer} **默认：** `0`
-* 返回：{Promise} 成功时 fulfilled 为 `undefined`。
-
-截断文件。
-
-如果文件大于 `len` 字节，则文件中只保留前 `len` 字节。
-
-以下示例仅保留文件的前四个字节：
-
-```mjs
-import { open } from 'node:fs/promises';
-
-let filehandle = null;
-try {
-  filehandle = await open('temp.txt', 'r+');
-  await filehandle.truncate(4);
-} finally {
-  await filehandle?.close();
-}
-```
-
-如果文件以前短于 `len` 字节，则它会扩展，并且扩展部分填充空字节（`'\0'`）：
-
-如果 `len` 为负数，则将使用 `0`。
-
-#### `filehandle.utimes(atime, mtime)`
-
-<!-- YAML
-added: v10.0.0
--->
-
-* `atime` {number|string|Date}
-* `mtime` {number|string|Date}
-* 返回：{Promise}
-
-更改 {FileHandle} 引用的对象的文件系统时间戳，然后在成功时返回已完成的 promise，且不带参数。
-
-#### `filehandle.write(buffer, offset[, length[, position]])`
-
-<!-- YAML
-added: v10.0.0
-changes:
-  - version: v14.0.0
-    pr-url: https://github.com/nodejs/node/pull/31030
-    description: "`buffer` 参数不再将不支持的输入强制转换为 buffers。"
--->
-
-* `buffer` {Buffer|TypedArray|DataView}
-* `offset` {integer} `buffer` 内开始写入数据的起始位置。
-* `length` {integer} 要从 `buffer` 写入的字节数。**默认：** `buffer.byteLength - offset`
-* `position` {integer|null} 应从文件开头偏移的位置写入 `buffer` 中的数据。如果 `position` 不是 `number`，则数据将写入当前位置。有关更多详细信息，请参阅 POSIX pwrite(2) 文档。**默认：** `null`
-* 返回：{Promise}
-
-将 `buffer` 写入文件。
-
-Promise fulfilled 为一个包含两个属性的对象：
-
-* `bytesWritten` {integer} 写入的字节数
-* `buffer` {Buffer|TypedArray|DataView} 对写入的 `buffer` 的引用。
-
-在不等待 promise fulfilled（或 rejected）的情况下在同一文件上多次使用 `filehandle.write()` 是不安全的。对于这种情况，请使用 [`filehandle.createWriteStream()`][]。
-
-在 Linux 上，当文件以追加模式打开时，位置写入不起作用。内核忽略位置参数并始终将数据追加到文件末尾。
-
-#### `filehandle.write(buffer[, options])`
-
-<!-- YAML
-added:
-  - v18.3.0
-  - v16.17.0
--->
-
-* `buffer` {Buffer|TypedArray|DataView}
-* `options` {Object}
-  * `offset` {integer} **默认：** `0`
-  * `length` {integer} **默认：** `buffer.byteLength - offset`
-  * `position` {integer|null} **默认：** `null`
-* 返回：{Promise}
-
-将 `buffer` 写入文件。
-
-与上面的 `filehandle.write` 函数类似，此版本采用可选的 `options` 对象。如果未指定 `options` 对象，它将默认使用上述值。
-
-#### `filehandle.write(string[, position[, encoding]])`
-
-<!-- YAML
-added: v10.0.0
-changes:
-  - version: v14.0.0
-    pr-url: https://github.com/nodejs/node/pull/31030
-    description: "`string` 参数不再将不支持的输入强制转换为字符串。"
--->
-
-* `string` {string}
-* `position` {integer|null} 应从文件开头偏移的位置写入 `string` 中的数据。如果 `position` 不是 `number`，则数据将写入当前位置。有关更多详细信息，请参阅 POSIX pwrite(2) 文档。**默认：** `null`
-* `encoding` {string} 预期的字符串编码。**默认：** `'utf8'`
-* 返回：{Promise}
-
-将 `string` 写入文件。如果 `string` 不是字符串，则 promise 被 rejected 并带有错误。
-
-Promise fulfilled 为一个包含两个属性的对象：
-
-* `bytesWritten` {integer} 写入的字节数
-* `buffer` {string} 对写入的 `string` 的引用。
-
-在不等待 promise fulfilled（或 rejected）的情况下在同一文件上多次使用 `filehandle.write()` 是不安全的。对于这种情况，请使用 [`filehandle.createWriteStream()`][]。
-
-在 Linux 上，当文件以追加模式打开时，位置写入不起作用。内核忽略位置参数并始终将数据追加到文件末尾。
-
-#### `filehandle.writeFile(data, options)`
-
-<!-- YAML
-added: v10.0.0
-changes:
-  - version:
-      - v15.14.0
-      - v14.18.0
-    pr-url: https://github.com/nodejs/node/pull/37490
-    description: "`data` 参数支持 `AsyncIterable`、`Iterable` 和 `Stream`。"
-  - version: v14.0.0
-    pr-url: https://github.com/nodejs/node/pull/31030
-    description: "`data` 参数不再将不支持的输入强制转换为字符串。"
--->
-
-* `data` {string|Buffer|TypedArray|DataView|AsyncIterable|Iterable|Stream}
-* `options` {Object|string}
-  * `encoding` {string|null} 当 `data` 是字符串时的预期字符编码。**默认：** `'utf8'`
-  * `signal` {AbortSignal|undefined} 允许中止进行中的 writeFile。**默认：** `undefined`
-* 返回：{Promise}
-
-异步将数据写入文件，如果文件已存在则替换该文件。`data` 可以是字符串、缓冲区、{AsyncIterable} 或 {Iterable} 对象。成功时 promise fulfilled 且不带参数。
-
-如果 `options` 是字符串，则它指定 `encoding`。
-
-{FileHandle} 必须支持写入。
-
-在不等待 promise fulfilled（或 rejected）的情况下在同一文件上多次使用 `filehandle.writeFile()` 是不安全的。
-
-如果在文件句柄上进行了一次或多次 `filehandle.write()` 调用，然后进行了 `filehandle.writeFile()` 调用，则数据将从当前位置写入到文件末尾。它并不总是从文件开头写入。
-
-#### `filehandle.writev(buffers[, position])`
-
-<!-- YAML
-added: v12.9.0
--->
-
-* `buffers` {Buffer\[]|TypedArray\[]|DataView\[]}
-* `position` {integer|null} 应从文件开头偏移的位置写入 `buffers` 中的数据。如果 `position` 不是 `number`，则数据将写入当前位置。**默认：** `null`
-* 返回：{Promise}
-
-将 {ArrayBufferView} 数组写入文件。
-
-Promise fulfilled 为一个包含两个属性的对象：
-
-* `bytesWritten` {integer} 写入的字节数
-* `buffers` {Buffer\[]|TypedArray\[]|DataView\[]} 对 `buffers` 输入的引用。
-
-在不等待 promise fulfilled（或 rejected）的情况下在同一文件上多次调用 `writev()` 是不安全的。
-
-在 Linux 上，当文件以追加模式打开时，位置写入不起作用。内核忽略位置参数并始终将数据追加到文件末尾。
-
-#### `filehandle.writer([options])`
-
-<!-- YAML
-added:
- - v25.9.0
--->
-
-> 稳定性：1 - 实验性
-
-* `options` {Object}
-  * `autoClose` {boolean} 当 writer 结束或失败时关闭文件句柄。**默认：** `false`。
-  * `start` {number} 开始写入的字节偏移量。指定时，写入使用显式定位。**默认：** 当前文件位置。
-  * `limit` {number} writer 接受的最大字节数。会超出限制的异步写入（`write()`、`writev()`）将以 `ERR_OUT_OF_RANGE` 拒绝。同步写入（`writeSync()`、`writevSync()`）返回 `false`。**默认：** 无限制。
-  * `chunkSize` {number} 同步写操作的最大块大小（字节）。大于此阈值的写入会回退到异步 I/O。将其设置为与 reader 的 `chunkSize` 匹配可获得最佳 `pipeTo()` 性能。**默认：** `131072` (128 KB)。
-* 返回：{Object}
-  * `write(chunk[, options])` {Function} 返回 {Promise}。接受 `Uint8Array`、`Buffer` 或字符串（UTF-8 编码）。
-    * `chunk` {Buffer|TypedArray|DataView|string}
-    * `options` {Object}
-      * `signal` {AbortSignal} 如果信号已中止，则写入将拒绝并返回 `AbortError`，且不执行 I/O。
-  * `writev(chunks[, options])` {Function} 返回 {Promise}。通过单次 `writev()` 系统调用使用散布/聚集 I/O。接受混合的 `Uint8Array`/字符串数组。
-    * `chunks` {Buffer\[]|TypedArray\[]|DataView\[]|string\[]}
-    * `options` {Object}
-      * `signal` {AbortSignal} 如果信号已中止，则写入拒绝并带有 `AbortError` 且不执行 I/O。
-  * `writeSync(chunk)` {Function} 返回 {boolean}。尝试同步写入。如果写入成功则返回 `true`，如果调用者应回退到异步 `write()` 则返回 `false`。当以下情况时返回 `false`：writer 已关闭/出错，异步操作正在进行中，块超过 `chunkSize`，或写入将超过 `limit`。
-    * `chunk` {Buffer|TypedArray|DataView|string}
-  * `writevSync(chunks)` {Function} 返回 {boolean}。同步批量写入。语义与 `writeSync()` 相同。
-    * `chunks` {Buffer\[]|TypedArray\[]|DataView\[]|string\[]}
-  * `end([options])` {Function} 返回 {Promise}，兑现为已写入的总字节数。如果已关闭，则幂等地返回 `totalBytesWritten`；如果已在关闭过程中，则返回待处理的 promise。如果 writer 处于错误状态，则拒绝。
-    * `options` {Object}
-      * `signal` {AbortSignal} 如果信号已中止，`end()` 将拒绝并带有 `AbortError`，且 writer 保持打开。
-  * `endSync()` {Function} 成功时返回 {number} 总写入字节数，如果 writer 出错或异步操作正在进行中则返回 `-1`。已关闭时幂等。
-  * `fail(reason)` {Function} 将 writer 置于终端错误状态。同步。如果 writer 已关闭或出错，这是无操作。如果 `autoClose` 为 true，则同步关闭文件句柄。
-
-返回由此文件句柄支持的 [`node:stream/iter`][] writer。
-
-writer 支持 `Symbol.asyncDispose` 和 `Symbol.dispose`：
-
-* `await using w = fh.writer()` — 如果 writer 仍然打开（未调用 `end()`），`asyncDispose` 调用 `fail()`。如果 `end()` 待处理，则等待其完成。
-* `using w = fh.writer()` — 无条件调用 `fail()`。
-
-`writeSync()` 和 `writevSync()` 方法启用 [`stream/iter pipeTo()`][] 使用的 try-sync 快速路径。当 reader 的块大小与 writer 的 `chunkSize` 匹配时，`pipeTo()` 管道中的所有写入都同步完成，零 promise 开销。
-
-此函数仅在启用 `--experimental-stream-iter` 标志时可用。
-
-```mjs
-import { open } from 'node:fs/promises';
-import { from, pipeTo } from 'node:stream/iter';
-import { compressGzip } from 'node:zlib/iter';
-
-// 异步管道
-const fh = await open('output.gz', 'w');
-await pipeTo(from('Hello!'), compressGzip(), fh.writer({ autoClose: true }));
-
-// 带限制的同步管道
-const src = await open('input.txt', 'r');
-const dst = await open('output.txt', 'w');
-const w = dst.writer({ limit: 1024 * 1024 }); // 最大 1 MB
-await pipeTo(src.pull({ autoClose: true }), w);
-await w.end();
-await dst.close();
-```
-
-```cjs
-const { open } = require('node:fs/promises');
-const { from, pipeTo } = require('node:stream/iter');
-const { compressGzip } = require('node:zlib/iter');
-
-async function run() {
-  // 异步管道
-  const fh = await open('output.gz', 'w');
-  await pipeTo(from('Hello!'), compressGzip(), fh.writer({ autoClose: true }));
-
-  // 带限制的同步管道
-  const src = await open('input.txt', 'r');
-  const dst = await open('output.txt', 'w');
-  const w = dst.writer({ limit: 1024 * 1024 }); // 最大 1 MB
-  await pipeTo(src.pull({ autoClose: true }), w);
-  await w.end();
-  await dst.close();
-}
-
-run().catch(console.error);
-```
 
 #### `filehandle[Symbol.asyncDispose]()`
 
@@ -995,6 +194,8 @@ changes:
 -->
 
 调用 `filehandle.close()` 并返回一个 promise，当文件句柄关闭时该 promise 会兑现。
+
+此方法支持将文件句柄与 [`await using`][] 一起使用。作用域退出时，文件将自动关闭。有关更多信息，请参阅 [MDN 关于 `using` 语句的文档][`using`]。
 
 ### `fsPromises.access(path[, mode])`
 
@@ -1032,11 +233,16 @@ changes:
     - v21.1.0
     - v20.10.0
     pr-url: https://github.com/nodejs/node/pull/50095
-    description: "现在支持 `flush` 选项。"
+    description: 现在支持 `flush` 选项。
+  - version:
+      - v15.14.0
+      - v14.18.0
+    pr-url: https://github.com/nodejs/node/pull/37490
+    description: "`data` 参数支持 `AsyncIterable`、`Iterable` 和 `Stream`。"
 -->
 
 * `path` {string|Buffer|URL|FileHandle} 文件名或 {FileHandle}
-* `data` {string|Buffer}
+* `data` {string|Buffer|TypedArray|DataView|AsyncIterable|Iterable}
 * `options` {Object|string}
   * `encoding` {string|null} **默认：** `'utf8'`
   * `mode` {integer} **默认：** `0o666`
@@ -1044,7 +250,8 @@ changes:
   * `flush` {boolean} 如果为 `true`，则在关闭之前刷新底层文件描述符。**默认：** `false`。
 * 返回：{Promise} 成功时 fulfilled 为 `undefined`。
 
-异步将数据追加到文件，如果文件尚不存在则创建该文件。`data` 可以是字符串或 {Buffer}。
+异步地向文件追加数据，如果文件尚不存在则创建该文件。
+`data` 可以是字符串、缓冲区、{AsyncIterable} 或 {Iterable} 对象。
 
 如果 `options` 是字符串，则它指定 `encoding`。
 
@@ -1291,7 +498,7 @@ changes:
 * path {string|Buffer|URL}
 * options {Object}
   * bigint {boolean} 返回的 {fs.Stats} 对象中的数值是否应为 bigint。**默认：** false。
-* 返回：{Promise}   fulfilled 为给定符号链接路径的 {fs.Stats} 对象。
+* 返回：{Promise}   fulfilled 的值为给定符号链接路径的 {fs.Stats} 对象。
 
 等同于 [fs.stat][]，除非 path 引用符号链接，在这种情况下统计的是链接本身，而不是它引用的文件。有关更多详细信息，请参阅 POSIX lstat(2) 文档。
 
@@ -1348,7 +555,7 @@ changes:
     - v20.6.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/48828
-    description: "`prefix` 参数现在接受 buffers 和 URL。"
+    description: "`prefix` 参数现在接受缓冲区和 URL。"
   - version:
       - v16.5.0
       - v14.18.0
@@ -1393,9 +600,10 @@ added: v24.4.0
 
 生成的 Promise 持有一个异步可处置对象，其 `path` 属性持有创建的目录路径。当对象被处置时，如果目录仍然存在，目录及其内容将被异步移除。如果无法删除目录，处置将抛出错误。该对象具有一个异步 `dispose` 方法，将执行相同的任务。
 
-此函数和结果对象上的处置函数都是异步的，因此应像 `using` 那样与 `await` + `Promise` 一起使用。
+此函数和结果对象上的处置函数都是异步的，因此应结合 `await` + [`await using`][] 使用，例如：
+`await using dir = await fsPromises.mkdtempDisposable('prefix')`。
 
-<!-- TODO: 一旦 `disposables` 合并，链接 MDN 关于 disposables 的文档 -->
+有关显式资源管理的更多信息，请参阅 [MDN 关于 `using` 语句的文档][`using`]。
 
 详细信息，请参阅 [`mkdtempDisposable()`][] 的文档。
 
@@ -1522,7 +730,9 @@ try {
 <!-- YAML
 added: v10.0.0
 changes:
-  - version: v26.4.0
+  - version:
+     - v26.4.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63634
     description: 新增对 `buffer` 选项的支持。
   - version:
@@ -1616,7 +826,7 @@ import { readFile } from 'node:fs/promises';
 
 const buf = Buffer.alloc(16384);
 const contents = await readFile('/path/to/file', { buffer: buf });
-console.log(contents); // A view over `buf` containing only the bytes read
+console.log(contents); // `buf` 上仅包含已读取字节的视图
 ```
 
 使用返回缓冲区的函数时使用 `buffer` 选项的示例：
@@ -1838,7 +1048,7 @@ added: v10.0.0
 ### `fsPromises.utimes(path, atime, mtime)`
 
 <!-- YAML
-added: v10.0.0
+添加于：v10.0.0
 -->
 
 * `path` {string|Buffer|URL}
@@ -1939,7 +1149,7 @@ changes:
 -->
 
 * `file` {string|Buffer|URL|FileHandle} 文件名或 `FileHandle`
-* `data` {string|Buffer|TypedArray|DataView|AsyncIterable|Iterable|Stream}
+* `data` {string|Buffer|TypedArray|DataView|AsyncIterable|Iterable}
 * `options` {Object|string}
   * `encoding` {string|null} **默认值：** `'utf8'`
   * `mode` {integer} **默认值：** `0o666`
@@ -3142,7 +2352,7 @@ added:
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
+    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `path` {string|Buffer|URL}
@@ -3151,9 +2361,9 @@ changes:
 * `callback` {Function}
   * `err` {Error}
 
-以与 [`fs.utimes()`][] 相同的方式更改文件的访问和修改时间，不同之处在于如果路径引用符号链接，则链接不会被解引用：相反，符号链接本身的时间戳会被更改。
+以与 [`fs.utimes()`][] 相同的方式更改文件的访问时间和修改时间，不同之处在于，如果路径引用的是符号链接，则不会解引用该链接；相反，会更改符号链接本身的时间戳。
 
-除了可能的异常外，不会向完成回调传递任何参数。
+除非发生异常，否则不会向完成回调传递任何参数。
 
 ### `fs.link(existingPath, newPath, callback)`
 
@@ -3295,7 +2505,7 @@ changes:
     - v20.6.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/48828
-    description: "`prefix` 参数现在接受 buffers 和 URL。"
+    description: "`prefix` 参数现在接受缓冲区和 URL。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
     description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是`ERR_INVALID_CALLBACK`。"
@@ -3327,7 +2537,7 @@ changes:
 生成六个随机字符附加到必需的
 `prefix` 后面以创建一个唯一的临时目录。由于平台
 不一致，避免在 `prefix` 中使用尾随的 `X` 字符。某些平台，
-特别是 BSDs，可以返回超过六个随机字符，并用随机字符替换
+特别是 BSD，可以返回超过六个随机字符，并用随机字符替换
 `prefix` 中的尾随 `X` 字符。
 
 创建的目录路径作为字符串传递给回调的第二个
@@ -3422,7 +2632,7 @@ changes:
 [此 MSDN 页面][MSDN-Using-Streams] 所述。
 
 基于 `fs.open()` 的函数也表现出这种行为：
-`fs.writeFile()`、`fs.readFile()` 等。
+`fs.writeFile()`、`fs.readFile()` 等】【。
 
 ### `fs.openAsBlob(path[, options])`
 
@@ -3438,8 +2648,8 @@ changes:
 
 * `path` {string|Buffer|URL}
 * `options` {Object}
-  * `type` {string} Blob 的可选 mime 类型。
-* 返回：{Promise} 成功时 fulfilled 一个 {Blob}。
+  * `type` {string} Blob 的可选 MIME 类型。
+* 返回：{Promise} 成功时兑现一个 {Blob}。
 
 返回一个 {Blob}，其数据由给定文件支持。
 
@@ -3544,7 +2754,7 @@ changes:
 如果文件未并发修改，当读取的字节数为零时到达文件末尾。
 
 如果此方法作为其 [`util.promisify()`][] 版本调用，它返回
-一个带有 `bytesRead` 和 `buffer` 属性的 `Object` 的 promise。
+一个带有 `bytesRead` 和 `buffer` 属性的对象的 Promise。
 
 `fs.read()` 方法从文件描述符 (`fd`) 指定的
 文件读取数据。
@@ -3557,11 +2767,11 @@ changes:
 
 * 如果文件短于指定的 `length`，`bytesRead`
   将设置为实际读取的字节数。
-* 如果文件在缓冲区填满之前遇到 EOF (文件末尾)，
+* 如果文件在缓冲区填满之前遇到 EOF（文件末尾），
   Node.js 将读取所有可用字节直到遇到 EOF，
   并且回调中的 `bytesRead` 参数将指示
   实际读取的字节数，这可能小于指定的 `length`。
-* 如果文件在慢速网络 `filesystem` 上
+* 如果文件位于慢速网络文件系统上
   或在读取期间遇到任何其他问题，
   `bytesRead` 可能低于指定的 `length`。
 
@@ -3689,7 +2899,9 @@ changes:
 <!-- YAML
 added: v0.1.29
 changes:
-  - version: v26.4.0
+  - version:
+     - v26.4.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63634
     description: 为 `buffer` 选项添加了支持。
   - version: v18.0.0
@@ -3722,8 +2934,8 @@ changes:
 
 * `path` {string|Buffer|URL|integer} 文件名或文件描述符
 * `options` {Object|string}
-  * `encoding` {string|null} **Default:** `null`
-  * `flag` {string} 参见 [文件系统 `flags` 的支持][]. **Default:** `'r'`.
+  * `encoding` {string|null} **默认值：** `null`
+  * `flag` {string} 参见 [文件系统 `flags` 的支持][]. **默认值：** `'r'`.
   * `signal` {AbortSignal} 允许中止正在进行的 readFile
   * `buffer` {Buffer|TypedArray|DataView|Function} 用于读入的缓冲区，或者一个
     以文件大小为参数并返回该缓冲区的函数。
@@ -3808,7 +3020,7 @@ import { readFile } from 'node:fs';
 const buf = Buffer.alloc(16384);
 readFile('/path/to/file', { buffer: buf }, (err, data) => {
   if (err) throw err;
-  console.log(data); // A view over `buf` containing only the bytes read
+  console.log(data); // 一个仅包含已读取字节的 `buf` 视图
 });
 ```
 
@@ -4331,7 +3543,7 @@ import { truncate } from 'node:fs';
 // 假设 'path/file.txt' 是一个普通文件。
 truncate('path/file.txt', (err) => {
   if (err) throw err;
-  console.log('path/file.txt was truncated');
+  console.log('path/file.txt 已被截断');
 });
 ```
 
@@ -4340,7 +3552,7 @@ const { truncate } = require('node:fs');
 // 假设 'path/file.txt' 是一个普通文件。
 truncate('path/file.txt', (err) => {
   if (err) throw err;
-  console.log('path/file.txt was truncated');
+  console.log('path/file.txt 已被截断');
 });
 ```
 
@@ -4361,7 +3573,7 @@ changes:
     description: "`callback` 参数不再是可选的。不传递它将在运行时抛出 `TypeError`。"
   - version: v7.6.0
     pr-url: https://github.com/nodejs/node/pull/10739
-    description: "`path` 参数可以是使用 `file:`协议的 WHATWG `URL` 对象。"
+    description: "`path` 参数可以是使用 `file:` 协议的 WHATWG `URL` 对象。"
   - version: v7.0.0
     pr-url: https://github.com/nodejs/node/pull/7897
     description: "`callback` 参数不再是可选的。不传递它将发出带有 id DEP0013 的弃用警告。"
@@ -4395,11 +3607,11 @@ added: v0.1.31
 * `filename` {string|Buffer|URL}
 * `listener` {Function} 可选，之前使用 `fs.watchFile()` 附加的监听器
 
-停止监视 `filename` 的更改。如果指定了 `listener`，仅移除该特定监听器。否则，_所有_ 监听器被移除，有效地停止监视 `filename`。
+停止监视 `filename` 的更改。如果指定了 `listener`，仅移除该特定监听器。否则，_所有_ 监听器都会被移除，从而有效地停止监视 `filename`。
 
-使用未被监视的 filename 调用 `fs.unwatchFile()` 是无操作，不是错误。
+使用未被监视的 filename 调用 `fs.unwatchFile()` 是无操作，不会报错。
 
-使用 [`fs.watch()`][] 比 `fs.watchFile()` 和 `fs.unwatchFile()` 更高效。可能时应使用 `fs.watch()` 代替 `fs.watchFile()` 和 `fs.unwatchFile()`。
+使用 [`fs.watch()`][] 比使用 `fs.watchFile()` 和 `fs.unwatchFile()` 更高效。可能时应使用 `fs.watch()` 代替 `fs.watchFile()` 和 `fs.unwatchFile()`。
 
 ### `fs.utimes(path, atime, mtime, callback)`
 
@@ -4518,7 +3730,7 @@ changes:
 
 仍然可以使用 `fs.watchFile()`，它使用 stat 轮询，但这种方法较慢且可靠性较低。
 
-##### Inodes
+##### Inode
 
 <!--type=misc-->
 
@@ -4996,7 +4208,7 @@ changes:
 
 查看更多详情 POSIX chmod(2) 文档。
 
-### 改变所有者和组
+### 更改所有者和组
 
 <!-- YAML
 added: v0.1.97
@@ -5013,7 +4225,7 @@ changes:
 同步更改文件的所有者和组。返回 `undefined`。
 这是 [`fs.chown()`][] 的同步版本。
 
-查看更多详情 POSIX chown(2) 文档。
+有关更多详细信息，请参阅 POSIX chown(2) 文档。
 
 ### 关闭文件描述符
 
@@ -5099,7 +4311,7 @@ changes:
 
 同步地将整个目录结构从 `src` 复制到 `dest`，包括子目录和文件。
 
-将目录复制到另一个目录时，不支持 globs，行为类似于 `cp dir1/ dir2/`。
+将目录复制到另一个目录时，不支持通配符，行为类似于 `cp dir1/ dir2/`。
 
 ### `fs.existsSync(path)`
 
@@ -5136,9 +4348,9 @@ added: v0.4.7
 * `fd` {integer}
 * `mode` {string|integer}
 
-设置文件上的权限。返回 `undefined`。
+设置文件的权限。返回 `undefined`。
 
-查看更多详情 POSIX fchmod(2) 文档。
+有关更多详情，请参阅 POSIX fchmod(2) 文档。
 
 ### `fs.fchownSync(fd, uid, gid)`
 
@@ -5147,12 +4359,12 @@ added: v0.4.7
 -->
 
 * `fd` {integer}
-* `uid` {integer} 文件新所有者的用户 id。
-* `gid` {integer} 文件新组的组 id。
+* `uid` {integer} 文件新所有者的用户 ID。
+* `gid` {integer} 文件新组的组 ID。
 
 设置文件的所有者。返回 `undefined`。
 
-查看更多详情 POSIX fchown(2) 文档。
+有关详细信息，请参阅 POSIX fchown(2) 文档。
 
 ### `fs.fdatasyncSync(fd)`
 
@@ -5181,7 +4393,7 @@ changes:
 
 检索文件描述符的 {fs.Stats}。
 
-查看更多详情 POSIX fstat(2) 文档。
+有关更多详细信息，请参阅 POSIX fstat(2) 文档。
 
 ### `fs.fsyncSync(fd)`
 
@@ -5191,7 +4403,7 @@ added: v0.1.96
 
 * `fd` {integer}
 
-请求打开文件描述符的所有数据刷新到存储设备。具体实现取决于操作系统和设备。参考 POSIX fsync(2) 文档获取更多详情。返回 `undefined`。
+请求将打开文件描述符的所有数据刷新到存储设备。具体实现取决于操作系统和设备。参考 POSIX fsync(2) 文档获取更多详情。返回 `undefined`。
 
 ### `fs.ftruncateSync(fd[, len])`
 
@@ -5405,7 +4617,7 @@ changes:
     - v20.6.0
     - v18.19.0
     pr-url: https://github.com/nodejs/node/pull/48828
-    description: "`prefix` 参数现在接受 buffers 和 URL。"
+    description: "`prefix` 参数现在接受缓冲区和 URL。"
   - version:
       - v16.5.0
       - v14.18.0
@@ -5440,11 +4652,11 @@ added: v24.4.0
 
 返回一个可处置对象，其 `path` 属性持有已创建的目录路径。当对象被处置时，如果目录仍然存在，目录及其内容将被移除。如果目录无法删除，处置将抛出错误。该对象有一个 `remove()` 方法将执行相同的任务。
 
-<!-- TODO: 一旦 https://github.com/mdn/content/pull/38027 合并，链接 MDN disposables 文档 -->
+有关显式资源管理的更多信息，请参阅 [MDN 关于 `using` 语句的文档][`using`]。
 
 详细信息，请参阅 [`fs.mkdtemp()`][] 的文档。
 
-此 API 没有基于回调的版本，因为它设计用于与 `using` 语法一起使用。
+此 API 没有基于回调的版本，因为它设计用于 [`using`][] 语法。
 
 可选的 `options` 参数可以是指定编码的字符串，或者是具有 `encoding` 属性以指定要使用的字符编码的对象。
 
@@ -5541,7 +4753,9 @@ changes:
 <!-- YAML
 added: v0.1.8
 changes:
-  - version: v26.4.0
+  - version:
+     - v26.4.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63634
     description: 添加对 `buffer` 选项的支持。
   - version: v7.6.0
@@ -5563,7 +4777,7 @@ changes:
 
 详细信息，请参阅此 API 异步版本的文档：[`fs.readFile()`][]。
 
-如果指定了 `encoding` 选项，则此函数返回字符串。否则它返回 buffer。
+如果指定了 `encoding` 选项，则此函数返回字符串。否则它返回缓冲区。
 
 如果提供了 `buffer`，且未指定编码，则返回的 {Buffer} 是所提供缓冲区的一个视图，其中只包含已读取的字节。如果所提供的缓冲区太小，无法容纳整个文件，则会抛出错误。
 
@@ -5574,7 +4788,7 @@ import { readFileSync } from 'node:fs';
 
 // macOS、Linux 和 Windows
 readFileSync('<directory>');
-// => [Error: EISDIR: illegal operation on a directory, read <directory")]
+// => [错误：EISDIR：目录上的非法操作，读取 <directory>]
 
 //  FreeBSD
 readFileSync('<directory>'); // => <data>
@@ -5727,7 +4941,7 @@ changes:
 
 将文件从 `oldPath` 重命名为 `newPath`。返回 `undefined`。
 
-查看更多详情 POSIX rename(2) 文档。
+更多详情请参阅 POSIX rename(2) 文档。
 
 ### `fs.rmdirSync(path[, options])`
 
@@ -6193,6 +5407,8 @@ changes:
 
 如果目录句柄是打开的，则调用 `dir.close()`，并返回一个在处置完成时变为已完成的 Promise。
 
+此方法支持将目录与 [`await using`][] 一起使用；当作用域退出时，目录将自动关闭。有关更多信息，请参阅 MDN 的 [`using`] 语句文档。
+
 #### `dir[Symbol.dispose]()`
 
 <!-- YAML
@@ -6207,6 +5423,8 @@ changes:
 
 如果目录句柄是打开的，则调用 `dir.closeSync()`，并返回
 `undefined`。
+
+此方法支持将目录与 [`using`][] 一起使用；当作用域退出时，目录将自动关闭。有关更多信息，请参阅 MDN 的 [`using`] 语句文档。
 
 ### 类：`fs.Dirent`
 
@@ -6405,7 +5623,7 @@ added:
 调用时，请求 Node.js 事件循环只要
 {fs.FSWatcher} 处于活动状态就不要退出。多次调用 `watcher.ref()` 将无效。
 
-默认情况下，所有 {fs.FSWatcher} 对象都是"ref'ed"，因此通常不需要调用 `watcher.ref()`，除非之前调用过 `watcher.unref()`。
+默认情况下，所有 {fs.FSWatcher} 对象都是“已引用”的，因此通常不需要调用 `watcher.ref()`，除非之前调用过 `watcher.unref()`。
 
 #### `watcher.unref()`
 
@@ -6548,7 +5766,7 @@ added: v0.1.21
 changes:
   - version: v26.2.0
     pr-url: https://github.com/nodejs/node/pull/60789
-    description: Added `Temporal.Instant` support.
+    description: 添加 `Temporal.Instant` 支持。
   - version:
     - v22.0.0
     - v20.13.0
@@ -6556,7 +5774,7 @@ changes:
     description: 公共构造函数已弃用。
   - version: v8.1.0
     pr-url: https://github.com/nodejs/node/pull/13173
-    description: 添加时间为数字。
+    description: 添加时间数字。
 -->
 
 {fs.Stats} 对象提供有关文件的信息。
@@ -6719,13 +5937,13 @@ added: v0.1.10
 
 * 类型：{number|bigint}
 
-包含文件的设备的数字标识符。
+包含文件所在设备的数字标识符。
 
 #### `stats.ino`
 
 * 类型：{number|bigint}
 
-文件特定的文件系统"Inode"编号。
+特定于文件的文件系统 inode 编号。
 
 #### `stats.mode`
 
@@ -6764,13 +5982,13 @@ added: v0.1.10
 文件的大小（字节）。
 
 如果底层文件系统不支持获取文件大小，
-这将为 `0`。
+则此值为 `0`。
 
 #### `stats.blksize`
 
 * 类型：{number|bigint}
 
-用于 i/o 操作的文件系统块大小。
+用于 I/O 操作的文件系统块大小。
 
 #### `stats.blocks`
 
@@ -6934,15 +6152,15 @@ added: v0.11.13
 
 stat 对象中的时间具有以下语义：
 
-* `atime` "访问时间"：上次访问文件数据的时间。由
+* `atime` “访问时间”：上次访问文件数据的时间。由
   mknod(2)、utimes(2) 和 read(2) 系统调用更改。
-* `mtime` "修改时间"：上次修改文件数据的时间。
+* `mtime` “修改时间”：上次修改文件数据的时间。
   由 mknod(2)、utimes(2) 和 write(2) 系统调用更改。
-* `ctime` "变更时间"：上次更改文件状态的时间
+* `ctime` “变更时间”：上次更改文件状态的时间
   (inode 数据修改)。由 chmod(2)、chown(2)、
   link(2)、mknod(2)、rename(2)、unlink(2)、utimes(2)、
   read(2) 和 write(2) 系统调用更改。
-* `birthtime` "出生时间"：文件创建时间。文件
+* `birthtime` “出生时间”：文件创建时间。文件
   创建时设置一次。在不提供 birthtime 的文件系统上，
   此字段可能保存 `ctime` 或
   `1970-01-01T00:00Z`（即 Unix 纪元时间戳 `0`）。在这种情况下，此值可能
@@ -6951,7 +6169,7 @@ stat 对象中的时间具有以下语义：
   `birthtime` 的值，也会设置。
 
 在 Node.js 0.12 之前，`ctime` 在 Windows 系统上保存 `birthtime`。从
-0.12 开始，`ctime` 不是"创建时间"，在 Unix 系统上，从来都不是。
+0.12 开始，`ctime` 不是“创建时间”，在 Unix 系统上，从来都不是。
 
 ### 类：`fs.StatFs`
 
@@ -7012,7 +6230,7 @@ import { statfs } from 'node:fs/promises';
 
 const stats = await statfs('/');
 const availableBytes = stats.bsize * stats.bavail;
-console.log(`Available space: ${availableBytes} bytes`);
+console.log(`可用空间：${availableBytes} 字节`);
 ```
 
 ```cjs
@@ -7021,7 +6239,7 @@ const { statfs } = require('node:fs/promises');
 (async () => {
   const stats = await statfs('/');
   const availableBytes = stats.bsize * stats.bavail;
-  console.log(`Available space: ${availableBytes} bytes`);
+  console.log(`可用空间：${availableBytes} 字节`);
 })();
 ```
 
@@ -7042,7 +6260,7 @@ import { statfs } from 'node:fs/promises';
 
 const stats = await statfs('/');
 const freeBytes = stats.bsize * stats.bfree;
-console.log(`Free space: ${freeBytes} bytes`);
+console.log(`空闲空间：${freeBytes} 字节`);
 ```
 
 ```cjs
@@ -7051,7 +6269,7 @@ const { statfs } = require('node:fs/promises');
 (async () => {
   const stats = await statfs('/');
   const freeBytes = stats.bsize * stats.bfree;
-  console.log(`Free space: ${freeBytes} bytes`);
+  console.log(`空闲空间：${freeBytes} 字节`);
 })();
 ```
 
@@ -7073,7 +6291,7 @@ import { statfs } from 'node:fs/promises';
 
 const stats = await statfs('/');
 const totalBytes = stats.bsize * stats.blocks;
-console.log(`Total space: ${totalBytes} bytes`);
+console.log(`总空间：${totalBytes} 字节`);
 ```
 
 ```cjs
@@ -7082,7 +6300,7 @@ const { statfs } = require('node:fs/promises');
 (async () => {
   const stats = await statfs('/');
   const totalBytes = stats.bsize * stats.blocks;
-  console.log(`Total space: ${totalBytes} bytes`);
+  console.log(`总空间：${totalBytes} 字节`);
 })();
 ```
 
@@ -7309,6 +6527,9 @@ added: v24.6.0
 
 调用 `utf8Stream.destroy()`。
 
+此方法支持将流与 [`using`][] 一起使用，当作用域退出时，
+该语句会自动销毁流。有关更多信息，请参阅 [MDN 关于 `using` 语句的文档][`using`]。
+
 ### 类：`fs.WriteStream`
 
 <!-- YAML
@@ -7354,7 +6575,7 @@ added: v9.11.0
 added: v0.4.7
 -->
 
-到目前为止写入的字节数。不包括仍排队等待写入的数据。
+到目前为止写入的字节数。不包括仍在排队等待写入的数据。
 
 #### `writeStream.close([callback])`
 
@@ -7365,9 +6586,8 @@ added: v0.9.4
 * `callback` {Function}
   * `err` {Error}
 
-关闭 `writeStream`。可选地接受一个
-回调，一旦 `writeStream`
-关闭就会执行。
+关闭 `writeStream`。可选地接受一个回调，在
+`writeStream` 关闭后执行。
 
 #### `writeStream.path`
 
@@ -7375,9 +6595,9 @@ added: v0.9.4
 added: v0.1.93
 -->
 
-流正在写入的文件的路径，如 [`fs.createWriteStream()`][] 的第一个
-参数中指定。如果 `path` 作为字符串传递，则
-`writeStream.path` 将是字符串。如果 `path` 作为 {Buffer} 传递，则
+流正在写入的文件路径，如 [`fs.createWriteStream()`][] 的第一个
+参数中所指定。如果将 `path` 作为字符串传递，则
+`writeStream.path` 将是字符串。如果将 `path` 作为 {Buffer} 传递，则
 `writeStream.path` 将是 {Buffer}。
 
 #### `writeStream.pending`
@@ -8094,6 +7314,7 @@ fs.open('<directory>', 'a+', (err, fd) => {
 [`Number.MAX_SAFE_INTEGER`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
 [`ReadDirectoryChangesW`]: https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-readdirectorychangesw
 [`UV_THREADPOOL_SIZE`]: cli.md#uv_threadpool_sizesize
+[`await using`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/await_using
 [`event ports`]: https://illumos.org/man/port_create
 [`filehandle.createReadStream()`]: #filehandlecreatereadstreamoptions
 [`filehandle.createWriteStream()`]: #filehandlecreatereadstreamoptions
@@ -8150,12 +7371,13 @@ fs.open('<directory>', 'a+', (err, fd) => {
 [`minimatch`]: https://github.com/isaacs/minimatch
 [`node:stream/iter`]: stream_iter.md
 [`statfs.bsize`]: #statfsbsize
-[`stream/iter pipeTo()`]: stream_iter.md#pipetosource-transforms-writer
+[`stream/iter pipeTo()`]: stream_iter.md#pipetosource-transforms-writer-options
 [`stream/iter pull()`]: stream_iter.md#pullsource-transforms-options
 [`stream/iter pullSync()`]: stream_iter.md#pullsyncsource-transforms
+[`using`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using
 [`util.promisify()`]: util.md#utilpromisifyoriginal
 [bigints]: https://tc39.github.io/proposal-bigint
 [注意事项]: #caveats
 [chcp]: https://ss64.com/nt/chcp.html
 [inode]: https://en.wikipedia.org/wiki/Inode
-[文件系统 `标志` 的支持]: #file-system-flags
+[文件系统 `标志` 的支持]: #file-system-flags】【。

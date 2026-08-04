@@ -90,9 +90,11 @@ Node.js 除了其自身代码外，还依赖于其他组件。这些依赖项提
 
 重要的是，用于构建 Node.js 中包含的 WASM 组件的工具及其版本应有充分的文档记录，并在需要时可用于重新构建/更新旧的 Node.js 版本。
 
-为了最大限度地减少用于构建 WASM 组件的工具和版本的不同数量，并记录和确保未来的可用性，该项目构建并维护一个通用的 [wasm-builder](https://github.com/nodejs/wasm-builder) 容器，该容器应用于构建 Node.js 依赖项中的 WASM 组件。
+为了尽量减少用于构建 WASM 组件的工具和版本的数量，并记录相关信息以确保未来可用性，该项目构建并维护了一个通用的
+[wasm-builder](https://github.com/nodejs/wasm-builder) 容器，
+该容器应当用于构建 Node.js 依赖项中的 WASM 组件。
 
-该容器提供了特定构建所用工具版本的持久副本，这些工具版本由 Node.js 项目控制。此外，工具和版本通过容器内 `/home/node/metadata` 目录中的元数据进行记录。
+该容器提供了特定构建所使用工具版本的持久副本，这些工具由 Node.js 项目控制。此外，工具及其版本还通过容器中 `/home/node/metadata` 目录内的元数据进行了记录。
 
 可以通过查看用于创建容器的 [Dockerfile](https://github.com/nodejs/wasm-builder/blob/main/container-build-info/Dockerfile) 的当前版本来找到可用的工具。
 
@@ -148,7 +150,7 @@ Node.js 除了其自身代码外，还依赖于其他组件。这些依赖项提
 
 [merve](https://github.com/nodejs/node/tree/HEAD/deps/merve)
 依赖项在 Node.js ESM 实现中使用，用于检测 CommonJS 模块的命名导出。
-有关更多信息，请参阅 [maintaining-merve][]。
+有关更多信息，请参阅 [维护 merve][]。
 
 ### corepack
 
@@ -170,13 +172,13 @@ C++ 测试和模拟框架。
 
 [icu](http://site.icu-project.org) 是广泛使用的 C/C++
 和 Java 库集，为软件应用程序提供 Unicode 和全球化支持。
-有关更多信息，请参阅 [maintaining-icu][]。
+有关更多信息，请参阅 [维护 icu][]。
 
 ### inspector\_protocol
 
 [inspector\_protocol](https://chromium.googlesource.com/deps/inspector_protocol/)
 是 Chromium 的代码生成器和检查器协议模板。
-有关更多信息，请参阅 [this doc](../../../tools/inspector_protocol/README.md)。
+有关更多信息，请参阅 [此文档](../../../tools/inspector_protocol/README.md)。
 
 ### libffi
 
@@ -192,8 +194,8 @@ C++ 测试和模拟框架。
 ### llhttp
 
 [llhttp](https://github.com/nodejs/llhttp) 依赖项是
-Node.js 使用的 http 解析器。
-有关更多信息，请参阅 [maintaining-http][]。
+Node.js 使用的 HTTP 解析器。
+有关更多信息，请参阅 [维护 HTTP][]。
 
 ### minimatch
 
@@ -204,7 +206,7 @@ Node.js 使用的 http 解析器。
 
 [nghttp2](https://github.com/nghttp2/nghttp2) 依赖项是实现
 HTTP/2 协议的 C 库。
-有关更多信息，请参阅 [maintaining-http][]。
+有关更多信息，请参阅 [维护 HTTP][]。
 
 ### nghttp3
 
@@ -245,7 +247,7 @@ OpenSSL 的一个分支，用于启用 QUIC。
 
 Node.js 目前使用 quictls/openssl 分支，该分支紧密跟踪主要的 openssl/openssl 版本，并添加了支持
 QUIC 协议的 API。
-有关更多信息，请参阅 [maintaining-openssl][]。
+有关更多信息，请参阅 [维护 openssl][]。
 
 ### perfetto
 
@@ -255,7 +257,7 @@ QUIC 协议的 API。
 ### postject
 
 [postject](https://github.com/nodejs/postject) 依赖项用于
-[Single Executable 战略计划](https://github.com/nodejs/single-executable)。
+[单一可执行文件战略计划](https://github.com/nodejs/single-executable)。
 
 ### simdjson
 
@@ -271,20 +273,20 @@ QUIC 协议的 API。
 
 [undici](https://github.com/nodejs/undici) 依赖项是一个 HTTP/1.1 客户端，
 为 Node.js 从头开始编写。
-有关更多信息，请参阅 [maintaining-http][]。
+有关更多信息，请参阅 [维护 HTTP][]。
 
 ### uvwasi
 
 [uvwasi](https://github.com/nodejs/uvwasi) 依赖项实现了
 WASI 系统调用 API，以便 WebAssembly 运行时可以轻松实现 WASI 调用。
 在底层，uvwasi 在可能的情况下利用 libuv 来实现最大的可移植性。
-有关更多信息，请参阅 [maintaining-web-assembly][]。
+有关更多信息，请参阅 [维护 WebAssembly][]。
 
 ### V8
 
 [V8](https://chromium.googlesource.com/v8/v8.git/) 是 Google 的开源
 高性能 JavaScript 和 WebAssembly 引擎，用 C++ 编写。
-有关更多信息，请参阅 [maintaining-V8][]。
+有关更多信息，请参阅 [维护 V8][]。
 
 ### zlib
 
@@ -312,12 +314,12 @@ WASI 系统调用 API，以便 WebAssembly 运行时可以轻松实现 WASI 调�
 [libffi]: #libffi
 [libuv]: #libuv
 [llhttp]: #llhttp
-[maintaining-V8]: ./maintaining-V8.md
-[maintaining-http]: ./maintaining-http.md
-[maintaining-icu]: ./maintaining-icu.md
-[maintaining-merve]: ./maintaining-merve.md
-[maintaining-openssl]: ./maintaining-openssl.md
-[maintaining-web-assembly]: ./maintaining-web-assembly.md
+[维护 V8]: ./maintaining-V8.md
+[维护 HTTP]: ./maintaining-http.md
+[维护 icu]: ./maintaining-icu.md
+[维护 merve]: ./maintaining-merve.md
+[维护 openssl]: ./maintaining-openssl.md
+[维护 WebAssembly]: ./maintaining-web-assembly.md
 [merve]: #merve
 [minimatch]: #minimatch
 [nghttp2]: #nghttp2

@@ -62,7 +62,7 @@ Node.js 支持创建 [单可执行应用程序][]，方法是允许注入一个�
    * 在 macOS 上：
 
    ```bash
-   codesign --sign - hello
+   codesign --sign - sea
    ```
 
    * 在 Windows 上（可选）：
@@ -71,7 +71,7 @@ Node.js 支持创建 [单可执行应用程序][]，方法是允许注入一个�
    二进制文件仍然可以运行。
 
    ```powershell
-   signtool sign /fd SHA256 hello.exe
+   signtool sign /fd SHA256 sea.exe
    ```
 
 5. 运行二进制文件：
@@ -79,14 +79,14 @@ Node.js 支持创建 [单可执行应用程序][]，方法是允许注入一个�
    * 在 Windows 以外的系统上
 
    ```console
-   $ ./hello world
+   $ ./sea world
    Hello, world!
    ```
 
    * 在 Windows 上
 
    ```console
-   $ .\hello.exe world
+   $ .\sea.exe world
    Hello, world!
    ```
 
@@ -405,7 +405,7 @@ require = createRequire(__filename);
 
 ### 注入的主脚本中的 `import()`
 
-<!-- TODO(joyeecheung): 支持并记录 module.registerHooks -->
+<!-- TODO(joyeecheung)：支持并记录 module.registerHooks -->
 
 当使用 `"mainFormat": "module"` 时，`import()` 可用于动态加载内置模块。尝试使用 `import()` 从文件系统加载模块将抛出错误。
 

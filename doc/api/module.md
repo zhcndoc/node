@@ -209,10 +209,11 @@ changes:
 > 稳定性：1.2 - 发布候选
 
 * `options` {Object}
-  * `load` {Function|undefined} 参见 [load 钩子][]。**默认值：** `undefined`。
-  * `resolve` {Function|undefined} 参见 [resolve 钩子][]。**默认值：** `undefined`。
-* 返回：{Object} 一个具有以下属性的对象：
-  * `deregister()` {Function} 移除已注册的钩子，以便不再调用它们。否则，钩子将在运行进程的生命周期内保留。
+  * `load` {Function|undefined} 参见 [加载钩子][]。**默认值：** `undefined`。
+  * `resolve` {Function|undefined} 参见 [解析钩子][]。**默认值：** `undefined`。
+* 返回：{Object} 包含以下属性的对象：
+  * `deregister()` {Function} 移除已注册的钩子，使其不再被调用。否则，钩子会在运行中的进程的整个生命周期内保留。
+  * `[Symbol.dispose]` {Function} 与 `deregister` 相同。
 
 注册 [钩子][] 以自定义 Node.js 模块解析和加载行为。参见 [自定义钩子][]。返回的对象可用于 [注销同步自定义钩子][同步自定义钩子的注销]。
 
@@ -437,13 +438,7 @@ changes:
 
 对于一般用例，建议调用 `module.enableCompileCache()` 而不指定 `options.directory`，以便在必要时可以通过 `NODE_COMPILE_CACHE` 环境变量覆盖目录。
 
-Since compile cache is supposed to be an optimization that is not mission critical, this
-method is designed to not throw any exception when the compile cache cannot be enabled.
-Instead, it will return an object containing an error message in the `message` field to
-aid debugging. If compile cache is enabled successfully, the `directory` field in the
-returned object contains the path to the directory where the compile cache is stored. The
-`status` field in the returned object would be one of the `module.constants.compileCacheStatus`
-values to indicate the result of the attempt to enable the [module compile cache][].
+由于编译缓存旨在作为非关键的优化功能，因此当无法启用编译缓存时，此方法不会抛出任何异常。相反，它会返回一个对象，其中 `message` 字段包含错误消息，以帮助调试。如果成功启用编译缓存，则返回对象中的 `directory` 字段包含存储编译缓存的目录路径。返回对象中的 `status` 字段将为 [`module.constants.compileCacheStatus`][] 中的某个值，用于指示尝试启用 [模块编译缓存][] 的结果。
 
 此方法仅影响当前 Node.js 实例。要在子工作线程中启用它，要么也在子工作线程中调用此方法，要么将 `process.env.NODE_COMPILE_CACHE` 值设置为编译缓存目录，以便行为可以继承到子工作线程。目录可以从该方法返回的 `directory` 字段获取，或使用 [`module.getCompileCacheDir()`][] 获取。
 
@@ -776,7 +771,7 @@ function resolve(specifier, context, nextResolve) {
     };
   }
 
-  // 如果不需要自定义，则 defer 到链中的下一个钩子，如果这是最后一个用户指定的加载器，则将是
+  // 如果不需要自定义，则推迟到链中的下一个钩子，如果这是最后一个用户指定的加载器，则将是
   // Node.js 默认 resolve。
   return nextResolve(specifier);
 }
@@ -809,7 +804,7 @@ changes:
   * `shortCircuit` {undefined|boolean} 一个信号，表明此钩子打算终止 `load` 钩子链。**默认值：** `false`
   * `source` {string|ArrayBuffer|TypedArray} 供 Node.js 评估的源
 
-`load` 钩子提供了一种定义自定义方法来检索已解析 URL 的源代码的方式。这将允许加载器 potentially 避免从磁盘读取文件。它还可用于将 unrecognized 格式映射到支持的格式，例如 `yaml` 到 `module`。
+`load` 钩子提供了一种定义自定义方法来检索已解析 URL 的源代码的方式。这将允许加载器可能避免从磁盘读取文件。它还可用于将无法识别的格式映射到支持的格式，例如 `yaml` 到 `module`。
 
 ```mjs
 import { registerHooks } from 'node:module';
@@ -927,8 +922,8 @@ export async function load(url, context, nextLoad) {
 import { register, createRequire } from 'node:module';
 register('./hooks.mjs', import.meta.url);
 
-// Asynchronous hooks does not affect modules loaded via custom require()
-// functions created by module.createRequire().
+// 异步钩子不影响通过 module.createRequire()
+// 创建的自定义 require() 函数加载的模块。
 const userRequire = createRequire(import.meta.filename);
 userRequire('./my-app-2.cjs');  // 钩子不会影响这个
 ```
@@ -1151,7 +1146,7 @@ changes:
     - v18.6.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42623
-    description: "添加对链式 resolve 钩子的支持。每个钩子必须 either 调用 `nextResolve()` 或在其返回中包含设置为 `true` 的 `shortCircuit` 属性。"
+    description: "添加对链式 resolve 钩子的支持。每个钩子必须调用 `nextResolve()`，或在其返回值中包含设置为 `true` 的 `shortCircuit` 属性。"
   - version:
     - v17.1.0
     - v16.14.0
@@ -1202,8 +1197,8 @@ export async function resolve(specifier, context, nextResolve) {
     };
   }
 
-  // 如果不需要自定义，则 defer 到链中的下一个钩子，如果这是最后一个用户指定的加载器，则将是
-  // Node.js 默认 resolve。
+  // 如果不需要自定义，则交由链中的下一个钩子处理；如果这是最后一个用户指定的加载器，则将由
+  // Node.js 默认 resolve 处理。
   return nextResolve(specifier);
 }
 ```
@@ -1222,7 +1217,7 @@ changes:
     - v18.6.0
     - v16.17.0
     pr-url: https://github.com/nodejs/node/pull/42623
-    description: "添加对链式 load 钩子的支持。每个钩子必须 either 调用 `nextLoad()` 或在其返回中包含设置为 `true` 的 `shortCircuit` 属性。"
+    description: "添加对链式 load 钩子的支持。每个钩子必须调用 `nextLoad()`，或在其返回值中包含设置为 `true` 的 `shortCircuit` 属性。"
 -->
 
 * `url` {string} `resolve` 链返回的 URL
@@ -1241,10 +1236,10 @@ changes:
 
 > **警告**：异步 `load` 钩子和 CommonJS 模块的命名空间导出不兼容。尝试一起使用它们将导致导入返回一个空对象。这可能会在未来得到解决。这不适用于同步 `load` 钩子，在这种情况下，导出可以照常使用。
 
-异步版本的工作方式与同步版本类似，尽管在使用异步 `load` 钩子时，省略 vs 提供 `'commonjs'` 的 `source` 具有非常不同的效果：
+异步版本的工作方式与同步版本类似，尽管在使用异步 `load` 钩子时，省略与提供 `'commonjs'` 的 `source` 具有非常不同的效果：
 
 * 当提供 `source` 时，此模块的所有 `require` 调用将由带有注册的 `resolve` 和 `load` 钩子的 ESM 加载器处理；此模块的所有 `require.resolve` 调用将由带有注册的 `resolve` 钩子的 ESM 加载器处理；只有一部分 CommonJS API 可用（例如，没有 `require.extensions`，没有 `require.cache`，没有 `require.resolve.paths`），并且 CommonJS 模块加载器上的猴子补丁将不适用。
-* 如果 `source` 为 undefined 或 `null`，它将由 CommonJS 模块加载器处理，`require`/`require.resolve` 调用将不会经过注册的钩子。这种针对 nullish `source` 的行为是暂时的 — 在未来，nullish `source` 将不受支持。
+* 如果 `source` 为 undefined 或 null，它将由 CommonJS 模块加载器处理，`require`/`require.resolve` 调用将不会经过注册的钩子。这种针对 nullish `source` 的行为是暂时的 — 在未来，nullish `source` 将不受支持。
 
 这些注意事项不适用于同步 `load` 钩子，在这种情况下，自定义 CommonJS 模块可用完整的 CommonJS API 集，并且 `require`/`require.resolve` 始终通过注册的钩子。
 
@@ -1271,7 +1266,7 @@ export async function load(url, context, nextLoad) {
 
 #### 从 HTTPS 导入
 
-下面的钩子注册钩子以启用对此类标识符的基本支持。虽然这似乎是对 Node.js 核心功能的重大改进，但实际使用这些钩子存在 substantial 缺点：性能比从磁盘加载文件慢得多，没有缓存，也没有安全性。
+下面的钩子注册钩子以启用对此类标识符的基本支持。虽然这似乎是对 Node.js 核心功能的重大改进，但实际使用这些钩子存在实质性缺点：性能比从磁盘加载文件慢得多，没有缓存，也没有安全性。
 
 ```mjs
 // https-hooks.mjs
@@ -1319,7 +1314,7 @@ workers 和 Atomics.wait() 实现 fetchSync 的示例 - 或者所有这些示例
 
 #### 转译
 
-Node.js 无法理解的格式的来源可以使用 [`load` 钩子][load 钩子] 转换为 JavaScript。
+Node.js 无法理解的格式的来源可以使用 [`load` 钩子][load 钩子]转换为 JavaScript。
 
 这比在运行 Node.js 之前转译源文件的性能要低；
 转译器钩子应仅用于开发和测试目的。

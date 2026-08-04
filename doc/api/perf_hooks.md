@@ -1480,7 +1480,9 @@ setImmediate(() => {
 <!-- YAML
 added: v11.10.0
 changes:
-  - version: v26.5.0
+  - version:
+     - v26.5.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/62935
     description: 新增了 `samplePerIteration` 选项。
 -->
@@ -1543,11 +1545,11 @@ added:
 
 * `fn` {Function}
 * `options` {Object}
-  * `histogram` {RecordableHistogram} A histogram object created using `perf_hooks.createHistogram()`, used to record runtime durations in nanoseconds.
+  * `histogram` {RecordableHistogram} 使用 `perf_hooks.createHistogram()` 创建的直方图对象，用于记录以纳秒为单位的运行时长。
 
-_This property is an extension of Node.js. It is not available in Web browsers._
+_此属性是 Node.js 的扩展功能，在 Web 浏览器中不可用。_
 
-Wraps the function in a new function that measures the wrapped function’s runtime. A `PerformanceObserver` must be subscribed to the `'function'` entry type to access the timing details.
+将函数包装在一个新函数中，以测量被包装函数的运行时长。必须订阅 `'function'` 条目类型的 `PerformanceObserver` 才能访问计时详情。
 
 ```mjs
 import { timerify, performance, PerformanceObserver } from 'node:perf_hooks';
@@ -1567,7 +1569,7 @@ const obs = new PerformanceObserver((list) => {
 });
 obs.observe({ entryTypes: ['function'] });
 
-// A performance timeline entry will be created
+// 将创建一个性能时间线条目
 wrapped();
 ```
 
@@ -1593,11 +1595,11 @@ const obs = new PerformanceObserver((list) => {
 });
 obs.observe({ entryTypes: ['function'] });
 
-// A performance timeline entry will be created
+// 将创建一个性能时间线条目
 wrapped();
 ```
 
-If the wrapped function returns a promise, a finally handler will be attached to the promise and the duration will be reported once the finally handler is invoked.
+如果被包装的函数返回一个 promise，则会向该 promise 附加一个 finally 处理程序，并在调用 finally 处理程序后报告时长。
 
 ## 类：`Histogram`
 

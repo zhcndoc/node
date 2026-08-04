@@ -164,38 +164,7 @@ REPL 环境中。例如，除非另外声明为
 > fs.createReadStream('./some/file');
 ```
 
-#### 全局未捕获异常
-
-<!-- YAML
-changes:
-  - version: v12.3.0
-    pr-url: https://github.com/nodejs/node/pull/27151
-    description: "一旦 repl 作为独立程序使用，现在会触发 `'uncaughtException'` 事件。"
--->
-
-REPL 使用 [`domain`][] 模块来捕获该
-REPL 会话的所有未捕获异常。
-
-在 REPL 中使用 [`domain`][] 模块有以下副作用：
-
-* 未捕获异常仅在独立 REPL 中发出 [`'uncaughtException'`][] 事件。在另一个
-  Node.js 程序中的 REPL 内为此事件添加监听器会导致 [`ERR_INVALID_REPL_INPUT`][]。
-
-  ```js
-  const r = repl.start();
-
-  r.write('process.on("uncaughtException", () => console.log("Foobar"));\n');
-  // 输出流包括：
-  //   TypeError [ERR_INVALID_REPL_INPUT]: uncaughtException 的监听器
-  //   不能在 REPL 中使用
-
-  r.close();
-  ```
-
-* 尝试使用 [`process.setUncaughtExceptionCaptureCallback()`][] 会抛出
-  [`ERR_DOMAIN_CANNOT_SET_UNCAUGHT_EXCEPTION_CAPTURE`][] 错误。
-
-#### _(下划线) 变量的赋值
+#### `_`（下划线）变量的赋值
 
 <!-- YAML
 changes:
@@ -233,7 +202,15 @@ Uncaught Error: foo
 
 #### `await` 关键字
 
-对 `await` 关键字的支持在顶层启用。
+<!-- YAML
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64034
+    description: The `--experimental-repl-await` flag was removed. Top-level
+                 `await` is always enabled and can no longer be disabled.
+-->
+
+顶层已启用对 `await` 关键字的支持。
 
 ```console
 > await Promise.resolve(123)
@@ -247,25 +224,6 @@ undefined
 1002
 undefined
 ```
-
-在 REPL 中使用 `await` 关键字的一个已知限制是
-它会使 `const` 关键字的词法作用域失效。
-
-例如：
-
-```console
-> const m = await Promise.resolve(123)
-undefined
-> m
-123
-> m = await Promise.resolve(234)
-234
-// 重新声明常量会报错
-> const m = await Promise.resolve(345)
-Uncaught SyntaxError: Identifier 'm' has already been declared
-```
-
-[`--no-experimental-repl-await`][] 将禁用 REPL 中的顶层 await。
 
 ### 反向 i 搜索
 
@@ -1051,19 +1009,14 @@ server.listen(8000);
 [TTY 键绑定]: readline.md#tty-keybindings
 [ZSH]: https://en.wikipedia.org/wiki/Z_shell
 [`'uncaughtException'`]: process.md#event-uncaughtexception
-[`--no-experimental-repl-await`]: cli.md#--no-experimental-repl-await
-[`ERR_DOMAIN_CANNOT_SET_UNCAUGHT_EXCEPTION_CAPTURE`]: errors.md#err_domain_cannot_set_uncaught_exception_capture
-[`ERR_INVALID_REPL_INPUT`]: errors.md#err_invalid_repl_input
 [`curl()`]: https://curl.haxx.se/docs/manpage.html
-[`domain`]: domain.md
 [`module.builtinModules`]: module.md#modulebuiltinmodules
 [`net.Server`]: net.md#class-netserver
 [`net.Socket`]: net.md#class-netsocket
-[`process.setUncaughtExceptionCaptureCallback()`]: process.md#processsetuncaughtexceptioncapturecallbackfn
 [`readline.InterfaceCompleter`]: readline.md#use-of-the-completer-function
 [`repl.ReplServer`]: #class-replserver
 [`repl.start()`]: #replstartoptions
 [`reverse-i-search`]: #reverse-i-search
 [`util.inspect()`]: util.md#utilinspectobject-options
 [自定义评估函数]: #custom-evaluation-functions
-[stream]: stream.md
+[stream]: stream.md。

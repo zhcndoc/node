@@ -64,37 +64,47 @@ try {
 
 ## 非对称密钥类型
 
-下表列出了 [`KeyObject`][] API 识别的非对称密钥类型以及每种密钥类型支持的导出/导入格式。
+以下内容按照导入和导出每种类型所支持的完整格式集合，列出了
+[`KeyObject`][] API 所识别的非对称密钥类型。
 
-| 密钥类型                           | 描述               | OID                     | `'pem'` | `'der'` | `'jwk'` | `'raw-public'` | `'raw-private'` | `'raw-seed'` |
-| ---------------------------------- | ------------------ | ----------------------- | ------- | ------- | ------- | -------------- | --------------- | ------------ |
-| `'dh'`                             | Diffie-Hellman     | 1.2.840.113549.1.3.1    | ✔       | ✔       |         |                |                 |              |
-| `'dsa'`                            | DSA                | 1.2.840.10040.4.1       | ✔       | ✔       |         |                |                 |              |
-| `'ec'`                             | 椭圆曲线           | 1.2.840.10045.2.1       | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'ed25519'`                        | Ed25519            | 1.3.101.112             | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'ed448'`                          | Ed448              | 1.3.101.113             | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'ml-dsa-44'`[^openssl35]          | ML-DSA-44          | 2.16.840.1.101.3.4.3.17 | ✔       | ✔       | ✔       | ✔              |                 | ✔            |
-| `'ml-dsa-65'`[^openssl35]          | ML-DSA-65          | 2.16.840.1.101.3.4.3.18 | ✔       | ✔       | ✔       | ✔              |                 | ✔            |
-| `'ml-dsa-87'`[^openssl35]          | ML-DSA-87          | 2.16.840.1.101.3.4.3.19 | ✔       | ✔       | ✔       | ✔              |                 | ✔            |
-| `'ml-kem-512'`[^openssl35]         | ML-KEM-512         | 2.16.840.1.101.3.4.4.1  | ✔       | ✔       | ✔       | ✔              |                 | ✔            |
-| `'ml-kem-768'`[^openssl35]         | ML-KEM-768         | 2.16.840.1.101.3.4.4.2  | ✔       | ✔       | ✔       | ✔              |                 | ✔            |
-| `'ml-kem-1024'`[^openssl35]        | ML-KEM-1024        | 2.16.840.1.101.3.4.4.3  | ✔       | ✔       | ✔       | ✔              |                 | ✔            |
-| `'rsa-pss'`                        | RSA PSS            | 1.2.840.113549.1.1.10   | ✔       | ✔       |         |                |                 |              |
-| `'rsa'`                            | RSA                | 1.2.840.113549.1.1.1    | ✔       | ✔       | ✔       |                |                 |              |
-| `'slh-dsa-sha2-128f'`[^openssl35]  | SLH-DSA-SHA2-128f  | 2.16.840.1.101.3.4.3.21 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'slh-dsa-sha2-128s'`[^openssl35]  | SLH-DSA-SHA2-128s  | 2.16.840.1.101.3.4.3.20 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'slh-dsa-sha2-192f'`[^openssl35]  | SLH-DSA-SHA2-192f  | 2.16.840.1.101.3.4.3.23 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'slh-dsa-sha2-192s'`[^openssl35]  | SLH-DSA-SHA2-192s  | 2.16.840.1.101.3.4.3.22 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'slh-dsa-sha2-256f'`[^openssl35]  | SLH-DSA-SHA2-256f  | 2.16.840.1.101.3.4.3.25 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'slh-dsa-sha2-256s'`[^openssl35]  | SLH-DSA-SHA2-256s  | 2.16.840.1.101.3.4.3.24 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'slh-dsa-shake-128f'`[^openssl35] | SLH-DSA-SHAKE-128f | 2.16.840.1.101.3.4.3.27 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'slh-dsa-shake-128s'`[^openssl35] | SLH-DSA-SHAKE-128s | 2.16.840.1.101.3.4.3.26 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'slh-dsa-shake-192f'`[^openssl35] | SLH-DSA-SHAKE-192f | 2.16.840.1.101.3.4.3.29 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'slh-dsa-shake-192s'`[^openssl35] | SLH-DSA-SHAKE-192s | 2.16.840.1.101.3.4.3.28 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'slh-dsa-shake-256f'`[^openssl35] | SLH-DSA-SHAKE-256f | 2.16.840.1.101.3.4.3.31 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'slh-dsa-shake-256s'`[^openssl35] | SLH-DSA-SHAKE-256s | 2.16.840.1.101.3.4.3.30 | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'x25519'`                         | X25519             | 1.3.101.110             | ✔       | ✔       | ✔       | ✔              | ✔               |              |
-| `'x448'`                           | X448               | 1.3.101.111             | ✔       | ✔       | ✔       | ✔              | ✔               |              |
+**格式：** `'pem'`、`'der'`
+
+* **`'dh'`（Diffie-Hellman）** — OID `1.2.840.113549.1.3.1`
+* **`'dsa'`** — OID `1.2.840.10040.4.1`
+* **`'rsa-pss'`** — OID `1.2.840.113549.1.1.10`
+
+**格式：** `'pem'`、`'der'`、`'jwk'`
+
+* **`'rsa'`** — OID `1.2.840.113549.1.1.1`
+
+**格式：** `'pem'`、`'der'`、`'jwk'`、`'raw-public'`、`'raw-private'`
+
+* **`'ec'`（椭圆曲线）** — OID `1.2.840.10045.2.1`
+* **`'ed25519'`** — OID `1.3.101.112`
+* **`'ed448'`** — OID `1.3.101.113`
+* **`'slh-dsa-sha2-128f'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.21`
+* **`'slh-dsa-sha2-128s'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.20`
+* **`'slh-dsa-sha2-192f'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.23`
+* **`'slh-dsa-sha2-192s'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.22`
+* **`'slh-dsa-sha2-256f'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.25`
+* **`'slh-dsa-sha2-256s'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.24`
+* **`'slh-dsa-shake-128f'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.27`
+* **`'slh-dsa-shake-128s'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.26`
+* **`'slh-dsa-shake-192f'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.29`
+* **`'slh-dsa-shake-192s'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.28`
+* **`'slh-dsa-shake-256f'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.31`
+* **`'slh-dsa-shake-256s'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.30`
+* **`'x25519'`** — OID `1.3.101.110`
+* **`'x448'`** — OID `1.3.101.111`
+
+**格式：** `'pem'`、`'der'`、`'jwk'`、`'raw-public'`、`'raw-seed'`
+
+* **`'ml-dsa-44'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.17`
+* **`'ml-dsa-65'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.18`
+* **`'ml-dsa-87'`[^openssl35]** — OID `2.16.840.1.101.3.4.3.19`
+* **`'ml-kem-512'`[^openssl35]** — OID `2.16.840.1.101.3.4.4.1`
+* **`'ml-kem-768'`[^openssl35]** — OID `2.16.840.1.101.3.4.4.2`
+* **`'ml-kem-1024'`[^openssl35]** — OID `2.16.840.1.101.3.4.4.3`
 
 ### 密钥格式
 
@@ -750,7 +760,11 @@ added: v0.1.94
   如果指定了 `outputEncoding`，则返回字符串。
   如果未提供 `outputEncoding`，则返回 [`Buffer`][]。
 
-一旦调用了 `cipher.final()` 方法，`Cipheriv` 对象就不再可用于加密数据。尝试多次调用 `cipher.final()` 将导致抛出错误。
+如果在之前调用 [`cipher.update()`][] 时指定了输出编码，
+则 `outputEncoding` 必须使用相同的编码。
+
+一旦调用了 `cipher.final()` 方法，`Cipheriv` 对象将无法再用于加密数据。
+尝试多次调用 `cipher.final()` 将导致抛出错误。
 
 ### `cipher.getAuthTag()`
 
@@ -821,8 +835,10 @@ changes:
 参数，`data` 必须是 [`Buffer`][]、`TypedArray` 或 `DataView`。如果 `data` 是 [`Buffer`][]、`TypedArray` 或 `DataView`，则
 忽略 `inputEncoding`。
 
-`outputEncoding` 指定加密数据的输出格式。如果指定了 `outputEncoding`，
-则返回使用指定编码的字符串。如果未提供 `outputEncoding`，则返回 [`Buffer`][]。
+`outputEncoding` 指定加密数据的输出格式。如果指定了
+`outputEncoding`，则返回使用指定编码的字符串。如果未提供
+`outputEncoding`，则返回 [`Buffer`][]。
+指定 `outputEncoding` 时，必须使用与之前调用 `cipher.update()` 时相同的编码。
 
 可以多次调用 `cipher.update()` 方法并传入新数据，直到调用 [`cipher.final()`][]。在 [`cipher.final()`][] 之后调用 `cipher.update()` 将导致抛出错误。
 
@@ -1109,7 +1125,9 @@ added: v0.1.94
 * 返回：{Buffer | string} 任何剩余的可解密内容。
   如果指定了 `outputEncoding`，则返回字符串。如果未提供 `outputEncoding`，则返回 [`Buffer`][]。
 
-一旦调用了 `decipher.final()` 方法，`Decipheriv` 对象就不再可用于解密数据。尝试多次调用 `decipher.final()` 将导致抛出错误。
+如果在之前调用 [`decipher.update()`][] 时指定了输出编码，`outputEncoding` 必须使用相同的编码。
+
+一旦调用了 `decipher.final()` 方法，`Decipheriv` 对象将无法再用于解密数据。尝试多次调用 `decipher.final()` 将导致抛出错误。
 
 ### `decipher.setAAD(buffer[, options])`
 
@@ -1206,6 +1224,7 @@ changes:
 使用 `data` 更新 decipher。如果给出了 `inputEncoding` 参数，则 `data` 参数是使用指定编码的字符串。如果未给出 `inputEncoding` 参数，`data` 必须是 [`Buffer`][]。如果 `data` 是 [`Buffer`][]，则忽略 `inputEncoding`。
 
 `outputEncoding` 指定加密数据的输出格式。如果指定了 `outputEncoding`，则返回使用指定编码的字符串。如果未提供 `outputEncoding`，则返回 [`Buffer`][]。
+指定 `outputEncoding` 时，必须使用与之前调用 `decipher.update()` 时相同的编码。
 
 可以多次使用新数据调用 `decipher.update()` 方法，直到调用 [`decipher.final()`][]。在 [`decipher.final()`][] 之后调用 `decipher.update()` 将导致抛出错误。
 
@@ -2424,7 +2443,7 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|URL}
   * `dsaEncoding` {string}
   * `padding` {integer}
   * `saltLength` {integer}
@@ -2435,7 +2454,7 @@ changes:
 
 计算通过 [`sign.update()`][] 或 [`sign.write()`][stream-writable-write] 传入的所有数据的签名。
 
-如果 `privateKey` 不是 [`KeyObject`][]，此函数的行为如同 `privateKey` 已被传递给 [`crypto.createPrivateKey()`][]。如果它是一个对象，则可以传递以下额外属性：
+如果 `privateKey` 不是 [`KeyObject`][]，此函数的行为就像将 `privateKey` 传入 [`crypto.createPrivateKey()`][] 一样。当 `privateKey` 是字符串、`ArrayBuffer`、[`Buffer`][]、`TypedArray` 或 `DataView` 时，它必须包含 PEM 编码的密钥材料。如果它是一个对象，则可以传入以下附加属性：
 
 * `dsaEncoding` {string} 对于 DSA 和 ECDSA，此选项指定生成签名的格式。它可以是以下之一：
   * `'der'`（默认）：DER 编码的 ASN.1 签名结构编码 `(r, s)`。
@@ -2546,9 +2565,7 @@ changes:
 
 使用给定的 `key` 和 `signature` 来验证所提供的数据。
 
-如果 `key` 不是 [`KeyObject`][]，此函数的行为如同
-`key` 已被传递给 [`crypto.createPublicKey()`][ ]。如果它是一个
-对象，则可以传递以下额外属性：
+如果 `key` 不是 [`KeyObject`][]，此函数的行为就像将 `key` 传递给了 [`crypto.createPublicKey()`][] 一样。当 `key` 是字符串、`ArrayBuffer`、[`Buffer`][]、`TypedArray` 或 `DataView` 时，它必须包含 PEM 编码的密钥材料。如果它是一个对象，则可以传入以下附加属性：
 
 * `dsaEncoding` {string} 对于 DSA 和 ECDSA，此选项指定签名的格式。它可以是以下之一：
   * `'der'`（默认）：DER 编码的 ASN.1 签名结构编码 `(r, s)`。
@@ -2984,7 +3001,7 @@ added: v15.6.0
 
 验证此证书是否由给定的公钥签署。不对证书执行任何其他验证检查。
 
-## crypto 模块的方法和属性
+## crypto 模块的方法和属性。
 
 ### argon2
 
@@ -3163,7 +3180,7 @@ added: v0.1.94
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63188
-    description: Passing a CryptoKey as `key` is no longer supported.
+    description: 不再支持将 CryptoKey 作为 `key` 传递。
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "传递 CryptoKey 作为 `key` 已弃用。"
@@ -3174,7 +3191,7 @@ changes:
     description: "使用 `chacha20-poly1305` 密码时，`authTagLength` 选项现在是可选的，默认为 16 字节。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
-    description: password 和 iv 参数可以是 ArrayBuffer，并且每个都限制为最大 2 ** 31 - 1 字节。
+    description: 密码和 iv 参数可以是 ArrayBuffer，并且每个都限制为最大 2 ** 31 - 1 字节。
   - version: v11.6.0
     pr-url: https://github.com/nodejs/node/pull/24234
     description: "`key` 参数现在可以是 `KeyObject`。"
@@ -3219,7 +3236,7 @@ added: v0.1.94
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63188
-    description: Passing a CryptoKey as `key` is no longer supported.
+    description: 不再支持将 CryptoKey 作为 `key` 传递。
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "传递 CryptoKey 作为 `key` 已弃用。"
@@ -3317,7 +3334,7 @@ added: v0.9.3
 * `name` {string}
 * 返回：{DiffieHellmanGroup}
 
-[`crypto.getDiffieHellman()`][] 的别名
+[`crypto.getDiffieHellman()`][] 的别名。
 
 ### `crypto.createECDH(curveName)`
 
@@ -3349,7 +3366,9 @@ changes:
 
 创建并返回一个 `Hash` 对象，可用于使用给定的 `algorithm` 生成哈希摘要。可选的 `options` 参数控制流行为。对于诸如 `'shake256'` 之类的 XOF 哈希函数，`outputLength` 选项指定所需的输出长度（以字节为单位）。对于没有默认输出长度的 XOF 哈希函数，这是必需的。
 
-`algorithm` 取决于平台上 OpenSSL 版本支持的可用算法。示例有 `'sha256'`、`'sha512'` 等。在最近的 OpenSSL 版本上，`openssl list -digest-algorithms` 将显示可用的摘要算法。
+当数据较小（< 5MB）且可直接获取时，通常 [`crypto.hash()`][] 的速度更快。
+
+`algorithm` 取决于平台上 OpenSSL 版本所支持的可用算法。示例包括 `'sha256'`、`'sha512'` 等。在较新版本的 OpenSSL 中，`openssl list -digest-algorithms` 将显示可用的摘要算法。
 
 示例：生成文件的 sha256 总和
 
@@ -3492,6 +3511,10 @@ input.on('readable', () => {
 added: v11.6.0
 changes:
   - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/63949
+    description: 密钥也可以是引用 OpenSSL STORE 加载器对象的 URL。新增了
+                 `properties` 选项。
+  - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63188
     description: 以 CryptoKey 作为 `key` 传递不再受支持。
   - version:
@@ -3518,15 +3541,19 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView}
-  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|Object} 密钥材料，PEM、DER、JWK 或 raw 格式。
-  * `format` {string} 必须是 `'pem'`、`'der'`、`'jwk'`、`'raw-private'` 或 `'raw-seed'`。**默认：** `'pem'`。
-  * `type` {string} 必须是 `'pkcs1'`、`'pkcs8'` 或 `'sec1'`。仅当 `format` 为 `'der'` 时需要此选项，否则忽略。
-  * `passphrase` {string | Buffer} 用于解密的密码短语。
-  * `encoding` {string} 当 `key` 是字符串时使用的字符串编码。
-  * `asymmetricKeyType` {string} 当 `format` 为 `'raw-private'` 或 `'raw-seed'` 时需要，否则忽略。
-    必须是 [支持的密钥类型][非对称密钥类型]。
-  * `namedCurve` {string} 要使用的曲线名称。当 `asymmetricKeyType` 为 `'ec'` 时需要，否则忽略。
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|URL}
+  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|Object|URL} 密钥材料，可以是 PEM、DER、JWK 或原始格式，也可以是引用 OpenSSL STORE 加载器对象的 {URL}。
+  * `format` {string} 必须是 `'pem'`、`'der'`、`'jwk'`、`'raw-private'` 或
+    `'raw-seed'`。**默认值：**`'pem'`。
+  * `type` {string} 必须是 `'pkcs1'`、`'pkcs8'` 或 `'sec1'`。仅当
+    `format` 为 `'der'` 时才需要此选项，否则将忽略该选项。
+  * `passphrase` {string | Buffer} 用于解密的密码短语。当 `key` 为 {URL} 时，这是传递给 STORE 加载器的可选 PIN/密码短语。
+  * `properties` {string} 获取 {URL} 密钥的 STORE 加载器时使用的可选 OpenSSL 属性查询。
+  * `encoding` {string} 当 `key` 为字符串时使用的字符串编码。
+  * `asymmetricKeyType` {string} 当 `format` 为 `'raw-private'` 或
+    `'raw-seed'` 时必须提供，否则将忽略该选项。
+    必须是[受支持的密钥类型][asymmetric key types]。
+  * `namedCurve` {string} 要使用的曲线名称。当 `asymmetricKeyType` 为 `'ec'` 时必须提供，否则将忽略该选项。
 * 返回：{KeyObject}
 
 <!--lint enable maximum-line-length remark-lint-->
@@ -3534,6 +3561,23 @@ changes:
 创建并返回一个包含私钥的新密钥对象。如果 `key` 是字符串或 `Buffer`，`format` 假定为 `'pem'`；否则，`key` 必须是具有上述属性的对象。
 
 如果私钥已加密，则必须指定 `passphrase`。密码短语的长度限制为 1024 字节。
+
+#### 来自 OpenSSL STORE 加载器的私钥
+
+> 稳定性：1.1 - 活跃开发中
+
+如果 `key` 是 {URL}（或 `key` 属性为 {URL} 的对象），则会通过 OpenSSL STORE 加载器加载私钥。该 URL 会作为 URI 传递给 OpenSSL，例如 `file:` URI 或由提供程序支持的方案（如 `pkcs11:`）。启用[权限模型][Permission Model]时，需要使用 [`--allow-openssl-store`][]。
+
+> **警告**：URI 方案不会固定 OpenSSL STORE 加载器，也不能证明返回的密钥来自何处。Node.js 会将 URI 转发给 OpenSSL，由 OpenSSL 根据其版本和配置选择加载器。例如，OpenSSL 可能会在尝试 `pkcs11` 加载器之前，先将不透明的 URI（例如 `pkcs11:object=...`，即方案后没有 `//` 的 URI）提供给其 `file` 加载器。如果完整 URI 是有效的本地路径且该文件存在，则可能会加载该文件。
+> Node.js 不会验证是哪个加载器提供了密钥。不要依赖特定于提供程序的 URI 方案来证明密钥来自该提供程序或硬件设备。
+
+已配置的 OpenSSL STORE 加载器拥有广泛的权限，可能会访问文件、设备、令牌或网络。加载器执行的访问不受 `fs.read`、`fs.write` 或 `net` 权限范围的限制。
+
+使用 {URL} 时，即使 `format`、`type`、`asymmetricKeyType` 和 `namedCurve` 这些选项原本会相互依赖（例如 `format: 'der'` 时的 `type`，或 `asymmetricKeyType: 'ec'` 时的 `namedCurve`），也会忽略它们。输入会作为 URI 传递给 STORE 加载器，而不会作为 PEM、DER、JWK 或原始密钥材料处理。`passphrase` 仍会作为传递给加载器的可选 PIN/密码短语使用；如果该 `passphrase` 是字符串，`encoding` 也会生效。
+
+请使用 `passphrase`，而不要将凭据嵌入传递给 STORE 加载器的 URI 中。Node.js 会从自身的权限拒绝资源和诊断信息中隐藏 URI。加载开始后，OpenSSL 或提供程序报告的错误可能会包含 URI。
+
+当 `properties` 与 {URL} 密钥一同指定时，它会作为用于选择 STORE 加载器的属性查询传递给 OpenSSL。它不会追加到 URL 中，并且不同于特定于提供程序的 URI 参数。
 
 ### `crypto.createPublicKey(key)`
 
@@ -3591,6 +3635,8 @@ changes:
 
 因为公钥可以从私钥派生，所以可以传递私钥而不是公钥。在这种情况下，此函数的行为就像调用了 [`crypto.createPrivateKey()`][]，除了返回的 `KeyObject` 的类型将是 `'public'` 并且无法从返回的 `KeyObject` 中提取私钥。类似地，如果给定类型为 `'private'` 的 `KeyObject`，将返回类型为 `'public'` 的新 `KeyObject`，并且无法从返回的对象中提取私钥。
 
+由存储支持的私钥可以先使用 [`crypto.createPrivateKey()`][] 加载，然后作为公钥使用；不能直接将 {URL} 传递给 `crypto.createPublicKey()`。
+
 ### `crypto.createSecretKey(key[, encoding])`
 
 <!-- YAML
@@ -3636,7 +3682,7 @@ added: v0.1.92
 * options {Object} [options 选项][]
 * 返回：{Verify}
 
-创建并返回一个 Verify 对象，使用给定的算法。使用 [crypto.getHashes][] 获取可用签名算法名称的数组。可选的 callback 参数控制异步行为。
+创建并返回一个 Verify 对象，使用给定的算法。使用 [crypto.getHashes][] 获取可用签名算法名称的数组。可选的回调参数控制异步行为。
 
 在某些情况下，可以使用签名算法的名称（如 RSA-SHA256）而不是摘要算法来创建 Verify 实例。这将使用相应的摘要算法。这不适用于所有签名算法，例如 RSA-SHA1，因此最好始终使用摘要算法名称。
 
@@ -3646,12 +3692,12 @@ added: v0.1.92
 added: v24.7.0
 -->
 
-* key {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject} Private Key
-* ciphertext {ArrayBuffer|Buffer|TypedArray|DataView}
-* callback {Function}
-  * error {Error}
-  * plaintext {Buffer}
-* 返回：{Buffer} 如果未提供 callback 函数。
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|URL} 私钥
+* `ciphertext` {ArrayBuffer|Buffer|TypedArray|DataView}
+* `callback` {Function}
+  * `err` {Error}
+  * `sharedKey` {Buffer}
+* 如果未提供 `callback` 函数，则返回：{Buffer}
 
 <!--lint enable maximum-line-length remark-lint-->
 
@@ -3660,16 +3706,16 @@ added: v24.7.0
 支持的密钥类型及其 KEM 算法有：
 
 * RSA-OAEP[^openssl30] RSA 密钥封装
-* P-256[^openssl32] DHKEM(P-256, HKDF-SHA256), DHKEM(P-384, HKDF-SHA256), DHKEM(P-521, HKDF-SHA256)
+* P-256[^openssl32] DHKEM(P-256, HKDF-SHA256)、DHKEM(P-384, HKDF-SHA256)、DHKEM(P-521, HKDF-SHA256)
 * X25519[^openssl32] DHKEM(X25519, HKDF-SHA256)
 * X448[^openssl32] DHKEM(X448, HKDF-SHA512)
 * ML-KEM-512[^openssl35] ML-KEM
 * ML-KEM-768[^openssl35] ML-KEM
 * ML-KEM-1024[^openssl35] ML-KEM
 
-如果 ciphertext 不是 [Buffer][]，此函数的行为就像 encoding 已传递给 [Buffer.from][]。
+如果 `ciphertext` 不是 [Buffer][]，此函数的行为就像已将 encoding 传递给 [Buffer.from][]。
 
-如果提供了 callback 函数，此函数使用 libuv 的线程池。
+如果提供了 `callback` 函数，此函数使用 libuv 的线程池。
 
 ### crypto.diffieHellman(key)
 
@@ -3688,13 +3734,13 @@ changes:
     description: 添加了可选的 callback 参数。
 -->
 
-* key {Object}
-  * privateKey {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
-  * publicKey {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
-* callback {Function}
-  * error {Error}
-  * sharedSecret {Buffer}
-* 返回：{Buffer} 如果未提供 callback 函数。
+* `options` {Object}
+  * `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|URL}
+  * `publicKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+* `callback` {Function}
+  * `err` {Error}
+  * `secret` {Buffer}
+* 返回值：如果未提供 `callback` 函数，则返回 {Buffer}。
 
 基于 privateKey 和 publicKey 计算 Diffie-Hellman 共享秘密。
 两个密钥必须表示相同的非对称密钥类型，并且必须支持 DH 或 ECDH 操作。
@@ -3711,7 +3757,7 @@ changes:
 added: v24.7.0
 -->
 
-* publicKey {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject} Public Key
+* publicKey {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject} 公钥
 * callback {Function}
   * error {Error}
   * sharedSecret {Buffer}
@@ -4151,7 +4197,7 @@ added: v15.0.0
 added: v0.9.3
 -->
 
-* Returns: {string\[]} 包含支持的密码算法名称的数组。
+* 返回：{string\[]} 包含支持的密码算法名称的数组。
 
 ```mjs
 const {
@@ -4310,7 +4356,7 @@ changes:
 * `algorithm` {string|undefined}
 * `data` {string|Buffer|TypedArray|DataView} 当 `data` 是字符串时，它将在被哈希之前编码为 UTF-8。如果希望字符串输入使用不同的输入编码，用户可以使用 `TextEncoder` 或 `Buffer.from()` 将字符串编码为 `TypedArray`，并将编码后的 `TypedArray` 传递到此 API 中。
 * `options` {Object|string}
-  * `outputEncoding` {string} [Encoding][encoding] 用于对返回的摘要进行编码。**默认值：** `'hex'`。
+  * `outputEncoding` {string} [编码][encoding] 用于对返回的摘要进行编码。**默认值：** `'hex'`。
   * `outputLength` {number} 对于诸如 'shake256' 之类的 XOF 哈希函数，指定所需的输出长度（以字节为单位）。对于没有默认输出长度的 XOF 哈希函数，此选项是必需的。
 * 返回：{string|Buffer}
 
@@ -4332,7 +4378,7 @@ const string = 'Node.js';
 console.log(crypto.hash('sha1', string));
 
 // 将 base64 编码的字符串编码为 Buffer，对其进行哈希处理并将
-// 结果作为 buffer 返回。
+// 结果作为 Buffer 返回。
 const base64 = 'Tm9kZS5qcw==';
 // <Buffer 10 b3 49 32 87 f8 31 e8 1a 43 88 11 a1 ff ba 01 f8 ce c4 b7>
 console.log(crypto.hash('sha1', Buffer.from(base64, 'base64'), 'buffer'));
@@ -4348,7 +4394,7 @@ const string = 'Node.js';
 console.log(crypto.hash('sha1', string));
 
 // 将 base64 编码的字符串编码为 Buffer，对其进行哈希处理，并将
-// 结果作为 buffer 返回。
+// 结果作为 Buffer 返回。
 const base64 = 'Tm9kZS5qcw==';
 // <Buffer 10 b3 49 32 87 f8 31 e8 1a 43 88 11 a1 ff ba 01 f8 ce c4 b7>
 console.log(crypto.hash('sha1', Buffer.from(base64, 'base64'), 'buffer'));
@@ -4380,7 +4426,7 @@ changes:
 
 HKDF 是 RFC 5869 中定义的一种简单密钥派生函数。给定的 `ikm`、`salt` 和 `info` 与 `digest` 一起用于派生 `keylen` 字节的密钥。
 
-提供的 `callback` 函数使用两个参数调用：`err` 和 `derivedKey`。如果派生密钥时发生错误，`err` 将被设置；否则 `err` 将为 `null`。成功生成的 `derivedKey` 将作为 {ArrayBuffer} 传递给回调。如果任何输入参数指定了无效的值或类型，将抛出错误。
+提供的 `callback` 函数接收两个参数：`err` 和 `derivedKey`。如果在派生密钥时发生错误，`err` 将被设置；否则 `err` 将为 `null`。成功生成的 `derivedKey` 将作为 {ArrayBuffer} 传递给回调。如果任何输入参数指定了无效的值或类型，将抛出错误。
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -4604,14 +4650,11 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|URL}
   * `oaepHash` {string} 用于 OAEP 填充和 MGF1 的哈希函数。
     **默认值：** `'sha1'`
-  * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于 OAEP 填充的标签。
-    如果未指定，则不使用标签。
-  * `padding` {crypto.constants} 在
-    `crypto.constants` 中定义的可选填充值，可能是：`crypto.constants.RSA_NO_PADDING`、
-    `crypto.constants.RSA_PKCS1_PADDING` 或
+  * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于 OAEP 填充的标签。如果未指定，则不使用标签。
+  * `padding` {crypto.constants} 在 `crypto.constants` 中定义的可选填充值，可以是：`crypto.constants.RSA_NO_PADDING`、`crypto.constants.RSA_PKCS1_PADDING` 或
     `crypto.constants.RSA_PKCS1_OAEP_PADDING`。
 * `buffer` {string|ArrayBuffer|Buffer|TypedArray|DataView}
 * 返回：{Buffer} 包含解密内容的新 `Buffer`。
@@ -4642,16 +4685,12 @@ changes:
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
-  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
-    PEM 编码的私钥。
-  * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} 私钥的可选
-    口令。
-  * `padding` {crypto.constants} 在
-    `crypto.constants` 中定义的可选填充值，可能是：`crypto.constants.RSA_NO_PADDING` 或
-    `crypto.constants.RSA_PKCS1_PADDING`。
-  * `encoding` {string} 当 `buffer`、`key` 或
-    `passphrase` 为字符串时使用的字符串编码。
+* `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|URL}
+  * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|URL}
+    私钥材料、{KeyObject}，或引用 OpenSSL STORE 加载器对象的 {URL}。
+  * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} 私钥的可选密码短语。
+  * `padding` {crypto.constants} 在 `crypto.constants` 中定义的可选填充值，可以是：`crypto.constants.RSA_NO_PADDING` 或 `crypto.constants.RSA_PKCS1_PADDING`。
+  * `encoding` {string} 当 `buffer`、`key` 或 `passphrase` 为字符串时使用的字符串编码。
 * `buffer` {string|ArrayBuffer|Buffer|TypedArray|DataView}
 * 返回：{Buffer} 包含加密内容的新 `Buffer`。
 
@@ -4765,11 +4804,11 @@ changes:
 * `callback` {Function}
   * `err` {Error}
   * `buf` {Buffer}
-* Returns: {Buffer} 如果未提供 `callback` 函数。
+* 返回：{Buffer} 如果未提供 `callback` 函数。
 
 生成加密强度高的伪随机数据。`size` 参数是一个数字，表示要生成的字节数。
 
-如果提供了 `callback` 函数，则字节会异步生成，并且 `callback` 函数会使用两个参数调用：`err` 和 `buf`。如果发生错误，`err` 将是一个 `Error` 对象；否则它为 `null`。`buf` 参数是一个包含生成字节的 [`Buffer`][].
+如果提供了 `callback` 函数，则字节会异步生成，并且 `callback` 函数会使用两个参数调用：`err` 和 `buf`。如果发生错误，`err` 将是一个 `Error` 对象；否则它为 `null`。`buf` 参数是一个包含生成字节的 [`Buffer`][]。
 
 ```mjs
 // 异步
@@ -5327,7 +5366,7 @@ changes:
 加载并为部分或全部 OpenSSL 函数设置 `engine`（由标志选择）。
 由于自定义引擎支持自 OpenSSL 3 起已弃用，因此此 API 也已弃用。
 
-`engine` 可以是 id 或引擎共享库的路径。
+`engine` 可以是 ID 或引擎共享库的路径。
 
 可选的 `flags` 参数默认使用 `ENGINE_METHOD_ALL`。`flags` 是一个位字段，采用以下标志之一或组合（定义在 `crypto.constants` 中）：
 
@@ -5353,7 +5392,7 @@ added: v10.0.0
 
 在启用 FIPS 的 Node.js 构建中启用符合 FIPS 的加密提供程序。如果 FIPS 模式不可用，则抛出错误。
 
-### sign
+### 签名
 
 <!-- YAML
 added: v12.0.0
@@ -5392,7 +5431,7 @@ changes:
 
 * `algorithm` {string | null | undefined}
 * `data` {ArrayBuffer|Buffer|SharedArrayBuffer|TypedArray|DataView|string}
-* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+* `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|URL}
 * `callback` {Function}
   * `err` {Error}
   * `signature` {Buffer}
@@ -5404,7 +5443,7 @@ changes:
 
 对于 Ed25519、Ed448 和 ML-DSA，`algorithm` 必须是 `null` 或 `undefined`。
 
-如果 `key` 不是 [`KeyObject`][]，此函数的行为就好像 `key` 已传递给 [`crypto.createPrivateKey()`][]。如果它是一个对象，则可以传递以下附加属性：
+如果 `key` 不是 [`KeyObject`][]，此函数的行为就像将 `key` 传递给了 [`crypto.createPrivateKey()`][] 一样。当 `key` 是字符串、`ArrayBuffer`、[`Buffer`][]、`TypedArray` 或 `DataView` 时，它必须包含 PEM 编码的密钥材料。如果它是一个对象，则可以传入以下其他属性：
 
 * `dsaEncoding` {string} 对于 DSA 和 ECDSA，此选项指定生成签名的格式。它可以是以下之一：
   * `'der'`（默认）：DER 编码的 ASN.1 签名结构编码 `(r, s)`。
@@ -5529,9 +5568,10 @@ changes:
 对于 Ed25519、Ed448 和
 ML-DSA，`algorithm` 必须为 `null` 或 `undefined`。
 
-如果 `key` 不是 [`KeyObject`][]，此函数的行为如同 `key` 已
-传递给 [`crypto.createPublicKey()`][]。如果它是一个对象，则可以传递
-以下附加属性：
+如果 `key` 不是 [`KeyObject`][]，此函数的行为就如同将 `key` 传递给了
+[`crypto.createPublicKey()`][]。当 `key` 是字符串、`ArrayBuffer`、
+[`Buffer`][]、`TypedArray` 或 `DataView` 时，其中必须包含 PEM 编码的密钥
+材料。如果它是一个对象，还可以传递以下其他属性：
 
 * `dsaEncoding` {string} 对于 DSA 和 ECDSA，此选项指定
   签名的格式。它可以是以下之一：
@@ -5568,7 +5608,7 @@ added: v15.0.0
 
 类型：{Crypto} Web Crypto API 标准的实现。
 
-详见 [Web Crypto API 文档][].
+详见 [Web Crypto API 文档][]。
 
 ## 注意事项
 
@@ -6122,8 +6162,9 @@ default_properties = fips=yes
 [NIST SP 800-131A]: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-131Ar2.pdf
 [NIST SP 800-132]: https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf
 [NIST SP 800-38D]: https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf
-[OpenSSL 的 FIPS README 文件]: https://github.com/openssl/openssl/blob/openssl-3.0/README-FIPS.md
-[OpenSSL 的 SPKAC 实现]: https://www.openssl.org/docs/man3.0/man1/openssl-spkac.html
+[OpenSSL's FIPS README file]: https://github.com/openssl/openssl/blob/openssl-3.0/README-FIPS.md
+[OpenSSL's SPKAC implementation]: https://www.openssl.org/docs/man3.0/man1/openssl-spkac.html
+[Permission Model]: permissions.md#permission-model
 [RFC 1421]: https://www.rfc-editor.org/rfc/rfc1421.txt
 [RFC 2409]: https://www.rfc-editor.org/rfc/rfc2409.txt
 [RFC 2818]: https://www.rfc-editor.org/rfc/rfc2818.txt
@@ -6137,6 +6178,7 @@ default_properties = fips=yes
 [RFC 8032]: https://www.rfc-editor.org/rfc/rfc8032.txt
 [RFC 9562]: https://www.rfc-editor.org/rfc/rfc9562.txt
 [Web Crypto API documentation]: webcrypto.md
+[`--allow-openssl-store`]: cli.md#--allow-openssl-store
 [`BN_is_prime_ex`]: https://www.openssl.org/docs/man1.1.1/man3/BN_is_prime_ex.html
 [`Buffer`]: buffer.md
 [`DH_generate_key()`]: https://www.openssl.org/docs/man3.0/man3/DH_generate_key.html
@@ -6164,6 +6206,7 @@ default_properties = fips=yes
 [`crypto.getCurves()`]: #cryptogetcurves
 [`crypto.getDiffieHellman()`]: #cryptogetdiffiehellmangroupname
 [`crypto.getHashes()`]: #cryptogethashes
+[`crypto.hash()`]: #cryptohashalgorithm-data-options
 [`crypto.privateDecrypt()`]: #cryptoprivatedecryptprivatekey-buffer
 [`crypto.privateEncrypt()`]: #cryptoprivateencryptprivatekey-buffer
 [`crypto.publicDecrypt()`]: #cryptopublicdecryptkey-buffer

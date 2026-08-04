@@ -45,12 +45,13 @@
 新来者提供另一种有意义的参与和贡献方式。
 
 任何对 Node.js 编程以及该项目 GitHub 组织有合理理解，并且
-对该项目有少量贡献（在 issues 或 PR 上发表评论）的人，都可以申请并成为分流者。请在本项目的 README.md 上提交一个 PR，其中包括：i) 请求被加入为分流者，ii) 成为分流者的动机，以及 iii) 同意阅读、理解并遵守本项目的 [行为准则](https://github.com/nodejs/admin/blob/HEAD/CODE_OF_CONDUCT.md)。
+对该项目有少量贡献（在 issues 或 PR 上发表评论）的人，都可以申请并成为
+分流者。请在本项目的 README.md 上提交一个 PR，其中包括：i) 请求被加入为分流者，ii) 成为分流者的动机，以及 iii) 同意阅读、理解并遵守本项目的 [行为准则](https://github.com/nodejs/admin/blob/HEAD/CODE_OF_CONDUCT.md)。
 
 分流角色使其能够执行最常见的分流活动，例如添加标签以及关闭/重新打开/分配 issues。
 有关角色和权限的更多信息，请参见 ["组织拥有的仓库的权限级别"](https://docs.github.com/en/github/setting-up-and-managing-organizations-and-teams/repository-permission-levels-for-an-organization#permission-levels-for-repositories-owned-by-an-organization)。
 
-在对 issues 和 PR 进行分流时：
+在对 issue 和 PR 进行分流时：
 
 * 对他人保持耐心和同理心，尤其是首次贡献者。
 * 对垃圾信息或恶意挑衅者不要有耐心，不要与其互动，直接关闭 issue，并将用户报告到 moderation 仓库。
@@ -58,5 +59,5 @@
 * 理想情况下，issue 只有在已被修复或得到回答时才应关闭（对于 pull request，则是在已合并后）。过早关闭 issue（或 PR）可能会被举报人/作者视为轻视。
   关闭 issue/PR 时务必尽量说明原因。
 
-[Node.js help repository]: https://github.com/nodejs/help/issues
-[Technical Steering Committee (TSC) repository]: https://github.com/nodejs/TSC/issues
+[Node.js 帮助仓库]: https://github.com/nodejs/help/issues
+[技术指导委员会（TSC）仓库]: https://github.com/nodejs/TSC/issues

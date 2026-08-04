@@ -214,8 +214,7 @@ TSC 成员以及其他协作者提出的修改。在合并到代码库之前，�
   `npm install && npm test`。这对于检查某项变更是否会导致生态系统出现破坏非常有用。
 
 * [`node-stress-single-test`](https://ci.nodejs.org/job/node-stress-single-test/)
-  can run a group of tests over and over on a specific platform. Use it to check
-  that the tests are reliable (i.e. not flaky).
+  可以在特定平台上反复运行一组测试。使用它来检查测试是否可靠（即不会不稳定）。
 
 * [`node-test-commit-v8-linux`](https://ci.nodejs.org/job/node-test-commit-v8-linux/)
   运行标准 V8 测试。当在 Node.js 中更新 V8 或在 V8 上应用新的补丁时，请运行它。
@@ -322,9 +321,10 @@ API。任何未被文档化的对象、属性、方法、参数、行为或事�
 
 对引入新核心模块的提交要格外小心处理。
 
-新增模块只能使用 `node:` 前缀来添加。
+新模块只能使用 `node:` 前缀添加，并作为 `semver-minor` 变更。
 
-在为现有 API 添加 Promise 时，请添加 `/promises`（例如 `inspector/promises` 等）。在新增上应用 `semver-major` 标签。
+在添加“子模块”时，例如现有 API 的 promise 变体（如
+`node:inspector/promises`），如果该子模块无需 `node:` 前缀即可使用，那么可以通过运行时标志使其无需前缀即可使用，或者将其作为 `semver-major` 变更。
 
 如果新的模块名称在 npm 中可用，尽快在模块注册表中注册一个占位符（placeholder）。在该占位符的 `README` 中链接指向引入该新核心模块的拉取请求。
 
@@ -407,17 +407,18 @@ Node.js 使用三种 [弃用（Deprecation）][] 级别。对于所有被弃用�
 
 当需要时，TSC 将作为最终仲裁者。
 
-## 合并到主分支的拉取请求（Landing pull requests）
+## 合并到主分支的拉取请求
 
 1. 避免将由他人作为负责人（assignee）的拉取请求合并到主分支。希望合并自己拉取请求的作者会自行指定为负责人。有时，作者会把任务委托给他人。如有疑问，请询问负责人是否可以合并。
 2. 永远不要使用 GitHub 的绿色按钮 ["Merge pull request"][]。不使用网页界面按钮的原因：
-   * “Create a merge commit（创建合并提交）”方法会添加一个不必要的合并提交。
-   * “Squash and merge（压缩并合并）”方法会把元数据（拉取请求 #）加入到提交标题中。如果不止一位作者为该拉取请求做出了贡献，压缩只会保留一位作者。
-   * “Rebase and merge（变基并合并）”方法无法向提交添加元数据。
+   * “创建合并提交（Create a merge commit）”方法会添加一个不必要的合并提交。
+   * “压缩并合并（Squash and merge）”方法会把元数据（拉取请求 #）加入到提交标题中。如果不止一位作者为该拉取请求做出了贡献，压缩只会保留一位作者。
+   * “变基并合并（Rebase and merge）”方法无法向提交添加元数据。
 3. 确保 CI 已完成且为绿色。如果 CI 不是绿色，请检查是否存在不可靠的测试和基础设施故障。如果在 [node][unreliable tests] 或
    [build](https://github.com/nodejs/build/issues) 仓库中没有对应的问题，请打开新问题。任何人向该拉取请求推送新代码时，都要运行新的 CI。
-4. 检查提交信息是否符合 [commit message guidelines][]。
-5. 在合并到主分支之前，将所有必要的 [metadata][git-node-metadata] 添加到提交信息中。如果你不确定如何正确格式化提交信息，请以提交日志作为参考。参见 [此提交][commit-example] 作为示例。
+4. 检查提交信息是否符合 [提交信息指南][commit message guidelines]。
+5. 在合并到主分支之前，将所有必要的 [元数据][git-node-metadata] 添加到提交信息中。如果你不确定如何正确格式化提交信息，请以提交日志作为参考。参见
+   [此提交][commit-example] 作为示例。
 
 对于来自首次贡献者的拉取请求，要
 [欢迎他们](#welcoming-first-time-contributors)。另外，也要确认他们的 git 设置符合他们的偏好。
@@ -426,14 +427,14 @@ Node.js 使用三种 [弃用（Deprecation）][] 级别。对于所有被弃用�
 
 所有提交都应当是自包含的（self-contained），也就是说每个提交都必须通过所有测试。这在排查引入了破坏性变更（breaking change）时进行二分定位（bisect）会容易得多。
 
-### 使用 commit queue 的 GitHub 标签
+### 使用提交队列的 GitHub 标签
 
-参见 [commit queue 指南][commit-queue.md]。
+参见 [提交队列指南][commit-queue.md]。
 
 ### 使用 `git-node`
 
-在大多数情况下，使用来自 [`@node-core/utils`][] 的 [`git-node` 命令][git-node] 就足以合并一个拉取请求。如果你在使用此工具时发现问题，请提交一个 issue
-到 [issue 跟踪器][node-core-utils-issues]。
+在大多数情况下，使用来自 [`@node-core/utils`][] 的 [`git-node 命令][git-node] 就足以合并一个拉取请求。如果你在使用此工具时发现问题，请提交一个 issue
+到 [问题跟踪器][node-core-utils-issues]。
 
 快速示例：
 
@@ -516,23 +517,23 @@ pick 8120c4c add test for feature A
 pick 51759dc crypto: feature B
 pick 7d6f433 test for feature B
 
-# Rebase f9456a2..7d6f433 onto f9456a2
+# 将 f9456a2..7d6f433 变基到 f9456a2 之上
 #
-# Commands:
-#  p, pick = use commit
-#  r, reword = use commit, but edit the commit message
-#  e, edit = use commit, but stop for amending
-#  s, squash = use commit, but meld into previous commit
-#  f, fixup = like "squash", but discard this commit's log message
-#  x, exec = run command (the rest of the line) using shell
+# 命令：
+#  p, pick = 使用提交
+#  r, reword = 使用提交，但编辑提交信息
+#  e, edit = 使用提交，但在修改时暂停
+#  s, squash = 使用提交，但与前一个提交合并
+#  f, fixup = 类似于 "squash"，但丢弃该提交的日志信息
+#  x, exec = 使用 shell 运行命令（该行的其余部分）
 #
-# These lines can be re-ordered; they are executed from top to bottom.
+# 这些行可以重新排序；它们会从上到下执行。
 #
-# If you remove a line here THAT COMMIT WILL BE LOST.
+# 如果删除此处的一行，该提交将会丢失。
 #
-# However, if you remove everything, the rebase will be aborted.
+# 但是，如果删除所有内容，变基将会中止。
 #
-# Note that empty commits are commented out
+# 注意，空提交会被注释掉
 ```
 
 把几个 `pick` 替换为 `fixup`，以便把它们压缩到之前的提交中：
@@ -555,7 +556,7 @@ fixup 7d6f433 test for feature B
 
 保存文件并关闭编辑器。系统提示你为该提交输入新的提交信息时，这是一个修复提交信息的机会。
 
-* 提交信息文本必须符合 [commit message guidelines][]。
+* 提交信息文本必须符合 [提交信息指南][commit message guidelines]。
 * <a name="metadata"></a>修改原始提交信息以包含元数据。（[`git node metadata`][git-node-metadata] 命令可以为你生成所需的元数据）。
 
   * 必填：`PR-URL:` 一行，引用该拉取请求的完整 GitHub URL。这使得可以很容易地追溯某次提交回到导致该改动的讨论。
@@ -588,7 +589,7 @@ git push upstream main
 
 </details>
 
-### 故障排查（Troubleshooting）
+### 故障排查
 
 有时，当你运行 `git push upstream main` 时，可能会看到类似下面的错误信息：
 
@@ -616,7 +617,7 @@ git push upstream main
 * 使用 `git` 时，可以通过强制推送远程代码树来覆盖（`git push -f`）。一般来说这是被禁止的，因为它会造成其他人分叉（fork）中的冲突。对于更简单的疏忽，比如提交信息中的拼写错误，这是可以接受的。你只能在最初推送后的 10 分钟内，强制推送到任意 Node.js 分支。如果其他人也推送到了该分支，或超过了 10 分钟的时间，那么请将该提交视为最终状态。
   * 使用 `--force-with-lease` 来降低覆盖他人改动的风险。
 
-### 长期支持（Long Term Support）
+### 长期支持
 
 #### 什么是 LTS？
 
@@ -633,7 +634,7 @@ git push upstream main
 
 #### 我该如何帮助？
 
-当你提交拉取请求时，请说明你的改动是否具有破坏性（breaking）。另外也请说明你认为你的补丁是否适合作为 backporting（回填）候选。有关 backporting 的更多信息，请参见 [backporting guide][]。
+当你提交拉取请求时，请说明你的改动是否具有破坏性（breaking）。另外也请说明你认为你的补丁是否适合作为 backporting（回填）候选。有关 backporting 的更多信息，请参见 [回填指南][backporting guide]。
 
 与 LTS 相关的标签有几种：
 

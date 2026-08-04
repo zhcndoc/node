@@ -131,10 +131,10 @@ changes:
       - v16.7.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/39610
-    description: "The `options` object now accepts a `tries` option."
+    description: "`options` 对象现在接受 `tries` 选项。"
   - version: v12.18.3
     pr-url: https://github.com/nodejs/node/pull/33472
-    description: "The constructor now accepts an `options` object.The single supported option is `timeout`."
+    description: "构造函数现在接受 `options` 对象。唯一支持的选项是 `timeout`。"
 -->
 
 创建一个新的解析器。
@@ -197,22 +197,22 @@ changes:
     - v22.1.0
     - v20.13.0
     pr-url: https://github.com/nodejs/node/pull/52492
-    description: "The `verbatim` option is now deprecated in favor of the new `order` option."
+    description: "`verbatim` 选项现已弃用，建议改用新的 `order` 选项。"
   - version: v18.4.0
     pr-url: https://github.com/nodejs/node/pull/43054
-    description: "For compatibility with `node:net`, when passing an option object the `family` option can be the string `'IPv4'` or the string `'IPv6'`."
+    description: "为了与 `node:net` 兼容，传入选项对象时，`family` 选项可以是字符串 `'IPv4'` 或字符串 `'IPv6'`。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "Passing an invalid callback to the `callback` argument now throws `ERR_INVALID_ARG_TYPE` instead of `ERR_INVALID_CALLBACK`."
+    description: "向 `callback` 参数传入无效回调函数时，现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
   - version: v17.0.0
     pr-url: https://github.com/nodejs/node/pull/39987
-    description: "The `verbatim` options defaults to `true` now."
+    description: "`verbatim` 选项现在默认为 `true`。"
   - version: v8.5.0
     pr-url: https://github.com/nodejs/node/pull/14731
-    description: "The `verbatim` option is supported now."
+    description: "现已支持 `verbatim` 选项。"
   - version: v1.2.0
     pr-url: https://github.com/nodejs/node/pull/744
-    description: "The `all` option is supported now."
+    description: "现已支持 `all` 选项。"
 -->
 
 * `hostname` {string}
@@ -286,7 +286,7 @@ changes:
      - v13.13.0
      - v12.17.0
     pr-url: https://github.com/nodejs/node/pull/32183
-    description: "Added support for the `dns.ALL` flag."
+    description: "新增对 `dns.ALL` 标志的支持。"
 -->
 
 以下标志可以作为提示传递给 [`dns.lookup()`][]。
@@ -696,7 +696,7 @@ added:
 <!--lint enable no-undefined-references list-item-bullet-indent-->
 
 使用 DNS 协议解析 `hostname` 的证书关联（`TLSA` 记录）。传递给 `callback` 函数的 `records` 参数是一个
-具有这些属性的对象数组：
+具有以下属性的对象数组：
 
 * `certUsage`
 * `selector`
@@ -736,6 +736,10 @@ changes:
 
 <!-- YAML
 added: v0.1.16
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64268
+    description: 反向查询不再查阅 hosts 文件。
 -->
 
 * `ip` {string}
@@ -956,30 +960,28 @@ changes:
 
 * `hostname` {string}
 * `options` {integer | Object}
-  * `family` {integer} 记录家族。必须是 `4`、`6` 或 `0`。值
-    `0` 表示返回 IPv4 或 IPv6 地址。如果将值
-    `0` 与 `{ all: true }` 一起使用（见下文），则根据系统的 DNS
-    解析器，返回 IPv4 和 IPv6 地址中的一个或两者。**默认值：** `0`。
-  * `hints` {number} 一个或多个 [支持的 `getaddrinfo` 标志][]。可以通过按位 `OR` 它们的值来传递多个
-    标志。
-  * `all` {boolean} 为 `true` 时，`Promise` 解析为包含所有地址的
-    数组。否则，返回单个地址。**默认值：** `false`。
-  * `order` {string} 为 `verbatim` 时，`Promise` 解析为 DNS 解析器返回顺序的 IPv4 和
-    IPv6 地址。为 `ipv4first` 时，
-    IPv4 地址放在 IPv6 地址之前。为 `ipv6first` 时，
-    IPv6 地址放在 IPv4 地址之前。
-    **默认值：** `verbatim`（地址不重新排序）。
-    默认值可使用 [`dns.setDefaultResultOrder()`][] 或
-    [`--dns-result-order`][] 配置。新代码应使用 `{ order: 'verbatim' }`。
-  * `verbatim` {boolean} 为 `true` 时，`Promise` 解析为 DNS 解析器返回顺序的 IPv4 和
-    IPv6 地址。为 `false` 时，
-    IPv4 地址放在 IPv6 地址之前。
-    此选项将被弃用，推荐使用 `order`。当两者都指定时，
-    `order` 具有更高优先级。新代码应仅使用 `order`。
-    **默认值：** 当前为 `false`（地址重新排序），但预计
-    在不久的将来会更改。默认值可
-    使用 [`dns.setDefaultResultOrder()`][] 或
-    [`--dns-result-order`][] 配置。
+  * `family` {integer} 记录族。必须是 `4`、`6` 或 `0`。值
+    `0` 表示返回 IPv4 或 IPv6 地址中的任意一种。如果值
+    `0` 与 `{ all: true }`（见下文）一起使用，则根据系统的 DNS
+    解析器，返回 IPv4 和 IPv6 地址中的一种或两种。**默认值：** `0`。
+  * `hints` {number} 一个或多个[受支持的 `getaddrinfo` 标志][]
+    。可以通过按位 `OR` 运算这些标志的值来传递多个标志。
+  * `all` {boolean} 当为 `true` 时，`Promise` 将解析为数组中的所有地址。
+    否则，返回单个地址。**默认值：** `false`。
+  * `order` {string} 当为 `verbatim` 时，`Promise` 将按照 DNS 解析器返回
+    IPv4 和 IPv6 地址的顺序进行解析。当为 `ipv4first` 时，IPv4 地址
+    会排在 IPv6 地址之前。当为 `ipv6first` 时，IPv6 地址会排在 IPv4
+    地址之前。
+    **默认值：** `verbatim`（地址不会重新排序）。
+    默认值可通过 [`dns.setDefaultResultOrder()`][] 或
+    [`--dns-result-order`][] 进行配置。新代码应使用 `{ order: 'verbatim' }`。
+  * `verbatim` {boolean} 当为 `true` 时，`Promise` 将按照 DNS 解析器返回
+    IPv4 和 IPv6 地址的顺序进行解析。当为 `false` 时，IPv4 地址会排在
+    IPv6 地址之前。
+    此选项将被弃用，改用 `order`。同时指定两者时，`order` 的优先级更高。
+    新代码应仅使用 `order`。
+    **默认值：** `true`（地址不会重新排序）。默认值可通过
+    [`dns.setDefaultResultOrder()`][] 或 [`--dns-result-order`][] 进行配置。
 
 将主机名（例如 `'nodejs.org'）解析为找到的第一个 A (IPv4) 或
 AAAA (IPv6) 记录。所有 `option` 属性都是可选的。如果 `options` 是
@@ -998,7 +1000,7 @@ AAAA (IPv6) 记录。所有 `option` 属性都是可选的。如果 `options` �
 协议有任何关系。实现使用操作系统设施，可以
 将名称与地址关联，反之亦然。此实现可能对任何 Node.js 程序的行为产生
 微妙但重要的后果。在使用 `dnsPromises.lookup()` 之前，
-请花些时间咨询 [实现注意事项部分][]。
+请花些时间咨询[实现注意事项部分][]。
 
 示例用法：
 
@@ -1214,7 +1216,7 @@ added: v10.6.0
 
 使用 DNS 协议解析 `hostname` 的 `CNAME` 记录。成功时，
 `Promise` 解析为可用于
-`hostname` 的规范名称记录数组（例如 `['bar.example.com']`）。
+`hostname` 的规范名称记录数组（例如 `['bar.example.com']`)。
 
 ### `dnsPromises.resolveMx(hostname)`
 
@@ -1226,7 +1228,7 @@ added: v10.6.0
 
 使用 DNS 协议解析 `hostname` 的邮件交换记录（`MX` 记录）。成功时，`Promise` 解析为一个对象
 数组，每个对象都包含 `priority` 和 `exchange` 属性（例如
-`[{priority: 10, exchange: 'mx.example.com'}, ...]`）。
+`[{priority: 10, exchange: 'mx.example.com'}, ...]`)。
 
 ### `dnsPromises.resolveNaptr(hostname)`
 
@@ -1268,7 +1270,7 @@ added: v10.6.0
 
 使用 DNS 协议解析 `hostname` 的名称服务器记录（`NS` 记录）。成功时，`Promise` 解析为可用于 `hostname` 的名称服务器
 记录数组（例如
-`['ns1.example.com', 'ns2.example.com']`）。
+`['ns1.example.com', 'ns2.example.com']`)。
 
 ### `dnsPromises.resolvePtr(hostname)`
 
@@ -1440,9 +1442,7 @@ added: v10.6.0
 
 * `servers` {string\[]} [RFC 5952][] 格式的地址数组
 
-设置执行 DNS
-解析时要使用的服务器的 IP 地址和端口。`servers` 参数是一个 [RFC 5952][] 格式
-的地址数组。如果端口是 IANA 默认 DNS 端口 (53)，则可以省略。
+设置执行 DNS 解析时要使用的服务器的 IP 地址和端口。`servers` 参数是一个 [RFC 5952][] 格式的地址数组。如果端口是 IANA 默认 DNS 端口 (53)，则可以省略。
 
 ```js
 dnsPromises.setServers([
@@ -1563,4 +1563,4 @@ DNS 查询进行时不得调用 `dnsPromises.setServers()` 方法。
 [`socket.connect()`]: net.md#socketconnectoptions-connectlistener
 [`util.promisify()`]: util.md#utilpromisifyoriginal
 [支持的 getaddrinfo 标志]: #supported-getaddrinfo-flags
-[工作线程]: worker_threads.md
+[工作线程]: worker_threads.md】【。

@@ -20,7 +20,7 @@ changes:
 
 ## 概述
 
-[WHATWG 流标准][]（或“web 流”）定义了一个用于处理流式数据的 API。它类似于 Node.js [流][] API，但出现得较晚，并已成为许多 JavaScript 环境中流式数据的“标准”API。
+[WHATWG 流标准][]（或“Web 流”）定义了一个用于处理流式数据的 API。它类似于 Node.js [流][] API，但出现得较晚，并已成为许多 JavaScript 环境中流式数据的“标准” API。
 
 主要有三种类型的对象：
 
@@ -88,7 +88,7 @@ const stream = new ReadableStream({
 
 ### Node.js 流互操作性
 
-Node.js 流可以通过 [`stream.Readable`][]、[`stream.Writable`][] 和 [`stream.Duplex`][] 对象上存在的 `toWeb` 和 `fromWeb` 方法转换为 web 流，反之亦然。
+Node.js 流可以通过 [`stream.Readable`][]、[`stream.Writable`][] 和 [`stream.Duplex`][] 对象上存在的 `toWeb` 和 `fromWeb` 方法转换为 Web 流，反之亦然。
 
 有关更多详细信息，请参阅相关文档：
 
@@ -97,14 +97,16 @@ Node.js 流可以通过 [`stream.Readable`][]、[`stream.Writable`][] 和 [`stre
 * [`stream.Writable.toWeb`][]
 * [`stream.Writable.fromWeb`][]
 * [`stream.Duplex.toWeb`][]
-* [`stream.Duplex.fromWeb`][]
+* [`stream.Duplex.fromWeb`][]。
 
 ## API
 
 ### `ReadableStreamTee(stream[, cloneForBranch2])`
 
 <!-- YAML
-added: v26.5.0
+added:
+ - v26.5.0
+ - v24.19.0
 -->
 
 > 稳定性：1 - 实验性
@@ -908,7 +910,7 @@ added: v16.5.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/42225
-    description: This class is now exposed on the global object.
+    description: 此类现在已在全局对象上公开。
 -->
 
 #### `new WritableStreamDefaultWriter(stream)`

@@ -264,7 +264,7 @@ added: v8.4.0
 added: v8.4.0
 -->
 
-* `settings` {HTTP/2 设置对象} 收到的 `SETTINGS` 帧的副本。
+* `settings` {HTTP/2 Settings Object} 收到的 `SETTINGS` 帧的副本。
 
 当收到确认 `SETTINGS` 帧时，会发出 `'localSettings'` 事件。
 
@@ -294,7 +294,7 @@ added: v10.12.0
 added: v8.4.0
 -->
 
-* `settings` {HTTP/2 设置对象} 收到的 `SETTINGS` 帧的副本。
+* `settings` {HTTP/2 Settings Object} 收到的 `SETTINGS` 帧的副本。
 
 当从连接的对等方收到新的 `SETTINGS` 帧时，会发出 `'remoteSettings'` 事件。
 
@@ -311,9 +311,9 @@ added: v8.4.0
 -->
 
 * `stream` {Http2Stream} 流的引用
-* `headers` {HTTP/2 头对象} 描述头的对象
+* `headers` {HTTP/2 Headers Object} 描述头的对象
 * `flags` {number} 关联的数字标志
-* `rawHeaders` {HTTP/2 原始头} 包含原始头的数组
+* `rawHeaders` {HTTP/2 Raw Headers} 包含原始头的数组
 
 当创建新的 `Http2Stream` 时，会发出 `'stream'` 事件。
 
@@ -471,7 +471,7 @@ added: v9.4.0
 * `lastStreamID` {number} 最后处理的 `Http2Stream` 的数字 ID
 * `opaqueData` {Buffer|TypedArray|DataView} 包含要在 `GOAWAY` 帧中携带的额外数据的 `TypedArray` 或 `DataView` 实例。
 
-向连接的对等方传输 `GOAWAY` 帧，_without_ 关闭 `Http2Session`。
+向连接的对等方传输 `GOAWAY` 帧，_而不_ 关闭 `Http2Session`。
 
 #### `http2session.localSettings`
 
@@ -479,9 +479,9 @@ added: v9.4.0
 added: v8.4.0
 -->
 
-* 类型：{HTTP/2 设置对象}
+* 类型：{HTTP/2 Settings Object}
 
-一个无原型的对象，描述此 `Http2Session` 的当前本地设置。本地设置是 _this_ `Http2Session` 实例本地的。
+一个无原型的对象，描述此 `Http2Session` 的当前本地设置。本地设置是 _此_ `Http2Session` 实例本地的。
 
 #### `http2session.originSet`
 
@@ -552,9 +552,9 @@ added: v9.4.0
 added: v8.4.0
 -->
 
-* 类型：{HTTP/2 设置对象}
+* 类型：{HTTP/2 Settings Object}
 
-一个无原型的对象，描述此 `Http2Session` 的当前远程设置。远程设置由 _connected_ HTTP/2 对等方设置。
+一个无原型的对象，描述此 `Http2Session` 的当前远程设置。远程设置由_已连接的_ HTTP/2 对等方设置。
 
 #### `http2session.setLocalWindowSize(windowSize)`
 
@@ -614,15 +614,20 @@ changes:
 
 <!-- YAML
 added: v8.4.0
+changes:
+  - version: v26.6.0
+    pr-url: https://github.com/nodejs/node/pull/64427
+    description: 调用 `destroy` 不再抛出异常，而是销毁
+                 `Http2Session`。
 -->
 
 * 类型：{net.Socket|tls.TLSSocket}
 
 返回一个 `Proxy` 对象，充当 `net.Socket`（或 `tls.TLSSocket`），但将可用方法限制为与 HTTP/2 一起使用安全的方法。
 
-`destroy`、`emit`、`end`、`pause`、`read`、`resume` 和 `write` 将抛出代码为 `ERR_HTTP2_NO_SOCKET_MANIPULATION` 的错误。有关更多信息，请参阅 [`Http2Session` 和套接字][]。
+`emit`、`end`、`pause`、`read`、`resume` 和 `write` 将抛出错误，错误代码为 `ERR_HTTP2_NO_SOCKET_MANIPULATION`。有关更多信息，请参阅 [`Http2Session` 和套接字][]。
 
-`setTimeout` 方法将在此 `Http2Session` 上调用。
+`destroy`、`setTimeout`、`ref` 和 `unref` 方法将在此 `Http2Session` 上调用。
 
 所有其他交互将直接路由到套接字。
 
@@ -657,17 +662,17 @@ changes:
     description: "向 callback 参数传递无效的回调现在抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
 -->
 
-* `settings` {HTTP/2 设置对象}
+* `settings` {HTTP/2 Settings Object}
 * `callback` {Function} 会话连接后或如果会话已连接则立即调用的回调。
   * `err` {Error|null}
-  * `settings` {HTTP/2 设置对象} 更新的 `settings` 对象。
+  * `settings` {HTTP/2 Settings Object} 更新的 `settings` 对象。
   * `duration` {integer}
 
 更新此 `Http2Session` 的当前本地设置，并向连接的 HTTP/2 对等方发送新的 `SETTINGS` 帧。
 
 一旦调用，当会话等待远程对等方确认新设置时，`http2session.pendingSettingsAck` 属性将为 `true`。
 
-新设置直到收到 `SETTINGS` 确认并发出 `'localSettings'` 事件后才生效。在确认仍在 pending 时，可以发送多个 `SETTINGS` 帧。
+新设置直到收到 `SETTINGS` 确认并发出 `'localSettings'` 事件后才生效。在确认仍处于等待状态时，可以发送多个 `SETTINGS` 帧。
 
 #### `http2session.type`
 
@@ -794,7 +799,7 @@ server.on('session', (session) => {
 
 当字符串作为 `origin` 传递时，它将被解析为 URL 并派生源。例如，HTTP URL `'https://example.org/foo/bar'` 的源是 ASCII 字符串 `'https://example.org'`。如果给定字符串无法解析为 URL 或无法派生有效源，将抛出错误。
 
-`URL` 对象或任何具有 `origin` 属性的对象都可以作为 `origin` 传递，在这种情况下，将使用 `origin` 属性的值。`origin` 属性的值 _must_ 是正确序列化的 ASCII 源。
+`URL` 对象或任何具有 `origin` 属性的对象都可以作为 `origin` 传递，在这种情况下，将使用 `origin` 属性的值。`origin` 属性的值 _必须_ 是正确序列化的 ASCII 源。
 
 或者，在使用 `http2.createSecureServer()` 方法创建新的 HTTP/2 服务器时，可以使用 `origins` 选项：
 
@@ -917,7 +922,7 @@ changes:
     description: 允许以原始数组格式传递头。
 -->
 
-* `headers` {HTTP/2 头对象|HTTP/2 原始头}
+* `headers` {Object|Array}
 
 * `options` {Object}
   * `endStream` {boolean} 如果 `Http2Stream` _可写_ 端应最初关闭，则为 `true`，例如发送不应期望负载主体的 `GET` 请求时。
@@ -1254,7 +1259,7 @@ added: v8.4.0
 added: v9.5.0
 -->
 
-* 类型：{HTTP/2 头对象}
+* 类型：{HTTP/2 Headers Object}
 
 包含为此 `Http2Stream` 发送的出站头的对象。
 
@@ -1264,7 +1269,7 @@ added: v9.5.0
 added: v9.5.0
 -->
 
-* 类型：{HTTP/2 头对象\[]}
+* 类型：{Object[]}
 
 包含为此 `Http2Stream` 发送的出站信息（额外）头的对象数组。
 
@@ -1274,7 +1279,7 @@ added: v9.5.0
 added: v9.5.0
 -->
 
-* 类型：{HTTP/2 头对象}
+* 类型：{HTTP/2 Headers Object}
 
 包含为此 `HttpStream` 发送的出站尾随头的对象。
 
@@ -1357,7 +1362,7 @@ changes:
 added: v10.0.0
 -->
 
-* `headers` {HTTP/2 头对象}
+* `headers` {HTTP/2 Headers Object}
 
 向连接的 HTTP/2 对等方发送尾随头帧。此方法将导致 `Http2Stream` 立即关闭，并且必须仅在发出 `'wantTrailers'` 事件后调用。发送请求或发送响应时，必须设置 `options.waitForTrailers` 选项，以便在最终 `DATA` 帧后保持 `Http2Stream` 打开，以便可以发送尾随头。
 
@@ -1411,9 +1416,9 @@ added: v8.5.0
 added: v8.4.0
 -->
 
-* `headers` {HTTP/2 头对象}
+* `headers` {HTTP/2 Headers Object}
 * `flags` {number}
-* `rawHeaders` {HTTP/2 原始头}
+* `rawHeaders` {HTTP/2 Raw Headers}
 
 当收到流的额外头块时，会发出 `'headers'` 事件，例如收到 `1xx` 信息头块时。监听器回调被传递 [HTTP/2 头对象][]、与头关联的标志以及原始格式的头（请参阅 [HTTP/2 原始头][]）。
 
@@ -1429,11 +1434,11 @@ stream.on('headers', (headers, flags) => {
 added: v8.4.0
 -->
 
-* `headers` {HTTP/2 头对象}
+* `headers` {HTTP/2 Headers Object}
 * `flags` {number}
-* `rawHeaders` {HTTP/2 原始头部}
+* `rawHeaders` {HTTP/2 Raw Headers}
 
-当收到 Server Push 流的响应头时，会触发 `'push'` 事件。监听器回调会接收 [HTTP/2 Headers Object][]、与这些头部相关联的标志，以及原始格式的头部（请参见 [HTTP/2 Raw Headers][]）。
+当收到服务器推送流的响应头时，会触发 `'push'` 事件。监听器回调会接收 [HTTP/2 头对象][]、与这些头部相关联的标志，以及原始格式的头部（请参见 [HTTP/2 原始头][]）。
 
 ```js
 stream.on('push', (headers, flags) => {
@@ -1452,11 +1457,11 @@ changes:
       如果在响应头到达时未附加 `'response'` 监听器，则响应体现在会被静默丢弃——这与 `lib/http` 客户端行为一致。
 -->
 
-* `headers` {HTTP/2 头对象}
+* `headers` {HTTP/2 Headers Object}
 * `flags` {number}
-* `rawHeaders` {HTTP/2 原始头}
+* `rawHeaders` {HTTP/2 Raw Headers}
 
-当从连接的 HTTP/2 服务器收到此流的响应 `HEADERS` 帧时，会发出 `'response'` 事件。监听器被调用三个参数：一个包含收到的 [HTTP/2 头对象][] 的 `Object`、与头关联的标志以及原始格式的头（请参阅 [HTTP/2 原始头][]）。
+当从连接的 HTTP/2 服务器收到此流的响应 `HEADERS` 帧时，会发出 `'response'` 事件。监听器被调用三个参数：一个包含收到的 [HTTP/2 头对象][] 的对象、与头关联的标志以及原始格式的头（请参阅 [HTTP/2 原始头][]）。
 
 ```mjs
 import { connect } from 'node:http2';
@@ -1497,7 +1502,7 @@ added: v8.4.0
 added: v8.4.0
 -->
 
-* `headers` {HTTP/2 头对象}
+* `headers` {HTTP/2 Headers Object}
 
 向连接的 HTTP/2 对等方发送一个额外的信息性 `HEADERS` 帧。
 
@@ -1533,7 +1538,7 @@ changes:
     description: "向 callback 参数传递无效的回调现在会抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
 -->
 
-* `headers` {HTTP/2 头对象}
+* `headers` {HTTP/2 Headers Object}
 * `options` {Object}
   * `exclusive` {boolean} 当为 `true` 且 `parent` 标识父流时，
     创建的流将成为父流的唯一直接依赖项，
@@ -1543,7 +1548,7 @@ changes:
 * `callback` {Function} 一旦推送流被发起即调用的回调。
   * `err` {Error}
   * `pushStream` {ServerHttp2Stream} 返回的 `pushStream` 对象。
-  * `headers` {HTTP/2 头对象} `pushStream` 发起时使用的头对象。
+  * `headers` {HTTP/2 Headers Object} `pushStream` 发起时使用的头对象。
 
 发起一个推送流。回调被调用时，为推送流创建的新 `Http2Stream`
 实例作为第二个参数传递，或者将 `Error` 作为第一个参数传递。
@@ -1600,7 +1605,7 @@ changes:
     description: 允许显式设置日期头。
 -->
 
-* `headers` {HTTP/2 头对象|HTTP/2 原始头}
+* `headers` {Object|Array}
 * `options` {Object}
   * `endStream` {boolean} 设置为 `true` 以指示响应将不包含
     负载数据。
@@ -1672,7 +1677,7 @@ changes:
 -->
 
 * `fd` {number|FileHandle} 一个可读的文件描述符。
-* `headers` {HTTP/2 头对象}
+* `headers` {HTTP/2 Headers Object}
 * `options` {Object}
   * `statCheck` {Function}
   * `waitForTrailers` {boolean} 当为 `true` 时，`Http2Stream` 将在发送最后一个
@@ -1808,7 +1813,7 @@ changes:
 -->
 
 * `path` {string|Buffer|URL}
-* `headers` {HTTP/2 头对象}
+* `headers` {HTTP/2 Headers Object}
 * `options` {Object}
   * `statCheck` {Function}
   * `onError` {Function} 在发送前发生错误时调用的回调函数。
@@ -2057,9 +2062,9 @@ added: v8.4.0
 -->
 
 * `stream` {Http2Stream} 流的引用
-* `headers` {HTTP/2 头对象} 描述头的对象
+* `headers` {HTTP/2 Headers Object} 描述头的对象
 * `flags` {number} 关联的数字标志
-* `rawHeaders` {HTTP/2 原始头} 包含原始头的数组
+* `rawHeaders` {HTTP/2 Raw Headers} 包含原始头的数组
 
 当与服务器关联的 `Http2Session` 发出 `'stream'` 事件时，
 发出 `'stream'` 事件。
@@ -2134,7 +2139,7 @@ added: v8.4.0
 
 * `callback` {Function}
 
-Stops the server from establishing new sessions and streams.
+停止服务器建立新的会话和流。
 
 如果提供了 `callback`，则直到所有活动会话都已关闭才会调用它，
 尽管服务器已经停止允许新会话。有关更多详细信息，请参阅
@@ -2206,7 +2211,7 @@ added:
   - v14.17.0
 -->
 
-* `settings` {HTTP/2 设置对象}
+* `settings` {HTTP/2 Settings Object}
 
 用于使用提供的设置更新服务器。
 
@@ -2304,9 +2309,9 @@ added: v8.4.0
 -->
 
 * `stream` {Http2Stream} 流的引用
-* `headers` {HTTP/2 头对象} 描述头的对象
+* `headers` {HTTP/2 Headers Object} 描述头的对象
 * `flags` {number} 关联的数字标志
-* `rawHeaders` {HTTP/2 原始头} 包含原始头的数组
+* `rawHeaders` {HTTP/2 Raw Headers} 包含原始头的数组
 
 当与服务器关联的 `Http2Session` 发出 `'stream'` 事件时，
 发出 `'stream'` 事件。
@@ -2370,12 +2375,12 @@ added: v8.4.0
 changes:
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27558
-    description: The default timeout changed from 120s to 0 (no timeout).
+    description: 默认超时从 120 秒更改为 0（无超时）。
 -->
 
-The `'timeout'` event is emitted when there is no activity on the Server for
-a given number of milliseconds set using `http2secureServer.setTimeout()`.
-**Default:** 0 (no timeout)
+当服务器在使用 `http2secureServer.setTimeout()` 设置的指定毫秒数内没有活动时，
+会发出 `'timeout'` 事件。
+**默认值：** 0（无超时）
 
 #### 事件：`'unknownProtocol'`
 
@@ -2413,7 +2418,7 @@ added: v8.4.0
 
 * `callback` {Function}
 
-Stops the server from establishing new sessions and streams.
+停止服务器建立新的会话和流。
 
 如果提供了 `callback`，则直到所有活动会话都已关闭才会调用它，
 尽管服务器已经停止允许新会话。有关更多详细信息，请参阅
@@ -2469,7 +2474,7 @@ added:
   - v14.17.0
 -->
 
-* `settings` {HTTP/2 设置对象}
+* `settings` {HTTP/2 Settings Object}
 
 用于使用提供的设置更新服务器。
 
@@ -2572,7 +2577,7 @@ changes:
     [DEP0202][]。
   * `http1Options` {Object} 用于在 `allowHTTP1` 为 `true` 时配置 HTTP/1
     回退的选项对象。这些选项会传递给
-    underlying HTTP/1 服务器。有关可用选项，请参见 [`http.createServer()`][]。除此之外，还支持以下选项：
+    底层 HTTP/1 服务器。有关可用选项，请参见 [`http.createServer()`][]。除此之外，还支持以下选项：
     * `IncomingMessage` {http.IncomingMessage} 指定用于 HTTP/1 回退的
       `IncomingMessage` 类。
       **默认值：** `http.IncomingMessage`。
@@ -2664,10 +2669,10 @@ changes:
     pr-url: https://github.com/nodejs/node/pull/61713
     description: 添加了 http1Options 选项。
   - version:
-      - v15.10.0
-      - v14.16.0
-      - v12.21.0
-      - v10.24.0
+     - v15.10.0
+     - v14.16.0
+     - v12.21.0
+     - v10.24.0
     pr-url: https://github.com/nodejs-private/node-private/pull/246
     description: 添加了 unknownProtocolTimeout 选项，默认值为 10000。
   - version:
@@ -2755,7 +2760,7 @@ changes:
     到那时 socket 仍未被销毁，服务器将销毁它。
     **默认值：** `10000`。
   * `strictFieldWhitespaceValidation` {boolean} 如果为 `true`，则会启用严格的前导
-    and 针对 HTTP/2 标头字段名称和值的尾随空白验证
+    和针对 HTTP/2 标头字段名称和值的尾随空白验证
     根据 [RFC-9113](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.2.1)。
     **默认值：** `true`。
   * `strictSingleValueFields` {boolean} 如果 `true`，则对被定义为仅有单个值的标头和尾部字段使用严格验证，
@@ -2846,13 +2851,13 @@ changes:
     description: "添加了 `maxSettings` 选项，默认值为 32。"
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/29144
-    description: "`PADDING_STRATEGY_CALLBACK` 已等同于提供`PADDING_STRATEGY_ALIGNED`，并且 `selectPadding`已被移除。"
+    description: "`PADDING_STRATEGY_CALLBACK` 已等同于提供 `PADDING_STRATEGY_ALIGNED`，并且 `selectPadding` 已被移除。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/17105
-    description: "添加了 `maxOutstandingPings` 选项，默认限制为10。"
+    description: "添加了 `maxOutstandingPings` 选项，默认限制为 10。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/16676
-    description: "添加了 `maxHeaderListPairs` 选项，默认限制为128 个头部对。"
+    description: "添加了 `maxHeaderListPairs` 选项，默认限制为 128 个头部对。"
 -->
 
 * `authority` {string|URL} 要连接的远程 HTTP/2 服务器。这必须
@@ -3283,7 +3288,7 @@ proxy.on('stream', (stream, headers) => {
     return;
   }
   const auth = new URL(`tcp://${headers[':authority']}`);
-  // 验证主机名和端口是否是此代理应该连接的内容是一个非常好的主意。
+  // 验证主机名和端口是否为此代理应该连接的目标是一个非常好的主意。
   const socket = connect(auth.port, auth.hostname, () => {
     stream.respond();
     socket.pipe(stream);
@@ -3310,7 +3315,7 @@ proxy.on('stream', (stream, headers) => {
     return;
   }
   const auth = new URL(`tcp://${headers[':authority']}`);
-  // 验证主机名和端口是否是此代理应该连接的内容是一个非常好的主意。
+  // 验证主机名和端口是否为此代理应该连接的目标是一个非常好的主意。
   const socket = net.connect(auth.port, auth.hostname, () => {
     stream.respond();
     socket.pipe(stream);
@@ -3442,7 +3447,7 @@ const server = http2.createServer((req, res) => {
 });
 ```
 
-要创建混合的 [HTTPS][] 和 HTTP/2 服务器，请参阅 [ALPN 协商][] 部分。
+要创建混合的 [HTTPS][] 和 HTTP/2 服务器，请参阅 [ALPN 协商][] 部分。  
 不支持从非 TLS HTTP/1 服务器升级。
 
 HTTP/2 兼容性 API 由 [`Http2ServerRequest`][] 和 [`Http2ServerResponse`][] 组成。它们旨在与 HTTP/1 保持 API 兼容，但它们并不隐藏协议之间的差异。例如，HTTP 代码的状态消息将被忽略。
@@ -3466,7 +3471,7 @@ const server = createSecureServer(
 ).listen(8000);
 
 function onRequest(req, res) {
-  // Detects if it is an HTTPS request or HTTP/2
+  // 检测这是 HTTPS 请求还是 HTTP/2 请求
   const { socket: { alpnProtocol } } = req.httpVersion === '2.0' ?
     req.stream.session : req;
   res.writeHead(200, { 'content-type': 'application/json' });
@@ -3490,7 +3495,7 @@ const server = createSecureServer(
 ).listen(4443);
 
 function onRequest(req, res) {
-  // Detects if it is an HTTPS request or HTTP/2
+  // 检测这是 HTTPS 请求还是 HTTP/2 请求
   const { socket: { alpnProtocol } } = req.httpVersion === '2.0' ?
     req.stream.session : req;
   res.writeHead(200, { 'content-type': 'application/json' });
@@ -3643,7 +3648,7 @@ added: v8.4.0
 added: v8.4.0
 -->
 
-* 类型：{HTTP/2 原始头}
+* 类型：{HTTP/2 Raw Headers}
 
 原始请求/响应头列表，完全按照接收到的样子。
 
@@ -3815,11 +3820,9 @@ added: v8.4.0
 
 此方法将 HTTP 尾部头（消息末尾的头）添加到响应中。
 
-Trailers must be added before calling [`response.end()`][]; trailers added
-afterwards are silently dropped.
+必须在调用 [`response.end()`][] 之前添加尾部头；之后添加的尾部头将被静默丢弃。
 
-Attempting to set a header field name or value that contains invalid characters
-will result in a [`TypeError`][] being thrown.
+尝试设置包含无效字符的头字段名称或值将导致抛出 [`TypeError`][]。
 
 #### `response.appendHeader(name, value)`
 
@@ -3873,7 +3876,7 @@ changes:
     description: "传递给 `callback` 参数的无效回调现在会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
-* `headers` {HTTP/2 头对象} 描述头的对象
+* `headers` {HTTP/2 Headers Object} 描述头的对象
 * `callback` {Function} 一旦 `http2stream.pushStream()` 完成，或者当尝试创建推送的 `Http2Stream` 失败或被拒绝，或者在调用 `http2stream.pushStream()` 方法之前 `Http2ServerRequest` 的状态已关闭时调用
   * `err` {Error}
   * `res` {http2.Http2ServerResponse} 新创建的 Http2ServerResponse 对象
@@ -4264,7 +4267,7 @@ changes:
 
 * `statusCode` {number}
 * `statusMessage` {string}
-* `headers` {HTTP/2 头对象|HTTP/2 原始头}
+* `headers` {Object|Array}
 * 返回：{http2.Http2ServerResponse}
 
 向请求发送响应头。状态码是 3 位 HTTP 状态码，如 `404`。最后一个参数 `headers` 是响应头。

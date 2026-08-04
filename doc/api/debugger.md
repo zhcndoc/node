@@ -204,7 +204,7 @@ debug>
 #### 其他
 
 * `scripts`: 列出所有已加载的脚本
-* `version`: 显示 V8 的版本
+* `version`: 显示 V8 的版本。
 
 ## 探测模式
 
@@ -213,13 +213,22 @@ added:
   - v26.1.0
   - v24.16.0
 changes:
-  - version: v26.4.0
+  - version: v26.6.0
+    pr-url: https://github.com/nodejs/node/pull/64328
+    description: 添加每个探测的 `--cond <expr>` 选项，仅当条件在探测位置为真值时才记录命中。
+  - version:
+     - v26.4.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63704
-    description: 为每个探针新增 `--max-hit <n>` 选项，用于限制已求值命中次数，并在任一探针达到其限制后立即以 `completed` 终止事件结束。
-  - version: v26.3.0
+    description: 添加每个探测的 `--max-hit <n>` 选项，用于限制已求值的命中次数，并在任一探测达到其限制后立即以 `completed` 终止事件结束。
+  - version:
+     - v26.3.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63437
-    description: 添加 inspector 端会话中途失败时的终端 `error` 事件 `probe_failure`，以及用于提供每次命中和终端错误额外上下文的 `error.details`。
-  - version: v26.2.0
+    description: 为检查器端会话中途的失败添加 `probe_failure` 终止 `error` 事件，并添加 `error.details` 以提供每次命中错误和终止错误的额外上下文。
+  - version:
+     - v26.2.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63286
     description: JSON 报告 schema 升级到 v2。Probe `target` 现在是 `{ suffix, line, column? }`，而不是数组。每个 "hit" 事件都携带一个 `location` 字段，报告实际求值位置。当探测未指定列时，它会绑定到该行第一个可执行列，而不是默认绑定到 1。
 -->
@@ -233,28 +242,29 @@ changes:
 探测模式会设置一个或多个源码断点；每当执行到断点时，就会求值指定表达式，并在会话结束时（正常完成、出错或超时）打印一份所有已求值表达式的最终报告。这样开发者就可以进行类似 printf 的调试，而无需修改应用代码并在事后清理。它还支持结构化 JSON 输出，便于工具使用。
 
 ```console
-$ node inspect --probe <file>:<line>[:<col>] --expr <expr> [--max-hit <n>]
-              [--probe <file>:<line>[:<col>] --expr <expr> [--max-hit <n>] ...]
+$ node inspect --probe <file>:<line>[:<col>] --expr <expr> [--cond <expr>] [--max-hit <n>]
+              [--probe <file>:<line>[:<col>] --expr <expr> [--cond <expr>] [--max-hit <n>] ...]
               [--json] [--preview] [--timeout=<ms>] [--port=<port>]
               [--] [<node-option> ...] <script> [<script-args> ...]
 ```
 
-* `--probe <file>:<line>[:<col>]`：探针的源位置。当执行到达该位置时，会对提供的表达式求值，并将结果打印到输出中。`<file>` 与要探测脚本的 URL 后缀匹配。`<line>` 和 `<col>` 的数字从 1 开始计数。当省略 `<col>` 时，探针会绑定到该行上第一个可执行列。
-* `--expr <expr>`：每当执行到达前一个 `--probe` 指定的位置时，要计算的 JavaScript 表达式。
-  必须紧跟在它所属的 `--probe` 之后。
-* `--max-hit <n>`：可选的、针对单个探针的命中次数上限。当未指定时，没有命中限制。当任意探针达到其命中上限时，探测进程将分离并报告结果。被探测的进程将继续运行。如果在会话结束时还有其他探针从未被触发，则会被报告为漏报的探针。
-* `--timeout=<ms>`：整个探针会话的全局墙钟截止时间。默认值为 `30000`。这可用于探测可被外部终止的长时间运行应用程序。
-* `--json`：如果使用，将输出结构化的 JSON 报告，而不是默认的文本报告。
-* `--preview`：如果使用，非原始值将包含对象类 JSON 探针值的 CDP 属性预览。
-* `--port=<port>`：选择探测会话监听的本地 inspector 端口。默认值为 `0`，这会请求一个随机端口。
-* `--` 在子进程需要自己的 Node.js 标志时才是可选的。
+* `--probe <file>:<line>[:<col>]`：探测的源代码位置。当执行到该位置时，会对提供的表达式求值，并将结果打印到输出中。`<file>` 匹配要探测脚本的 URL 后缀。`<line>` 和 `<col>` 的编号从 1 开始。当省略 `<col>` 时，探测会绑定到该行第一个可执行列。
+* `--expr <expr>`：每当执行到前一个 `--probe` 指定的位置时要进行求值的 JavaScript 表达式。必须紧跟在其所属的 `--probe` 后面。
+* `--cond <expr>`：探测位置的可选条件。仅当 `<expr>` 在该位置为真值时，探测才会记录一次命中。抛出异常的条件会被视为 false。
+* `--max-hit <n>`：每个探测可命中的次数上限。当未指定时，不限制命中次数。当任一探测达到其命中上限时，探测进程将分离并报告结果。被探测的进程将继续运行。如果会话结束时其他探测从未被触发，则会将其报告为未命中探测。
+* `--timeout=<ms>`：整个探测会话的全局实际时间截止期限。默认为 `30000`。可用于探测能够被外部终止的长时间运行应用。
+* `--json`：如果使用，则打印结构化 JSON 报告，而不是默认的文本报告。
+* `--preview`：如果使用，则对于类似对象的 JSON 探测值，非原始值将包含 CDP 属性预览。
+* `--port=<port>`：选择探测会话监听的本地检查器端口。默认为 `0`，表示请求一个随机端口。
+* `--` 是可选的，除非子进程需要使用其自身的 Node.js 标志。
 
-关于 `--probe` 和 `--expr` 参数还有以下附加规则：
+关于选项组合的其他规则：
 
-* `--probe <file>:<line>[:<col>]` 和 `--expr <expr>` 是严格成对的。每个 `--probe` 后面必须立即跟着且仅跟着一个 `--expr`。
-* `--max-hit <n>` 是一个可选的、适用于最近一个 `--probe`/`--expr` 成对项的探针级选项。它不能出现在第一个 `--probe` 之前，也不能出现在 `--probe` 与其匹配的 `--expr` 之间，并且每个探针最多只能给出一次。
-* `--timeout`、`--json`、`--preview` 和 `--port` 是作用于整个探针会话的全局探针选项。它们可以出现在探针对之前或之间，但不能出现在 `--probe` 与其匹配的 `--expr` 之间。
-* 如果需要将额外的 Node.js 执行参数传递给子脚本，必须使用 `--` 将探针选项与子脚本的 Node.js 选项分隔开来。
+* `--probe <file>:<line>[:<col>]` 和 `--expr <expr>` 是严格成对的。每个 `--probe` 后面必须紧跟且只能紧跟一个 `--expr`。
+* `--cond <expr>` 和 `--max-hit <n>` 是可选修饰符，必须写在其所适用的 `--probe`/`--expr` 对之后，每对最多使用一次。它们不能出现在第一个 `--probe` 之前，也不能出现在 `--probe` 与其匹配的 `--expr` 之间。
+* `--max-hit` 的作用域限定为它后面的 `--probe`/`--expr` 对，因此共享同一位置的多对选项可以设置不同的限制。`--cond` 的作用域限定为整个位置，共享同一位置的探测必须使用同一个条件（或都不使用条件）。
+* `--timeout`、`--json`、`--preview` 和 `--port` 是针对整个探测会话的全局探测选项。它们可以出现在探测对之前或探测对之间，但不能出现在 `--probe` 与其匹配的 `--expr` 之间。
+* 如果需要向子脚本传递其他 Node.js 执行参数，则必须使用 `--` 将探测选项与子脚本的 Node.js 选项分隔开。
 
 示例：
 
@@ -304,7 +314,7 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
 
 ```json
 {
-  "v": 2, // Probe JSON schema version.
+  "v": 2, // 探测 JSON 模式版本。
   "probes": [
     {
       "expr": "rss", // 与 --probe 配对的表达式。
@@ -316,7 +326,8 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
         "suffix": "cli.js",
         "line": 5
       }
-      // `maxHit` is present only when the probe was given a --max-hit limit.
+      // 仅当探测通过 --cond 表达式指定了条件时才会出现 `condition`。
+      // 仅当探测通过 --max-hit 限制指定了最大命中次数时才会出现 `maxHit`。
     }
   ],
   "results": [
@@ -402,6 +413,9 @@ $ node inspect --json --probe cli.js:5 --expr 'rss' cli.js
 
 当多个 `--probe`/`--expr` 对共享同一个 `--probe` 时，这些表达式会在同一次暂停中按其在命令行中出现的顺序求值。
 
+对于每个位置，最多只能有一个 `--cond`（也可以没有）。
+在同一位置具有冲突条件的多个 `--probe`/`--expr` 对将在启动时被拒绝。
+
 ```js
 // app.js
 const x = { x: 42 };       // 第 2 行
@@ -413,7 +427,7 @@ const z = { ...x, ...y };  // 第 4 行
 $ node inspect --probe app.js:4 --expr 'x' --probe app.js:4 --expr 'y' -- app.js
 ```
 
-打印
+输出
 
 ```text
 在 file:///path/to/app.js:4:1 命中 1 次
@@ -427,7 +441,7 @@ Completed
 $ node inspect --probe app.js:4 --expr 'x' --probe app.js:4 --expr 'y' --json --preview -- app.js
 ```
 
-打印
+输出
 
 ```json
 {"v":2,"probes":[{"expr":"x","target":{"suffix":"app.js","line":4}},{"expr":"y","target":{"suffix":"app.js","line":4}}],"results":[{"probe":0,"event":"hit","hit":1,"location":{"url":"file:///path/to/app.js","line":4,"column":1},"result":{"type":"object","description":"Object","preview":{"type":"object","description":"Object","overflow":false,"properties":[{"name":"x","type":"number","value":"42"}]}}},{"probe":1,"event":"hit","hit":1,"location":{"url":"file:///path/to/app.js","line":4,"column":1},"result":{"type":"object","description":"Object","preview":{"type":"object","description":"Object","overflow":false,"properties":[{"name":"y","type":"number","value":"35"}]}}},{"event":"completed"}]}
@@ -474,6 +488,37 @@ project/
 ```console
 $ node inspect --probe src/utils.js:10 --expr 'x' main.js   # 仅匹配 src/utils.js
 ```
+
+### 探针示例
+
+#### 有条件地探测变量
+
+```js
+// app.js
+let total = 0;
+for (let i = 0; i < 10; i++) {
+  total += i;  // 第 4 行
+}
+```
+
+```console
+$ out/Release/node inspect --probe app.js:4 --expr 'total' \
+                           --cond 'i % 3 === 0' app.js
+```
+
+```text
+在 file:///path/to/app.js:3:3 命中第 1 次
+  total = 0
+在 file:///path/to/app.js:3:3 命中第 2 次
+  total = 3
+在 file:///path/to/app.js:3:3 命中第 3 次
+  total = 15
+在 file:///path/to/app.js:3:3 命中第 4 次
+  total = 36
+已完成
+```
+
+<!-- TODO(joyeecheung)：为不同选项添加更多示例 -->
 
 ## 高级用法
 

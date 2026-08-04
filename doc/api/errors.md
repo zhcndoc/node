@@ -499,17 +499,16 @@ try {
 
 ## 类：`TypeError`
 
-* 扩展 {errors.Error}
+* 继承自 {errors.Error}
 
-表示提供的参数不是允许的类型。例如，
-向一个期望字符串的参数传入函数会导致 `TypeError`。
+表示提供的参数不是允许的类型。例如，向期望字符串的参数传入函数会导致 `TypeError`。
 
 ```js
 require('node:url').parse(() => { });
 // 抛出 TypeError，因为它期望的是一个字符串。
 ```
 
-Node.js 会作为参数校验的一种形式，_立即_ 生成并抛出 `TypeError` 实例。
+Node.js 会将其作为参数校验的一种形式，_立即_ 创建并抛出 `TypeError` 实例。
 
 ## 异常与错误
 
@@ -581,7 +580,7 @@ added: v15.0.0
 
 ### `ERR_ARG_NOT_ITERABLE`
 
-An iterable argument (that is, a value suitable for a `for...of` loop) was required, but was not provided to the Node.js API.
+Node.js API 要求提供一个可迭代参数（即适用于 `for...of` 循环的值），但未提供。
 
 <a id="ERR_ASSERTION"></a>
 
@@ -647,7 +646,7 @@ An iterable argument (that is, a value suitable for a `for...of` loop) was requi
 
 ### `ERR_BUFFER_OUT_OF_BOUNDS`
 
-Attempted to perform an operation outside the bounds of a `Buffer`.
+尝试执行超出 `Buffer` 边界的操作。
 
 <a id="ERR_BUFFER_TOO_LARGE"></a>
 
@@ -655,12 +654,6 @@ Attempted to perform an operation outside the bounds of a `Buffer`.
 
 试图创建大于最大允许
 大小的 `Buffer`。
-
-<a id="ERR_CANNOT_WATCH_SIGINT"></a>
-
-### `ERR_CANNOT_WATCH_SIGINT`
-
-Node.js 无法监视 `SIGINT` 信号。
 
 <a id="ERR_CHILD_CLOSED_BEFORE_REPLY"></a>
 
@@ -742,7 +735,7 @@ added:
   - v22.20.0
 -->
 
-具有给定名称的 CPU 配置文件已启动。
+具有给定名称的 CPU 性能分析已启动。
 
 <a id="ERR_CPU_PROFILE_NOT_STARTED"></a>
 
@@ -754,7 +747,7 @@ added:
   - v22.20.0
 -->
 
-具有给定名称的 CPU 配置文件未启动。
+具有给定名称的 CPU 配置文件尚未启动。
 
 <a id="ERR_CPU_PROFILE_TOO_MANY"></a>
 
@@ -778,9 +771,9 @@ added:
 
 ### `ERR_CRYPTO_CUSTOM_ENGINE_NOT_SUPPORTED`
 
-A OpenSSL engine was requested (for example, via the `clientCertEngine` or
-`privateKeyEngine` TLS options), but the OpenSSL version in use does not
-support it, possibly because of the `OPENSSL_NO_ENGINE` compile-time flag.
+请求使用了 OpenSSL 引擎（例如通过 `clientCertEngine` 或
+`privateKeyEngine` TLS 选项），但正在使用的 OpenSSL 版本不支持该引擎，
+可能是因为编译时启用了 `OPENSSL_NO_ENGINE` 标志。
 
 <a id="ERR_CRYPTO_ECDH_INVALID_FORMAT"></a>
 
@@ -814,7 +807,7 @@ support it, possibly because of the `OPENSSL_NO_ENGINE` compile-time flag.
 
 ### `ERR_CRYPTO_FIPS_UNAVAILABLE`
 
-Attempted to enable or disable FIPS mode, but FIPS mode is unavailable.
+尝试启用或禁用 FIPS 模式，但 FIPS 模式不可用。
 
 <a id="ERR_CRYPTO_HASH_FINALIZED"></a>
 
@@ -879,7 +872,7 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-An invalid elliptic curve was provided.
+提供了无效的椭圆曲线。
 
 <a id="ERR_CRYPTO_INVALID_DIGEST"></a>
 
@@ -961,8 +954,7 @@ added: v15.0.0
 added: v15.0.0
 -->
 
-One or more [`crypto.scrypt()`][] or [`crypto.scryptSync()`][] parameters
-are out of their valid range.
+一个或多个 [`crypto.scrypt()`][] 或 [`crypto.scryptSync()`][] 参数超出其有效范围。
 
 <a id="ERR_CRYPTO_INVALID_STATE"></a>
 
@@ -979,7 +971,7 @@ are out of their valid range.
 added: v15.0.0
 -->
 
-An invalid authentication tag length was provided.
+提供了无效的身份验证标签长度。
 
 <a id="ERR_CRYPTO_JOB_INIT_FAILED"></a>
 
@@ -1057,7 +1049,7 @@ Node.js 编译时未包含 `scrypt` 支持。官方
 
 ### `ERR_CRYPTO_UNKNOWN_CIPHER`
 
-Unknown cipher specified.
+指定了未知的加密算法。
 
 <a id="ERR_CRYPTO_UNKNOWN_DH_GROUP"></a>
 
@@ -1197,7 +1189,7 @@ added: v15.0.0
 
 ### `ERR_EVENT_RECURSION`
 
-Thrown when attempting to recursively dispatch an event on `EventTarget`.
+尝试在 `EventTarget` 上递归分发事件时抛出。
 
 <a id="ERR_EXECUTION_ENVIRONMENT_NOT_AVAILABLE"></a>
 
@@ -1251,7 +1243,7 @@ added: v14.0.0
 added: v16.7.0
 -->
 
-Attempted to copy a directory to a non-directory using [`fs.cp()`][] (such as a file, symbolic link, etc.).
+尝试使用 [`fs.cp()`][] 将目录复制到非目录对象（例如文件、符号链接等）。
 
 <a id="ERR_FS_CP_EEXIST"></a>
 
@@ -1282,7 +1274,7 @@ added: v16.7.0
 added: v16.7.0
 -->
 
-Attempted to use [`fs.cp()`][] to copy a named pipe.
+尝试使用 [`fs.cp()`][] 复制命名管道。
 
 <a id="ERR_FS_CP_NON_DIR_TO_DIR"></a>
 
@@ -1323,7 +1315,7 @@ added: v16.7.0
 added: v16.7.0
 -->
 
-Attempted to use [`fs.cp()`][] to copy to an unknown file type.
+尝试使用 [`fs.cp()`][] 复制到未知文件类型。
 
 <a id="ERR_FS_EISDIR"></a>
 
@@ -1373,7 +1365,7 @@ HTTP/2 ALTSVC 帧限制为最大 16,382 有效载荷字节。
 
 ### `ERR_HTTP2_CONNECT_SCHEME`
 
-对于使用 `CONNECT` 方法的 HTTP/2 请求，禁止 `:scheme` 伪头。
+对于使用 `CONNECT` 方法的 HTTP/2 请求，禁止使用 `:scheme` 伪头。
 
 <a id="ERR_HTTP2_ERROR"></a>
 
@@ -1392,7 +1384,7 @@ HTTP/2 ALTSVC 帧限制为最大 16,382 有效载荷字节。
 
 ### `ERR_HTTP2_HEADERS_AFTER_RESPOND`
 
-在启动 HTTP/2 响应后指定了额外的头。
+在 HTTP/2 响应启动后指定了其他标头。
 
 <a id="ERR_HTTP2_HEADERS_SENT"></a>
 
@@ -1410,7 +1402,7 @@ HTTP/2 ALTSVC 帧限制为最大 16,382 有效载荷字节。
 
 ### `ERR_HTTP2_INFO_STATUS_NOT_ALLOWED`
 
-Informational HTTP status codes (`1xx`) must not be set as the response status code for an HTTP/2 response.
+信息性 HTTP 状态码（`1xx`）不得设置为 HTTP/2 响应的响应状态码。
 
 <a id="ERR_HTTP2_INVALID_CONNECTION_HEADERS"></a>
 
@@ -1450,14 +1442,14 @@ HTTP/2 `ORIGIN` 帧需要有效的源。
 
 ### `ERR_HTTP2_INVALID_PSEUDOHEADER`
 
-Only valid HTTP/2 pseudo headers may be used (`:status`, `:path`, `:authority`, `:scheme`
-and `:method`).
+只能使用有效的 HTTP/2 伪标头（`:status`、`:path`、`:authority`、`:scheme`
+和 `:method`）。
 
 <a id="ERR_HTTP2_INVALID_SESSION"></a>
 
 ### `ERR_HTTP2_INVALID_SESSION`
 
-An operation was performed on a destroyed `Http2Session` object.
+在已销毁的 `Http2Session` 对象上执行了操作。
 
 <a id="ERR_HTTP2_INVALID_SETTING_VALUE"></a>
 
@@ -1483,7 +1475,7 @@ An operation was performed on a destroyed `Http2Session` object.
 
 ### `ERR_HTTP2_NESTED_PUSH`
 
-尝试从推送流内部发起新的推送流。
+尝试从推送流内部发起新的推送流。  
 不允许嵌套推送流。
 
 <a id="ERR_HTTP2_NO_MEM"></a>
@@ -1535,8 +1527,7 @@ HTTP/2 ping 有效载荷长度必须正好为 8 字节。
 
 ### `ERR_HTTP2_PSEUDOHEADER_NOT_ALLOWED`
 
-HTTP/2 伪头使用不当。伪头是以 `:` 为前缀开头的头
-键名。
+HTTP/2 伪头使用不当。伪头是以 `:` 为前缀开头的头键名。
 
 <a id="ERR_HTTP2_PUSH_DISABLED"></a>
 
@@ -1589,7 +1580,7 @@ HTTP/2 伪头使用不当。伪头是以 `:` 为前缀开头的头
 
 ### `ERR_HTTP2_STATUS_101`
 
-It is prohibited to use the `101` informational status code in HTTP/2.
+禁止在 HTTP/2 中使用 `101` 信息性状态码。
 
 <a id="ERR_HTTP2_STATUS_INVALID"></a>
 
@@ -1611,8 +1602,8 @@ It is prohibited to use the `101` informational status code in HTTP/2.
 
 ### `ERR_HTTP2_STREAM_CANCEL`
 
-`Http2Stream` 在将任何数据传输到连接的
-对方之前被销毁。
+`Http2Stream` 在向连接的
+对端传输任何数据之前被销毁。
 
 <a id="ERR_HTTP2_STREAM_ERROR"></a>
 
@@ -1791,8 +1782,7 @@ added:
 
 ### `ERR_INSPECTOR_ALREADY_ACTIVATED`
 
-在使用 `node:inspector` 模块时，试图在检查器
-已经开始监听端口时激活它。在于不同地址激活之前，请先使用 `inspector.close()`。
+在使用 `node:inspector` 模块时，试图在检查器已经开始监听端口时激活它。在不同地址激活之前，请先使用 `inspector.close()`。
 
 <a id="ERR_INSPECTOR_ALREADY_CONNECTED"></a>
 
@@ -1818,7 +1808,7 @@ added:
 
 ### `ERR_INSPECTOR_NOT_ACTIVE`
 
-`inspector.waitForDebugger()` called when `inspector` is not active.
+在 `inspector` 未激活时调用了 `inspector.waitForDebugger()`。
 
 <a id="ERR_INSPECTOR_NOT_AVAILABLE"></a>
 
@@ -1850,7 +1840,7 @@ Node.js 中存在错误或 Node.js 内部使用不正确。
 
 ### `ERR_INVALID_ADDRESS`
 
-Node.js API 不理解提供的地址。
+Node.js API 无法理解所提供的地址。
 
 <a id="ERR_INVALID_ADDRESS_FAMILY"></a>
 
@@ -1874,7 +1864,7 @@ Node.js API 不理解提供的地址族。
 
 ### `ERR_INVALID_ASYNC_ID`
 
-使用 `AsyncHooks` 传递了无效的 `asyncId` 或 `triggerAsyncId`。id
+使用 `AsyncHooks` 传递了无效的 `asyncId` 或 `triggerAsyncId`。ID
 小于 -1 的情况绝不应发生。
 
 <a id="ERR_INVALID_BUFFER_SIZE"></a>
@@ -1930,14 +1920,14 @@ Node.js API 不理解提供的地址族。
 
 ### `ERR_INVALID_HANDLE_TYPE`
 
-试图通过 IPC 通信
+试图通过 IPC 通信  
 通道向子进程发送不支持的 "handle"。有关更多信息，请参阅 [`subprocess.send()`][] 和 [`process.send()`][]。
 
 <a id="ERR_INVALID_HTTP_TOKEN"></a>
 
 ### `ERR_INVALID_HTTP_TOKEN`
 
-An invalid HTTP token was provided.
+提供了无效的 HTTP 令牌。
 
 <a id="ERR_INVALID_IP_ADDRESS"></a>
 
@@ -1968,8 +1958,7 @@ added:
 
 ### `ERR_INVALID_MODULE_SPECIFIER`
 
-导入的模块字符串是无效的 URL、包名或包子路径
-说明符。
+导入的模块字符串是无效的 URL、包名或包子路径说明符。
 
 <a id="ERR_INVALID_OBJECT_DEFINE_PROPERTY"></a>
 
@@ -1987,8 +1976,7 @@ added:
 
 ### `ERR_INVALID_PACKAGE_TARGET`
 
-`package.json` [`"exports"`][] 字段包含无效的 target 映射
-值，用于尝试的模块解析。
+`package.json` [`"exports"`][] 字段包含无效的目标映射值，用于尝试解析模块。
 
 <a id="ERR_INVALID_PROTOCOL"></a>
 
@@ -2002,13 +1990,6 @@ added:
 
 在 [`REPL`][] 配置中同时设置了 `breakEvalOnSigint` 和 `eval` 选项，
 这是不支持的。
-
-<a id="ERR_INVALID_REPL_INPUT"></a>
-
-### `ERR_INVALID_REPL_INPUT`
-
-输入不得在 [`REPL`][] 中使用。使用此
-错误的条件在 [`REPL`][] 文档中描述。
 
 <a id="ERR_INVALID_RETURN_PROPERTY"></a>
 
@@ -2093,7 +2074,7 @@ changes:
 
 ### `ERR_INVALID_URI`
 
-An invalid URI was passed.
+传入了无效的 URI。
 
 <a id="ERR_INVALID_URL"></a>
 
@@ -2129,7 +2110,7 @@ An invalid URI was passed.
 
 ### `ERR_IPC_DISCONNECTED`
 
-Attempt to disconnect an IPC communication channel that is already disconnected. For more information, refer to the documentation for the [`child_process`][] module.
+尝试断开已经断开的 IPC 通信通道。有关更多信息，请参阅 [`child_process`][] 模块的文档。
 
 <a id="ERR_IPC_ONE_PIPE"></a>
 
@@ -2227,8 +2208,8 @@ added:
 
 ### `ERR_MISSING_PLATFORM_FOR_WORKER`
 
-此 Node.js 实例使用的 V8 平台不支持创建
-Worker。这是由于缺乏对 Worker 的嵌入者支持。特别是，
+此 Node.js 实例使用的 V8 平台不支持创建  
+Worker。这是由于缺乏对 Worker 的嵌入者支持。特别是，  
 此错误不会在 Node.js 的标准构建中发生。
 
 <a id="ERR_MODULE_LINK_MISMATCH"></a>
@@ -2247,11 +2228,9 @@ ECMAScript 模块加载器在尝试 `import` 操作或加载程序入口点时�
 
 ### `ERR_MULTIPLE_CALLBACK`
 
-The callback was called multiple times.
+回调函数被调用了多次。
 
-A callback should almost always be called only once, because a query
-can be fulfilled or rejected, but not both. The latter
-can be achieved by calling the callback multiple times.
+回调函数几乎总是应该只被调用一次，因为查询可以被满足或被拒绝，但不能两者兼有。后者可以通过多次调用回调函数来实现。
 
 <a id="ERR_NAPI_CONS_FUNCTION"></a>
 
@@ -2299,7 +2278,7 @@ can be achieved by calling the callback multiple times.
 
 ### `ERR_NOT_BUILDING_SNAPSHOT`
 
-Although Node.js is not currently building a V8 startup snapshot, an operation was still attempted that is only available when building a V8 startup snapshot.
+尽管 Node.js 当前并未构建 V8 启动快照，但仍尝试执行了只有在构建 V8 启动快照时才可用的操作。
 
 <a id="ERR_NOT_IN_SINGLE_EXECUTABLE_APPLICATION"></a>
 
@@ -2323,7 +2302,7 @@ added:
 
 ### `ERR_NO_CRYPTO`
 
-Attempted to use cryptographic functionality, but Node.js was compiled without OpenSSL cryptographic support.
+尝试使用加密功能，但 Node.js 编译时未启用 OpenSSL 加密支持。
 
 <a id="ERR_NO_ICU"></a>
 
@@ -2380,7 +2359,7 @@ added:
 
 ### `ERR_OUT_OF_RANGE`
 
-The given value is outside the accepted range.
+给定的值超出可接受范围。
 
 <a id="ERR_PACKAGE_IMPORT_NOT_DEFINED"></a>
 
@@ -2434,7 +2413,7 @@ Error [ERR_PACKAGE_MAP_INVALID]: 无效的 package map 位于 "./missing.json"�
 added: v26.4.0
 -->
 
-In [package map][]，the package's `dependencies` object references a package key that is not defined in the `packages` object.
+在[包映射][]中，包的 `dependencies` 对象引用了一个未在 `packages` 对象中定义的包键。
 
 ```json
 {
@@ -2449,9 +2428,9 @@ In [package map][]，the package's `dependencies` object references a package ke
 }
 ```
 
-In this example, `"nonexistent"` is referenced as a dependency target, but it is not defined in `packages`, which will throw this error.
+在此示例中，`"nonexistent"` 被引用为依赖目标，但它未在 `packages` 中定义，因此会抛出此错误。
 
-To fix this error, make sure that all package keys referenced in `dependencies` values are defined in the `packages` object.
+要修复此错误，请确保 `dependencies` 值中引用的所有包键都已在 `packages` 对象中定义。
 
 <a id="ERR_PACKAGE_PATH_NOT_EXPORTED"></a>
 
@@ -2481,7 +2460,7 @@ added:
   - v16.17.0
 -->
 
-当提供位置参数且 `allowPositionals` 设置为 `false` 时，[`util.parseArgs()`][] 将抛出此错误。
+当提供位置参数且 [`util.parseArgs()`][] 的 `allowPositionals` 设置为 `false` 时，将抛出此错误。
 
 <a id="ERR_PARSE_ARGS_UNKNOWN_OPTION"></a>
 
@@ -2646,7 +2625,7 @@ changes:
     description: 添加了 `requireStack` 和 `topLevelAwaitLocations` 属性。
 -->
 
-当尝试对一个 [ES Module][] 执行 `require()` 时，该模块实际上是异步的。
+尝试 `require()` 一个 [ES 模块][] 时，该模块被发现是异步的。
 也就是说，它包含顶层 await。
 
 在未被捕获时，标志 `--experimental-print-required-tla` 会将
@@ -2666,7 +2645,10 @@ changes:
 
 ### `ERR_REQUIRE_CYCLE_MODULE`
 
-尝试 `require()` [ES 模块][] 时，CommonJS 到 ESM 或 ESM 到 CommonJS 的边参与了直接循环。这是不允许的，因为 ES 模块在已经求值时无法再次求值。要避免循环，涉及循环的 `require()` 调用不应发生在 ES 模块（通过 `createRequire()`）或 CommonJS 模块的顶层，而应在内部函数中延迟进行。
+尝试 `require()` 一个 [ES 模块][] 时，CommonJS 到 ESM 或 ESM 到 CommonJS 的边参与了一个即时循环。
+这是不允许的，因为 ES 模块无法在自身已经处于求值过程时进行求值。
+
+为避免循环，参与循环的 `require()` 调用不应位于 ES 模块（通过 `createRequire()`）或 CommonJS 模块的顶层，而应在内部函数中延迟执行。
 
 <a id="ERR_REQUIRE_ESM"></a>
 
@@ -2698,7 +2680,7 @@ added:
 
 > 稳定性：1 - 实验性。
 
-当另一个 `import()` 调用已经在异步加载它时，尝试 `require()` 一个 [ES 模块][]。
+当另一个 `import()` 调用已在异步加载某个 [ES 模块][] 时，尝试使用 `require()` 加载该模块。
 
 <a id="ERR_SCRIPT_EXECUTION_INTERRUPTED"></a>
 
@@ -2734,7 +2716,7 @@ added:
   - v20.12.0
 -->
 
-将键传递给单可执行应用程序 API 以标识资产，但找不到匹配项。
+向单可执行应用程序 API 传递了用于标识资产的键，但找不到匹配的资产。
 
 <a id="ERR_SOCKET_ALREADY_BOUND"></a>
 
@@ -2812,7 +2794,7 @@ added:
 
 ### `ERR_SOURCE_MAP_CORRUPT`
 
-Unable to parse the source map because it does not exist or is corrupted.
+无法解析源映射，因为它不存在或已损坏。
 
 <a id="ERR_SOURCE_MAP_MISSING_SOURCE"></a>
 
@@ -2862,7 +2844,7 @@ added: v22.5.0
 
 ### `ERR_STREAM_DESTROYED`
 
-A stream method was called, but the stream was destroyed with `stream.destroy()`, so it could not be completed.
+调用了流方法，但该流已通过 `stream.destroy()` 被销毁，因此无法完成。
 
 <a id="ERR_STREAM_ITER_MISSING_FLAG"></a>
 
@@ -2886,7 +2868,7 @@ A stream method was called, but the stream was destroyed with `stream.destroy()`
 
 ### `ERR_STREAM_PUSH_AFTER_EOF`
 
-尝试在将 `null`(EOF) 推送到流之后调用 [`stream.push()`][]。
+尝试在将 `null`（EOF）推送到流之后调用 [`stream.push()`][]。
 
 <a id="ERR_STREAM_UNABLE_TO_PIPE"></a>
 
@@ -2898,7 +2880,7 @@ A stream method was called, but the stream was destroyed with `stream.destroy()`
 
 ### `ERR_STREAM_UNSHIFT_AFTER_END_EVENT`
 
-Attempted to call [`stream.unshift()`][] after emitting the `'end'` event.
+在触发 `'end'` 事件后尝试调用 [`stream.unshift()`][]。
 
 <a id="ERR_STREAM_WRAP"></a>
 
@@ -2993,7 +2975,7 @@ added: v13.3.0
 
 ### `ERR_TLS_INVALID_PROTOCOL_METHOD`
 
-The specified `secureProtocol` method is invalid. It is either unknown or disabled for being insecure.
+指定的 `secureProtocol` 方法无效。该方法可能未知，或因不安全而被禁用。
 
 <a id="ERR_TLS_INVALID_PROTOCOL_VERSION"></a>
 
@@ -3029,7 +3011,7 @@ TLS 套接字必须已连接并安全建立。确保在继续之前发出 'secur
 
 ### `ERR_TLS_RENEGOTIATION_DISABLED`
 
-Attempted to renegotiate TLS on a socket instance where renegotiation is disabled.
+尝试在已禁用重新协商的套接字实例上重新协商 TLS。
 
 <a id="ERR_TLS_RENEGOTIATION_UNSUPPORTED"></a>
 
@@ -3047,7 +3029,7 @@ Attempted to renegotiate TLS on a socket instance where renegotiation is disable
 
 ### `ERR_TLS_SESSION_ATTACK`
 
-Detected excessive TLS renegotiation, which is a potential vector for denial-of-service attacks.
+检测到过多的 TLS 重新协商，这可能成为拒绝服务攻击的潜在手段。
 
 <a id="ERR_TLS_SNI_FROM_SERVER"></a>
 
@@ -3121,7 +3103,7 @@ TTY 初始化失败，原因是系统错误。
 
 ### `ERR_UNKNOWN_BUILTIN_MODULE`
 
-Used to identify a specific type of internal Node.js error, which generally should not be triggered by user code. Instances of this error point to an internal error within the Node.js binary itself.
+用于标识一种特定类型的 Node.js 内部错误，通常不应由用户代码触发。此错误的实例表示 Node.js 二进制文件自身发生了内部错误。
 
 <a id="ERR_UNKNOWN_CREDENTIAL"></a>
 
@@ -3139,7 +3121,7 @@ Used to identify a specific type of internal Node.js error, which generally shou
 
 ### `ERR_UNKNOWN_FILE_EXTENSION`
 
-Attempting to load a module with an unknown or unsupported file extension.
+尝试加载具有未知或不受支持文件扩展名的模块。
 
 <a id="ERR_UNKNOWN_MODULE_FORMAT"></a>
 
@@ -3151,7 +3133,7 @@ Attempting to load a module with an unknown or unsupported file extension.
 
 ### `ERR_UNKNOWN_SIGNAL`
 
-向期望有效信号的 API（例如 [`subprocess.kill()`][]）传递了无效或未知的进程信号。
+向期望接收有效信号的 API（例如 [`subprocess.kill()`][]）传递了无效或未知的进程信号。
 
 <a id="ERR_UNSUPPORTED_DIR_IMPORT"></a>
 
@@ -3179,7 +3161,7 @@ import 'package-name'; // 支持
 added: v22.6.0
 -->
 
-不支持对 `node_modules` 目录后代中的文件进行类型剥离。
+不支持对 `node_modules` 目录下的文件进行类型剥离。
 
 <a id="ERR_UNSUPPORTED_RESOLVE_REQUEST"></a>
 
@@ -3209,7 +3191,7 @@ added:
   - v22.14.0
 -->
 
-所提供的 TypeScript 语法不受支持。当使用需要 [type stripping][] 转换的 TypeScript 语法时，可能会发生这种情况。
+所提供的 TypeScript 语法不受支持。当使用需要 [类型擦除][] 转换的 TypeScript 语法时，可能会发生这种情况。
 
 <a id="ERR_USE_AFTER_CLOSE"></a>
 
@@ -3221,7 +3203,7 @@ added:
 
 ### `ERR_VALID_PERFORMANCE_ENTRY_TYPE`
 
-使用 Performance Timing API（`perf_hooks`）时，未找到有效的 performance entry 类型。
+使用 Performance Timing API（`perf_hooks`）时，未找到有效的性能条目类型。
 
 <a id="ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING"></a>
 
@@ -3267,7 +3249,7 @@ added:
 
 ### `ERR_VM_MODULE_LINK_FAILURE`
 
-Module could not be linked due to failure.
+由于链接失败，模块无法完成链接。
 
 <a id="ERR_VM_MODULE_NOT_MODULE"></a>
 
@@ -3314,13 +3296,6 @@ added: v18.1.0
 ### `ERR_WORKER_HANDLE_NOT_TRANSFERABLE`
 
 尝试通过 `worker_threads` 的 `postMessage()` 调用将 `net.Socket` 或 `net.Server` 传输到另一个线程，但它当时并不处于可传输状态，例如因为它已经开始读取或已经有了缓冲数据。
-
-<a id="ERR_WORKER_HANDLE_TRANSFER_UNSUPPORTED"></a>
-
-### `ERR_WORKER_HANDLE_TRANSFER_UNSUPPORTED`
-
-在不支持在事件循环之间移动底层句柄的平台上，尝试将 `net.Socket` 或 `net.Server` 传输到另一个线程
-（目前为 Windows）。
 
 <a id="ERR_WORKER_INIT_FAILED"></a>
 
@@ -3404,13 +3379,57 @@ Worker 主脚本的路径既不是绝对路径，也不是以 `./` 或 `../` 开
 
 ### `ERR_WORKER_UNSERIALIZABLE_ERROR`
 
-All attempts to serialize an uncaught exception from a worker thread failed.
+从工作线程中序列化未捕获异常的所有尝试均失败。
 
 <a id="ERR_WORKER_UNSUPPORTED_OPERATION"></a>
 
 ### `ERR_WORKER_UNSUPPORTED_OPERATION`
 
 Worker 线程中不支持请求的功能。
+
+<a id="ERR_ZIP_ARCHIVE_TOO_LARGE"></a>
+
+### `ERR_ZIP_ARCHIVE_TOO_LARGE`
+
+归档级结构超出限制：归档注释超过了 ZIP 格式允许的 65,535 字节编码长度，或者归档的中央目录过大，无法缓冲到内存中。
+
+<a id="ERR_ZIP_ENTRY_CORRUPT"></a>
+
+### `ERR_ZIP_ENTRY_CORRUPT`
+
+ZIP 归档条目在读取时未通过 CRC-32 校验，或产生的字节数多于或少于其声明的未压缩大小。
+
+<a id="ERR_ZIP_ENTRY_NOT_FOUND"></a>
+
+### `ERR_ZIP_ENTRY_NOT_FOUND`
+
+从不包含该名称条目的 [`ZipFile`][] 或 [`ZipBuffer`][] 中请求了一个具名条目。
+
+<a id="ERR_ZIP_ENTRY_TOO_LARGE"></a>
+
+### `ERR_ZIP_ENTRY_TOO_LARGE`
+
+ZIP 归档条目声明的大小超过了配置的限制，或者提供的条目名称或注释超过了 ZIP 格式允许的 65,535 字节编码长度。
+
+<a id="ERR_ZIP_INVALID_ARCHIVE"></a>
+
+### `ERR_ZIP_INVALID_ARCHIVE`
+
+原本应为 ZIP 归档或其中结构的数据缺失、超出范围，或以其他方式与 ZIP 格式不一致。
+
+<a id="ERR_ZIP_NOT_WRITABLE"></a>
+
+### `ERR_ZIP_NOT_WRITABLE`
+
+在未使用 `{ writable: true }` 打开的 [`ZipFile`][] 上调用了变更方法（例如
+`zipFile.addEntry()` 或 `zipFile.delete()`）。
+
+<a id="ERR_ZIP_UNSUPPORTED_FEATURE"></a>
+
+### `ERR_ZIP_UNSUPPORTED_FEATURE`
+
+ZIP 归档使用了此实现不支持的功能，
+例如条目加密、不受支持的压缩方法或多磁盘归档。
 
 <a id="ERR_ZLIB_INITIALIZATION_FAILED"></a>
 
@@ -3760,7 +3779,7 @@ removed: v22.2.0
 ### `ERR_MANIFEST_TDZ`
 
 <!-- YAML
-removed: v22.2.0
+removed: v22.0.0
 -->
 
 尝试从策略清单读取，但清单初始化尚未发生。这可能是 Node.js 中的缺陷。
@@ -4280,6 +4299,8 @@ CRL nextUpdate 字段包含无效时间。
 [`ServerResponse`]: http.md#class-httpserverresponse
 [`Temporal`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal
 [`Writable`]: stream.md#class-streamwritable
+[`ZipBuffer`]: zlib.md#class-zlibzipbuffer
+[`ZipFile`]: zlib.md#class-zlibzipfile
 [`child_process`]: child_process.md
 [`cipher.getAuthTag()`]: crypto.md#ciphergetauthtag
 [`crypto.getDiffieHellman()`]: crypto.md#cryptogetdiffiehellmangroupname
@@ -4309,7 +4330,7 @@ CRL nextUpdate 字段包含无效时间。
 [`libuv Error handling`]: https://docs.libuv.org/en/v1.x/errors.html
 [`net.Server`]: net.md#class-netserver
 [`net.Socket.write()`]: net.md#socketwritedata-encoding-callback
-[`net.Socket`]: net.md#class-netsocket
+[`net.Socket`]: net.md#class-net-socket
 [`net`]: net.md
 [`new URL(input)`]: url.md#new-urlinput-base
 [`new URLPattern(input)`]: url.md#new-urlpatternstring-baseurl-options

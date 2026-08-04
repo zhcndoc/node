@@ -1,8 +1,8 @@
 # 使用 Dev Containers 开发 Node.js
 
-Node.js 在 [DockerHub](https://hub.docker.com/r/nodejs/devcontainer) 上发布了一个
-[Dev Containers](https://containers.dev/) 的
-[夜间镜像](https://hub.docker.com/r/nodejs/devcontainer)，可用于快速启动一个开发容器，该容器预先安装了构建依赖项和预先生成的构建缓存。
+Node.js 在 [DockerHub](https://hub.docker.com/r/nodejs/devcontainer) 上为
+[Dev Containers](https://containers.dev/) 发布了一个[夜间镜像]，可用于启动一个
+预装构建依赖项并预生成构建缓存的开发容器。
 
 当你需要测试主分支的一些更改，并且**不需要**更改 V8 头文件（这种情况很少见）时，使用夜间镜像可以让你从干净的安装快速编译你的更改，而无需从头开始编译整个代码库，特别是 V8。
 
@@ -19,7 +19,7 @@ Dev Container 还允许你在不同的操作系统中测试你的更改，并可
 
 * [Docker](https://www.docker.com/get-started)
 * [Visual Studio Code](https://code.visualstudio.com/)
-* [VS Code 的 Dev Containers 扩展](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+* [VS Code 的 Dev Containers 扩展](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)。
 
 ## 设置 Dev Container
 
@@ -84,7 +84,7 @@ ninja -C out/Release
 
 默认配置位于
 [`.devcontainer/base/devcontainer.json`](../../.devcontainer/base/devcontainer.json)，它与官方的
-[Node.js 夜间 Dev Container 镜像](https://github.com/nodejs/devcontainer) 配对。
+[Node.js 夜间 Dev Container 镜像](https://github.com/nodejs/devcontainer)配对。
 此配置受版本控制。你可以创建一个个人配置，方法是：在 `.devcontainer/` 目录中创建一个新目录，
 并在该目录中添加一个 `devcontainer.json` 文件（例如，`.devcontainer/local/devcontainer.json`），
 然后配置 VS Code 使用它。

@@ -62,7 +62,7 @@ QUIC 和 HTTP/3 协议由一组 RFC 定义，这些 RFC 主要由 IETF QUIC 工�
 **运营与信息性：**
 
 * [RFC 9308][] — QUIC 传输协议的适用性
-* [RFC 9312][] — QUIC 传输协议的可管理性
+* [RFC 9312][] — QUIC 传输协议的可管理性。
 
 ## 架构
 
@@ -96,7 +96,7 @@ QUIC 包含反放大限制（[RFC 9000 第 8.1 节][]），该限制规定在客
 
 * **优先选择证书链较短的证书颁发机构。** 一些 CA 签发的证书只需一个较小的中间证书，而另一些则需要多个较大的 RSA 中间证书。CA 的选择会直接影响握手延迟。
 
-证书压缩（[RFC 8879][]）也可以通过在握手期间压缩证书链来解决此问题。不过，Node.js 目前不支持 TLS 证书压缩。
+证书压缩（[RFC 8879][]）也可以通过在握手期间压缩证书链来解决此问题，通常可以使服务器的 Certificate 消息保持在放大限制以内，从而避免额外的往返。证书压缩通过 [`certificateCompression`][] TLS 选项选择启用，默认处于禁用状态。启用后，它既适用于服务器证书，也适用于双向 TLS 中的客户端证书。
 
 ### 速率限制
 
@@ -316,7 +316,7 @@ added: v23.8.0
 
 * `onsession` {quic.OnSessionCallback}
 * `options` {quic.SessionOptions}
-* 返回：{Promise} 一个关于 {quic.QuicEndpoint} 的 promise
+* 返回：{Promise} 一个解析为 {quic.QuicEndpoint} 的 promise
 
 配置端点以作为服务器监听。当远程对等方发起新会话时，
 给定的 `onsession` 回调将与创建的会话一起被调用。
@@ -328,7 +328,7 @@ const endpoint = await listen((session) => {
   // ... 处理会话
 });
 
-// 关闭端点允许在调用 close 时打开的任何会话自然完成，同时防止新会话被
+// 关闭端点会使在调用 close 时已打开的任何会话自然完成，同时防止新会话被
 // 发起。一旦所有现有会话完成，端点将被销毁。该调用返回一个 promise，在
 // 端点销毁后解析。
 await endpoint.close();
@@ -834,7 +834,7 @@ added: v23.8.0
 added: v26.3.0
 -->
 
-* Type: {quic.TransportParams|null}
+* 类型：{quic.TransportParams|null}
 
 握手期间由本地端点公布的传输参数。如果会话已被销毁，则返回 `null`。只读。
 
@@ -854,7 +854,7 @@ added: REPLACEME
 added: v26.4.0
 -->
 
-* Type: {quic.OnApplicationCallback}
+* 类型：{quic.OnApplicationCallback}
 
 当新的应用程序选项（例如 HTTP/3 设置）到达时要调用的回调。
 
@@ -940,7 +940,7 @@ added: v23.8.0
 
 * 类型：{quic.OnSessionTicketCallback}
 
-当收到新会话票据时调用的回调。读/写。
+当收到新的会话票据时调用的回调。可读/可写。
 
 ### `session.onversionnegotiation`
 
@@ -1055,40 +1055,32 @@ added: v23.8.0
 * `options` {Object}
   * `body` {string | ArrayBuffer | SharedArrayBuffer | ArrayBufferView |
     Blob | FileHandle | AsyncIterable | Iterable | Promise | null}
-    The outbound body source. See [`stream.setBody()`][] for details on
-    supported types. When omitted, the stream's outgoing side remains
-    writable with no body queued; no FIN is sent immediately.
-  * `headers` {Object} Initial request or response headers to send. Only
-    used when the session supports headers (e.g. HTTP/3). If `body` is not
-    specified and `headers` is provided, the stream is treated as
-    headers-only (terminal).
-  * `priority` {string} The priority level of the stream. One of `'high'`,
-    `'default'`, or `'low'`. **Default:** `'default'`.
-  * `incremental` {boolean} When `true`, data from this stream may be
-    interleaved with data from other streams of the same priority level.
-    When `false`, the stream should be completed before same-priority peers.
-    **Default:** `false`.
-  * `highWaterMark` {number} The maximum number of bytes that the writer
-    will buffer before `writeSync()` returns `false`. When the buffered
-    data exceeds this limit, the caller should wait for drain before
-    writing more. **Default:** `65536` (64 KB).
-  * `onheaders` {Function} Callback for received initial response headers.
-    Called with `(headers)`.
-  * `ontrailers` {Function} Callback for received trailing headers.
-    Called with `(trailers)`.
-  * `oninfo` {Function} Callback for received informational (1xx) headers.
-    Called with `(headers)`.
-  * `onwanttrailers` {Function} Callback when trailers should be sent.
-    Called with no arguments; use [`stream.sendTrailers()`][] within the
-    callback.
-* Returns: {Promise} for a {quic.QuicStream}
+    出站正文源。有关支持类型的详细信息，请参阅 [`stream.setBody()`][]。
+    如果省略此选项，流的发送端将保持可写状态，且不会排队任何正文；不会立即发送 FIN。
+  * `headers` {Object} 要发送的初始请求或响应标头。仅在会话支持标头时使用（例如 HTTP/3）。
+    如果未指定 `body` 但提供了 `headers`，则该流将被视为仅包含标头的流（终止状态）。
+  * `priority` {string} 流的优先级。可选值为 `'high'`、`'default'` 或
+    `'low'`。**默认值：**`'default'`。
+  * `incremental` {boolean} 为 `true` 时，此流中的数据可以与相同优先级的其他流中的数据交错。
+    为 `false` 时，应在处理相同优先级的其他流之前完成此流。
+    **默认值：**`false`。
+  * `budget` {number} 写入器在 `writeSync()` 返回 `false` 之前可以缓冲的最大字节数。
+    当缓冲数据超过此限制时，调用方应等待排空后再写入更多数据。
+    **默认值：**`65536`（64 KB）。
+  * `onheaders` {Function} 接收初始响应标头时的回调。
+    使用 `(headers)` 调用。
+  * `ontrailers` {Function} 接收尾部标头时的回调。
+    使用 `(trailers)` 调用。
+  * `oninfo` {Function} 接收信息性（1xx）标头时的回调。
+    使用 `(headers)` 调用。
+  * `onwanttrailers` {Function} 应发送尾部标头时的回调。
+    不带参数调用；在回调中使用 [`stream.sendTrailers()`][]。
+* 返回：{Promise} 一个 {quic.QuicStream}
 
-Open a new bidirectional stream. If the `body` option is not specified,
-the stream's outgoing side remains writable and no FIN is sent
-immediately. The `priority` and `incremental`
-options are only used when the session supports priority (e.g. HTTP/3).
-The `headers`, `onheaders`, `ontrailers`, `oninfo`, and `onwanttrailers`
-options are only used when the session supports headers (e.g. HTTP/3).
+打开一个新的双向流。如果未指定 `body` 选项，流的发送端将保持可写状态，且不会立即发送 FIN。
+仅当会话支持优先级时（例如 HTTP/3），才会使用 `priority` 和 `incremental`
+选项。仅当会话支持标头时（例如 HTTP/3），才会使用
+`headers`、`onheaders`、`ontrailers`、`oninfo` 和 `onwanttrailers` 选项。
 
 ### `session.createUnidirectionalStream([options])`
 
@@ -1099,33 +1091,29 @@ added: v23.8.0
 * `options` {Object}
   * `body` {string | ArrayBuffer | SharedArrayBuffer | ArrayBufferView |
     Blob | FileHandle | AsyncIterable | Iterable | Promise | null}
-    The outbound body source. See [`stream.setBody()`][] for details on
-    supported types. When omitted, the stream's outgoing side remains
-    writable with no body queued; no FIN is sent immediately.
-  * `headers` {Object} Initial request headers to send.
-  * `priority` {string} The priority level of the stream. One of `'high'`,
-    `'default'`, or `'low'`. **Default:** `'default'`.
-  * `incremental` {boolean} When `true`, data from this stream may be
-    interleaved with data from other streams of the same priority level.
-    When `false`, the stream should be completed before same-priority peers.
-    **Default:** `false`.
-  * `highWaterMark` {number} The maximum number of bytes that the writer
-    will buffer before `writeSync()` returns `false`. When the buffered
-    data exceeds this limit, the caller should wait for drain before
-    writing more. **Default:** `65536` (64 KB).
-  * `onheaders` {Function} Callback for received initial response headers.
-    Called with `(headers)`.
-  * `ontrailers` {Function} Callback for received trailing headers.
-    Called with `(trailers)`.
-  * `oninfo` {Function} Callback for received informational (1xx) headers.
-    Called with `(headers)`.
-  * `onwanttrailers` {Function} Callback when trailers should be sent.
-* Returns: {Promise} for a {quic.QuicStream}
+    出站正文源。有关支持类型的详细信息，请参阅 [`stream.setBody()`][]。
+    如果省略此选项，流的发送端将保持可写状态，且不会排入正文；不会立即发送 FIN。
+  * `headers` {Object} 要发送的初始请求标头。
+  * `priority` {string} 流的优先级别。可以是 `'high'`、`'default'` 或
+    `'low'`。**默认值：**`'default'`。
+  * `incremental` {boolean} 为 `true` 时，此流中的数据可以与其他相同优先级流中的数据交错传输。
+    为 `false` 时，应在同优先级的对等流之前完成此流。
+    **默认值：**`false`。
+  * `budget` {number} 写入器在 `writeSync()` 返回 `false` 之前将缓冲的最大字节数。
+    当缓冲数据超过此限制时，调用方应等待排空后再写入更多数据。
+    **默认值：**`65536`（64 KB）。
+  * `onheaders` {Function} 接收到初始响应标头时的回调。
+    使用 `(headers)` 调用。
+  * `ontrailers` {Function} 接收到尾部标头时的回调。
+    使用 `(trailers)` 调用。
+  * `oninfo` {Function} 接收到信息性（1xx）标头时的回调。
+    使用 `(headers)` 调用。
+  * `onwanttrailers` {Function} 应发送尾部标头时的回调。
+* 返回：{Promise}，其结果为一个 {quic.QuicStream}
 
-Open a new unidirectional stream. If the `body` option is not specified,
-the stream's outgoing side remains writable and no FIN is sent
-immediately. The `priority` and `incremental`
-options are only used when the session supports priority (e.g. HTTP/3).
+打开一个新的单向流。如果未指定 `body` 选项，
+流的发送端将保持可写状态，且不会立即发送 FIN。仅当会话支持优先级（例如 HTTP/3）时，
+才会使用 `priority` 和 `incremental` 选项。
 
 ### `session.path`
 
@@ -1191,13 +1179,35 @@ added: v23.8.0
 `maxDatagramFrameSize` 传输参数（默认：`1200` 字节）控制
 此端点向对等方宣告的自身最大值。
 
+### `session.servername`
+
+<!-- YAML
+added: v26.6.0
+-->
+
+* Type: {string|boolean|null}
+
+与会话关联的 SNI（服务器名称指示）主机名。在处理客户端 Hello 之前，此值为
+`null`。处理 Hello 后，此值为主机名字符串；如果握手没有包含 SNI，则为
+`false`。
+
+### `session.alpnProtocol`
+
+<!-- YAML
+added: v26.6.0
+-->
+
+* 类型：{string|null}
+
+协商的 ALPN 协议。在处理客户端问候之前，此值为 `null`。ALPN 协商完成后，此值为协议字符串。在 QUIC 中，ALPN 是强制性的，因此在成功建立连接时此值永远不会是 `false`，不同于 `node:tls`，后者中的 ALPN 是可选的。
+
 ### `session.certificate`
 
 <!-- YAML
 added: v26.2.0
 -->
 
-* Type: {crypto.X509Certificate|undefined}
+* 类型：{crypto.X509Certificate|undefined}
 
 本地证书作为 [`crypto.X509Certificate`][] 实例。服务器
 会话返回为协商出的 SNI 主机配置的证书。
@@ -1273,7 +1283,7 @@ added: v23.8.0
 added: v23.8.0
 -->
 
-发起会话的密钥更新。
+发起会话密钥更新。
 
 ### `session[Symbol.asyncDispose]()`
 
@@ -1281,7 +1291,7 @@ added: v23.8.0
 added: v23.8.0
 -->
 
-调用 `session.close()` 并返回一个在会话关闭时履行的 promise。
+调用 `session.close()` 并返回一个在会话关闭时履行的 Promise。
 
 ## 类：`QuicSession.Stats`
 
@@ -1532,12 +1542,12 @@ added: v26.2.0
 ```mjs
 import { QuicError } from 'node:quic';
 
-const err = new QuicError('rejecting stream', { errorCode: 0x10cn });
+const err = new QuicError('拒绝流', { errorCode: 0x10cn });
 console.log(err.code);       // 'ERR_QUIC_STREAM_ABORTED'
 console.log(err.errorCode);  // 268n
 console.log(err.type);       // 'application'
 
-const custom = new QuicError('custom failure', {
+const custom = new QuicError('自定义失败', {
   errorCode: 0x10cn,
   code: 'ERR_MY_QUIC_FAILURE',
 });
@@ -1670,7 +1680,7 @@ added: v23.8.0
 
 流的方向性；如果流已被销毁或仍处于 pending 状态，则为 `null`。只读。
 
-### `stream.highWaterMark`
+### `stream.budget`
 
 <!-- YAML
 added: v26.2.0
@@ -1874,7 +1884,7 @@ added: v26.2.0
 设置流的优先级。如果会话不支持优先级（例如非 HTTP/3），则抛出 `ERR_INVALID_STATE`。
 如果流已被销毁，则无效。
 
-### `stream[Symbol.asyncIterator]()`
+### `stream[Symbol.asyncIterator]()` 
 
 <!-- YAML
 added: v26.2.0
@@ -1891,7 +1901,7 @@ added: v26.2.0
 ```mjs
 for await (const chunks of stream) {
   for (const chunk of chunks) {
-    // 处理每个 Uint8Array 块
+    // Process each Uint8Array chunk
   }
 }
 ```
@@ -1921,20 +1931,22 @@ try-sync-fallback-to-async 模式的 stream/iter Writer 接口。
 
 Writer 具有以下方法：
 
-* `writeSync(chunk)` — 同步写入。如果接受则返回 `true`，如果受流量控制则返回 `false`。
-  当返回 `false` 时，不会接受数据。
-* `write(chunk[, options])` — 带等待排空的异步写入。`options.signal` 在入口处检查，但在写入期间不会持续观察。
-* `writevSync(chunks)` — 同步向量写入。要么全部接受，要么全部不接受。
-* `writev(chunks[, options])` — 异步向量写入。
-* `endSync()` — 同步关闭。返回总字节数或 `-1`。
+* `writeSync(chunk)` — 同步写入。如果接受则返回 `true`，如果受流控制则返回 `false`。
+  返回 `false` 时不会接受数据。
+* `write(chunk[, options])` — 带等待 drain 的异步写入。进入时会检查 `options.signal`，
+  但写入期间不会观察它。
+* `writevSync(chunks)` — 同步向量化写入。要么全部写入，要么全部不写入。
+* `writev(chunks[, options])` — 异步向量化写入。
+* `endSync()` — 同步关闭。返回字节总数或 `-1`。
 * `end([options])` — 异步关闭。
 * `fail(reason)` — 使流出错（向对端发送 `RESET_STREAM`）。
-  当 `reason` 是 [`QuicError`][] 时，其 [`error.errorCode`][] 会被用作
-  结果 `RESET_STREAM` 帧上的线上错误码；否则线上错误码会回退到协商出的应用协议的
+  当 `reason` 是 [`QuicError`][] 时，其 [`error.errorCode`][] 会被用作结果
+  `RESET_STREAM` 帧中的线上错误码；否则线上错误码会回退到协商出的应用协议的
   “内部错误”码（HTTP/3 使用 `H3_INTERNAL_ERROR`（`0x102`），原生 QUIC 使用
-  QUIC 传输层的 `INTERNAL_ERROR`（`0x1`））。
-  有关也会通过 `STOP_SENDING` 重置可读侧的全流中止，请参见 [`stream.destroy()`][]。
-* `desiredSize` — 可用容量（字节），如果已关闭/出错则为 `null`。
+  QUIC 传输层的 `INTERNAL_ERROR`（`0x1`））。有关同时通过 `STOP_SENDING`
+  重置可读侧的完整流中止，请参见 [`stream.destroy()`][]。
+* `canWrite` — 如果会接受写入则为 `true`，如果已达到容量上限则为 `false`，
+  如果已关闭或出错则为 `null`。
 
 每个 `writeSync()` / `writevSync()` / `write()` / `writev()` 输入块中的字节都会被复制到内部缓冲区，
 因此调用方的源缓冲区不会改变，并且可在调用返回后立即复用或修改。希望确保源缓冲区在交出后不能被修改的调用方，
@@ -2132,7 +2144,7 @@ added: v26.3.0
 
 * 类型：{bigint|number}
 
-每个头部块中所有 header 名称和值的总字节长度上限。会使总长度超过此限制的 header 会被静默丢弃。**默认值：** `8192`
+每个头部块中所有 header 名称和值的总字节长度上限。会使总长度超过此限制的 header 被静默丢弃。**默认值：** `8192`
 
 #### `applicationOptions.maxFieldSectionSize`
 
@@ -2489,7 +2501,7 @@ await listen((session) => { /* ... */ }, {
 });
 ```
 
-#### `sessionOptions.ca`（仅限客户端）
+#### `sessionOptions.ca`
 
 <!-- YAML
 added: v23.8.0
@@ -2497,7 +2509,7 @@ added: v23.8.0
 
 * 类型：{ArrayBuffer|ArrayBufferView|ArrayBuffer\[]|ArrayBufferView\[]}
 
-客户端会话使用的 CA 证书。对于服务器会话，CA 证书在 [`sessionOptions.sni`][] 地图中按身份指定。
+用于会话的 CA 证书。
 
 #### `sessionOptions.cc`
 
@@ -2522,6 +2534,22 @@ added: v23.8.0
 
 客户端会话使用的 TLS 证书。对于服务器会话，证书在 [`sessionOptions.sni`][] 地图中按身份指定。
 
+#### `sessionOptions.certificateCompression`
+
+<!-- YAML
+added: v26.6.0
+-->
+
+* 类型：{string\[]} `'zlib'`、`'brotli'` 或 `'zstd'` 中的一个或多个，按首选项排序。
+
+为此会话启用 TLS 证书压缩（[RFC 8879][]）。省略时，证书压缩处于禁用状态。
+
+在服务器端，证书链会使用客户端通告支持的算法列表中排在最前面的算法进行压缩。在客户端，所列算法会通告给服务器，以便服务器可以压缩其证书。当使用客户端身份验证时，此选项还控制客户端证书的压缩。
+
+压缩证书链对 QUIC 尤其有用，因为它可以减小服务器首次发送的数据量，而该数据量受反放大限制约束（参见[证书大小和握手性能][]）。证书压缩要求使用 TLS 1.3，而 QUIC 始终使用 TLS 1.3。
+
+最多可以指定三种算法。如果 Node.js 使用不支持证书压缩的共享 OpenSSL 构建，则会静默忽略此选项。
+
 #### `sessionOptions.ciphers`
 
 <!-- YAML
@@ -2532,7 +2560,7 @@ added: v23.8.0
 
 支持的 TLS 1.3 加密算法列表。
 
-#### `sessionOptions.crl`（仅限客户端）
+#### `sessionOptions.crl`
 
 <!-- YAML
 added: v23.8.0
@@ -2540,7 +2568,7 @@ added: v23.8.0
 
 * 类型：{ArrayBuffer|ArrayBufferView|ArrayBuffer\[]|ArrayBufferView\[]}
 
-客户端会话使用的 CRL。对于服务器会话，CRL 在 [`sessionOptions.sni`][] 地图中按身份指定。
+用于会话的 CRL。
 
 #### `sessionOptions.enableEarlyData`
 
@@ -2771,17 +2799,16 @@ added:
 * `keys` {KeyObject|KeyObject\[]} TLS 私钥。**必需。**
 * `certs` {ArrayBuffer|ArrayBufferView|ArrayBuffer\[]|ArrayBufferView\[]}
   TLS 证书。**必需。**
-  可选的证书吊销列表。
 * `verifyPrivateKey` {boolean} 验证私钥。默认值：`false`。
-* `port` {number} 在 ORIGIN 帧（RFC 9412）中为此主机名通告的端口。**默认值：** `443`。仅用于 HTTP/3 会话。
-* `authoritative` {boolean} 是否将此主机名包含在 ORIGIN 帧中。**默认值：** `true`。设置为 `false` 可将主机名排除在 ORIGIN 通告之外。通配符（`'*'`）条目无论此设置如何都始终被排除。
+* `port` {number} 在针对此主机名的 ORIGIN 帧（RFC 9412）中通告的端口。**默认值：** `443`。仅用于 HTTP/3 会话。
+* `authoritative` {boolean} 是否在 ORIGIN 帧中包含此主机名。**默认值：** `true`。设置为 `false` 可将主机名排除在 ORIGIN 通告之外。无论此设置如何，通配符（`'*'`）条目始终会被排除。
 
 ```mjs
 const endpoint = await listen(callback, {
   sni: {
     '*': { keys: [defaultKey], certs: [defaultCert] },
     'api.example.com': { keys: [apiKey], certs: [apiCert], port: 8443 },
-    'www.example.com': { keys: [wwwKey], certs: [wwwCert], ca: [customCA] },
+    'www.example.com': { keys: [wwwKey], certs: [wwwCert] },
     'internal.example.com': { keys: [intKey], certs: [intCert], authoritative: false },
   },
 });
@@ -2799,7 +2826,7 @@ added: v23.8.0
 
 * 类型：{boolean}
 
-设为 true 以启用 TLS 追踪输出。
+设为 `true` 以启用 TLS 追踪输出。
 
 #### `sessionOptions.token`（仅限客户端）
 
@@ -2862,7 +2889,7 @@ added: v23.8.0
 
 * 类型：{boolean}
 
-为 true 以要求验证 TLS 客户端证书。
+为 `true` 以要求验证 TLS 客户端证书。
 
 #### `sessionOptions.verifyPrivateKey`（仅限客户端）
 
@@ -2872,7 +2899,7 @@ added: v23.8.0
 
 * 类型：{boolean}
 
-为 true 以要求客户端会话的私钥验证。对于服务器会话，此选项在 [`sessionOptions.sni`][] 地图中按身份指定。
+为 `true` 以要求客户端会话的私钥验证。对于服务器会话，此选项在 [`sessionOptions.sni`][] 地图中按身份指定。
 
 #### `sessionOptions.version`
 
@@ -3059,7 +3086,7 @@ added: v23.8.0
 * `this` {quic.QuicEndpoint}
 * `session` {quic.QuicSession}
 
-当远程对等方发起新会话时调用的回调函数。
+当远程对端发起新的服务器会话时调用的回调函数。在对端的 TLS `ClientHello` 处理完毕后调用，因此回调运行时即可立即获得协商完成的 TLS 参数。在此之前握手被拒绝的会话不会被提供给应用。
 
 ### 回调：`OnStreamCallback`
 
@@ -3571,7 +3598,7 @@ obs.observe({ entryTypes: ['quic'] });
 
 在端点的繁忙状态发生变化时发布。
 
-### Channel: `quic.session.application`
+### 频道：`quic.session.application`
 
 <!-- YAML
 added: v23.8.0
@@ -3582,7 +3609,7 @@ added: v23.8.0
 
 在本地发起的流打开时发布。
 
-### Channel: `quic.session.created.client`
+### 频道：`quic.session.created.client`
 
 <!-- YAML
 已添加：v23.8.0
@@ -3905,9 +3932,10 @@ GOAWAY 帧时）。
 
 [中止流]: #aborting-a-stream
 [回调错误处理]: #callback-error-handling
+[证书大小和握手性能]: #certificate-size-and-handshake-performance
 [JSON-SEQ]: https://www.rfc-editor.org/rfc/rfc7464
-[NSS Key Log 格式]: https://udn.realityripple.com/docs/Mozilla/Projects/NSS/Key_Log_Format
-[Permission Model]: permissions.md#permission-model
+[NSS 密钥日志格式]: https://udn.realityripple.com/docs/Mozilla/Projects/NSS/Key_Log_Format
+[权限模型]: permissions.md#permission-model
 [RFC 8879]: https://www.rfc-editor.org/rfc/rfc8879
 [RFC 8999]: https://www.rfc-editor.org/rfc/rfc8999
 [RFC 9000]: https://www.rfc-editor.org/rfc/rfc9000
@@ -3934,6 +3962,7 @@ GOAWAY 帧时）。
 [`application.enableConnectProtocol`]: #sessionoptionsapplication
 [`application.enableDatagrams`]: #sessionoptionsapplication
 [`application.qpackMaxDTableCapacity`]: #sessionoptionsapplication
+[`certificateCompression`]: #sessionoptionscertificatecompression
 [`crypto.X509Certificate`]: crypto.md#class-x509certificate
 [`endpoint.busy`]: #endpointbusy
 [`endpoint.maxConnectionsPerHost`]: #endpointmaxconnectionsperhost

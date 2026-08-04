@@ -53,7 +53,7 @@ changes:
 added: v8.0.0
 -->
 
-stdin 的别名。类似于其他命令行实用程序中对 `-` 的使用，这意味着脚本从 stdin 读取，其余选项传递给该脚本。
+`stdin` 的别名。类似于其他命令行实用程序中对 `-` 的使用，这意味着脚本从 `stdin` 读取，其余选项传递给该脚本。
 
 ### `--`
 
@@ -128,7 +128,7 @@ changes:
 
 > 稳定性：1.1 - 积极开发中
 
-当使用 [Permission Model][] 时，进程默认将无法生成任何子进程。
+当使用 [权限模型][] 时，进程默认将无法生成任何子进程。
 除非用户在启动 Node.js 时显式传递 `--allow-child-process` 标志，否则尝试这样做将抛出 `ERR_ACCESS_DENIED`。
 
 示例：
@@ -225,9 +225,9 @@ $ node --permission -r custom-require.js -r custom-require-2.js index.js
 * `custom-require.js`、`custom-require-2.js` 和 `index.js` 默认将在允许的读取列表中。
 
 ```js
-process.permission.has('fs.read', 'index.js'); // true
-process.permission.has('fs.read', 'custom-require.js'); // true
-process.permission.has('fs.read', 'custom-require-2.js'); // true
+process.permission.has('fs.read', 'index.js'); // 真
+process.permission.has('fs.read', 'custom-require.js'); // 真
+process.permission.has('fs.read', 'custom-require-2.js'); // 真
 ```
 
 ### 文件系统写入权限
@@ -318,6 +318,22 @@ $ node --permission index.js
 }
 ```
 
+### `--allow-openssl-store`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.1 - 开发中
+
+使用[权限模型][]时，进程默认无法使用 OpenSSL STORE 加载器，例如从传递给
+[`crypto.createPrivateKey()`][] 的 {URL} 中加载私钥。除非用户明确传递
+`--allow-openssl-store` 标志，否则尝试这样做将抛出
+`ERR_ACCESS_DENIED`。此权限可在运行时通过
+[`permission.drop()`][] 移除。
+
+此标志向已配置的 OpenSSL STORE 加载器授予广泛权限。加载器可能会访问文件、设备、令牌或网络。加载器执行的访问不受 `fs.read`、`fs.write` 或 `net` 权限范围的限制。
+
 ### `--allow-wasi`
 
 <!-- YAML
@@ -363,7 +379,7 @@ added: v20.0.0
 
 > 稳定性：1.1 - 积极开发中
 
-当使用 [Permission Model][] 时，进程默认将无法创建任何工作线程。
+当使用 [权限模型][] 时，进程默认将无法创建任何工作线程。
 出于安全原因，除非用户在主 Node.js 进程中显式传递 `--allow-worker` 标志，否则调用将抛出 `ERR_ACCESS_DENIED`。
 
 示例：
@@ -393,9 +409,9 @@ added:
 
 > 稳定性：1.1 - 积极开发中
 
-从 JSON 配置文件生成 [single executable application][]。参数必须是配置文件的路径。如果路径不是绝对路径，则相对于当前工作目录解析。
+从 JSON 配置文件生成[单可执行应用程序][single executable application]。参数必须是配置文件的路径。如果路径不是绝对路径，则相对于当前工作目录解析。
 
-有关配置字段、跨平台说明和资源 API，请参阅 [single executable application][] 文档。
+有关配置字段、跨平台说明和资源 API，请参阅[单可执行应用程序][single executable application]文档。
 
 ### `--build-snapshot`
 
@@ -442,7 +458,7 @@ I am from the snapshot
 
 由于确保所有内置模块的可序列化性很复杂，而且这些模块也在不断增长，因此只有一部分内置模块经过充分测试，可以在快照构建过程中序列化。
 Node.js 核心测试套件检查了几个相当复杂的应用程序是否可以快照化。被 [__TRANSDOC_LOCK_14__][] 的内置模块列表被视为受支持。
-当快照构建器遇到无法序列化的内置模块时，它可能会导致快照构建过程崩溃。在这种情况下，典型的解决方法是延迟加载该模块直到运行时，使用 [`v8.startupSnapshot.setDeserializeMainFunction()`][] 或 [`v8.startupSnapshot.addDeserializeCallback()`][]。如果需要在快照构建过程中为额外的模块进行序列化，请在 [Node.js 问题跟踪器][] 中提交请求，并将其链接到 [用户态快照的跟踪问题][].
+当快照构建器遇到无法序列化的内置模块时，它可能会导致快照构建过程崩溃。在这种情况下，典型的解决方法是延迟加载该模块直到运行时，使用 [`v8.startupSnapshot.setDeserializeMainFunction()`][] 或 [`v8.startupSnapshot.addDeserializeCallback()`][]。如果需要在快照构建过程中为额外的模块进行序列化，请在 [Node.js 问题跟踪器][] 中提交请求，并将其链接到 [用户态快照的跟踪问题][]。
 
 ### `--build-snapshot-config`
 
@@ -479,7 +495,7 @@ changes:
     description: "检查文件时现在支持 `--require` 选项。"
 -->
 
-语法检查脚本而不执行。
+检查脚本语法而不执行。
 
 ### `--completion-bash`
 
@@ -487,7 +503,7 @@ changes:
 added: v10.12.0
 -->
 
-Print a sourceable Node.js bash completion script.
+打印一个可供 source 的 Node.js bash 补全脚本。
 
 ```bash
 node --completion-bash > node_bash_completion
@@ -508,13 +524,13 @@ changes:
     description: 该标志不再是实验性的。
 -->
 
-提供自定义 [conditional exports][] 解析条件。
+提供自定义 [条件导出][] 解析条件。
 
 允许任意数量的自定义字符串条件名称。
 
 默认的 Node.js 条件 `"node"`、`"default"`、`"import"` 和 `"require"` 将始终按定义应用。
 
-例如，要以 "development" 解析运行模块：
+例如，要以 `"development"` 条件解析运行模块：
 
 ```bash
 node -C development app.js
@@ -566,7 +582,7 @@ changes:
     description: "`--cpu-prof` 标志现已稳定。"
 -->
 
-指定放置由 `--cpu-prof` 生成的 CPU 配置文件的目录。
+指定放置由 `--cpu-prof` 生成的 CPU 性能分析文件的目录。
 
 默认值由 [`--diagnostic-dir`][] 命令行选项控制。
 
@@ -640,15 +656,19 @@ changes:
 added:
   - v21.3.0
   - v20.11.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64742
+    description: "`--disable-warning` 标志现已稳定。"
 -->
 
-> 稳定性：1.1 - 积极开发中
+> 稳定性：2 - 稳定
 
 按 `code` 或 `type` 禁用特定的进程警告。
 
 从 [`process.emitWarning()`][emit_warning] 发出的警告可能包含 `code` 和 `type`。此选项将不发出具有匹配 `code` 或 `type` 的警告。
 
-[deprecation warnings][] 列表。
+[弃用警告][deprecation warnings] 列表。
 
 Node.js 核心警告类型为：`DeprecationWarning` 和 `ExperimentalWarning`
 
@@ -662,7 +682,7 @@ import sys from 'node:sys';
 const sys = require('node:sys');
 ```
 
-例如，以下脚本在使用 `node --disable-warning=ExperimentalWarning` 执行时将发出 [DEP0025 `require('node:sys')`][DEP0025 警告]，但不发出任何实验性警告（例如 <=v21 中的 [实验性警告：`vm.measureMemory` 是一项实验性功能][]）：
+例如，以下脚本在使用 `node --disable-warning=ExperimentalWarning` 执行时将发出 [DEP0025 `require('node:sys')`][DEP0025 warning]，但不发出任何实验性警告（例如 <=v21 中的 [实验性警告：`vm.measureMemory` 是一项实验性功能][实验性警告：`vm.measureMemory` 是一项实验性功能]）：
 
 ```mjs
 import sys from 'node:sys';
@@ -686,16 +706,17 @@ added:
 - v20.15.0
 changes:
   - version:
-    - v26.0.0
+     - v26.0.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/62132
-    description: 当启动时没有足够的虚拟内存可用以分配一个笼时，Node.js 现在会自动禁用陷阱处理程序。
+    description: Node.js 现在会在启动时没有足够的虚拟内存可用于分配一个笼时，自动禁用陷阱处理程序。
 -->
 
-Node.js 在 64 位平台上启用 V8 基于陷阱处理程序的 WebAssembly 边界检查，这通过消除对内联边界检查的需求显著提高了 WebAssembly 性能。此优化需要为每个 WebAssembly 内存实例分配一个大虚拟内存笼（目前 32 位 WebAssembly 内存通常为 8GB，64 位 WebAssembly 内存为 16GB）以捕获越界访问。在大多数 64 位平台上，虚拟内存地址空间通常足够大（约 128TB）以适应典型的 WebAssembly 用法，但如果机器对虚拟内存有手动限制（例如通过 `ulimit -v`），WebAssembly 内存分配更可能因 `WebAssembly.Memory(): could not allocate memory` 而失败。
+Node.js 在 64 位平台上启用基于 V8 陷阱处理程序的 WebAssembly 边界检查，通过消除内联边界检查的需要，显著提升 WebAssembly 的性能。此优化需要为每个 WebAssembly 内存实例分配一个大型虚拟内存笼（目前，32 位 WebAssembly 内存通常为 8GB，64 位 WebAssembly 内存为 16GB），以捕获越界访问。在大多数 64 位平台上，虚拟内存地址空间通常足够大（约 128TB），能够满足典型的 WebAssembly 使用场景；但是，如果机器对虚拟内存设置了手动限制（例如通过 `ulimit -v`），WebAssembly 内存分配更有可能因 `WebAssembly.Memory(): could not allocate memory` 而失败。
 
-在启动时，Node.js 自动检查是否有足够的虚拟内存可用以分配至少一个笼，如果没有，则自动禁用陷阱处理程序优化，以便 WebAssembly 仍然可以使用内联边界检查运行（性能较差）。但是，如果应用程序需要创建许多 WebAssembly 内存实例，并且机器仍然配置了相对较高的虚拟内存限制，由于虚拟内存使用量增加，WebAssembly 内存实例的分配仍可能比预期更快地失败。
+启动时，Node.js 会自动检查是否有足够的虚拟内存可用于分配至少一个笼。如果没有，Node.js 会自动禁用陷阱处理程序优化，使 WebAssembly 能够继续使用内联边界检查运行（但性能较低）。不过，如果应用程序需要创建大量 WebAssembly 内存实例，并且机器仍配置了相对较高的虚拟内存限制，那么由于虚拟内存使用量增加，WebAssembly 内存实例的分配仍可能比预期更快地失败。
 
-`--disable-wasm-trap-handler` 完全禁用此优化，以便 WebAssembly 内存实例始终使用内联边界检查，而不是保留大虚拟内存笼。当 Node.js 进程可用的虚拟内存地址空间有限时，这允许创建更多实例。
+`--disable-wasm-trap-handler` 会完全禁用此优化，使 WebAssembly 内存实例始终使用内联边界检查，而不是保留大型虚拟内存笼。当 Node.js 进程可用的虚拟内存地址空间有限时，这可以创建更多实例。
 
 ### `--disallow-code-generation-from-strings`
 
@@ -750,7 +771,7 @@ changes:
     description: 此 API 不再处于实验阶段。
 -->
 
-启用堆栈跟踪的 [Source Map][] 支持。
+启用堆栈跟踪的 [源映射][] 支持。
 
 使用转译器（如 TypeScript）时，应用程序抛出的堆栈跟踪引用的是转译后的代码，而不是原始源位置。`--enable-source-maps` 启用源映射的缓存，并尽最大努力报告相对于原始源文件的堆栈跟踪。
 
@@ -778,7 +799,7 @@ added:
 
 如果存在，Node.js 将把入口点解释为 URL，而不是路径。
 
-遵循 [ECMAScript module][] 解析规则。
+遵循 [ECMAScript 模块][] 解析规则。
 
 URL 中的任何查询参数或哈希都可以通过 [`import.meta.url`][] 访问。
 
@@ -881,7 +902,7 @@ changes:
 
 如果 `script` 以 `-` 开头，请使用 `=` 传递它（例如，`node --print --eval=-42`），以便将其解析为 `--eval` 的值。
 
-在 Windows 上，使用 `cmd.exe` 时单引号将无法正常工作，因为它只识别双 `"` 进行引号。在 Powershell 或 Git bash 中，`'` 和 `"` 均可用。
+在 Windows 上，使用 `cmd.exe` 时单引号将无法正常工作，因为它只识别双 `"` 进行引号。在 PowerShell 或 Git Bash 中，`'` 和 `"` 均可用。
 
 除非提供 [`--no-strip-types`][] 标志，否则可以运行包含内联类型的代码。
 
@@ -892,7 +913,9 @@ added:
   - v23.6.0
   - v22.20.0
 changes:
-  - version: v26.5.0
+  - version:
+     - v26.5.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/64221
     description: 这已默认启用。
 -->
@@ -907,9 +930,13 @@ changes:
 added:
  - v23.10.0
  - v22.16.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64516
+    description: 标记为候选发布版。
 -->
 
-> 稳定性：1.0 - 早期开发
+> 稳定性：1.2 - 候选发布版
 
 如果存在，Node.js 将在指定路径查找配置文件。
 如果未指定路径，Node.js 将在当前工作目录中查找 `node.config.json` 文件。
@@ -1007,7 +1034,7 @@ node --test --test-isolation=process
 不支持无操作标志。
 并非所有 V8 标志目前都受支持。
 
-可以使用 [官方 JSON 模式](../node-config-schema.json) 验证配置文件，这可能因 Node.js 版本而异。
+可以使用[官方 JSON 模式](../node-config-schema.json)验证配置文件，这可能因 Node.js 版本而异。
 配置文件中的每个键对应于一个可以作为命令行参数传递的标志。键的值是将传递给标志的值。
 
 例如，上面的配置文件等同于以下命令行参数：
@@ -1099,6 +1126,7 @@ changes:
 <!-- YAML
 added:
   - v26.5.0
+  - v24.19.0
 -->
 
 > 稳定性：1.0 - 早期开发
@@ -1134,11 +1162,11 @@ changes:
 -->
 
 > 不鼓励使用此标志，它可能会在未来的 Node.js 版本中被移除。
-> 请改用 [`--import` 使用 `register()`][preloading asynchronous module customization hooks]。
+> 请改用 [`--import` 使用 `register()`][预加载异步模块自定义钩子]。
 
-指定包含导出的 [asynchronous module customization hooks][] 的 `module`。`module` 可以是任何接受为 [`import` specifier][] 的字符串。
+指定包含导出的[异步模块自定义钩子][]的 `module`。`module` 可以是任何可接受为 [`import` 说明符][] 的字符串。
 
-如果与 [权限模型][] 一起使用，此功能需要 `--allow-worker`。
+如果与[权限模型][]一起使用，此功能需要 `--allow-worker`。
 
 ### `--experimental-network-inspection`
 
@@ -1169,7 +1197,7 @@ node --experimental-package-map=./package-map.json app.js
 启用后，裸说明符解析会查询包映射以进行解析。
 这使得可以显式控制哪些包可以导入哪些依赖项。
 
-有关配置文件格式和解析算法的详细信息，请参阅 [包映射][].
+有关配置文件格式和解析算法的详细信息，请参阅 [包映射][]。
 
 ### `--experimental-print-required-tla`
 
@@ -1183,7 +1211,7 @@ changes:
     description: 在不执行模块的情况下打印顶层 await。
 -->
 
-如果 ES 模块图因为包含任何顶层 `await` 而无法被 `require()`，此标志允许 Node.js 定位并打印它们的位置。
+如果 ES 模块图由于包含任何顶层 `await` 而无法被 `require()`，此标志允许 Node.js 定位并打印它们的位置。
 
 ### `--experimental-quic`
 
@@ -1227,7 +1255,7 @@ added:
 
 > 稳定性：1.1 - 积极开发中
 
-启用存储检查的实验性支持
+启用存储检查的实验性支持。
 
 ### `--experimental-stream-iter`
 
@@ -1280,7 +1308,9 @@ changes:
 ### `--experimental-test-tag-filter=<tag>`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.19.0
 -->
 
 > 稳定性：1.0 - 早期开发
@@ -1366,7 +1396,7 @@ if (globalThis.gc) {
 added: v12.12.0
 -->
 
-Disable loading native addons that are not [context-aware][].
+禁止加载不具备[上下文感知能力][]的原生插件。
 
 ### `--force-fips`
 
@@ -1384,9 +1414,9 @@ added:
   - v16.17.0
 -->
 
-在 Node-API 异步回调上强制 `uncaughtException` 事件。
+在 Node-API 异步回调上强制触发 `uncaughtException` 事件。
 
-为了防止现有插件使进程崩溃，默认情况下不启用此标志。将来，此标志将默认启用以强制正确的行为。
+为了防止现有插件导致进程崩溃，默认情况下不启用此标志。将来，此标志将默认启用，以强制执行正确的行为。
 
 ### `--frozen-intrinsics`
 
@@ -1556,11 +1586,11 @@ added:
 
 在启动时预加载指定的模块。如果多次提供该标志，每个模块将按出现的顺序依次执行，从 [`NODE_OPTIONS`][] 中提供的模块开始。
 
-遵循 [ECMAScript module][] 解析规则。
-使用 [`--require`][] 加载 [CommonJS module][]。
+遵循 [ECMAScript 模块][] 解析规则。
+使用 [`--require`][] 加载 [CommonJS 模块][]。
 使用 `--require` 预加载的模块将在使用 `--import` 预加载的模块之前运行。
 
-模块被预加载到主线程以及任何工作线程、fork 的进程或集群进程中。
+模块会被预加载到主线程以及任何工作线程、派生进程或集群进程中。
 
 ### `--input-type=type`
 
@@ -1628,7 +1658,7 @@ added: v7.6.0
 
 在 `host:port` 激活检查器并在用户脚本开始时中断。默认 `host:port` 为 `127.0.0.1:9229`。如果指定端口 `0`，则将使用随机可用端口。
 
-有关 Node.js 调试器的进一步说明，请参阅 [V8 Inspector integration for Node.js][]。
+有关 Node.js 调试器的进一步说明，请参阅 [Node.js 的 V8 检查器集成][]。
 
 有关 `host` 参数使用的 [安全警告][]，请参阅下文。
 
@@ -1667,12 +1697,12 @@ added:
 ### `--inspect[=[host:]port]`
 
 <!-- YAML
-Added in: v6.3.0
+添加于：v6.3.0
 -->
 
 激活 `host:port` 上的检查器。默认值为 `127.0.0.1:9229`。如果指定端口 `0`，则将使用随机可用端口。
 
-V8 检查器集成允许 Chrome DevTools 和 IDE 等工具调试和配置 Node.js 实例。工具通过 tcp 端口附加到 Node.js 实例，并使用 [Chrome DevTools Protocol][] 进行通信。有关 Node.js 调试器的进一步说明，请参阅 [V8 Inspector integration for Node.js][]。
+V8 检查器集成允许 Chrome DevTools 和 IDE 等工具调试和配置 Node.js 实例。工具通过 TCP 端口附加到 Node.js 实例，并使用 [Chrome DevTools Protocol][] 进行通信。有关 Node.js 调试器的进一步说明，请参阅 [V8 Inspector integration for Node.js][]。
 
 <!-- 锚点，用于确保旧链接能找到目标 -->
 
@@ -1813,14 +1843,6 @@ added: v21.2.0
 
 禁用在全局作用域上暴露 [Navigator API][].
 
-### `--no-experimental-repl-await`
-
-<!-- YAML
-added: v16.6.0
--->
-
-使用此标志禁用 REPL 中的顶层 await。
-
 ### `--no-experimental-require-module`
 
 <!-- YAML
@@ -1854,7 +1876,7 @@ changes:
     - v23.4.0
     - v22.13.0
     pr-url: https://github.com/nodejs/node/pull/55890
-    description: SQLite has been unflagged but is still experimental.
+    description: SQLite 已取消实验性标志，但仍处于实验阶段。
 -->
 
 禁用实验性的 [`node:sqlite`][] 模块。
@@ -1887,7 +1909,7 @@ changes:
 added: v17.0.0
 -->
 
-隐藏导致退出的致命异常上的额外信息。
+隐藏导致退出的致命异常的额外信息。
 
 ### `--no-force-async-hooks-checks`
 
@@ -1895,7 +1917,7 @@ added: v17.0.0
 added: v9.0.0
 -->
 
-Disable the runtime checks of `async_hooks`. When `async_hooks` is enabled, these checks are still dynamically enabled.
+禁用 `async_hooks` 的运行时检查。启用 `async_hooks` 时，这些检查仍会动态启用。
 
 ### `--no-global-search-paths`
 
@@ -1946,7 +1968,7 @@ changes:
 
 禁用在 `require()` 中加载同步 ES 模块图的支持。
 
-请参阅 [使用 `require()` 加载 ECMAScript 模块][].
+请参阅 [使用 `require()` 加载 ECMAScript 模块][]。
 
 ### `--no-strip-types`
 
@@ -1993,9 +2015,7 @@ added:
 added: v6.9.0
 -->
 
-在启动时加载 OpenSSL 配置文件。除其他用途外，这可以
-用于在 Node.js 是针对
-启用 FIPS 的 OpenSSL 构建时，启用符合 FIPS 标准的加密。
+在启动时加载 OpenSSL 配置文件。除其他用途外，当 Node.js 针对启用 FIPS 的 OpenSSL 构建时，这可用于启用符合 FIPS 标准的加密。
 
 ### `--openssl-legacy-provider`
 
@@ -2019,11 +2039,12 @@ added:
 
 启用 OpenSSL 默认配置部分 `openssl_conf`，以便从
 OpenSSL 配置文件中读取。默认配置文件名为
-`openssl.cnf`，但这可以使用环境变量
-`OPENSSL_CONF` 更改，或使用命令行选项 `--openssl-config`。
+`openssl.cnf`，但可以使用环境变量
+`OPENSSL_CONF` 或命令行选项 `--openssl-config` 进行更改。
 默认 OpenSSL 配置文件的位置取决于 OpenSSL
 如何链接到 Node.js。共享 OpenSSL 配置可能会产生不必要的
-影响，建议使用特定于 Node.js 的配置部分，即 `nodejs_conf`，当不使用此选项时它是默认的。
+影响，因此建议使用特定于 Node.js 的配置部分 `nodejs_conf`；
+不使用此选项时，该配置部分为默认配置。
 
 ### `--pending-deprecation`
 
@@ -2031,14 +2052,9 @@ OpenSSL 配置文件中读取。默认配置文件名为
 added: v8.0.0
 -->
 
-Emit pending deprecation warnings.
+发出待定弃用警告。
 
-Pending deprecations are generally identical to runtime deprecations with
-the notable exception that they are off by default and will not be emitted
-unless either the `--pending-deprecation` command-line flag or the
-`NODE_PENDING_DEPRECATION=1` environment variable is set. Pending deprecations
-are used to provide a selective "early warning" mechanism that
-developers may leverage to detect use of deprecated APIs.
+待定弃用通常与运行时弃用完全相同，但有一个显著的例外：它们默认处于关闭状态，除非设置了 `--pending-deprecation` 命令行标志或 `NODE_PENDING_DEPRECATION=1` 环境变量，否则不会发出警告。待定弃用用于提供一种选择性的“预警”机制，开发者可以利用该机制检测对已弃用 API 的使用情况。
 
 ### `--permission`
 
@@ -2055,13 +2071,18 @@ changes:
 为当前进程启用权限模型。启用时，
 以下权限受到限制：
 
-* 文件系统 - 可通过 [`--allow-fs-read`][], [`--allow-fs-write`][] 标志管理
-* 网络 - 可通过 [`--allow-net`][] 标志管理
-* 子进程 - 可通过 [`--allow-child-process`][] 标志管理
-* 工作线程 - 可通过 [`--allow-worker`][] 标志管理
-* WASI - 可通过 [`--allow-wasi`][] 标志管理
-* 加载项 - 可通过 [`--allow-addons`][] 标志管理
-* FFI - 可通过 [`--allow-ffi`](#--allow-ffi) 标志管理
+> 另请参阅仅审计模式 [`--permission-audit`](#--permission-audit)，
+> 该模式会记录违规行为，但不会拒绝访问。
+
+* 文件系统 - 可通过
+  [`--allow-fs-read`][]、[`--allow-fs-write`][] 标志进行管理
+* 网络 - 可通过 [`--allow-net`][] 标志进行管理
+* 子进程 - 可通过 [`--allow-child-process`][] 标志进行管理
+* Worker 线程 - 可通过 [`--allow-worker`][] 标志进行管理
+* WASI - 可通过 [`--allow-wasi`][] 标志进行管理
+* 原生插件 - 可通过 [`--allow-addons`][] 标志进行管理
+* FFI - 可通过 [`--allow-ffi`](#--allow-ffi) 标志进行管理
+* OpenSSL STORE 加载器 - 可通过 [`--allow-openssl-store`][] 标志进行管理
 
 ### `--permission-audit`
 
@@ -2069,9 +2090,17 @@ changes:
 added: v25.8.0
 -->
 
-仅为权限模型启用审计。启用时，执行权限检查
-但不拒绝访问。相反，通过诊断通道为
-每个权限违规发出警告。
+启用权限模型的审计模式。启用后会执行权限检查，但**不会**拒绝访问——不会抛出 `ERR_ACCESS_DENIED` 错误。相反，每次权限违规都会通过
+`node:diagnostics_channel` 模块发布，并且执行会正常继续。
+
+使用此标志不要求同时指定 [`--permission`](#--permission)。在审计模式下不需要使用
+`--allow-*` 标志，因为不会拒绝访问。
+
+在使用 [`--permission`](#--permission) 部署之前，审计模式有助于发现应用程序所需的权限。有关诊断频道名称列表和消息格式，请参阅
+[权限模型][] 文档。
+
+如果同时指定了 [`--permission`](#--permission) 和 `--permission-audit`，
+则以 `--permission` 为准，权限模型将以强制模式运行。
 
 ### `--preserve-symlinks`
 
@@ -2083,9 +2112,9 @@ added: v6.3.0
 缓存模块时保留符号链接。
 
 默认情况下，当 Node.js 从符号链接到
-不同磁盘位置的路径加载模块时，Node.js 将取消引用链接并使用模块的实际磁盘“真实路径”作为标识符和作为根
+不同磁盘位置的路径加载模块时，Node.js 会取消引用链接，并使用模块的实际磁盘“真实路径”作为标识符和根
 路径来定位其他依赖模块。在大多数情况下，此默认行为
-是可以接受的。但是，当使用符号链接的对等依赖时，如下例所示，如果 `moduleA` 尝试 require `moduleB` 作为对等依赖，默认行为会导致抛出异常：
+是可以接受的。但是，当使用符号链接的对等依赖时，如下例所示，如果 `moduleA` 尝试将 `moduleB` 作为对等依赖进行 require，默认行为会导致抛出异常：
 
 ```text
 {appDir}
@@ -2102,14 +2131,14 @@ added: v6.3.0
 ```
 
 `--preserve-symlinks` 命令行标志指示 Node.js 对模块使用
-符号链接路径而不是真实路径，允许找到符号链接的
+符号链接路径，而不是真实路径，从而允许找到符号链接的
 对等依赖。
 
 但是请注意，使用 `--preserve-symlinks` 可能会产生其他副作用。
-具体来说，如果符号链接的_原生_模块从依赖树中的多个位置链接，则可能无法加载（Node.js 会将它们视为两个单独的模块并尝试多次加载模块，导致抛出异常）。
+具体来说，如果符号链接的_原生_模块从依赖树中的多个位置链接，则可能无法加载（Node.js 会将它们视为两个单独的模块，并尝试多次加载该模块，从而导致抛出异常）。
 
 `--preserve-symlinks` 标志不适用于主模块，这允许
-`node --preserve-symlinks node_module/.bin/<foo>` 工作。要对主模块应用相同的
+`node --preserve-symlinks node_module/.bin/<foo>` 正常工作。要对主模块应用相同的
 行为，还请使用 `--preserve-symlinks-main`。
 
 ### `--preserve-symlinks-main`
@@ -2149,7 +2178,7 @@ changes:
 added: v2.0.0
 -->
 
-Generate V8 profiler output.
+生成 V8 性能分析器输出。
 
 ### `--prof-process`
 
@@ -2219,7 +2248,7 @@ added:
 -->
 
 从诊断报告中排除 `header.networkInterfaces`。默认情况下
-未设置此项，并且包含网络接口。
+未设置此选项，并且报告中包含网络接口。
 
 ### `--report-filename=filename`
 
@@ -2332,12 +2361,12 @@ changes:
 启动时预加载指定模块。
 
 遵循 `require()` 的模块解析
-规则。`module` 可以是文件路径，也可以是 node 模块名称。
+规则。`module` 可以是文件路径，也可以是 Node.js 模块名称。
 
 使用 `--require` 预加载的模块将在使用 `--import` 预加载的模块之前运行。
 
 模块被预加载到主线程以及任何工作线程、
-fork 的进程或集群进程中。
+派生的进程或集群进程中。
 
 ### `--run`
 
@@ -2361,8 +2390,128 @@ changes:
 `--run` 将向上遍历到根目录并找到 `package.json`
 文件以从中运行命令。
 
-`--run` 将 `./node_modules/.bin` 预先添加到当前目录的每个祖先目录的
-PATH 中，'utility perhaps? noqa'
+`--run` 会将当前目录每个祖先目录中的 `./node_modules/.bin` 添加到
+`PATH` 中，以便在存在多个 `node_modules` 目录时，从不同文件夹中执行二进制文件，
+前提是 `ancestor-folder/node_modules/.bin` 是一个目录。
+
+`--run` 会在包含相关 `package.json` 的目录中执行命令。
+
+例如，以下命令将在当前文件夹中的
+`package.json` 内运行 `test` 脚本：
+
+```console
+$ node --run test
+```
+
+你也可以向命令传递参数。`--` 后的任何参数都将
+追加到脚本中：
+
+```console
+$ node --run test -- --verbose
+```
+
+#### 有意的限制
+
+`node --run` 并不旨在匹配 `npm run` 或其他包管理器的
+`run` 命令的行为。Node.js 的实现有意进行了更多限制，
+以专注于最常见使用场景下的最高性能。
+其他 `run` 实现中的以下功能被有意排除：
+
+* 除指定脚本外，同时运行 `pre` 或 `post` 脚本。
+* 定义包管理器专用的环境变量。
+
+#### 环境变量
+
+使用 `--run` 运行脚本时，会设置以下环境变量：
+
+* `NODE_RUN_SCRIPT_NAME`：正在运行的脚本名称。例如，如果使用
+  `--run` 运行 `test`，则此变量的值将为 `test`。
+* `NODE_RUN_PACKAGE_JSON_PATH`：正在处理的 `package.json` 的路径。
+
+从 [`--env-file`][] 文件中加载的环境变量不会应用于
+由 `--run` 执行的命令。
+
+### `--secure-heap-min=n`
+
+<!-- YAML
+added: v15.6.0
+-->
+
+使用 `--secure-heap` 时，`--secure-heap-min` 标志指定安全堆的最小分配量。最小值为 `2`。
+最大值为 `--secure-heap` 或 `2147483647` 中的较小值。
+给定的值必须是 2 的幂。
+
+### `--secure-heap=n`
+
+<!-- YAML
+added: v15.6.0
+-->
+
+初始化一个大小为 `n` 字节的 OpenSSL 安全堆。初始化后，在密钥生成和其他操作期间，OpenSSL 会将安全堆用于特定类型的分配。例如，这有助于防止敏感信息因指针越界或下溢而泄露。
+
+安全堆的大小是固定的，无法在运行时调整，因此如果使用安全堆，务必选择足够大的堆，以满足应用程序的所有使用需求。
+
+指定的堆大小必须是 2 的幂。任何小于 2 的值都会禁用安全堆。
+
+默认情况下，安全堆处于禁用状态。
+
+Windows 不支持安全堆。
+
+有关更多详细信息，请参阅 [`CRYPTO_secure_malloc_init`][]。
+
+### `--snapshot-blob=path`
+
+<!-- YAML
+added: v18.8.0
+-->
+
+> 稳定性：1 - 实验性
+
+与 `--build-snapshot` 一起使用时，`--snapshot-blob` 指定生成的快照 blob 的写入路径。如果未指定，则生成的 blob 会写入当前工作目录中的 `snapshot.blob`。
+
+不与 `--build-snapshot` 一起使用时，`--snapshot-blob` 指定用于恢复应用程序状态的 blob 路径。
+
+加载快照时，Node.js 会检查：
+
+1. 正在运行的 Node.js 二进制文件的版本、架构和平台是否与生成快照的二进制文件完全相同。
+2. V8 标志和 CPU 功能是否与生成快照的二进制文件兼容。
+
+如果不匹配，Node.js 将拒绝加载快照，并以状态码 1 退出。
+
+### `--test`
+
+<!-- YAML
+added:
+  - v18.1.0
+  - v16.17.0
+changes:
+  - version: v20.0.0
+    pr-url: https://github.com/nodejs/node/pull/46983
+    description: 测试运行器现已稳定。
+  - version:
+      - v19.2.0
+      - v18.13.0
+    pr-url: https://github.com/nodejs/node/pull/45214
+    description: 测试运行器现在支持以监视模式运行。
+-->
+
+启动 Node.js 命令行测试运行器。此标志不能与
+`--watch-path`、`--check`、`--eval`、`--interactive` 或检查器结合使用。
+有关更多详细信息，请参阅[从命令行运行测试][]
+的文档。
+
+### `--test-concurrency`
+
+<!-- YAML
+added:
+  - v21.0.0
+  - v20.10.0
+  - v18.19.0
+-->
+
+测试运行器 CLI 将并发执行的测试文件的最大数量。如果将 `--test-isolation` 设置为 `'none'`，则忽略此标志，并发数为 1。否则，并发数默认为 `os.availableParallelism() - 1`。
+
+### `--test-coverage-branches=threshold`
 
 <!-- YAML
 added: v22.8.0
@@ -2370,7 +2519,7 @@ added: v22.8.0
 
 > 稳定性：1 - 实验性
 
-要求最低百分比的覆盖函数。如果代码覆盖率未达到
+要求函数覆盖率达到最低百分比。如果代码覆盖率未达到
 指定的阈值，进程将以退出码 `1` 退出。
 
 ### `--test-coverage-include`
@@ -2389,6 +2538,19 @@ added:
 
 如果同时提供 `--test-coverage-exclude` 和 `--test-coverage-include`，
 文件必须满足**两者**标准才能包含在覆盖率报告中。
+
+### `--test-coverage-include-all`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+在覆盖率报告中包含测试运行期间从未加载的源文件，并将其报告为覆盖率为零。
+
+候选文件将在当前工作目录中搜索，并接受与报告其余部分相同的
+`--test-coverage-include` 和 `--test-coverage-exclude` 过滤。
 
 ### `--test-coverage-lines=threshold`
 
@@ -2409,7 +2571,7 @@ added:
   - v20.14.0
 -->
 
-Configure the test runner to exit the process after all known tests have finished running, even if the event loop would otherwise remain active.
+配置测试运行器在所有已知测试运行完毕后退出进程，即使事件循环仍会保持活动状态。
 
 ### `--test-global-setup=module`
 
@@ -2559,13 +2721,13 @@ added:
 
 以 `<index>/<total>` 格式执行的测试套件分片，其中
 
-* `index` 是正整数，划分部分的索引。
-* `total` 是正整数，划分部分的总数。
+* `index` 是正整数，表示分片的索引。
+* `total` 是正整数，表示分片的总数。
 
-此命令将所有测试文件划分为 `total` 个相等部分，
-并仅运行那些恰好在 `index` 部分中的文件。
+此命令将所有测试文件划分为 `total` 个相等的分片，
+并仅运行恰好属于 `index` 分片的文件。
 
-例如，要将测试套件分为三部分，请使用此命令：
+例如，要将测试套件分为三部分，请使用以下命令：
 
 ```bash
 node --test --test-shard=1/3
@@ -2594,8 +2756,8 @@ added:
   - v20.11.0
 -->
 
-测试执行将在之后失败的毫秒数。如果未指定，
-子测试从其父级继承此值。默认值为 `Infinity`。
+测试将在指定的毫秒数后失败。如果未指定，
+子测试将从其父级继承此值。默认值为 `Infinity`。
 
 ### `--test-update-snapshots`
 
@@ -2619,13 +2781,13 @@ added: v0.11.14
 
 为弃用抛出错误。
 
-### `--title=title`
+### `--title=标题`
 
 <!-- YAML
 added: v10.7.0
 -->
 
-Set `process.title` on startup.
+在启动时设置 `process.title`。
 
 ### `--tls-cipher-list=list`
 
@@ -2777,8 +2939,7 @@ added: v7.7.0
 added: v9.8.0
 -->
 
-指定跟踪事件数据文件路径的模板字符串，它
-支持 `${rotation}` 和 `${pid}`。
+指定跟踪事件数据文件路径的模板字符串，它支持 `${rotation}` 和 `${pid}`。
 
 ### `--trace-events-enabled`
 
@@ -2786,7 +2947,7 @@ added: v9.8.0
 added: v7.7.0
 -->
 
-Enable the collection of trace event tracing information.
+启用跟踪事件跟踪信息的收集。
 
 ### `--trace-exit`
 
@@ -3061,7 +3222,7 @@ changes:
 在监视模式下，被监视文件中的更改会导致 Node.js 进程
 重启。
 默认情况下，监视模式将监视入口点
-和任何 required 或 imported 模块。
+和任何通过 `require` 或 `import` 导入的模块。
 使用 `--watch-path` 指定要监视的路径。
 
 此标志不能与
@@ -3154,13 +3315,13 @@ added: v6.0.0
 
 `FORCE_COLOR` 环境变量用于启用 ANSI 彩色输出。该值可以是：
 
-* `1`、`true` 或空字符串 `''` 表示支持 16 色，
-* `2` 表示支持 256 色，或
-* `3` 表示支持 1600 万色。
+* `1`、`true` 或空字符串 `''`，表示支持 16 色，
+* `2`，表示支持 256 色，或
+* `3`，表示支持 1600 万色。
 
-当使用 `FORCE_COLOR` 并设置为支持的值时，`NO_COLOR` 和 `NODE_DISABLE_COLORS` 环境变量都会被忽略。
+当使用 `FORCE_COLOR` 并将其设置为受支持的值时，`NO_COLOR` 和 `NODE_DISABLE_COLORS` 环境变量都会被忽略。
 
-任何其他值将导致彩色输出被禁用。
+任何其他值都会导致彩色输出被禁用。
 
 ### `NODE_COMPILE_CACHE=dir`
 
@@ -3230,7 +3391,7 @@ added: v7.3.0
 added: v0.11.15
 -->
 
-ICU (`Intl` 对象) 数据的数据路径。当编译为支持 small-icu 时，将扩展链接的数据。
+ICU（`Intl` 对象）数据的路径。当编译为支持 small-icu 时，将链接扩展数据。
 
 ### `NODE_NO_WARNINGS=1`
 
@@ -3280,6 +3441,7 @@ node --require "./a.js" --require "./b.js"
 * `--allow-fs-write`
 * `--allow-inspector`
 * `--allow-net`
+* `--allow-openssl-store`
 * `--allow-wasi`
 * `--allow-worker`
 * `--conditions`, `-C`
@@ -3348,7 +3510,6 @@ node --require "./a.js" --require "./b.js"
 * `--no-async-context-frame`
 * `--no-deprecation`
 * `--no-experimental-global-navigator`
-* `--no-experimental-repl-await`
 * `--no-experimental-sqlite`
 * `--no-experimental-strip-types`
 * `--no-experimental-websocket`
@@ -3388,6 +3549,7 @@ node --require "./a.js" --require "./b.js"
 * `--test-coverage-branches`
 * `--test-coverage-exclude`
 * `--test-coverage-functions`
+* `--test-coverage-include-all`
 * `--test-coverage-include`
 * `--test-coverage-lines`
 * `--test-global-setup`
@@ -3492,7 +3654,7 @@ added: v8.0.0
 
 ### `NODE_PENDING_PIPE_INSTANCES=instances`
 
-Sets the number of pending pipe instance handles for a pipe server while waiting for connections. This setting only applies to Windows.
+设置管道服务器在等待连接时的挂起管道实例句柄数量。此设置仅适用于 Windows。
 
 ### `NODE_PRESERVE_SYMLINKS=1`
 
@@ -3500,12 +3662,12 @@ Sets the number of pending pipe instance handles for a pipe server while waiting
 added: v7.1.0
 -->
 
-When set to `1`, instructs the module loader to preserve symbolic links when resolving and caching modules.
+设置为 `1` 时，指示模块加载器在解析和缓存模块时保留符号链接。
 
 ### `NODE_REDIRECT_WARNINGS=file`
 
 <!-- YAML
-added: v8.0.0
+添加于: v8.0.0
 -->
 
 设置后，进程警告将发送到给定文件，而不是打印到 stderr。如果文件不存在，将创建该文件；如果存在，将追加内容。如果尝试将警告写入文件时发生错误，警告将改为写入 stderr。这等同于使用 `--redirect-warnings=file` 命令行标志。
@@ -3549,7 +3711,7 @@ added: v14.5.0
 
 ### `NODE_TLS_REJECT_UNAUTHORIZED=value`
 
-If `value` is equal to `'0'`, certificate verification for TLS connections is disabled. This makes TLS and, by extension, HTTPS insecure. The use of this environment variable is strongly discouraged.
+如果 `value` 等于 `'0'`，则会禁用 TLS 连接的证书验证。这会导致 TLS，以及由此扩展的 HTTPS 变得不安全。强烈不建议使用此环境变量。
 
 ### `NODE_USE_ENV_PROXY=1`
 
@@ -3719,7 +3881,7 @@ Wed May 12 2021 20:30:48 GMT+0100 (Irish Standard Time)
 * `dns.lookup()`
 * 所有 `zlib` API，除了那些明确同步的 API
 
-因为 libuv 的线程池大小是固定的，这意味着如果出于任何原因这些 API 中的任何一个花费很长时间，其他（看似无关的）在 libuv 线程池中运行的 API 将经历性能下降。为了缓解此问题，一个潜在的解决方案是通过将 `'UV_THREADPOOL_SIZE'` 环境变量设置为大于 `4`（其当前默认值）的值来增加 libuv 线程池的大小。但是，在进程内部使用 `process.env.UV_THREADPOOL_SIZE=size` 设置此值不能保证有效，因为线程池将在用户代码运行之前作为运行时初始化的一部分创建。有关更多信息，请参阅 [libuv 线程池文档][].
+因为 libuv 的线程池大小是固定的，这意味着如果出于任何原因这些 API 中的任何一个花费很长时间，其他（看似无关的）在 libuv 线程池中运行的 API 将经历性能下降。为了缓解此问题，一个潜在的解决方案是通过将 `'UV_THREADPOOL_SIZE'` 环境变量设置为大于 `4`（其当前默认值）的值来增加 libuv 线程池的大小。但是，在进程内部使用 `process.env.UV_THREADPOOL_SIZE=size` 设置此值不能保证有效，因为线程池将在用户代码运行之前作为运行时初始化的一部分创建。有关更多信息，请参阅 [libuv 线程池文档][]。
 
 ## 有用的 V8 选项
 
@@ -3840,6 +4002,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`--allow-fs-read`]: #--allow-fs-read
 [`--allow-fs-write`]: #--allow-fs-write
 [`--allow-net`]: #--allow-net
+[`--allow-openssl-store`]: #--allow-openssl-store
 [`--allow-wasi`]: #--allow-wasi
 [`--allow-worker`]: #--allow-worker
 [`--build-snapshot`]: #--build-snapshot
@@ -3870,6 +4033,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`NO_COLOR`]: https://no-color.org
 [`Web Storage`]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
 [`YoungGenerationSizeFromSemiSpaceSize`]: https://chromium.googlesource.com/v8/v8.git/+/refs/tags/10.3.129/src/heap/heap.cc#328
+[`crypto.createPrivateKey()`]: crypto.md#cryptocreateprivatekeykey
 [`dns.lookup()`]: dns.md#dnslookuphostname-options-callback
 [`dns.setDefaultResultOrder()`]: dns.md#dnssetdefaultresultorderorder
 [`dnsPromises.lookup()`]: dns.md#dnspromiseslookuphostname-options
@@ -3880,6 +4044,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`node:sqlite`]: sqlite.md
 [`node:stream/iter`]: stream_iter.md
 [`node:vfs`]: vfs.md
+[`permission.drop()`]: permissions.md#permissiondropscope-reference
 [`process.setUncaughtExceptionCaptureCallback()`]: process.md#processsetuncaughtexceptioncapturecallbackfn
 [`tls.DEFAULT_MAX_VERSION`]: tls.md#tlsdefault_max_version
 [`tls.DEFAULT_MIN_VERSION`]: tls.md#tlsdefault_min_version

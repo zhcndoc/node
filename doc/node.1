@@ -222,6 +222,17 @@ Error: connect ERR_ACCESS_DENIED Access to this API has been restricted. Use --a
 }
 .Ed
 .
+.It Fl -allow-openssl-store
+When using the Permission Model, the process will not be able to use
+OpenSSL STORE loaders by default, for example to load a private key from a
+\fB<URL>\fR passed to \fBcrypto.createPrivateKey()\fR. Attempts to do so will throw
+an \fBERR_ACCESS_DENIED\fR unless the user explicitly passes the
+\fB--allow-openssl-store\fR flag. This permission can be dropped at runtime via
+\fBpermission.drop()\fR.
+This flag grants broad authority to configured OpenSSL STORE loaders. A loader
+may access files, devices, tokens, or the network. Access performed by a loader
+is not constrained by the \fBfs.read\fR, \fBfs.write\fR, or \fBnet\fR permission scopes.
+.
 .It Fl -allow-wasi
 When using the Permission Model, the process will not be capable of creating
 any WASI instances by default.
@@ -1093,9 +1104,6 @@ Disable using syntax detection to determine module type.
 .It Fl -no-experimental-global-navigator
 Disable exposition of Navigator API on the global scope.
 .
-.It Fl -no-experimental-repl-await
-Use this flag to disable top-level await in REPL.
-.
 .It Fl -no-experimental-require-module
 Legacy alias for \fB--no-require-module\fR.
 .
@@ -1169,6 +1177,7 @@ developers may leverage to detect deprecated API usage.
 .It Fl -permission
 Enable the Permission Model for current process. When enabled, the
 following permissions are restricted:
+
 .Bl -bullet
 .It
 File System - manageable through
@@ -1185,12 +1194,24 @@ WASI - manageable through \fB--allow-wasi\fR flag
 Addons - manageable through \fB--allow-addons\fR flag
 .It
 FFI - manageable through \fB--allow-ffi\fR flag
+.It
+OpenSSL STORE loaders - manageable through \fB--allow-openssl-store\fR flag
 .El
 .
 .It Fl -permission-audit
-Enable audit only for the permission model. When enabled, permission checks
-are performed but access is not denied. Instead, a warning is emitted for
-each permission violation via diagnostics channel.
+Enable audit mode for the permission model. When enabled, permission checks
+are performed but access is \fBnot\fR denied — no \fBERR_ACCESS_DENIED\fR error is
+thrown. Instead, each permission violation is published through the
+\fBnode:diagnostics_channel\fR module, and execution continues normally.
+This flag does not require \fB--permission\fR to be specified. The
+\fB--allow-*\fR flags are not needed in audit mode, since no
+access is denied.
+Audit mode is useful for discovering what permissions your application
+requires before deploying with \fB--permission\fR. See the
+Permission Model documentation for the list of diagnostics channel names
+and the message format.
+If both \fB--permission\fR and \fB--permission-audit\fR are specified,
+\fB--permission\fR takes precedence and the Permission Model runs in enforce mode.
 .
 .It Fl -preserve-symlinks
 Instructs the module loader to preserve symbolic links when resolving and
@@ -1402,6 +1423,13 @@ both absolute and relative file paths.
 This option may be specified multiple times to include multiple glob patterns.
 If both \fB--test-coverage-exclude\fR and \fB--test-coverage-include\fR are provided,
 files must meet \fBboth\fR criteria to be included in the coverage report.
+.
+.It Fl -test-coverage-include-all
+Includes source files that were never loaded by the test run in the coverage
+report, where they are reported as having zero coverage.
+Candidate files are searched for in the current working directory, and are
+subject to the same \fB--test-coverage-include\fR and \fB--test-coverage-exclude\fR
+filtering as the rest of the report.
 .
 .It Fl -test-coverage-lines Ns = Ns Ar threshold
 Require a minimum percent of covered lines. If code coverage does not reach
@@ -1914,6 +1942,8 @@ one is included in the list below.
 .It
 \fB--allow-net\fR
 .It
+\fB--allow-openssl-store\fR
+.It
 \fB--allow-wasi\fR
 .It
 \fB--allow-worker\fR
@@ -2050,8 +2080,6 @@ one is included in the list below.
 .It
 \fB--no-experimental-global-navigator\fR
 .It
-\fB--no-experimental-repl-await\fR
-.It
 \fB--no-experimental-sqlite\fR
 .It
 \fB--no-experimental-strip-types\fR
@@ -2129,6 +2157,8 @@ one is included in the list below.
 \fB--test-coverage-exclude\fR
 .It
 \fB--test-coverage-functions\fR
+.It
+\fB--test-coverage-include-all\fR
 .It
 \fB--test-coverage-include\fR
 .It

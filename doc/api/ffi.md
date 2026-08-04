@@ -52,16 +52,17 @@ FFI 签名使用字符串类型名称。
 支持的类型名称：
 
 * `void`
+* `char`
 * `i8`, `int8`
-* `u8`, `uint8`, `bool`, `char`
+* `u8`, `uint8`, `bool`
 * `i16`, `int16`
 * `u16`, `uint16`
 * `i32`, `int32`
 * `u32`, `uint32`
 * `i64`, `int64`
 * `u64`, `uint64`
-* `f32`, `float`
-* `f64`, `double`
+* `f32`, `float`, `float32`
+* `f64`, `double`, `float64`
 * `pointer`, `ptr`
 * `string`, `str`
 * `buffer`
@@ -127,15 +128,15 @@ const signature = {
 added: v26.1.0
 -->
 
-* {string}
+* {字符串}
 
-The native shared library suffix for the current platform:
+当前平台的原生共享库后缀：
 
-* macOS: `'dylib'`
-* Unix-like platforms: `'so'`
-* Windows: `'dll'`
+* macOS：`'dylib'`
+* 类 Unix 平台：`'so'`
+* Windows：`'dll'`
 
-This can be used to build portable library paths:
+可使用此属性构建可移植的库路径：
 
 ```cjs
 const { suffix } = require('node:ffi');
@@ -167,10 +168,10 @@ added: v26.1.0
 返回的对象也实现了显式资源管理协议，因此可以与 [`using`][] 声明一起使用。释放返回的对象会关闭库句柄。
 
 ```mjs
-import { dlopen } from 'node:ffi';
+import { dlopen, suffix } from 'node:ffi';
 
 {
-  using handle = dlopen('./mylib.so', {
+  using handle = dlopen(`./mylib.${suffix}`, {
     add_i32: { arguments: ['i32', 'i32'], return: 'i32' },
   });
   console.log(handle.functions.add_i32(20, 22));
@@ -178,9 +179,9 @@ import { dlopen } from 'node:ffi';
 ```
 
 ```mjs
-import { dlopen } from 'node:ffi';
+import { dlopen, suffix } from 'node:ffi';
 
-const { lib, functions } = dlopen('./mylib.so', {
+const { lib, functions } = dlopen(`./mylib.${suffix}`, {
   add_i32: { arguments: ['i32', 'i32'], return: 'i32' },
   string_length: { arguments: ['pointer'], return: 'u64' },
 });
@@ -189,9 +190,9 @@ console.log(functions.add_i32(20, 22));
 ```
 
 ```cjs
-const { dlopen } = require('node:ffi');
+const { dlopen, suffix } = require('node:ffi');
 
-const { lib, functions } = dlopen('./mylib.so', {
+const { lib, functions } = dlopen(`./mylib.${suffix}`, {
   add_i32: { arguments: ['i32', 'i32'], return: 'i32' },
   string_length: { arguments: ['pointer'], return: 'u64' },
 });
@@ -242,9 +243,9 @@ added: v26.1.0
 在 Windows 上不支持传入 `null`。
 
 ```cjs
-const { DynamicLibrary } = require('node:ffi');
+const { DynamicLibrary, suffix } = require('node:ffi');
 
-const lib = new DynamicLibrary('./mylib.so');
+const lib = new DynamicLibrary(`./mylib.${suffix}`);
 ```
 
 ### `library.path`
@@ -272,11 +273,11 @@ const lib = new DynamicLibrary('./mylib.so');
 `DynamicLibrary` 实现了显式资源管理协议，因此可以使用 [`using`][] 声明来管理库实例。离开包含作用域时会自动调用 `library.close()`。
 
 ```mjs
-import { DynamicLibrary } from 'node:ffi';
+import { DynamicLibrary, suffix } from 'node:ffi';
 
 {
-  using lib = new DynamicLibrary('./mylib.so');
-  // 在此处使用 `lib`；在块结束时会调用 `lib.close()`。
+  using lib = new DynamicLibrary(`./mylib.${suffix}`);
+  // 在此处使用 `lib`；代码块退出时会调用 `lib.close()`。
 }
 ```
 
@@ -315,9 +316,9 @@ added: v26.1.0
 如果同一个符号已经被解析过，随后使用不同的签名再次请求它将抛出异常。
 
 ```cjs
-const { DynamicLibrary } = require('node:ffi');
+const { DynamicLibrary, suffix } = require('node:ffi');
 
-const lib = new DynamicLibrary('./mylib.so');
+const lib = new DynamicLibrary(`./mylib.${suffix}`);
 const add = lib.getFunction('add_i32', {
   arguments: ['i32', 'i32'],
   return: 'i32',
@@ -362,9 +363,9 @@ console.log(add.pointer);
 返回值是回调指针地址（作为 `bigint`）。它可以传递给期望回调指针的原生函数。
 
 ```cjs
-const { DynamicLibrary } = require('node:ffi');
+const { DynamicLibrary, suffix } = require('node:ffi');
 
-const lib = new DynamicLibrary('./mylib.so');
+const lib = new DynamicLibrary(`./mylib.${suffix}`);
 
 const callback = lib.registerCallback(
   { arguments: ['i32'], return: 'i32' },
@@ -399,6 +400,8 @@ const callback = lib.registerCallback(
 
 强引用由 JavaScript 持有的回调。
 
+如果回调函数在之前调用 `library.unrefCallback(pointer)` 后已经被垃圾回收，则抛出 `ERR_INVALID_ARG_VALUE`，因为已被回收的函数无法再次建立引用。
+
 ### `library.unrefCallback(pointer)`
 
 * `pointer` {bigint}
@@ -406,6 +409,8 @@ const callback = lib.registerCallback(
 允许该回调被 JavaScript 以弱引用的方式持有。
 
 如果该回调函数随后被垃圾回收，那么后续的原生调用将变成空操作（no-op）。在返回给原生代码之前，非 `void` 的返回值会被初始化为零。
+
+如果回调函数已经被垃圾回收，则抛出 `ERR_INVALID_ARG_VALUE`。
 
 ## 调用原生函数
 
@@ -598,12 +603,12 @@ added: v26.1.0
 * `pointer` {bigint}
 * `length` {number}
 
-Copies bytes from an `ArrayBuffer` to native memory.
+将 `ArrayBuffer` 中的字节复制到本机内存。
 
-`length` must be at least equal to `arrayBuffer.byteLength`.
+`length` 必须至少等于 `arrayBuffer.byteLength`。
 
-`pointer` must point to writable native memory, and the available storage must be at least `length` bytes.
-This function does not allocate memory on its own.
+`pointer` 必须指向可写的本机内存，并且可用存储空间必须至少为 `length` 个字节。
+此函数不会自行分配内存。
 
 ## `ffi.exportArrayBufferView(arrayBufferView, pointer, length)`
 
@@ -639,7 +644,7 @@ added: v26.1.0
 ## `ffi.getCurrentEventLoop()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.6.0
 -->
 
 * 返回：{bigint}

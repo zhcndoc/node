@@ -208,7 +208,7 @@ added:
  - v22.19.0
 -->
 
-* 返回 Blocklist.rules
+* 返回 Blocklist.rules。
 
 ## 类：`net.SocketAddress`
 
@@ -434,6 +434,43 @@ changes:
 -->
 
 调用 [`server.close()`][] 并返回一个 promise，该 promise 会在服务器关闭时完成。
+
+### `server[Symbol.asyncIterator]()` 
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+* 返回：{AsyncIterator} 一个异步迭代器，为每个传入的
+  [`net.Socket`][] 生成值。
+
+返回一个用于迭代服务器传入连接的异步迭代器，使其可以使用
+`for await...of` 进行消费，作为 [`'connection'`][] 事件的替代方案。当服务器发出
+[`'close'`][] 事件时，迭代结束；当服务器发出 [`'error'`][] 事件时，迭代将被拒绝。
+
+只有在当前迭代的主体完成等待后，循环才会继续处理下一个连接，因此连接处理应分派到单独的异步任务中，而不应直接内联等待。否则，连接将被串行处理：每个连接都要等待前一个连接被完全处理。
+
+```mjs
+import { createServer } from 'node:net';
+
+const server = createServer().listen(8124);
+
+async function handleConnection(socket) {
+  // ...处理连接，并按需等待。
+  socket.end('hello world!');
+}
+
+for await (const socket of server) {
+  // 将处理分派到单独的任务中，使循环继续接受连接，
+  // 而不是将它们串行处理。
+  handleConnection(socket);
+}
+```
+
+循环主体运行期间，服务器不会停止接受连接，因此处理速度低于连接速率的消费者可能会无限制地缓存连接。使用
+[`server.maxConnections`][] 来限制并发数。
 
 ### `server.getConnections(callback)`
 
@@ -696,25 +733,25 @@ added: v0.9.1
 活动服务器时退出。如果服务器已经 `unref`，再次调用
 `unref()` 将没有效果。
 
-## Class: `net.Socket`
+## 类：`net.Socket`
 
 <!-- YAML
 added: v0.3.4
 -->
 
-* Extends: {stream.Duplex}
+* 继承：{stream.Duplex}
 
-This class is an abstraction of a TCP socket or a streaming [IPC][] endpoint (using named pipes on Windows, and Unix domain sockets on other systems). It is also an [`EventEmitter`][].
+此类是 TCP 套接字或流式 [IPC][] 端点（在 Windows 上使用命名管道，在其他系统上使用 Unix 域套接字）的抽象。它同时也是 [`EventEmitter`][]。
 
-`net.Socket` can be created by users and used directly to interact with a server. For example, it is returned by [`net.createConnection()`][], so users can use it to communicate with a server.
+用户可以创建 `net.Socket`，并直接使用它与服务器进行交互。例如，[`net.createConnection()`][] 会返回该对象，因此用户可以使用它与服务器通信。
 
-It can also be created by Node.js and passed to users upon receiving a connection. For example, it is passed to listeners of the [`'connection'`][] event emitted on [`net.Server`][] so users can use it to interact with clients.
+Node.js 也可以创建该对象，并在接收到连接时将其传递给用户。例如，它会被传递给 [`net.Server`][] 上触发的 [`'connection'`][] 事件的监听器，因此用户可以使用它与客户端进行交互。
 
 ### 将 TCP 句柄传递到其他线程
 
 一个已连接的 TCP `net.Socket` 可以通过将其列入 [`worker_threads`][] 的 `postMessage()` 调用的 `transferList` 中，移动到另一个线程。传输后，源 socket 会在发送线程上被销毁（后续使用会失败并返回 `ERR_STREAM_DESTROYED`，而不是静默丢弃数据），并且该 socket 会继续在接收线程上工作。这使得可以在一个线程上接受连接，然后将它们分发到一个 worker 线程池中，例如在 worker 线程之上构建类似 `node:cluster` 的模型。
 
-该 socket 必须是一个新近接受或创建的 TCP 连接：它仍然必须绑定到一个存活的句柄，不能处于连接中或已销毁状态，也不能已经开始读取或缓存任何数据。否则 `postMessage()` 会抛出 `ERR_WORKER_HANDLE_NOT_TRANSFERABLE`。仅支持 TCP socket，并且仅限于类 Unix 平台；在 Windows 上，`postMessage()` 会抛出 `ERR_WORKER_HANDLE_TRANSFER_UNSUPPORTED`。
+该 socket 必须是刚刚接受或创建的 TCP 连接：它仍必须附加到一个活动句柄上，不能处于连接中或已销毁状态，也不能已经开始读取或包含缓冲数据。否则，`postMessage()` 会抛出 `ERR_WORKER_HANDLE_NOT_TRANSFERABLE`。目前仅支持 TCP socket。
 
 ```cjs
 const net = require('node:net');
@@ -888,7 +925,7 @@ changes:
     description: "现在支持 `host` 参数。"
 -->
 
-在解析主机名之后但在连接之前发出。
+在解析主机名之后但在连接之前发出。  
 不适用于 Unix 套接字。
 
 * `err` {Error|null} 错误对象。详见 [`dns.lookup()`][]。
@@ -931,7 +968,7 @@ changes:
 
 * 返回：{Object}
 
-返回操作系统报告的 Socket 绑定的 `address`、地址 `family` 名称和 `port`：
+返回操作系统报告的套接字绑定的 `address`、地址 `family` 名称和 `port`：
 `{ port: 12346, family: 'IPv4', address: '127.0.0.1' }`
 
 ### `socket.autoSelectFamilyAttemptedAddresses`
@@ -1113,7 +1150,7 @@ added: v0.1.90
 * `error` {Object}
 * 返回：{net.Socket}
 
-确保此 Socket 上不再发生 I/O 活动。
+确保此 Socket 上不再发生 I/O 活动。  
 销毁流并关闭连接。
 
 详见 [`writable.destroy()`][] 以获取更多详情。
@@ -1183,7 +1220,7 @@ added:
 
 * 返回：{net.Socket} Socket 本身。
 
-暂停数据读取。即，[`'data'`][] 事件将不会发出。
+暂停数据读取。即，[`'data'`][] 事件将不会发出。  
 可用于限制上传。
 
 ### `socket.pending`
@@ -1206,7 +1243,7 @@ added: v0.9.1
 
 * 返回：{net.Socket} Socket 本身。
 
-`unref()` 的反义词，在先前 `unref` 的 Socket 上调用 `ref()` 将 _不_ 允许程序退出，如果它是唯一剩下的 Socket（默认行为）。如果 Socket 已 `ref`，再次调用 `ref` 将无效。
+`unref()` 的反义词，在先前调用过 `unref` 的 Socket 上调用 `ref()` 将 _不_ 允许程序退出，如果它是唯一剩下的 Socket（默认行为）。如果 Socket 已调用 `ref`，再次调用 `ref` 将无效。
 
 ### `socket.remoteAddress`
 
@@ -1238,6 +1275,16 @@ added: v0.5.10
 * 类型：{integer}
 
 远程端口的数字表示。例如，`80` 或 `21`。如果 Socket 已销毁（例如，如果客户端断开连接），值可能为 `undefined`。
+
+### `socket.server`
+
+<!-- YAML
+added: v0.3.4
+-->
+
+* 类型：{net.Server|null}
+
+接受该套接字的服务器的引用。对于未由服务器接受的套接字，此值为 `null`。
 
 ### `socket.resetAndDestroy()`
 
@@ -1301,7 +1348,9 @@ added: v0.1.90
 #### `socket.setKeepAlive([options])`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 * `options` {Object}
@@ -1322,7 +1371,9 @@ socket.setKeepAlive({ enable: true, initialDelay: 1000, interval: 1000, count: 1
 <!-- YAML
 added: v0.1.92
 changes:
-  - version: v26.4.0
+  - version:
+     - v26.4.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63825
     description: 添加了用于配置 `TCP_KEEPINTVL` 和 `TCP_KEEPCNT` 的 `interval` 和 `count` 参数。
   - version:
@@ -1350,11 +1401,11 @@ added: v0.1.90
 * `noDelay` {boolean} **默认值：** `true`
 * 返回：{net.Socket} Socket 本身。
 
-启用/禁用 Nagle 算法的使用。
+启用/禁用 Nagle 算法。
 
 创建 TCP 连接时，将启用 Nagle 算法。
 
-Nagle 算法在网络发送之前延迟数据。它试图以延迟为代价优化吞吐量。
+Nagle 算法会在通过网络发送数据之前延迟数据。它试图以增加延迟为代价优化吞吐量。
 
 为 `noDelay` 传递 `true` 或不传递参数将禁用 Socket 的 Nagle 算法。为 `noDelay` 传递 `false` 将启用 Nagle 算法。
 
@@ -1372,7 +1423,7 @@ changes:
 * `callback` {Function}
 * 返回：{net.Socket} Socket 本身。
 
-设置 Socket 在 Socket 上不活动 `timeout` 毫秒后超时。默认情况下 `net.Socket` 没有超时。
+设置 Socket 在 Socket 上不活动 `timeout` 毫秒后超时。默认情况下，`net.Socket` 没有超时。
 
 当触发空闲超时时，Socket 将收到 [`'timeout'`][] 事件，但连接不会被切断。用户必须手动调用 [`socket.end()`][] 或 [`socket.destroy()`][] 来结束连接。
 
@@ -1413,15 +1464,15 @@ added:
  - v24.15.0
 -->
 
-* `tos` {integer} The TOS value to set (0-255).
-* Returns: {net.Socket} The Socket itself.
+* `tos` {integer} 要设置的 TOS 值（0-255）。
+* 返回值：{net.Socket} Socket 本身。
 
-Sets the Type of Service (TOS) field for IPv4 packets or the traffic class for IPv6 packets sent from this Socket. This can be used to prioritize network traffic.
+为从此 Socket 发送的 IPv4 数据包设置服务类型（TOS）字段，或为 IPv6 数据包设置流量类别。此功能可用于设置网络流量的优先级。
 
-`setTypeOfService()` can be called before the Socket is connected; the value will be cached and applied when the Socket establishes a connection.
-`getTypeOfService()` returns the current setting even before connection.
+`setTypeOfService()` 可以在 Socket 连接之前调用；该值会被缓存，并在 Socket 建立连接时应用。
+即使在连接之前，`getTypeOfService()` 也会返回当前设置。
 
-On some platforms, such as Linux, certain TOS/ECN bits may be masked or ignored, and behavior may differ between IPv4 and IPv6 or dual-stack sockets. Callers should verify platform-specific semantics.
+在某些平台（例如 Linux）上，某些 TOS/ECN 位可能会被屏蔽或忽略，并且 IPv4 和 IPv6 或双栈 Socket 之间的行为可能有所不同。调用方应确认特定平台上的语义。
 
 ### `socket.timeout`
 
@@ -1473,20 +1524,29 @@ added: v0.5.0
 
 此属性表示连接的状态（字符串）。
 
-* 如果流正在连接，`socket.readyState` 为 `opening`。
-* 如果流可读且可写，则为 `open`。
-* 如果流可读但不可写，则为 `readOnly`。
-* 如果流不可读但可写，则为 `writeOnly`。
+* 如果套接字正在连接，则 `socket.readyState` 为 `opening`。
+* 如果套接字可读且可写，则为 `open`。
+* 如果套接字可读但不可写，则为 `readOnly`。
+* 如果套接字不可读但可写，则为 `writeOnly`。
+* 否则为 `closed`。
 
 ## 类：`net.BoundSocket`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 允许同步创建一个预绑定的套接字，之后可以将其传递给 `listen()` 或 `new net.Socket()`。对于 `listen()`，这可实现同步端口预留；而对于 `new net.Socket()`，它允许通过 `bind(2)` 语义来控制本地出站端口/IP。
 
-接管会转移套接字的所有权；之后 `address()` 和 `close()` 会抛出 [`ERR_SOCKET_HANDLE_ADOPTED`][]。从未被接管的句柄必须关闭，以避免泄漏套接字。
+`BoundSocket` 可以绑定 TCP 端点（`host` 或 `port`），也可以绑定 Unix 域/命名管道端点（`path`）；两者互斥。对于 `path`，文件系统条目会在构造函数中预留，因此诸如 `EADDRINUSE` 之类的冲突会像 TCP 绑定一样同步抛出。在 Linux 上，`path` 开头的 `'\0'` 会选择抽象命名空间（不创建文件系统条目）；在其他平台上使用抽象路径会抛出 [`ERR_INVALID_ARG_VALUE`][]。
+
+接管会转移套接字的所有权；此后调用 `address()` 和 `close()` 会抛出 [`ERR_SOCKET_HANDLE_ADOPTED`][]。从未被接管的句柄必须关闭，以避免套接字泄漏。关闭管道 `BoundSocket` 会移除其文件系统条目；抽象绑定和 TCP 绑定没有需要移除的条目。
+
+当绑定到源 `path` 的管道 `BoundSocket` 作为客户端被接管后，连接成功时，该路径会作为套接字的 `localAddress` 报告。
+
+当被接管的 `BoundSocket` 连接到数字 IP 字面量时，会同步发出 `connect(2)`，因此 [`socket.connect()`][] 返回后即可解析 [`socket.localAddress`][]。连接失败仍会通过延迟触发的 `'error'` 事件报告。
 
 ```mjs
 import net from 'node:net';
@@ -1502,37 +1562,54 @@ server.listen(bound); // 作为服务器接管，或者改为传给 new net.Sock
 ### `new net.BoundSocket([options])`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64399
+    description: The `path` option is supported.
 -->
 
 * `options` {Object}
-  * `host` {string} 要绑定的本地地址。必须是数值型 IP 字面量；不会执行 DNS
-    解析。**默认：** `'0.0.0.0'`，或者当 `ipv6Only` 为
-    `true` 时为 `'::'`。
-  * `port` {number} 本地端口。`0` 请求由操作系统分配的临时端口。
-    **默认：** `0`。
-  * `ipv6Only` {boolean} 设置 `IPV6_V6ONLY`，禁用双栈支持，因此
-    套接字仅绑定 IPv6。仅在绑定 IPv6 时有意义。**默认：**
-    `false`。
-  * `reusePort` {boolean} 设置 `SO_REUSEPORT`，允许多个套接字绑定
-    相同的地址和端口，以便在内核级别进行负载均衡。是否支持取决于
-    平台。**默认：** `false`。
+  * `host` {string} 要绑定的本地地址。必须是数字 IP 字面量；不会执行 DNS 解析。**默认值：** `'0.0.0.0'`，或者当 `ipv6Only` 为 `true` 时为 `'::'`。
+  * `port` {number} 本地端口。`0` 请求操作系统分配临时端口。**默认值：** `0`。
+  * `ipv6Only` {boolean} 设置 `IPV6_V6ONLY`，禁用双栈支持，使套接字仅绑定 IPv6。仅对 IPv6 绑定有意义。**默认值：** `false`。
+  * `reusePort` {boolean} 设置 `SO_REUSEPORT`，允许多个套接字绑定相同的地址和端口，以实现内核级负载均衡。是否支持取决于平台。**默认值：** `false`。
+  * `path` {string} 在给定路径绑定 Unix 域套接字（或 Windows 命名管道），而不是 TCP 端点。开头为 `'\0'` 时选择 Linux 抽象命名空间。与 `host`、`port`、`ipv6Only` 和 `reusePort` 互斥；将它们组合使用会抛出 [`ERR_INVALID_ARG_VALUE`][]。
 
 ### `boundSocket.address()`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64399
+    description: The bound path is returned for a pipe bind.
 -->
 
-* 返回：{Object} 一个包含 `address`、`family` 和 `port` 属性的对象，
-  如 [`server.address()`][] 返回。
+* 返回值：{Object|string} 对于 TCP 绑定，返回一个包含 `address`、`family` 和 `port` 属性的对象，类似 [`server.address()`][] 的返回值。对于管道绑定，返回已绑定的路径字符串，类似管道服务器中 [`server.address()`][] 的返回值。
 
 返回已绑定的本地地址。当使用 `port: 0` 绑定时，`port` 是操作系统分配的临时端口。
+
+### `boundSocket.isPipe`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* {boolean}
+
+当套接字使用 `path` 绑定（Unix 域套接字或 Windows 命名管道）时为 `true`，TCP 绑定时为 `false`。`net.BoundSocket.prototype` 上存在此 getter 也可用作探测是否支持 `path` 的能力检测。
 
 ### `boundSocket.fd()`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 * 返回：{integer} 底层操作系统文件描述符；在不向套接字暴露文件描述符的平台上（例如 Windows），则为 `-1`。
@@ -1544,7 +1621,9 @@ added: v26.4.0
 ### `boundSocket.close()`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 释放已绑定的套接字。仅在句柄从未被接管时需要。
@@ -1552,7 +1631,9 @@ added: v26.4.0
 ### `boundSocket[Symbol.dispose]()``
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 如果句柄尚未被接管或关闭，则关闭它；否则不执行任何操作。
@@ -1606,11 +1687,11 @@ added: v0.1.90
 * 返回：{net.Socket}
 
 别名于
-[`net.createConnection(port[, host][, connectListener])`][`net.createConnection(port, host)`]】【。
+[`net.createConnection(port[, host][, connectListener])`][`net.createConnection(port, host)`]。
 
 ## `net.createConnection()`
 
-这是一个工厂函数，它创建一个新的 [`net.Socket`][]，
+这是一个工厂函数，它创建一个新的 [`net.Socket`][],
 立即使用 [`socket.connect()`][] 发起连接，
 然后返回启动连接的 `net.Socket`。
 
@@ -1647,7 +1728,7 @@ added: v0.1.90
 
 其他选项：
 
-* `handle` {net.BoundSocket} 预绑定的 [`BoundSocket`][]，用作
+* `handle` {net.BoundSocket} 预绑定的 [`BoundSocket`][], 用作
   连接的源绑定，并遵循其本地地址和端口。采用后会消耗该绑定套接字（参见[所有权转移][`BoundSocket`]）。
 * `timeout` {number} 如果设置，将用于在套接字创建后、
   开始连接之前调用 [`socket.setTimeout(timeout)`][]。
@@ -1744,7 +1825,7 @@ added: v0.1.90
 
 发起一个 [IPC][] 连接。
 
-此函数创建一个所有选项设置为默认值的新 [`net.Socket`][]，
+此函数创建一个所有选项设置为默认值的新 [`net.Socket`][],
 立即使用
 [`socket.connect(path[, connectListener])`][`socket.connect(path)`] 发起连接，
 然后返回启动连接的 `net.Socket`。
@@ -1767,7 +1848,7 @@ added: v0.1.90
 
 发起一个 TCP 连接。
 
-此函数创建一个所有选项设置为默认值的新 [`net.Socket`][]，
+此函数创建一个所有选项设置为默认值的新 [`net.Socket`][],
 立即使用
 [`socket.connect(port[, host][, connectListener])`][`socket.connect(port)`] 发起连接，
 然后返回启动连接的 `net.Socket`。
@@ -1813,18 +1894,18 @@ changes:
 
 创建一个新的 TCP 或 [IPC][] 服务器。
 
-如果 `allowHalfOpen` 设置为 `true`，当套接字的另一端信号传输结束时，
-服务器将仅在显式调用 [`socket.end()`][] 时才发回传输结束信号。
-例如，在 TCP 上下文中，当收到 FIN 包时，仅在显式调用 [`socket.end()`][] 时才发回 FIN 包。
-在此之前，连接是半关闭的（不可读但仍可写）。
-参见 [`'end'`][] 事件和 [RFC 1122][half-closed]（第 4.2.2.13 节）以获取更多信息。
+如果将 `allowHalfOpen` 设置为 `true`，则当套接字的另一端发出传输结束信号时，
+服务器只有在显式调用 [`socket.end()`][] 时才会发送传输结束信号。例如，在 TCP
+上下文中，当接收到 FIN 数据包时，只有在显式调用 [`socket.end()`][] 时才会发回
+FIN 数据包。在此之前，连接处于半关闭状态（不可读但仍可写）。有关更多信息，请参见 [`'end'`][]
+事件和 [RFC 1122][half-closed]（第 4.2.2.13 节）。
 
 如果 `pauseOnConnect` 设置为 `true`，则与每个传入连接关联的套接字将被暂停，
 并且不会从其句柄读取数据。
 这允许在进程之间传递连接，而原始进程不读取任何数据。
 要开始从暂停的套接字读取数据，调用 [`socket.resume()`][]。
 
-服务器可以是 TCP 服务器或 [IPC][] 服务器，取决于它 [`listen()`][`server.listen()`] 什么。
+服务器可以是 TCP 服务器或 [IPC][] 服务器，取决于它调用 [`listen()`][`server.listen()`] 时使用的方式。
 
 这是一个监听端口 8124 连接的 TCP 回显服务器示例：
 
@@ -1916,8 +1997,8 @@ added:
  - v18.18.0
 -->
 
-获取 [`socket.connect(options)`][] 的 `autoSelectFamilyAttemptTimeout` 选项的当前默认值。
-初始默认值为 `500` 或通过命令行选项 `--network-family-autoselection-attempt-timeout` 指定的值。
+获取 [`socket.connect(options)`][] 的 `autoSelectFamilyAttemptTimeout` 选项的当前默认值。  
+初始默认值为 `500`，或通过命令行选项 `--network-family-autoselection-attempt-timeout` 指定的值。
 
 * 返回：{number} `autoSelectFamilyAttemptTimeout` 选项的当前默认值。
 
@@ -1986,6 +2067,66 @@ net.isIPv6('::1'); // 返回 true
 net.isIPv6('fhqwhgads'); // 返回 false
 ```
 
+## `net/promises` API
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1 - 实验性
+
+`net/promises` API 提供了一组返回 `Promise` 对象而不是依赖事件的 `net` 函数。该 API 可通过
+`require('node:net').promises` 或 `require('node:net/promises')` 访问。
+
+### `netPromises.connect(options)`
+
+### `netPromises.connect(path)`
+
+### `netPromises.connect(port[, host])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `options` {Object} 接受与 [`net.connect()`][] 相同的参数。可以包含一个
+  `signal` {AbortSignal}，用于中止正在进行的连接尝试。
+* 返回值：{Promise} 使用已连接的 [`net.Socket`][] 履行。
+
+这是基于 Promise 的 [`net.connect()`][] 替代方案。返回的 promise 会在其 [`'connect'`][] 事件触发后使用该套接字履行；如果连接失败或 `signal` 被中止，则会被拒绝。当 promise 被拒绝时，底层套接字会被销毁。
+
+该 API 根据其执行并等待的操作——连接——命名，以与 [`netPromises.listen()`][] 平行。它没有命名为 `createConnection()`，因为该名称属于回调 API 的套接字工厂分类，而这里没有与之对应的 API。
+
+```mjs
+import { connect } from 'node:net/promises';
+
+const socket = await connect({ port: 8124 });
+socket.write('hello world!');
+socket.end();
+```
+
+### `netPromises.listen([options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `options` {Object} 接受与 [`net.createServer()`][] 和
+  [`server.listen()`][] 相同的选项，此外还包括：
+  * `connectionListener` {Function} 自动设置为 [`'connection'`][] 事件的监听器。
+  * `signal` {AbortSignal} 可用于中止服务器的 `AbortSignal`。如果在服务器开始监听前中止，则返回的 promise 会被拒绝，并显示 `AbortError`；如果在之后的任何时间点中止，则会关闭服务器，这与 [`server.listen()`][] 的 `signal` 选项一致。
+* 返回值：{Promise} 使用正在监听的 [`net.Server`][] 履行。
+
+创建一个 [`net.Server`][] 并开始监听。返回的 promise 会在服务器的 [`'listening'`][] 事件触发后使用该服务器履行；如果服务器绑定失败，或在开始监听前 `signal` 被中止，则会被拒绝。当 promise 被拒绝时，服务器会被关闭。
+
+解析后的服务器是异步可迭代对象，因此可以使用 `for await...of` 消费传入的连接（参见 `server[Symbol.asyncIterator]()`）。
+
+```mjs
+import { listen } from 'node:net/promises';
+
+const server = await listen({ port: 8124 });
+console.log('listening on', server.address().port);
+```
+
 [IPC]: #ipc-support
 [识别 IPC 连接的路径]: #identifying-paths-for-ipc-connections
 [RFC 8305]: https://www.rfc-editor.org/rfc/rfc8305.txt
@@ -2001,6 +2142,7 @@ net.isIPv6('fhqwhgads'); // 返回 false
 [`'listening'`]: #event-listening
 [`'timeout'`]: #event-timeout
 [`BoundSocket`]: #class-netboundsocket
+[`ERR_INVALID_ARG_VALUE`]: errors.md#err_invalid_arg_value
 [`ERR_SOCKET_HANDLE_ADOPTED`]: errors.md#err_socket_handle_adopted
 [`EventEmitter`]: events.md#class-eventemitter
 [`child_process.fork()`]: child_process.md#child_processforkmodulepath-args-options
@@ -2019,6 +2161,7 @@ net.isIPv6('fhqwhgads'); // 返回 false
 [`net.createServer()`]: #netcreateserveroptions-connectionlistener
 [`net.getDefaultAutoSelectFamily()`]: #netgetdefaultautoselectfamily
 [`net.getDefaultAutoSelectFamilyAttemptTimeout()`]: #netgetdefaultautoselectfamilyattempttimeout
+[`netPromises.listen()`]: #netpromiseslistenoptions
 [`new net.Socket(options)`]: #new-netsocketoptions
 [`readable.setEncoding()`]: stream.md#readablesetencodingencoding
 [`server.address()`]: #serveraddress
@@ -2038,6 +2181,7 @@ net.isIPv6('fhqwhgads'); // 返回 false
 [`socket.connecting`]: #socketconnecting
 [`socket.destroy()`]: #socketdestroyerror
 [`socket.end()`]: #socketenddata-encoding-callback
+[`socket.localAddress`]: #socketlocaladdress
 [`socket.pause()`]: #socketpause
 [`socket.resume()`]: #socketresume
 [`socket.setEncoding()`]: #socketsetencodingencoding

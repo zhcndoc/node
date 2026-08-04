@@ -443,7 +443,9 @@ describe('test 2', (t) => {
 ## 测试标签
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.19.0
 -->
 
 > 稳定性：1.0 - 早期开发
@@ -607,15 +609,15 @@ export async function globalTeardown() {
 如果全局设置函数抛出错误，将不会运行任何测试，进程将以非零退出码退出。
 在这种情况下，全局清理函数不会被调用。
 
-## Running tests from the command line
+## 从命令行运行测试
 
-The Node.js test runner can be invoked from the command line by passing the [`--test`][] flag:
+可以通过传递 [`--test`][] 标志从命令行调用 Node.js 测试运行器：
 
 ```bash
 node --test
 ```
 
-By default, Node.js will run all files matching the following patterns:
+默认情况下，Node.js 将运行匹配以下模式的所有文件：
 
 * `**/*.test.{cjs,mjs,js}`
 * `**/*-test.{cjs,mjs,js}`
@@ -624,7 +626,7 @@ By default, Node.js will run all files matching the following patterns:
 * `**/test.{cjs,mjs,js}`
 * `**/test/**/*.{cjs,mjs,js}`
 
-Unless [`--no-strip-types`][] is provided, the following additional patterns are also matched:
+除非提供了 [`--no-strip-types`][]，否则还会匹配以下附加模式：
 
 * `**/*.test.{cts,mts,ts}`
 * `**/*-test.{cts,mts,ts}`
@@ -633,15 +635,15 @@ Unless [`--no-strip-types`][] is provided, the following additional patterns are
 * `**/test.{cts,mts,ts}`
 * `**/test/**/*.{cts,mts,ts}`
 
-Alternatively, one or more glob patterns can be provided as the final arguments to the Node.js command, as shown below.
-Glob patterns follow the behavior of [`glob(7)`][].
-On the command line, glob patterns should be enclosed in double quotes to prevent shell expansion, which can reduce portability issues across systems.
+或者，也可以将一个或多个 glob 模式作为 Node.js 命令的最后参数传入，如下所示。
+Glob 模式遵循 [`glob(7)`][] 的行为。
+在命令行中，应将 glob 模式括在双引号中，以防止 shell 展开，从而减少跨系统的可移植性问题。
 
 ```bash
 node --test "**/*.test.js" "**/*.spec.js"
 ```
 
-### Randomizing the test execution order
+### 随机化测试执行顺序
 
 <!-- YAML
 added:
@@ -649,36 +651,36 @@ added:
  - v24.16.0
 -->
 
-> Stability: 1.0 - Early development
+> 稳定性：1.0 - 早期开发
 
-The test runner can randomize the execution order to help detect tests that depend on order. When enabled, the runner randomizes the discovered files and the queued tests within each file. Use `--test-randomize` to enable this mode.
+测试运行器可以随机化执行顺序，以帮助检测依赖顺序的测试。启用后，运行器会随机化发现的文件以及每个文件中排队的测试。使用 `--test-randomize` 可启用此模式。
 
 ```bash
 node --test --test-randomize
 ```
 
-When randomization is enabled, the test runner prints the seed used for the run as a diagnostic message:
+启用随机化后，测试运行器会将本次运行所使用的种子打印为诊断消息：
 
 ```text
 Randomized test order seed: 12345
 ```
 
-Use `--test-random-seed=<number>` to deterministically replay the same random order. Providing `--test-random-seed` also enables randomization, so `--test-randomize` is optional when a seed is provided:
+使用 `--test-random-seed=<number>` 可以确定性地重放相同的随机顺序。提供 `--test-random-seed` 也会启用随机化，因此提供种子时，`--test-randomize` 是可选的：
 
 ```bash
 node --test --test-random-seed=12345
 ```
 
-In most test files, randomization takes effect automatically. One important exception is when subtests are awaited one by one. In this mode, each subtest starts only after the previous one completes, so the runner preserves declaration order instead of randomizing it.
+在大多数测试文件中，随机化会自动生效。一个重要的例外是逐个等待子测试的情况。在此模式下，每个子测试只有在前一个子测试完成后才会启动，因此运行器会保留声明顺序，而不会将其随机化。
 
-Example: this runs in order, and is **not** randomized.
+示例：以下代码按顺序运行，**不会**进行随机化。
 
 ```mjs
 import test from 'node:test';
 
 test('math', async (t) => {
   for (const name of ['adds', 'subtracts', 'multiplies']) {
-    // Awaiting each subtest sequentially preserves declaration order.
+    // 依次等待每个子测试会保留声明顺序。
     await t.test(name, async () => {});
   }
 });
@@ -689,15 +691,15 @@ const test = require('node:test');
 
 test('math', async (t) => {
   for (const name of ['adds', 'subtracts', 'multiplies']) {
-    // Awaiting each subtest sequentially preserves declaration order.
+    // 依次等待每个子测试会保留声明顺序。
     await t.test(name, async () => {});
   }
 });
 ```
 
-Using suite-style APIs such as `describe()`/`it()` or `suite()`/`test()` still allows randomization because sibling tests are queued together.
+使用 `describe()`/`it()` 或 `suite()`/`test()` 等套件风格的 API 仍然支持随机化，因为同级测试会一起排队。
 
-Example: this is still eligible for randomization.
+示例：以下代码仍然可以进行随机化。
 
 ```mjs
 import { describe, it } from 'node:test';
@@ -719,35 +721,35 @@ describe('math', () => {
 });
 ```
 
-`--test-randomize` and `--test-random-seed` are not supported together with `--watch` mode.
+`--test-randomize` 和 `--test-random-seed` 不支持与 `--watch` 模式一起使用。
 
-Matching files are executed as test files.
-For more information about test file execution, see the [Test runner execution model][] section.
+匹配的文件会作为测试文件执行。
+有关测试文件执行的更多信息，请参阅[测试运行器执行模型][]部分。
 
-### Test runner execution model
+### 测试运行器执行模型
 
-When process-level test isolation is enabled, each matching test file is executed in a separate child process. The maximum number of child processes running at any one time is controlled by the [`--test-concurrency`][] flag. If a child process exits with code 0, the test is considered passed. Otherwise, the test is considered failed. The test file must be executable by Node.js, but it does not need to use the `node:test` module internally.
+启用进程级测试隔离后，每个匹配的测试文件都会在单独的子进程中执行。任意时刻运行的子进程最大数量由 [`--test-concurrency`][] 标志控制。如果子进程以代码 0 退出，则测试被视为通过。否则，测试被视为失败。测试文件必须能够由 Node.js 执行，但其内部不必使用 `node:test` 模块。
 
-Each test file is executed as though it were a regular script. That is, if the test file itself uses `node:test` to define tests, then all such tests are executed within a single application thread, regardless of the `concurrency` option value of [`test()`][].
+每个测试文件都会按照普通脚本的方式执行。也就是说，如果测试文件本身使用 `node:test` 定义测试，那么所有此类测试都会在单个应用程序线程中执行，而不论 [`test()`][] 的 `concurrency` 选项值为何。
 
-When process-level test isolation is disabled, each matching test file is imported into the test runner process. After all test files have been loaded, top-level tests are executed with a concurrency of 1. Because all test files run in the same context, tests may interact with each other in ways that are not possible when isolation is enabled. For example, if tests depend on global state, that state may be modified by tests originating from another file.
+禁用进程级测试隔离后，每个匹配的测试文件都会被导入测试运行器进程。所有测试文件加载完毕后，顶层测试会以 1 的并发度执行。由于所有测试文件都在同一上下文中运行，测试之间可能会以启用隔离时不可能的方式相互影响。例如，如果测试依赖全局状态，那么该状态可能会被源自另一个文件的测试修改。
 
-#### Child process option inheritance
+#### 子进程选项继承
 
-When running tests in process isolation mode (the default), spawned child processes inherit Node.js options from the parent process, including those specified in the [configuration file][]. However, certain flags are filtered out to enable correct test runner functionality:
+在进程隔离模式下运行测试时（默认模式），生成的子进程会继承父进程的 Node.js 选项，包括[配置文件][]中指定的选项。不过，为了确保测试运行器正常运行，某些标志会被过滤掉：
 
-* `--test` - Prevents recursive test execution
-* `--experimental-test-coverage` - Managed by the test runner
-* `--experimental-test-tag-filter` - Filter values are validated by the parent process and re-sent to the child process
-* `--watch` - Watch mode is handled by the parent
-* `--experimental-default-config-file` - Configuration file loading is handled by the parent
-* `--test-reporter` - Reporting is managed by the parent process
-* `--test-reporter-destination` - Output destination is controlled by the parent
-* `--experimental-config-file` - Configuration file path is managed by the parent
-* `--test-randomize` - Randomization is managed by the parent process and propagated to child processes
-* `--test-random-seed` - Randomization seed is managed by the parent process and propagated to child processes
+* `--test` - 防止递归执行测试
+* `--experimental-test-coverage` - 由测试运行器管理
+* `--experimental-test-tag-filter` - 过滤值由父进程验证后重新发送给子进程
+* `--watch` - 监视模式由父进程处理
+* `--experimental-default-config-file` - 配置文件加载由父进程处理
+* `--test-reporter` - 报告由父进程管理
+* `--test-reporter-destination` - 输出目标由父进程控制
+* `--experimental-config-file` - 配置文件路径由父进程管理
+* `--test-randomize` - 随机化由父进程管理，并传递给子进程
+* `--test-random-seed` - 随机化种子由父进程管理，并传递给子进程
 
-All other Node.js options from command-line arguments, environment variables, and configuration files are inherited by the child processes.
+命令行参数、环境变量和配置文件中的所有其他 Node.js 选项都会由子进程继承。
 
 ## 收集代码覆盖率
 
@@ -799,7 +801,7 @@ node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-de
 import assert from 'node:assert';
 import { mock, test } from 'node:test';
 
-test('spy on a function', () => {
+test('监视函数', () => {
   const sum = mock.fn((a, b) => {
     return a + b;
   });
@@ -822,7 +824,7 @@ test('spy on a function', () => {
 const assert = require('node:assert');
 const { mock, test } = require('node:test');
 
-test('spy on a function', () => {
+test('监视函数', () => {
   const sum = mock.fn((a, b) => {
     return a + b;
   });
@@ -844,7 +846,7 @@ test('spy on a function', () => {
 相同的模拟功能也暴露在每个测试的 [`TestContext`][] 对象上。以下示例使用 `TestContext` 上暴露的 API 创建对象方法的间谍。通过测试上下文进行模拟的好处是，一旦测试完成，测试运行器将自动恢复所有模拟的功能。
 
 ```js
-test('spy on an object method', (t) => {
+test('监视对象方法', (t) => {
   const number = {
     value: 5,
     add(a) {
@@ -888,7 +890,7 @@ test('spy on an object method', (t) => {
 import assert from 'node:assert';
 import { mock, test } from 'node:test';
 
-test('mocks setTimeout to be executed synchronously without having to actually wait for it', () => {
+test('模拟 setTimeout，使其同步执行而无需实际等待', () => {
   const fn = mock.fn();
 
   // 可选地选择要模拟的内容
@@ -912,7 +914,7 @@ test('mocks setTimeout to be executed synchronously without having to actually w
 const assert = require('node:assert');
 const { mock, test } = require('node:test');
 
-test('mocks setTimeout to be executed synchronously without having to actually wait for it', () => {
+test('模拟 setTimeout，使其同步执行而无需实际等待', () => {
   const fn = mock.fn();
 
   // 可选地选择要模拟的内容
@@ -940,7 +942,7 @@ test('mocks setTimeout to be executed synchronously without having to actually w
 import assert from 'node:assert';
 import { test } from 'node:test';
 
-test('mocks setTimeout to be executed synchronously without having to actually wait for it', (context) => {
+test('模拟 setTimeout，使其同步执行而无需实际等待', (context) => {
   const fn = context.mock.fn();
 
   // 可选地选择要模拟的内容
@@ -958,7 +960,7 @@ test('mocks setTimeout to be executed synchronously without having to actually w
 const assert = require('node:assert');
 const { test } = require('node:test');
 
-test('mocks setTimeout to be executed synchronously without having to actually wait for it', (context) => {
+test('模拟 setTimeout，使其同步执行而无需实际等待', (context) => {
   const fn = context.mock.fn();
 
   // 可选地选择要模拟的内容
@@ -989,7 +991,7 @@ test('mocks setTimeout to be executed synchronously without having to actually w
 import assert from 'node:assert';
 import { test } from 'node:test';
 
-test('mocks the Date object', (context) => {
+test('模拟 Date 对象', (context) => {
   // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['Date'] });
   // 如果未指定，初始日期将基于 UNIX 纪元的 0
@@ -1005,7 +1007,7 @@ test('mocks the Date object', (context) => {
 const assert = require('node:assert');
 const { test } = require('node:test');
 
-test('mocks the Date object', (context) => {
+test('模拟 Date 对象', (context) => {
   // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['Date'] });
   // 如果未指定，初始日期将基于 UNIX 纪元的 0
@@ -1023,7 +1025,7 @@ test('mocks the Date object', (context) => {
 import assert from 'node:assert';
 import { test } from 'node:test';
 
-test('mocks the Date object with initial time', (context) => {
+test('模拟具有初始时间的 Date 对象', (context) => {
   // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['Date'], now: 100 });
   assert.strictEqual(Date.now(), 100);
@@ -1038,7 +1040,7 @@ test('mocks the Date object with initial time', (context) => {
 const assert = require('node:assert');
 const { test } = require('node:test');
 
-test('mocks the Date object with initial time', (context) => {
+test('模拟具有初始时间的 Date 对象', (context) => {
   // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['Date'], now: 100 });
   assert.strictEqual(Date.now(), 100);
@@ -1060,7 +1062,7 @@ test('mocks the Date object with initial time', (context) => {
 import assert from 'node:assert';
 import { test } from 'node:test';
 
-test('sets the time of a date object', (context) => {
+test('设置日期对象的时间', (context) => {
   // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['Date'], now: 100 });
   assert.strictEqual(Date.now(), 100);
@@ -1076,7 +1078,7 @@ test('sets the time of a date object', (context) => {
 const assert = require('node:assert');
 const { test } = require('node:test');
 
-test('sets the time of a date object', (context) => {
+test('设置日期对象的时间', (context) => {
   // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['Date'], now: 100 });
   assert.strictEqual(Date.now(), 100);
@@ -1095,7 +1097,7 @@ test('sets the time of a date object', (context) => {
 import assert from 'node:assert';
 import { test } from 'node:test';
 
-test('setTime does not execute timers', (context) => {
+test('setTime 不会执行计时器', (context) => {
   // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
   const fn = context.mock.fn();
@@ -1120,7 +1122,7 @@ test('setTime does not execute timers', (context) => {
 const assert = require('node:assert');
 const { test } = require('node:test');
 
-test('setTime does not execute timers', (context) => {
+test('setTime 不会执行计时器', (context) => {
   // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
   const fn = context.mock.fn();
@@ -1148,7 +1150,7 @@ test('setTime does not execute timers', (context) => {
 import assert from 'node:assert';
 import { test } from 'node:test';
 
-test('runs timers as setTime passes ticks', (context) => {
+test('随着 setTime 推进执行计时器', (context) => {
   // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
   const fn = context.mock.fn();
@@ -1167,7 +1169,7 @@ test('runs timers as setTime passes ticks', (context) => {
 const assert = require('node:assert');
 const { test } = require('node:test');
 
-test('runs timers as setTime passes ticks', (context) => {
+test('随着 setTime 推进执行计时器', (context) => {
   // 可选地选择要模拟的内容
   context.mock.timers.enable({ apis: ['setTimeout', 'Date'] });
   const fn = context.mock.fn();
@@ -1493,7 +1495,9 @@ added:
   - v18.9.0
   - v16.19.0
 changes:
-  - version: v26.2.0
+  - version:
+     - v26.2.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63221
     description: 添加了 `testTagFilters` 选项。
   - version:
@@ -1531,92 +1535,74 @@ changes:
 -->
 
 * `options` {Object} 运行测试的配置选项。支持以下属性：
-  * `concurrency` {number|boolean} 如果提供的是数字，
-    那么将并行运行这么多个测试进程，其中每个进程对应一个测试文件。
+  * `concurrency` {number|boolean} 如果提供一个数字，则会并行运行相应数量的测试进程，其中每个进程对应一个测试文件。
     如果为 `true`，则会并行运行 `os.availableParallelism() - 1` 个测试文件。
     如果为 `false`，则一次只运行一个测试文件。
     **默认值：** `false`。
   * `cwd` {string} 指定测试运行器使用的当前工作目录。
-    作为解析文件的基路径，行为类似于在该目录下[从命令行运行测试][]。
+    作为解析文件的基准路径，就像[从命令行运行测试][]时从该目录运行一样。
     **默认值：** `process.cwd()`。
-  * `files` {Array} 包含要运行的文件列表的数组。
+  * `files` {Array} 要运行的文件列表。
     **默认值：** 与[从命令行运行测试][]相同。
-  * `forceExit` {boolean} 配置测试运行器在所有已知测试执行完毕后退出进程，即使事件循环本来仍会保持活动状态。**默认值：** `false`。
-  * `globPatterns` {Array} 包含用于匹配测试文件的 glob 模式列表的数组。此选项不能与 `files` 同时使用。
+  * `forceExit` {boolean} 配置测试运行器，使其在所有已知测试执行完毕后退出进程，即使事件循环原本仍会保持活动状态。**默认值：** `false`。
+  * `globPatterns` {Array} 用于匹配测试文件的 glob 模式列表。此选项不能与 `files` 同时使用。
     **默认值：** 与[从命令行运行测试][]相同。
   * `inspectPort` {number|Function} 设置测试子进程的检查器端口。
-    这可以是一个数字，也可以是一个不带参数并返回数字的函数。如果提供的是 nullish 值，则每个进程都会获得自己的端口，从主进程的 `process.debugPort` 递增。若将 `isolation` 选项设置为 `'none'`，因为不会生成子进程，此选项将被忽略。**默认值：** `undefined`。
-  * `isolation` {string} 配置测试隔离类型。如果设置为 `'process'`，每个测试文件都将在单独的子进程中运行。如果设置为 `'none'`，所有测试文件都将在当前进程中运行。**默认值：**
+    可以是一个数字，也可以是不接受参数并返回数字的函数。如果提供空值，则每个进程都会获得自己的端口，该端口从主进程的 `process.debugPort` 开始递增。如果将 `isolation` 选项设置为 `'none'`，则会忽略此选项，因为不会生成子进程。**默认值：** `undefined`。
+  * `isolation` {string} 配置测试隔离类型。如果设置为 `'process'`，则每个测试文件都会在单独的子进程中运行。如果设置为 `'none'`，则所有测试文件都在当前进程中运行。**默认值：**
     `'process'`。
-  * `only` {boolean} 如果为 truthy，则测试上下文只会运行设置了 `only` 选项的测试
-  * `setup` {Function} 接受 `TestsStream` 实例的函数，可用于在任何测试运行之前设置监听器。
+  * `only` {boolean} 如果为真，则测试上下文只运行设置了 `only` 选项的测试
+  * `setup` {Function} 接受 `TestsStream` 实例的函数，可用于在运行任何测试前设置监听器。
     **默认值：** `undefined`。
-  * `execArgv` {Array} 在生成子进程时传递给 `node` 可执行文件的一组 CLI 标志。`isolation` 为 `'none`' 时此选项无效。
+  * `execArgv` {Array} 生成子进程时传递给 `node` 可执行文件的 CLI 标志数组。当 `isolation` 为 `'none'` 时，此选项无效。
     **默认值：** `[]`
-  * `argv` {Array} 在生成子进程时传递给每个测试文件的一组 CLI 标志。`isolation` 为 `'none'` 时此选项无效。
+  * `argv` {Array} 生成子进程时传递给每个测试文件的 CLI 标志数组。当 `isolation` 为 `'none'` 时，此选项无效。
     **默认值：** `[]`。
-  * `signal` {AbortSignal} 允许中止正在进行中的测试执行。
-  * `testNamePatterns` {string|RegExp|Array} 一个字符串、RegExp 或 RegExp 数组，
-    可用于只运行名称与提供模式匹配的测试。
+  * `signal` {AbortSignal} 允许中止正在进行的测试执行。
+  * `testNamePatterns` {string|RegExp|Array} 字符串、RegExp 或 RegExp 数组，可用于仅运行名称与所提供模式匹配的测试。
     测试名称模式会被解释为 JavaScript 正则表达式。
-    对于执行的每个测试，任何对应的测试钩子（例如
-    `beforeEach()`）也会运行。
+    对于每个执行的测试，也会运行相应的测试钩子，例如 `beforeEach()`。
     **默认值：** `undefined`。
-  * `testSkipPatterns` {string|RegExp|Array} 一个字符串、RegExp 或 RegExp 数组，
-    可用于排除运行名称与提供模式匹配的测试。
+  * `testSkipPatterns` {string|RegExp|Array} 字符串、RegExp 或 RegExp 数组，可用于排除运行名称与所提供模式匹配的测试。
     测试名称模式会被解释为 JavaScript 正则表达式。
-    对于执行的每个测试，任何对应的测试钩子（例如
-    `beforeEach()`）也会运行。
+    对于每个执行的测试，也会运行相应的测试钩子，例如 `beforeEach()`。
     **默认值：** `undefined`。
-  * `testTagFilters` {string|string\[]} 一个标签名，或一个标签名数组，
-    用于按测试声明的标签筛选测试。测试必须包含列出的每个标签才能运行。等同于在命令行上传递 [`--experimental-test-tag-filter`][]。
-    参见 [Test tags][]。**默认值：** `undefined`。
-  * `timeout` {number} 测试执行在多少毫秒后将失败。
-    如果未指定，子测试会从其父级继承此值。
+  * `testTagFilters` {string|string\[]} 用于根据测试声明的标签筛选测试的标签名称或标签名称数组。测试必须包含列出的每个标签才能运行。等同于在命令行中传递 [`--experimental-test-tag-filter`][]。参见[测试标签][]。**默认值：** `undefined`。
+  * `timeout` {number} 测试执行在指定的毫秒数后失败。
+    如果未指定，子测试会从其父测试继承此值。
     **默认值：** `Infinity`。
-  * `watch` {boolean} 是否以监视模式运行。**默认值：** `false`。
+  * `watch` {boolean} 是否以监听模式运行。**默认值：** `false`。
   * `shard` {Object} 在特定分片中运行测试。**默认值：** `undefined`。
-    * `index` {number} 是介于 1 和 `<total>` 之间的正整数，
-      用于指定要运行的分片索引。此选项为 _必需_。
-    * `total` {number} 是一个正整数，用于指定拆分测试文件的分片总数。此选项为 _必需_。
-  * `randomize` {boolean} 随机化测试文件和队列中测试的执行顺序。
-    此选项不支持 `watch: true`。
+    * `index` {number} 一个介于 1 和 `<total>` 之间的正整数，用于指定要运行的分片索引。此选项是_必需的_。
+    * `total` {number} 一个正整数，用于指定要将测试文件拆分成的分片总数。此选项是_必需的_。
+  * `randomize` {boolean} 随机化测试文件和排队测试的执行顺序。
+    此选项不支持与 `watch: true` 一起使用。
     **默认值：** `false`。
-  * `randomSeed` {number} 用于随机化执行顺序的种子。如果设置了此
-    选项，则运行可以确定性地重放相同的随机顺序，
-    并且设置此选项也会启用随机化。该值必须是
-    介于 `0` 和 `4294967295` 之间的整数。
+  * `randomSeed` {number} 随机化执行顺序时使用的种子。如果设置此选项，则运行可以确定性地重现相同的随机顺序，并且设置此选项也会启用随机化。该值必须是介于 `0` 和 `4294967295` 之间的整数。
     **默认值：** `undefined`。
-  * `rerunFailuresFilePath` {string} 一个文件路径，测试运行器会
-    在其中存储测试状态，以便下次运行时仅重跑失败的测试。
-    更多信息请参见 \[Rerunning failed tests]\[]。
+  * `rerunFailuresFilePath` {string} 测试运行器用于存储测试状态的文件路径，以便在下次运行时只重新运行失败的测试。
+    有关更多信息，请参阅\[重新运行失败的测试]\[]。
     **默认值：** `undefined`。
-  * `coverage` {boolean} 启用 [代码覆盖率][] 收集。
+  * `coverage` {boolean} 启用[代码覆盖率][]收集。
     **默认值：** `false`。
-  * `coverageExcludeGlobs` {string|Array} 使用 glob 模式排除代码覆盖率中的特定文件，
-    该模式可以匹配绝对路径和相对路径。
-    仅当 `coverage` 设置为 `true` 时，此属性才适用。
-    如果同时提供了 `coverageExcludeGlobs` 和 `coverageIncludeGlobs`，
-    文件必须同时满足**两者**条件才会包含在覆盖率报告中。
+  * `coverageExcludeGlobs` {string|Array} 使用 glob 模式排除代码覆盖率中的特定文件，该模式可以匹配绝对文件路径和相对文件路径。
+    此属性仅在将 `coverage` 设置为 `true` 时适用。
+    如果同时提供 `coverageExcludeGlobs` 和 `coverageIncludeGlobs`，则文件必须同时满足这两个条件才能包含在覆盖率报告中。
     **默认值：** `undefined`。
-  * `coverageIncludeGlobs` {string|Array} 使用 glob 模式将特定文件包含在代码覆盖率中，
-    该模式可以匹配绝对路径和相对路径。
-    仅当 `coverage` 设置为 `true` 时，此属性才适用。
-    如果同时提供了 `coverageExcludeGlobs` 和 `coverageIncludeGlobs`，
-    文件必须同时满足**两者**条件才会包含在覆盖率报告中。
+  * `coverageIncludeGlobs` {string|Array} 使用 glob 模式将特定文件包含在代码覆盖率中，该模式可以匹配绝对文件路径和相对文件路径。
+    此属性仅在将 `coverage` 设置为 `true` 时适用。
+    如果同时提供 `coverageExcludeGlobs` 和 `coverageIncludeGlobs`，则文件必须同时满足这两个条件才能包含在覆盖率报告中。
     **默认值：** `undefined`。
-  * `lineCoverage` {number} 要求覆盖行的最低百分比。如果代码
-    覆盖率未达到指定阈值，进程将以代码 `1` 退出。
+  * `coverageIncludeAll` {boolean} 将测试运行期间从未加载的源文件包含在覆盖率报告中，并将其报告为覆盖率为零。候选文件会在 `cwd` 中搜索，并接受与报告其余部分相同的 `coverageIncludeGlobs` 和 `coverageExcludeGlobs` 筛选。此属性仅在将 `coverage` 设置为 `true` 时适用。
+    **默认值：** `false`。
+  * `lineCoverage` {number} 要求达到最低行覆盖率百分比。如果代码覆盖率未达到指定阈值，进程将以代码 `1` 退出。
     **默认值：** `0`。
-  * `branchCoverage` {number} 要求覆盖分支的最低百分比。如果代码
-    覆盖率未达到指定阈值，进程将以代码 `1` 退出。
+  * `branchCoverage` {number} 要求达到最低分支覆盖率百分比。如果代码覆盖率未达到指定阈值，进程将以代码 `1` 退出。
     **默认值：** `0`。
-  * `functionCoverage` {number} 要求覆盖函数的最低百分比。如果代码
-    覆盖率未达到指定阈值，进程将以代码 `1` 退出。
+  * `functionCoverage` {number} 要求达到最低函数覆盖率百分比。如果代码覆盖率未达到指定阈值，进程将以代码 `1` 退出。
     **默认值：** `0`。
   * `env` {Object} 指定要传递给测试进程的环境变量。
-    此选项与 `isolation='none'` 不兼容。这些变量将覆盖
-    主进程中的变量，不会与 `process.env` 合并。
+    此选项不能与 `isolation='none'` 一起使用。这些变量将覆盖主进程中的变量，并且不会与 `process.env` 合并。
     **默认值：** `process.env`。
 * 返回：{TestsStream}
 
@@ -1703,7 +1689,9 @@ added:
   - v18.0.0
   - v16.17.0
 changes:
-  - version: v26.2.0
+  - version:
+     - v26.2.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63221
     description: 添加了 `tags` 选项。
   - version:
@@ -1782,17 +1770,17 @@ test('顶层测试', async (t) => {
 
 ## `test.skip([name][, options][, fn])`
 
-A shorthand for skipping tests,  
-this is the same as [`test([name], { skip: true }[, fn])`][it options].
+跳过测试的简写形式，  
+这与 [`test([name], { skip: true }[, fn])`][it options] 相同。
 
 ## `test.todo([name][, options][, fn])`
 
-用于将测试标记为 `TODO` 的简写，
+用于将测试标记为 `TODO` 的简写，  
 这与 [`test([name], { todo: true }[, fn])`][it options] 相同。
 
 ## `test.only([name][, options][, fn])`
 
-用于将测试标记为 `only` 的简写，
+用于将测试标记为 `only` 的简写，  
 这与 [`test([name], { only: true }[, fn])`][it options] 相同。
 
 ## `describe([name][, options][, fn])`
@@ -1842,7 +1830,7 @@ changes:
 
 ## 仅运行
 
-用于跳过测试的简写，
+用于跳过测试的简写，  
 这与 [仅][it options] 相同。
 
 ## 跳过
@@ -1928,22 +1916,21 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} Hook function.
-  If the hook uses a callback,
-  the callback function is passed as the second argument. **Default:** No-op function.
-* `options` {Object} Hook options. Supports the following properties:
-  * `signal` {AbortSignal} Allows aborting an in-progress hook.
-  * `timeout` {number} The number of milliseconds after which the hook fails.
-    If not specified, subtests inherit this value from their parent.
-    **Default:** `Infinity`.
+* `fn` {Function|AsyncFunction} 钩子函数。
+  如果钩子使用回调，则回调函数会作为第二个参数传入。**默认值：** 无操作函数。
+* `options` {Object} 钩子选项。支持以下属性：
+  * `signal` {AbortSignal} 允许中止正在进行的钩子。
+  * `timeout` {number} 钩子失败前等待的毫秒数。
+    如果未指定，子测试会从其父测试继承此值。
+    **默认值：** `Infinity`。
 
-This function creates a hook that runs before each test in the current suite.
+此函数创建一个在当前测试套件中的每个测试之前运行的钩子。
 
 ```js
 describe('tests', async () => {
   beforeEach(() => console.log('A test is about to run'));
   it('is a subtest', () => {
-    // There are some relevant assertions here
+    // 此处有一些相关的断言
   });
 });
 ```
@@ -1956,23 +1943,22 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} Hook function.
-  If the hook uses a callback,
-  the callback function is passed as the second argument. **Default:** A no-op function.
-* `options` {Object} Hook configuration options. Supports the following properties:
-  * `signal` {AbortSignal} Allows the ongoing hook to be aborted.
-  * `timeout` {number} The number of milliseconds before the hook fails.
-    If not specified, subtests inherit this value from their parent.
-    **Default:** `Infinity`.
+* `fn` {Function|AsyncFunction} 钩子函数。
+  如果钩子使用回调，则回调函数会作为第二个参数传入。**默认值：** 无操作函数。
+* `options` {Object} 钩子配置选项。支持以下属性：
+  * `signal` {AbortSignal} 允许中止正在进行的钩子。
+  * `timeout` {number} 钩子失败前的毫秒数。
+    如果未指定，子测试将从其父测试继承此值。
+    **默认值：** `Infinity`。
 
-This function creates a hook that runs after each test in the current test suite.
-The `afterEach()` hook runs even if a test fails.
+此函数创建一个在当前测试套件中的每个测试之后运行的钩子。
+即使测试失败，`afterEach()` 钩子也会运行。
 
 ```js
 describe('tests', async () => {
   afterEach(() => console.log('测试运行完成'));
   it('is a subtest', () => {
-    // Related assertions go here
+    // 相关断言写在这里
   });
 });
 ```
@@ -2023,8 +2009,9 @@ added: v22.3.0
 added: v22.3.0
 -->
 
-* `resolveSnapshotPath` {Function} 用于计算快照文件位置的函数。
-  此函数接收测试文件的路径作为唯一参数。如果测试未关联文件，例如在 REPL 中，则输入为 undefined。`resolveSnapshotPath` 必须返回一个指定快照文件位置的字符串。
+* `fn` {Function} 用于计算快照文件位置的函数。
+  此函数接收测试文件的路径作为其唯一参数。如果测试未关联文件（例如在 REPL 中），则输入为
+  `undefined`。`fn()` 必须返回一个字符串，用于指定快照文件的位置。
 
 此函数用于自定义快照测试所使用的快照文件位置。默认情况下，快照文件的名称与入口文件相同，扩展名为 `.snap`。
 
@@ -2538,7 +2525,7 @@ changes:
     description: 模拟定时器现已稳定。
 -->
 
-Mock timers 是软件测试中常用的一种技术，用于模拟和控制定时器（例如 `setInterval` 和 `setTimeout`）的行为，而无需实际等待指定的时间间隔。
+模拟定时器是软件测试中常用的一种技术，用于模拟和控制定时器（例如 `setInterval` 和 `setTimeout`）的行为，而无需实际等待指定的时间间隔。
 
 MockTimers 也可以模拟 `Date` 对象。
 
@@ -2555,25 +2542,25 @@ changes:
     - v21.2.0
     - v20.11.0
     pr-url: https://github.com/nodejs/node/pull/48638
-    description: "将参数更新为一个选项对象，其中包含可用的 API 和默认初始纪元。"
+    description: "Updated the argument to an options object containing the available APIs and the default initial epoch."
 -->
 
-为指定的定时器启用定时器模拟。
+Enables timer mocking for the specified timers.
 
-* `enableOptions` {Object} 可选配置项，用于启用定时器模拟。支持以下属性：
-  * `apis` {Array} 一个可选数组，包含要模拟的定时器。
-    当前支持的定时器值有 `'setInterval'`、`'setTimeout'`、`'setImmediate'`
-    和 `'Date'`。**默认值：** `['setInterval', 'setTimeout', 'setImmediate', 'Date']`。
-    如果未提供数组，则默认模拟所有与时间相关的 API（`'setInterval'`、`'clearInterval'`、
-    `'setTimeout'`、`'clearTimeout'`、`'setImmediate'`、`'clearImmediate'` 和
-    `'Date'`）。
-  * `now` {number | Date} 一个可选的数字或 Date 对象，表示用于 `Date.now()` 值的初始时间（以毫秒为单位）。**默认值：** `0`。
+* `enableOptions` {Object} Optional configuration used to enable timer mocking. The following properties are supported:
+  * `apis` {Array} An optional array containing the timers to mock.
+    The currently supported timer values are `'setInterval'`, `'setTimeout'`, `'setImmediate'`,
+    and `'Date'`. **Default:** `['setInterval', 'setTimeout', 'setImmediate', 'Date']`.
+    If an array is not provided, all time-related APIs are mocked by default (`'setInterval'`, `'clearInterval'`,
+    `'setTimeout'`, `'clearTimeout'`, `'setImmediate'`, `'clearImmediate'`, and
+    `'Date'`).
+  * `now` {number | Date} An optional number or Date object representing the initial time, in milliseconds, to be used for the `Date.now()` value. **Default:** `0`.
 
-**注意：** 当你为某个特定定时器启用模拟时，其关联的清除函数也会被隐式模拟。
+**Note:** When mocking is enabled for a specific timer, its associated clear function is also implicitly mocked.
 
-**注意：** 模拟 `Date` 会影响 mock timers 的行为，因为它们使用的是同一个内部时钟。
+**Note:** Mocking `Date` affects the behavior of mock timers because they use the same internal clock.
 
-不设置初始时间的使用示例：
+Example usage without setting an initial time:
 
 ```mjs
 import { mock } from 'node:test';
@@ -2585,11 +2572,11 @@ const { mock } = require('node:test');
 mock.timers.enable({ apis: ['setInterval'] });
 ```
 
-上面的示例启用了对 `setInterval` 定时器的模拟，并隐式模拟了 `clearInterval` 函数。来自 [node:timers](./timers.md)、
-[node:timers/promises](./timers.md#timers-promises-api) 和
-`globalThis` 的 `setInterval` 与 `clearInterval` 函数都会被模拟。
+The example above enables mocking for the `setInterval` timer and implicitly mocks the `clearInterval` function. The `setInterval` and `clearInterval` functions from [node:timers](./timers.md),
+[node:timers/promises](./timers.md#timers-promises-api), and
+`globalThis` will be mocked.
 
-设置初始时间的使用示例
+Example usage with an initial time:
 
 ```mjs
 import { mock } from 'node:test';
@@ -2601,7 +2588,7 @@ const { mock } = require('node:test');
 mock.timers.enable({ apis: ['Date'], now: 1000 });
 ```
 
-将初始 Date 对象设置为时间的使用示例
+Example usage with an initial Date object:
 
 ```mjs
 import { mock } from 'node:test';
@@ -2613,12 +2600,12 @@ const { mock } = require('node:test');
 mock.timers.enable({ apis: ['Date'], now: new Date() });
 ```
 
-或者，如果你不带参数调用 `mock.timers.enable()`：
+Alternatively, if you call `mock.timers.enable()` without arguments:
 
-所有定时器（`'setInterval'`、`'clearInterval'`、`'setTimeout'`、`'clearTimeout'`、
-`'setImmediate'` 和 `'clearImmediate'`）都会被模拟。来自 `node:timers`、`node:timers/promises` 和
-`globalThis` 的 `setInterval`、`clearInterval`、`setTimeout`、`clearTimeout`、`setImmediate` 和
-`clearImmediate` 函数都会被模拟。全局 `Date` 对象也会被模拟。
+All timers (`'setInterval'`, `'clearInterval'`, `'setTimeout'`, `'clearTimeout'`,
+`'setImmediate'`, and `'clearImmediate'`) will be mocked. The `setInterval`, `clearInterval`, `setTimeout`, `clearTimeout`, `setImmediate`, and
+`clearImmediate` functions from `node:timers`, `node:timers/promises`, and
+`globalThis` will be mocked. The global `Date` object will also be mocked.
 
 ### `timers.reset()`
 
@@ -3110,11 +3097,12 @@ added:
   - v18.9.0
   - v16.19.0
 changes:
-  - version: REPLACEME
+  - version: v26.6.0
     pr-url: https://github.com/nodejs/node/pull/64309
-    description: Added `entryFile` to events forwarded from child processes
-                 when tests run with process isolation.
-  - version: v26.3.0
+    description: 为在进程隔离模式下运行测试时从子进程转发的事件添加了 `entryFile`
+  - version:
+     - v26.3.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63435
     description: 为携带 `testId` 的测试事件添加了 `parentId`。
   - version:
@@ -3353,7 +3341,7 @@ added:
 ### 事件：`'test:log'`
 
 <!-- YAML
-added: REPLACEME
+added: v26.6.0
 -->
 
 * `data` {Object}
@@ -3489,7 +3477,9 @@ added: REPLACEME
 ## `getTestContext()`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.19.0
 -->
 
 * 返回值：{TestContext|SuiteContext|undefined}
@@ -3618,12 +3608,12 @@ added:
   - v18.17.0
 -->
 
-* `fn` {Function|AsyncFunction} Hook function. The first argument to this function is the [`TestContext`][] object. If the hook uses a callback, the callback function is passed as the second argument. **Default:** A no-op function.
-* `options` {Object} Configuration options for the hook. The following properties are supported:
-  * `signal` {AbortSignal} Allows aborting an in-progress hook.
-  * `timeout` {number} The number of milliseconds after which the hook will fail. If not specified, child tests inherit this value from their parent. **Default:** `Infinity`.
+* `fn` {Function|AsyncFunction} 钩子函数。此函数的第一个参数是 [`TestContext`][] 对象。如果钩子使用回调函数，则回调函数会作为第二个参数传入。**默认值：** 空操作函数。
+* `options` {Object} 钩子的配置选项。支持以下属性：
+  * `signal` {AbortSignal} 允许中止正在进行的钩子。
+  * `timeout` {number} 钩子失败前等待的毫秒数。如果未指定，子测试将从其父测试继承此值。**默认值：** `Infinity`。
 
-This function is used to create a hook that runs before the current test's subtests.
+此函数注册一个钩子，该钩子会在当前测试的任何子测试之前运行。
 
 ### `context.beforeEach([fn][, options])`
 
@@ -3638,7 +3628,7 @@ added:
   * `signal` {AbortSignal} 允许中止进行中的钩子。
   * `timeout` {number} 钩子将在多少毫秒后失败。如果未指定，子测试将从其父级继承此值。**默认值：** `Infinity`。
 
-此函数用于创建一个钩子，在当前测试的每个子测试之前运行。
+此函数注册一个钩子，该钩子会在当前测试的每个子测试之前运行。
 
 ```js
 test('顶级测试', async (t) => {
@@ -3665,7 +3655,7 @@ added:
   * `signal` {AbortSignal} 允许中止进行中的钩子。
   * `timeout` {number} 钩子将在多少毫秒后失败。如果未指定，子测试将从其父级继承此值。**默认值：** `Infinity`。
 
-此函数用于创建一个钩子，在当前测试完成后运行。
+此函数注册一个在当前测试完成后运行的钩子。
 
 ```js
 test('顶级测试', (t) => {
@@ -3682,12 +3672,12 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} Hook function. The first argument to this function is the [`TestContext`][] object. If the hook uses a callback, the callback function is passed as the second argument. **Default:** A no-op function.
-* `options` {Object} Configuration options for the hook. The following properties are supported:
-  * `signal` {AbortSignal} Allows the in-progress hook to be aborted.
-  * `timeout` {number} The number of milliseconds before the hook fails. If unspecified, subtests inherit this value from their parent. **Default:** `Infinity`.
+* `fn` {Function|AsyncFunction} 钩子函数。此函数的第一个参数是 [`TestContext`][] 对象。如果钩子使用回调，则回调函数会作为第二个参数传入。**默认值：** 无操作函数。
+* `options` {Object} 钩子的配置选项。支持以下属性：
+  * `signal` {AbortSignal} 允许中止正在进行的钩子。
+  * `timeout` {number} 钩子失败前等待的毫秒数。如果未指定，子测试将从其父测试继承此值。**默认值：** `Infinity`。
 
-This function is used to create a hook that runs after each child test of the current test.
+此函数注册一个钩子，该钩子会在当前测试的每个子测试之后运行。
 
 ```js
 test('顶级测试', async (t) => {
@@ -3792,11 +3782,11 @@ test('顶级测试', (t) => {
 ### `context.log(message[, data])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.6.0
 -->
 
 * `message` {string} 要报告的消息。
-* `data` {any} 可选的结构化负载，附加到消息上。测试运行器会原样传递它。在使用进程隔离运行测试时，该值必须与 [HTML structured clone algorithm][] 兼容。
+* `data` {any} 可选的结构化负载，附加到消息上。测试运行器会原样传递它。在使用进程隔离运行测试时，该值必须与 [HTML 结构化克隆算法][] 兼容。
 
 此函数用于向输出写入日志消息。与 [`context.diagnostic`][] 不同，生成的 [`'test:log'`][] 事件会立即发出，按照测试执行的顺序进行，而不是缓冲到测试报告结果时才发出。此函数不返回值。
 
@@ -3874,14 +3864,16 @@ added: v25.0.0
 ### `context.tags`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.19.0
 -->
 
 > 稳定性：1.0 - 早期开发
 
 * 类型：{string\[]}
 
-An array of lowercase tags after flattening, ordered by declaration order, including any tags inherited from ancestor suites. If the test has no tags, it is empty. See [Test tags][].
+展平后的由小写标签组成的数组，按声明顺序排列，包括从祖先套件继承的所有标签。如果测试没有标签，则为空。请参阅[测试标签][]。
 
 ### `context.workerId`
 
@@ -3997,9 +3989,9 @@ added:
   - v16.17.0
 -->
 
-* `shouldRunOnlyTests` {boolean} Whether to run only `only` tests.
+* `shouldRunOnlyTests` {boolean} 是否只运行带有 `only` 选项的测试。
 
-If `shouldRunOnlyTests` is truthy, the test context will only run tests that are set with the `only` option. Otherwise, all tests will run. If Node.js was not started with the [`--test-only`][] command-line option, this function is a no-op.
+如果 `shouldRunOnlyTests` 为真值，测试上下文将只运行设置了 `only` 选项的测试。否则，将运行所有测试。如果 Node.js 启动时未使用 [`--test-only`][] 命令行选项，则此函数不执行任何操作。
 
 ```js
 test('顶级测试', (t) => {
@@ -4075,7 +4067,9 @@ added:
   - v18.0.0
   - v16.17.0
 changes:
-  - version: v26.2.0
+  - version:
+     - v26.2.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63221
     description: 添加了 `tags` 选项。
   - version:
@@ -4102,7 +4096,7 @@ changes:
   * `signal` {AbortSignal} 允许中止进行中的测试。
   * `skip` {boolean|string} 如果为真值，则测试被跳过。如果提供字符串，则该字符串会作为跳过该测试的原因显示在测试结果中。**默认值：** `false`。
   * `tags` {string\[]} 与子测试关联的字符串标签数组。
-    与 [`--experimental-test-tag-filter`][] 一起使用，用于筛选要运行的测试。标签通过并集从父测试或套件继承。参见 [Test tags][]。**默认值：** `[]`。
+    与 [`--experimental-test-tag-filter`][] 一起使用，用于筛选要运行的测试。标签通过并集从父测试或套件继承。参见 [测试标签][]。**默认值：** `[]`。
   * `todo` {boolean|string} 如果为真值，则测试标记为 `TODO`。如果提供字符串，则该字符串会作为测试为何为 `TODO` 的原因显示在测试结果中。**默认值：** `false`。
   * `timeout` {number} 测试在多少毫秒后失败。
     如果未指定，子测试将从其父级继承此值。
@@ -4135,13 +4129,13 @@ added:
   - v22.14.0
 -->
 
-* `condition` {Function|AsyncFunction} A predicate function that will be invoked periodically until it completes successfully or the configured polling timeout elapses. Successful completion is defined as not throwing or rejecting. This function takes no arguments and may return any value.
-* `options` {Object} Optional configuration object for the polling operation. The following properties are supported:
-  * `interval` {number} The number of milliseconds to wait after a failed `condition` call before retrying. **Default:** `50`.
-  * `timeout` {number} The polling timeout, in milliseconds. If `condition` has not completed successfully before this time elapses, an error occurs. **Default:** `1000`.
-* Returns: {Promise} fulfilled with the value returned by `condition`.
+* `condition` {Function|AsyncFunction} 一个谓词函数，将定期调用，直到成功完成或配置的轮询超时。成功完成的定义是未抛出异常或未拒绝。此函数不接受任何参数，并且可以返回任意值。
+* `options` {Object} 轮询操作的可选配置对象。支持以下属性：
+  * `interval` {number} 在 `condition` 调用失败后、重试前等待的毫秒数。**默认值：** `50`。
+  * `timeout` {number} 轮询超时时间，以毫秒为单位。如果在此时间过去之前 `condition` 尚未成功完成，则会发生错误。**默认值：** `1000`。
+* 返回：{Promise} 以 `condition` 返回的值完成。
 
-This method polls the `condition` function until it completes successfully or the operation times out.
+此方法会轮询 `condition` 函数，直到其成功完成或操作超时。
 
 ## 类：`SuiteContext`
 
@@ -4238,7 +4232,7 @@ test.describe('my suite', (suite) => {
 ### `context.log(message[, data])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.6.0
 -->
 
 * `message` {string} 要报告的消息。
@@ -4252,9 +4246,9 @@ test.describe('my suite', (suite) => {
 });
 ```
 
-[HTML structured clone algorithm]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+[HTML 结构化克隆算法]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
 [TAP]: https://testanything.org/
-[Test tags]: #test-tags
+[测试标签]: #test-tags
 [`'test:complete'`]: #event-testcomplete
 [`'test:coverage'`]: #event-testcoverage
 [`'test:dequeue'`]: #event-testdequeue
@@ -4273,7 +4267,7 @@ test.describe('my suite', (suite) => {
 [`'test:watch:restarted'`]: #event-testwatchrestarted
 [`--experimental-test-coverage`]: cli.md#--experimental-test-coverage
 [`--experimental-test-module-mocks`]: cli.md#--experimental-test-module-mocks
-[`--experimental-test-tag-filter`]: cli.md#--experimental-test-tag-filterexpr
+[`--experimental-test-tag-filter`]: cli.md#--experimental-test-tag-filtertag
 [`--import`]: cli.md#--importmodule
 [`--no-strip-types`]: cli.md#--no-strip-types
 [`--test-concurrency`]: cli.md#--test-concurrency
@@ -4309,14 +4303,14 @@ test.describe('my suite', (suite) => {
 [`run()`]: #runoptions
 [`suite()`]: #suitename-options-fn
 [`test()`]: #testname-options-fn
-[code coverage]: #collecting-code-coverage
-[configuration files]: cli.md#--experimental-config-filepath---experimental-config-file
-[describe options]: #describename-options-fn
-[it options]: #testname-options-fn
-[module customization hooks]: module.md#customization-hooks
-[running tests from the command line]: #running-tests-from-the-command-line
+[代码覆盖率]: #collecting-code-coverage
+[配置文件]: cli.md#--experimental-config-filepath---experimental-config-file
+[describe 选项]: #describename-options-fn
+[it 选项]: #testname-options-fn
+[模块自定义钩子]: module.md#customization-hooks
+[从命令行运行测试]: #running-tests-from-the-command-line
 [stream.compose]: stream.md#streamcomposestreams
-[subtests]: #subtests
-[suite options]: #suitename-options-fn
-[test reporters]: #test-reporters
-[test runner execution model]: #test-runner-execution-model
+[子测试]: #subtests
+[套件选项]: #suitename-options-fn
+[测试报告器]: #test-reporters
+[测试运行器执行模型]: #test-runner-execution-model

@@ -109,10 +109,10 @@ changes:
     description: 不再是实验性功能。
 -->
 
-* `key` {any} 任何任意的、可克隆的 JavaScript 值，可用作 {Map} 键。
+* `key` {any} 任何可克隆的 JavaScript 值，可用作 {Map} 键。
 * 返回：{any}
 
-在工作线程内，`worker.getEnvironmentData()` 返回传递给生成线程的 `worker.setEnvironmentData()` 的数据克隆。每个新 `Worker` 都会自动接收环境数据的自己的副本。
+在工作线程内，`worker.getEnvironmentData()` 返回传递给生成线程的 `worker.setEnvironmentData()` 数据的克隆。每个新 `Worker` 都会自动接收环境数据的独立副本。
 
 ```mjs
 import {
@@ -645,11 +645,11 @@ changes:
     description: 不再是实验性的。
 -->
 
-* `key` {any} 任何可用作 {Map} 键的任意可克隆 JavaScript 值。
-* `value` {any} 任何将被克隆并自动传递给所有新 `Worker` 实例的任意可克隆 JavaScript 值。如果 `value` 传递
+* `key` {any} 任何可用作 {Map} 键的可克隆 JavaScript 值。
+* `value` {any} 任何将被克隆并自动传递给所有新 `Worker` 实例的可克隆 JavaScript 值。如果 `value` 传递
   为 `undefined`，则之前为 `key` 设置的任何值将被删除。
 
-`worker.setEnvironmentData()` API 设置当前线程和从当前上下文
+`worker.setEnvironmentData()` API 设置当前线程以及从当前上下文
 生成的所有新 `Worker` 实例中 `worker.getEnvironmentData()` 的内容。
 
 ## `worker_threads.threadId`
@@ -1159,10 +1159,10 @@ port2.postMessage(circularData);
 `transferList` 可能是 {ArrayBuffer}、[`MessagePort`][]、[`FileHandle`][]、{net.Server} 和 {net.Socket} 对象的列表。
 传输后，它们在通道发送端将不再可用（即使它们不包含在 `value` 中也是如此）。
 
-传输 {net.Server} 会将其监听套接字——以及接受队列中的任何待处理连接——移动到接收线程的事件循环中。
-传输 {net.Socket} 会移动单个连接；该套接字必须是新近接受或创建的、尚未开始读取且没有缓冲数据的 TCP 连接，否则 `postMessage()` 会抛出
-`ERR_WORKER_HANDLE_NOT_TRANSFERABLE`。这使得可以在一个线程上接受连接，并将它们分发到一个 worker 线程池中。
-仅支持 TCP 句柄，并且仅在类 Unix 平台上支持；在 Windows 上，`postMessage()` 会抛出 `ERR_WORKER_HANDLE_TRANSFER_UNSUPPORTED`。
+传输 {net.Server} 会将其监听套接字（以及接受队列中的任何待处理连接）移动到接收线程的事件循环中。
+传输 {net.Socket} 会移动单个连接；该套接字必须是刚刚接受或创建的 TCP 连接，且尚未开始读取并且没有缓冲数据，否则 `postMessage()` 会抛出 `ERR_WORKER_HANDLE_NOT_TRANSFERABLE`。
+这样可以在一个线程上接受连接，并将其分配到工作线程池中的多个工作线程。
+仅支持 TCP 句柄。
 
 如果 `value` 包含 {SharedArrayBuffer} 实例，则它们可从任一线程访问。它们不能列在 `transferList` 中。
 
@@ -1365,7 +1365,7 @@ Worker 环境内的显著差异包括：
 可以在其他 `Worker` 内部创建 `Worker` 实例。
 
 像 [Web Workers][] 和 [`node:cluster` 模块][] 一样，双向通信
-可以通过线程间消息传递实现。在内部，`Worker` 拥有一对内置的 [`MessagePort`][]，
+可以通过线程间消息传递实现。在内部，`Worker` 拥有一对内置的 [`MessagePort`][],
 它们在 `Worker` 创建时已经相互关联。虽然父端
 的 `MessagePort` 对象没有直接暴露，但其功能通过
 父线程 `Worker` 对象上的 [`worker.postMessage()`][] 和 [`worker.on('message')`][] 事件
@@ -1548,7 +1548,7 @@ added: v10.5.0
 
 * `err` {any}
 
-如果工作线程抛出未捕获的异常，则会发出 `'error'` 事件。在这种情况下，worker 将被终止。
+如果工作线程抛出未捕获的异常，则会发出 `'error'` 事件。在这种情况下，工作线程将被终止。
 
 ### 事件：`'exit'`
 
@@ -1665,7 +1665,7 @@ added:
   - v12.22.0
 -->
 
-一个可用于查询 worker
+一个可用于查询工作线程
 实例性能信息的对象。
 
 #### `performance.eventLoopUtilization([utilization1[, utilization2]])`
@@ -1687,13 +1687,13 @@ added:
   * `utilization` {number}
 
 与 [`perf_hooks` `eventLoopUtilization()`][] 相同的调用，但返回的是
-worker 实例的值。
+工作线程实例的值。
 
-一个区别是，与主线程不同，worker 内的引导是在
-事件循环内完成的。因此，一旦 worker 的脚本开始执行，
+一个区别是，与主线程不同，工作线程内的引导是在
+事件循环内完成的。因此，一旦工作线程的脚本开始执行，
 事件循环利用率立即可用。
 
-`idle` 时间不增加并不表示 worker 卡在引导过程中。以下示例显示 worker 的整个
+`idle` 时间不增加并不表示工作线程卡在引导过程中。以下示例显示工作线程的整个
 生命周期从未积累任何 `idle` 时间，但仍能够处理
 消息。
 
@@ -1737,7 +1737,7 @@ if (isMainThread) {
 }
 ```
 
-Worker 的事件循环利用率仅在发出 [`'online'`
+工作线程的事件循环利用率仅在发出 [`'online'`
 事件][] 后可用，如果在此之前调用，或在 [`'exit'`
 事件][] 之后调用，则所有属性的值为 `0`。
 
@@ -1760,9 +1760,9 @@ added: v10.5.0
 added: v10.5.0
 -->
 
-`unref()` 的反操作，对之前 `unref()` 过的 worker 调用 `ref()`
+`unref()` 的反操作，对之前调用过 `unref()` 的 worker 调用 `ref()`
 _不会_ 让程序退出，如果它是唯一活动的句柄（默认
-行为）。如果 worker 是 `ref()` 过的，再次调用 `ref()`
+行为）。如果 worker 已经调用过 `ref()`，再次调用 `ref()`
 没有效果。
 
 ### `worker.resourceLimits`
@@ -1951,9 +1951,9 @@ added: v10.5.0
 
 * 类型：{stream.Readable}
 
-这是一个可读流，包含在 worker 线程内写入 [`process.stdout`][]
-的数据。如果未将 `stdout: true` 传递给
-[`Worker`][] 构造函数，则数据会管道传输到父线程的
+这是一个可读流，包含在 worker 线程内写入 [`process.stdout`][]  
+的数据。如果未将 `stdout: true` 传递给  
+[`Worker`][] 构造函数，则数据会管道传输到父线程的  
 [`process.stdout`][] 流。
 
 ### `worker.terminate()`
@@ -1994,8 +1994,8 @@ added:
 
 * {string|null}
 
-A string identifier for the referenced thread, or null if the thread is not running.
-Within the worker thread, it is available as [`require('node:worker_threads').threadName`][].
+引用线程的字符串标识符；如果线程未运行，则为 null。
+在线程内部，可通过 [`require('node:worker_threads').threadName`][] 获取。
 
 ### `worker.unref()`
 

@@ -149,7 +149,7 @@ WICG 提案：
 * [`subtle.encapsulateBits()`][]
 * [`subtle.encapsulateKey()`][]
 * [`subtle.getPublicKey()`][]
-* [`SubtleCrypto.supports()`][]
+* [`SubtleCrypto.supports()`][]。
 
 ## Web 加密 API 中的安全曲线
 
@@ -506,101 +506,79 @@ const decrypted = new TextDecoder().decode(await crypto.subtle.decrypt(
 ));
 ```
 
-## 算法矩阵
+## 算法支持
 
-下表详细列出了 Node.js Web
+以下部分详细介绍 Node.js Web
 Crypto API 实现所支持的算法，以及每种算法所支持的 API：
 
 ### 密钥管理 API
 
-| 算法                            | [`subtle.generateKey()`][] | [`subtle.exportKey()`][] | [`subtle.importKey()`][] | [`subtle.getPublicKey()`][] |
-| ------------------------------------ | -------------------------- | ------------------------ | ------------------------ | --------------------------- |
-| `'AES-CBC'`                          | ✔                          | ✔                        | ✔                        |                             |
-| `'AES-CTR'`                          | ✔                          | ✔                        | ✔                        |                             |
-| `'AES-GCM'`                          | ✔                          | ✔                        | ✔                        |                             |
-| `'AES-KW'`                           | ✔                          | ✔                        | ✔                        |                             |
-| `'AES-OCB'`                          | ✔                          | ✔                        | ✔                        |                             |
-| `'Argon2d'`                          |                            |                          | ✔                        |                             |
-| `'Argon2i'`                          |                            |                          | ✔                        |                             |
-| `'Argon2id'`                         |                            |                          | ✔                        |                             |
-| `'ChaCha20-Poly1305'`[^modern-algos] | ✔                          | ✔                        | ✔                        |                             |
-| `'ECDH'`                             | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'ECDSA'`                            | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'Ed25519'`                          | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'Ed448'`[^secure-curves]            | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'HKDF'`                             |                            |                          | ✔                        |                             |
-| `'HMAC'`                             | ✔                          | ✔                        | ✔                        |                             |
-| `'KMAC128'`[^modern-algos]           | ✔                          | ✔                        | ✔                        |                             |
-| `'KMAC256'`[^modern-algos]           | ✔                          | ✔                        | ✔                        |                             |
-| `'ML-DSA-44'`[^modern-algos]         | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'ML-DSA-65'`[^modern-algos]         | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'ML-DSA-87'`[^modern-algos]         | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'ML-KEM-512'`[^modern-algos]        | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'ML-KEM-768'`[^modern-algos]        | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'ML-KEM-1024'`[^modern-algos]       | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'PBKDF2'`                           |                            |                          | ✔                        |                             |
-| `'RSA-OAEP'`                         | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'RSA-PSS'`                          | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'RSASSA-PKCS1-v1_5'`                | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'X25519'`                           | ✔                          | ✔                        | ✔                        | ✔                           |
-| `'X448'`[^secure-curves]             | ✔                          | ✔                        | ✔                        | ✔                           |
+* [`subtle.generateKey()`][], [`subtle.exportKey()`][] 和
+  [`subtle.importKey()`][] 支持 `'AES-CBC'`、`'AES-CTR'`、`'AES-GCM'`、
+  `'AES-KW'`、`'AES-OCB'`、`'ChaCha20-Poly1305'`[^modern-algos]、`'HMAC'`、
+  `'KMAC128'`[^modern-algos] 和 `'KMAC256'`[^modern-algos]。
+* [`subtle.importKey()`][] 支持 `'Argon2d'`、`'Argon2i'`、`'Argon2id'`、
+  `'HKDF'` 和 `'PBKDF2'`。
+* [`subtle.generateKey()`][]、[`subtle.exportKey()`][]、
+  [`subtle.importKey()`][] 和 [`subtle.getPublicKey()`][] 支持 `'ECDH'`、
+  `'ECDSA'`、`'Ed25519'`、`'Ed448'`[^secure-curves]、
+  `'ML-DSA-44'`[^modern-algos]、`'ML-DSA-65'`[^modern-algos]、
+  `'ML-DSA-87'`[^modern-algos]、`'ML-KEM-512'`[^modern-algos]、
+  `'ML-KEM-768'`[^modern-algos]、`'ML-KEM-1024'`[^modern-algos]、`'RSA-OAEP'`、
+  `'RSA-PSS'`、`'RSASSA-PKCS1-v1_5'`、`'X25519'` 和
+  `'X448'`[^secure-curves]。
 
 ### 加密操作 API
 
-**列图例：**
+* [`subtle.encrypt()`][] 和 [`subtle.decrypt()`][] 支持 `'AES-CBC'`、
+  `'AES-CTR'`、`'AES-GCM'`、`'AES-OCB'`、
+  `'ChaCha20-Poly1305'`[^modern-algos] 和 `'RSA-OAEP'`。
+* [`subtle.sign()`][] 和 [`subtle.verify()`][] 支持 `'ECDSA'`、`'Ed25519'`、
+  `'Ed448'`[^secure-curves]、`'HMAC'`、`'KMAC128'`[^modern-algos]、
+  `'KMAC256'`[^modern-algos]、`'ML-DSA-44'`[^modern-algos]、
+  `'ML-DSA-65'`[^modern-algos]、`'ML-DSA-87'`[^modern-algos]、`'RSA-PSS'` 和
+  `'RSASSA-PKCS1-v1_5'`。
+* [`subtle.deriveBits()`][] 和 [`subtle.deriveKey()`][] 支持 `'Argon2d'`、
+  `'Argon2i'`、`'Argon2id'`、`'ECDH'`、`'HKDF'`、`'PBKDF2'`、`'X25519'` 和
+  `'X448'`[^secure-curves]。
+* [`subtle.wrapKey()`][] 和 [`subtle.unwrapKey()`][] 支持 `'AES-CBC'`、
+  `'AES-CTR'`、`'AES-GCM'`、`'AES-KW'`、`'AES-OCB'`、
+  `'ChaCha20-Poly1305'`[^modern-algos] 和 `'RSA-OAEP'`。
+* [`subtle.encapsulateBits()`][]、[`subtle.decapsulateBits()`][]、
+  [`subtle.encapsulateKey()`][] 和 [`subtle.decapsulateKey()`][] 支持
+  `'ML-KEM-512'`[^modern-algos]、`'ML-KEM-768'`[^modern-algos] 和
+  `'ML-KEM-1024'`[^modern-algos]。
+* [`subtle.digest()`][] 支持 `'cSHAKE128'`[^modern-algos]、
+  `'cSHAKE256'`[^modern-algos]、`'KT128'`[^modern-algos]、
+  `'KT256'`[^modern-algos]、`'SHA-1'`、`'SHA-256'`、`'SHA-384'`、`'SHA-512'`、
+  `'SHA3-256'`[^modern-algos]、`'SHA3-384'`[^modern-algos]、
+  `'SHA3-512'`[^modern-algos]、`'TurboSHAKE128'`[^modern-algos] 和
+  `'TurboSHAKE256'`[^modern-algos]。
 
-* **加密**: [`subtle.encrypt()`][] / [`subtle.decrypt()`][]
-* **签名和 MAC**: [`subtle.sign()`][] / [`subtle.verify()`][]
-* **密钥或位派生**: [`subtle.deriveBits()`][] / [`subtle.deriveKey()`][]
-* **密钥包装**: [`subtle.wrapKey()`][] / [`subtle.unwrapKey()`][]
-* **密钥封装**: [`subtle.encapsulateBits()`][] / [`subtle.decapsulateBits()`][]
-  [`subtle.encapsulateKey()`][] / [`subtle.decapsulateKey()`][]
-* **摘要**: [`subtle.digest()`][]
+### 密钥格式
 
-| 算法                            | 加密 | 签名和 MAC | 密钥或位派生 | 密钥包装 | 密钥封装 | 摘要 |
-| ------------------------------------ | ---------- | ------------------ | ---------------------- | ------------ | ----------------- | ------ |
-| `'AES-CBC'`                          | ✔          |                    |                        | ✔            |                   |        |
-| `'AES-CTR'`                          | ✔          |                    |                        | ✔            |                   |        |
-| `'AES-GCM'`                          | ✔          |                    |                        | ✔            |                   |        |
-| `'AES-KW'`                           |            |                    |                        | ✔            |                   |        |
-| `'AES-OCB'`                          | ✔          |                    |                        | ✔            |                   |        |
-| `'Argon2d'`                          |            |                    | ✔                      |              |                   |        |
-| `'Argon2i'`                          |            |                    | ✔                      |              |                   |        |
-| `'Argon2id'`                         |            |                    | ✔                      |              |                   |        |
-| `'ChaCha20-Poly1305'`[^modern-algos] | ✔          |                    |                        | ✔            |                   |        |
-| `'cSHAKE128'`[^modern-algos]         |            |                    |                        |              |                   | ✔      |
-| `'cSHAKE256'`[^modern-algos]         |            |                    |                        |              |                   | ✔      |
-| `'ECDH'`                             |            |                    | ✔                      |              |                   |        |
-| `'ECDSA'`                            |            | ✔                  |                        |              |                   |        |
-| `'Ed25519'`                          |            | ✔                  |                        |              |                   |        |
-| `'Ed448'`[^secure-curves]            |            | ✔                  |                        |              |                   |        |
-| `'HKDF'`                             |            |                    | ✔                      |              |                   |        |
-| `'HMAC'`                            |            | ✔                  |                        |              |                   |        |
-| `'KMAC128'`[^modern-algos]           |            | ✔                  |                        |              |                   |        |
-| `'KMAC256'`[^modern-algos]           |            | ✔                  |                        |              |                   |        |
-| `'KT128'`[^modern-algos]             |            |                    |                        |              |                   | ✔      |
-| `'KT256'`[^modern-algos]             |            |                    |                        |              |                   | ✔      |
-| `'ML-DSA-44'`[^modern-algos]         |            | ✔                  |                        |              |                   |        |
-| `'ML-DSA-65'`[^modern-algos]         |            | ✔                  |                        |              |                   |        |
-| `'ML-DSA-87'`[^modern-algos]         |            | ✔                  |                        |              |                   |        |
-| `'ML-KEM-512'`[^modern-algos]        |            |                    |                        |              | ✔                 |        |
-| `'ML-KEM-768'`[^modern-algos]        |            |                    |                        |              | ✔                 |        |
-| `'ML-KEM-1024'`[^modern-algos]       |            |                    |                        |              | ✔                 |        |
-| `'PBKDF2'`                           |            |                    | ✔                      |              |                   |        |
-| `'RSA-OAEP'`                         | ✔          |                    |                        | ✔            |                   |        |
-| `'RSA-PSS'`                          |            | ✔                  |                        |              |                   |        |
-| `'RSASSA-PKCS1-v1_5'`                |            | ✔                  |                        |              |                   |        |
-| `'SHA-1'`                            |            |                    |                        |              |                   | ✔      |
-| `'SHA-256'`                          |            |                    |                        |              |                   | ✔      |
-| `'SHA-384'`                          |            |                    |                        |              |                   | ✔      |
-| `'SHA-512'`                          |            |                    |                        |              |                   | ✔      |
-| `'SHA3-256'`[^modern-algos]          |            |                    |                        |              |                   | ✔      |
-| `'SHA3-384'`[^modern-algos]          |            |                    |                        |              |                   | ✔      |
-| `'SHA3-512'`[^modern-algos]          |            |                    |                        |              |                   | ✔      |
-| `'TurboSHAKE128'`[^modern-algos]     |            |                    |                        |              |                   | ✔      |
-| `'TurboSHAKE256'`[^modern-algos]          |            |                    |                        |              |                   | ✔      |
-| `'X25519'`                           |            |                    | ✔                      |              |                   |        |
-| `'X448'`[^secure-curves]             |            |                    | ✔                      |              |                   |        |
+以下列表描述 [`subtle.importKey()`][] 和 [`subtle.exportKey()`][] 所支持的格式。
+
+* **`'AES-CBC'`、`'AES-CTR'`、`'AES-GCM'`、`'AES-KW'` 和 `'HMAC'`** 可以使用
+  `'jwk'`、`'raw'` 和 `'raw-secret'`[^modern-algos] 进行导入和导出。
+* **`'AES-OCB'`[^modern-algos]、`'ChaCha20-Poly1305'`[^modern-algos]、
+  `'KMAC128'`[^modern-algos] 和 `'KMAC256'`[^modern-algos]** 可以使用
+  `'jwk'` 和 `'raw-secret'`[^modern-algos] 进行导入和导出。
+* **`'Argon2d'`[^modern-algos]、`'Argon2i'`[^modern-algos] 和
+  `'Argon2id'`[^modern-algos]** 可以使用
+  `'raw-secret'`[^modern-algos] 导入；不支持导出。
+* **`'ECDH'`、`'ECDSA'`、`'Ed25519'`、`'Ed448'`[^secure-curves]、`'X25519'`、
+  和 `'X448'`[^secure-curves]** 可以使用 `'spki'`、`'pkcs8'`、`'jwk'`、
+  `'raw'` 和 `'raw-public'`[^modern-algos] 进行导入和导出。
+* **`'HKDF'` 和 `'PBKDF2'`** 可以使用 `'raw'` 和
+  `'raw-secret'`[^modern-algos] 导入；不支持导出。
+* **`'ML-DSA-44'`[^modern-algos]、`'ML-DSA-65'`[^modern-algos]、
+  `'ML-DSA-87'`[^modern-algos]、`'ML-KEM-512'`[^modern-algos]、
+  `'ML-KEM-768'`[^modern-algos] 和 `'ML-KEM-1024'`[^modern-algos]** 可以使用
+  `'spki'`、`'pkcs8'`、`'jwk'`、
+  `'raw-public'`[^modern-algos] 和 `'raw-seed'`[^modern-algos] 进行导入和导出。
+* **`'RSA-OAEP'`、`'RSA-PSS'` 和 `'RSASSA-PKCS1-v1_5'`** 可以使用
+  `'spki'`、`'pkcs8'` 和 `'jwk'` 进行导入和导出。
 
 ## 类：`Crypto`
 
@@ -714,48 +692,8 @@ added: v15.0.0
 * `'wrapKey'` - 启用密钥与 [`subtle.wrapKey()`][] 一起使用
 * `'unwrapKey'` - 启用密钥与 [`subtle.unwrapKey()`][] 一起使用
 
-有效的密钥用途取决于密钥算法（由 `cryptokey.algorithm.name` 标识）。
-
-**图例：**
-
-* **加密**：[`subtle.encrypt()`][] / [`subtle.decrypt()`][]
-* **签名和 MAC**：[`subtle.sign()`][] / [`subtle.verify()`][]
-* **密钥或位派生**：[`subtle.deriveBits()`][] / [`subtle.deriveKey()`][]
-* **密钥包装**：[`subtle.wrapKey()`][] / [`subtle.unwrapKey()`][]
-* **密钥封装**：[`subtle.encapsulateBits()`][] / [`subtle.decapsulateBits()`][] /
-  [`subtle.encapsulateKey()`][] / [`subtle.decapsulateKey()`][]
-
-| 支持的密钥算法              | 加密 | 签名和 MAC | 密钥或位派生 | 密钥包装 | 密钥封装 |
-| ------------------------------------ | ---------- | ------------------ | ---------------------- | ------------ | ----------------- |
-| `'AES-CBC'`                          | ✔          |                    |                        | ✔            |                   |
-| `'AES-CTR'`                          | ✔          |                    |                        | ✔            |                   |
-| `'AES-GCM'`                          | ✔          |                    |                        | ✔            |                   |
-| `'AES-KW'`                           |            |                    |                        | ✔            |                   |
-| `'AES-OCB'`                          | ✔          |                    |                        | ✔            |                   |
-| `'Argon2d'`                          |            |                    | ✔                      |              |                   |
-| `'Argon2i'`                          |            |                    | ✔                      |              |                   |
-| `'Argon2id'`                         |            |                    | ✔                      |              |                   |
-| `'ChaCha20-Poly1305'`[^modern-algos] | ✔          |                    |                        | ✔            |                   |
-| `'ECDH'`                             |            |                    | ✔                      |              |                   |
-| `'ECDSA'`                            |            | ✔                  |                        |              |                   |
-| `'Ed25519'`                          |            | ✔                  |                        |              |                   |
-| `'Ed448'`[^secure-curves]            |            | ✔                  |                        |              |                   |
-| `'HKDF'`                             |            |                    | ✔                      |              |                   |
-| `'HMAC'`                             |            | ✔                  |                        |              |                   |
-| `'KMAC128'`[^modern-algos]           |            | ✔                  |                        |              |                   |
-| `'KMAC256'`[^modern-algos]           |            | ✔                  |                        |              |                   |
-| `'ML-DSA-44'`[^modern-algos]         |            | ✔                  |                        |              |                   |
-| `'ML-DSA-65'`[^modern-algos]         |            | ✔                  |                        |              |                   |
-| `'ML-DSA-87'`[^modern-algos]         |            | ✔                  |                        |              |                   |
-| `'ML-KEM-512'`[^modern-algos]        |            |                    |                        |              | ✔                 |
-| `'ML-KEM-768'`[^modern-algos]        |            |                    |                        |              | ✔                 |
-| `'ML-KEM-1024'`[^modern-algos]       |            |                    |                        |              | ✔                 |
-| `'PBKDF2'`                           |            |                    | ✔                      |              |                   |
-| `'RSA-OAEP'`                         | ✔          |                    |                        | ✔            |                   |
-| `'RSA-PSS'`                          |            | ✔                  |                        |              |                   |
-| `'RSASSA-PKCS1-v1_5'`                |            | ✔                  |                        |              |                   |
-| `'X25519'`                           |            |                    | ✔                      |              |                   |
-| `'X448'`[^secure-curves]             |            |                    | ✔                      |              |                   |
+有效的密钥用途取决于密钥算法（由
+`cryptokey.algorithm.name` 标识）。请参阅 [Crypto 操作 API][]，了解每种密钥算法支持的操作。
 
 ## 类：`CryptoKeyPair`
 
@@ -797,9 +735,9 @@ added: v24.7.0
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `operation` {string} "encrypt", "decrypt", "sign", "verify", "digest", "generateKey", "deriveKey", "deriveBits", "importKey", "exportKey", "getPublicKey", "wrapKey", "unwrapKey", "encapsulateBits", "encapsulateKey", "decapsulateBits", 或 "decapsulateKey"
+* `operation` {string} "encrypt", "decrypt", "sign", "verify", "digest", "generateKey", "deriveKey", "deriveBits", "importKey", "exportKey", "getPublicKey", "wrapKey", "unwrapKey", "encapsulateBits", "encapsulateKey", "decapsulateBits" 或 "decapsulateKey"
 * `algorithm` {string|Algorithm}
-* `lengthOrAdditionalAlgorithm` {null|number|string|Algorithm|undefined} 取决于操作，这要么被忽略，要么是操作为 "deriveBits" 时的 length 参数值，要么是操作为 "deriveKey" 时要派生的密钥的算法，要么是操作为 "wrapKey" 时在包装前要导出的密钥的算法，要么是操作为 "unwrapKey" 时在解包后要导入的密钥的算法，要么是操作为 "encapsulateKey" 或 "decapsulateKey" 时在封/解封装密钥后要导入的密钥的算法。**默认值：** 当操作为 "deriveBits" 时为 `null`，否则为 `undefined`。
+* `lengthOrAdditionalAlgorithm` {null|number|string|Algorithm|undefined} 取决于操作，这要么被忽略，要么是操作为 "deriveBits" 时的 length 参数值，要么是操作为 "deriveKey" 时要派生的密钥的算法，要么是操作为 "wrapKey" 时在包装前要导出的密钥的算法，要么是操作为 "unwrapKey" 时在解包后要导入的密钥的算法，要么是操作为 "encapsulateKey" 或 "decapsulateKey" 时在封装或解封装密钥后要导入的密钥的算法。**默认值：** 当操作为 "deriveBits" 时为 `null`，否则为 `undefined`。
 * 返回：{boolean} 指示实现是否支持给定的操作
 
 <!--lint enable maximum-line-length remark-lint-->
@@ -994,7 +932,7 @@ changes:
 * `data` {ArrayBuffer|TypedArray|DataView|Buffer}
 * 返回：{Promise} 成功时兑现为 {ArrayBuffer}。
 
-使用 `algorithm` 标识的方法，此方法尝试生成 `data` 的摘要。如果成功，返回的 Promise 将解决为一个包含计算摘要的 {ArrayBuffer}。
+使用 `algorithm` 标识的方法，此方法尝试生成 `data` 的摘要。如果成功，返回的 Promise 将兑现为一个包含计算摘要的 {ArrayBuffer}。
 
 如果 `algorithm` 作为 {string} 提供，它必须是以下之一：
 
@@ -1032,7 +970,7 @@ added: v24.7.0
 
 * `'ML-KEM-512'`[^modern-algos]
 * `'ML-KEM-768'`[^modern-algos]
-* `'ML-KEM-1024'`[^modern-algos]
+* `'ML-KEM-1024'`[^modern-algos]。
 
 ### `subtle.encapsulateKey(encapsulationAlgorithm, encapsulationKey, sharedKeyAlgorithm, extractable, keyUsages)`
 
@@ -1128,32 +1066,9 @@ changes:
 
 当 `format` 为 `'pkcs8'` 或 `'spki'` 且导出成功时，返回的 Promise 将解决为一个包含导出密钥数据的 {ArrayBuffer}。
 
-当 `format` 为 `'jwk'` 且导出成功时，返回的 Promise 将解决为一个符合 [JSON Web Key][] 规范的 JavaScript 对象。
+当 `format` 为 `'jwk'` 且导出成功时，返回的 Promise 将解决为一个符合 [JSON Web 密钥][] 规范的 JavaScript 对象。
 
-| 支持的密钥算法              | `'spki'` | `'pkcs8'` | `'jwk'` | `'raw'` | `'raw-secret'` | `'raw-public'` | `'raw-seed'` |
-| ------------------------------------ | -------- | --------- | ------- | ------- | -------------- | -------------- | ------------ |
-| `'AES-CBC'`                          |          |           | ✔       | ✔       | ✔              |                |              |
-| `'AES-CTR'`                          |          |           | ✔       | ✔       | ✔              |                |              |
-| `'AES-GCM'`                          |          |           | ✔       | ✔       | ✔              |                |              |
-| `'AES-KW'`                           |          |           | ✔       | ✔       | ✔              |                |              |
-| `'AES-OCB'`[^modern-algos]           |          |           | ✔       |         | ✔              |                |              |
-| `'ChaCha20-Poly1305'`[^modern-algos] |          |           | ✔       |         | ✔              |                |              |
-| `'ECDH'`                             | ✔        | ✔         | ✔       | ✔       |                | ✔              |              |
-| `'ECDSA'`                            | ✔        | ✔         | ✔       | ✔       |                | ✔              |              |
-| `'Ed25519'`                          | ✔        | ✔         | ✔       | ✔       |                | ✔              |              |
-| `'Ed448'`[^secure-curves]            | ✔        | ✔         | ✔       | ✔       |                | ✔              |              |
-| `'HMAC'`                             |          |           | ✔       | ✔       | ✔              |                |              |
-| `'KMAC128'`[^modern-algos]           |          |           | ✔       |         | ✔              |                |              |
-| `'KMAC256'`[^modern-algos]           |          |           | ✔       |         | ✔              |                |              |
-| `'ML-DSA-44'`[^modern-algos]         | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'ML-DSA-65'`[^modern-algos]         | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'ML-DSA-87'`[^modern-algos]         | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'ML-KEM-512'`[^modern-algos]        | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'ML-KEM-768'`[^modern-algos]        | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'ML-KEM-1024'`[^modern-algos]       | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'RSA-OAEP'`                         | ✔        | ✔         | ✔       |         |                |                |              |
-| `'RSA-PSS'`                          | ✔        | ✔         | ✔       |         |                |                |              |
-| `'RSASSA-PKCS1-v1_5'`                | ✔        | ✔         | ✔       |         |                |                |              |
+请参阅[密钥格式][]，了解每种算法支持的格式。
 
 ### `subtle.getPublicKey(key, keyUsages)`
 
@@ -1284,39 +1199,7 @@ changes:
 
 如果导入 KDF 算法密钥，`extractable` 必须为 `false`。
 
-目前支持的算法包括：
-
-| 支持的密钥算法              | `'spki'` | `'pkcs8'` | `'jwk'` | `'raw'` | `'raw-secret'` | `'raw-public'` | `'raw-seed'` |
-| ------------------------------------ | -------- | --------- | ------- | ------- | -------------- | -------------- | ------------ |
-| `'AES-CBC'`                          |          |           | ✔       | ✔       | ✔              |                |              |
-| `'AES-CTR'`                          |          |           | ✔       | ✔       | ✔              |                |              |
-| `'AES-GCM'`                          |          |           | ✔       | ✔       | ✔              |                |              |
-| `'AES-KW'`                           |          |           | ✔       | ✔       | ✔              |                |              |
-| `'AES-OCB'`[^modern-algos]           |          |           | ✔       |         | ✔              |                |              |
-| `'Argon2d'`[^modern-algos]           |          |           |         |         | ✔              |                |              |
-| `'Argon2i'`[^modern-algos]           |          |           |         |         | ✔              |                |              |
-| `'Argon2id'`[^modern-algos]          |          |           |         |         | ✔              |                |              |
-| `'ChaCha20-Poly1305'`[^modern-algos] |          |           | ✔       |         | ✔              |                |              |
-| `'ECDH'`                             | ✔        | ✔         | ✔       | ✔       |                | ✔              |              |
-| `'ECDSA'`                            | ✔        | ✔         | ✔       | ✔       |                | ✔              |              |
-| `'Ed25519'`                          | ✔        | ✔         | ✔       | ✔       |                | ✔              |              |
-| `'Ed448'`[^secure-curves]            | ✔        | ✔         | ✔       | ✔       |                | ✔              |              |
-| `'HKDF'`                             |          |           |         | ✔       | ✔              |                |              |
-| `'HMAC'`                             |          |           | ✔       | ✔       | ✔              |                |              |
-| `'KMAC128'`[^modern-algos]           |          |           | ✔       |         | ✔              |                |              |
-| `'KMAC256'`[^modern-algos]           |          |           | ✔       |         | ✔              |                |              |
-| `'ML-DSA-44'`[^modern-algos]         | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'ML-DSA-65'`[^modern-algos]         | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'ML-DSA-87'`[^modern-algos]         | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'ML-KEM-512'`[^modern-algos]        | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'ML-KEM-768'`[^modern-algos]        | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'ML-KEM-1024'`[^modern-algos]       | ✔        | ✔         | ✔       |         |                | ✔              | ✔            |
-| `'PBKDF2'`                           |          |           |         | ✔       | ✔              |                |              |
-| `'RSA-OAEP'`                         | ✔        | ✔         | ✔       |         |                |                |              |
-| `'RSA-PSS'`                          | ✔        | ✔         | ✔       |         |                |                |              |
-| `'RSASSA-PKCS1-v1_5'`                | ✔        | ✔         | ✔       |         |                |                |              |
-| `'X25519'`                           | ✔        | ✔         | ✔       | ✔       |                | ✔              |              |
-| `'X448'`[^secure-curves]             | ✔        | ✔         | ✔       | ✔       |                | ✔              |              |
+请参阅[密钥格式][]，了解当前支持的算法和格式。
 
 ### `subtle.sign(algorithm, key, data)`
 
@@ -1819,7 +1702,7 @@ changes:
      - v25.9.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61875
-    description: "将 `cShakeParams.length` 重命名为 `cShakeParams.outputLength`。"
+    description: "`cShakeParams.length` 重命名为 `cShakeParams.outputLength`。"
 -->
 
 #### `cShakeParams.name`
@@ -1845,7 +1728,9 @@ added:
 <!-- YAML
 added: v24.7.0
 changes:
-  - version: v26.4.0
+  - version:
+     - v26.4.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/63988
     description: 现在接受命名的 cSHAKE 变体。
 -->
@@ -1862,7 +1747,15 @@ changes:
 
 #### `cShakeParams.customization`
 
-这段内容看起来是 **Node.js Web Crypto / CryptoKey / KeyGen / derive / encrypt 相关文档的中文片段**，而且里面的 `__TRANSDOC_LOCK_*__` 是未替换的占位符。
+<!-- YAML
+added: v24.7.0
+changes:
+  - version:
+     - v26.4.0
+     - v24.19.0
+    pr-url: https://github.com/nodejs/node/pull/63988
+    description: 现在支持非空的自定义字符串。
+-->
 
 如果你的目标是：
 
@@ -1936,11 +1829,16 @@ added:
 added:
  - v25.9.0
  - v24.18.0
+changes:
+  - version: v26.6.0
+    pr-url: https://github.com/nodejs/node/pull/64557
+    description: 将自定义字符串限制为 512 字节。
 -->
 
 * 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
 
-KangarooTwelve 的可选自定义字符串。
+KangarooTwelve 的可选自定义字符串。不得超过 512
+字节。
 
 #### `kangarooTwelveParams.name`
 
@@ -2371,10 +2269,12 @@ added:
 
 [^openssl35]: 需要 OpenSSL >= 3.5
 
-[检查运行时算法支持]: #checking-for-runtime-algorithm-support
+[Checking for runtime algorithm support]: #checking-for-runtime-algorithm-support
+[Crypto operation APIs]: #crypto-operation-apis
 [JSON Web Key]: https://tools.ietf.org/html/rfc7517
-[密钥用法]: #cryptokeyusages
-[Web Cryptography API 中的现代算法]: #modern-algorithms-in-the-web-cryptography-api
+[Key formats]: #key-formats
+[Key usages]: #cryptokeyusages
+[Modern Algorithms in the Web Cryptography API]: #modern-algorithms-in-the-web-cryptography-api
 [RFC 4122]: https://www.rfc-editor.org/rfc/rfc4122.txt
 [Web Cryptography API 中的安全曲线]: #secure-curves-in-the-web-cryptography-api
 [Web Crypto API]: https://www.w3.org/TR/WebCryptoAPI/
@@ -2386,7 +2286,7 @@ added:
 [`subtle.deriveKey()`]: #subtlederivekeyalgorithm-basekey-derivedkeytype-extractable-keyusages
 [`subtle.digest()`]: #subtledigestalgorithm-data
 [`subtle.encapsulateBits()`]: #subtleencapsulatebitsencapsulationalgorithm-encapsulationkey
-[`subtle.encapsulateKey()`]: #subtleencapsulatekeyencapsulationalgorithm-encapsulationkey-sharedkeyalgorithm-extractable-keyusages
+[`subtle.encapsulateKey()`]: #subtleencapsulatekeyencapsulationkey-sharedkeyalgorithm-extractable-keyusages
 [`subtle.encrypt()`]: #subtleencryptalgorithm-key-data
 [`subtle.exportKey()`]: #subtleexportkeyformat-key
 [`subtle.generateKey()`]: #subtlegeneratekeyalgorithm-extractable-keyusages
@@ -2395,4 +2295,4 @@ added:
 [`subtle.sign()`]: #subtlesignalgorithm-key-data
 [`subtle.unwrapKey()`]: #subtleunwrapkeyformat-wrappedkey-unwrappingkey-unwrapalgorithm-unwrappedkeyalgorithm-extractable-keyusages
 [`subtle.verify()`]: #subtleverifyalgorithm-key-signature-data
-[`subtle.wrapKey()`]: #subtlewrapkeyformat-key-wrappingkey-wrapalgorithm
+[`subtle.wrapKey()`]: #subtlewrapkeyformat-key-wrappingkey-wrapalgorithm】【。

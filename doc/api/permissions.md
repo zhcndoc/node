@@ -33,9 +33,13 @@ Node.js 权限模型是一种在执行期间限制访问特定资源的机制。
 
 可用权限由 [`--permission`][] 标志文档说明。
 
-当使用 `--permission` 启动 Node.js 时，
-通过 `fs` 模块访问文件系统、访问网络、生成进程、使用 `node:worker_threads`、使用原生插件、使用 WASI、使用
-FFI，以及启用运行时检查器（runtime inspector）都将受到限制（不会创建 SIGUSR1 的监听器）。
+权限模型有两种运行模式：
+
+* **强制模式**（使用 [`--permission`][] 时的默认模式）：对于进程未获准执行的任何操作，访问都会被拒绝，并抛出 `ERR_ACCESS_DENIED` 错误。
+* **审计模式**（使用 [`--permission-audit`][] 时）：会执行权限检查，并通过诊断通道发布违规信息，但**不会**拒绝访问。执行会正常继续。此模式适用于在使用强制模式部署之前，发现应用程序所需的权限。
+
+使用 `--permission` 启动 Node.js 时，
+通过 `fs` 模块访问文件系统、访问网络、生成进程、使用 `node:worker_threads`、使用原生插件、使用 WASI、使用 FFI 以及启用运行时检查器的能力都会受到限制（不会创建 SIGUSR1 的监听器）。
 
 ```console
 $ node --permission index.js
@@ -52,10 +56,13 @@ Error: Access to this API has been restricted
 
 要允许网络访问，使用 [`--allow-net`][]；在使用权限模型时允许原生插件，使用 [`--allow-addons`][] 标志。对于 WASI，使用 [`--allow-wasi`][] 标志。对于 FFI，使用 [`--allow-ffi`][] 标志。[`node:ffi`](ffi.md) 模块还需要 `--experimental-ffi` 标志，并且仅在支持 FFI 的构建版本中可用。
 
+要允许使用 OpenSSL STORE 加载器（例如，从传递给 [`crypto.createPrivateKey()`][] 的 {URL} 中加载私钥），请使用 [`--allow-openssl-store`][] 标志。
+此标志会向已配置的 OpenSSL STORE 加载器授予广泛权限；这些加载器可能会访问文件、设备、令牌或网络。加载器执行的访问不受 `fs.read`、`fs.write` 或 `net` 权限范围的限制。
+
 #### 运行时 API
 
-当通过 [`--permission`][] 标志启用权限模型时，会向 `process` 对象添加一个新的 `permission` 属性。
-该属性包含以下函数：
+通过 [`--permission`][] 或 [`--permission-audit`][] 标志启用权限模型时，
+`process` 对象会新增一个 `permission` 属性。此属性包含以下函数：
 
 ##### `permission.has(scope[, reference])`
 
@@ -92,6 +99,47 @@ process.permission.has('fs.read', '/etc/myapp/config.json'); // false
 // 完全撤销子进程权限
 process.permission.drop('child');
 ```
+
+#### 审计模式
+
+[`--permission-audit`][] 标志会为权限模型启用审计模式。
+在审计模式下，会执行权限检查，但**不会**拒绝访问——不会抛出 `ERR_ACCESS_DENIED` 错误。相反，每次权限违规都会通过 `node:diagnostics_channel` 模块发布，使应用程序能够观察并记录在强制模式下会被拒绝的操作。执行会正常继续。
+
+审计模式适用于在使用 [`--permission`][] 部署之前，发现应用程序所需的权限。它还可以与 [`--allow-fs-read`] []、[`--allow-fs-write`][]、[`--allow-net`][]、
+[`--allow-child-process`][]、[`--allow-worker`][]、[`--allow-addons`][]、
+[`--allow-wasi`][] 和 [`--allow-ffi`][] 标志结合使用，在授予其他权限的同时审计部分权限。
+
+当审计模式下的权限检查失败时，会向与被拒绝作用域相对应的诊断通道发布消息。通道名称如下：
+
+* `node:permission-model:fs` — 文件系统（读取和写入）
+* `node:permission-model:net` — 网络
+* `node:permission-model:child` — 子进程
+* `node:permission-model:worker` — 工作线程
+* `node:permission-model:inspector` — 检查器
+* `node:permission-model:wasi` — WASI
+* `node:permission-model:addon` — 原生插件
+* `node:permission-model:ffi` — FFI
+
+每条消息都是一个包含以下属性的对象：
+
+* `permission` {string} 被拒绝的权限作用域名称。
+* `resource` {string} 被拒绝访问的资源（例如文件路径或主机）。
+
+```js
+const diagnostics_channel = require('node:diagnostics_channel');
+
+diagnostics_channel.channel('node:permission-model:fs').subscribe((msg) => {
+  console.log(`Permission denied: ${msg.permission} on ${msg.resource}`);
+});
+
+// 使用 --permission-audit 运行时，这会发布诊断通道消息
+// 但不会抛出错误
+const fs = require('node:fs');
+fs.readFileSync('/etc/passwd');
+```
+
+如果同时指定 [`--permission`][] 和 [`--permission-audit`][]，
+则 [`--permission`][] 优先，权限模型将以强制模式运行。
 
 #### 文件系统权限
 
@@ -156,7 +204,8 @@ $ node -r /path/to/custom-require.js --permission index.js.
     "allow-worker": true,
     "allow-net": true,
     "allow-addons": false,
-    "allow-ffi": false
+    "allow-ffi": false,
+    "allow-openssl-store": false
   }
 }
 ```
@@ -211,10 +260,11 @@ npx --node-options="--permission" package-name
   * 文件系统访问
   * WASI
   * FFI
+  * OpenSSL STORE 加载器
 * 权限模型会在 Node.js 环境设置完成后初始化。
-  但是，某些标志（如 `--env-file` 或 `--openssl-config`）旨在在环境初始化之前读取文件。因此，这类标志不受权限模型规则约束。通过运行时使用 `v8.setFlagsFromString` 设置的 V8 标志也同样如此。
-* 在启用权限模型时，不能在运行时请求 OpenSSL 引擎，这会影响内置的 crypto、https 和 tls 模块。
-* 在启用权限模型时，不能加载运行时可加载扩展，这会影响 sqlite 模块。
+  但是，某些标志（例如 `--env-file` 或 `--openssl-config`）设计为在环境初始化之前读取文件。因此，这些标志不受权限模型规则的约束。通过 `v8.setFlagsFromString` 在运行时设置的 V8 标志也同样不受约束。
+* 启用权限模型后，无法在运行时请求 OpenSSL 引擎，这会影响内置的 crypto、https 和 tls 模块。
+* 启用权限模型后，无法加载运行时可加载扩展，这会影响 sqlite 模块。
 * 通过 `node:fs` 模块使用现有文件描述符会绕过权限模型。
 
 #### `process._debugProcess()` 和跨进程 Inspector 激活
@@ -246,8 +296,11 @@ npx --node-options="--permission" package-name
 [`--allow-fs-read`]: cli.md#--allow-fs-read
 [`--allow-fs-write`]: cli.md#--allow-fs-write
 [`--allow-net`]: cli.md#--allow-net
+[`--allow-openssl-store`]: cli.md#--allow-openssl-store
 [`--allow-wasi`]: cli.md#--allow-wasi
 [`--allow-worker`]: cli.md#--allow-worker
+[`--permission-audit`]: cli.md#--permission-audit
 [`--permission`]: cli.md#--permission
+[`crypto.createPrivateKey()`]: crypto.md#cryptocreateprivatekeykey
 [`npx`]: https://docs.npmjs.com/cli/commands/npx
 [`permission.has()`]: process.md#processpermissionhasscope-reference

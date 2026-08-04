@@ -81,7 +81,7 @@ added: v0.6.1
 
 * `domain` {string}
 
-`punycode.toUnicode()` 方法将表示包含 [Punycode][] 编码字符的域名的字符串转换为 Unicode。只有域名的 [Punycode][] 编码部分会被转换。
+`punycode.toUnicode()` 方法将表示包含以 [Punycode][] 编码字符的域名的字符串转换为 Unicode。仅转换域名中以 [Punycode][] 编码的部分。
 
 ```js
 // 解码域名
@@ -140,4 +140,4 @@ added: v0.6.1
 [Punycode]: https://tools.ietf.org/html/rfc3492
 [Punycode.js]: https://github.com/bestiejs/punycode.js
 [WHATWG URL API]: url.md#the-whatwg-url-api
-[`url.domainToASCII`]: url.md#urldomaintoasciidomain
+[`url.domainToASCII`]: url.md#urldomaintoascii-domain

@@ -1,4 +1,4 @@
-# TLS (SSL)
+# TLS（SSL）
 
 <!--introduced_in=v0.10.0-->
 
@@ -6,7 +6,7 @@
 
 <!-- source_link=lib/tls.js -->
 
-`node:tls` 模块提供了基于 OpenSSL 构建的传输层安全 (TLS) 和安全套接字层 (SSL) 协议的实现。可以使用以下方式访问该模块：
+`node:tls` 模块提供了基于 OpenSSL 构建的传输层安全（TLS）和安全套接字层（SSL）协议的实现。可以使用以下方式访问该模块：
 
 ```mjs
 import tls from 'node:tls';
@@ -344,8 +344,8 @@ createServer({ ciphers: 'DEFAULT@SECLEVEL=0', minVersion: 'TLSv1' }, function(so
 多个函数可能因 OpenSSL 报告的证书错误而失败。在这种情况下，函数通过其回调提供一个 {Error}，该回调具有 `code` 属性，该属性可以采用以下值之一：
 
 <!--
-values are taken from src/crypto/crypto_common.cc
-description are taken from deps/openssl/openssl/crypto/x509/x509_txt.c
+值取自 src/crypto/crypto_common.cc
+描述取自 deps/openssl/openssl/crypto/x509/x509_txt.c
 -->
 
 * `'UNABLE_TO_GET_ISSUER_CERT'`: 无法获取颁发者证书。
@@ -520,9 +520,7 @@ added: v0.3.2
 
 `tlsSocket.authorized` 属性是一个 `boolean`，指示客户端是否已由服务器提供的证书授权机构之一验证。如果 `tlsSocket.authorized` 为 `false`，则 `socket.authorizationError` 设置为描述授权失败的原因。根据 TLS 服务器的设置，可能仍会接受未经授权的连接。
 
-`tlsSocket.alpnProtocol` 属性是一个包含所选 ALPN 协议的字符串。当 ALPN 没有所选协议（因为客户端或服务器未发送 ALPN 扩展）时，`tlsSocket.alpnProtocol` 等于 `false`。
-
-`tlsSocket.servername` 属性是一个包含通过 SNI 请求的服务器名称的字符串。
+可以使用 [`tls.TLSSocket.servername`][] 和 [`tls.TLSSocket.alpnProtocol`][] 属性来检查请求的是哪个服务器名称，以及协商的是哪个协议。
 
 ### 事件：`'tlsClientError'`
 
@@ -750,7 +748,18 @@ changes:
 
 * 返回：{Object}
 
-返回操作系统报告的底层 socket 的绑定 `address`、地址 `family` 名称和 `port`：`{ port: 12346, family: 'IPv4', address: '127.0.0.1' }`。
+返回操作系统报告的底层套接字的绑定 `address`、地址 `family` 名称和 `port`：`{ port: 12346, family: 'IPv4', address: '127.0.0.1' }`。
+
+### `tlsSocket.alpnProtocol`
+
+<!-- YAML
+added: v6.0.0
+-->
+
+* 类型：{string|boolean|null}
+
+协商的 ALPN 协议。在握手完成之前，此值为 `null`。
+握手完成后，此值将确定为协商的协议名称；如果对等方未协商 ALPN 协议，则为 `false`。
 
 ### `tlsSocket.authorizationError`
 
@@ -769,6 +778,8 @@ added: v0.11.4
 * 类型：{boolean}
 
 如果对等证书由创建 `tls.TLSSocket` 实例时指定的 CA 之一签名，则此属性为 `true`，否则为 `false`。
+
+对等证书仅在完整的 TLS 握手期间进行验证。当连接通过恢复先前的会话建立时（请参阅[会话恢复][Session Resumption]），不会重复进行验证。如果客户端在初始握手中提供了证书，则 `authorized` 和 `authorizationError` 会携带与该会话一同存储的结果，包括任何验证错误。在 TLS 1.3 中，完全没有发送证书的客户端可以恢复会话，并将 `authorized` 报告为 `true`，而 [`tls.TLSSocket.getPeerCertificate()`][] 返回一个空对象。因此，使用 `rejectUnauthorized: false` 手动授权客户端的服务器还应检查 [`tls.TLSSocket.isSessionReused()`][]，并确认存在对等证书。
 
 ### `tlsSocket.disableRenegotiation()`
 
@@ -888,10 +899,9 @@ added: v5.0.0
 
 * 返回：{Object}
 
-返回一个描述客户端连接上 [perfect forward
-secrecy][] 中临时密钥协商的对象。当密钥协商不是临时时，它会返回一个空对象。由于这仅支持客户端 socket；如果在服务器 socket 上调用，则返回 `null`。支持的类型有 `'DH'`、`'ECDH'` 和 `'TLSGroup'`。对于 `'DH'` 和 `'ECDH'`，该对象描述对端临时密钥参数。对于 `'TLSGroup'`，当没有可用的对端临时密钥对象时，该对象标识用于密钥协商的已协商 TLS 支持组。
+返回一个描述客户端连接上 [完美前向保密][] 中临时密钥协商的对象。当密钥协商不是临时时，它会返回一个空对象。由于这仅支持客户端 socket；如果在服务器 socket 上调用，则返回 `null`。支持的类型有 `'DH'`、`'ECDH'` 和 `'TLSGroup'`。对于 `'DH'` 和 `'ECDH'`，该对象描述对端临时密钥参数。对于 `'TLSGroup'`，当没有可用的对端临时密钥对象时，该对象标识用于密钥协商的已协商 TLS 支持组。
 
-`name` 属性仅在类型为 `'ECDH'` 或 `'TLSGroup'` 时可用。类型为 `'TLSGroup'` 时，`size` 属性不可用。对于 `'TLSGroup'`，`name` 是已协商的 TLS 支持组名称。标准化的 TLS 组名称和代码点列在 [IANA TLS Supported Groups registry][] 中。
+`name` 属性仅在类型为 `'ECDH'` 或 `'TLSGroup'` 时可用。类型为 `'TLSGroup'` 时，`size` 属性不可用。对于 `'TLSGroup'`，`name` 是已协商的 TLS 支持组名称。标准化的 TLS 组名称和代码点列在 [IANA TLS 支持组注册表][] 中。
 
 例如：`{ type: 'ECDH', name: 'prime256v1', size: 256 }`。
 
@@ -913,7 +923,7 @@ added: v9.9.0
 added: v0.11.4
 -->
 
-* `detailed` {boolean} 如果为 `true` 则包含完整证书链，否则仅包含对等方的证书。
+* `detailed` {boolean} 如果为 `true`，则包含完整证书链，否则仅包含对等方的证书。
 * 返回：{Object} 一个证书对象。
 
 返回一个代表对等方证书的对象。如果对等方未提供证书，将返回一个空对象。如果 socket 已被销毁，将返回 `null`。
@@ -941,18 +951,18 @@ changes:
 
 证书对象具有对应于证书字段的属性。
 
-* `ca` {boolean} 如果是证书颁发机构 (CA) 则为 `true`，否则为 `false`。
+* `ca` {boolean} 如果是证书颁发机构 (CA)，则为 `true`，否则为 `false`。
 * `raw` {Buffer} DER 编码的 X.509 证书数据。
-* `subject` {Object} 证书主体，根据国家 (`C`)、州或省 (`ST`)、 地区 (`L`)、组织 (`O`)、组织单位 (`OU`) 和通用名称 (`CN`) 来描述。通用名称通常是 TLS 证书的 DNS 名称。示例：`{C: 'UK', ST: 'BC', L: 'Metro', O: 'Node Fans', OU: 'Docs', CN: 'example.com'}`。
+* `subject` {Object} 证书主体，根据国家 (`C`)、州或省 (`ST`)、地区 (`L`)、组织 (`O`)、组织单位 (`OU`) 和通用名称 (`CN`) 来描述。通用名称通常是 TLS 证书的 DNS 名称。示例：`{C: 'UK', ST: 'BC', L: 'Metro', O: 'Node Fans', OU: 'Docs', CN: 'example.com'}`。
 * `issuer` {Object} 证书颁发者，描述术语与 `subject` 相同。
 * `valid_from` {string} 证书有效的起始日期时间。
 * `valid_to` {string} 证书有效的截止日期时间。
 * `serialNumber` {string} 证书序列号，作为十六进制字符串。示例：`'B9B0D332A1AA5635'`。
-* `fingerprint` {string} DER 编码证书的 SHA-1 摘要。它作为 `:` 分隔的十六进制字符串返回。示例：`'2A:7A:C2:DD:...'`。
-* `fingerprint256` {string} DER 编码证书的 SHA-256 摘要。它作为 `:` 分隔的十六进制字符串返回。示例：`'2A:7A:C2:DD:...'`。
-* `fingerprint512` {string} DER 编码证书的 SHA-512 摘要。它作为 `:` 分隔的十六进制字符串返回。示例：`'2A:7A:C2:DD:...'`。
+* `fingerprint` {string} DER 编码证书的 SHA-1 摘要。它作为以 `:` 分隔的十六进制字符串返回。示例：`'2A:7A:C2:DD:...'`。
+* `fingerprint256` {string} DER 编码证书的 SHA-256 摘要。它作为以 `:` 分隔的十六进制字符串返回。示例：`'2A:7A:C2:DD:...'`。
+* `fingerprint512` {string} DER 编码证书的 SHA-512 摘要。它作为以 `:` 分隔的十六进制字符串返回。示例：`'2A:7A:C2:DD:...'`。
 * `ext_key_usage` {Array} (可选) 扩展密钥用法，一组 OID。
-* `subjectaltname` {string} (可选) 包含主体连接名称的字符串，`subject` 名称的替代方案。
+* `subjectaltname` {string} (可选) 包含主体连接名称的字符串，作为 `subject` 名称的替代方案。
 * `infoAccess` {Array} (可选) 描述 AuthorityInfoAccess 的数组，与 OCSP 一起使用。
 * `issuerCertificate` {Object} (可选) 颁发者证书对象。对于自签名证书，这可能是循环引用。
 
@@ -1080,11 +1090,11 @@ added: v0.11.4
 
 * 类型：{Buffer}
 
-For clients, returns the TLS session ticket if available, otherwise returns `undefined`. For servers, always returns `undefined`.
+对于客户端，如果 TLS 会话票据可用，则返回该票据，否则返回 `undefined`。对于服务器，始终返回 `undefined`。
 
-It may be used for debugging.
+它可用于调试。
 
-See [session resumption][] for more information.
+有关更多信息，请参阅[会话恢复][]。
 
 ### `tlsSocket.getX509Certificate()`
 
@@ -1184,6 +1194,18 @@ changes:
 
 对于 TLSv1.3，无法启动重新协商，协议不支持。
 
+### `tlsSocket.servername`
+
+<!-- YAML
+added: v0.11.3
+-->
+
+* 类型：{string|boolean|null}
+
+与套接字关联的 SNI（服务器名称指示）主机名。在握手完成之前，此值为
+`null`。握手完成后，此值将确定为主机名字符串；如果未使用 SNI，则为
+`false`。
+
 ### `tlsSocket.setKeyCert(context)`
 
 <!-- YAML
@@ -1194,7 +1216,7 @@ added:
 
 * `context` {Object|tls.SecureContext} 一个对象，包含来自 [`tls.createSecureContext()`][] `options` 的至少 `key` 和 `cert` 属性，或使用 [`tls.createSecureContext()`][] 本身创建的 TLS 上下文对象。
 
-`tlsSocket.setKeyCert()` 方法设置用于 socket 的私钥和证书。这主要有用，如果您希望从 TLS 服务器的 `ALPNCallback` 中选择服务器证书。
+`tlsSocket.setKeyCert()` 方法设置用于 socket 的私钥和证书。当您希望从 TLS 服务器的 `ALPNCallback` 中选择服务器证书时，此方法非常有用。
 
 ### `tlsSocket.setMaxSendFragment(size)`
 
@@ -1440,8 +1462,10 @@ added: v0.11.13
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63966
-    description: "`clientCertEngine`、`privateKeyEngine` 和 `privateKeyIdentifier` 选项已在运行时弃用。"
-  - version: v26.4.0
+    description: "`clientCertEngine`、`privateKeyEngine` 和 `privateKeyIdentifier` 选项在运行时已弃用。"
+  - version:
+     - v26.4.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/62217
     description: 已添加 `certificateCompression` 选项。
   - version:
@@ -1724,9 +1748,9 @@ added:
 证书列表，并由后续未指定自己 CA 证书的 TLS 连接使用。
 在设置为默认值之前，证书将被去重。
 
-此函数仅影响当前 Node.js 线程。HTTPS 代理缓存的先前
-会话不会受此更改影响，因此
-应在进行任何不需要的可缓存 TLS 连接之前调用此方法。
+此函数仅影响当前的 Node.js 线程。HTTPS 代理缓存的先前
+会话不会受此更改影响，因此应在建立任何不希望缓存的 TLS 连接
+之前调用此方法。
 
 要将系统 CA 证书用作默认值：
 
@@ -1807,7 +1831,9 @@ console.log(tls.getCiphers()); // ['aes128-gcm-sha256', 'aes128-sha', ...]
 ## `tls.getCertificateCompressionAlgorithms()`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.19.0
 -->
 
 * 返回：{string\[]}
@@ -1878,13 +1904,13 @@ added: v0.11.3
 [DHE]: https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange
 [ECDHE]: https://en.wikipedia.org/wiki/Elliptic_curve_Diffie%E2%80%93Hellman
 [IANA TLS Supported Groups registry]: https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-8
-[Modifying the default TLS cipher suite]: #modifying-the-default-tls-cipher-suite
-[Mozilla's publicly trusted list of CAs]: https://hg.mozilla.org/mozilla-central/raw-file/tip/security/nss/lib/ckfw/builtins/certdata.txt
-[OCSP request]: https://en.wikipedia.org/wiki/OCSP_stapling
-[OpenSSL Options]: crypto.md#openssl-options
-[OpenSSL Security Level]: #openssl-security-level
-[OpenSSL documentation on security levels]: https://www.openssl.org/docs/manmaster/man3/SSL_CTX_set_security_level.html#DEFAULT-CALLBACK-BEHAVIOUR
-[Pre-shared keys]: #pre-shared-keys
+[修改默认 TLS 加密套件]: #modifying-the-default-tls-cipher-suite
+[Mozilla 公开信任的 CA 列表]: https://hg.mozilla.org/mozilla-central/raw-file/tip/security/nss/lib/ckfw/builtins/certdata.txt
+[OCSP 请求]: https://en.wikipedia.org/wiki/OCSP_stapling
+[OpenSSL 选项]: crypto.md#openssl-options
+[OpenSSL 安全级别]: #openssl-security-level
+[OpenSSL 关于安全级别的文档]: https://www.openssl.org/docs/manmaster/man3/SSL_CTX_set_security_level.html#DEFAULT-CALLBACK-BEHAVIOUR
+[预共享密钥]: #pre-shared-keys
 [RFC 2246]: https://www.ietf.org/rfc/rfc2246.txt
 [RFC 4086]: https://tools.ietf.org/html/rfc4086
 [RFC 4279]: https://tools.ietf.org/html/rfc4279
@@ -1914,7 +1940,7 @@ added: v0.11.3
 [`import()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import
 [`net.Server.address()`]: net.md#serveraddress
 [`net.Server`]: net.md#class-netserver
-[`net.Socket`]: net.md#class-netsocket
+[`net.Server`]: net.md#class-netserver
 [`net.createServer()`]: net.md#netcreateserveroptions-connectionlistener
 [`server.addContext()`]: #serveraddcontexthostname-context
 [`server.getTicketKeys()`]: #servergetticketkeys
@@ -1926,11 +1952,14 @@ added: v0.11.3
 [`tls.DEFAULT_MAX_VERSION`]: #tlsdefault_max_version
 [`tls.DEFAULT_MIN_VERSION`]: #tlsdefault_min_version
 [`tls.Server`]: #class-tlsserver
+[`tls.TLSSocket.alpnProtocol`]: #tlssocketalpnprotocol
 [`tls.TLSSocket.enableTrace()`]: #tlssocketenabletrace
 [`tls.TLSSocket.getPeerCertificate()`]: #tlssocketgetpeercertificatedetailed
 [`tls.TLSSocket.getProtocol()`]: #tlssocketgetprotocol
 [`tls.TLSSocket.getSession()`]: #tlssocketgetsession
 [`tls.TLSSocket.getTLSTicket()`]: #tlssocketgettlsticket
+[`tls.TLSSocket.isSessionReused()`]: #tlssocketissessionreused
+[`tls.TLSSocket.servername`]: #tlssocketservername
 [`tls.TLSSocket`]: #class-tlstlssocket
 [`tls.connect()`]: #tlsconnectoptions-callback
 [`tls.createSecureContext()`]: #tlscreatesecurecontextoptions

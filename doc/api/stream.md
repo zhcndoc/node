@@ -2752,7 +2752,9 @@ const server = http.createServer((req, res) => {
 <!-- YAML
 added: v16.9.0
 changes:
-  - version: v26.2.0
+  - version:
+     - v26.2.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/62562
     description: 将 API 标记为稳定。
   - version:
@@ -2839,6 +2841,19 @@ console.log(res); // 打印 'HELLOWORLD'
 ```
 
 为了方便起见，[`readable.compose(stream)`][] 方法在 {Readable} 和 {Duplex} 流上可用作此函数的包装器。
+
+### `stream.isDestroyed(stream)`
+
+<!-- YAML
+added:
+  - v19.9.0
+  - v18.17.0
+-->
+
+* `stream` {Readable|Writable|Duplex}
+* Returns: {boolean|null} - Only returns `null` if `stream` is not a valid `Readable`, `Writable` or `Duplex`.
+
+Returns whether the stream has been destroyed.
 
 ### `stream.isErrored(stream)`
 
@@ -3248,7 +3263,8 @@ changes:
 * `signal` {AbortSignal} 一个表示可能取消的信号
 * `stream` {Stream|ReadableStream|WritableStream} 一个要附加信号的流。
 
-将 AbortSignal 附加到可读流或可写流。这允许代码使用 `AbortController` 控制流的销毁。
+Attaches an AbortSignal to a readable or writable stream. This lets code
+control stream destruction using an `AbortController`.
 
 在与传递的 `AbortSignal` 对应的 `AbortController` 上调用 `abort` 的行为，与在流上调用 `.destroy(new AbortError())` 以及在 webstreams 上调用 `controller.error(new AbortError())` 的行为相同。
 
@@ -3344,7 +3360,235 @@ added:
 * `objectMode` {boolean}
 * `value` {integer} highWaterMark 值
 
-设置流使用的默认 highWaterMark。
+Sets the default highWaterMark used by streams.
+
+## API for stream implementers
+
+<!--type=misc-->
+
+The `node:stream` module API has been designed to make it possible to easily
+implement streams using JavaScript's prototypal inheritance model.
+
+First, a stream developer would declare a new JavaScript class that extends one
+of the four basic stream classes (`stream.Writable`, `stream.Readable`,
+`stream.Duplex`, or `stream.Transform`), making sure they call the appropriate
+parent class constructor:
+
+```js
+const { Writable } = require('node:stream');
+
+class MyWritable extends Writable {
+  constructor({ highWaterMark, ...options }) {
+    super({ highWaterMark });
+    // ...
+  }
+}
+```
+
+When extending streams, keep in mind what options the user
+can and should provide before forwarding these to the base constructor. For
+example, if the implementation makes assumptions in regard to the
+`autoDestroy` and `emitClose` options, do not allow the
+user to override these. Be explicit about what
+options are forwarded instead of implicitly forwarding all options.
+
+The new stream class must then implement one or more specific methods, depending
+on the type of stream being created, as detailed in the chart below:
+
+| Use-case                                      | Class           | Method(s) to implement                                                                                             |
+| --------------------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Reading only                                  | [`Readable`][]  | [`_read()`][stream-_read]                                                                                          |
+| Writing only                                  | [`Writable`][]  | [`_write()`][stream-_write], [`_writev()`][stream-_writev], [`_final()`][stream-_final]                            |
+| Reading and writing                           | [`Duplex`][]    | [`_read()`][stream-_read], [`_write()`][stream-_write], [`_writev()`][stream-_writev], [`_final()`][stream-_final] |
+| Operate on written data, then read the result | [`Transform`][] | [`_transform()`][stream-_transform], [`_flush()`][stream-_flush], [`_final()`][stream-_final]                      |
+
+The implementation code for a stream should _never_ call the "public" methods
+of a stream that are intended for use by consumers (as described in the
+[API for stream consumers][] section). Doing so may lead to adverse side effects
+in application code consuming the stream.
+
+Avoid overriding public methods such as `write()`, `end()`, `cork()`,
+`uncork()`, `read()` and `destroy()`, or emitting internal events such
+as `'error'`, `'data'`, `'end'`, `'finish'` and `'close'` through `.emit()`.
+Doing so can break current and future stream invariants leading to behavior
+and/or compatibility issues with other streams, stream utilities, and user
+expectations.
+
+### Simplified construction
+
+<!-- YAML
+added: v1.2.0
+-->
+
+For many simple cases, it is possible to create a stream without relying on
+inheritance. This can be accomplished by directly creating instances of the
+`stream.Writable`, `stream.Readable`, `stream.Duplex`, or `stream.Transform`
+objects and passing appropriate methods as constructor options.
+
+```js
+const { Writable } = require('node:stream');
+
+const myWritable = new Writable({
+  construct(callback) {
+    // Initialize state and load resources...
+  },
+  write(chunk, encoding, callback) {
+    // ...
+  },
+  destroy() {
+    // Free resources...
+  },
+});
+```
+
+### Implementing a writable stream
+
+The `stream.Writable` class is extended to implement a [`Writable`][] stream.
+
+Custom `Writable` streams _must_ call the `new stream.Writable([options])`
+constructor and implement the `writable._write()` and/or `writable._writev()`
+method.
+
+#### `new stream.Writable([options])`
+
+<!-- YAML
+changes:
+  - version: v22.0.0
+    pr-url: https://github.com/nodejs/node/pull/52037
+    description: bump default highWaterMark.
+  - version: v15.5.0
+    pr-url: https://github.com/nodejs/node/pull/36431
+    description: support passing in an AbortSignal.
+  - version: v14.0.0
+    pr-url: https://github.com/nodejs/node/pull/30623
+    description: Change `autoDestroy` option default to `true`.
+  - version:
+     - v11.2.0
+     - v10.16.0
+    pr-url: https://github.com/nodejs/node/pull/22795
+    description: Add `autoDestroy` option to automatically `destroy()` the
+                 stream when it emits `'finish'` or errors.
+  - version: v10.0.0
+    pr-url: https://github.com/nodejs/node/pull/18438
+    description: Add `emitClose` option to specify if `'close'` is emitted on
+                 destroy.
+-->
+
+* `options` {Object}
+  * `highWaterMark` {number} Buffer level when
+    [`stream.write()`][stream-write] starts returning `false`. **Default:**
+    `65536` (64 KiB), or `16` for `objectMode` streams.
+  * `decodeStrings` {boolean} Whether to encode `string`s passed to
+    [`stream.write()`][stream-write] to `Buffer`s (with the encoding
+    specified in the [`stream.write()`][stream-write] call) before passing
+    them to [`stream._write()`][stream-_write]. Other types of data are not
+    converted (i.e. `Buffer`s are not decoded into `string`s). Setting to
+    false will prevent `string`s from being converted. **Default:** `true`.
+  * `defaultEncoding` {string} The default encoding that is used when no
+    encoding is specified as an argument to [`stream.write()`][stream-write].
+    **Default:** `'utf8'`.
+  * `objectMode` {boolean} Whether or not the
+    [`stream.write(anyObj)`][stream-write] is a valid operation. When set,
+    it becomes possible to write JavaScript values other than string, {Buffer},
+    {TypedArray} or {DataView} if supported by the stream implementation.
+    **Default:** `false`.
+  * `emitClose` {boolean} Whether or not the stream should emit `'close'`
+    after it has been destroyed. **Default:** `true`.
+  * `write` {Function} Implementation for the
+    [`stream._write()`][stream-_write] method.
+  * `writev` {Function} Implementation for the
+    [`stream._writev()`][stream-_writev] method.
+  * `destroy` {Function} Implementation for the
+    [`stream._destroy()`][writable-_destroy] method.
+  * `final` {Function} Implementation for the
+    [`stream._final()`][stream-_final] method.
+  * `construct` {Function} Implementation for the
+    [`stream._construct()`][writable-_construct] method.
+  * `autoDestroy` {boolean} Whether this stream should automatically call
+    `.destroy()` on itself after ending. **Default:** `true`.
+  * `signal` {AbortSignal} A signal representing possible cancellation.
+
+<!-- eslint-disable no-useless-constructor -->
+
+```js
+const { Writable } = require('node:stream');
+
+class MyWritable extends Writable {
+  constructor(options) {
+    // Calls the stream.Writable() constructor.
+    super(options);
+    // ...
+  }
+}
+```
+
+Or, when using pre-ES6 style constructors:
+
+```js
+const { Writable } = require('node:stream');
+const util = require('node:util');
+
+function MyWritable(options) {
+  if (!(this instanceof MyWritable))
+    return new MyWritable(options);
+  Writable.call(this, options);
+}
+util.inherits(MyWritable, Writable);
+```
+
+Or, using the simplified constructor approach:
+
+```js
+const { Writable } = require('node:stream');
+
+const myWritable = new Writable({
+  write(chunk, encoding, callback) {
+    // ...
+  },
+  writev(chunks, callback) {
+    // ...
+  },
+});
+```
+
+Calling `abort` on the `AbortController` corresponding to the passed
+`AbortSignal` will behave the same way as calling `.destroy(new AbortError())`
+on the writable stream.
+
+```js
+const { Writable } = require('node:stream');
+
+const controller = new AbortController();
+const myWritable = new Writable({
+  write(chunk, encoding, callback) {
+    // ...
+  },
+  writev(chunks, callback) {
+    // ...
+  },
+  signal: controller.signal,
+});
+// Later, abort the operation closing the stream
+controller.abort();
+```
+
+#### `writable._construct(callback)`
+
+<!-- YAML
+added: v15.0.0
+-->
+
+* `callback` {Function} Call this function (optionally with an error
+  argument) when the stream has finished initializing.
+
+The `_construct()` method MUST NOT be called directly. It may be implemented
+by child classes, and if so, will be called by the internal `Writable`
+class methods only.
+
+This optional function will be called in a tick after the stream constructor
+has returned, delaying any `_write()`, `_final()` and `_destroy()` calls until
+`callback` is called. This is useful to initialize state or asynchronously
+initialize resources before the stream can be used.
 
 ```js
 const { Writable } = require('node:stream');

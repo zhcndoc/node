@@ -125,7 +125,7 @@ added: REPLACEME
 
 ```bash
 git add my/changed/files
-git commit
+git commit -s
 ```
 
 多个提交在合并时通常会被压缩。参见关于 [提交压缩](#commit-squashing) 的说明。
@@ -149,9 +149,9 @@ git commit
 
 3. 其余所有行都按 72 列换行（长 URL 除外）。
 
-4. 如果你的补丁修复了一个开放 issue，可以在日志末尾添加对它的引用。使用 `Fixes:` 前缀和完整 issue URL。其他引用使用 `Refs:`。
+4. 如果你的补丁修复了一个未解决的问题，请在拉取请求描述中包含引用。使用 `Fixes:` 前缀和完整的问题 URL。对于其他引用，请使用 `Refs:`。
 
-   `Fixes:` 和 `Refs:` 结尾项会在拉取请求合并时自动添加到你的提交信息中，只要它们包含在拉取请求的描述里即可。若拉取请求分成多个提交合并，默认会把描述中的这些结尾项添加到每个提交中。
+   当拉取请求合并时，`Fixes:` 和 `Refs:` 尾注会自动添加到提交信息中。如果拉取请求以多个提交合并，描述中的尾注默认会添加到每个提交中。
 
    示例：
 
@@ -165,7 +165,10 @@ git commit
    机器人生成的提交不受此要求约束。如果一个提交有多个作者，那么每个作者都应添加 `Signed-off-by` 行；
    并且至少有一行应与提交元数据中的作者信息匹配。此规则不适用于依赖更新（例如 cherry-pick）、发布提交或 backport 提交。
 
-完整提交信息示例：
+   [`git commit -s`][git commit -s]（使用小写的 `s`）会在提交日志信息末尾添加
+   `Signed-off-by` 尾注。
+
+合并后的最终提交信息示例：
 
 ```text
 subsystem: explain the commit in one line
@@ -242,7 +245,7 @@ GitHub 会自动更新该拉取请求。
 
 ```bash
 git add my/changed/files
-git commit
+git commit -s
 git push origin my-branch
 ```
 
@@ -319,21 +322,65 @@ git push --force-with-lease origin my-branch
 
 ### 注意代码背后的人
 
-请注意，你在反馈中 _如何_ 传达请求和审查意见，可能会对拉取请求的成功产生重大影响。是的，我们也许会合并某个让 Node.js 变得更好的变更，但这个人可能再也不想和 Node.js 有任何关系了。目标不只是拥有好的代码。
+请注意，你在反馈中传达请求和审查意见的_方式_，可能会对拉取请求的成功产生重大影响。是的，我们可能会合并某项让 Node.js 变得更好的变更，但这位个人贡献者可能从此再也不想与 Node.js 有任何关系。目标不仅仅是拥有优秀的代码。
 
-CI access is only available to collaborators and members of the platform
-teams.  If you are not yet in one of those teams then you will need someone
-to relay the results to you.  If a CI has been completed and failed and a
-day or so has passed, it will be worth commenting in the issue to say you
-cannot see what failed and to politely request in the PR that someone gives
-you that information.
+### 尊重评论的最短等待时间
 
-Ideally, the code change will pass ("be green") on all platform configurations
-supported by Node.js. This means that all tests pass and there are no linting
-errors. In reality, however, it is not uncommon for the CI infrastructure itself
-to fail on specific platforms or for so-called "flaky" tests to fail ("be red").
-It is vital to visually inspect the results of all failed ("red") tests to
-determine whether the failure was caused by the changes in the pull request.
+对于非平凡变更，我们会尽量遵守一个最低等待时间，以便在这样一个分布式项目中可能有重要意见的人能够回应。
+
+对于非平凡变更，拉取请求必须至少开放 48 小时。有时变更需要更长时间才能审查，或者需要该领域专家进行更专业的审查。拿不准时，不要催促。
+
+通常仅限于小的格式调整或文档修复的琐碎变更，可以在最短 48 小时窗口内合并。
+
+### 被放弃或停滞的拉取请求
+
+如果某个拉取请求看起来已被放弃或停滞，礼貌的做法是先询问贡献者是否打算继续这项工作，然后再询问他们是否介意你接手它（尤其是如果只剩下一些细节修改）。这样做时，最好在提交日志中保留原贡献者的姓名和电子邮件地址，或通过在提交中使用 `Author:` 元数据标签，给予原贡献者应有的署名。
+
+如果一个拉取请求超过六个月没有活动，请为其添加 `stalled` 标签。这会触发一个自动化流程，添加一条评论，说明该拉取请求可能因不活跃而即将被关闭，并在实际关闭之前提醒贡献者。
+
+### 批准变更
+
+任何 Node.js 核心协作者（即在 `nodejs/node` 仓库中拥有提交权限的任何 GitHub 用户）都有权批准其他任何贡献者的工作。协作者不得批准自己的拉取请求。
+
+协作者可以通过 GitHub 的 Approval Workflow（更推荐）或留下 `LGTM`（“Looks Good To Me”）评论来表示他们已经审查并批准了拉取请求中的变更。
+
+在明确使用 GitHub Approval Workflow 的“Changes requested”组件时，请体现同理心。也就是说，不要让反馈显得粗鲁或唐突，并尽可能提供具体的改进建议。如果你不确定某项变更应如何改进，就直接说明。
+
+最重要的是，在留下此类请求后，礼貌地在之后保持可联系，以便检查你的评论是否已被处理。
+
+如果你看到已请求的修改已经完成，你可以清除另一位协作者的 `Changes requested` 审阅。
+
+含糊、轻蔑或缺乏建设性的变更请求，如果在合理时间内没有得到进一步澄清，也可能被忽略。
+
+使用 `Changes requested` 来阻止拉取请求合并。这样做时，请说明你为什么认为该拉取请求不应合并，并解释如果有的话，什么样的替代方案可能是可接受的。
+
+### 接受 Node.js 中关于“什么属于其中”存在不同意见的事实
+
+即使在技术指导委员会成员之间，对此也有不同看法。
+
+一般来说，如果 Node.js 自身需要它（由于历史或功能原因），那么它就属于 Node.js。例如，`url` 解析属于 Node.js，因为它支持 HTTP 协议。
+
+另外，某些功能要么无法以任何合理方式在核心之外实现，要么实现起来代价很高。
+
+贡献者提出他们认为会让 Node.js 更好的新功能，并不罕见。这些功能可能适合添加，也可能不适合，但和所有变更一样，你在表达立场时应保持礼貌。那些让贡献者觉得自己“本该知道更好”或仅仅因为尝试了就被嘲笑的评论，都违背了 [行为准则][]。
+
+### 性能并非一切
+
+Node.js 一直以来都将执行速度作为优化目标。如果某项变更能够证明让 Node.js 的某部分更快，那么它很可能会被接受。声称某个拉取请求会让事情更快，几乎总会被要求提供能展示改进的性能 [基准结果][]。
+
+不过，性能并不是唯一要考虑的因素。Node.js 也会优先考虑不破坏生态系统中的现有代码，以及不会仅仅为了改变而去改变那些正常工作的功能代码。
+
+如果某个拉取请求引入了性能或功能回归，不要只是简单拒绝它，而是花时间与贡献者一起改进该变更。就如何让拉取请求变得可接受提供反馈和建议，不要假设贡献者已经知道该怎么做。请在反馈中明确说明。
+
+### 持续集成测试
+
+所有包含代码变更的拉取请求都必须在 [https://ci.nodejs.org/][] 上通过持续集成（CI）测试。
+
+只有 Node.js 核心协作者和审核者才能启动 CI 测试运行。具体操作细节包含在新的协作者 [入门指南][] 中。通常，协作者或审核者会在拉取请求获得批准时为你启动 CI 测试运行。若没有，你可以请协作者或审核者启动 CI 运行。
+
+CI 访问权限仅对协作者和平台团队成员开放。如果你还不属于这些团队之一，就需要有人将结果转达给你。如果 CI 已经完成但失败了，并且一两天已经过去，那么值得在议题中发表评论，说明你无法看到失败的具体原因，并在拉取请求中礼貌地请求有人向你提供相关信息。
+
+理想情况下，代码变更应在 Node.js 支持的所有平台配置上都通过（即“变绿”）。这意味着所有测试都通过，并且没有 lint 错误。不过，现实中 CI 基础设施本身在某些平台上失败，或者所谓的“flaky”测试失败（“变红”）也并不少见。务必目视检查所有失败（“红色”）测试的结果，以判断失败是否由拉取请求中的变更引起。
 
 对于非平凡变更，我们会尽量遵守一个最低等待时间，以便在这样一个分布式项目中可能有重要意见的人能够回应。
 
@@ -425,16 +472,17 @@ Node.js 一直以来都将执行速度作为优化目标。如果某项变更能
 你可以在 [nodejs/core-validate-commit][] 仓库中找到受支持子系统的完整列表。
 对于任何特定 issue 或拉取请求，可能适用不止一个子系统。
 
-[构建指南]: ../../BUILDING.md
-[CI（持续集成）测试运行]: #continuous-integration-testing
-[行为准则]: https://github.com/nodejs/admin/blob/HEAD/CODE_OF_CONDUCT.md
-[开发者原创证书]: ../../CONTRIBUTING.md#developers-certificate-of-origin-11
-[入门指南]: ../../onboarding.md
-[已批准]: #getting-approvals-for-your-pull-request
-[基准测试结果]: writing-and-running-benchmarks.md
-[协作者指南]: collaborator-guide.md
-[Node.js 编写测试指南]: writing-tests.md
-[隐藏评论]: https://help.github.com/articles/managing-disruptive-comments/#hiding-a-comment
+[Building guide]: ../../BUILDING.md
+[CI (Continuous Integration) test run]: #continuous-integration-testing
+[Code of Conduct]: https://github.com/nodejs/admin/blob/HEAD/CODE_OF_CONDUCT.md
+[Developer Certificate of Origin]: ../../CONTRIBUTING.md#developers-certificate-of-origin-11
+[Onboarding guide]: ../../onboarding.md
+[approved]: #getting-approvals-for-your-pull-request
+[benchmark results]: writing-and-running-benchmarks.md
+[collaborator guide]: collaborator-guide.md
+[git commit -s]: https://git-scm.com/docs/git-commit#Documentation/git-commit.txt--s
+[guide for writing tests in Node.js]: writing-tests.md
+[hiding-a-comment]: https://help.github.com/articles/managing-disruptive-comments/#hiding-a-comment
 [https://ci.nodejs.org/]: https://ci.nodejs.org/
 [大型拉取请求]: large-pull-requests.md
 [维护依赖项]: ./maintaining/maintaining-dependencies.md

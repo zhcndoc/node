@@ -721,7 +721,7 @@ req.on('information', (info) => {
 });
 ```
 
-101 升级状态不会触发此事件，因为它们打破了传统的 HTTP 请求/响应链，例如 web sockets、原地 TLS 升级或 HTTP 2.0。要接收 101 升级通知，请改为监听 [`'upgrade'`][] 事件。
+101 升级状态不会触发此事件，因为它们打破了传统的 HTTP 请求/响应链，例如 WebSocket、原地 TLS 升级或 HTTP 2.0。要接收 101 升级通知，请改为监听 [`'upgrade'`][] 事件。
 
 ### 事件：`'response'`
 
@@ -763,7 +763,7 @@ added: v0.1.94
 * `stream` {stream.Duplex}
 * `head` {Buffer}
 
-每当服务器响应带有升级的请求时触发。如果没有监听此事件且响应状态码为 101 Switching Protocols，接收升级头部的客户端的连接将被关闭。
+每当服务器响应带有升级的请求时触发。如果没有监听此事件且响应状态码为 101 协议切换，接收升级头部的客户端的连接将被关闭。
 
 除非用户指定了 {net.Socket} 以外的 socket 类型，否则保证此事件会传递一个 {net.Socket} 类的实例，它是 {stream.Duplex} 的子类。
 
@@ -784,7 +784,7 @@ server.on('upgrade', (req, stream, head) => {
                'Connection: Upgrade\r\n' +
                '\r\n');
 
-  stream.pipe(stream); // Echo
+  stream.pipe(stream); // 回显
 });
 
 // 现在服务器正在运行
@@ -825,7 +825,7 @@ server.on('upgrade', (req, stream, head) => {
                'Connection: Upgrade\r\n' +
                '\r\n');
 
-  stream.pipe(stream); // Echo
+  stream.pipe(stream); // 回显
 });
 
 // 现在服务器正在运行
@@ -882,7 +882,7 @@ changes:
 
 * 类型：{boolean}
 
-如果请求已被中止，则 `request.aborted` 属性将为 `true`。
+如果请求已被中止，则 `request.aborted` 属性将为 `true`】【。
 
 ### 请求主体
 
@@ -1040,7 +1040,7 @@ added: v7.7.0
 
 返回当前传出头部的浅拷贝。由于使用了浅拷贝，数组值可能会被变更，而无需额外调用各种头部相关的 http 模块方法。返回对象的键是头部名称，值是相应的头部值。所有头部名称均为小写。
 
-`request.getHeaders()` 方法返回的对象 _不_ 原型继承自 JavaScript `Object`。这意味着典型的 `Object` 方法（如 `obj.toString()`、`obj.hasOwnProperty()` 等）未定义且 _将无法工作_】【。
+`request.getHeaders()` 方法返回的对象 _不_ 原型继承自 JavaScript `Object`。这意味着典型的 `Object` 方法（如 `obj.toString()`、`obj.hasOwnProperty()` 等）未定义且 _将无法工作_。
 
 ```js
 request.setHeader('Foo', 'bar');
@@ -1409,7 +1409,7 @@ changes:
 added: v0.1.17
 -->
 
-* 继承自：{net.Server}
+* 继承自：{net.Server}】【。
 
 ### 事件：`'checkContinue'`
 
@@ -1453,7 +1453,7 @@ changes:
     description: "`rawPacket` 是刚刚解析的当前缓冲区。将此缓冲区添加到 `'clientError'` 事件中的错误对象里，是为了让开发者能够记录格式错误的数据包。"
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/4557
-    description: "如果附加了 `'clientError'` 个 `socket` 监听器，则对 `.destroy()` 调用 `.destroy()` 的默认行为将不再发生。"
+    description: "如果为 `socket` 添加了 `'clientError'` 监听器，则调用 `.destroy()` 的默认行为将不再发生。"
 -->
 
 * `exception` {Error}
@@ -1890,7 +1890,7 @@ added:
 
 此选项仅适用于新的传入连接。
 
-### `server[Symbol.asyncDispose]()`
+### `server[Symbol.asyncDispose]()` 
 
 <!-- YAML
 added: v20.4.0
@@ -1964,7 +1964,7 @@ deprecated: v13.0.0
 
 * 类型：{stream.Duplex}
 
-参见 [`response.socket`][].
+参见 [`response.socket`][]。
 
 ### `response.cork()`
 
@@ -1974,7 +1974,7 @@ added:
  - v12.16.0
 -->
 
-参见 [`writable.cork()`][].
+参见 [`writable.cork()`][]。
 
 ### `response.end([data[, encoding]][, callback])`
 
@@ -1994,9 +1994,9 @@ changes:
 * `callback` {Function}
 * 返回：{this}
 
-此方法向服务器发出信号，表明所有响应头部和主体都已发送；服务器应认为此消息已完成。每个响应都必须调用 `response.end()` 方法。
+此方法向服务器发出信号，表明所有响应头和响应主体都已发送；服务器应认为此消息已完成。每个响应都必须调用 `response.end()` 方法。
 
-如果指定了 `data`，其效果类似于调用 [`response.write(data, encoding)`][] 后跟 [`response.end(callback)`]。
+如果指定了 `data`，其效果类似于调用 [`response.write(data, encoding)`][]，然后调用 [`response.end(callback)`]。
 
 如果指定了 `callback`，它将在响应流完成时调用。
 
@@ -2148,33 +2148,33 @@ added: v0.7.5
 ### `response.setHeader(name, value)`
 
 <!-- YAML
-Added in: v0.4.0
+添加于：v0.4.0
 -->
 
 * `name` {string}
 * `value` {number | string | string\[]}
-* Returns: {http.ServerResponse}
+* 返回：{http.ServerResponse}
 
-Returns the response object.
+返回响应对象。
 
-Sets a single header value for implicit headers. If this header already exists in the to-be-sent headers, its value will be replaced. Use an array of strings here to send multiple headers with the same name. Non-string values will be stored without modification. Therefore, [`response.getHeader()`][] may return non-string values. However, non-string values will be converted to strings for network transmission. Returns the same response object to the caller to enable chaining.
+为隐式标头设置单个标头值。如果此标头已存在于待发送的标头中，其值将被替换。使用字符串数组可以发送多个具有相同名称的标头。非字符串值将不会被修改地存储。因此，[`response.getHeader()`][] 可能会返回非字符串值。但是，非字符串值在通过网络传输时将被转换为字符串。返回同一个响应对象给调用方，以支持链式调用。
 
 ```js
 response.setHeader('Content-Type', 'text/html');
 ```
 
-or
+或
 
 ```js
 response.setHeader('Set-Cookie', ['type=ninja', 'language=javascript']);
 ```
 
-Attempting to set a header field name or value containing invalid characters will throw a [`TypeError`][].
+尝试设置包含无效字符的标头字段名称或值时，将抛出 [`TypeError`][]。
 
-When headers are set using [`response.setHeader()`][], they will be merged with any headers passed to [`response.writeHead()`][], with the headers passed to [`response.writeHead()`][] taking precedence.
+使用 [`response.setHeader()`][] 设置标头时，它们将与传递给 [`response.writeHead()`][] 的任何标头合并，其中传递给 [`response.writeHead()`][] 的标头具有优先权。
 
 ```js
-// returns content-type = text/plain
+// 返回 content-type = text/plain
 const server = http.createServer((req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('X-Foo', 'bar');
@@ -2183,7 +2183,7 @@ const server = http.createServer((req, res) => {
 });
 ```
 
-If [`response.writeHead()`][] method is called and this method is not called, it will directly write the provided header values to the network channel without internal caching, and [`response.getHeader()`][] for that header will not produce the expected result. If you want to incrementally populate headers for future retrieval and modification, use [`response.setHeader()`][] instead of [`response.writeHead()`][].
+如果调用了 [`response.writeHead()`][] 方法而没有调用此方法，它将直接将提供的标头值写入网络通道，而不会进行内部缓存，并且针对该标头调用 [`response.getHeader()`][] 将不会产生预期结果。如果希望逐步填充标头，以便之后检索和修改，请使用 [`response.setHeader()`][]，而不要使用 [`response.writeHead()`][]。
 
 ### `response.setTimeout(msecs[, callback])`
 
@@ -2271,7 +2271,7 @@ added:
 
 * 类型：{boolean} **默认：** `false`
 
-如果设置为 `true`，Node.js 将检查 `Content-Length` 头部值与主体大小（以字节为单位）是否相等。`Content-Length` 头部值不匹配将导致抛出 `Error`，标识为 `code:` [`'ERR_HTTP_CONTENT_LENGTH_MISMATCH'`][].
+如果设置为 `true`，Node.js 将检查 `Content-Length` 头部值与主体大小（以字节为单位）是否相等。`Content-Length` 头部值不匹配将导致抛出 `Error`，标识为 `code:` [`'ERR_HTTP_CONTENT_LENGTH_MISMATCH'`][]。
 
 ### `response.uncork()`
 
@@ -2281,7 +2281,7 @@ added:
  - v12.16.0
 -->
 
-参见 [`writable.uncork()`][].
+参见 [`writable.uncork()`][]。
 
 ### `response.writableEnded`
 
@@ -2330,7 +2330,7 @@ changes:
 
 第一次调用 [`response.write()`][] 时，它将把缓冲的头部信息和第一块主体发送给客户端。第二次调用 [`response.write()`][] 时，Node.js 假设数据将被流式传输，并单独发送新数据。也就是说，响应被缓冲到主体的第一块。
 
-如果整个数据成功刷新到内核缓冲区，则返回 `true`。如果全部或部分数据排队在用户内存中，则返回 `false`。当缓冲区再次空闲时，将发出 `'drain'`。
+如果整个数据成功刷新到内核缓冲区，则返回 `true`。如果全部或部分数据排队在用户内存中，则返回 `false`。当缓冲区再次空闲时，将发出 `'drain'`】【。
 
 ### `response.writeContinue()`
 
@@ -2727,11 +2727,16 @@ added: v0.5.9
 added:
  - v26.1.0
  - v24.16.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64392
+    description: 消息正常完成后，该信号不再中止。
 -->
 
 * 类型：{AbortSignal}
 
-当底层 socket 关闭或请求被销毁时中止的 {AbortSignal}。该信号在首次访问时惰性创建——对于从未使用此属性的请求，不会分配 {AbortController}。
+一个 {AbortSignal}，当消息在完成前被销毁，或者其底层 socket 在请求处理或响应读取完成前关闭时，该信号会中止。
+该信号会在首次访问时惰性创建——对于从未使用此属性的请求，不会分配 {AbortController}。
 
 当客户端在请求中途断开连接时，这对于取消下游异步工作（例如数据库查询或 `fetch` 调用）非常有用。
 
@@ -3311,7 +3316,9 @@ added: v0.1.22
 <!-- YAML
 added: v0.1.13
 changes:
-  - version: v26.3.0
+  - version:
+     - v26.3.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/61597
     description: 现在支持 `httpValidation` 选项。
   - version:
@@ -3475,7 +3482,7 @@ import http from 'node:http';
 // 创建一个本地服务器来接收数据
 const server = http.createServer();
 
-// 监听 request 事件
+// 监听请求事件
 server.on('request', (request, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({
@@ -3492,7 +3499,7 @@ const http = require('node:http');
 // 创建一个本地服务器来接收数据
 const server = http.createServer();
 
-// 监听 request 事件
+// 监听请求事件
 server.on('request', (request, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({
@@ -3538,8 +3545,8 @@ http.get('http://localhost:8000/', (res) => {
   const contentType = res.headers['content-type'];
 
   let error;
-  // Any 2xx status code indicates a successful response, but
-  // here we're only checking for 200.
+  // 任何 2xx 状态码都表示响应成功，
+  // 但这里我们只检查 200。
   if (statusCode !== 200) {
     error = new Error('Request Failed.\n' +
                       `Status Code: ${statusCode}`);
@@ -3549,7 +3556,7 @@ http.get('http://localhost:8000/', (res) => {
   }
   if (error) {
     console.error(error.message);
-    // Consume response data to free up memory
+    // 消耗响应数据以释放内存
     res.resume();
     return;
   }
@@ -3569,7 +3576,7 @@ http.get('http://localhost:8000/', (res) => {
   console.error(`Got error: ${e.message}`);
 });
 
-// Create a local server to receive data
+// 创建一个本地服务器来接收数据
 const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({
@@ -3616,7 +3623,9 @@ added:
 <!-- YAML
 added: v0.3.6
 changes:
-  - version: v26.3.0
+  - version:
+     - v26.3.0
+     - v24.19.0
     pr-url: https://github.com/nodejs/node/pull/61597
     description: 现在支持 `httpValidation` 选项。
   - version:
@@ -4025,14 +4034,14 @@ added:
   - v24.14.0
 -->
 
-* `proxyEnv` {Object} An object containing proxy configuration. It accepts the same options as the `proxyEnv` option accepted by [`Agent`][]. **Default:** `process.env`.
-* Returns: {Function} A function that restores the original agent and dispatcher settings to the state they were in before `http.setGlobalProxyFromEnv()` was called.
+* `proxyEnv` {Object} 包含代理配置的对象。它接受与 [`Agent`][] 接受的 `proxyEnv` 选项相同的选项。**默认值：** `process.env`。
+* 返回值：{Function} 一个函数，用于将原始代理和分发器设置恢复到调用 `http.setGlobalProxyFromEnv()` 之前的状态。
 
-Dynamically reset global configuration to enable built-in proxy support for `fetch()` and `http.request()`/`https.request()` at runtime, as an alternative to using the `--use-env-proxy` flag or the `NODE_USE_ENV_PROXY` environment variable. It can also be used to override settings configured from environment variables.
+动态重置全局配置，以便在运行时为 `fetch()` 和 `http.request()`/`https.request()` 启用内置代理支持，这是使用 `--use-env-proxy` 标志或 `NODE_USE_ENV_PROXY` 环境变量的替代方案。它还可用于覆盖通过环境变量配置的设置。
 
-Because this function resets global configuration, any previously configured `http.globalAgent`, `https.globalAgent`, or undici global dispatcher will be overwritten after calling this function. It is recommended to call it before making any requests and to avoid calling it while any request is in progress.
+由于此函数会重置全局配置，之前配置的 `http.globalAgent`、`https.globalAgent` 或 undici 全局分发器将在调用此函数后被覆盖。建议在发出任何请求之前调用此函数，并避免在任何请求进行期间调用它。
 
-For details on proxy URL formats and `NO_PROXY` syntax, see [Built-in Proxy Support][].
+有关代理 URL 格式和 `NO_PROXY` 语法的详细信息，请参阅[内置代理支持][]。
 
 ## 类：`WebSocket`
 
@@ -4299,11 +4308,11 @@ const agent2 = new http.Agent({ proxyEnv: process.env });
 [`server.requestTimeout`]: #serverrequesttimeout
 [`server.timeout`]: #servertimeout
 [`setHeader(name, value)`]: #requestsetheadername-value
-[`socket.connect()`]: net.md#socketconnectoptions-connectlistener
-[`socket.setKeepAlive()`]: net.md#socketsetkeepalive
-[`socket.setNoDelay()`]: net.md#socketsetnodelaynodelay
-[`socket.setTimeout()`]: net.md#socketsettimeouttimeout-callback
-[`socket.unref()`]: net.md#socketunref
+[`socket.connect()`]: #socketconnectoptions-connectlistener
+[`socket.setKeepAlive()`]: #socketsetkeepalive
+[`socket.setNoDelay()`]: #socketsetnodelaynodelay
+[`socket.setTimeout()`]: #socketsettimeouttimeout-callback
+[`socket.unref()`]: #socketunref
 [`stream.getDefaultHighWaterMark()`]: stream.md#streamgetdefaulthighwatermarkobjectmode
 [`url.parse()`]: url.md#urlparseurlstring-parsequerystring-slashesdenotehost
 [`writable.cork()`]: stream.md#writablecork

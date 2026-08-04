@@ -8,7 +8,7 @@
 
 HTTPS 是基于 TLS/SSL 的 HTTP 协议。在 Node.js 中，这是作为一个单独的模块实现的。
 
-## 确定是否无法使用 crypto 支持
+## 确定 crypto 支持是否不可用
 
 Node.js 有可能在不包含 `node:crypto` 模块支持的情况下构建。在这种情况下，尝试从 `https` `import` 或调用 `require('node:https')` 将导致抛出错误。
 
@@ -84,6 +84,8 @@ changes:
 
     详见 [`Session Resumption`][] 了解 TLS 会话复用的信息。
 
+指定自定义 `checkServerIdentity` 选项的请求不符合通过 `https.Agent` 复用连接或 TLS 会话的条件，除非在构造 Agent 时指定了 `checkServerIdentity` 选项。
+
 #### 事件：`'keylog'`
 
 <!-- YAML
@@ -106,15 +108,15 @@ https.globalAgent.on('keylog', (line, tlsSocket) => {
 });
 ```
 
-## 類：`https.Server`
+## 类：`https.Server`
 
 <!-- YAML
 added: v0.3.4
 -->
 
-* 繼承：{tls.Server}
+* 继承：{tls.Server}
 
-詳見 [`http.Server`][] 獲取更多資訊。
+详见 [`http.Server`][] 获取更多信息。
 
 ### `server.close([callback])`
 
@@ -125,7 +127,7 @@ added: v0.1.90
 * `callback` {Function}
 * 返回：{https.Server}
 
-詳見 `node:http` 模組中的 [`server.close()`][]。
+详见 `node:http` 模块中的 [`server.close()`][]。
 
 ### `server[Symbol.asyncDispose]()`
 
@@ -134,10 +136,10 @@ added: v20.4.0
 changes:
  - version: v24.2.0
    pr-url: https://github.com/nodejs/node/pull/58467
-   description: 不再是實驗性的。
+   description: 不再是实验性的。
 -->
 
-調用 [`server.close()`][httpsServerClose] 並返回一個 promise，當伺服器關閉時該 promise 會 fulfilled。
+调用 [`server.close()`][httpsServerClose] 并返回一个 promise，当服务器关闭时该 promise 会 fulfilled。
 
 ### `server.closeAllConnections()`
 
@@ -145,7 +147,7 @@ changes:
 added: v18.2.0
 -->
 
-詳見 `node:http` 模組中的 [`server.closeAllConnections()`][]。
+详见 `node:http` 模块中的 [`server.closeAllConnections()`][]。
 
 ### `server.closeIdleConnections()`
 
@@ -153,7 +155,7 @@ added: v18.2.0
 added: v18.2.0
 -->
 
-詳見 `node:http` 模組中的 [`server.closeIdleConnections()`][]。
+详见 `node:http` 模块中的 [`server.closeIdleConnections()`][]。
 
 ### `server.headersTimeout`
 
@@ -161,20 +163,20 @@ added: v18.2.0
 added: v11.3.0
 -->
 
-* 類型：{number} **默認值：** `60000`
+* 类型：{number} **默认值：** `60000`
 
-詳見 `node:http` 模組中的 [`server.headersTimeout`][]。
+详见 `node:http` 模块中的 [`server.headersTimeout`][]。
 
 ### `server.listen()`
 
-啟動 HTTPS 伺服器監聽加密連接。
-此方法等同於 [`net.Server`][] 中的 [`server.listen()`][]。
+启动 HTTPS 服务器监听加密连接。
+此方法等同于 [`net.Server`][] 中的 [`server.listen()`][]。
 
 ### `server.maxHeadersCount`
 
-* 類型：{number} **默認值：** `2000`
+* 类型：{number} **默认值：** `2000`
 
-詳見 `node:http` 模組中的 [`server.maxHeadersCount`][]。
+详见 `node:http` 模块中的 [`server.maxHeadersCount`][]。
 
 ### `server.requestTimeout`
 
@@ -183,12 +185,12 @@ added: v14.11.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41263
-    description: 默認請求超時從無超時更改為 300 秒（5 分鐘）。
+    description: 默认请求超时从无超时更改为 300 秒（5 分钟）。
 -->
 
-* 類型：{number} **默認值：** `300000`
+* 类型：{number} **默认值：** `300000`
 
-詳見 `node:http` 模組中的 [`server.requestTimeout`][]。
+详见 `node:http` 模块中的 [`server.requestTimeout`][]。
 
 ### `server.setTimeout([msecs][, callback])`
 
@@ -196,11 +198,11 @@ changes:
 added: v0.11.2
 -->
 
-* `msecs` {number} **默認值：** `120000`（2 分鐘）
+* `msecs` {number} **默认值：** `120000`（2 分钟）
 * `callback` {Function}
 * 返回：{https.Server}
 
-詳見 `node:http` 模組中的 [`server.setTimeout()`][]。
+详见 `node:http` 模块中的 [`server.setTimeout()`][]。
 
 ### `server.timeout`
 
@@ -209,12 +211,12 @@ added: v0.11.2
 changes:
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/27558
-    description: 默認超時從 120 秒更改為 0（無超時）。
+    description: 默认超时从 120 秒更改为 0（无超时）。
 -->
 
-* 類型：{number} **默認值：** 0（無超時）
+* 类型：{number} **默认值：** 0（无超时）
 
-詳見 `node:http` 模組中的 [`server.timeout`][]。
+详见 `node:http` 模块中的 [`server.timeout`][]。
 
 ### `server.keepAliveTimeout`
 
@@ -222,9 +224,9 @@ changes:
 added: v8.0.0
 -->
 
-* 類型：{number} **默認值：** `5000`（5 秒）
+* 类型：{number} **默认值：** `5000`（5 秒）
 
-詳見 `node:http` 模組中的 [`server.keepAliveTimeout`][]。
+详见 `node:http` 模块中的 [`server.keepAliveTimeout`][]。
 
 ## `https.createServer([options][, requestListener])`
 
@@ -323,18 +325,18 @@ added: v0.3.6
 changes:
   - version: v10.9.0
     pr-url: https://github.com/nodejs/node/pull/21616
-    description: "`url` 參數現在可以與單獨的 `options` 對象一起傳遞。"
+    description: "`url` 参数现在可以与单独的 `options` 对象一起传递。"
   - version: v7.5.0
     pr-url: https://github.com/nodejs/node/pull/10638
-    description: "`options` 參數可以是 WHATWG `URL` 對象。"
+    description: "`options` 参数可以是 WHATWG `URL` 对象。"
 -->
 
 * `url` {string | URL}
-* `options` {Object | string | URL} 接受與 [`https.request()`][] 相同的 `options`，默认方法设置为 GET。
+* `options` {Object | string | URL} 接受与 [`https.request()`][] 相同的 `options`，默认方法设置为 GET。
 * `callback` {Function}
 * 返回：{http.ClientRequest}
 
-类似于 [`http.get()`][] 但用于 HTTPS。
+类似于 [`http.get()`][]，但用于 HTTPS。
 
 `options` 可以是一个对象、一个字符串或一个 [`URL`][] 对象。如果 `options` 是字符串，它会自动被 [`new URL()`][] 解析。如果它是 [`URL`][] 对象，它将自动转换为普通 `options` 对象。
 

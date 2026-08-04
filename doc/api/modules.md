@@ -284,12 +284,12 @@ require(X) from module at path Y
 4. 如果 X 以 '#' 开头
    a. LOAD_PACKAGE_IMPORTS(X, dirname(Y))
 5. LOAD_PACKAGE_SELF(X, dirname(Y))
-6. If a package map PACKAGE_MAP exists,
-   a. Find the package ID for the package owning Y
-        1. Let PARENT_PACKAGE_ID be FIND_PACKAGE_ID(dirname(Y), PACKAGE_MAP)
+6. 如果存在包映射 PACKAGE_MAP，
+   a. 查找拥有 Y 的包的包 ID
+        1. 设 PARENT_PACKAGE_ID = FIND_PACKAGE_ID(dirname(Y), PACKAGE_MAP)
    b. LOAD_PACKAGE_MAP(X, PARENT_PACKAGE_ID, PACKAGE_MAP)
 7. LOAD_NODE_MODULES(X, dirname(Y))
-8. THROW "not found"
+8. 抛出 "not found"
 
 MAYBE_DETECT_AND_LOAD(X)
 1. 如果 X 被解析为 CommonJS 模块，则将 X 作为 CommonJS 模块加载。停止。
@@ -332,10 +332,10 @@ LOAD_AS_DIRECTORY(X)
 2. LOAD_INDEX(X)
 
 LOAD_NODE_MODULES(X, START)
-1. Try to interpret X as a combination of NAME and SUBPATH where the name
-   may have a @scope/ prefix and the subpath begins with a slash (`/`).
-2. let DIRS = NODE_MODULES_PATHS(START)
-3. for each DIR in DIRS:
+1. 尝试将 X 解释为 NAME 和 SUBPATH 的组合，其中名称
+   可能带有 @scope/ 前缀，子路径以斜杠 (`/`) 开头。
+2. 设 DIRS = NODE_MODULES_PATHS(START)
+3. 对于 DIRS 中的每个 DIR：
    a. LOAD_PACKAGE_EXPORTS(SUBPATH, DIR/NAME)
    b. LOAD_AS_FILE(DIR/X)
    c. LOAD_AS_DIRECTORY(DIR/X)
@@ -352,23 +352,23 @@ NODE_MODULES_PATHS(START)
 5. 返回 DIRS + GLOBAL_FOLDERS
 
 FIND_PACKAGE_ID(PATH, PACKAGE_MAP)
-1. Find the PACKAGE_ID for the entry whose "path" is a parent directory of PATH
-2. If multiple entries are found, THROW "ambiguous resolution"
-3. If no entry was found, THROW "external file".
-4. return PACKAGE_ID
+1. 查找条目中 "path" 为 PATH 的父目录的 PACKAGE_ID
+2. 如果找到多个条目，抛出 "ambiguous resolution"
+3. 如果未找到条目，抛出 "external file"。
+4. 返回 PACKAGE_ID
 
 LOAD_PACKAGE_MAP(X, PARENT_PACKAGE_ID, PACKAGE_MAP)
-1. Try to interpret X as a combination of NAME and SUBPATH where the name
-   may have a @scope/ prefix and the subpath begins with a slash (`/`).
-2. Find the package map entry for key PARENT_PACKAGE_ID
-3. Look up NAME in the entry's "dependencies" map.
-4. If NAME is not found, THROW "not found".
-5. Let TARGET be PACKAGE_MAP.packages[dependencies[name]]
-6. Let PACKAGE_PATH be the resolved path of TARGET.
+1. 尝试将 X 解释为 NAME 和 SUBPATH 的组合，其中名称
+   可能带有 @scope/ 前缀，子路径以斜杠 (`/`) 开头。
+2. 查找键为 PARENT_PACKAGE_ID 的包映射条目
+3. 在该条目的 "dependencies" 映射中查找 NAME。
+4. 如果未找到 NAME，抛出 "not found"。
+5. 设 TARGET = PACKAGE_MAP.packages[dependencies[name]]
+6. 设 PACKAGE_PATH = TARGET 的解析路径。
 7. LOAD_PACKAGE_EXPORTS(SUBPATH, PACKAGE_PATH)
 8. LOAD_AS_FILE(PACKAGE_PATH/SUBPATH)
 9. LOAD_AS_DIRECTORY(PACKAGE_PATH/SUBPATH)
-10. THROW "not found"
+10. 抛出 "not found"
 
 LOAD_PACKAGE_IMPORTS(X, DIR)
 1. 找到离 DIR 最近的包作用域 SCOPE。
@@ -406,7 +406,7 @@ RESOLVE_ESM_MATCH(MATCH)
 3. 抛出 "not found"
 ```
 
-The “ESM 解析器”在 [ESM 文档](esm.md#resolution-and-loading-algorithm) 中有定义。
+“ESM 解析器”在 [ESM 文档](esm.md#resolution-and-loading-algorithm) 中有定义。
 
 ## 缓存
 
@@ -447,12 +447,12 @@ Node.js 有几个编译到二进制文件中的模块。这些模块在本文档
 
 如果某些内置模块的标识符传递给 `require()`，它们总是被优先加载。例如，`require('http')` 将始终返回内置 HTTP 模块，即使存在同名的文件。
 
-所有内置模块的列表可以从 [`module.builtinModules`][] 检索。
+所有内置模块的列表可以从 [`module.builtinModules`][] 检索。  
 列出的模块都不带 `node:` 前缀，除了那些强制要求此类前缀的模块（如下一节所述）。
 
 ### 带有强制 `node:` 前缀的内置模块
 
-当被 `require()` 加载时，某些内置模块必须使用 `node:` 前缀请求。此要求存在是为了防止新引入的内置模块与已经占用该名称的用户土地包发生冲突。目前需要 `node:` 前缀的内置模块有：
+当被 `require()` 加载时，某些内置模块必须使用 `node:` 前缀请求。此要求旨在防止新引入的内置模块与已经占用该名称的用户空间包发生冲突。目前需要 `node:` 前缀的内置模块有：
 
 * [`node:ffi`][]
 * [`node:sea`][]
@@ -929,7 +929,7 @@ exports = { hello: false };  // 未导出，仅在模块内可用
 
 当 `module.exports` 属性被新对象完全替换时，通常也会重新赋值 `exports`：
 
-<!-- eslint-disable func-name-matching -->
+<!-- eslint-disable node-core/func-name-matching -->
 
 ```js
 module.exports = exports = function Constructor() {
@@ -1100,4 +1100,4 @@ added: v0.5.1
 [模块解析]: #all-together
 [原生扩展]: addons.md
 [子路径导出]: packages.md#subpath-exports
-[子路径导入]: packages.md#subpath-imports
+[子路径导入]: packages.md#subpath-imports。
