@@ -710,11 +710,14 @@ console.log(buf);
 
 如果 `size` 不是数字，将抛出 `TypeError`。
 
-### 静态方法：`Buffer.allocUnsafe(size)`
+### 静态方法：`Buffer.allocUnsafe(size[, alignment])`
 
 <!-- YAML
 added: v5.10.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65003
+    description: 添加 `alignment` 参数。
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/45796
     description: "对于无效的输入参数，抛出 ERR_INVALID_ARG_TYPE 或 ERR_OUT_OF_RANGE 而不是ERR_INVALID_ARG_VALUE。"
@@ -726,7 +729,10 @@ changes:
     description: "传递负数 `size` 现在将抛出错误。"
 -->
 
-* `size` {integer} 新 `Buffer` 所需的长度。
+* `size` {integer} 新 `Buffer` 的所需长度。
+* `alignment` {integer} 如果给定，新 `Buffer` 的底层内存将从一个为
+  `alignment` 的倍数的地址开始。必须是一个不大于 `2 ** 30` 的
+  二的幂。请参阅[对齐分配][]。
 * 返回：{Buffer}
 
 分配一个 `size` 字节的新 `Buffer`。如果 `size` 大于
@@ -782,11 +788,14 @@ console.log(buf);
 区别很微妙，但当应用程序需要
 [`Buffer.allocUnsafe()`][] 提供的额外性能时可能很重要。
 
-### 静态方法：`Buffer.allocUnsafeSlow(size)`
+### 静态方法：`Buffer.allocUnsafeSlow(size[, alignment])`
 
 <!-- YAML
 added: v5.12.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65003
+    description: Added the `alignment` argument.
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/45796
     description: "对于无效的输入参数，抛出 ERR_INVALID_ARG_TYPE 或 ERR_OUT_OF_RANGE 而不是ERR_INVALID_ARG_VALUE。"
@@ -795,7 +804,10 @@ changes:
     description: 对于无效的输入参数，抛出 ERR_INVALID_ARG_VALUE 而不是 ERR_INVALID_OPT_VALUE。
 -->
 
-* `size` {integer} 新 `Buffer` 所需的长度。
+* `size` {integer} 新 `Buffer` 的所需长度。
+* `alignment` {integer} 如果给定，新 `Buffer` 的底层内存将从
+  一个地址为 `alignment` 的倍数的位置开始。必须是一个不大于
+  `2 ** 30` 的二的幂。参见[对齐分配][Aligned allocations]。
 * 返回：{Buffer}
 
 分配一个 `size` 字节的新 `Buffer`。如果 `size` 大于
@@ -893,7 +905,7 @@ const str = '\u00bd + \u00bc = \u00be';
 
 console.log(`${str}: ${str.length} characters, ` +
             `${Buffer.byteLength(str, 'utf8')} bytes`);
-// 输出：½ + ¼ = ¾: 9 characters, 12 bytes
+// 输出：½ + ¼ = ¾: 9 个字符，12 个字节
 ```
 
 ```cjs
@@ -903,7 +915,7 @@ const str = '\u00bd + \u00bc = \u00be';
 
 console.log(`${str}: ${str.length} characters, ` +
             `${Buffer.byteLength(str, 'utf8')} bytes`);
-// 输出：½ + ¼ = ¾: 9 characters, 12 bytes
+// 输出：½ + ¼ = ¾: 9 个字符，12 个字节
 ```
 
 当 `string` 是 {Buffer|DataView|TypedArray|ArrayBuffer|SharedArrayBuffer} 时，
@@ -1377,7 +1389,7 @@ const { Buffer } = require('node:buffer');
 
 Buffer.isBuffer(Buffer.alloc(10)); // 真
 Buffer.isBuffer(Buffer.from('foo')); // 真
-Buffer.isBuffer('a string'); // 假
+Buffer.isBuffer('a string'); // 真
 Buffer.isBuffer([]); // 假
 Buffer.isBuffer(new Uint8Array(1024)); // 假
 ```
@@ -1667,7 +1679,7 @@ console.log(buf1.compare(buf2, 5, 6, 5));
 
 如果 `targetStart < 0`、`sourceStart < 0`、
 `targetEnd > target.byteLength` 或 `sourceEnd > source.byteLength`，
-将抛出 [`ERR_OUT_OF_RANGE`][].
+将抛出 [`ERR_OUT_OF_RANGE`][]。
 
 ### `buf.copy(target[, targetStart[, sourceStart[, sourceEnd]]])`
 
@@ -2423,8 +2435,8 @@ added:
  - v10.20.0
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足：`0 <= offset <= buf.length - 8`。**默认值：** `0`。
-* 返回值：{bigint}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足：`0 <= offset <= buf.length - 8`。**默认值：** `0`。
+* 返回值：{大整数}
 
 从 `buf` 中指定的 `offset` 处读取一个有符号的大端 64 位整数。
 
@@ -2751,8 +2763,8 @@ changes:
     description: 移除了 noAssert，并且不再将 offset 隐式强制转换为 uint32。
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 2`。**默认值：** `0`。
-* 返回值：{integer}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 2`。**默认值：** `0`。
+* 返回值：{整数}
 
 从 `buf` 中指定的 `offset` 处读取一个有符号的小端 16 位整数。
 
@@ -3851,13 +3863,13 @@ added:
  - v10.20.0
 -->
 
-* `value` {bigint} 要写入 `buffer` 的数字。
+* `value` {bigint} 要写入 `buffer` 的数值。
 * `offset` {integer} 开始写入前要跳过的字节数。必须满足：`0 <= offset <= buffer.length - 8`。**默认值：** `0`。
 * 返回值：{integer} `offset` 加上写入的字节数。
 
 将 `value` 以大端格式写入 `buffer` 的指定 `offset` 处。
 
-`value` 被解释并写入为二进制补码有符号整数。
+`value` 会被解释并写入为二进制补码有符号整数。
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -5058,6 +5070,11 @@ npx codemod@latest @nodejs/buffer-atob-btoa
 added:
   - v19.6.0
   - v18.15.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64504
+    description: Detached `ArrayBuffer`s and views backed by them are treated
+                 as empty.
 -->
 
 * `input` {Buffer | ArrayBuffer | TypedArray} 要验证的输入。
@@ -5065,7 +5082,7 @@ added:
 
 如果 `input` 仅包含有效的 ASCII 编码数据（包括 `input` 为空的情况），则此函数返回 `true`。
 
-如果 `input` 是分离的数组缓冲区，则抛出异常。
+分离的 `ArrayBuffer`，或由其支持的 `TypedArray`，将被视为空。
 
 ### `buffer.isUtf8(input)`
 
@@ -5073,6 +5090,11 @@ added:
 added:
   - v19.4.0
   - v18.14.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64504
+    description: Detached `ArrayBuffer`s and views backed by them are treated
+                 as empty.
 -->
 
 * `input` {Buffer | ArrayBuffer | TypedArray} 要验证的输入。
@@ -5080,7 +5102,7 @@ added:
 
 如果 `input` 仅包含有效的 UTF-8 编码数据（包括 `input` 为空的情况），则此函数返回 `true`。
 
-如果 `input` 是分离的数组缓冲区，则抛出异常。
+分离的 `ArrayBuffer`，或由其支持的 `TypedArray`，将被视为空。
 
 ### `buffer.INSPECT_MAX_BYTES`
 
@@ -5259,16 +5281,67 @@ $ node --zero-fill-buffers
 
 虽然使用 [`Buffer.allocUnsafe()`][] 有明显的性能优势，但必须格外小心以避免向应用程序引入安全漏洞。
 
+### 对齐分配
+
+某些操作系统接口要求其操作的内存经过对齐，而在某些硬件上，对齐仅仅意味着速度更快。前一种情况最常见的例子是无缓冲（“直接”）文件 I/O。在 Linux 上，这要求缓冲区地址、文件偏移量和传输长度都必须是底层设备逻辑块大小的倍数：
+
+```mjs
+import { open } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { Buffer } from 'node:buffer';
+
+const blockSize = 4096;
+
+// 要使 O_DIRECT 接受该缓冲区，缓冲区地址必须按块对齐。
+const buf = Buffer.allocUnsafeSlow(blockSize, blockSize);
+
+const file = await open('/dev/sda', constants.O_RDONLY | constants.O_DIRECT);
+try {
+  await file.read(buf, 0, blockSize, 0);
+} finally {
+  await file.close();
+}
+```
+
+```cjs
+const fs = require('node:fs');
+const { Buffer } = require('node:buffer');
+
+const blockSize = 4096;
+
+// 要使 O_DIRECT 接受该缓冲区，缓冲区地址必须按块对齐。
+const buf = Buffer.allocUnsafeSlow(blockSize, blockSize);
+
+const flags = fs.constants.O_RDONLY | fs.constants.O_DIRECT;
+fs.open('/dev/sda', flags, (err, fd) => {
+  if (err) throw err;
+  fs.read(fd, buf, 0, blockSize, 0, (err) => {
+    fs.close(fd, () => {});
+    if (err) throw err;
+  });
+});
+```
+
+即使没有接口强制要求，对齐也可能纯粹为了性能而值得请求。将一个高频使用的 `Buffer` 按缓存行大小（当代大多数 CPU 上为 64 字节）对齐，可以避免它跨越不必要的额外缓存行，使得一个小型结构只需一次缓存未命中即可获取，而不是两次；按页（4096 字节）对齐的分配同样有助于映射或固定内存的接口。这些都是微优化：在采用它们之前应先进行测量，因为额外的字节并非没有代价。
+
+由于无法直接选择 `Buffer` 内存的地址，因此必须分配或跳过额外的字节，以到达对齐的地址。[`Buffer.allocUnsafeSlow()`][] 会额外分配最多 `alignment - 1` 个字节，并将返回的 `Buffer` 放置在其中第一个适当对齐的字节处。[`Buffer.allocUnsafe()`][] 则会将其偏移量填充到共享内部内存池中；该内存池的起始位置始终按 64 字节对齐，只有当 `alignment` 大于该值时才会退回到独立分配。无论哪种方式，[`buf.byteOffset`][] 通常都不是 0，并且 [`buf.buffer`][] 大于 `size`，因此访问 `Buffer` 底层 `ArrayBuffer` 中超出该 `Buffer` 范围的代码必须考虑偏移量；对于池化的 `Buffer` 也是如此。
+
+对齐是返回的 `Buffer` 的属性，并且在其整个生命周期内都会保留，但不会被其他视图继承：[`buf.subarray`][]、[`buf.slice()`][] 和 `structuredClone()` 都可能生成未对齐的 `Buffer`。
+
+将对齐状态保存到启动快照中也无法保留对齐：内存在序列化过程中不会保留其地址，因此在 [`--build-snapshot`][] 生效时分配的 `Buffer` 在反序列化进程中不会保持对齐。如果运行时必须保持对齐，应在 [`v8.startupSnapshot.setDeserializeMainFunction()`][] 回调中或启动之后进行分配。
+
 [ASCII]: https://en.wikipedia.org/wiki/ASCII
+[对齐分配]: #aligned-allocations
 [Base64]: https://en.wikipedia.org/wiki/Base64
 [ISO-8859-1]: https://en.wikipedia.org/wiki/ISO-8859-1
 [RFC 4648, Section 5]: https://tools.ietf.org/html/rfc4648#section-5
 [UTF-16]: https://en.wikipedia.org/wiki/UTF-16
 [UTF-8]: https://en.wikipedia.org/wiki/UTF-8
 [WHATWG Encoding Standard]: https://encoding.spec.whatwg.org/
+[`--build-snapshot`]: cli.md#--build-snapshot
 [`Buffer.alloc()`]: #static-method-bufferallocsize-fill-encoding
-[`Buffer.allocUnsafe()`]: #static-method-bufferallocunsafesize
-[`Buffer.allocUnsafeSlow()`]: #static-method-bufferallocunsafeslowsize
+[`Buffer.allocUnsafe()`]: #static-method-bufferallocunsafesize-alignment
+[`Buffer.allocUnsafeSlow()`]: #static-method-bufferallocunsafeslowsize-alignment
 [`Buffer.concat()`]: #static-method-bufferconcatlist-totallength
 [`Buffer.copyBytesFrom()`]: #static-method-buffercopybytesfromview-offset-length
 [`Buffer.from(array)`]: #static-method-bufferfromarray
@@ -5290,10 +5363,11 @@ $ node --zero-fill-buffers
 [`TypedArray.prototype.subarray()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/subarray
 [`blob.stream()`]: #blobstream
 [`buf.buffer`]: #bufbuffer
+[`buf.byteOffset`]: #bufbyteoffset
 [`buf.compare()`]: #bufcomparetarget-targetstart-targetend-sourcestart-sourceend
 [`buf.entries()`]: #bufentries
 [`buf.fill()`]: #buffillvalue-offset-end-encoding
-[`buf.indexOf()`]: #bufindexofvalue-byteoffset-encoding
+[`buf.indexOf()`]: #bufindexofvalue-start-end-encoding
 [`buf.keys()`]: #bufkeys
 [`buf.length`]: #buflength
 [`buf.slice()`]: #bufslicestart-end
@@ -5304,6 +5378,7 @@ $ node --zero-fill-buffers
 [`buffer.constants.MAX_STRING_LENGTH`]: #bufferconstantsmax_string_length
 [`buffer.kMaxLength`]: #bufferkmaxlength
 [`util.inspect()`]: util.md#utilinspectobject-options
+[`v8.startupSnapshot.setDeserializeMainFunction()`]: v8.md#v8startupsnapshotsetdeserializemainfunctioncallback-data
 [`v8::Uint8Array::kMaxLength`]: https://v8.github.io/api/head/classv8_1_1Uint8Array.html#a7677e3d0c9c92e4d40bef7212f5980c6
 [base64url]: https://tools.ietf.org/html/rfc4648#section-5
 [endianness]: https://en.wikipedia.org/wiki/Endianness

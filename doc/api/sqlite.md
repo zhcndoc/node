@@ -876,6 +876,15 @@ changes:
 不返回任何结果，此方法返回一个空数组。预准备语句 [参数被绑定][] 使用
 `namedParameters` 和 `anonymousParameters` 中的值。
 
+### `statement.close()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+完成预准备语句。如果语句已经完成，则会抛出异常。此方法是
+[`sqlite3_finalize()`][] 的封装。
+
 ### `statement.columns()`
 
 <!-- YAML
@@ -1069,6 +1078,14 @@ added: v22.5.0
 
 预准备语句的源 SQL 文本。此属性是
 对 [`sqlite3_sql()`][] 的封装。
+
+### `statement[Symbol.dispose]()`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+完成预准备语句。如果预准备语句已经完成，则此操作不执行任何操作。
 
 ## 类：`SQLTagStore`
 
@@ -1513,6 +1530,7 @@ added:
 [`sqlite3_deserialize()`]: https://sqlite.org/c3ref/deserialize.html
 [`sqlite3_exec()`]: https://www.sqlite.org/c3ref/exec.html
 [`sqlite3_expanded_sql()`]: https://www.sqlite.org/c3ref/expanded_sql.html
+[`sqlite3_finalize()`]: https://www.sqlite.org/c3ref/finalize.html
 [`sqlite3_get_autocommit()`]: https://sqlite.org/c3ref/get_autocommit.html
 [`sqlite3_last_insert_rowid()`]: https://www.sqlite.org/c3ref/last_insert_rowid.html
 [`sqlite3_load_extension()`]: https://www.sqlite.org/c3ref/load_extension.html

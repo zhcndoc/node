@@ -140,11 +140,11 @@ added: v0.6.9
 * `multicastAddress` {string}
 * `multicastInterface` {string}
 
-告知内核使用 `IP_ADD_MEMBERSHIP` 套接字选项加入给定 `multicastAddress` 和 `multicastInterface` 处的多播组。
-如果未指定 `multicastInterface` 参数，操作系统将选择一个接口并将成员资格添加到该接口。
-要将成员资格添加到每个可用接口，请多次调用 `addMembership`，每个接口一次。
+告知内核使用 `IP_ADD_MEMBERSHIP` 套接字选项加入位于给定 `multicastAddress` 和 `multicastInterface` 的多播组。
+如果未指定 `multicastInterface` 参数，操作系统将选择一个接口，并将成员资格添加到该接口。
+要将成员资格添加到每个可用接口，请多次调用 `addMembership`，每个接口调用一次。
 
-当在未绑定的套接字上调用时，此方法将隐式绑定到随机端口，监听所有接口。
+当在未绑定的套接字上调用时，此方法将隐式绑定到随机端口，并监听所有接口。
 
 当在多个 `cluster` 工作进程之间共享 UDP 套接字时，`socket.addMembership()` 函数只能调用一次，否则将发生 `EADDRINUSE` 错误：
 
@@ -190,8 +190,8 @@ added:
 * `groupAddress` {string}
 * `multicastInterface` {string}
 
-使用 `multicastInterface` 和 `IP_ADD_SOURCE_MEMBERSHIP` 套接字选项，告知内核加入给定 `sourceAddress` 和 `groupAddress` 上的特定源多播通道。
-如果未指定 `multicastInterface` 参数，操作系统将选择一个接口，并将成员关系添加到该接口。
+使用 `multicastInterface` 和 `IP_ADD_SOURCE_MEMBERSHIP` 套接字选项，告知内核加入给定 `sourceAddress` 和 `groupAddress` 上的特定源多播通道。  
+如果未指定 `multicastInterface` 参数，操作系统将选择一个接口，并将成员关系添加到该接口。  
 要将成员关系添加到每个可用接口，请多次调用 `socket.addSourceSpecificMembership()`，每个接口调用一次。
 
 在未绑定的套接字上调用时，此方法会隐式绑定到一个随机端口，并监听所有接口。
@@ -232,7 +232,7 @@ changes:
 
 绑定的数据报套接字会保持 Node.js 进程运行以接收数据报消息。
 
-如果绑定失败，将生成 `'error'` 事件。在极少数情况下（例如尝试使用已关闭的套接字进行绑定），可能会抛出 [`Error`][]。
+如果绑定失败，则会生成一个 `'error'` 事件。在极少数情况下（例如，尝试使用已关闭的套接字进行绑定），可能会抛出一个 [`Error`][]。
 
 监听端口 41234 的 UDP 服务器示例：
 
@@ -312,7 +312,7 @@ added: v0.11.14
 
 绑定的数据报套接字会保持 Node.js 进程运行以接收数据报消息。
 
-如果绑定失败，将生成 `'error'` 事件。在极少数情况下（例如尝试使用已关闭的套接字进行绑定），可能会抛出 [`Error`][]。
+如果绑定失败，则会生成一个 `'error'` 事件。在极少数情况下（例如，尝试使用已关闭的套接字进行绑定），可能会抛出一个 [`Error`][]。
 
 下面展示了一个监听独占端口的套接字示例。
 
@@ -368,7 +368,7 @@ added: v0.1.99
 关闭底层套接字并停止监听其上的数据。
 如果提供了回调，它将被添加为 [`'close'`][] 事件的监听器。
 
-### `socket[Symbol.asyncDispose]()`
+### `socket[Symbol.asyncDispose]()`**
 
 <!-- YAML
 added:
@@ -398,7 +398,7 @@ added: v12.0.0
 尝试在已连接的套接字上调用 `connect()` 将导致 [`ERR_SOCKET_DGRAM_IS_CONNECTED`][] 异常。
 如果未提供 `address`，默认将使用 `'127.0.0.1'`（对于 `udp4` 套接字）或 `'::1'`（对于 `udp6` 套接字）。
 连接完成后，会发出 `'connect'` 事件并调用可选的 `callback` 函数。
-如果失败，将调用 `callback`，如果失败，则发出 `'error'` 事件。
+如果失败，将调用 `callback`，并发出 `'error'` 事件。
 
 ### `socket.connectSync(port[, address])`
 
@@ -460,7 +460,7 @@ added:
 * `groupAddress` {string}
 * `multicastInterface` {string}
 
-指示内核使用 `IP_DROP_SOURCE_MEMBERSHIP` 套接字选项离开给定 `sourceAddress` 和 `groupAddress` 处的源特定多播通道。
+指示内核使用 `IP_DROP_SOURCE_MEMBERSHIP` 套接字选项离开给定 `sourceAddress` 和 `groupAddress` 处的源特定多播通道。  
 当套接字关闭或进程终止时，内核会自动调用此方法，因此大多数应用程序永远没有理由调用此方法。
 
 如果未指定 `multicastInterface`，操作系统将尝试在所有有效接口上删除成员资格。
@@ -517,7 +517,7 @@ added: v0.9.1
 可以使用 `socket.unref()` 方法将套接字从保持 Node.js 进程活动的引用计数中排除。
 `socket.ref()` 方法将套接字添加回引用计数并恢复默认行为。
 
-多次调用 `socket.ref()` 不会产生额外效果。
+多次调用 `socket.ref()` 不会产生其他影响。
 
 `socket.ref()` 方法返回对套接字的引用，因此调用可以链式进行。
 
@@ -529,7 +529,7 @@ added: v12.0.0
 
 * 返回：{Object}
 
-返回一个包含远程端点的 `address`、`family` 和 `port` 的对象。
+返回一个包含远程端点的 `address`、`family` 和 `port` 的对象。  
 如果套接字未连接，此方法将抛出 [`ERR_SOCKET_DGRAM_NOT_CONNECTED`][] 异常。
 
 ### `socket.send(msg[, offset, length][, port][, address][, callback])`
@@ -648,9 +648,9 @@ client.send([buf1, buf2], 41234, (err) => {
 });
 ```
 
-发送多个缓冲区可能更快或更慢，具体取决于应用程序和操作系统。
-运行基准测试以确定具体情况下的最佳策略。
-然而，一般来说，发送多个缓冲区更快。
+发送多个缓冲区可能更快，也可能更慢，具体取决于应用程序和操作系统。
+请运行基准测试，以确定每种情况下的最佳策略。
+不过一般来说，发送多个缓冲区会更快。
 
 使用连接到 `localhost` 上端口的套接字发送 UDP 数据包的示例：
 
@@ -768,7 +768,7 @@ socket.bind(1234, () => {
 
 对尚未准备好发送或不再打开的套接字的调用可能会抛出 _未运行_ [`Error`][]。
 
-如果 `multicastInterface` 无法解析为 IP，则抛出 _EINVAL_ [`System Error`][]。
+如果 `multicastInterface` 无法解析为 IP，则会抛出 _EINVAL_ [`System Error`][]。
 
 在 IPv4 上，如果 `multicastInterface` 是有效地址但不匹配任何接口，或者如果地址不匹配族，则抛出 [`System Error`][]，例如 `EADDRNOTAVAIL` 或 `EPROTONOSUP`。
 
@@ -795,7 +795,7 @@ added: v0.3.8
 added: v0.3.8
 -->
 
-* `ttl` {integer}
+* `ttl` {整数}
 
 设置 `IP_MULTICAST_TTL` 套接字选项。
 尽管 TTL 通常代表“生存时间”（time to live），但在此上下文中，它指定了数据包允许经过的 IP 跳数，尤其适用于多播流量。
@@ -815,7 +815,7 @@ added: v8.7.0
 
 * `size` {integer}
 
-设置 `SO_RCVBUF` 套接字选项。
+设置 `SO_RCVBUF` 套接字选项。  
 设置最大套接字接收缓冲区（字节）。
 
 如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][].
@@ -828,7 +828,7 @@ added: v8.7.0
 
 * `size` {integer}
 
-设置 `SO_SNDBUF` 套接字选项。
+设置 `SO_SNDBUF` 套接字选项。  
 设置最大套接字发送缓冲区（字节）。
 
 如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][].
@@ -839,18 +839,18 @@ added: v8.7.0
 added: v0.1.101
 -->
 
-* `ttl` {integer}
+* `ttl` {整数}
 
-Sets the `IP_TTL` socket option.
-Although TTL usually stands for “time to live,” in this context, it specifies the number of IP hops that a packet is allowed to traverse.
-Each router or gateway that forwards the packet decrements the TTL.
-If a router decrements the TTL to 0, it will not forward the packet.
-Changing the TTL value is commonly used for network probing or multicasting.
+设置 `IP_TTL` 套接字选项。  
+虽然 TTL 通常代表“生存时间”（time to live），但在此上下文中，它表示数据包允许经过的 IP 跳数。  
+每个转发数据包的路由器或网关都会将 TTL 减 1。  
+如果路由器将 TTL 减至 0，则不会转发该数据包。  
+更改 TTL 值通常用于网络探测或多播。
 
-The `ttl` parameter may be between 1 and 255.
-The default value on most systems is 64.
+`ttl` 参数的取值范围可以是 1 到 255。  
+大多数系统上的默认值为 64。
 
-Calling this method on an unbound socket will throw `EBADF`.
+在未绑定的套接字上调用此方法将抛出 `EBADF`。
 
 ### `socket.unref()`
 

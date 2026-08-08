@@ -719,12 +719,13 @@ added: v26.3.0
 * 类型：{quic.ApplicationOptions}
 
 此会话当前的应用层选项。这些选项包括特定于已协商应用协议（例如 HTTP/3）的设置，并且可能与传输参数分开协商。只读。
+
 你可以使用回调 [`session.onapplication`][] 来在远端设置到达时收到通知。
 
 ### `session.close([options])`
 
 <!-- YAML
-added: v23.8.0
+新增：v23.8.0
 -->
 
 * `options` {Object}
@@ -894,7 +895,7 @@ added: v23.8.0
 
 * 类型：{quic.OnDatagramCallback}
 
-当从远程对等方收到新数据报时调用的回调。读/写。
+从远程对等方收到新数据报时调用的回调。可读/可写。
 
 ### `session.ondatagramstatus`
 
@@ -1133,7 +1134,7 @@ added: v23.8.0
 added: v26.3.0
 -->
 
-* Type: {quic.TransportParams|null|undefined}
+* 类型：{quic.TransportParams|null|undefined}
 
 握手期间由远程对等方公布的传输参数。如果会话已被销毁，则返回 `null`，如果握手
 尚未完成且远程参数尚不可用，则返回 `undefined`。只读。
@@ -1147,9 +1148,9 @@ added: v23.8.0
 * `datagram` {string|ArrayBufferView|Promise}
 * `encoding` {string} 如果 `datagram` 是字符串，则使用的编码。
   **默认：** `'utf8'`。
-* 返回：{Promise} 一个关于 {bigint} 数据报 ID 的 promise。
+* 返回：{Promise} 一个包含 {bigint} 数据报 ID 的 promise。
 
-向远程对等方发送不可靠数据报，并返回一个关于
+向远程对等方发送不可靠数据报，并返回一个包含
 数据报 ID 的 promise。
 
 如果 `datagram` 是字符串，将使用指定的 `encoding` 进行编码。
@@ -1185,7 +1186,7 @@ added: v23.8.0
 added: v26.6.0
 -->
 
-* Type: {string|boolean|null}
+* 类型：{string|boolean|null}
 
 与会话关联的 SNI（服务器名称指示）主机名。在处理客户端 Hello 之前，此值为
 `null`。处理 Hello 后，此值为主机名字符串；如果握手没有包含 SNI，则为
@@ -1285,7 +1286,7 @@ added: v23.8.0
 
 发起会话密钥更新。
 
-### `session[Symbol.asyncDispose]()`
+### `session[Symbol.asyncDispose]()`  
 
 <!-- YAML
 added: v23.8.0
@@ -1734,13 +1735,27 @@ added: v23.8.0
 
 * 类型：{quic.OnStreamErrorCallback}
 
-当对端通过发送 `RESET_STREAM` 帧中止流的一个方向（对端放弃了其可写侧，因此不会再有数据进入我们的可读侧）
-或发送 `STOP_SENDING` 帧（对端要求我们停止在可写侧写入）时要调用的回调。
+当对端通过发送 `RESET_STREAM` 帧中止流的一个方向时调用的回调（对端放弃了其可写侧，
+因此我们的可读侧不会再收到任何数据）。
 
 回调接收一个 Node.js 错误，其 `errorCode`（`bigint`）属性携带来自线上帧的应用错误码。
 
 当此回调触发时，流**不会**自动销毁——由应用程序决定如何响应。常见模式有：忽略（并继续使用双向流中仍然活跃的方向）、
 通过 [`writer.fail()`][] 中止另一方向，或通过 [`stream.destroy()`][] 拆除整个流。可读/可写。
+
+### `stream.onstopsending`
+
+<!-- YAML
+added: v26.7.0
+-->
+
+* 类型：{quic.OnStreamErrorCallback}
+
+当对端通过发送 `STOP_SENDING` 帧中止流的一个方向时调用的回调（对端要求我们停止在
+可写侧上写入）。
+
+回调接收一个 Node.js 错误，其 `errorCode`（`bigint`）属性携带来自线上帧的应用错误码。
+可读/可写。
 
 ### `stream.headers`
 
@@ -1901,7 +1916,7 @@ added: v26.2.0
 ```mjs
 for await (const chunks of stream) {
   for (const chunk of chunks) {
-    // Process each Uint8Array chunk
+    // 处理每个 Uint8Array 块
   }
 }
 ```
@@ -2138,19 +2153,19 @@ added: v26.3.0
 
 * 类型：{bigint|number}
 
-每个头部块接受的 header 名值对最大数量。超过此限制的 header 会被静默丢弃。**默认值：** `128`
+每个标头块接受的标头名称-值对最大数量。超过此限制的标头会被静默丢弃。**默认值：** `128`
 
 #### `applicationOptions.maxHeaderLength`
 
 * 类型：{bigint|number}
 
-每个头部块中所有 header 名称和值的总字节长度上限。会使总长度超过此限制的 header 被静默丢弃。**默认值：** `8192`
+每个标头块中所有标头名称和值的总字节长度上限。会使总长度超过此限制的标头被静默丢弃。**默认值：** `8192`
 
 #### `applicationOptions.maxFieldSectionSize`
 
 * 类型：{bigint|number}
 
-压缩后的 header 字段部分（QPACK）最大大小。`0` 表示无限制。**默认值：** `0`
+压缩后的标头字段部分（QPACK）的最大大小。`0` 表示无限制。**默认值：** `0`
 
 #### `applicationOptions.qpackMaxDTableCapacity`
 
@@ -2162,7 +2177,7 @@ QPACK 动态表容量（字节）。设为 `0` 可禁用动态表。**默认值�
 
 * 类型：{bigint|number}
 
-QPACK 编码器动态表最大容量。**默认值：** `4096`
+QPACK 编码器动态表的最大容量。**默认值：** `4096`
 
 #### `applicationOptions.qpackBlockedStreams`
 
@@ -3062,13 +3077,12 @@ added: v26.3.0
 
 所有会话和流回调都可以是同步函数或异步函数。如果回调同步抛出错误或返回一个被拒绝的 promise，则该错误会被捕获，并且所属会话或流会因该错误而被销毁：
 
-* 流回调（`onblocked`、`onreset`、`onheaders`、`ontrailers`、
-  `oninfo`、`onwanttrailers`）：流将被销毁。
+* 流回调（`onblocked`、`onreset`、`onstopsending`、`onheaders`、
+  `ontrailers`、`oninfo`、`onwanttrailers`）：流会被销毁。
 * 会话回调（`onapplication`、`onstream`、`ondatagram`、
   `ondatagramstatus`、`onpathvalidation`、`onsessionticket`、
   `onnewtoken`、`onversionnegotiation`、`onorigin`、`ongoaway`、
-  `onhandshake`、`onkeylog`、`onqlog`）：会话将被销毁，
-  其所有流也会一并销毁。
+  `onhandshake`、`onkeylog`、`onqlog`）：会话及其所有流都会被销毁。
 
 在销毁之前，会先调用可选的 [`session.onerror`][] 或
 [`stream.onerror`][] 回调（如果已设置），让应用有机会观察或记录该错误。`session.closed` 或 `stream.closed`
@@ -3130,7 +3144,7 @@ added: v23.8.0
 * `this` {quic.QuicSession}
 * `applicationoption` {quic.QuicSession}
 
-当应用选项发生变化时调用的回调函数。例如，对于 http/3，
+当应用选项发生变化时调用的回调函数。例如，对于 HTTP/3，
 设置会包含在应用选项中，并且可能在连接建立后才到达。
 
 ### 回调：`OnPathValidationCallback`
@@ -3516,7 +3530,7 @@ const obs = new PerformanceObserver((list) => {
 obs.observe({ entryTypes: ['quic'] });
 ```
 
-## 诊断通道
+## 诊断通道。
 
 ### 通道：`quic.endpoint.created`
 
@@ -3913,10 +3927,7 @@ GOAWAY 帧时）。
 * `session` {quic.QuicSession}
 * `error` {any} 与重置相关的 QUIC 错误。
 
-在流从对端接收到 STOP_SENDING 或 RESET_STREAM 帧
-时触发，表示对端已中止该流。这是
-诊断应用层问题（例如已取消的
-请求）的关键信号。
+当流从对端接收到 RESET\_STREAM 帧时发布，表示对端已中止其发送方向。这是诊断应用程序级问题（例如已取消的请求）的关键信号。
 
 ### 通道：`quic.stream.blocked`
 

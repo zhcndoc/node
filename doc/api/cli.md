@@ -173,8 +173,8 @@ API。尝试使用 FFI API 将抛出一个 `ERR_ACCESS_DENIED`
 示例：
 
 ```js
-const { DynamicLibrary } = require('node:ffi');
-const lib = new DynamicLibrary('mylib.so');
+const { DynamicLibrary, suffix } = require('node:ffi');
+const lib = new DynamicLibrary(`./mylib.${suffix}`);
 ```
 
 ```console
@@ -296,7 +296,7 @@ added: v25.0.0
 
 > 稳定性：1.1 - 积极开发中
 
-当使用 [Permission Model][] 时，进程默认将无法访问网络。
+当使用 [权限模型][] 时，进程默认将无法访问网络。
 除非用户在启动 Node.js 时显式传递 `--allow-net` 标志，否则尝试这样做将抛出 `ERR_ACCESS_DENIED`。
 
 示例：
@@ -321,7 +321,7 @@ $ node --permission index.js
 ### `--allow-openssl-store`
 
 <!-- YAML
-added: REPLACEME
+added: v26.7.0
 -->
 
 > 稳定性：1.1 - 开发中
@@ -379,7 +379,7 @@ added: v20.0.0
 
 > 稳定性：1.1 - 积极开发中
 
-当使用 [权限模型][] 时，进程默认将无法创建任何工作线程。
+当使用 [权限模型][] 时，进程默认将无法创建任何工作线程。  
 出于安全原因，除非用户在主 Node.js 进程中显式传递 `--allow-worker` 标志，否则调用将抛出 `ERR_ACCESS_DENIED`。
 
 示例：
@@ -471,17 +471,17 @@ changes:
     - v25.4.0
     - v24.13.1
     pr-url: https://github.com/nodejs/node/pull/60954
-    description: 快照构建过程不再是实验性的。
+    description: The snapshot build process is no longer experimental.
 -->
 
-指定 JSON 配置文件的路径，该文件配置快照创建行为。
+Specifies the path to a JSON configuration file that configures snapshot creation behavior.
 
-目前支持以下选项：
+The following options are currently supported:
 
-* `builder` {string} 必需。提供在构建快照之前执行的脚本的名称，就好像传递了 [`--build-snapshot`][] 并将 `builder` 作为主脚本名称一样。
-* `withoutCodeCache` {boolean} 可选。包含代码缓存会减少编译快照中包含的函数所花费的时间，但代价是快照大小更大，并可能破坏快照的可移植性。
+* `builder` {string} Required. Provides the name of the script to execute before building the snapshot, as if [`--build-snapshot`][] had been passed with `builder` as the main script name.
+* `withoutCodeCache` {boolean} Optional. Including the code cache reduces the time spent on functions included in the compiled snapshot, at the cost of a larger snapshot size and potentially breaking snapshot portability.
 
-使用此标志时，命令行上提供的其他脚本文件将不会执行，而是被解释为常规命令行参数。
+When this flag is used, other script files provided on the command line will not be executed, but will instead be interpreted as regular command-line arguments.
 
 ### `-c`, `--check`
 
@@ -510,7 +510,7 @@ node --completion-bash > node_bash_completion
 source node_bash_completion
 ```
 
-### `-C condition`, `--conditions=condition`
+### `-C 条件`、`--conditions=条件`
 
 <!-- YAML
 added:
@@ -622,7 +622,7 @@ changes:
 
 * [`--cpu-prof-dir`][]
 * [`--heap-prof-dir`][]
-* [`--redirect-warnings`][]
+* [`--redirect-warnings`][]。
 
 ### `--disable-proto=mode`
 
@@ -657,7 +657,7 @@ added:
   - v21.3.0
   - v20.11.0
 changes:
-  - version: REPLACEME
+  - version: v26.7.0
     pr-url: https://github.com/nodejs/node/pull/64742
     description: "`--disable-warning` 标志现已稳定。"
 -->
@@ -757,7 +757,9 @@ changes:
 added: v6.0.0
 -->
 
-在启动时启用符合 FIPS 标准的加密。（需要 Node.js 针对兼容 FIPS 的 OpenSSL 构建。）
+在启动时启用 [FIPS 模式][]。使用 OpenSSL 3 时，必须有一个名为
+`fips` 的已配置提供程序，并且该提供程序必须成功初始化。使用 OpenSSL 1.1.1
+时，Node.js 必须基于支持 FIPS 的 OpenSSL 构建。
 
 ### `--enable-source-maps`
 
@@ -931,7 +933,7 @@ added:
  - v23.10.0
  - v22.16.0
 changes:
-  - version: REPLACEME
+  - version: v26.7.0
     pr-url: https://github.com/nodejs/node/pull/64516
     description: 标记为候选发布版。
 -->
@@ -1194,7 +1196,7 @@ added: v26.4.0
 node --experimental-package-map=./package-map.json app.js
 ```
 
-启用后，裸说明符解析会查询包映射以进行解析。
+启用后，裸说明符解析会查询包映射以进行解析。  
 这使得可以显式控制哪些包可以导入哪些依赖项。
 
 有关配置文件格式和解析算法的详细信息，请参阅 [包映射][]。
@@ -1372,24 +1374,6 @@ added:
 
 启用与 Chrome DevTools 进行工作线程检查的实验性支持。
 
-### `--expose-gc`
-
-<!-- YAML
-added:
-  - v22.3.0
-  - v20.18.0
--->
-
-> 稳定性：1 - 实验性。此标志继承自 V8，可能会在上游发生变化。
-
-此标志将暴露 V8 的 gc 扩展。
-
-```js
-if (globalThis.gc) {
-  globalThis.gc();
-}
-```
-
 ### `--force-context-aware`
 
 <!-- YAML
@@ -1404,7 +1388,7 @@ added: v12.12.0
 added: v6.0.0
 -->
 
-在启动时强制使用符合 FIPS 标准的加密。（无法从脚本代码禁用。）（与 `--enable-fips` 的要求相同。）
+在启动时启用 [FIPS 模式][]，并阻止通过脚本代码禁用该模式。适用于与 [`--enable-fips`][] 相同的 OpenSSL 要求。
 
 ### `--force-node-api-uncaught-exceptions-policy`
 
@@ -1557,13 +1541,13 @@ $ ls
 Heap.20190718.133405.15554.0.001.heapsnapshot
 ```
 
-### `-h`, `--help`
+### `-h`、`--help`
 
 <!-- YAML
 added: v0.1.3
 -->
 
-打印 node 命令行选项。
+打印 Node 命令行选项。  
 此选项的输出不如本文档详细。
 
 ### `--icu-data-dir=file`
@@ -1586,8 +1570,8 @@ added:
 
 在启动时预加载指定的模块。如果多次提供该标志，每个模块将按出现的顺序依次执行，从 [`NODE_OPTIONS`][] 中提供的模块开始。
 
-遵循 [ECMAScript 模块][] 解析规则。
-使用 [`--require`][] 加载 [CommonJS 模块][]。
+遵循 [ECMAScript 模块][] 解析规则。  
+使用 [`--require`][] 加载 [CommonJS 模块][]。  
 使用 `--require` 预加载的模块将在使用 `--import` 预加载的模块之前运行。
 
 模块会被预加载到主线程以及任何工作线程、派生进程或集群进程中。
@@ -1635,20 +1619,20 @@ added:
  - v10.19.0
 -->
 
-在 HTTP 解析器上启用宽容标志。这可能允许与不符合标准的 HTTP 实现互操作。
+在 HTTP 解析器上启用宽松标志。这可能允许与不符合标准的 HTTP 实现进行互操作。
 
 启用后，解析器将接受以下内容：
 
 * 无效的 HTTP 头值。
 * 无效的 HTTP 版本。
 * 允许消息同时包含 `Transfer-Encoding` 和 `Content-Length` 头。
-* 当存在 `Connection: close` 时，允许消息后有额外数据。
+* 当存在 `Connection: close` 时，允许消息后存在额外数据。
 * 提供 `chunked` 后允许额外的传输编码。
 * 允许使用 `\n` 作为令牌分隔符，而不是 `\r\n`。
 * 允许在块后不提供 `\r\n`。
 * 允许在块大小之后和 `\r\n` 之前存在空格。
 
-以上所有都将使您的应用程序暴露于请求走私或投毒攻击。避免使用此选项。
+以上所有情况都将使您的应用程序暴露于请求走私或投毒攻击。避免使用此选项。
 
 ### `--inspect-brk[=[host:]port]`
 
@@ -1690,7 +1674,7 @@ added:
 
 在 `host:port` 上激活检查器并等待调试器附加。默认 `host:port` 为 `127.0.0.1:9229`。如果指定端口 `0`，则将使用随机可用端口。
 
-有关 Node.js 调试器的进一步说明，请参阅 [V8 Inspector integration for Node.js][]。
+有关 Node.js 调试器的进一步说明，请参阅 [Node.js 的 V8 检查器集成][]。
 
 有关 `host` 参数使用的 [安全警告][]，请参阅下文。
 
@@ -1789,7 +1773,7 @@ added:
 -->
 
 设置网络族自动选择尝试超时的默认值。
-更多信息，请参阅 [`net.getDefaultAutoSelectFamilyAttemptTimeout()`][].
+更多信息，请参阅 [`net.getDefaultAutoSelectFamilyAttemptTimeout()`][]。
 
 ### `--no-addons`
 
@@ -1922,7 +1906,7 @@ added: v9.0.0
 ### `--no-global-search-paths`
 
 <!-- YAML
-added: v16.10.0
+新增: v16.10.0
 -->
 
 不要从全局路径中搜索模块（例如 `$HOME/.node_modules` 和 `$NODE_PATH`）。
@@ -2015,7 +1999,9 @@ added:
 added: v6.9.0
 -->
 
-在启动时加载 OpenSSL 配置文件。除其他用途外，当 Node.js 针对启用 FIPS 的 OpenSSL 构建时，这可用于启用符合 FIPS 标准的加密。
+在启动时加载 OpenSSL 配置文件。该文件可以激活 OpenSSL 3 FIPS 提供程序，或配置支持 FIPS 的 OpenSSL 1.1.1 构建版本。请参阅 [FIPS 模式][]。
+
+此选项优先于 `OPENSSL_CONF` 环境变量。
 
 ### `--openssl-legacy-provider`
 
@@ -2082,7 +2068,7 @@ changes:
 * WASI - 可通过 [`--allow-wasi`][] 标志进行管理
 * 原生插件 - 可通过 [`--allow-addons`][] 标志进行管理
 * FFI - 可通过 [`--allow-ffi`](#--allow-ffi) 标志进行管理
-* OpenSSL STORE 加载器 - 可通过 [`--allow-openssl-store`][] 标志进行管理
+* OpenSSL STORE 加载器 - 可通过 [`--allow-openssl-store`][] 标志进行管理。
 
 ### `--permission-audit`
 
@@ -2158,7 +2144,7 @@ added: v10.2.0
 不希望在使用相对路径解析之前跟随符号链接时，请除了
 `--preserve-symlinks` 外还使用 `--preserve-symlinks-main`。
 
-更多信息请参阅 [`--preserve-symlinks`][].
+更多信息请参阅 [`--preserve-symlinks`][]。
 
 ### `-p`, `--print "script"`
 
@@ -2194,12 +2180,9 @@ added: v5.2.0
 added: v8.0.0
 -->
 
-将进程警告写入给定文件而不是打印到 stderr。如果
-文件不存在则创建它，如果存在则追加到它。如果尝试将警告写入文件时发生错误，则
-警告将写入 stderr。
+将进程警告写入给定文件，而不是打印到 stderr。如果文件不存在，则创建该文件；如果文件已存在，则追加写入。如果尝试将警告写入文件时发生错误，则警告将写入 stderr。
 
-`file` 名称可以是绝对路径。如果不是，则写入它的默认目录由
-[`--diagnostic-dir`][] 命令行选项控制。
+`file` 名称可以是绝对路径。如果不是，则写入该文件的默认目录由 [`--diagnostic-dir`][] 命令行选项控制。
 
 ### `--report-compact`
 
@@ -2542,7 +2525,7 @@ added:
 ### `--test-coverage-include-all`
 
 <!-- YAML
-added: REPLACEME
+added: v26.7.0
 -->
 
 > 稳定性：1 - 实验性
@@ -2795,8 +2778,8 @@ added: v10.7.0
 added: v4.0.0
 -->
 
-指定替代默认 TLS 加密套件列表。需要 Node.js 构建
-时带有 crypto 支持（默认）。
+指定替代默认 TLS 密码套件列表。需要 Node.js 构建时包含
+crypto 支持（默认）。
 
 ### `--tls-keylog=file`
 
@@ -2923,7 +2906,7 @@ added:
   - v22.13.0
 -->
 
-除了 `--trace-env` 所做的之外，这还会打印被访问的原生堆栈跟踪。
+除了 `--trace-env` 的功能外，此选项还会打印被访问的原生堆栈跟踪。
 
 ### `--trace-event-categories`
 
@@ -2947,7 +2930,7 @@ added: v9.8.0
 added: v7.7.0
 -->
 
-启用跟踪事件跟踪信息的收集。
+启用跟踪事件信息的收集。
 
 ### `--trace-exit`
 
@@ -3054,13 +3037,13 @@ changes:
 如果在命令行入口点的 ES 模块静态
 加载阶段发生拒绝，它将始终将其作为未捕获异常抛出。
 
-### `--use-bundled-ca`, `--use-openssl-ca`
+### `--use-bundled-ca`、`--use-openssl-ca`
 
 <!-- YAML
 added: v6.11.0
 -->
 
-使用当前 Node.js 版本提供的捆绑 Mozilla CA 存储
+使用当前 Node.js 版本提供的捆绑 Mozilla CA 存储，
 或使用 OpenSSL 的默认 CA 存储。默认存储可在
 构建时选择。
 
@@ -3269,7 +3252,7 @@ changes:
 以监视模式启动 Node.js 并指定要监视的路径。
 在监视模式下，被监视路径中的更改会导致 Node.js 进程
 重启。
-即使与 `--watch` 组合使用，这也将关闭对 required 或 imported 模块的监视。
+即使与 `--watch` 组合使用，这也将关闭对通过 `require` 或 `import` 加载的模块的监视。
 
 此标志不能与
 `--check`、`--eval`、`--interactive`、`--test` 或 REPL 组合。
@@ -3407,30 +3390,30 @@ added: v6.11.0
 added: v8.0.0
 -->
 
-以空格分隔的命令行选项列表。`options...` 会先于命令行选项进行解析，因此命令行选项会覆盖 `options...` 中的任何内容，或与其之后的内容组合。如果使用了环境中不允许的选项（例如 `-p` 或脚本文件），Node.js 将退出并报错。
+A space-separated list of command-line options. `options...` is parsed before the command-line options, so command-line options will override anything in `options...` or combine with what follows it. Node.js will exit with an error if an option that is not allowed in the environment is used (such as `-p` or a script file).
 
-如果选项值包含空格，可以使用双引号进行转义：
+If an option value contains spaces, you can escape them using double quotes:
 
 ```bash
 NODE_OPTIONS='--require "./my path/file.js"'
 ```
 
-作为命令行选项传递的单例标志将覆盖传递给 `NODE_OPTIONS` 的相同标志：
+Singleton flags passed as command-line options will override the same flags passed to `NODE_OPTIONS`:
 
 ```bash
-# 检查器将在端口 5555 上可用
+# The inspector will be available on port 5555
 NODE_OPTIONS='--inspect=localhost:4444' node --inspect=localhost:5555
 ```
 
-可以多次传递的标志将按先传递其 `NODE_OPTIONS` 实例、再传递其命令行实例的顺序处理：
+Flags that can be passed multiple times will be processed in the order of first passing their `NODE_OPTIONS` instances, followed by their command-line instances:
 
 ```bash
 NODE_OPTIONS='--require "./a.js"' node --require "./b.js"
-# 等同于：
+# Equivalent to:
 node --require "./a.js" --require "./b.js"
 ```
 
-允许的 Node.js 选项如下。如果某个选项同时支持 --XX 和 --no-XX 变体，则两者都支持，但下面的列表中只包含其中一个。
+The following Node.js options are allowed. If an option supports both the --XX and --no-XX variants, both are supported, but only one of them is included in the list below.
 
 <!-- node-options-node start -->
 
@@ -3603,7 +3586,7 @@ node --require "./a.js" --require "./b.js"
 
 <!-- node-options-node end -->
 
-允许的 V8 选项有：
+The following V8 options are allowed:
 
 <!-- node-options-v8 start -->
 
@@ -3626,9 +3609,9 @@ node --require "./a.js" --require "./b.js"
 
 <!-- node-options-others start -->
 
-`--perf-basic-prof-only-functions`、`--perf-basic-prof`、`--perf-prof-unwinding-info` 和 `--perf-prof` 仅在 Linux 上可用。
+`--perf-basic-prof-only-functions`, `--perf-basic-prof`, `--perf-prof-unwinding-info`, and `--perf-prof` are available only on Linux.
 
-`--enable-etw-stack-walking` 仅在 Windows 上可用。
+`--enable-etw-stack-walking` is available only on Windows.
 
 <!-- node-options-others end -->
 
@@ -3820,7 +3803,7 @@ Node.js 使用系统存储中存在的受信任 CA 证书，以及 `--use-bundle
 added: v6.11.0
 -->
 
-启动时加载 OpenSSL 配置文件。除其他用途外，这可用于在 Node.js 使用 `--openssl-config` 构建时启用符合 FIPS 的加密。
+在启动时加载 OpenSSL 配置文件。该文件可用作 [FIPS 模式][] 配置的一部分。
 
 如果使用了 [`--use-openssl-ca`][] 命令行选项，则会忽略该环境变量。
 
@@ -3874,7 +3857,7 @@ Wed May 12 2021 20:30:48 GMT+0100 (Irish Standard Time)
 
 将 libuv 线程池中使用的线程数设置为 `size` 个线程。
 
-只要可能，Node.js 就会使用异步系统 API，但在它们不存在的地方，libuv 的线程池用于基于同步系统 API 创建异步 node API。使用线程池的 Node.js API 有：
+只要可能，Node.js 就会使用异步系统 API，但在它们不存在的地方，libuv 的线程池用于基于同步系统 API 创建异步 Node.js API。使用线程池的 Node.js API 有：
 
 * 所有 `fs` API，除了文件监视器 API 和那些明确同步的 API
 * 异步加密 API，例如 `crypto.pbkdf2()`、`crypto.scrypt()`、`crypto.randomBytes()`、`crypto.randomFill()`、`crypto.generateKeyPair()`
@@ -3979,10 +3962,11 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [DEP0025 warning]: deprecations.md#dep0025-requirenodesys
 [ECMAScript module]: esm.md#modules-ecmascript-modules
 [EventSource Web API]: https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events
-[ExperimentalWarning: `vm.measureMemory` 是一个实验性功能]: vm.md#vmmeasurememoryoptions
-[文件系统权限]: permissions.md#file-system-permissions
-[使用 require() 加载 ECMAScript 模块]: modules.md#loading-ecmascript-modules-using-require
-[模块解析和加载]: packages.md#module-resolution-and-loading
+[ExperimentalWarning: `vm.measureMemory` is an experimental feature]: vm.md#vmmeasurememoryoptions
+[FIPS mode]: crypto.md#fips-mode
+[File System Permissions]: permissions.md#file-system-permissions
+[Loading ECMAScript modules using `require()`]: modules.md#loading-ecmascript-modules-using-require
+[Module resolution and loading]: packages.md#module-resolution-and-loading
 [Navigator API]: globals.md#navigator
 [Node.js 问题追踪器]: https://github.com/nodejs/node/issues
 [OSSL_PROVIDER-legacy]: https://www.openssl.org/docs/man3.0/man7/OSSL_PROVIDER-legacy.html
@@ -4009,6 +3993,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`--cpu-prof-dir`]: #--cpu-prof-dir
 [`--diagnostic-dir`]: #--diagnostic-dirdirectory
 [`--disable-sigusr1`]: #--disable-sigusr1
+[`--enable-fips`]: #--enable-fips
 [`--env-file-if-exists`]: #--env-file-if-existsfile
 [`--env-file`]: #--env-filefile
 [`--experimental-sea-config`]: single-executable-applications.md#1-generating-single-executable-preparation-blobs

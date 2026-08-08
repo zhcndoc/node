@@ -393,7 +393,7 @@ added: v10.5.0
 
 * 类型：{null|MessagePort}
 
-如果此线程是一个 [`Worker`][]，则这是一个 [`MessagePort`][]，
+如果此线程是一个 [`Worker`][]，则这是一个 [`MessagePort`][],
 允许与主线程通信。使用 `parentPort.postMessage()` 发送的消息在主线程中
 通过 `worker.on('message')` 可用，而使用 `worker.postMessage()` 从主线程
 发送的消息在此线程中通过 `parentPort.on('message')` 可用。
@@ -646,7 +646,7 @@ changes:
 -->
 
 * `key` {any} 任何可用作 {Map} 键的可克隆 JavaScript 值。
-* `value` {any} 任何将被克隆并自动传递给所有新 `Worker` 实例的可克隆 JavaScript 值。如果 `value` 传递
+* `value` {any} 任何将被克隆并自动传递给所有新 `Worker` 实例的可克隆 JavaScript 值。如果将 `value` 传递
   为 `undefined`，则之前为 `key` 设置的任何值将被删除。
 
 `worker.setEnvironmentData()` API 设置当前线程以及从当前上下文
@@ -961,7 +961,7 @@ added: v15.4.0
 added: v10.5.0
 -->
 
-`worker.MessageChannel` 类的实例表示一个异步双向通信通道。
+`worker.MessageChannel` 类的实例表示一个异步双向通信通道。  
 `MessageChannel` 没有自己的方法。`new MessageChannel()` 生成一个带有 `port1` 和 `port2` 属性的对象，这些属性引用链接的 [`MessagePort`][] 实例。
 
 ```mjs
@@ -1571,7 +1571,7 @@ added: v10.5.0
 added: v10.5.0
 -->
 
-* `value` {any} 传输的值
+* `value` {任意类型} 传输的值
 
 当工作线程调用了
 [`require('node:worker_threads').parentPort.postMessage()`][] 时，会发出 `'message'` 事件。
@@ -1693,9 +1693,8 @@ added:
 事件循环内完成的。因此，一旦工作线程的脚本开始执行，
 事件循环利用率立即可用。
 
-`idle` 时间不增加并不表示工作线程卡在引导过程中。以下示例显示工作线程的整个
-生命周期从未积累任何 `idle` 时间，但仍能够处理
-消息。
+`idle` 时间没有增加并不表示工作线程卡在引导阶段。以下示例展示了
+工作线程的整个生命周期中从未累积任何 `idle` 时间，但仍然能够处理消息。
 
 ```mjs
 import { Worker, isMainThread, parentPort } from 'node:worker_threads';
@@ -1926,9 +1925,9 @@ added: v10.5.0
 
 * 类型：{stream.Readable}
 
-这是一个可读流，包含在 worker 线程内写入 [`process.stderr`][]
-的数据。如果未将 `stderr: true` 传递给
-[`Worker`][] 构造函数，则数据会管道传输到父线程的
+这是一个可读流，包含在 worker 线程内写入 [`process.stderr`][]  
+的数据。如果未将 `stderr: true` 传递给  
+[`Worker`][] 构造函数，则数据会管道传输到父线程的  
 [`process.stderr`][] 流。
 
 ### `worker.stdin`
@@ -2080,7 +2079,7 @@ if (isMainThread) {
 [`--max-old-space-size`]: cli.md#--max-old-space-sizesize-in-mib
 [`--max-semi-space-size`]: cli.md#--max-semi-space-sizesize-in-mib
 [`AsyncResource`]: async_hooks.md#class-asyncresource
-[`Buffer.allocUnsafe()`]: buffer.md#static-method-bufferallocunsafesize
+[`Buffer.allocUnsafe()`]: buffer.md#static-method-bufferallocunsafesize-alignment
 [`ERR_MISSING_MESSAGE_PORT_IN_TRANSFER_LIST`]: errors.md#err_missing_message_port_in_transfer_list
 [`ERR_WORKER_MESSAGING_ERRORED`]: errors.md#err_worker_messaging_errored
 [`ERR_WORKER_MESSAGING_FAILED`]: errors.md#err_worker_messaging_failed

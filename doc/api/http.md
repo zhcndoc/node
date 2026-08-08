@@ -287,36 +287,36 @@ http.request(options, onResponseCallback);
 added: v0.11.4
 -->
 
-* `options` {Object} 包含连接详情的选项。查看
-  [`net.createConnection()`][] 了解选项的格式。对于自定义 agent，
-  此对象会传递给自定义 `createConnection` 函数。
-* `callback` {Function} （可选，主要用于自定义 agent）当套接字
-  创建时由自定义 `createConnection` 实现调用的函数，
+* `options` {Object} 包含连接详细信息的选项。有关选项格式，请参阅
+  [`net.createConnection()`][]。对于自定义 agent，
+  此对象会传递给自定义的 `createConnection` 函数。
+* `callback` {Function} （可选，主要用于自定义 agent）套接字
+  创建后由自定义 `createConnection` 实现调用的函数，
   尤其适用于异步操作。
   * `err` {Error | null} 如果套接字创建失败，则为错误对象。
   * `socket` {stream.Duplex} 创建的套接字。
-* 返回：{stream.Duplex} 创建的套接字。这是由默认
-  实现或自定义同步 `createConnection` 实现返回的。
-  如果自定义 `createConnection` 使用 `callback` 进行异步
-  操作，此返回值可能不是获取套接字的主要方式。
+* 返回：{stream.Duplex} 创建的套接字。这是由默认实现
+  或自定义的同步 `createConnection` 实现返回的。
+  如果自定义的 `createConnection` 使用 `callback` 执行异步
+  操作，则此返回值可能不是获取套接字的主要方式。
 
-生成一个用于 HTTP 请求的套接字/流。
+创建一个用于 HTTP 请求的套接字/流。
 
 默认情况下，此函数的行为与 [`net.createConnection()`][] 完全相同，
-同步返回创建的套接字。签名中的可选 `callback` 参数**不**被此默认实现使用。
+会同步返回创建的套接字。签名中的可选 `callback` 参数**不会**由此默认实现使用。
 
-然而，自定义 agent 可以重写此方法以提供更大的灵活性，
-例如异步创建套接字。当重写 `createConnection` 时：
+但是，自定义 agent 可以重写此方法以提供更大的灵活性，
+例如异步创建套接字。重写 `createConnection` 时：
 
-1. **同步套接字创建**：重写的方法可以直接返回
+1. **同步创建套接字**：重写的方法可以直接返回
    套接字/流。
-2. **异步套接字创建**：重写的方法可以接受 `callback`
+2. **异步创建套接字**：重写的方法可以接受 `callback`，
    并将创建的套接字/流传递给它（例如，`callback(null, newSocket)`）。
-   如果在套接字创建期间发生错误，应将其作为第一个
+   如果在创建套接字期间发生错误，应将其作为第一个
    参数传递给 `callback`（例如，`callback(err)`）。
 
-agent 将使用 `options` 和此内部 `callback` 调用提供的 `createConnection` 函数。
-agent 提供的 `callback` 的签名为 `(err, stream)`。
+agent 将使用 `options` 和此内部 `callback` 调用所提供的 `createConnection` 函数。
+agent 提供的 `callback` 签名为 `(err, stream)`。
 
 ### `agent.keepSocketAlive(socket)`
 
@@ -450,8 +450,7 @@ added:
 
 * 类型：{number}
 
-默认设置为 `Infinity`。确定 agent
-可以打开多少个并发套接字。与 `maxSockets` 不同，此参数适用于所有源。
+默认设置为 `Infinity`。确定代理可以打开多少个并发套接字。与 `maxSockets` 不同，此参数适用于所有源。
 
 ### `agent.requests`
 
@@ -497,7 +496,7 @@ added: v0.1.17
 
 在 [`'response'`][] 事件期间，可以向响应对象添加监听器；特别是监听 `'data'` 事件。
 
-如果没有添加 [`'response'`][] 处理程序，则响应将被完全丢弃。但是，如果添加了 [`'response'`][] 事件处理程序，则**必须**消费来自响应对象的数据，要么在有 `'readable'` 事件时调用 `response.read()`，要么添加 `'data'` 处理程序，要么调用 `.resume()` 方法。在数据被消费之前，`'end'` 事件不会触发。此外，在数据被读取之前，它将消耗内存，最终可能导致 '进程内存溢出' 错误。
+如果没有添加 [`'response'`][] 处理程序，则响应将被完全丢弃。但是，如果添加了 [`'response'`][] 事件处理程序，则**必须**消费来自响应对象的数据，要么在有 `'readable'` 事件时调用 `response.read()`，要么添加 `'data'` 处理程序，要么调用 `.resume()` 方法。在数据被消费之前，`'end'` 事件不会触发。此外，在数据被读取之前，它将消耗内存，最终可能导致“进程内存溢出”错误。
 
 为了向后兼容，只有在注册了 `'error'` 监听器的情况下，`res` 才会触发 `'error'`。
 
@@ -925,9 +924,9 @@ changes:
 * `callback` {Function}
 * 返回：{this}
 
-完成发送请求。如果主体的任何部分未发送，它将把它们冲刷到流中。如果请求是分块的，这将发送终止符 `'0\r\n\r\n'`。
+结束发送请求。如果主体的任何部分尚未发送，它会将这些部分冲刷到流中。如果请求采用分块传输编码，这将发送终止符 `'0\r\n\r\n'`。
 
-如果指定了 `data`，则相当于调用 [`request.write(data, encoding)`][] 后跟 [`request.end(callback)`]。
+如果指定了 `data`，则相当于调用 [`request.write(data, encoding)`][]，然后调用 [`request.end(callback)`]。
 
 如果指定了 `callback`，它将在请求流完成时被调用。
 
@@ -960,7 +959,7 @@ added:
 
 在调用 [`request.destroy()`][] 后为 `true`。
 
-详见 [`writable.destroyed`][].
+详见 [`writable.destroyed`][]。
 
 ### 服务器消息已发送
 
@@ -1460,7 +1459,7 @@ changes:
 * `socket` {stream.Duplex}
 
 如果客户端连接触发了 `'error'` 事件，就会转发到这里。
-此事件的监听器负责关闭/销毁底层 socket。例如，使用自定义 HTTP 响应更优雅地关闭 socket，而不是突然中断连接，可能会更合适。处理程序在返回之前必须关闭或销毁该 socket。
+此事件的监听器负责关闭或销毁底层 socket。例如，使用自定义 HTTP 响应更优雅地关闭 socket，而不是突然中断连接，可能会更合适。处理程序在返回之前必须关闭或销毁该 socket。
 
 除非用户指定了 {net.Socket} 以外的 socket 类型，否则此事件保证会传递 {net.Socket} 类的实例，
 它是 {stream.Duplex} 的子类。
@@ -1746,7 +1745,7 @@ changes:
 
 ### `server.listen()`
 
-开始监听 HTTP 服务器上的连接。
+开始监听 HTTP 服务器上的连接。  
 此方法与 [`server.listen()`][] 在 [`net.Server`][] 中完全相同。
 
 ### `server.listening`
@@ -2291,7 +2290,7 @@ added: v12.9.0
 
 * 类型：{boolean}
 
-在调用 [`response.end()`][] 之后为 `true`。此属性不表示数据是否已刷新；为此请使用 [`response.writableFinished`][].
+在调用 [`response.end()`][] 之后为 `true`。此属性不表示数据是否已刷新；为此请使用 [`response.writableFinished`][]。
 
 ### `response.writableFinished`
 
@@ -2320,17 +2319,17 @@ changes:
 
 如果调用了此方法且尚未调用 [`response.writeHead()`][]，它将切换到隐式头部模式并刷新隐式头部。
 
-这会发送响应主体的一块。可以多次调用此方法以提供主体的连续部分。
+此方法会发送响应主体的一部分。可以多次调用此方法，以提供主体的连续部分。
 
-如果在 `createServer` 中将 `rejectNonStandardBodyWrites` 设置为 true，则当请求方法或响应状态不支持内容时，不允许写入主体。如果尝试为 HEAD 请求写入主体或作为 `204` 或 `304` 响应的一部分写入主体，则会抛出代码为 `ERR_HTTP_BODY_NOT_ALLOWED` 的同步 `Error`。
+如果在 `createServer` 中将 `rejectNonStandardBodyWrites` 设置为 `true`，则当请求方法或响应状态不支持内容时，不允许写入主体。如果尝试为 HEAD 请求写入主体，或作为 `204` 或 `304` 响应的一部分写入主体，则会抛出代码为 `ERR_HTTP_BODY_NOT_ALLOWED` 的同步 `Error`。
 
-`chunk` 可以是字符串或 buffer。如果 `chunk` 是字符串，则第二个参数指定如何将其编码为字节流。当这块数据被刷新时，将调用 `callback`。
+`chunk` 可以是字符串或缓冲区。如果 `chunk` 是字符串，则第二个参数指定如何将其编码为字节流。当这块数据被刷新时，将调用 `callback`。
 
 这是原始 HTTP 主体，与可能使用的更高级的多部分主体编码无关。
 
-第一次调用 [`response.write()`][] 时，它将把缓冲的头部信息和第一块主体发送给客户端。第二次调用 [`response.write()`][] 时，Node.js 假设数据将被流式传输，并单独发送新数据。也就是说，响应被缓冲到主体的第一块。
+第一次调用 [`response.write()`][] 时，它将把缓冲的头部信息和第一块主体发送给客户端。第二次调用 [`response.write()`][] 时，Node.js 假设数据将被流式传输，并单独发送新数据。也就是说，响应会缓冲主体的第一部分。
 
-如果整个数据成功刷新到内核缓冲区，则返回 `true`。如果全部或部分数据排队在用户内存中，则返回 `false`。当缓冲区再次空闲时，将发出 `'drain'`】【。
+如果整个数据成功刷新到内核缓冲区，则返回 `true`。如果全部或部分数据排队在用户内存中，则返回 `false`。当缓冲区再次空闲时，将发出 `'drain'`。
 
 ### `response.writeContinue()`
 
@@ -2353,7 +2352,7 @@ changes:
 * `hints` {Object}
 * `callback` {Function}
 
-向客户端发送带有 Link 头部的 HTTP/1.1 103 Early Hints 消息，指示用户代理可以预加载/预连接链接的资源。`hints` 是一个对象，包含要随 early hints 消息发送的头部值。可选的 `callback` 参数将在写入响应消息时调用。
+向客户端发送带有 Link 头部的 HTTP/1.1 103 Early Hints 消息，指示用户代理可以预加载/预连接链接的资源。`hints` 是一个对象，包含要随早期提示消息发送的头部值。可选的 `callback` 参数将在写入响应消息时调用。
 
 **示例**
 
@@ -2728,7 +2727,7 @@ added:
  - v26.1.0
  - v24.16.0
 changes:
-  - version: REPLACEME
+  - version: v26.7.0
     pr-url: https://github.com/nodejs/node/pull/64392
     description: 消息正常完成后，该信号不再中止。
 -->

@@ -90,6 +90,44 @@ added:
 
 添加一条规则以阻止给定的 IP 地址。
 
+### `blockList.addAddresses(addresses[, type])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `addresses` {string\[]|net.SocketAddress\[]} IPv4 或 IPv6 地址数组。
+* `type` {string} `'ipv4'` 或 `'ipv6'`。**默认：** `'ipv4'`。
+
+在单次操作中向阻止列表添加多条地址规则。
+
+当添加大量单独地址时，这比反复调用
+`blockList.addAddress()` 更高效，因为这些地址会在一次内部锁获取期间插入。
+
+### `blockList.addCIDR(cidr)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `cidr` {string} 使用 CIDR 表示法表示的 IPv4 或 IPv6 子网（例如
+  `'10.0.0.0/8'` 或 `'2001:db8::/32'`）。
+
+使用 CIDR 表示法添加一条子网规则。地址族会根据地址自动检测（如果地址包含
+`':'` 则为 IPv6，否则为 IPv4）。这等价于使用解析后的网络地址、
+前缀长度和地址族调用 `blockList.addSubnet()`。
+
+### `blockList.addCIDRs(cidrs)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `cidrs` {string\[]} 使用 CIDR 表示法表示的 IPv4 或 IPv6 子网数组。
+
+在一次调用中使用 CIDR 表示法添加多条子网规则。每个条目的地址族都会自动检测。
+这等价于对数组中的每个元素调用 `blockList.addCIDR()`。
+
 ### `blockList.addRange(start, end[, type])`
 
 <!-- YAML
@@ -151,28 +189,13 @@ console.log(blockList.check('::ffff:7b7b:7b7b', 'ipv6')); // 输出：true
 console.log(blockList.check('::ffff:123.123.123.123', 'ipv6')); // 输出：true
 ```
 
-### `blockList.rules`
+### `blockList.clear()`
 
-<!-- YAML
-added:
-  - v15.0.0
-  - v14.18.0
+<!--
+added: REPLACEME
 -->
 
-* 类型：{string\[]}
-
-要添加到阻止列表中的规则列表。
-
-### `BlockList.isBlockList(value)`
-
-<!-- YAML
-added:
-  - v23.4.0
-  - v22.13.0
--->
-
-* `value` {any} 任何 JS 值
-* 如果 `value` 是 `net.BlockList`，则返回 `true`。
+清除 `BlockList` 中的所有规则。
 
 ### `blockList.fromJSON(value)`
 
@@ -197,6 +220,126 @@ blockList.fromJSON(JSON.stringify(data));
 ```
 
 * `value` Blocklist.rules
+
+### `BlockList.isBlockList(value)`
+
+<!-- YAML
+added:
+  - v23.4.0
+  - v22.13.0
+-->
+
+* `value` {any} 任意 JS 值
+* 如果 `value` 是 `net.BlockList`，则返回 `true`。
+
+### `BlockList.PRIVATE_RANGES`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{string\[]}
+
+一个冻结的 CIDR 字符串数组，表示私有、回环和链路本地
+IP 地址范围。可以将其传递给 `blockList.addCIDRs()`，以快速将所有不可路由的地址范围添加到阻止列表中。
+
+包含的范围如下：
+
+* `10.0.0.0/8` — RFC 1918 私有 IPv4
+* `172.16.0.0/12` — RFC 1918 私有 IPv4
+* `192.168.0.0/16` — RFC 1918 私有 IPv4
+* `127.0.0.0/8` — IPv4 回环
+* `::1/128` — IPv6 回环
+* `169.254.0.0/16` — IPv4 链路本地
+* `fe80::/10` — IPv6 链路本地
+* `fc00::/7` — IPv6 唯一本地地址（ULA）
+
+```js
+const blockList = new net.BlockList();
+blockList.addCIDRs(net.BlockList.PRIVATE_RANGES);
+
+console.log(blockList.check('10.0.0.1'));      // 输出：true
+console.log(blockList.check('127.0.0.1'));     // 输出：true
+console.log(blockList.check('8.8.8.8'));       // 输出：false
+```
+
+### `blockList.removeAddress(address[, type])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `address` {string|net.SocketAddress} 一个 IPv4 或 IPv6 地址。
+* `type` {string} `'ipv4'` 或 `'ipv6'`。**默认：** `'ipv4'`。
+
+移除之前通过 `blockList.addAddress()` 添加的规则。
+地址必须与添加规则时使用的值完全匹配。如果指定的地址不存在，则不执行任何操作。
+
+### `blockList.removeCIDR(cidr)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `cidr` {string} 使用 CIDR 表示法表示的 IPv4 或 IPv6 子网（例如
+  `'10.0.0.0/8'` 或 `'2001:db8::/32'`）。
+
+使用 CIDR 表示法移除一条子网规则。地址族会根据地址自动检测。
+这等价于使用解析后的网络地址、前缀长度和地址族调用
+`blockList.removeSubnet()`。如果指定的子网不存在，则不执行任何操作。
+
+### `blockList.removeRange(start, end[, type])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `start` {string|net.SocketAddress} 范围中的起始 IPv4 或 IPv6 地址。
+* `end` {string|net.SocketAddress} 范围中的结束 IPv4 或 IPv6 地址。
+* `type` {string} `'ipv4'` 或 `'ipv6'`。**默认：** `'ipv4'`。
+
+移除之前通过 `blockList.addRange()` 添加的规则。`start`
+和 `end` 地址必须与添加规则时使用的值完全匹配。
+如果指定的范围不存在，则不执行任何操作。
+
+### `blockList.removeSubnet(net, prefix[, type])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `net` {string|net.SocketAddress} 网络 IPv4 或 IPv6 地址。
+* `prefix` {number} CIDR 前缀位数。对于 IPv4，此
+  值必须在 `0` 和 `32` 之间。对于 IPv6，此值必须在
+  `0` 和 `128` 之间。
+* `type` {string} `'ipv4'` 或 `'ipv6'`。**默认：** `'ipv4'`。
+
+移除之前通过 `blockList.addSubnet()` 添加的规则。
+网络地址和前缀必须与添加规则时使用的值完全匹配。
+如果指定的子网不存在，则不执行任何操作。
+
+### `blockList.rules`
+
+<!-- YAML
+added:
+  - v15.0.0
+  - v14.18.0
+-->
+
+* 类型：{string\[]}
+
+添加到阻止列表中的规则列表。
+
+### `blockList.size`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{number}
+
+阻止列表中的规则数量。这等价于
+`blockList.rules.length`，但不会分配规则数组。
 
 ### `blockList.toJSON()`
 
@@ -793,8 +936,8 @@ changes:
   * `fd` {number} 如果指定，则使用给定的文件描述符包装现有套接字，否则将创建一个新套接字。
   * `handle` {net.BoundSocket} 如果指定，则包装来自 [`BoundSocket`][] 的已绑定套接字。随后对 [`socket.connect()`][`socket.connect()`] 的调用会将已绑定套接字用作连接的源绑定（遵循已绑定的本地地址和端口）。
     采用会消耗该已绑定套接字（参见 [所有权转移][`BoundSocket`]）。
-  * `keepAlive` {boolean} 如果设置为 `true`，则会在连接建立后立即在套接字上启用 keep-alive 功能，类似于 [`socket.setKeepAlive()`][] 中的做法。**默认值：** `false`。
-  * `keepAliveInitialDelay` {number} 如果设置为正数，则会设置在空闲套接字上发送第一个 keepalive 探测前的初始延迟。**默认值：** `0`。
+  * `keepAlive` {boolean} 如果设置为 `true`，则会在连接建立后立即在套接字上启用保活功能，类似于 [`socket.setKeepAlive()`][] 中的做法。**默认值：** `false`。
+  * `keepAliveInitialDelay` {number} 如果设置为正数，则会设置在空闲套接字上发送第一个保活探测前的初始延迟。**默认值：** `0`。
   * `noDelay` {boolean} 如果设置为 `true`，则会在套接字建立后立即禁用 Nagle 算法。**默认值：** `false`。
   * `onread` {Object} 如果指定，则传入数据会存储在单个 `buffer` 中，并在数据到达套接字时传递给提供的 `callback`。这将导致流式功能不提供任何数据。
     套接字仍会像往常一样发出 `'error'`、`'end'` 和 `'close'` 等事件。`pause()` 和 `resume()` 等方法也会按预期运行。
@@ -806,9 +949,9 @@ changes:
   * `writable` {boolean} 当传入 `fd` 时，允许在套接字上进行写入，否则忽略。**默认值：** `false`。
 * 返回：{net.Socket}
 
-创建一个新的 Socket 对象。
+创建一个新的套接字对象。
 
-新创建的 Socket 可以是 TCP Socket 或流式 [IPC][] 端点，具体取决于它 [`connect()`][`socket.connect()`] 到什么。
+新创建的套接字可以是 TCP 套接字或流式 [IPC][] 端点，具体取决于它 [`connect()`][`socket.connect()`] 到什么。
 
 ### 事件：`'close'`
 
@@ -951,7 +1094,7 @@ added: v0.1.90
 
 如果 Socket 因不活动而超时时发出。这仅用于通知 Socket 处于空闲状态。用户必须手动关闭连接。
 
-另见：[`socket.setTimeout()`][]】【。
+另见：[`socket.setTimeout()`][]。
 
 ### `socket.address()`
 
@@ -1296,9 +1439,9 @@ added:
 
 * 返回：{net.Socket}
 
-通过发送 RST 包关闭 TCP 连接并销毁流。
-如果此 TCP Socket 处于连接状态，它将在连接后发送 RST 包并销毁此 TCP Socket。
-否则，它将使用 `ERR_SOCKET_CLOSED` 错误调用 `socket.destroy`。
+通过发送 RST 包关闭 TCP 连接并销毁流。  
+如果此 TCP Socket 处于连接状态，它将在连接后发送 RST 包并销毁此 TCP Socket。  
+否则，它将使用 `ERR_SOCKET_CLOSED` 错误调用 `socket.destroy`。  
 如果这不是 TCP Socket（例如，管道），调用此方法将立即抛出 `ERR_INVALID_HANDLE_TYPE` 错误。
 
 ### `socket.resume()`
@@ -1482,7 +1625,7 @@ added: v10.7.0
 
 * 类型：{number|undefined}
 
-由 [`socket.setTimeout()`][] 设置的 Socket 超时（毫秒）。
+由 [`socket.setTimeout()`][] 设置的 Socket 超时（毫秒）。  
 如果未设置超时，则为 `undefined`。
 
 ### `socket.unref()`
@@ -1566,9 +1709,9 @@ added:
  - v26.4.0
  - v24.19.0
 changes:
-  - version: REPLACEME
+  - version: v26.7.0
     pr-url: https://github.com/nodejs/node/pull/64399
-    description: The `path` option is supported.
+    description: 支持 `path` 选项。
 -->
 
 * `options` {Object}
@@ -1585,9 +1728,9 @@ added:
  - v26.4.0
  - v24.19.0
 changes:
-  - version: REPLACEME
+  - version: v26.7.0
     pr-url: https://github.com/nodejs/node/pull/64399
-    description: The bound path is returned for a pipe bind.
+    description: 对管道绑定返回已绑定的路径。
 -->
 
 * 返回值：{Object|string} 对于 TCP 绑定，返回一个包含 `address`、`family` 和 `port` 属性的对象，类似 [`server.address()`][] 的返回值。对于管道绑定，返回已绑定的路径字符串，类似管道服务器中 [`server.address()`][] 的返回值。
@@ -1597,7 +1740,7 @@ changes:
 ### `boundSocket.isPipe`
 
 <!-- YAML
-added: REPLACEME
+added: v26.7.0
 -->
 
 * {boolean}
@@ -2130,8 +2273,8 @@ console.log('listening on', server.address().port);
 [IPC]: #ipc-support
 [识别 IPC 连接的路径]: #identifying-paths-for-ipc-connections
 [RFC 8305]: https://www.rfc-editor.org/rfc/rfc8305.txt
-[Readable Stream]: stream.md#class-streamreadable
-[Transferring TCP handles to other threads]: #transferring-tcp-handles-to-other-threads
+[可读流]: stream.md#class-streamreadable
+[将 TCP 句柄传输到其他线程]: #transferring-tcp-handles-to-other-threads
 [`'close'`]: #event-close
 [`'connect'`]: #event-connect
 [`'connection'`]: #event-connection

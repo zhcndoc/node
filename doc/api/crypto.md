@@ -3001,7 +3001,7 @@ added: v15.6.0
 
 验证此证书是否由给定的公钥签署。不对证书执行任何其他验证检查。
 
-## crypto 模块的方法和属性。
+## crypto 模块的方法和属性】【。
 
 ### argon2
 
@@ -3009,19 +3009,19 @@ added: v15.6.0
 added: v24.7.0
 -->
 
-* type {string} Argon2 的变体，取值为 argon2d、argon2i 或 argon2id。
-* options {Object}
-  * passphrase {string|ArrayBuffer|Buffer|TypedArray|DataView} 必需，这是 Argon2 密码哈希应用中的密码。
-  * salt {string|ArrayBuffer|Buffer|TypedArray|DataView} 必需，长度必须至少为 8 字节。这是 Argon2 密码哈希应用中的盐值。
-  * parallelism {number} 必需，并行度决定可运行多少条计算链（lane）。必须至少为 1，且至多为 4。
-  * keyLength {number} 必需，要生成的密钥长度。必须至少为 4，且至多为 4294967295。
-  * memory {number} 必需，以 1KiB 块为单位的内存成本。必须至少为 8192，且至多为 4294967295。实际块数会向下取整到最接近的 4 的倍数。
-  * iterations {number} 必需，遍数（迭代次数）。必须至少为 1，且至多为 4294967295。
+* 类型 {string} Argon2 的变体，取值为 argon2d、argon2i 或 argon2id。
+* 选项 {Object}
+  * 密码短语 {string|ArrayBuffer|Buffer|TypedArray|DataView} 必需，这是 Argon2 密码哈希应用中的密码。
+  * 盐值 {string|ArrayBuffer|Buffer|TypedArray|DataView} 必需，长度必须至少为 8 字节。这是 Argon2 密码哈希应用中的盐值。
+  * 并行度 {number} 必需，并行度决定可运行多少条计算链（lane）。必须至少为 1，且至多为 4。
+  * 密钥长度 {number} 必需，要生成的密钥长度。必须至少为 4，且至多为 4294967295。
+  * 内存 {number} 必需，以 1KiB 块为单位的内存成本。必须至少为 8192，且至多为 4294967295。实际块数会向下取整到最接近的 4 的倍数。
+  * 迭代次数 {number} 必需，遍数（迭代次数）。必须至少为 1，且至多为 4294967295。
   * secret {string|ArrayBuffer|Buffer|TypedArray|DataView|undefined} 可选，随机附加输入，类似于盐值，但**不应**与派生密钥一起存储。在密码哈希应用中这称为 pepper。如果使用，其长度不得超过 4294967295 字节。
   * associatedData {string|ArrayBuffer|Buffer|TypedArray|DataView|undefined} 可选，要添加到哈希中的附加数据，功能上等同于盐值或 secret，但用于非随机数据。如果使用，其长度不得超过 4294967295 字节。
-* callback {Function}
-  * error {Error}
-  * result {Buffer}
+* 回调函数 {Function}
+  * 错误 {Error}
+  * 结果 {Buffer}
 
 提供异步 [Argon2][] 实现。Argon2 是一种基于密码的密钥派生函数，旨在在计算和内存方面都很昂贵，以使暴力破解攻击无利可图。
 
@@ -3223,7 +3223,7 @@ changes:
 
 `algorithm` 依赖于 OpenSSL，示例有 `'aes192'` 等。在最近的 OpenSSL 版本上，`openssl list -cipher-algorithms` 将显示可用的密码算法。
 
-`key` 是 `algorithm` 使用的原始密钥，`iv` 是 [初始化向量][]。两个参数必须是 `'utf8'` 编码的字符串、[Buffers][`Buffer`]、`TypedArray` 或 `DataView`。`key` 也可以是类型为 `secret` 的 [`KeyObject`][]。如果密码不需要初始化向量，`iv` 可以是 `null`。
+`key` 是 `algorithm` 使用的原始密钥，`iv` 是 [初始化向量][]。两个参数必须是 `'utf8'` 编码的字符串、[缓冲区][`Buffer`]、`TypedArray` 或 `DataView`。`key` 也可以是类型为 `secret` 的 [`KeyObject`][]。如果密码不需要初始化向量，`iv` 可以是 `null`。
 
 当为 `key` 或 `iv` 传递字符串时，请考虑 [使用字符串作为加密 API 输入时的注意事项][]。
 
@@ -3301,7 +3301,7 @@ changes:
 * `prime` {string|ArrayBuffer|Buffer|TypedArray|DataView}
 * `primeEncoding` {string} `prime` 字符串的 [编码][]。
 * `generator` {number|string|ArrayBuffer|Buffer|TypedArray|DataView}
-  **默认：** `2`
+  **默认值：** `2`
 * `generatorEncoding` {string} `generator` 字符串的 [编码][]。
 * 返回：{DiffieHellman}
 
@@ -3510,11 +3510,10 @@ input.on('readable', () => {
 <!-- YAML
 added: v11.6.0
 changes:
-  - version: REPLACEME
+  - version: v26.7.0
     pr-url: https://github.com/nodejs/node/pull/63949
-    description: 密钥也可以是引用 OpenSSL STORE 加载器对象的 URL。新增了
-                 `properties` 选项。
-  - version: REPLACEME
+    description: 密钥也可以是引用 OpenSSL STORE 加载器对象的 URL。新增了 `properties` 选项。
+  - version: v26.7.0
     pr-url: https://github.com/nodejs/node/pull/63188
     description: 以 CryptoKey 作为 `key` 传递不再受支持。
   - version:
@@ -3533,10 +3532,10 @@ changes:
     description: 添加对 ML-DSA 密钥的支持。
   - version: v15.12.0
     pr-url: https://github.com/nodejs/node/pull/37254
-    description: key 也可以是 JWK 对象。
+    description: "`key` 也可以是 JWK 对象。"
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
-    description: key 也可以是 ArrayBuffer。添加了 encoding 选项。key 不能包含超过 2 ** 32 - 1 字节。
+    description: "`key` 也可以是 ArrayBuffer。添加了 `encoding` 选项。`key` 不能包含超过 2 ** 32 - 1 字节。"
 -->
 
 <!--lint disable maximum-line-length remark-lint-->
@@ -3631,7 +3630,7 @@ changes:
 
 创建并返回一个包含公钥的新密钥对象。如果 `key` 是字符串或 `Buffer`，`format` 假定为 `'pem'`；如果 `key` 是类型为 `'private'` 的 `KeyObject`，则公钥是从给定的私钥派生的；否则，`key` 必须是具有上述属性的对象。
 
-如果格式是 `'pem'`，`'key'` 也可以是 X.509 证书。
+如果格式是 `'pem'`，`key` 也可以是 X.509 证书。
 
 因为公钥可以从私钥派生，所以可以传递私钥而不是公钥。在这种情况下，此函数的行为就像调用了 [`crypto.createPrivateKey()`][]，除了返回的 `KeyObject` 的类型将是 `'public'` 并且无法从返回的 `KeyObject` 中提取私钥。类似地，如果给定类型为 `'private'` 的 `KeyObject`，将返回类型为 `'public'` 的新 `KeyObject`，并且无法从返回的对象中提取私钥。
 
@@ -3668,7 +3667,7 @@ added: v0.1.92
 * `options` {Object} [`stream.Writable` 选项][]
 * 返回：{Sign}
 
-创建并返回一个 Verify 对象，使用给定的摘要算法。使用 [crypto.getHashes][] 获取可用摘要算法的名称。可选的 callback 参数控制异步行为。
+创建并返回一个 Verify 对象，使用给定的摘要算法。使用 [crypto.getHashes][] 获取可用摘要算法的名称。可选的回调参数控制异步行为。
 
 在某些情况下，可以使用签名算法的名称（如 RSA-SHA256）而不是摘要算法来创建 Verify 实例。这将使用相应的摘要算法。这不适用于所有签名算法，例如 RSA-SHA1，因此最好始终使用摘要算法名称。
 
@@ -3762,7 +3761,7 @@ added: v24.7.0
   * error {Error}
   * sharedSecret {Buffer}
   * ciphertext {Buffer}
-* 返回：{Object} 如果未提供 callback 函数。
+* 返回：{Object} 未提供 callback 函数时。
   * sharedSecret {Buffer}
   * ciphertext {Buffer}
 
@@ -3773,14 +3772,14 @@ added: v24.7.0
 支持的密钥类型及其 KEM 算法有：
 
 * RSA-OAEP[^openssl30] RSA 密钥封装
-* P-256[^openssl32] DHKEM(P-256, HKDF-SHA256), DHKEM(P-384, HKDF-SHA256), DHKEM(P-521, HKDF-SHA256)
+* P-256[^openssl32] DHKEM(P-256, HKDF-SHA256)、DHKEM(P-384, HKDF-SHA256)、DHKEM(P-521, HKDF-SHA256)
 * X25519[^openssl32] DHKEM(X25519, HKDF-SHA256)
 * X448[^openssl32] DHKEM(X448, HKDF-SHA512)
 * ML-KEM-512[^openssl35] ML-KEM
 * ML-KEM-768[^openssl35] ML-KEM
 * ML-KEM-1024[^openssl35] ML-KEM
 
-如果 publicKey 不是 [KeyObject][]，此函数的行为就像 encoding 已传递给 [Buffer.from][]。
+如果 publicKey 不是 [KeyObject][]，此函数的行为就像将 encoding 传递给了 [Buffer.from][]。
 
 如果提供了 callback 函数，此函数使用 libuv 的线程池。
 
@@ -3793,9 +3792,8 @@ deprecated: v10.0.0
 
 > 稳定性：0 - 已弃用
 
-用于检查和控制当前是否正在使用符合 FIPS 的加密提供程序的属性。设置为 true 需要 Node.js 的 FIPS 构建。
-
-此属性已弃用。请改用 crypto.getFips() 和 crypto.setFips()。
+用于检查和控制 [FIPS 模式][]. 已弃用的属性。请改用
+[`crypto.getFips()`][] 和 [`crypto.setFips()`][]。
 
 ### crypto.generateKey(type, options)
 
@@ -4221,7 +4219,7 @@ console.log(getCiphers()); // ['aes-128-cbc', 'aes-128-ccm', ...]
 added: v2.3.0
 -->
 
-* 返回值：{string\[]} 包含支持的椭圆曲线名称的数组。
+* 返回值：{string\[]} 包含受支持的椭圆曲线名称的数组。
 
 ```mjs
 const {
@@ -4296,7 +4294,11 @@ console.log(aliceSecret === bobSecret);
 added: v10.0.0
 -->
 
-* 返回：{number} 当且仅当当前正在使用符合 FIPS 的加密提供程序时为 `1`，否则为 `0`。未来的 semver-major 版本可能会将此 API 的返回类型更改为 {boolean}。
+* 返回：{number} 如果启用了 FIPS 模式，则为 `1`，否则为 `0`。未来的
+  semver-major 版本可能会将此 API 的返回类型更改为 {boolean}。
+
+使用 OpenSSL 3 时，此 API 报告默认属性查询是否包含
+`fips=yes`。它不能证明 FIPS 提供程序已加载或经过验证。即使请求的加密实现无法获取，因为没有已加载的提供程序为 `fips=yes` 提供匹配项，它也可能返回 `1`。请参阅 [FIPS 模式][]。
 
 ### `crypto.getHashes()`
 
@@ -4572,6 +4574,9 @@ pbkdf2('secret', 'salt', 100000, 64, 'sha512', (err, derivedKey) => {
 <!-- YAML
 added: v0.9.3
 changes:
+  - version: v15.0.0
+    pr-url: https://github.com/nodejs/node/pull/35093
+    description: password 和 salt 参数现在也可以是 ArrayBuffer 实例。
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/30578
     description: "`iterations` 参数现在限制为正值。早期版本将其他值视为一。"
@@ -4583,8 +4588,8 @@ changes:
     description: "如果 `password` 是字符串，其默认编码已从 `binary` 更改为 `utf8`。"
 -->
 
-* `password` {string|Buffer|TypedArray|DataView}
-* `salt` {string|Buffer|TypedArray|DataView}
+* `password` {string|ArrayBuffer|Buffer|TypedArray|DataView}
+* `salt` {string|ArrayBuffer|Buffer|TypedArray|DataView}
 * `iterations` {number}
 * `keylen` {number}
 * `digest` {string}
@@ -5364,7 +5369,7 @@ changes:
 * `flags` {crypto.constants} **默认：** `crypto.constants.ENGINE_METHOD_ALL`
 
 加载并为部分或全部 OpenSSL 函数设置 `engine`（由标志选择）。
-由于自定义引擎支持自 OpenSSL 3 起已弃用，因此此 API 也已弃用。
+由于自 OpenSSL 3 起已弃用自定义引擎支持，因此此 API 也已弃用。
 
 `engine` 可以是 ID 或引擎共享库的路径。
 
@@ -5388,9 +5393,28 @@ changes:
 added: v10.0.0
 -->
 
-* `bool` {boolean} `true` 以启用 FIPS 模式。
+* `bool` {boolean} `true` 启用 FIPS 模式，`false` 禁用 FIPS 模式。
 
-在启用 FIPS 的 Node.js 构建中启用符合 FIPS 的加密提供程序。如果 FIPS 模式不可用，则抛出错误。
+更改 [FIPS 模式][]。对于 OpenSSL 3，这只会在默认属性查询中添加或移除
+`fips=yes`。它不会安装、加载、初始化或验证 FIPS 提供程序。要获得可用的 FIPS
+配置，请安装该提供程序，并按照 [FIPS
+模式][] 中的说明配置 OpenSSL，使其在 Node.js 启动时加载该提供程序。
+
+如果没有已加载的提供程序提供与 `fips=yes` 匹配的请求加密实现，则调用仍可能成功，
+且 `crypto.getFips()` 仍可能返回 `1`，但获取该实现会失败。受影响的 `node:crypto`
+操作通常会失败，并返回 `ERR_OSSL_EVP_UNSUPPORTED`。不需要重新获取实现的操作，
+包括使用先前已获取的实现或已初始化操作上下文的操作，仍可能成功。请在应用初始化
+期间调用此方法，并在应用代码使用其他基于 OpenSSL 的 API 之前调用。
+
+此方法只会影响后续的算法获取。Node.js 会在应用代码运行前初始化部分 OpenSSL 状态。
+当属性查询必须从进程启动时就处于活动状态时，请在 OpenSSL 配置中设置
+`default_properties = fips=yes`，或使用 [`--enable-fips`][] 或
+[`--force-fips`][]。此外，命令行标志还要求配置名为 `fips` 的提供程序，以便对其
+进行初始化并通过其自检；否则 Node.js 将无法启动。
+
+如果 OpenSSL 无法更改状态，则抛出错误。当 Node.js 使用 `--force-fips` 启动时，
+无法禁用 FIPS 模式。对于 OpenSSL 1.1.1，启用 FIPS 模式要求使用支持 FIPS 的
+OpenSSL 构建版本。
 
 ### 签名
 
@@ -5610,258 +5634,24 @@ added: v15.0.0
 
 详见 [Web Crypto API 文档][]。
 
-## 注意事项
-
-### 使用字符串作为加密 API 的输入
-
-出于历史原因，Node.js 提供的许多加密 API 接受
-字符串作为输入，而底层加密算法处理的是字节
-序列。这些实例包括明文、密文、对称密钥、
-初始化向量、密码短语、盐、身份验证标签、
-和附加认证数据。
-
-将字符串传递给加密 API 时，请考虑以下因素。
-
-* 并非所有字节序列都是有效的 UTF-8 字符串。因此，当长度为 `n` 的字节
-  序列源自字符串时，其熵通常低于随机或伪随机 `n` 字节序列的熵。
-  例如，没有 UTF-8 字符串会产生字节序列 `c0 af`。秘密
-  密钥几乎应仅是随机或伪随机字节序列。
-* 同样，当将随机或伪随机字节序列转换为 UTF-8
-  字符串时，不代表有效码点的子序列可能会被
-  Unicode 替换字符（`U+FFFD`）替换。因此，生成的 Unicode 字符串的字节表示
-  可能不等于创建该字符串的字节序列。
-
-  ```js
-  const original = [0xc0, 0xaf];
-  const bytesAsString = Buffer.from(original).toString('utf8');
-  const stringAsBytes = Buffer.from(bytesAsString, 'utf8');
-  console.log(stringAsBytes);
-  // 打印 '<Buffer ef bf bd ef bf bd>'。
-  ```
-
-  密码、哈希函数、签名算法和密钥
-  派生函数的输出是伪随机字节序列，不应
-  用作 Unicode 字符串。
-* 当字符串来自用户输入时，某些 Unicode 字符可以
-  以多种等效方式表示，从而导致不同的字节
-  序列。例如，当将用户密码短语传递给密钥派生
-  函数（如 PBKDF2 或 scrypt）时，密钥派生函数
-  的结果取决于字符串是使用组合字符还是分解字符。Node.js
-  不规范字符表示。开发者应考虑在将用户输入传递给
-  加密 API 之前对其使用 [`String.prototype.normalize()`][]。
-
-### 遗留流 API（Node.js 0.10 之前）
-
-Crypto 模块是在统一流 API 的概念之前以及在使用
-[`Buffer`][] 对象处理二进制数据之前添加到 Node.js 的。因此，许多 `crypto` 类具有
-通常在实现 [流][stream] API 的其他 Node.js 类上找不到的方法
-（例如 `update()`、`final()` 或 `digest()`）。此外，许多方法默认接受
-并返回 `'latin1'` 编码的字符串，而不是 `Buffer`。此
-默认设置在 Node.js 0.9.3 中更改为默认使用 [`Buffer`][] 对象。
-
-### 对弱算法或受损算法的支持
-
-`node:crypto` 模块仍然支持一些已经
-受损且不推荐使用的算法。API 还允许
-使用密钥大小较小且太弱而不安全使用的
-密码和哈希。
-
-用户应根据其安全要求全权负责选择加密
-算法和密钥大小。
-
-基于 [NIST SP 800-131A][] 的建议：
-
-* MD5 和 SHA-1 在需要抗碰撞性
-  的地方（例如数字签名）不再可接受。
-* 与 RSA、DSA 和 DH 算法一起使用的密钥推荐
-  至少为 2048 位，ECDSA 和 ECDH 的曲线密钥至少
-  为 224 位，以便安全使用数年。
-* `modp1`、`modp2` 和 `modp5` 的 DH 组的密钥大小
-  小于 2048 位，不推荐使用。
-
-参见参考文档以获取其他建议和详情。
-
-一些已知弱点且在实践中几乎无关紧要的算法
-仅通过 [遗留提供程序][] 可用，该提供程序默认
-未启用。
-
-### CCM 模式
-
-CCM 是支持的 [AEAD 算法][] 之一。使用此
-模式的应用程序在使用密码 API 时必须遵守某些限制：
-
-* 必须在创建密码时通过
-  设置 `authTagLength` 选项指定身份验证标签长度，并且必须是 4、6、8、10、12、14 或
-  16 字节之一。
-* 初始化向量（nonce）`N` 的长度必须在 7 到 13
-  字节之间（`7 ≤ N ≤ 13`）。
-* 明文长度限制为 `2 ** (8 * (15 - N))` 字节。
-* 解密时，必须在
-  调用 `update()` 之前通过 `setAuthTag()` 设置身份验证标签。
-  否则，解密将失败，并且 `final()` 将抛出错误，以
-  符合 [RFC 3610][] 第 2.6 节。
-* 在 CCM
-  模式下使用流方法（如 `write(data)`、`end(data)` 或 `pipe()`）可能会失败，因为 CCM 无法处理每个实例超过一个数据块。
-* 传递附加认证数据 (AAD) 时，实际
-  消息的字节长度必须通过 `plaintextLength`
-  选项传递给 `setAAD()`。
-  许多加密库将身份验证标签包含在密文中，
-  这意味着它们产生的密文长度为
-  `plaintextLength + authTagLength`。Node.js 不包含身份验证
-  标签，因此密文长度始终为 `plaintextLength`。
-  如果不使用 AAD，则不需要这样做。
-* 由于 CCM 一次性处理整个消息，`update()` 必须恰好调用
-  一次。
-* 即使调用 `update()` 足以加密/解密消息，
-  应用程序_必须_调用 `final()` 来计算或验证
-  身份验证标签。
-
-```mjs
-import { Buffer } from 'node:buffer';
-const {
-  createCipheriv,
-  createDecipheriv,
-  randomBytes,
-} = await import('node:crypto');
-
-const key = 'keykeykeykeykeykeykeykey';
-const nonce = randomBytes(12);
-
-const aad = Buffer.from('0123456789', 'hex');
-
-const cipher = createCipheriv('aes-192-ccm', key, nonce, {
-  authTagLength: 16,
-});
-const plaintext = 'Hello world';
-cipher.setAAD(aad, {
-  plaintextLength: Buffer.byteLength(plaintext),
-});
-const ciphertext = cipher.update(plaintext, 'utf8');
-cipher.final();
-const tag = cipher.getAuthTag();
-
-// 现在传输 { ciphertext, nonce, tag }。
-
-const decipher = createDecipheriv('aes-192-ccm', key, nonce, {
-  authTagLength: 16,
-});
-decipher.setAuthTag(tag);
-decipher.setAAD(aad, {
-  plaintextLength: ciphertext.length,
-});
-const receivedPlaintext = decipher.update(ciphertext, null, 'utf8');
-
-try {
-  decipher.final();
-} catch (err) {
-  throw new Error('Authentication failed!', { cause: err });
-}
-
-console.log(receivedPlaintext);
-```
-
-```cjs
-const { Buffer } = require('node:buffer');
-const {
-  createCipheriv,
-  createDecipheriv,
-  randomBytes,
-} = require('node:crypto');
-
-const key = 'keykeykeykeykeykeykeykey';
-const nonce = randomBytes(12);
-
-const aad = Buffer.from('0123456789', 'hex');
-
-const cipher = createCipheriv('aes-192-ccm', key, nonce, {
-  authTagLength: 16,
-});
-const plaintext = 'Hello world';
-cipher.setAAD(aad, {
-  plaintextLength: Buffer.byteLength(plaintext),
-});
-const ciphertext = cipher.update(plaintext, 'utf8');
-cipher.final();
-const tag = cipher.getAuthTag();
-
-// 现在传输 { ciphertext, nonce, tag }。
-
-const decipher = createDecipheriv('aes-192-ccm', key, nonce, {
-  authTagLength: 16,
-});
-decipher.setAuthTag(tag);
-decipher.setAAD(aad, {
-  plaintextLength: ciphertext.length,
-});
-const receivedPlaintext = decipher.update(ciphertext, null, 'utf8');
-
-try {
-  decipher.final();
-} catch (err) {
-  throw new Error('Authentication failed!', { cause: err });
-}
-
-console.log(receivedPlaintext);
-```
-
 ### FIPS 模式
 
-使用 OpenSSL 3 时，Node.js 支持与适当的
-OpenSSL 3 提供程序一起使用 FIPS 140-2，例如 [OpenSSL 3 的 FIPS 提供程序][]，可以通过遵循 [OpenSSL 的 FIPS README 文件][] 中的说明进行安装。
+Node.js 公开了所链接的 OpenSSL 库提供的 FIPS 支持。Node.js 本身并未通过 FIPS 验证。验证针对特定的 OpenSSL 模块或提供程序，并且仅在按照其安全策略部署时适用。供应商提供的 Node.js 或 OpenSSL 构建可能需要不同的配置；对于这些构建，请遵循供应商的文档。
 
-对于 Node.js 中的 FIPS 支持，您需要：
+使用 OpenSSL 1.1.1 时，Node.js 必须针对支持 FIPS 的 OpenSSL 库构建。
+
+使用 OpenSSL 3 时，FIPS 支持采用 [OpenSSL FIPS 模块指南][] 中描述的提供程序模型。使用经 FIPS 批准的实现需要：
 
 * 正确安装的 OpenSSL 3 FIPS 提供程序。
 * OpenSSL 3 [FIPS 模块配置文件][]。
-* 引用 FIPS 模块
-  配置文件的 OpenSSL 3 配置文件。
+* 将 FIPS 提供程序加载到 Node.js 使用的 OpenSSL 库上下文中，通常是在 Node.js 启动时通过 OpenSSL 配置文件激活该提供程序。
+* 在获取加密实现时，使默认属性查询包含 `fips=yes`。可以通过 OpenSSL 配置、[`--enable-fips`][] 或 [`--force-fips`][] 在进程启动时设置，也可以通过 `crypto.setFips(true)` 为后续获取操作设置。
 
-Node.js 需要配置一个指向 FIPS 提供程序的 OpenSSL 配置文件。示例配置文件如下所示：
-
-```text
-nodejs_conf = nodejs_init
-
-.include /<absolute path>/fipsmodule.cnf
-
-[nodejs_init]
-providers = provider_sect
-
-[provider_sect]
-default = default_sect
-# fips 部分名称应与
-# 包含的 fipsmodule.cnf 中的部分名称匹配。
-fips = fips_sect
-
-[default_sect]
-activate = 1
-```
-
-其中 `fipsmodule.cnf` 是从
-FIPS 提供程序安装步骤生成的 FIPS 模块配置文件：
-
-```bash
-openssl fipsinstall
-```
-
-将 `OPENSSL_CONF` 环境变量设置为指向
-您的配置文件，并将 `OPENSSL_MODULES` 设置为 FIPS
-提供程序动态库的位置。例如
-
-```bash
-export OPENSSL_CONF=/<path to configuration file>/nodejs.cnf
-export OPENSSL_MODULES=/<path to openssl lib>/ossl-modules
-```
-
-然后可以通过以下方式在 Node.js 中启用 FIPS 模式：
-
-* 使用 `--enable-fips` 或 `--force-fips` 命令行标志启动 Node.js。
-* 以编程方式调用 `crypto.setFips(true)`。
-
-或者，可以通过 OpenSSL 配置
-文件在 Node.js 中启用 FIPS 模式。例如
+OpenSSL 3 配置文件示例如下：
 
 ```text
 nodejs_conf = nodejs_init
+config_diagnostics = 1
 
 .include /<absolute path>/fipsmodule.cnf
 
@@ -5870,17 +5660,45 @@ providers = provider_sect
 alg_section = algorithm_sect
 
 [provider_sect]
-default = default_sect
-# fips 部分名称应与
-# 包含的 fipsmodule.cnf 中的部分名称匹配。
+# FIPS 节的名称应与所包含的 fipsmodule.cnf 内的节名称匹配。
 fips = fips_sect
+base = base_sect
 
-[default_sect]
+[base_sect]
 activate = 1
 
 [algorithm_sect]
 default_properties = fips=yes
 ```
+
+`fipsmodule.cnf` 文件是在安装 FIPS 提供程序时生成的，其中包含模块完整性和自检信息。具体命令和参数因安装方式而异；请参阅 [OpenSSL FIPS 配置][] 和 [OpenSSL FIPS 模块指南][]。安装过程使用 `openssl fipsinstall`。
+
+该示例会在 Node.js 启动时激活提供程序并启用 `fips=yes` 属性查询。若要在启动时激活提供程序，但稍后通过 `crypto.setFips(true)` 启用属性查询，请省略 `alg_section = algorithm_sect` 和 `[algorithm_sect]` 代码块。提供程序仍然必须被加载；使用此启动配置时，请保持其激活状态。应在应用程序代码使用其他基于 OpenSSL 的 API 之前调用 `crypto.setFips(true)`。它不等同于在进程启动时启用属性查询，因为 Node.js 会在运行应用程序代码之前初始化一些 OpenSSL 状态。当属性查询必须从进程启动时就处于活动状态时，请使用此处所示的示例、[`--enable-fips`][] 或 [`--force-fips`][]。
+
+`config_diagnostics` 会使配置错误阻止启动，而不是被忽略。`base` 提供程序提供非加密的支持算法，例如编码器和解码器，这些算法通常需要与 FIPS 提供程序配合使用。`default_properties = fips=yes` 会将 OpenSSL 的默认算法选择限制为符合 `fips=yes` 的实现。
+
+将 `OPENSSL_CONF` 设置为 OpenSSL 配置文件。对于动态加载的提供程序，可以使用 `OPENSSL_MODULES` 设置包含提供程序模块的目录。例如：
+
+```bash
+export OPENSSL_CONF=/<path to configuration file>/nodejs.cnf
+export OPENSSL_MODULES=/<path to openssl lib>/ossl-modules
+```
+
+[`--openssl-config`][] 命令行选项用于选择配置文件，其优先级高于 `OPENSSL_CONF`。如果两者均未设置，则使用 OpenSSL 的默认配置文件。
+
+默认情况下，Node.js 会读取 `nodejs_conf` 节，而不是 OpenSSL 通常使用的 `openssl_conf` 节。使用 [`--openssl-shared-config`][] 可读取 `openssl_conf`，或者使用 `./configure --openssl-conf-name=<name>` 构建 Node.js，以更改默认节名称。
+
+在 OpenSSL 3 上，上述配置会在启动时启用 `fips=yes` 属性查询。还可以使用以下控制项：
+
+* [`--enable-fips`][] 和 [`--force-fips`][] 会启用属性查询，并另外要求配置的名为 `fips` 的提供程序完成初始化并通过自检。如果检查失败，Node.js 将退出。`--force-fips` 还会阻止通过脚本代码禁用 FIPS 模式。
+* [`crypto.setFips()`][] 会更改 FIPS/属性查询状态。在 OpenSSL 3 上，它不会安装、加载、初始化或验证提供程序。调用之前获取的实现不会发生变化。
+* [`crypto.getFips()`][] 会报告 FIPS/属性查询状态。在 OpenSSL 3 上，返回值为 `1` 并不能证明 FIPS 提供程序已加载或通过验证。
+
+使用 OpenSSL 1.1.1 时，这些控制项使用库提供的 FIPS 模式支持，并且要求使用支持 FIPS 的 OpenSSL 构建。
+
+只能使用当前 FIPS 设置下可用的算法。在 OpenSSL 3 上，如果没有已加载的提供程序提供符合 `fips=yes` 的所请求加密实现，则获取该实现会失败，通常会产生 `ERR_OSSL_EVP_UNSUPPORTED`。对于 Node.js 支持、但在禁用 FIPS 模式时才可用且在当前 FIPS 设置下不可用的算法，也可能出现相同的错误。
+
+OpenSSL 文档说明，同一个 FIPS 提供程序不能被一个进程中的多个 `libcrypto` 副本使用。这可能会影响加载另一个 `libcrypto` 副本的原生插件；OpenSSL 文档给出的解决方法是为每个 `libcrypto` 实例使用一个独立的提供程序副本。请参阅 [OpenSSL FIPS 提供程序限制][]。
 
 ## 加密常量
 
@@ -6154,17 +5972,19 @@ default_properties = fips=yes
 [CVE-2021-44532]: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44532
 [注意事项]: #support-for-weak-or-compromised-algorithms
 [加密常量]: #crypto-constants
-[FIPS 模块配置文件]: https://www.openssl.org/docs/man3.0/man5/fips_config.html
-[来自 OpenSSL 3 的 FIPS 提供程序]: https://www.openssl.org/docs/man3.0/man7/crypto.html#FIPS-provider
+[FIPS 模式]: #fips-mode
+[FIPS 模块配置文件]: https://docs.openssl.org/3.0/man5/fips_config/
 [HTML 5.2]: https://www.w3.org/TR/html52/changes.html#features-removed
 [JWK]: https://tools.ietf.org/html/rfc7517
 [密钥用法]: webcrypto.md#cryptokeyusages
 [NIST SP 800-131A]: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-131Ar2.pdf
 [NIST SP 800-132]: https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf
 [NIST SP 800-38D]: https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-38d.pdf
-[OpenSSL's FIPS README file]: https://github.com/openssl/openssl/blob/openssl-3.0/README-FIPS.md
-[OpenSSL's SPKAC implementation]: https://www.openssl.org/docs/man3.0/man1/openssl-spkac.html
-[Permission Model]: permissions.md#permission-model
+[OpenSSL FIPS 配置]: https://docs.openssl.org/3.0/man5/fips_config/
+[OpenSSL FIPS 模块指南]: https://docs.openssl.org/master/man7/fips_module/
+[OpenSSL FIPS 提供程序限制]: https://docs.openssl.org/3.6/man7/OSSL_PROVIDER-FIPS/
+[OpenSSL 的 SPKAC 实现]: https://www.openssl.org/docs/man3.0/man1/openssl-spkac.html
+[权限模型]: permissions.md#permission-model
 [RFC 1421]: https://www.rfc-editor.org/rfc/rfc1421.txt
 [RFC 2409]: https://www.rfc-editor.org/rfc/rfc2409.txt
 [RFC 2818]: https://www.rfc-editor.org/rfc/rfc2818.txt
@@ -6177,8 +5997,12 @@ default_properties = fips=yes
 [RFC 7517]: https://www.rfc-editor.org/rfc/rfc7517.txt
 [RFC 8032]: https://www.rfc-editor.org/rfc/rfc8032.txt
 [RFC 9562]: https://www.rfc-editor.org/rfc/rfc9562.txt
-[Web Crypto API documentation]: webcrypto.md
+[Web Crypto API 文档]: webcrypto.md
 [`--allow-openssl-store`]: cli.md#--allow-openssl-store
+[`--enable-fips`]: cli.md#--enable-fips
+[`--force-fips`]: cli.md#--force-fips
+[`--openssl-config`]: cli.md#--openssl-configfile
+[`--openssl-shared-config`]: cli.md#--openssl-shared-config
 [`BN_is_prime_ex`]: https://www.openssl.org/docs/man1.1.1/man3/BN_is_prime_ex.html
 [`Buffer`]: buffer.md
 [`DH_generate_key()`]: https://www.openssl.org/docs/man3.0/man3/DH_generate_key.html
@@ -6205,6 +6029,7 @@ default_properties = fips=yes
 [`crypto.generateKeyPair()`]: #cryptogeneratekeypairtype-options-callback
 [`crypto.getCurves()`]: #cryptogetcurves
 [`crypto.getDiffieHellman()`]: #cryptogetdiffiehellmangroupname
+[`crypto.getFips()`]: #cryptogetfips
 [`crypto.getHashes()`]: #cryptogethashes
 [`crypto.hash()`]: #cryptohashalgorithm-data-options
 [`crypto.privateDecrypt()`]: #cryptoprivatedecryptprivatekey-buffer
@@ -6213,6 +6038,7 @@ default_properties = fips=yes
 [`crypto.publicEncrypt()`]: #cryptopublicencryptkey-buffer
 [`crypto.randomBytes()`]: #cryptorandombytessize-callback
 [`crypto.randomFill()`]: #cryptorandomfillbuffer-offset-size-callback
+[`crypto.setFips()`]: #cryptosetfipsbool
 [`crypto.sign()`]: #cryptosignalgorithm-data-key-callback
 [`crypto.verify()`]: #cryptoverifyalgorithm-data-key-signature-callback
 [`crypto.webcrypto.getRandomValues()`]: webcrypto.md#cryptogetrandomvaluestypedarray
@@ -6233,8 +6059,8 @@ default_properties = fips=yes
 [`postMessage()`]: worker_threads.md#portpostmessagevalue-transferlist
 [`sign.sign()`]: #signsignprivatekey-outputencoding
 [`sign.update()`]: #signupdatedata-inputencoding
-[`stream.Writable` options]: stream.md#new-streamwritableoptions
-[`stream.transform` options]: stream.md#new-streamtransformoptions
+[`stream.Writable` 选项]: stream.md#new-streamwritableoptions
+[`stream.transform` 选项]: stream.md#new-streamtransformoptions
 [`util.promisify()`]: util.md#utilpromisifyoriginal
 [`verify.update()`]: #verifyupdatedata-inputencoding
 [`verify.verify()`]: #verifyverifykey-signature-signatureencoding

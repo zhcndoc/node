@@ -811,7 +811,7 @@ changes:
   默认为空字典）
 * `info` {boolean}（如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。）
 * `maxOutputLength` {integer} 使用
-  [convenience methods][]. 时限制输出大小。**默认值:** [`buffer.kMaxLength`][]
+  [便捷方法][] 时限制输出大小。**默认值:** [`buffer.kMaxLength`][]
 * `rejectGarbageAfterEnd` {boolean} 如果为 `true`，则在压缩流结束后检测到尾随输入时，解压将失败。这
   包括不可读字节，以及在解压 gzip 时，紧随第一个成员之后的其他 gzip 成员。**默认值:** `false`
 
@@ -1959,7 +1959,7 @@ added:
   - v23.8.0
   - v22.15.0
 changes:
-  - version: REPLACEME
+  - version: v26.7.0
     pr-url: https://github.com/nodejs/node/pull/64599
     description: "`dictionary` 选项可以是 `TypedArray`、`DataView` 或 `ArrayBuffer`。"
   - version:
@@ -2079,7 +2079,7 @@ added:
  - v10.16.0
 -->
 
-* `options` {brotli options}
+* `options` {brotli 选项}
 
 创建并返回一个新的 [`BrotliCompress`][] 对象。
 
@@ -2091,7 +2091,7 @@ added:
  - v10.16.0
 -->
 
-* `options` {brotli options}
+* `options` {brotli 选项}
 
 创建并返回一个新的 [`BrotliDecompress`][] 对象。
 
@@ -2111,7 +2111,7 @@ added: v0.5.8
 added: v0.5.8
 -->
 
-* `options` {zlib options}
+* `options` {zlib 选项}
 
 创建并返回一个新的 [`DeflateRaw`][] 对象。
 
@@ -2830,7 +2830,7 @@ console.log(original); // 'hello'
 ### `compressBrotliSync([options])`
 
 <!-- YAML
-added: v25.9.0
+新增：v25.9.0
 -->
 
 * `options` {Object}
@@ -2852,7 +2852,7 @@ added: v25.9.0
 ### `compressDeflateSync([options])`
 
 <!-- YAML
-added: v25.9.0
+添加于：v25.9.0
 -->
 
 * `options` {Object}
@@ -2953,8 +2953,8 @@ added: v25.9.0
 -->
 
 * `options` {Object}
-  * `chunkSize` {number} 输出缓冲区大小。**默认：** `65536`（64 KB）。
-  * `windowBits` {number} **默认：** `Z_DEFAULT_WINDOWBITS`（15）。
+  * `chunkSize` {number} 输出缓冲区大小。**默认值：** `65536`（64 KB）。
+  * `windowBits` {number} **默认值：** `Z_DEFAULT_WINDOWBITS`（15）。
   * `dictionary` {Buffer|TypedArray|DataView}
 * 返回：{Object} 一个有状态的转换。
 

@@ -3341,13 +3341,18 @@ reader.read().then(({ value, done }) => {
 added:
   - v19.9.0
   - v18.17.0
+changes:
+  - version: v22.0.0
+    pr-url: https://github.com/nodejs/node/pull/52037
+    description: bump default highWaterMark.
 -->
 
 * `objectMode` {boolean}
 * 返回：{integer}
 
-返回流使用的默认 highWaterMark。
-默认为 `65536` (64 KiB)，对于 `objectMode` 为 `16`。
+Returns the default highWaterMark used by streams. Defaults to `16` for
+`objectMode`. For byte streams, it defaults to `65536` (64 KiB) on non-Windows
+platforms and `16384` (16 KiB) on Windows.
 
 ### `stream.setDefaultHighWaterMark(objectMode, value)`
 
@@ -3477,7 +3482,7 @@ changes:
 * `options` {Object}
   * `highWaterMark` {number} Buffer level when
     [`stream.write()`][stream-write] starts returning `false`. **Default:**
-    `65536` (64 KiB), or `16` for `objectMode` streams.
+    See [`stream.getDefaultHighWaterMark()`][].
   * `decodeStrings` {boolean} Whether to encode `string`s passed to
     [`stream.write()`][stream-write] to `Buffer`s (with the encoding
     specified in the [`stream.write()`][stream-write] call) before passing
@@ -3510,7 +3515,7 @@ changes:
 
 <!-- eslint-disable no-useless-constructor -->
 
-```js
+```cjs
 const { Writable } = require('node:stream');
 
 class MyWritable extends Writable {
@@ -3522,18 +3527,18 @@ class MyWritable extends Writable {
 }
 ```
 
-Or, when using pre-ES6 style constructors:
+<!-- eslint-disable no-useless-constructor -->
 
-```js
-const { Writable } = require('node:stream');
-const util = require('node:util');
+```mjs
+import { Writable } from 'node:stream';
 
-function MyWritable(options) {
-  if (!(this instanceof MyWritable))
-    return new MyWritable(options);
-  Writable.call(this, options);
+class MyWritable extends Writable {
+  constructor(options) {
+    // Calls the stream.Writable() constructor.
+    super(options);
+    // ...
+  }
 }
-util.inherits(MyWritable, Writable);
 ```
 
 Or, using the simplified constructor approach:
@@ -3788,15 +3793,25 @@ changes:
 -->
 
 * `options` {Object}
-  * `highWaterMark` {number} 在停止从基础资源读取之前存储在内部缓冲区中的最大 [字节数][hwm-gotcha]。**默认：** `65536` (64 KiB)，对于 `objectMode` 流为 `16`。
-  * `encoding` {string} 如果指定，则 buffers 将使用指定的编码解码为字符串。**默认：** `null`。
-  * `objectMode` {boolean} 此流是否应表现为对象流。意味着 [`stream.read(n)`][stream-read] 返回单个值而不是大小为 `n` 的 `Buffer`。**默认：** `false`。
-  * `emitClose` {boolean} 流在销毁后是否应发出 `'close'`。**默认：** `true`。
-  * `read` {Function} [`stream._read()`][stream-_read] 方法的实现。
-  * `destroy` {Function} [`stream._destroy()`][readable-_destroy] 方法的实现。
-  * `construct` {Function} [`stream._construct()`][readable-_construct] 方法的实现。
-  * `autoDestroy` {boolean} 此流在结束后是否应自动调用 `.destroy()`。**默认：** `true`。
-  * `signal` {AbortSignal} 表示可能取消的信号。
+  * `highWaterMark` {number} The maximum [number of bytes][hwm-gotcha] to store
+    in the internal buffer before ceasing to read from the underlying resource.
+    **Default:** See [`stream.getDefaultHighWaterMark()`][].
+  * `encoding` {string} If specified, then buffers will be decoded to
+    strings using the specified encoding. **Default:** `null`.
+  * `objectMode` {boolean} Whether this stream should behave
+    as a stream of objects. Meaning that [`stream.read(n)`][stream-read] returns
+    a single value instead of a `Buffer` of size `n`. **Default:** `false`.
+  * `emitClose` {boolean} Whether or not the stream should emit `'close'`
+    after it has been destroyed. **Default:** `true`.
+  * `read` {Function} Implementation for the [`stream._read()`][stream-_read]
+    method.
+  * `destroy` {Function} Implementation for the
+    [`stream._destroy()`][readable-_destroy] method.
+  * `construct` {Function} Implementation for the
+    [`stream._construct()`][readable-_construct] method.
+  * `autoDestroy` {boolean} Whether this stream should automatically call
+    `.destroy()` on itself after ending. **Default:** `true`.
+  * `signal` {AbortSignal} A signal representing possible cancellation.
 
 <!-- eslint-disable no-useless-constructor -->
 
@@ -3812,21 +3827,7 @@ class MyReadable extends Readable {
 }
 ```
 
-或者，当使用 ES6 之前的构造函数风格时：
-
-```js
-const { Readable } = require('node:stream');
-const util = require('node:util');
-
-function MyReadable(options) {
-  if (!(this instanceof MyReadable))
-    return new MyReadable(options);
-  Readable.call(this, options);
-}
-util.inherits(MyReadable, Readable);
-```
-
-或者，使用简化构造函数方法：
+Or, using the simplified constructor approach:
 
 ```js
 const { Readable } = require('node:stream');
@@ -4075,7 +4076,7 @@ changes:
 
 <!-- eslint-disable no-useless-constructor -->
 
-```js
+```cjs
 const { Duplex } = require('node:stream');
 
 class MyDuplex extends Duplex {
@@ -4086,18 +4087,17 @@ class MyDuplex extends Duplex {
 }
 ```
 
-或者，当使用 ES6 之前的构造函数风格时：
+<!-- eslint-disable no-useless-constructor -->
 
-```js
-const { Duplex } = require('node:stream');
-const util = require('node:util');
+```mjs
+import { Duplex } from 'node:stream';
 
-function MyDuplex(options) {
-  if (!(this instanceof MyDuplex))
-    return new MyDuplex(options);
-  Duplex.call(this, options);
+class MyDuplex extends Duplex {
+  constructor(options) {
+    super(options);
+    // ...
+  }
 }
-util.inherits(MyDuplex, Duplex);
 ```
 
 或者，使用简化构造函数方法：
@@ -4245,7 +4245,7 @@ myTransform.write(100);
 
 <!-- eslint-disable no-useless-constructor -->
 
-```js
+```cjs
 const { Transform } = require('node:stream');
 
 class MyTransform extends Transform {
@@ -4256,18 +4256,17 @@ class MyTransform extends Transform {
 }
 ```
 
-或者，当使用 ES6 之前的构造函数风格时：
+<!-- eslint-disable no-useless-constructor -->
 
-```js
-const { Transform } = require('node:stream');
-const util = require('node:util');
+```mjs
+import { Transform } from 'node:stream';
 
-function MyTransform(options) {
-  if (!(this instanceof MyTransform))
-    return new MyTransform(options);
-  Transform.call(this, options);
+class MyTransform extends Transform {
+  constructor(options) {
+    super(options);
+    // ...
+  }
 }
-util.inherits(MyTransform, Transform);
 ```
 
 或者，使用简化构造函数方法：
@@ -4537,6 +4536,7 @@ net.createServer((socket) => {
 [`stream.cork()`]: #writablecork
 [`stream.duplexPair()`]: #streamduplexpairoptions
 [`stream.finished()`]: #streamfinishedstream-options-callback
+[`stream.getDefaultHighWaterMark()`]: #streamgetdefaulthighwatermarkobjectmode
 [`stream.pipe()`]: #readablepipedestination-options
 [`stream.pipeline()`]: #streampipelinesource-transforms-destination-callback
 [`stream.uncork()`]: #writableuncork

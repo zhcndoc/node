@@ -1711,35 +1711,30 @@ changes:
     description: "添加了 `timeout` 选项。"
 -->
 
-* `name` {string} 测试的名称，在报告测试结果时显示。**默认：** `fn` 的 `name` 属性；如果 `fn` 没有名称，则为 `'<anonymous>'`。
+* `name` {string} 测试的名称，在报告测试结果时显示。**默认值：** `fn` 的 `name` 属性；如果 `fn` 没有名称，则为 `'<anonymous>'`。
 * `options` {Object} 测试的配置选项。支持以下属性：
-  * `concurrency` {number|boolean} 如果提供一个数字，则会有那么多个测试异步运行（它们仍由单线程事件循环管理）。
-    如果为 `true`，所有已安排的异步测试都会在该线程内并发运行。如果为 `false`，一次只运行一个测试。
-    如果未指定，子测试会从其父级继承此值。
-    **默认：** `false`。
-  * `expectFailure` {boolean|string|RegExp|Function|Object|Error} 如果为真值，则
-    预期测试会失败。如果提供非空字符串，则该字符串会在测试结果中显示为测试预期失败的原因。如果直接提供 {RegExp|Function|Object|Error}
-    （而不是封装在 `{ match: … }` 中），则只有在抛出的错误匹配时测试才会通过，行为与
-    [`assert.throws`][] 一致。若要同时提供原因和验证，请传入一个包含 `label`（字符串）和 `match`（RegExp、Function、Object 或 Error）的对象。
-    **默认：** `false`。
-  * `only` {boolean} 如果为真值，并且测试上下文配置为运行 `only` 测试，则会运行此测试。否则，测试会被跳过。
-    **默认：** `false`。
-  * `signal` {AbortSignal} 允许中止正在进行中的测试。
-  * `skip` {boolean|string} 如果为真值，则测试会被跳过。如果提供字符串，则该字符串会在测试结果中显示为跳过测试的原因。**默认：** `false`。
+  * `concurrency` {number|boolean} 如果提供的是数字，则会有相应数量的测试异步运行（它们仍由单线程事件循环管理）。
+    如果为 `true`，所有已调度的异步测试都会在线程内并发运行。如果为 `false`，则一次只运行一个测试。
+    如果未指定，子测试将从其父测试继承此值。
+    **默认值：** `false`。
+  * `expectFailure` {boolean|string|RegExp|Function|Object|Error} 如果为真值，则表示预期测试失败。如果提供非空字符串，该字符串会作为测试预期失败的原因显示在测试结果中。如果直接提供 {RegExp|Function|Object|Error}（不使用 `{ match: … }` 包装），则只有在抛出的错误匹配时测试才会通过，其行为遵循 [`assert.throws`][]。若要同时提供原因和验证条件，请传入一个包含 `label`（字符串）和 `match`（RegExp、Function、Object 或 Error）的对象。
+    **默认值：** `false`。
+  * `only` {boolean} 如果为真值，并且测试上下文配置为运行 `only` 测试，则会运行此测试。否则会跳过该测试。
+    **默认值：** `false`。
+  * `signal` {AbortSignal} 允许中止正在进行的测试。
+  * `skip` {boolean|string} 如果为真值，则跳过测试。如果提供字符串，该字符串会作为跳过测试的原因显示在测试结果中。**默认值：** `false`。
   * `tags` {string\[]} 与测试关联的字符串标签数组。
-    与 [`--experimental-test-tag-filter`][] 一起用于筛选要运行的测试。标签会通过并集从套件继承到嵌套测试。参见
-    [测试标签][]。**默认：** `[]`。
-  * `todo` {boolean|string} 如果为真值，则测试会被标记为 `TODO`。如果提供字符串，则该字符串会在测试结果中显示为测试为何为 `TODO` 的原因。**默认：** `false`。
-  * `timeout` {number} 测试在多少毫秒后失败。
-    如果未指定，子测试会从其父级继承此值。
-    **默认：** `Infinity`。
-  * `plan` {number} 预期在测试中运行的断言和子测试数量。
-    如果测试中实际运行的断言数量与计划中指定的数量不匹配，测试将失败。
-    **默认：** `undefined`。
-* `fn` {Function|AsyncFunction} 被测试的函数。该函数的第一个参数
-  是一个 [`TestContext`][] 对象。如果测试使用回调，则回调函数作为第二个参数传入。**默认：** 一个无操作函数。
-* 返回值：{Promise} 在测试完成后兑现为 `undefined`，
-  如果测试在套件内运行，则会立即兑现。
+    与 [`--experimental-test-tag-filter`][] 一起使用，以筛选要运行的测试。标签会通过并集从套件继承到嵌套测试。参见[测试标签][]。**默认值：** `[]`。
+  * `todo` {boolean|string} 如果为真值，则将测试标记为 `TODO`。如果提供字符串，该字符串会作为测试为 `TODO` 的原因显示在测试结果中。**默认值：** `false`。
+  * `timeout` {number} 测试在指定毫秒数后失败。如果未指定，子测试将从其父测试继承此值。
+    **默认值：** `Infinity`。
+  * `plan` {number} 测试中预期运行的断言和子测试数量。
+    如果测试中运行的断言数量与计划中指定的数量不匹配，测试将失败。
+    **默认值：** `undefined`。
+  * `fn` {Function|AsyncFunction} 要测试的函数。如果提供，则优先于 `fn` 参数。
+  * `name` {string} 测试的名称。如果提供，则优先于 `name` 参数。
+* `fn` {Function|AsyncFunction} 要测试的函数。此函数的第一个参数是 [`TestContext`][] 对象。如果测试使用回调，则回调函数作为第二个参数传入。**默认值：** 空操作函数。
+* 返回值：{Promise} 测试完成后兑现为 `undefined`；如果测试在套件内运行，则立即兑现。
 
 `test()` 函数是从 `test` 模块导入的一个值。每次调用此函数都会向 {TestsStream} 报告一个测试。
 
@@ -1835,7 +1830,7 @@ changes:
 
 ## 跳过
 
-用于将测试标记为 已跳过 的简写，
+用于将测试标记为 已跳过 的简写，  
 这与 [跳过][it options] 相同。
 
 ## 仅运行（异步）
@@ -1887,14 +1882,14 @@ added:
 
 * `fn` {Function|AsyncFunction} 钩子函数。
   如果钩子使用回调，
-  则回调函数作为第二个参数传入。**默认：** 无操作函数。
+  则回调函数作为第二个参数传入。**默认值：** 无操作函数。
 * `options` {Object} 钩子的配置项。支持以下属性：
-  * `signal` {AbortSignal} 允许中止正在进行中的钩子。
+  * `signal` {AbortSignal} 允许中止正在进行的钩子。
   * `timeout` {number} 钩子在多少毫秒后失败。
     如果未指定，子测试会从其父级继承此值。
-    **默认：** `Infinity`。
+    **默认值：** `Infinity`。
 
-此函数会创建一个在执行套件之后运行的钩子。
+此函数会创建一个在套件执行之后运行的钩子。
 
 ```js
 describe('tests', async () => {
@@ -1943,22 +1938,22 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} 钩子函数。
-  如果钩子使用回调，则回调函数会作为第二个参数传入。**默认值：** 无操作函数。
-* `options` {Object} 钩子配置选项。支持以下属性：
-  * `signal` {AbortSignal} 允许中止正在进行的钩子。
-  * `timeout` {number} 钩子失败前的毫秒数。
-    如果未指定，子测试将从其父测试继承此值。
-    **默认值：** `Infinity`。
+* `fn` {Function|AsyncFunction} The hook function.
+  If the hook uses a callback, the callback function is passed as the second argument. **Default:** A no-op function.
+* `options` {Object} Hook configuration options. Supports the following properties:
+  * `signal` {AbortSignal} Allows the hook in progress to be aborted.
+  * `timeout` {number} The number of milliseconds before the hook fails.
+    If not specified, subtests will inherit this value from their parent test.
+    **Default:** `Infinity`.
 
-此函数创建一个在当前测试套件中的每个测试之后运行的钩子。
-即使测试失败，`afterEach()` 钩子也会运行。
+This function creates a hook that runs after each test in the current test suite.
+The `afterEach()` hook runs even if the test fails.
 
 ```js
 describe('tests', async () => {
-  afterEach(() => console.log('测试运行完成'));
+  afterEach(() => console.log('Test run completed'));
   it('is a subtest', () => {
-    // 相关断言写在这里
+    // Write related assertions here
   });
 });
 ```
@@ -2542,25 +2537,25 @@ changes:
     - v21.2.0
     - v20.11.0
     pr-url: https://github.com/nodejs/node/pull/48638
-    description: "Updated the argument to an options object containing the available APIs and the default initial epoch."
+    description: "已将参数更新为包含可用 API 和默认初始纪元的选项对象。"
 -->
 
-Enables timer mocking for the specified timers.
+为指定的计时器启用计时器模拟。
 
-* `enableOptions` {Object} Optional configuration used to enable timer mocking. The following properties are supported:
-  * `apis` {Array} An optional array containing the timers to mock.
-    The currently supported timer values are `'setInterval'`, `'setTimeout'`, `'setImmediate'`,
-    and `'Date'`. **Default:** `['setInterval', 'setTimeout', 'setImmediate', 'Date']`.
-    If an array is not provided, all time-related APIs are mocked by default (`'setInterval'`, `'clearInterval'`,
-    `'setTimeout'`, `'clearTimeout'`, `'setImmediate'`, `'clearImmediate'`, and
-    `'Date'`).
-  * `now` {number | Date} An optional number or Date object representing the initial time, in milliseconds, to be used for the `Date.now()` value. **Default:** `0`.
+* `enableOptions` {Object} 用于启用计时器模拟的可选配置。支持以下属性：
+  * `apis` {Array} 包含要模拟的计时器的可选数组。
+    当前支持的计时器值为 `'setInterval'`、`'setTimeout'`、`'setImmediate'`
+    和 `'Date'`。**默认值：** `['setInterval', 'setTimeout', 'setImmediate', 'Date']`。
+    如果未提供数组，则默认模拟所有与时间相关的 API（`'setInterval'`、`'clearInterval'`、
+    `'setTimeout'`、`'clearTimeout'`、`'setImmediate'`、`'clearImmediate'` 和
+    `'Date'`）。
+  * `now` {number | Date} 表示初始时间的可选数字或 Date 对象，单位为毫秒，将用于设置 `Date.now()` 的值。**默认值：** `0`。
 
-**Note:** When mocking is enabled for a specific timer, its associated clear function is also implicitly mocked.
+**注意：** 为特定计时器启用模拟时，其关联的清除函数也会被隐式模拟。
 
-**Note:** Mocking `Date` affects the behavior of mock timers because they use the same internal clock.
+**注意：** 模拟 `Date` 会影响模拟计时器的行为，因为它们使用相同的内部时钟。
 
-Example usage without setting an initial time:
+不设置初始时间的使用示例：
 
 ```mjs
 import { mock } from 'node:test';
@@ -2572,11 +2567,10 @@ const { mock } = require('node:test');
 mock.timers.enable({ apis: ['setInterval'] });
 ```
 
-The example above enables mocking for the `setInterval` timer and implicitly mocks the `clearInterval` function. The `setInterval` and `clearInterval` functions from [node:timers](./timers.md),
-[node:timers/promises](./timers.md#timers-promises-api), and
-`globalThis` will be mocked.
+上面的示例启用了对 `setInterval` 计时器的模拟，并隐式模拟了 `clearInterval` 函数。来自 [node:timers](./timers.md)、[node:timers/promises](./timers.md#timers-promises-api) 和
+`globalThis` 的 `setInterval` 和 `clearInterval` 函数将被模拟。
 
-Example usage with an initial time:
+设置初始时间的使用示例：
 
 ```mjs
 import { mock } from 'node:test';
@@ -2588,7 +2582,7 @@ const { mock } = require('node:test');
 mock.timers.enable({ apis: ['Date'], now: 1000 });
 ```
 
-Example usage with an initial Date object:
+使用初始 Date 对象的示例：
 
 ```mjs
 import { mock } from 'node:test';
@@ -2600,12 +2594,12 @@ const { mock } = require('node:test');
 mock.timers.enable({ apis: ['Date'], now: new Date() });
 ```
 
-Alternatively, if you call `mock.timers.enable()` without arguments:
+或者，如果调用不带参数的 `mock.timers.enable()`：
 
-All timers (`'setInterval'`, `'clearInterval'`, `'setTimeout'`, `'clearTimeout'`,
-`'setImmediate'`, and `'clearImmediate'`) will be mocked. The `setInterval`, `clearInterval`, `setTimeout`, `clearTimeout`, `setImmediate`, and
-`clearImmediate` functions from `node:timers`, `node:timers/promises`, and
-`globalThis` will be mocked. The global `Date` object will also be mocked.
+所有计时器（`'setInterval'`、`'clearInterval'`、`'setTimeout'`、`'clearTimeout'`、
+`'setImmediate'` 和 `'clearImmediate'`）都将被模拟。来自 `node:timers`、`node:timers/promises` 和
+`globalThis` 的 `setInterval`、`clearInterval`、`setTimeout`、`clearTimeout`、`setImmediate` 和
+`clearImmediate` 函数将被模拟。全局 `Date` 对象也将被模拟。
 
 ### `timers.reset()`
 
@@ -3307,7 +3301,7 @@ changes:
   * `parentId` {number|undefined} 包含该测试的 `testId`，或者
     对于顶层测试为 `undefined`。当同一嵌套层级的并发同级测试交错执行时，允许自定义报告器跟踪其来源关系。
   * `tags` {string\[]} 在测试及其祖先套件上声明的、展开并转为小写的标签，按声明顺序排列。未打标签的测试为空。
-    参见 [Test tags][]。
+    参见 [测试标签][]。
   * `testId` {number} 该测试实例的数字标识符，在测试文件的进程内唯一。
     对同一测试实例的所有事件保持一致，从而使自定义报告器能够可靠地关联。
   * `testNumber` {number} 测试的序号。
@@ -3316,7 +3310,7 @@ changes:
 
 当测试失败时发出。
 此事件保证按测试定义的顺序发出。
-对应的执行顺序事件是 `'test:complete'`。
+对应的执行顺序事件是 `'test:complete'`】【。
 
 ### 事件：`'test:interrupted'`
 
@@ -3416,8 +3410,8 @@ added: v26.6.0
   * `nesting` {number} 测试的嵌套层级。
   * `parentId` {number|undefined} 包含该测试的父测试的 `testId`，或者
     顶层测试为 `undefined`。即使同一嵌套层级的并发兄弟测试交错执行，也能帮助自定义报告器跟踪谱系。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并转为小写的标签，按声明顺序排列。未加标签的测试为空。
-    参见 [Test tags][]。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平并转换为小写的标签，按声明顺序排列。未加标签的测试为空。
+    参见 [测试标签][]。
   * `testId` {number} 此测试实例的数字标识符，在测试文件的进程内唯一。
     对同一测试实例的所有事件保持一致，使自定义报告器能够可靠关联。
 
@@ -3440,13 +3434,13 @@ added: v26.6.0
 ### 事件：`'test:stdout'`
 
 * `data` {Object}
-  * `entryFile` {string|undefined} 作为发出此事件的子进程入口点而执行的测试文件路径。仅在测试以进程隔离方式运行时存在。
+  * `entryFile` {string|undefined} 作为触发此事件的子进程入口点执行的测试文件路径。仅当测试以进程隔离方式运行时存在。
   * `file` {string} 测试文件的路径。
   * `message` {string} 写入 `stdout` 的消息。
 
-当运行中的测试写入 `stdout` 时发出。
-仅当传递了 `--test` 标志时才会发出此事件。
-此事件不保证按测试定义的顺序发出。
+当正在运行的测试向 `stdout` 写入内容时触发。
+仅当传入 `--test` 标志时才会触发此事件。
+不保证此事件按照测试定义的顺序触发。
 
 ### 事件：`'test:summary'`
 
@@ -3825,7 +3819,7 @@ added:
   - v16.18.0
 -->
 
-测试的名称。
+测试名称。
 
 ### `context.passed`
 
@@ -4313,4 +4307,4 @@ test.describe('my suite', (suite) => {
 [子测试]: #subtests
 [套件选项]: #suitename-options-fn
 [测试报告器]: #test-reporters
-[测试运行器执行模型]: #test-runner-execution-model
+[测试运行器执行模型]: #test-runner-execution-model】【。

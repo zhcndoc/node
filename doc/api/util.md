@@ -915,7 +915,7 @@ changes:
   * `colors` {boolean} 如果为 `true`，输出将使用 ANSI 颜色代码进行样式化。颜色是可自定义的。参见 [自定义 `util.inspect` 颜色][]。**默认值：** `false`。
   * `customInspect` {boolean} 如果为 `false`，则不会调用 `[util.inspect.custom](depth, opts, inspect)` 函数。**默认值：** `true`。
   * `showProxy` {boolean} 如果为 `true`，`Proxy` 检查包括 [`target` 和 `handler`][] 对象。**默认值：** `false`。
-  * `maxArrayLength` {integer} 指定格式化时要包含的 `Array`、{TypedArray}、{Map}、{WeakMap} 和 {WeakSet} 元素的最大数量。设置为 `null` 或 `Infinity` 以显示所有元素。设置为 `0` 或负数以不显示任何元素。**默认值：** `100`。
+  * `maxArrayLength` {integer} 指定格式化时要包含的 `Array`、{TypedArray}、`Map`、`WeakMap` 和 `WeakSet` 元素的最大数量。设置为 `null` 或 `Infinity` 以显示所有元素。设置为 `0` 或负数以不显示任何元素。**默认值：** `100`。
   * `maxStringLength` {integer} 指定格式化时要包含的最大字符数。设置为 `null` 或 `Infinity` 以显示所有元素。设置为 `0` 或负数以不显示任何字符。**默认值：** `10000`。
   * `breakLength` {integer} 输入值跨多行分割的长度。设置为 `Infinity` 将输入格式化为单行（结合 `compact` 设置为 `true` 或任何 >= `1` 的数字）。**默认值：** `80`。
   * `compact` {boolean|integer} 将其设置为 `false` 会导致每个对象键显示在新行上。它将在长于 `breakLength` 的文本中的新行处断开。如果设置为数字，只要所有属性都适合 `breakLength`，最多 `n` 个内部元素将合并在一行上。短数组元素也会分组在一起。更多信息，请参见下面的示例。**默认值：** `3`。
@@ -1213,7 +1213,7 @@ console.log(inspect(bigDecimal, { numericSeparator: true }));
 
 `util.inspect` 的颜色输出（如果启用）可以通过 `util.inspect.styles` 和 `util.inspect.colors` 属性在全局范围内自定义。
 
-`util.inspect.styles` 是一个将样式名称映射到 `util.inspect.colors` 中的颜色的 map。
+`util.inspect.styles` 是一个将样式名称映射到 `util.inspect.colors` 中的颜色的映射。
 
 默认样式和相关颜色如下：
 
@@ -1710,6 +1710,17 @@ const myMIMES = [
 console.log(JSON.stringify(myMIMES));
 // 输出：["image/png", "image/gif"]
 ```
+
+### `MIMEType.parse(string)`
+
+<!--
+added: REPLACEME
+-->
+
+* `string` {string} 要解析的输入 MIME
+* 返回值：{MIMEType|null}
+
+尝试将给定的 `string` 解析为 MIMEType。如果无法解析该字符串，则返回 `null`。
 
 ## 类：`util.MIMEParams`
 
@@ -2427,7 +2438,7 @@ changes:
 ```js
 const decoder = new TextDecoder();
 const u8arr = new Uint8Array([72, 101, 108, 108, 111]);
-console.log(decoder.decode(u8arr)); // Hello
+console.log(decoder.decode(u8arr)); // 你好
 ```
 
 ### WHATWG 支持的编码
@@ -2781,7 +2792,7 @@ added: v10.0.0
 * `value` {any}
 * 返回：{boolean}
 
-如果值是内置 {ArrayBuffer} 实例，则返回 `true`。
+如果值是内置 {ArrayBuffer} 实例，则返回 `true`。  
 这_不_包括 {SharedArrayBuffer} 实例。通常，需要同时测试两者；参见 [`util.types.isAnyArrayBuffer()`][]。
 
 ```js
@@ -3399,7 +3410,7 @@ added: v10.0.0
 * `value` {any}
 * 返回：{boolean}
 
-如果值是符号对象，通过对 `Symbol` 原始值调用 `Object()` 创建，则返回 `true`。
+如果值是通过对 `Symbol` 原始值调用 `Object()` 创建的符号对象，则返回 `true`。
 
 ```js
 const symbol = Symbol('foo');

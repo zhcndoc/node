@@ -295,7 +295,7 @@ import { DynamicLibrary, suffix } from 'node:ffi';
 
 从库的某个活动回调内部调用 `library.close()` 不受支持且危险。回调必须在库被关闭之前返回。
 
-### `library[Symbol.dispose]()`
+### `library[Symbol.dispose]()` 
 
 <!-- YAML
 added: v26.1.0
@@ -633,8 +633,8 @@ added: v26.1.0
 added: v26.1.0
 -->
 
-* `source` {Buffer|ArrayBuffer|ArrayBufferView}
-* 返回：{bigint}
+* `source` {Buffer|ArrayBuffer|SharedArrayBuffer|ArrayBufferView}
+* 返回值：{bigint}
 
 返回由 JavaScript 管理的字节存储的原始内存地址。
 
@@ -671,8 +671,8 @@ added: v26.6.0
 
 作为一般规则，除非必须要零拷贝访问，否则请优先使用拷贝值，并在原生侧保持回调和指针生命周期的显式管理。
 
-[Permission Model]: permissions.md#permission-model
+[权限模型]: permissions.md#permission-model
 [`--allow-ffi`]: cli.md#--allow-ffi
 [`ffi.toBuffer(pointer, length, copy)`]: #ffitobufferpointer-length-copy
 [`using`]: https://tc39.es/proposal-explicit-resource-management/#sec-using-declarations
-[type names]: #type-names
+[类型名称]: #type-names。

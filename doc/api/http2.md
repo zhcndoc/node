@@ -79,7 +79,7 @@ const server = createSecureServer({
 server.on('error', (err) => console.error(err));
 
 server.on('stream', (stream, headers) => {
-  // stream 是一个 Duplex
+  // stream 是一个双工流
   stream.respond({
     'content-type': 'text/html; charset=utf-8',
     ':status': 200,
@@ -101,7 +101,7 @@ const server = http2.createSecureServer({
 server.on('error', (err) => console.error(err));
 
 server.on('stream', (stream, headers) => {
-  // stream 是一个 Duplex
+  // stream 是一个双工流
   stream.respond({
     'content-type': 'text/html; charset=utf-8',
     ':status': 200,
@@ -2001,7 +2001,7 @@ added: v8.5.0
 
 处理此事件涉及调用 [`response.writeContinue()`][]（如果客户端
 应继续发送请求体），或生成适当的
-HTTP 响应（例如 400 Bad Request）（如果客户端不应继续发送
+HTTP 响应（例如 400 错误请求）（如果客户端不应继续发送
 请求体）。
 
 当发出并处理此事件时，[`'request'`][] 事件将
@@ -2976,7 +2976,7 @@ added: v8.4.0
 added: v8.4.0
 -->
 
-* `settings` {HTTP/2 Settings Object}
+* `settings` {HTTP/2 设置对象}
 * 返回：{Buffer}
 
 返回一个 `Buffer` 实例，其中包含 [HTTP/2][] 规范中指定的给定 HTTP/2 设置的序列化表示。这旨在与 `HTTP2-Settings` 头部字段一起使用。
@@ -3153,32 +3153,20 @@ changes:
 `http2session.remoteSettings` API 要么返回要么接收一个定义 `Http2Session` 对象配置设置的对象作为输入。
 这些对象是包含以下属性的普通 JavaScript 对象。
 
-* `headerTableSize` {number} 指定用于头部压缩的最大字节数。允许的最小值为 0。允许的最大值
-  为 2<sup>32</sup>-1。**默认值：** `4096`。
+* `headerTableSize` {number} 指定用于标头压缩的最大字节数。允许的最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `4096`。
 * `enablePush` {boolean} 如果允许在 `Http2Session` 实例上使用 HTTP/2 推送流，则指定为 `true`。**默认值：** `true`。
-* `initialWindowSize` {number} 指定流级流控制的 _发送方_ 初始窗口大小（字节）。允许的最小值为 0。
-  允许的最大值为 2<sup>32</sup>-1。**默认值：** `65535`。
-* `maxFrameSize` {number} 指定最大帧负载的大小（字节）。允许的最小值为 16,384。允许的最大值为
-  2<sup>24</sup>-1。**默认值：** `16384`。
-* `maxConcurrentStreams` {number} 指定 `Http2Session` 上允许的最大并发
-  流数。没有默认值，这意味着至少在理论上，`Http2Session` 中在任何给定时间可以有 2<sup>32</sup>-1 个流同时打开。最小值
-  为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：**
-  `4294967295`。
-* `maxHeaderListSize` {number} 指定将接受的头部列表的最大大小（未压缩字节）。允许的最小值为 0。
-  允许的最大值为 2<sup>32</sup>-1。**默认值：** `65535`。
+* `initialWindowSize` {number} 指定用于流级流量控制的_发送方_初始窗口大小（以字节为单位）。允许的最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `4194304`。
+* `maxFrameSize` {number} 指定最大帧负载的字节大小。允许的最小值为 16,384。允许的最大值为 2<sup>24</sup>-1。**默认值：** `16384`。
+* `maxConcurrentStreams` {number} 指定 `Http2Session` 上允许的最大并发流数量。没有默认值，这意味着至少在理论上，在 `Http2Session` 中任何时刻都可以同时打开 2<sup>32</sup>-1 个流。最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `4294967295`。
+* `maxHeaderListSize` {number} 指定将接受的标头列表的最大大小（未压缩字节数）。允许的最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `65535`。
 * `maxHeaderSize` {number} `maxHeaderListSize` 的别名。
-* `enableConnectProtocol`{boolean} 如果启用 [RFC 8441][] 定义的“扩展连接
-  协议”，则指定为 `true`。此设置仅
-  在由服务器发送时才有意义。一旦为给定的 `Http2Session` 启用了 `enableConnectProtocol` 设置，就不能禁用它。
-  **默认值：** `false`。
-* `customSettings` {Object} 指定额外的设置，但尚未在 node 和底层库中实现。对象的键定义设置类型的数值（由 \[RFC 7540] 建立的"HTTP/2 SETTINGS"注册表中定义），值则是设置的实际数值。
+* `enableConnectProtocol`{boolean} 如果要启用 [RFC 8441][] 定义的“扩展 Connect 协议”，则指定为 `true`。此设置仅在由服务器发送时有意义。一旦为给定的 `Http2Session` 启用 `enableConnectProtocol` 设置，就无法将其禁用。**默认值：** `false`。
+* `customSettings` {Object} 指定 Node.js 和底层库中尚未实现的其他设置。对象的键定义设置类型的数值（如 \[RFC 7540] 建立的“HTTP/2 SETTINGS”注册表中所定义），值则为设置的实际数值。
   设置类型必须是 1 到 2^16-1 范围内的整数。
-  它不应该是 node 已经处理的设置类型，即目前
-  它应该大于 6，尽管这不是错误。
+  它不应是 Node.js 已处理的设置类型，即目前应大于 6，但这并不会导致错误。
   值必须是 0 到 2^32-1 范围内的无符号整数。
-  目前，最多支持 10 个自定义设置。
-  仅支持发送 SETTINGS，或接收服务器或客户端
-  对象的 `remoteCustomSettings` 选项中指定的设置值。不要将设置 id 的 `customSettings` 机制与本地处理的设置接口混合，以防设置在未来的 node 版本中变为本地支持。
+  目前最多支持 10 个自定义设置。
+  仅支持用于发送 SETTINGS，或接收服务器或客户端对象的 `remoteCustomSettings` 选项中指定的设置值。如果未来 Node.js 版本原生支持某个设置，请不要将某个设置 ID 的 `customSettings` 机制与原生处理设置的接口混用。
 
 设置对象上的所有其他属性都被忽略。
 
@@ -3200,7 +3188,7 @@ HTTP/2 实现对 HTTP 头部名称和值中无效字符的处理比 HTTP/1 实�
 
 头部字段名称是 _不区分大小写_ 的，并且严格作为小写字符串在线上传输。Node.js 提供的 API 允许将头部名称设置为混合大小写字符串（例如 `Content-Type`），但在传输时会将它们转换为小写（例如 `content-type`）。
 
-头部字段名称 _必须仅_ 包含以下 ASCII 字符中的一个或多个：`a`-`z`、`A`-`Z`、`0`-`9`、`!`、`#`、`$`、`%`、`&`、`'`、`*`、`+`、
+头部字段名称 _必须仅_ 包含以下 ASCII 字符中的一个或多个：`a`-`z`、`A`-`Z`、`0`-`9`、`!`、`#`、`$`、`%`、`&`、`'`、`*`、`+`、  
 `-`、`.`、`^`、`_`、`` ` ``（反引号）、`|` 和 `~`。
 
 在 HTTP 头部字段名称中使用无效字符将导致流被关闭并报告协议错误。
@@ -3532,7 +3520,7 @@ added: v8.4.0
 added: v8.4.0
 -->
 
-表示底层的 [`Http2Stream`][] 已关闭。
+表示底层的 [`Http2Stream`][] 已关闭。  
 就像 `'end'` 一样，此事件每个响应只发生一次。
 
 #### `request.aborted`
@@ -3738,7 +3726,7 @@ added: v8.4.0
 
 * 类型：{Object}
 
-请求/响应 trailers 对象。仅在 `'end'` 事件处填充。
+请求/响应尾部字段对象。仅在 `'end'` 事件处填充。
 
 #### `request.url`
 
