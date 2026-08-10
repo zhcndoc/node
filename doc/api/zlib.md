@@ -2079,7 +2079,7 @@ added:
  - v10.16.0
 -->
 
-* `options` {brotli 选项}
+* `options` {brotli options}
 
 创建并返回一个新的 [`BrotliCompress`][] 对象。
 
@@ -2091,7 +2091,7 @@ added:
  - v10.16.0
 -->
 
-* `options` {brotli 选项}
+* `options` {brotli options}
 
 创建并返回一个新的 [`BrotliDecompress`][] 对象。
 
@@ -2111,7 +2111,7 @@ added: v0.5.8
 added: v0.5.8
 -->
 
-* `options` {zlib 选项}
+* `options` {zlib options}
 
 创建并返回一个新的 [`DeflateRaw`][] 对象。
 

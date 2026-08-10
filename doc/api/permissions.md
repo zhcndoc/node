@@ -88,12 +88,12 @@ process.permission.has('fs.read', '/home/rafaelgss/protected-folder'); // false
 const fs = require('node:fs');
 
 // 在启动时读取配置，此时我们仍然拥有权限
-const config = fs.readFileSync('/etc/myapp/config.json', 'utf8');
+const config = fs.readFileSync('/etc/myapp/config.json');
 
 // 初始化后撤销对 /etc/myapp 的读取访问
 process.permission.drop('fs.read', '/etc/myapp');
 
-// 现在这将抛出 ERR_ACCESS_DENIED
+// 现在将返回 false
 process.permission.has('fs.read', '/etc/myapp/config.json'); // false
 
 // 完全撤销子进程权限
@@ -162,7 +162,7 @@ $ node --permission index.js
 * `index.js` 将包含在允许的文件系统读取列表中
 
 ```console
-$ node -r /path/to/custom-require.js --permission index.js.
+$ node -r /path/to/custom-require.js --permission index.js
 ```
 
 * `/path/to/custom-require.js` 将包含在允许的文件系统读取列表中。

@@ -1261,12 +1261,12 @@ added: v7.1.0
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/30165
-    description: 该对象不再意外暴露原生 C++ 绑定。
+    description: The object no longer accidentally exposes native C++ bindings.
 -->
 
-* 类型：{Object} 表示到子进程的 IPC 通道的管道。
+* Type: {Object} A pipe representing the IPC channel to the child process.
 
-`subprocess.channel` 属性是对子进程 IPC 通道的引用。如果不存在 IPC 通道，此属性为 `undefined`。
+The `subprocess.channel` property is a reference to the child process IPC channel. If no IPC channel exists, this property is `undefined`.
 
 #### `subprocess.channel.ref()`
 
@@ -1274,7 +1274,7 @@ changes:
 added: v7.1.0
 -->
 
-如果之前已调用 `.unref()`，此方法会使 IPC 通道保持父进程的事件循环运行。
+If `.unref()` was previously called, this method makes the IPC channel keep the parent process's event loop running.
 
 #### `subprocess.channel.unref()`
 
@@ -1282,7 +1282,7 @@ added: v7.1.0
 added: v7.1.0
 -->
 
-此方法使 IPC 通道不保持父进程的事件循环运行，并允许其在通道打开时完成。
+This method makes the IPC channel not keep the parent process's event loop running and allows it to complete while the channel is open.
 
 ### `subprocess.connected`
 
@@ -1457,7 +1457,7 @@ grep.stdin.end();
 added: v0.7.10
 -->
 
-在调用 `subprocess.unref()` 之后调用 `subprocess.ref()` 将恢复子进程的已移除引用计数，强制父进程在退出之前等待子进程退出。
+在调用 `subprocess.unref()` 后调用 `subprocess.ref()` 将恢复子进程被移除的引用计数，强制父进程在退出之前等待子进程退出。
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -1708,7 +1708,7 @@ added: v0.1.90
 
 * 类型：{stream.Readable|null|undefined}
 
-表示子进程 `stderr` 的 `Readable Stream`。
+表示子进程 `stderr` 的 `可读流`。
 
 如果生成子进程时 `stdio[2]` 设置为 `'pipe'` 以外的任何值，则此项将为 `null`。
 
@@ -1925,7 +1925,7 @@ added:
 [`subprocess.stdin`]: #subprocessstdin
 [`subprocess.stdio`]: #subprocessstdio
 [`subprocess.stdout`]: #subprocessstdout
-[`util.convertProcessSignalToExitCode()`]: util.md#utilconvertprocesssignaltoexitcodesignalcode
+[`util.convertProcessSignalToExitCode()`]: util.md#utilconvertprocesssignaltoexitcodesignal
 [`util.promisify()`]: util.md#utilpromisifyoriginal
 [同步对应方法]: #synchronous-process-creation
 [v8.serdes]: v8.md#serialization-api

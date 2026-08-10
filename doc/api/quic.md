@@ -316,9 +316,9 @@ added: v23.8.0
 
 * `onsession` {quic.OnSessionCallback}
 * `options` {quic.SessionOptions}
-* 返回：{Promise} 一个解析为 {quic.QuicEndpoint} 的 promise
+* 返回：{Promise} 一个解析为 {quic.QuicEndpoint} 的 Promise
 
-配置端点以作为服务器监听。当远程对等方发起新会话时，
+配置端点以作为服务器进行监听。当远程对等方发起新会话时，
 给定的 `onsession` 回调将与创建的会话一起被调用。
 
 ```mjs
@@ -329,16 +329,16 @@ const endpoint = await listen((session) => {
 });
 
 // 关闭端点会使在调用 close 时已打开的任何会话自然完成，同时防止新会话被
-// 发起。一旦所有现有会话完成，端点将被销毁。该调用返回一个 promise，在
+// 发起。一旦所有现有会话完成，端点将被销毁。该调用返回一个 Promise，在
 // 端点销毁后解析。
 await endpoint.close();
 ```
 
 默认情况下，每次调用 `listen(...)` 都会创建一个新的本地
-`QuicEndpoint` 实例，绑定到一个新的随机本地 IP 端口。要
+`QuicEndpoint` 实例，并绑定到一个新的随机本地 IP 端口。若要
 指定要使用的确切本地地址，或在单个本地端口上复用多个
-QUIC 会话，请传递 `endpoint` 选项，
-参数为 `QuicEndpoint` 或 `EndpointOptions`。
+QUIC 会话，请传递 `endpoint` 选项，其参数为
+`QuicEndpoint` 或 `EndpointOptions`。
 
 任何单个 `QuicEndpoint` 最多只能配置为监听服务器一次。
 
@@ -998,10 +998,10 @@ added: v26.2.0
 是一个 `{bigint}`：
 
 * 当 `lastStreamId` 为 `-1n` 时，对等方发送了关闭通知（意图
- 关闭），但未指定流边界。所有现有流仍可继续处理。
+  关闭），但未指定流边界。所有现有流仍可继续处理。
 * 当 `lastStreamId` `>= 0n` 时，它是对等方可能已处理的
- 最高流 ID。ID 高于此值的流未被处理，
- 并且可以在新连接上安全重试。
+  最高流 ID。ID 高于此值的流未被处理，
+  并且可以在新连接上安全重试。
 
 收到 GOAWAY 后，`session.createBidirectionalStream()` 将
 抛出 `ERR_INVALID_STATE`。现有流将继续，直到它们
@@ -1644,19 +1644,54 @@ added: v23.8.0
 
 ### 中止一个流
 
-QuicStream 可以通过三种方式中止，每种方式都会产生不同的线上帧副作用：
+QuicStream 可以通过多种方式中止，每种方式都会产生不同的
+线上帧副作用：
 
-* [`writer.fail(reason)`][] — 仅中止可写侧。向对端发送 `RESET_STREAM`。
-  可读侧不受影响；任何已缓冲可读的数据仍然可用。
-* 带 `error` 参数的 [`stream.destroy()`][] — 完全拆除该流。对任何仍然打开的可写侧发送
-  `RESET_STREAM`，**并且**对任何仍然打开的可读侧发送 `STOP_SENDING`。
-  线上错误码从 `error` 派生（优先级规则见 [`stream.destroy()`][]）。
-* 带显式 `options.code` 的 [`stream.destroy()`][] — 与前一种形式相同，但线上错误码由调用方提供，
-  且优先于 `error` 中携带的任何错误码。
+* [`stream.stopSending()`][] — 仅中止可读端。向对端发送
+  `STOP_SENDING`。可写端不受影响。
+* [`stream.resetStream()`][] — 仅中止可写端。向对端发送
+  `RESET_STREAM`。与 [`writer.fail(reason)`][] 不同，线上错误码会直接给出，而不是从错误中推导。
+* [`writer.fail(reason)`][] — 仅中止可写端。向对端发送
+  `RESET_STREAM`。可读端不受影响；任何已经缓冲、等待读取的数据仍然可用。
+* [`stream.destroy()`][] 带有 `error` 参数 — 完全关闭该流。在任何仍处于打开状态的可写端发送
+  `RESET_STREAM`，并在任何仍处于打开状态的可读端发送 `STOP_SENDING`。线上错误码从
+  `error` 推导得出（优先级规则请参见 [`stream.destroy()`][]）。
+* [`stream.destroy()`][] 带有显式的 `options.code` — 与上一种形式相同，但使用调用方提供的线上错误码；该错误码的优先级高于 `error` 中携带的任何错误码。
 
 当 `error` 是 [`QuicError`][] 时，其 [`error.errorCode`][] 会被用作
 `writer.fail()` 和 `stream.destroy()` 的线上错误码。否则实现会回退到协商出的应用协议的
 “内部错误”码（见 [`QuicError`][]）。
+
+[`stream.stopSending()`][] 和 [`stream.resetStream()`][] 不会执行此推导：它们会按原样发送 `code`。
+
+### `stream.resetStream([code])`
+
+<!-- YAML
+added: v23.8.0
+-->
+
+* `code` {number|bigint} 要发送给对端的应用程序错误代码。
+  **默认值：** `0n`。
+
+告知对端此端将不再在此流上发送任何数据，并发送一个携带 `code` 的 `RESET_STREAM` 帧。可读端保持打开状态，因此对端已经发送的数据仍可供读取。
+
+所有仍在排队等待发送的数据都会被丢弃。重置流不会得到对端的确认，因此出站队列将无法再排空。
+
+不会提供对此操作的确认。如果流已被销毁、已经被重置，或者是由远端发起的单向流（没有可中止的可写端），则调用不会执行任何操作。
+
+### `stream.stopSending([code])`
+
+<!-- YAML
+added: v23.8.0
+-->
+
+* `code` {number|bigint} 要发送给对端的应用程序错误代码。
+  **默认值：** `0n`。
+
+请求对端停止在此流上发送数据，并发送一个携带 `code` 的 `STOP_SENDING`
+帧。可写端保持打开状态，因此此端仍可发送数据。
+
+不会提供此操作的确认。如果流已被销毁，或者这是一个本地发起的单向流（没有可中止的可读端），则调用不会执行任何操作。
 
 ### `stream.early`
 
@@ -1674,12 +1709,12 @@ added: v26.2.0
 ### `stream.direction`
 
 <!-- YAML
-added: v23.8.0
+添加于: v23.8.0
 -->
 
 * 类型：{string|null} 取 `'bidi'`、`'uni'` 或 `null` 之一。
 
-流的方向性；如果流已被销毁或仍处于 pending 状态，则为 `null`。只读。
+流的方向性；如果流已被销毁或仍处于挂起状态，则为 `null`。只读。
 
 ### `stream.budget`
 
@@ -1791,8 +1826,8 @@ added: v26.2.0
 
 * 类型：{Function}
 
-当收到来自对端的尾部头部时要调用的回调。回调接收 `(trailers)`，其中 `trailers` 是一个对象，
-格式与 `stream.headers` 相同。如果设置在不支持头部的会话上，则抛出 `ERR_INVALID_STATE`。可读/可写。
+当收到来自对端的尾部标头时要调用的回调。回调接收 `(trailers)`，其中 `trailers` 是一个对象，
+格式与 `stream.headers` 相同。如果设置在不支持标头的会话上，则抛出 `ERR_INVALID_STATE`。可读/可写。
 
 ### `stream.oninfo`
 
@@ -1802,9 +1837,9 @@ added: v26.2.0
 
 * 类型：{Function}
 
-当从服务器接收到信息性（1xx）头部时要调用的回调。回调接收 `(headers)`，其中 `headers` 是一个对象，
-格式与 `stream.headers` 相同。信息性头部在最终响应之前发送（例如 103 Early Hints）。
-如果设置在不支持头部的会话上，则抛出 `ERR_INVALID_STATE`。可读/可写。
+当从服务器接收到信息性（1xx）标头时要调用的回调。回调接收 `(headers)`，其中 `headers` 是一个对象，
+格式与 `stream.headers` 相同。信息性标头在最终响应之前发送（例如 103 早期提示）。
+如果设置在不支持标头的会话上，则抛出 `ERR_INVALID_STATE`。可读/可写。
 
 ### `stream.onwanttrailers`
 
@@ -1814,8 +1849,8 @@ added: v26.2.0
 
 * 类型：{Function}
 
-当应用程序已准备好发送尾部头部时要调用的回调。该回调是同步调用的——用户必须在此回调中调用
-[`stream.sendTrailers()`][]。如果设置在不支持头部的会话上，则抛出 `ERR_INVALID_STATE`。可读/可写。
+当应用程序已准备好发送尾部标头时要调用的回调。该回调是同步调用的——用户必须在此回调中调用
+[`stream.sendTrailers()`][]。如果设置在不支持标头的会话上，则抛出 `ERR_INVALID_STATE`。可读/可写。
 
 ### `stream.pendingTrailers`
 
@@ -1862,11 +1897,11 @@ added: v26.2.0
 added: v26.2.0
 -->
 
-* `headers` {Object} 尾部头部对象。尾部中不得包含伪头部。
+* `headers` {Object} 尾部标头对象。尾部不得包含伪标头。
 * 返回：{boolean}
 
-在流上发送尾部头部。必须在 [`stream.onwanttrailers`][] 回调期间同步调用，或者提前通过
-[`stream.pendingTrailers`][] 设置。如果会话不支持头部，则抛出 `ERR_INVALID_STATE`。
+在流上发送尾部标头。必须在 [`stream.onwanttrailers`][] 回调期间同步调用，或者提前通过
+[`stream.pendingTrailers`][] 设置。如果会话不支持标头，则抛出 `ERR_INVALID_STATE`。
 
 ### `stream.priority`
 
@@ -3391,19 +3426,18 @@ await session.close();
 
 有几点需要注意：
 
-* `session.createBidirectionalStream({ headers })` 在未提供 `body` 时会自动
-  将 HEADERS 帧标记为终止帧——
-  请求即为 `HEADERS` 后跟 `END_STREAM`。
-* `onheaders` 回调会在一个对象中接收响应伪标头和
-  常规标头，键为小写字符串。
-  回调返回后，同一个对象也可通过
-  [`stream.headers`][] 访问。
-* 读取 `for await (const chunks of stream)` 会消耗响应
-  主体。每次迭代都会产出一个 `Uint8Array[]` 分块批次。
-* HTTP 语义辅助功能（URL 解析、方法/状态校验、
-  重定向、内容协商等）是刻意未
-  内置的。除线上帧格式之外的任何 HTTP 层处理都
-  由调用方负责。
+* `session.createBidirectionalStream({ headers })` 在未提供 `body`
+  时会自动将 HEADERS 帧标记为终止帧 —
+  请求由 `HEADERS` 后跟 `END_STREAM` 组成。
+* `onheaders` 回调会在同一个对象中接收响应伪标头和
+  常规标头，其键为小写字符串。对于传入的标头，
+  `:status` 伪标头会转换为 `number`，与 HTTP/2 的行为一致。
+  回调返回后，同一个对象也可通过 [`stream.headers`][] 访问。
+* 读取 `for await (const chunks of stream)` 会消费响应主体。
+  每次迭代都会产生一个由 `Uint8Array[]` 组成的分块批次。
+* HTTP 语义辅助功能（URL 解析、方法/状态验证、
+  重定向、内容协商等）不会内置。除线级分帧之外的任何
+  HTTP 层处理都由调用方负责。
 
 ### 最小 HTTP/3 服务器
 
@@ -3451,7 +3485,7 @@ console.log('listening on', endpoint.address);
 
 * **服务器推送** — `PUSH_PROMISE` 及相关的推送流
   机制尚未实现，也不在近期
-  路线图中。服务器推送在实际部署中使用有限，而且大多数
+  路线图中。服务器推送在实际部署中的使用有限，而且大多数
   用例更适合使用 Early Hints（`103`）或由客户端直接
   发起获取。
 * **WebTransport / 扩展 CONNECT 辅助功能** — 可以协商
@@ -4029,11 +4063,13 @@ GOAWAY 帧时）。
 [`stream.onwanttrailers`]: #streamonwanttrailers
 [`stream.pendingTrailers`]: #streampendingtrailers
 [`stream.priority`]: #streampriority
+[`stream.resetStream()`]: #streamresetstreamcode
 [`stream.sendHeaders()`]: #streamsendheadersheaders-options
 [`stream.sendInformationalHeaders()`]: #streamsendinformationalheadersheaders
 [`stream.sendTrailers()`]: #streamsendtrailersheaders
 [`stream.setBody()`]: #streamsetbodybody
 [`stream.setPriority()`]: #streamsetpriorityoptions
+[`stream.stopSending()`]: #streamstopsendingcode
 [`stream.writer`]: #streamwriter
 [`writer.fail()`]: #streamwriter
 [`writer.fail(reason)`]: #streamwriter

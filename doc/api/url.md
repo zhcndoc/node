@@ -810,6 +810,7 @@ console.log(myPattern.exec('https://nodejs.org/docs/latest/api/dns.html'));
 
 * `input` {string | Object} 一个 URL 或 URL 部分
 * `baseURL` {string | undefined} 一个基 URL 字符串
+* 返回值 {boolean}
 
 输入可以是字符串或提供各个 URL 部分的对象。对象
 成员可以是 `protocol`、`username`、`password`、`hostname`、

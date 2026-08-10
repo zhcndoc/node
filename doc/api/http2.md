@@ -2976,7 +2976,7 @@ added: v8.4.0
 added: v8.4.0
 -->
 
-* `settings` {HTTP/2 设置对象}
+* `settings` {HTTP/2 Settings Object}
 * 返回：{Buffer}
 
 返回一个 `Buffer` 实例，其中包含 [HTTP/2][] 规范中指定的给定 HTTP/2 设置的序列化表示。这旨在与 `HTTP2-Settings` 头部字段一起使用。

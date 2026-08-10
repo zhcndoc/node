@@ -1,16 +1,16 @@
 # 大型拉取请求
 
 * [概述](#overview)
-* [什么情况下算作大型拉取请求](#what-qualifies-as-a-large-pull-request)
+* [什么样的拉取请求算大型拉取请求](#what-qualifies-as-a-large-pull-request)
 * [谁可以发起大型拉取请求](#who-can-open-a-large-pull-request)
 * [要求](#requirements)
   * [详细的拉取请求描述](#detailed-pull-request-description)
   * [审查指南](#review-guide)
   * [批准要求](#approval-requirements)
-  * [依赖变更](#dependency-changes)
-* [拆分大型拉取请求](#splitting-large-pull-requests)
-  * [特性分支与分支](#feature-forks-and-branches)
-* [给审查者的指导](#guidance-for-reviewers)
+  * [依赖项变更](#dependency-changes)
+* [避免大型拉取请求](#avoiding-large-pull-requests)
+  * [功能分支和分支](#feature-forks-and-branches)
+* [给审查者的指南](#guidance-for-reviewers)
 
 ## 概述
 

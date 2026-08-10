@@ -53,11 +53,14 @@ const insert = database.prepare('INSERT INTO data (key, value) VALUES (?, ?)');
 // 使用绑定值执行预编译语句。
 insert.run(1, 'hello');
 insert.run(2, 'world');
+// 不再需要预编译语句时将其终结。
+insert.close();
 // 创建一个预编译语句，用于从数据库读取数据。
 const query = database.prepare('SELECT * FROM data ORDER BY key');
 // 执行预编译语句并输出结果集。
 console.log(query.all());
-// 输出： [ { key: 1, value: 'hello' }, { key: 2, value: 'world' } ]
+// 输出：[ { key: 1, value: 'hello' }, { key: 2, value: 'world' } ]
+query.close();
 ```
 
 ```cjs
@@ -76,11 +79,14 @@ const insert = database.prepare('INSERT INTO data (key, value) VALUES (?, ?)');
 // 使用绑定值执行预编译语句。
 insert.run(1, 'hello');
 insert.run(2, 'world');
+// 不再需要预编译语句时将其终结。
+insert.close();
 // 创建一个预编译语句，用于从数据库读取数据。
 const query = database.prepare('SELECT * FROM data ORDER BY key');
 // 执行预编译语句并输出结果集。
 console.log(query.all());
-// 输出： [ { key: 1, value: 'hello' }, { key: 2, value: 'world' } ]
+// 输出：[ { key: 1, value: 'hello' }, { key: 2, value: 'world' } ]
+query.close();
 ```
 
 ## JavaScript 与 SQLite 类型转换
@@ -89,13 +95,15 @@ console.log(query.all());
 由于 JavaScript 支持的数据类型比 SQLite 更多，因此只支持 JavaScript 类型的一个子集。
 尝试将不受支持的数据类型写入 SQLite 将导致异常。
 
-| 存储类 | JavaScript 到 SQLite | SQLite 到 JavaScript |
-| ------------- | -------------------------- | ------------------------------------- |
-| `NULL` | {null} | {null} |
-| `INTEGER` | {number} 或 {bigint} | {number} 或 {bigint} _(可配置)_ |
-| `REAL` | {number} | {number} |
-| `TEXT` | {string} | {string} |
-| `BLOB` | {TypedArray} 或 {DataView} | {Uint8Array} |
+| 存储类        | JavaScript 到 SQLite                                          | SQLite 到 JavaScript                  |
+| ------------- | --------------------------------------------------------------- | ------------------------------------- |
+| `NULL`        | {null}                                                          | {null}                                |
+| `INTEGER`     | {number}、{bigint} 或 {boolean}                                | {number} 或 {bigint} _（可配置）_ |
+| `REAL`        | {number}                                                        | {number}                              |
+| `TEXT`        | {string}                                                        | {string}                              |
+| `BLOB`        | {TypedArray}、{DataView}、{ArrayBuffer} 或 {SharedArrayBuffer} | {Uint8Array}                          |
+
+布尔值会被写入为 `INTEGER` 值 `1` 和 `0`。与其他 `INTEGER` 值一样，读取时默认会将它们作为 {number} 返回；启用 BigInt 读取后，则会作为 {bigint} 值（`1n` 和 `0n`）返回。写入无法容纳在有符号 64 位整数中的 {bigint} 时，会抛出 `ERR_INVALID_ARG_VALUE` 错误。
 
 用于从 SQLite 读取值的 API 提供了一个配置选项，用于决定 `INTEGER` 值在 JavaScript 中被转换为 `number` 还是 `bigint`，例如语句的 `readBigInts` 选项以及用户定义函数的 `useBigIntArguments` 选项。
 如果 Node.js 从 SQLite 读取的 `INTEGER` 值超出了 JavaScript [安全整数][] 范围，并且未启用读取 BigInt 的选项，则会抛出 `ERR_OUT_OF_RANGE` 错误。
@@ -212,7 +220,8 @@ db.aggregate('sumint', {
   step: (acc, value) => acc + value,
 });
 
-db.prepare('SELECT sumint(y) as total FROM t3').get(); // { total: 21 }
+using query = db.prepare('SELECT sumint(y) as total FROM t3');
+query.get(); // { total: 21 }
 ```
 
 ```mjs
@@ -233,7 +242,8 @@ db.aggregate('sumint', {
   step: (acc, value) => acc + value,
 });
 
-db.prepare('SELECT sumint(y) as total FROM t3').get(); // { total: 21 }
+using query = db.prepare('SELECT sumint(y) as total FROM t3');
+query.get(); // { total: 21 }
 ```
 
 ### `database.close()`
@@ -382,8 +392,9 @@ db.setAuthorizer((actionCode) => {
   return constants.SQLITE_OK;
 });
 
-// 这将正常工作
-db.prepare('SELECT 1').get();
+// 这将正常运行
+using query = db.prepare('SELECT 1');
+query.get();
 
 // 由于授权被拒绝，这里会抛出错误
 try {
@@ -405,8 +416,9 @@ db.setAuthorizer((actionCode) => {
   return constants.SQLITE_OK;
 });
 
-// 这将正常工作
-db.prepare('SELECT 1').get();
+// 这将正常运行
+using query = db.prepare('SELECT 1');
+query.get();
 
 // 由于授权被拒绝，这里会抛出错误
 try {
@@ -536,8 +548,9 @@ original.close();
 
 const clone = new DatabaseSync(':memory:');
 clone.deserialize(buffer);
-console.log(clone.prepare('SELECT value FROM t').get());
-// 打印： { value: 'hello' }
+using query = clone.prepare('SELECT value FROM t');
+console.log(query.get());
+// 输出：{ value: 'hello' }
 ```
 
 ```cjs
@@ -551,8 +564,9 @@ original.close();
 
 const clone = new DatabaseSync(':memory:');
 clone.deserialize(buffer);
-console.log(clone.prepare('SELECT value FROM t').get());
-// 打印： { value: 'hello' }
+using query = clone.prepare('SELECT value FROM t');
+console.log(query.get());
+// 输出：{ value: 'hello' }
 ```
 
 ### `database.prepare(sql[, options])`
@@ -596,7 +610,8 @@ sqlTagStore.get`SELECT ${value}`;
 等同于：
 
 ```js
-db.prepare('SELECT ?').get(value);
+using statement = db.prepare('SELECT ?');
+statement.get(value);
 ```
 
 不过在第一个示例中，标签存储会缓存底层预编译语句以供将来使用。
@@ -711,10 +726,10 @@ added:
 -->
 
 * `changeset` {Uint8Array} 二进制 changeset 或 patchset。
-* `options` {Object} 用于指定如何应用更改的配置选项。
-  * `filter` {Function} 对于 changeset 中至少受一项更改影响的每个表，都会以表名作为第一个参数调用 `filter` 回调。如果返回值为假，则不会尝试对该表应用任何更改。否则，如果返回值为真或未提供 `filter` 回调，则会尝试应用该表的所有更改。
-  * `onConflict` {Function} 用于决定如何处理冲突的函数。该函数接收一个参数，
-    该参数可以是以下值之一：
+
+* `options` {Object} 用于配置如何应用更改的选项。
+  * `filter` {Function} 对于 changeset 中至少包含一项更改的每个表，都会调用 `filter` 回调，并将表名作为第一个参数传入。如果返回值为假值，则不会尝试对该表应用任何更改。否则，如果返回值为真值或未提供 `filter` 回调，则会尝试应用与该表相关的所有更改。
+  * `onConflict` {Function} 用于确定如何处理冲突的函数。该函数接收一个参数，其值可以是以下值之一：
 
     * `SQLITE_CHANGESET_DATA`：`DELETE` 或 `UPDATE` 更改不包含预期的“之前”值。
     * `SQLITE_CHANGESET_NOTFOUND`：不存在与 `DELETE` 或 `UPDATE` 更改的主键匹配的行。
@@ -730,8 +745,9 @@ added:
 
     如果冲突处理函数中抛出错误，或者处理函数返回其他任何值，应用 changeset 将会中止并回滚数据库。
 
-    **默认**：返回 `SQLITE_CHANGESET_ABORT` 的函数。
-* 返回：{boolean} changeset 是否已成功应用且未中止。
+    **默认值**：返回 `SQLITE_CHANGESET_ABORT` 的函数。
+
+* 返回值：{boolean} changeset 是否在未中止的情况下成功应用。
 
 如果数据库未打开，则会抛出异常。此方法是对 [`sqlite3changeset_apply()`][] 的封装。
 
@@ -746,7 +762,7 @@ targetDb.exec('CREATE TABLE data(key INTEGER PRIMARY KEY, value TEXT)');
 
 const session = sourceDb.createSession();
 
-const insert = sourceDb.prepare('INSERT INTO data (key, value) VALUES (?, ?)');
+using insert = sourceDb.prepare('INSERT INTO data (key, value) VALUES (?, ?)');
 insert.run(1, 'hello');
 insert.run(2, 'world');
 
@@ -766,7 +782,7 @@ targetDb.exec('CREATE TABLE data(key INTEGER PRIMARY KEY, value TEXT)');
 
 const session = sourceDb.createSession();
 
-const insert = sourceDb.prepare('INSERT INTO data (key, value) VALUES (?, ?)');
+using insert = sourceDb.prepare('INSERT INTO data (key, value) VALUES (?, ?)');
 insert.run(1, 'hello');
 insert.run(2, 'world');
 
@@ -832,7 +848,8 @@ added:
 ### `session[Symbol.dispose]()`
 
 <!-- YAML
-added: v24.9.0
+added:
+  - v24.9.0
 -->
 
 关闭会话。如果会话已关闭，则不执行任何操作。
@@ -853,11 +870,49 @@ added: v22.5.0
 [SQL 注入][] 攻击的保护。出于这些原因，在处理用户输入时，预准备语句优于
 手工编写的 SQL 字符串。
 
+### 绑定参数
+
+`all()`、`get()`、`iterate()` 和 `run()` 方法会在执行预处理语句之前，将它们的参数绑定到预处理语句的参数上。参数可以是匿名参数或命名参数。
+
+匿名参数在 SQL 中写作 `?`，并按照传递给方法的参数顺序进行绑定。`?NNN` 形式会将 SQLite 参数索引 `NNN` 分配给占位符。避免混用编号参数和命名参数，因为它们共享参数索引。
+
+```js
+db.prepare('SELECT ? AS a, ? AS b').get('x', 42);
+// { a: 'x', b: 42 }
+db.prepare('SELECT ?2 AS a, ?1 AS b').get('first', 'second');
+// { a: 'second', b: 'first' }
+```
+
+命名参数在 SQL 中以 `$`、`:` 或 `@` 之一作为前缀。它们从作为第一个参数传入的对象中绑定。如果在 SQL 中重复使用某个名称，则每次出现都会绑定相同的值。
+
+```js
+db.prepare('SELECT $a AS a, $b AS b').get({ $a: 1, $b: 2 });
+// { a: 1, b: 2 }
+db.prepare('SELECT :a AS a').get({ ':a': 1 });
+// { a: 1 }
+db.prepare('SELECT @a AS a').get({ '@a': 1 });
+// { a: 1 }
+db.prepare('SELECT $k AS a, $k AS b').get({ k: 7 });
+// { a: 7, b: 7 }
+```
+
+上一个示例省略了对象键中的前缀字符。默认情况下允许使用不带前缀的名称；其注意事项请参见 [`statement.setAllowBareNamedParameters()`][]。
+
+如果绑定的键不是该语句的参数名称，则会抛出 `ERR_INVALID_STATE` 错误，除非忽略未知的命名参数。请参见 [`statement.setAllowUnknownNamedParameters()`][]。
+
+有关可以绑定的值，请参见 [JavaScript 与 SQLite 之间的类型转换][]。绑定任何其他值都会抛出 `ERR_INVALID_ARG_TYPE` 错误。
+
 ### `statement.all([namedParameters][, ...anonymousParameters])`
 
 <!-- YAML
 added: v22.5.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62001
+    description: 为绑定参数添加对布尔值的支持。
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62061
+    description: 为绑定参数添加对 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
   - version:
     - v23.7.0
     - v22.14.0
@@ -865,16 +920,14 @@ changes:
     description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
-* `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
+* `namedParameters` {Object} 用于绑定命名参数的可选对象。
   此对象的键用于配置映射。
-* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 零或
-  多个绑定到匿名参数的值。
-* 返回值：{Array} 对象数组。每个对象对应于执行预准备语句返回的一行
-  数据。每个对象的键和值对应于行的列名和值。
+* `...anonymousParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+  要绑定到匿名参数的零个或多个值。
+* 返回值：{Array} 对象数组。每个对象对应于执行预处理语句所返回的一行。
+  每个对象的键和值分别对应于该行的列名和值。
 
-此方法执行预准备语句并将所有结果作为对象数组返回。如果预准备语句
-不返回任何结果，此方法返回一个空数组。预准备语句 [参数被绑定][] 使用
-`namedParameters` 和 `anonymousParameters` 中的值。
+此方法执行预处理语句，并以对象数组的形式返回所有结果。如果预处理语句不返回任何结果，此方法将返回一个空数组。预处理语句的[参数将使用][] `namedParameters` 和 `anonymousParameters` 中的值进行绑定。参见[绑定参数][]。
 
 ### `statement.close()`
 
@@ -893,24 +946,12 @@ added:
   - v22.16.0
 -->
 
-* 返回值：{Array} 对象数组。每个对象对应于预准备语句中的一列，
-  并包含以下属性：
-
-  * `column` {string|null} 源表中列的未别名化名称，
-    如果列是表达式或子查询的结果，则为 `null`。此属性是
-    [`sqlite3_column_origin_name()`][] 的结果。
-  * `database` {string|null} 源数据库的未别名化名称，或
-    如果列是表达式或子查询的结果，则为 `null`。此
-    属性是 [`sqlite3_column_database_name()`][] 的结果。
-  * `name` {string} 在 `SELECT` 语句的结果集中分配给列的名称。此
-    属性是
-    [`sqlite3_column_name()`][] 的结果。
-  * `table` {string|null} 源表的未别名化名称，如果
-    列是表达式或子查询的结果，则为 `null`。此属性是
-    [`sqlite3_column_table_name()`][] 的结果。
-  * `type` {string|null} 列的声明数据类型，如果
-    列是表达式或子查询的结果，则为 `null`。此属性是
-    [`sqlite3_column_decltype()`][] 的结果。
+* 返回：{Array} 对象数组。每个对象对应于预准备语句中的一列，并包含以下属性：
+  * `column` {string|null} 源表中未使用别名的列名；如果该列是表达式或子查询的结果，则为 `null`。此属性是 [`sqlite3_column_origin_name()`][] 的结果。
+  * `database` {string|null} 源数据库中未使用别名的名称；如果该列是表达式或子查询的结果，则为 `null`。此属性是 [`sqlite3_column_database_name()`][] 的结果。
+  * `name` {string} 在 `SELECT` 语句结果集中的列名。此属性是 [`sqlite3_column_name()`][] 的结果。
+  * `table` {string|null} 源表中未使用别名的名称；如果该列是表达式或子查询的结果，则为 `null`。此属性是 [`sqlite3_column_table_name()`][] 的结果。
+  * `type` {string|null} 列声明的数据类型；如果该列是表达式或子查询的结果，则为 `null`。此属性是 [`sqlite3_column_decltype()`][] 的结果。
 
 此方法用于检索有关预准备语句返回的列的信息。
 
@@ -931,6 +972,12 @@ added: v22.5.0
 <!-- YAML
 added: v22.5.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62001
+    description: 为绑定参数添加对布尔值的支持。
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62061
+    description: 为绑定参数中的 `ArrayBuffer` 和 `SharedArrayBuffer` 对象添加支持。
   - version:
     - v23.7.0
     - v22.14.0
@@ -938,17 +985,14 @@ changes:
     description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
-* `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
+* `namedParameters` {Object} 用于绑定命名参数的可选对象。
   此对象的键用于配置映射。
-* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 零或
-  多个绑定到匿名参数的值。
-* 返回值：{Object|undefined} 对应于执行预准备语句返回的第一行的对象。
-  对象的键和值对应于行的列名和值。如果数据库
-  未返回任何行，则此方法返回 `undefined`。
+* `...anonymousParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+  要绑定到匿名参数的零个或多个值。
+* 返回值：{Object|undefined} 执行准备好的语句所返回的第一行对应的对象。
+  对象的键和值分别对应行的列名和值。如果数据库未返回任何行，则此方法返回 `undefined`。
 
-此方法执行预准备语句并将第一个结果作为对象返回。如果预准备语句
-不返回任何结果，此方法返回 `undefined`。预准备语句 [参数被绑定][] 使用
-`namedParameters` 和 `anonymousParameters` 中的值。
+此方法执行准备好的语句，并将第一个结果作为对象返回。如果准备好的语句不返回任何结果，则此方法返回 `undefined`。准备好的语句的[参数使用][] `namedParameters` 和 `anonymousParameters` 中的值进行绑定。参见[绑定参数][]。
 
 ### `statement.iterate([namedParameters][, ...anonymousParameters])`
 
@@ -957,6 +1001,12 @@ added:
   - v23.4.0
   - v22.13.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62001
+    description: 添加对绑定参数中布尔值的支持。
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62061
+    description: 添加对绑定参数中 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
   - version:
     - v23.7.0
     - v22.14.0
@@ -964,22 +1014,27 @@ changes:
     description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
-* `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
+* `namedParameters` {Object} 用于绑定命名参数的可选对象。
   此对象的键用于配置映射。
-* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 零或
-  多个绑定到匿名参数的值。
-* 返回值：{Iterator} 对象的可迭代迭代器。每个对象对应于执行预准备语句返回的一行
-  数据。每个对象的键和值对应于行的列名和值。
+* `...anonymousParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+  要绑定到匿名参数的零个或多个值。
+* 返回：{Iterator} 一个由对象组成的可迭代迭代器。每个对象对应于执行预准备语句所返回的一行。
+  每个对象的键和值分别对应于该行的列名和值。
 
-此方法执行预准备语句并返回对象的迭代器。如果预准备语句
-不返回任何结果，此方法返回一个空迭代器。预准备语句 [参数被绑定][] 使用
-`namedParameters` 和 `anonymousParameters` 中的值。
+此方法执行预准备语句，并返回一个由对象组成的迭代器。如果预准备语句不返回任何结果，此方法将返回一个空迭代器。预准备语句的[参数将使用 `namedParameters` 和 `anonymousParameters` 中的值进行绑定][Binding parameters][]。参见
+[绑定参数][]。
 
 ### `statement.run([namedParameters][, ...anonymousParameters])`
 
 <!-- YAML
 added: v22.5.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62001
+    description: 支持绑定参数中的布尔值。
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62061
+    description: 支持绑定参数中的 `ArrayBuffer` 和 `SharedArrayBuffer` 对象。
   - version:
     - v23.7.0
     - v22.14.0
@@ -987,21 +1042,21 @@ changes:
     description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
-* `namedParameters` {Object} 一个用于绑定命名参数的可选对象。
+* `namedParameters` {Object} 用于绑定命名参数的可选对象。
   此对象的键用于配置映射。
-* `...anonymousParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 零或
-  多个绑定到匿名参数的值。
+* `...anonymousParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+  用于绑定匿名参数的零个或多个值。
 * 返回值：{Object}
   * `changes` {number|bigint} 最近完成的 `INSERT`、`UPDATE` 或 `DELETE` 语句
-    修改、插入或删除的行数。此字段是数字或 `BigInt`，取决于预准备语句
-    的配置。此属性是 [`sqlite3_changes64()`][] 的结果。
-  * `lastInsertRowid` {number|bigint} 最近插入的 rowid。此
-    字段是数字或 `BigInt`，取决于预准备语句的
-    配置。此属性是
+    修改、插入或删除的行数。
+    此字段的类型取决于预处理语句的配置，可以是 number 或 `BigInt`。
+    此属性是 [`sqlite3_changes64()`][] 的结果。
+  * `lastInsertRowid` {number|bigint} 最近插入的行 ID。此字段的类型取决于
+    预处理语句的配置，可以是 number 或 `BigInt`。此属性是
     [`sqlite3_last_insert_rowid()`][] 的结果。
 
-此方法执行预准备语句并返回一个总结结果变更的对象。预准备语句 [参数被绑定][] 使用
-`namedParameters` 和 `anonymousParameters` 中的值。
+此方法执行预处理语句，并返回一个概述所产生更改的对象。预处理语句的[参数使用绑定][]，
+绑定时使用 `namedParameters` 和 `anonymousParameters` 中的值。请参阅[绑定参数][]。
 
 ### `statement.setAllowBareNamedParameters(enabled)`
 
@@ -1012,13 +1067,12 @@ added: v22.5.0
 * `enabled` {boolean} 启用或禁用对绑定命名参数
   无前缀字符的支持。
 
-SQLite 参数的名称以前缀字符开头。默认情况下，
-`node:sqlite` 要求绑定参数时存在此前缀字符。但是，除了美元
-符号字符外，这些前缀字符在对象键中使用时也需要额外引号。
+SQLite 参数的名称以一个前缀字符开头。不过，除了美元符号之外，
+这些前缀字符在用作对象键时还需要额外的引号。
 
-为了提高易用性，此方法也可用于允许裸命名参数，
-即在 JavaScript 代码中不需要前缀字符。启用裸命名参数时有几个
-注意事项需要注意：
+为了提升易用性，`node:sqlite` 默认允许使用裸命名参数，即在
+JavaScript 代码中不需要前缀字符。可以使用此方法禁用该行为，
+要求绑定时使用前缀字符。允许使用裸命名参数时，需要注意以下几点：
 
 * SQL 中仍然需要前缀字符。
 * JavaScript 中仍然允许前缀字符。事实上，前缀名称
@@ -1103,11 +1157,19 @@ added: v24.9.0
 
 <!-- YAML
 added: v24.9.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62001
+    description: 添加对绑定参数中布尔值的支持。
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62061
+    description: 添加对绑定参数中 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
 -->
 
 * `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
-* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 要绑定到模板字符串中占位符的参数值。
-* 返回：{Array} 一个对象数组，表示查询返回的行。
+* `...boundParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+  要绑定到模板字符串中占位符的参数值。
+* 返回值：{Array} 一个对象数组，表示查询返回的行。
 
 执行给定的 SQL 查询并将所有结果行作为对象数组返回。
 
@@ -1117,11 +1179,19 @@ added: v24.9.0
 
 <!-- YAML
 added: v24.9.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62001
+    description: 添加对绑定参数中布尔值的支持。
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62061
+    description: 添加对绑定参数中 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
 -->
 
 * `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
-* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 要绑定到模板字符串中占位符的参数值。
-* 返回：{Object | undefined} 一个对象，表示查询返回的第一行，如果没有返回行则为 `undefined`。
+* `...boundParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+  要绑定到模板字符串中占位符的参数值。
+* 返回值：{Object | undefined} 一个对象，表示查询返回的第一行；如果没有返回任何行，则为 `undefined`。
 
 执行给定的 SQL 查询并将第一行结果作为对象返回。
 
@@ -1131,11 +1201,19 @@ added: v24.9.0
 
 <!-- YAML
 added: v24.9.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62001
+    description: 添加对绑定参数中布尔值的支持。
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62061
+    description: 添加对绑定参数中 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
 -->
 
 * `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
-* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 要绑定到模板字符串中占位符的参数值。
-* 返回：{Iterator} 一个迭代器，生成表示查询返回的行的对象。
+* `...boundParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+  要绑定到模板字符串中占位符的参数值。
+* 返回值：{Iterator} 一个迭代器，生成表示查询返回行的对象。
 
 执行给定的 SQL 查询并返回结果行的迭代器。
 
@@ -1145,11 +1223,19 @@ added: v24.9.0
 
 <!-- YAML
 added: v24.9.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62001
+    description: 添加对绑定参数中布尔值的支持。
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/62061
+    description: 添加对绑定参数中 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
 -->
 
 * `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
-* `...boundParameters` {null|number|bigint|string|Buffer|TypedArray|DataView} 要绑定到模板字符串中占位符的参数值。
-* 返回：{Object} 一个包含执行信息的对象，包括 `changes` 和 `lastInsertRowid`。
+* `...boundParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+  要绑定到模板字符串中占位符的参数值。
+* 返回值：{Object} 一个对象，包含执行相关的信息，包括 `changes` 和 `lastInsertRowid`。
 
 执行给定的 SQL 查询，预期不返回任何行（例如，INSERT、UPDATE、DELETE）。
 
@@ -1212,13 +1298,13 @@ changes:
 -->
 
 * `sourceDb` {DatabaseSync} 要备份的数据库。源数据库必须处于打开状态。
-* `path` {string | Buffer | URL} 创建备份的路径。如果文件已存在，内容将被覆盖。
+* `path` {string | Buffer | URL} 创建备份的路径。如果文件已存在，其内容将被覆盖。
 * `options` {Object} 备份的可选配置。支持以下属性：
-  * `source` {string} 源数据库的名称。可以是 `'main'`（默认主数据库）或任何已通过 [`ATTACH DATABASE`][] 添加的其他数据库 **默认值：** `'main'`。
-  * `target` {string} 目标数据库的名称。可以是 `'main'`（默认主数据库）或任何已通过 [`ATTACH DATABASE`][] 添加的其他数据库 **默认值：** `'main'`。
-  * `rate` {number} 每批备份中传输的页数。 **默认值：** `100`。
-  * `progress` {Function} 一个可选的回调函数，将在每个备份步骤后调用。传递给此回调的参数是一个 {Object}，具有 `remainingPages` 和 `totalPages` 属性，描述备份操作的当前进度。
-* 返回：{Promise} 一个 Promise，完成时 fulfilled 值为备份的总页数，如果发生错误则 rejected。
+  * `source` {string} 源数据库的名称。可以是 `'main'`（默认的主数据库），也可以是通过 [`ATTACH DATABASE`][] 添加的任何其他数据库。**默认值：**`'main'`。
+  * `target` {string} 目标数据库的名称。可以是 `'main'`（默认的主数据库），也可以是通过 [`ATTACH DATABASE`][] 添加的任何其他数据库。**默认值：**`'main'`。
+  * `rate` {integer} 备份每批传输的页数，必须为正数。**默认值：**`100`。
+  * `progress` {Function} 可选的回调函数，在每个备份步骤之后调用。传递给此回调的参数是一个 {Object}，包含 `remainingPages` 和 `totalPages` 属性，用于描述备份操作的当前进度。
+* 返回：{Promise} 备份完成时兑现为已备份页的总数；如果发生错误则拒绝。
 
 此方法进行数据库备份。此方法抽象了 [`sqlite3_backup_init()`][]、[`sqlite3_backup_step()`][] 和 [`sqlite3_backup_finish()`][] 函数。
 
@@ -1496,13 +1582,14 @@ added:
   </tr>
 </table>
 
-[Changesets 和 Patchsets]: https://www.sqlite.org/sessionintro.html#changesets_and_patchsets
-[传递给冲突处理程序的常量]: https://www.sqlite.org/session/c_changeset_conflict.html
-[从冲突处理程序返回的常量]: https://www.sqlite.org/session/c_changeset_abort.html
-[限制常量]: https://www.sqlite.org/c3ref/c_limit_attached.html
-[运行时限制]: https://www.sqlite.org/c3ref/limit.html
-[SQL 注入]: https://en.wikipedia.org/wiki/SQL_injection
-[JavaScript 和 SQLite 之间的类型转换]: #type-conversion-between-javascript-and-sqlite
+[Binding parameters]: #binding-parameters
+[Changesets and Patchsets]: https://www.sqlite.org/sessionintro.html#changesets_and_patchsets
+[Constants Passed To The Conflict Handler]: https://www.sqlite.org/session/c_changeset_conflict.html
+[Constants Returned From The Conflict Handler]: https://www.sqlite.org/session/c_changeset_abort.html
+[Limit Constants]: https://www.sqlite.org/c3ref/c_limit_attached.html
+[Run-Time Limits]: https://www.sqlite.org/c3ref/limit.html
+[SQL injection]: https://en.wikipedia.org/wiki/SQL_injection
+[Type conversion between JavaScript and SQLite]: #type-conversion-between-javascript-and-sqlite
 [`ATTACH DATABASE`]: https://www.sqlite.org/lang_attach.html
 [`PRAGMA foreign_keys`]: https://www.sqlite.org/pragma.html#pragma_foreign_keys
 [`SQLITE_DBCONFIG_DEFENSIVE`]: https://www.sqlite.org/c3ref/c_dbconfig_defensive.html#sqlitedbconfigdefensive
@@ -1544,6 +1631,8 @@ added:
 [`sqlite3session_create()`]: https://www.sqlite.org/session/sqlite3session_create.html
 [`sqlite3session_delete()`]: https://www.sqlite.org/session/sqlite3session_delete.html
 [`sqlite3session_patchset()`]: https://www.sqlite.org/session/sqlite3session_patchset.html
+[`statement.setAllowBareNamedParameters()`]: #statementsetallowbarenamedparametersenabled
+[`statement.setAllowUnknownNamedParameters()`]: #statementsetallowunknownnamedparametersenabled
 [busy timeout]: https://sqlite.org/c3ref/busy_timeout.html
 [connection]: https://www.sqlite.org/c3ref/sqlite3.html
 [data types]: https://www.sqlite.org/datatype3.html

@@ -168,10 +168,10 @@ changes:
       - v15.14.0
       - v14.18.0
     pr-url: https://github.com/nodejs/node/pull/37490
-    description: `data` 参数支持 `AsyncIterable`、`Iterable` 和 `Stream`。
+    description: "`data` 参数支持 `AsyncIterable`、`Iterable` 和 `Stream`。"
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/31030
-    description: `data` 参数不再将不受支持的输入强制转换为字符串。
+    description: "`data` 参数不再将不受支持的输入强制转换为字符串。"
 -->
 
 * `data` {string|Buffer|TypedArray|DataView|AsyncIterable|Iterable}

@@ -1213,22 +1213,22 @@ added: v0.1.94
 changes:
   - version: v6.0.0
     pr-url: https://github.com/nodejs/node/pull/5522
-    description: "默认 `inputEncoding` 从 `binary` 更改为 `utf8`。"
+    description: "The default `inputEncoding` was changed from `binary` to `utf8`."
 -->
 
 * `data` {string|Buffer|TypedArray|DataView}
-* `inputEncoding` {string} `data` 字符串的 [编码][]。
-* `outputEncoding` {string} 返回值的 [编码][]。
-* 返回：{Buffer | string}
+* `inputEncoding` {string} The [encoding][] of the `data` string.
+* `outputEncoding` {string} The [encoding][] of the return value.
+* Returns: {Buffer | string}
 
-使用 `data` 更新 decipher。如果给出了 `inputEncoding` 参数，则 `data` 参数是使用指定编码的字符串。如果未给出 `inputEncoding` 参数，`data` 必须是 [`Buffer`][]。如果 `data` 是 [`Buffer`][]，则忽略 `inputEncoding`。
+Updates the decipher with `data`. If the `inputEncoding` argument is given, the `data` argument is a string using the specified encoding. If the `inputEncoding` argument is not given, `data` must be a [`Buffer`][]. If `data` is a [`Buffer`][], `inputEncoding` is ignored.
 
-`outputEncoding` 指定加密数据的输出格式。如果指定了 `outputEncoding`，则返回使用指定编码的字符串。如果未提供 `outputEncoding`，则返回 [`Buffer`][]。
-指定 `outputEncoding` 时，必须使用与之前调用 `decipher.update()` 时相同的编码。
+`outputEncoding` specifies the output format of the deciphered data. If `outputEncoding` is specified, a string using the specified encoding is returned. If `outputEncoding` is not provided, a [`Buffer`][] is returned.
+When specifying `outputEncoding`, the same encoding must be used as in previous calls to `decipher.update()`.
 
-可以多次使用新数据调用 `decipher.update()` 方法，直到调用 [`decipher.final()`][]。在 [`decipher.final()`][] 之后调用 `decipher.update()` 将导致抛出错误。
+The `decipher.update()` method can be called multiple times with new data until [`decipher.final()`][] is called. Calling `decipher.update()` after [`decipher.final()`][] will cause an error to be thrown.
 
-即使底层密码实现了认证，此时从此函数返回的明文的真实性和完整性也可能不确定。对于认证加密算法，真实性通常仅在应用程序调用 [`decipher.final()`][] 时确立。
+Even if the underlying cipher implements authentication, the authenticity and integrity of the plaintext returned from this function may be uncertain at this time. For authenticated encryption algorithms, authenticity is generally established only when the application calls [`decipher.final()`][].
 
 ## 类：`DiffieHellman`
 
@@ -3001,7 +3001,7 @@ added: v15.6.0
 
 验证此证书是否由给定的公钥签署。不对证书执行任何其他验证检查。
 
-## crypto 模块的方法和属性】【。
+## crypto 模块的方法和属性
 
 ### argon2
 
@@ -3276,7 +3276,7 @@ changes:
 
 `algorithm` 依赖于 OpenSSL，示例有 `'aes192'` 等。在最近的 OpenSSL 版本上，`openssl list -cipher-algorithms` 将显示可用的密码算法。
 
-`key` 是 `algorithm` 使用的原始密钥，`iv` 是 [初始化向量][]。两个参数必须是 `'utf8'` 编码的字符串、[Buffers][`Buffer`]、`TypedArray` 或 `DataView`。`key` 也可以是类型为 `secret` 的 [`KeyObject`][]。如果密码不需要初始化向量，`iv` 可以是 `null`。
+`key` 是 `algorithm` 使用的原始密钥，`iv` 是 [初始化向量][]。两个参数必须是 `'utf8'` 编码的字符串、[缓冲区][`Buffer`]、`TypedArray` 或 `DataView`。`key` 也可以是类型为 `secret` 的 [`KeyObject`][]。如果密码不需要初始化向量，`iv` 可以是 `null`。
 
 当为 `key` 或 `iv` 传递字符串时，请考虑 [使用字符串作为加密 API 输入时的注意事项][]。
 
@@ -4173,21 +4173,21 @@ added: v15.8.0
 added: v15.0.0
 -->
 
-* `nameOrNid` {string|number} 要查询的密码的名称或 nid。
+* `nameOrNid` {string|number} 要查询的密码名称或 nid。
 * `options` {Object}
-  * `keyLength` {number} 测试密钥长度。
-  * `ivLength` {number} 测试 IV 长度。
+  * `keyLength` {number} 要测试的密钥长度。
+  * `ivLength` {number} 要测试的 IV 长度。
 * 返回：{Object}
-  * `name` {string} 密码的名称
-  * `nid` {number} 密码的 nid
-  * `blockSize` {number} 密码的块大小（字节）。当 `mode` 为 `'stream'` 时，此属性被省略。
+  * `name` {string} 密码名称
+  * `nid` {number} 密码 nid
+  * `blockSize` {number} 密码块大小（字节）。当 `mode` 为 `'stream'` 时，此属性被省略。
   * `ivLength` {number} 预期或默认的初始化向量长度（字节）。如果密码不使用初始化向量，则省略此属性。
   * `keyLength` {number} 预期或默认的密钥长度（字节）。
-  * `mode` {string} 密码模式。`'cbc'`、`'ccm'`、`'cfb'`、`'ctr'`、`'ecb'`、`'gcm'`、`'ocb'`、`'ofb'`、`'stream'`、`'wrap'`、`'xts'` 之一。
+  * `mode` {string} 密码模式。为 `'cbc'`、`'ccm'`、`'cfb'`、`'ctr'`、`'ecb'`、`'gcm'`、`'ocb'`、`'ofb'`、`'stream'`、`'wrap'`、`'xts'` 之一。
 
 返回有关给定密码的信息。
 
-某些密码接受可变长度的密钥和初始化向量。默认情况下，`crypto.getCipherInfo()` 方法将返回这些密码的默认值。要测试给定的密钥长度或 iv 长度对于给定密码是否可接受，请使用 `keyLength` 和 `ivLength` 选项。如果给定的值不可接受，将返回 `undefined`。
+某些密码接受可变长度的密钥和初始化向量。默认情况下，`crypto.getCipherInfo()` 方法将返回这些密码的默认值。要测试给定的密钥长度或 IV 长度对于给定密码是否可接受，请使用 `keyLength` 和 `ivLength` 选项。如果给定的值不可接受，将返回 `undefined`。
 
 ### `crypto.getCiphers()`
 
@@ -4799,24 +4799,24 @@ added: v0.5.8
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在会抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
+    description: "Passing an invalid callback to the `callback` argument now throws `ERR_INVALID_ARG_TYPE` instead of `ERR_INVALID_CALLBACK`."
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/16454
-    description: "将 `null` 作为 `callback` 参数传递现在会抛出 `ERR_INVALID_CALLBACK`。"
+    description: "Passing `null` as the `callback` argument now throws `ERR_INVALID_CALLBACK`."
 -->
 
-* `size` {number} 要生成的字节数。`size` 不得大于 `2**31 - 1`。
+* `size` {number} The number of bytes to generate. `size` must not be greater than `2**31 - 1`.
 * `callback` {Function}
   * `err` {Error}
   * `buf` {Buffer}
-* 返回：{Buffer} 如果未提供 `callback` 函数。
+* Returns: {Buffer} if the `callback` function is not provided.
 
-生成加密强度高的伪随机数据。`size` 参数是一个数字，表示要生成的字节数。
+Generates cryptographically strong pseudorandom data. The `size` argument is a number indicating the number of bytes to generate.
 
-如果提供了 `callback` 函数，则字节会异步生成，并且 `callback` 函数会使用两个参数调用：`err` 和 `buf`。如果发生错误，`err` 将是一个 `Error` 对象；否则它为 `null`。`buf` 参数是一个包含生成字节的 [`Buffer`][]。
+If a `callback` function is provided, the bytes are generated asynchronously and the `callback` function is called with two arguments: `err` and `buf`. If an error occurs, `err` will be an `Error` object; otherwise it will be `null`. The `buf` argument is a [`Buffer`][] containing the generated bytes.
 
 ```mjs
-// 异步
+// Asynchronous
 const {
   randomBytes,
 } = await import('node:crypto');
@@ -4828,7 +4828,7 @@ randomBytes(256, (err, buf) => {
 ```
 
 ```cjs
-// 异步
+// Asynchronous
 const {
   randomBytes,
 } = require('node:crypto');
@@ -4839,10 +4839,10 @@ randomBytes(256, (err, buf) => {
 });
 ```
 
-如果未提供 `callback` 函数，则随机字节是同步生成的并作为 [`Buffer`][] 返回。如果生成字节出现问题，将抛出错误。
+If the `callback` function is not provided, the random bytes are generated synchronously and returned as a [`Buffer`][]. An error will be thrown if there is a problem generating the bytes.
 
 ```mjs
-// 同步
+// Synchronous
 const {
   randomBytes,
 } = await import('node:crypto');
@@ -4853,7 +4853,7 @@ console.log(
 ```
 
 ```cjs
-// 同步
+// Synchronous
 const {
   randomBytes,
 } = require('node:crypto');
@@ -4863,11 +4863,11 @@ console.log(
   `${buf.length} 字节的随机数据：${buf.toString('hex')}`);
 ```
 
-`crypto.randomBytes()` 方法直到有足够可用的熵才会完成。这通常永远不会超过几毫秒。唯一可能生成随机字节阻塞较长时间的情况是在刚启动后，此时整个系统的熵仍然较低。
+The `crypto.randomBytes()` method will not complete until there is sufficient available entropy. This will normally never take longer than a few milliseconds. The only time generating random bytes may block for a longer period of time is right after startup, when the entire system is still low on entropy.
 
-此 API 使用 libuv 的线程池，这可能会对某些应用程序产生令人惊讶的负面性能影响；有关更多信息，请参阅 [`UV_THREADPOOL_SIZE`][] 文档。
+This API uses libuv's threadpool, which can have surprising and negative performance implications for some applications; see the [`UV_THREADPOOL_SIZE`][] documentation for more information.
 
-`crypto.randomBytes()` 的异步版本在单个线程池请求中执行。为了最小化线程池任务长度变化，在作为满足客户端请求的一部分时，请分区大型 `randomBytes` 请求。
+The asynchronous version of `crypto.randomBytes()` is carried out in a single threadpool request. To minimize threadpool task length variation, partition large `randomBytes` requests when fulfilling client requests.
 
 ### `crypto.randomFill(buffer[, offset][, size], callback)`
 
@@ -4884,9 +4884,14 @@ changes:
     description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
 -->
 
-* `buffer` {ArrayBuffer|Buffer|TypedArray|DataView} 必须提供。提供的 `buffer` 的大小不得大于 `2**31 - 1`。
-* `offset` {number} **默认：** `0`
-* `size` {number} **默认：** `buffer.length - offset`。`size` 不得大于 `2**31 - 1`。
+* `buffer` {ArrayBuffer|Buffer|TypedArray|DataView} 必须提供。所提供的
+  `buffer` 大小不得大于 `2**31 - 1`。
+* `offset` {number} 起始位置；对于 `TypedArray`，单位为元素，对于
+  `ArrayBuffer` 或 `DataView`，单位为字节。**默认值：** `0`
+* `size` {number} 要填充的数量，单位与 `offset` 相同。
+  **默认值：**对于 `TypedArray`，为 `buffer.length - offset`；对于
+  `ArrayBuffer` 或 `DataView`，为 `buffer.byteLength - offset`。`size`
+  不得大于 `2**31 - 1`。
 * `callback` {Function} `function(err, buf) {}`。
 
 此函数类似于 [`crypto.randomBytes()`][]，但要求第一个参数是要填充的 [`Buffer`][]。它还要求传入一个回调。
@@ -5007,10 +5012,15 @@ changes:
     description: "`buffer` 参数可以是任何 `TypedArray` 或 `DataView`。"
 -->
 
-* `buffer` {ArrayBuffer|Buffer|TypedArray|DataView} 必须提供。提供的 `buffer` 的大小不得大于 `2**31 - 1`。
-* `offset` {number} **默认：** `0`
-* `size` {number} **默认：** `buffer.length - offset`。`size` 不得大于 `2**31 - 1`。
-* 返回：{ArrayBuffer|Buffer|TypedArray|DataView} 作为 `buffer` 参数传递的对象。
+* `buffer` {ArrayBuffer|Buffer|TypedArray|DataView} 必须提供。所提供的
+  `buffer` 大小不得大于 `2**31 - 1`。
+* `offset` {number} 起始位置；对于 `TypedArray`，单位为元素；对于
+  `ArrayBuffer` 或 `DataView`，单位为字节。**默认值：** `0`
+* `size` {number} 要填充的数量，单位与 `offset` 相同。
+  **默认值：**对于 `TypedArray`，为 `buffer.length - offset`；对于
+  `ArrayBuffer` 或 `DataView`，为 `buffer.byteLength - offset`。`size`
+  不得大于 `2**31 - 1`。
+* 返回值：{ArrayBuffer|Buffer|TypedArray|DataView} 作为 `buffer` 参数传入的对象。
 
 [`crypto.randomFill()`][] 的同步版本。
 
