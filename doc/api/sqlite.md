@@ -309,7 +309,10 @@ added: v22.5.0
 -->
 
 Closes the database connection. An exception is thrown if the database is not
-open. This method is a wrapper around [`sqlite3_close_v2()`][].
+open. An [`ERR_INVALID_STATE`][] error is thrown if the method is called while
+a statement is executing, such as inside a user-defined function, an aggregate
+function, or an authorizer callback. This method is a wrapper around
+[`sqlite3_close_v2()`][].
 
 ### `database.loadExtension(path[, entryPoint])`
 
@@ -670,6 +673,10 @@ console.log(query.get());
 
 <!-- YAML
 added: v22.5.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65157
+    description: Throw `ERR_INVALID_ARG_VALUE` if `sql` contains no statements.
 -->
 
 * `sql` {string} A SQL string to compile to a prepared statement.
