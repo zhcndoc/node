@@ -301,7 +301,7 @@ makeFaster();
 * 继承：{errors.Error}
 
 表示断言失败。详细信息，请参阅
-[` 类：assert.AssertionError`][]】【。
+[` 类：assert.AssertionError`][]
 
 ## 类：`RangeError`
 

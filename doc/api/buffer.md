@@ -4875,7 +4875,7 @@ changes:
   **默认值：** `arrayBuffer.byteLength - byteOffset`。
 
 参见
-[`Buffer.from(arrayBuffer[, byteOffset[, length]])`][`Buffer.from(arrayBuf)`]】【。
+[`Buffer.from(arrayBuffer[, byteOffset[, length]])`][`Buffer.from(arrayBuf)`]
 
 ### `new Buffer(buffer)`
 

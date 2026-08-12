@@ -2018,4 +2018,4 @@ console.log(textSync(stream)); // 'hello world'
 [`stream.Writable`]: #class-streamwritable
 [`tap()`]: #tapcallback
 [`text()`]: #textsource-options
-[`toAsyncStreamable`]: #streamtoasyncstreamable】【。
+[`toAsyncStreamable`]: #streamtoasyncstreamable

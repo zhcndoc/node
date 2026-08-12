@@ -2430,7 +2430,7 @@ changes:
 * `callback` {Function}
   * `err` {Error}
 
-更改由提供的文件描述符引用的对象的文件系统时间戳。参见 [`fs.utimes()`][]】【。
+更改由提供的文件描述符引用的对象的文件系统时间戳。参见 [`fs.utimes()`][]
 
 ### `fs.glob(pattern[, options], callback)`
 

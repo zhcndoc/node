@@ -659,7 +659,7 @@ changes:
 added: v15.0.0
 -->
 
-`MessageChannel` 类。有关更多详细信息，请参阅 [`MessageChannel`][]】【。
+`MessageChannel` 类。有关更多详细信息，请参阅 [`MessageChannel`][]
 
 ## 类：`MessageEvent`
 

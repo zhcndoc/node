@@ -1563,4 +1563,4 @@ DNS 查询进行时不得调用 `dnsPromises.setServers()` 方法。
 [`socket.connect()`]: net.md#socketconnectoptions-connectlistener
 [`util.promisify()`]: util.md#utilpromisifyoriginal
 [支持的 getaddrinfo 标志]: #supported-getaddrinfo-flags
-[工作线程]: worker_threads.md】【。
+[工作线程]: worker_threads.md

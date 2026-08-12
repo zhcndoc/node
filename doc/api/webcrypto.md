@@ -2295,4 +2295,4 @@ added:
 [`subtle.sign()`]: #subtlesignalgorithm-key-data
 [`subtle.unwrapKey()`]: #subtleunwrapkeyformat-wrappedkey-unwrappingkey-unwrapalgorithm-unwrappedkeyalgorithm-extractable-keyusages
 [`subtle.verify()`]: #subtleverifyalgorithm-key-signature-data
-[`subtle.wrapKey()`]: #subtlewrapkeyformat-key-wrappingkey-wrapalgorithm】【。
+[`subtle.wrapKey()`]: #subtlewrapkeyformat-key-wrappingkey-wrapalgorithm

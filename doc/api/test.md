@@ -3310,7 +3310,7 @@ changes:
 
 当测试失败时发出。
 此事件保证按测试定义的顺序发出。
-对应的执行顺序事件是 `'test:complete'`】【。
+对应的执行顺序事件是 `'test:complete'`
 
 ### 事件：`'test:interrupted'`
 
@@ -4307,4 +4307,4 @@ test.describe('my suite', (suite) => {
 [子测试]: #subtests
 [套件选项]: #suitename-options-fn
 [测试报告器]: #test-reporters
-[测试运行器执行模型]: #test-runner-execution-model】【。
+[测试运行器执行模型]: #test-runner-execution-model

@@ -881,7 +881,7 @@ changes:
 
 * 类型：{boolean}
 
-如果请求已被中止，则 `request.aborted` 属性将为 `true`】【。
+如果请求已被中止，则 `request.aborted` 属性将为 `true`
 
 ### 请求主体
 
@@ -1408,7 +1408,7 @@ changes:
 added: v0.1.17
 -->
 
-* 继承自：{net.Server}】【。
+* 继承自：{net.Server}
 
 ### 事件：`'checkContinue'`
 
