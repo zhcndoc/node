@@ -252,7 +252,7 @@ query.get(); // { total: 21 }
 added: v22.5.0
 -->
 
-关闭数据库连接。如果数据库未打开，则会抛出异常。此方法是对 [`sqlite3_close_v2()`][] 的封装。
+关闭数据库连接。如果数据库未打开，则会抛出异常。如果在语句正在执行时调用该方法，例如在用户定义函数、聚合函数或授权器回调中调用，则会抛出 [`ERR_INVALID_STATE`][] 错误。此方法是对 [`sqlite3_close_v2()`][] 的封装。
 
 ### `database.loadExtension(path[, entryPoint])`
 
@@ -441,7 +441,7 @@ added:
 ### `database.isTransaction`
 
 <!-- YAML
-added:
+added：
   - v24.0.0
   - v22.16.0
 -->
@@ -531,11 +531,13 @@ added:
  - v24.16.0
 -->
 
-* `buffer` {Uint8Array} 数据库的二进制表示，例如 [`database.serialize()`][] 的输出。
+* `buffer` {Uint8Array} 数据库的二进制表示形式，例如
+  [`database.serialize()`][] 的输出。
 * `options` {Object} 反序列化的可选配置。
-  * `dbName` {string} 要反序列化到的数据库名称。**默认：** `'main'`。
+  * `dbName` {string} 要将数据库反序列化到的数据库名称。
+    **默认值：** `'main'`。
 
-将一个已序列化的数据库加载到此连接中，替换当前数据库。反序列化后的数据库是可写的。即使操作随后失败，现有的预编译语句也会在尝试反序列化之前被终结。此方法是对 [`sqlite3_deserialize()`][] 的封装。
+将序列化的数据库加载到此连接中，替换当前数据库。反序列化后的数据库可写。即使后续操作失败，也会在尝试反序列化之前完成现有预准备语句。如果在数据库回调位于调用堆栈中时调用此方法，例如用户定义的函数、聚合函数、授权器，或变更集筛选器或冲突处理程序，则会抛出 [`ERR_INVALID_STATE`][] 错误。此方法是 [`sqlite3_deserialize()`][] 的包装器。
 
 ```mjs
 import { DatabaseSync } from 'node:sqlite';
@@ -573,17 +575,25 @@ console.log(query.get());
 
 <!-- YAML
 added: v22.5.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65157
+    description: Throw `ERR_INVALID_ARG_VALUE` if `sql` contains no statements.
 -->
 
-* `sql` {string} 要编译为预编译语句的 SQL 字符串。
-* `options` {Object} 预编译语句的可选配置。
-  * `readBigInts` {boolean} 如果为 `true`，整数字段将作为 `BigInt` 读取。**默认：** 继承自数据库选项，或为 `false`。
-  * `returnArrays` {boolean} 如果为 `true`，结果将以数组形式返回。**默认：** 继承自数据库选项，或为 `false`。
-  * `allowBareNamedParameters` {boolean} 如果为 `true`，允许绑定不带前缀字符的命名参数。**默认：** 继承自数据库选项，或为 `true`。
-  * `allowUnknownNamedParameters` {boolean} 如果为 `true`，则忽略未知命名参数。**默认：** 继承自数据库选项，或为 `false`。
-* 返回：{StatementSync} 预编译语句。
+* `sql` {string} 要编译为预准备语句的 SQL 字符串。
+* `options` {Object} 预准备语句的可选配置。
+  * `readBigInts` {boolean} 如果为 `true`，则将整数字段读取为 `BigInt`。
+    **默认值：**继承自数据库选项或 `false`。
+  * `returnArrays` {boolean} 如果为 `true`，则将结果作为数组返回。
+    **默认值：**继承自数据库选项或 `false`。
+  * `allowBareNamedParameters` {boolean} 如果为 `true`，则允许绑定不带前缀字符的命名参数。**默认值：**继承自数据库选项或 `true`。
+  * `allowUnknownNamedParameters` {boolean} 如果为 `true`，则忽略未知的命名参数。
+    **默认值：**继承自数据库选项或 `false`。
+* 返回：{StatementSync} 预准备语句。
 
-将 SQL 语句编译为 [预编译语句][]。此方法是对 [`sqlite3_prepare_v2()`][] 的封装。
+将 SQL 语句编译为[预准备语句][]. 此方法是对
+[`sqlite3_prepare_v2()`][] 的封装。
 
 ### `database.createTagStore([maxSize])`
 
@@ -1055,8 +1065,7 @@ changes:
     预处理语句的配置，可以是 number 或 `BigInt`。此属性是
     [`sqlite3_last_insert_rowid()`][] 的结果。
 
-此方法执行预处理语句，并返回一个概述所产生更改的对象。预处理语句的[参数使用绑定][]，
-绑定时使用 `namedParameters` 和 `anonymousParameters` 中的值。请参阅[绑定参数][]。
+此方法执行预处理语句，并返回一个概述所产生更改的对象。预处理语句的[参数使用绑定]，绑定时使用 `namedParameters` 和 `anonymousParameters` 中的值。请参阅[绑定参数][]。
 
 ### `statement.setAllowBareNamedParameters(enabled)`
 
@@ -1582,15 +1591,16 @@ added:
   </tr>
 </table>
 
-[Binding parameters]: #binding-parameters
-[Changesets and Patchsets]: https://www.sqlite.org/sessionintro.html#changesets_and_patchsets
-[Constants Passed To The Conflict Handler]: https://www.sqlite.org/session/c_changeset_conflict.html
-[Constants Returned From The Conflict Handler]: https://www.sqlite.org/session/c_changeset_abort.html
-[Limit Constants]: https://www.sqlite.org/c3ref/c_limit_attached.html
-[Run-Time Limits]: https://www.sqlite.org/c3ref/limit.html
-[SQL injection]: https://en.wikipedia.org/wiki/SQL_injection
-[Type conversion between JavaScript and SQLite]: #type-conversion-between-javascript-and-sqlite
+[绑定参数]: #binding-parameters
+[变更集和补丁集]: https://www.sqlite.org/sessionintro.html#changesets_and_patchsets
+[传递给冲突处理程序的常量]: https://www.sqlite.org/session/c_changeset_conflict.html
+[从冲突处理程序返回的常量]: https://www.sqlite.org/session/c_changeset_abort.html
+[限制常量]: https://www.sqlite.org/c3ref/c_limit_attached.html
+[运行时限制]: https://www.sqlite.org/c3ref/limit.html
+[SQL 注入]: https://en.wikipedia.org/wiki/SQL_injection
+[JavaScript 与 SQLite 之间的类型转换]: #type-conversion-between-javascript-and-sqlite
 [`ATTACH DATABASE`]: https://www.sqlite.org/lang_attach.html
+[`ERR_INVALID_STATE`]: errors.md#err_invalid_state
 [`PRAGMA foreign_keys`]: https://www.sqlite.org/pragma.html#pragma_foreign_keys
 [`SQLITE_DBCONFIG_DEFENSIVE`]: https://www.sqlite.org/c3ref/c_dbconfig_defensive.html#sqlitedbconfigdefensive
 [`SQLITE_DETERMINISTIC`]: https://www.sqlite.org/c3ref/c_deterministic.html
@@ -1633,11 +1643,11 @@ added:
 [`sqlite3session_patchset()`]: https://www.sqlite.org/session/sqlite3session_patchset.html
 [`statement.setAllowBareNamedParameters()`]: #statementsetallowbarenamedparametersenabled
 [`statement.setAllowUnknownNamedParameters()`]: #statementsetallowunknownnamedparametersenabled
-[busy timeout]: https://sqlite.org/c3ref/busy_timeout.html
-[connection]: https://www.sqlite.org/c3ref/sqlite3.html
-[data types]: https://www.sqlite.org/datatype3.html
-[double-quoted string literals]: https://www.sqlite.org/quirks.html#dblquote
-[in memory]: https://www.sqlite.org/inmemorydb.html
-[parameters are bound]: https://www.sqlite.org/c3ref/bind_blob.html
-[prepared statement]: https://www.sqlite.org/c3ref/stmt.html
-[safe integer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isSafeInteger
+[忙等待超时]: https://sqlite.org/c3ref/busy_timeout.html
+[连接]: https://www.sqlite.org/c3ref/sqlite3.html
+[数据类型]: https://www.sqlite.org/datatype3.html
+[双引号字符串字面量]: https://www.sqlite.org/quirks.html#dblquote
+[内存中]: https://www.sqlite.org/inmemorydb.html
+[参数已绑定]: https://www.sqlite.org/c3ref/bind_blob.html
+[预处理语句]: https://www.sqlite.org/c3ref/stmt.html
+[安全整数]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isSafeInteger

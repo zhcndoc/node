@@ -1,0 +1,14 @@
+{
+  "name": "zhcndoc-node",
+  "private": true,
+  "packageManager": "pnpm@11.21.0",
+  "scripts": {
+    "build": "doc-kit generate --config-file doc-kit.config.mjs"
+  },
+  "devDependencies": {
+    "@doc-kit/cli": "^1.0.0",
+    "@doc-kit/generator-react": "^0.1.0",
+    "@node-core/doc-kit": "^2.0.0",
+    "@node-core/doc-kit-legacy": "github:nodejs/doc-kit#main&path:/packages/node-legacy"
+  }
+}

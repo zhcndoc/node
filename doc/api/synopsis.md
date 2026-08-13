@@ -12,13 +12,11 @@
 
 ## 示例
 
-一个用 Node.js 编写的 [Web 服务器][] 示例，其响应内容为 `'Hello, World!'`：
+一个使用 Node.js 编写的[Web 服务器][]示例，它响应
+`'Hello, World!'`：
 
-本文档中的命令以 `$` 或 `>` 开头，以模拟它们在用户终端中的显示方式。不要包含 `$` 和 `>` 字符。它们用于表示每条命令的开始。
-
-不以 `$` 或 `>` 字符开头的行显示上一条命令的输出。
-
-首先，确保已下载并安装了 Node.js。请参阅 [通过包管理器安装 Node.js][] 以获取进一步的安装信息。
+首先，确保已下载并安装 Node.js。有关进一步的安装信息，请参阅
+[安装 Node.js][]。
 
 现在，创建一个名为 `projects` 的空项目文件夹，然后进入该文件夹。
 
@@ -76,10 +74,11 @@ node hello-world.js
 Server running at http://127.0.0.1:3000/
 ```
 
-现在，打开任何首选的网页浏览器并访问 `http://127.0.0.1:3000`。
+现在，打开任何首选 Web 浏览器并访问 `http://127.0.0.1:3000`。
 
-如果浏览器显示字符串 `Hello, World!`，则表示服务器正在运行。
+如果浏览器显示字符串 `Hello, World!`，则表示
+服务器正常运行。
 
 [命令行选项]: cli.md#options
-[通过包管理器安装 Node.js]: https://nodejs.org/en/download/package-manager/
-[Web 服务器]: http.md
+[安装 Node.js]: https://nodejs.org/en/download
+[Web 服务器]: http.md。

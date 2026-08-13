@@ -1,7 +1,7 @@
 # Node.js 发布流程
 
 本文档描述了 Node.js 发布流程的技术细节。
-本文档的受众是那些已被 Node.js 技术指导委员会 (TSC) 授权在 <https://nodejs.org/> 上托管官方 Node.js 发布构建的人员，他们负责创建、推广和签名这些构建。
+本文档的受众是那些已被 Node.js 技术指导委员会（TSC）授权在 <https://nodejs.org/> 上托管官方 Node.js 发布构建的人员，他们负责创建、推广和签名这些构建。
 
 ## 目录
 
@@ -33,7 +33,7 @@
   * [19. 公告](#19-公告)
   * [20. 庆祝](#20-庆祝)
 * [LTS 发布](#lts-发布)
-* [主版本发布](#主版本发布)
+* [主版本发布](#主版本发布)。
 
 ## 谁可以发布？
 
@@ -50,7 +50,7 @@
 **a.** **测试运行：**
 **[node-test-pull-request](https://ci.nodejs.org/job/node-test-pull-request/)** 用于进行最终的全面测试运行，以确保当前的 _HEAD_ 稳定。
 
-**b.** **CitGM:**
+**b.** **CitGM：**
 **[citgm-smoker](https://ci.nodejs.org/job/citgm-smoker/)** 用于运行 [CitGM](https://github.com/nodejs/citgm/) 工具，该工具会针对一组预定义的社区模块测试 Node.js 的构建版本。这在发布过程中用于确保 CitGM 所测试的常用模块在新的 Node.js 版本下没有功能回归，从而影响用户。
 
 **c.** **Nightly 构建：**（可选）
@@ -114,8 +114,8 @@ gpg --keyserver keyserver.ubuntu.com --send-keys <FINGERPRINT>
 
 说明：
 
-* 下面列出的日期以 _"YYYY-MM-DD"_ 格式表示，应为发布的日期，**按 UTC 计算**。使用 `date -u +'%Y-%m-%d'` 来查找该日期。
-* 下面列出的版本字符串以 _"vx.y.z"_ 或 _"x.y.z"_ 格式表示。请替换为发布版本。
+* 下面列出的日期以 _“YYYY-MM-DD”_ 格式表示，应为发布的日期，**按 UTC 计算**。使用 `date -u +'%Y-%m-%d'` 来查找该日期。
+* 下面列出的版本字符串以 _“vx.y.z”_ 或 _“x.y.z”_ 格式表示。请替换为发布版本。
 * 示例将使用虚构的发布版本 `1.2.3`。
 * 在准备 _安全发布_ 时，请遵循详细信息部分中的安全步骤。
 
@@ -320,6 +320,11 @@ _（如果你使用的是 `create-release-proposal` 或 `git node release --prep
 #define NODE_MAJOR_VERSION x
 #define NODE_MINOR_VERSION y
 #define NODE_PATCH_VERSION z
+
+// And for alpha releases:
+#define NODE_ALPHA_MAJOR_VERSION a
+#define NODE_ALPHA_MINOR_VERSION b
+#define NODE_ALPHA_PATCH_VERSION c
 ```
 
 将 `NODE_VERSION_IS_RELEASE` 宏值设置为 `1`。这将导致构建生成一个不带尾随预发布标签的版本字符串：
@@ -328,14 +333,22 @@ _（如果你使用的是 `create-release-proposal` 或 `git node release --prep
 #define NODE_VERSION_IS_RELEASE 1
 ```
 
+<details>
+<summary>主版本发布</summary>
+
+移除 `NODE_ALPHA_MAJOR_VERSION`、`NODE_ALPHA_MINOR_VERSION` 和
+`NODE_ALPHA_PATCH_VERSION` 宏。
+
+</details>
+
 ### 4. 更新变更日志
 
-_(如果您使用的是 `create-release-proposal` 或 `git node release --prepare`，此步骤将自动完成)_
+_(如果您使用 `create-release-proposal` 或 `git node release --prepare`，此步骤将自动完成)_
 
-#### 步骤 1：收集格式化后的变更列表
+#### 步骤 1：收集格式化的变更列表
 
-收集自上次发布以来的格式化提交列表。使用
-[`changelog-maker`](https://github.com/nodejs/changelog-maker) 来完成此操作：
+收集自上次发布以来的提交格式化列表。使用
+[`changelog-maker`](https://github.com/nodejs/changelog-maker) 执行此操作：
 
 ```bash
 changelog-maker --group --markdown
@@ -661,7 +674,7 @@ git node release -S --promote \
 ***
 
 创建新标签：通过等到此阶段才创建标签，如果出现问题或需要其他提交，您可以丢弃拟议的发布。
-一旦您创建了标签并将其推送到 GitHub，您 _**不得**_ 删除并重新标记。如果您在标记后犯了错误，您将不得不进行版本升级并重新开始，并将该标签/版本视为已丢失。
+一旦您创建了标签并将其推送到 GitHub，您 _**不得**_ 删除并重新标记。如果您在标记后犯了错误，您将不得不进行版本升级并重新开始，并将该标签／版本视为已丢失。
 
 标签摘要具有可预测的格式。查看最近的标签以了解：
 
@@ -710,8 +723,8 @@ git secure-tag <vx.y.z> <commit-sha> -sm "YYYY-MM-DD Node.js vx.y.z (<release-ty
 
 在发布提案分支上，再次编辑 `src/node_version.h` 并：
 
-* 将 `NODE_PATCH_VERSION` 加一
-* 将 `NODE_VERSION_IS_RELEASE` 改回 `0`
+* 将 `NODE_PATCH_VERSION`（或 alpha 发布的 `NODE_ALPHA_PATCH_VERSION`）递增一位。
+* 将 `NODE_VERSION_IS_RELEASE` 改回 `0`。
 
 使用以下提交消息格式提交此更改：
 
@@ -774,11 +787,13 @@ git restore --source=upstream/main src/node_version.h
 
 在 main 分支上，不要撤销对 `src/node_version.h` 所做的更改，而是编辑它并：
 
-* 将 `NODE_MAJOR_VERSION` 加一
-* 将 `NODE_PATCH_VERSION` 重置为 `0`
-* 将 `NODE_VERSION_IS_RELEASE` 改回 `0`
+* 将 `NODE_MAJOR_VERSION` 加一。
+* 将 `NODE_PATCH_VERSION` 和 `NODE_MINOR_VERSION` 重置为 `0`。
+* 将 `NODE_ALPHA_MAJOR_VERSION`、`NODE_ALPHA_MINOR_VERSION` 和
+  `NODE_ALPHA_PATCH_VERSION` 改回 `0`（`main` 应该已经是这种状态，发布提交会移除这些值）。
+* 将 `NODE_VERSION_IS_RELEASE` 改回 `0`。
 
-使用以下命令修改当前提交以应用更改：
+修改当前提交以应用这些更改：
 
 ```bash
 git commit --amend
@@ -1022,6 +1037,13 @@ git node release --prepare --startLTS
 * `NODE_VERSION_LTS_CODENAME` 宏必须设置为为 LTS 发布选择的代号。
 
 例如：
+* The `NODE_MINOR_VERSION` macro must be incremented by one.
+* The `NODE_PATCH_VERSION` macro must be set to `0`.
+* The `NODE_VERSION_IS_LTS` macro must be set to `1`.
+* The `NODE_VERSION_LTS_CODENAME` macro must be set to the code name selected
+  for the LTS release.
+
+For example:
 
 ```diff
 -#define NODE_MINOR_VERSION 12
@@ -1050,48 +1072,57 @@ git node release --prepare --startLTS
 
 ### 更新发布标签
 
-必须创建 `lts-watch-vN.x` 问题标签，其颜色应与该发布线的其他现有标签（如 `vN.x`）相同。
+必须创建 `lts-watch-vN.x` issue 标签，并使用与该发布线的其他现有标签（例如 `vN.x`）相同的颜色。
 
-如果发布正在从 Active LTS 过渡到 Maintenance，则必须删除 `backport-blocked-vN.x` 标签。
+如果发布线正从 Active LTS 转为 Maintenance，则必须删除 `backport-requested-vN.x` 标签。
 
 ### 将新代号添加到 nodejs-latest-linker
 
-为了确保新的 LTS 发布线有一个可用的下载 URL（例如：<https://nodejs.org/download/release/latest-codename/>），你需要向 <https://github.com/nodejs/nodejs-latest-linker> 提交一个 PR，并在其 `./common.js` 文件中的 `ltsNames` 映射中为新的 LTS 代号添加一个新条目。
+为了确保新 LTS 发布线可以使用下载 URL
+（例如：<https://nodejs.org/download/release/latest-codename/>），你需要向
+<https://github.com/nodejs/nodejs-latest-linker> 提交 PR，并在其 `./common.js`
+文件中 `ltsNames` 映射所在的位置添加新 LTS 代号的新条目。
 
-请务必联系 Build WG，以验证新 URL 是否作为 LTS 发布推广的一部分可用。
+请务必联系 Build WG，以便确认新 URL 在 LTS 发布推广过程中可用。
 
-### 更新发布仓库信息
+### 更新 Release 仓库信息
 
-在 <https://github.com/nodejs/Release> 仓库的 `./README.md` 文件中，将新的 LTS 代号添加到发布时间表表格中，并在同一仓库的 `./schedule.json` 文件中添加新的代号。
+将新的 LTS 代号添加到位于 <https://github.com/nodejs/Release> 仓库中的
+`./README.md` 文件内的发布计划表中，同时将新的代号添加到同一仓库中的 `./schedule.json`
+文件。
 
-## 主要版本发布
+## 重大版本发布
 
-创建新的 Node.js 主要版本发布的过程与创建次要或补丁版本发布有许多不同之处。
+切割新的 Node.js 重大版本发布的流程与切割次要版本或补丁版本发布存在一些差异。
 
-### 时间表
+### 时间安排
 
-新的 Node.js 主要版本发布每年两次：
+新的 Node.js 重大版本每年发布一次：
 
-* 偶数版本在四月发布。
-* 奇数版本在十月发布。
+* 分支分出时间为 10 月。
+* Semver-major 发布时间为 4 月。
 
-主要版本应定在发布月份的第三个星期二。
+重大版本发布应以发布月份的第三个星期二为目标日期。
 
-主要版本不得推迟到发布月份之后。换句话说，主要版本不得推迟到五月或十一月。
+重大版本发布不得推迟到发布月份之后。换句话说，重大版本发布不得推迟到 5 月。
 
-@nodejs/releasers 会提前 3 个月发出发布者招募通知。目前，此通知在 `#nodejs-release-private` Slack 频道中自动化。
+@nodejs/releasers 会提前 3 个月征集发布负责人。
 
-下一个主要版本的发布日期应在当前版本发布后立即宣布（例如，13.0.0 的发布日期应在 12.0.0 发布后立即宣布）。
+目前，此征集流程会在 `#nodejs-release-private` Slack 频道中自动进行。
 
-### 发布分支
+下一次重大版本发布的日期应在当前版本发布后立即宣布（例如，13.0.0 的发布日期应在 12.0.0 发布后立即宣布）。
 
-在大约主要版本发布前两个月，应创建新的 `vN.x` 和 `vN.x-staging` 分支（其中 `N` 表示主要版本），作为 `main` 分支的分叉。直到发布者宣布的截止日期，这些分支都必须与 `main` 保持同步。
+### 分支分出（10 月）
 
-在发布日期之前，`vN.x` 和 `vN.x-staging` 分支必须保持同步。
+#### 发布分支
 
-如果在主要版本发布日期前一个月内，默认分支上有一个 `SEMVER-MAJOR` 的拉取请求合并，则不得将其包含在新主要版本的暂存分支中，除非得到 Node.js 发布者团队的共识。此措施旨在确保发布候选（RC）阶段的稳定性，该阶段大约在正式发布前两周开始。通过限制此期间的 `SEMVER-MAJOR` 提交，我们为彻底测试提供了更多时间，并减少了主要破坏性更改的可能性，尤其是在 LTS 版本线中。
+在重大版本发布前大约 6 个月，应从 `main` 分支创建新的 `vN.x` 和 `vN.x-staging` 分支（其中 `N` 表示重大版本）。Alpha 版本应从 `main` 分支中获取提交并进行发布。第一版 Alpha 发布的目标日期应为上一条发布线升级为 LTS 状态的同一天。
 
-### 创建发布标签
+如果在重大版本发布日期前一个月内，有 `SEMVER-MAJOR` 拉取请求合并到默认分支，则不得将其包含在新的重大版本暂存分支中，除非 Node.js 发布负责人团队对此达成共识。此措施旨在确保发布候选（RC）阶段具有更好的稳定性，该阶段大约在正式发布前两周开始。
+
+通过限制此期间的 `SEMVER-MAJOR` 提交，我们可以留出更多时间进行全面测试，并降低发生重大故障的可能性。
+
+#### 创建发布标签
 
 必须创建以下问题标签：
 
@@ -1104,67 +1135,48 @@ git node release --prepare --startLTS
 
 标签描述可以从先前发布的现有标签复制。所有新标签的颜色必须相同，但必须与先前发布的标签不同。
 
-### 发布提案
+#### 初始 Alpha 发布提案
 
-应在发布前 6 周创建草稿发布提案。应创建一个单独的 `vN.x-proposal` 分支，该分支跟踪 `vN.x` 分支。此分支将包含草稿发布提交（带有草稿变更日志）。
+应在发布前创建发布提案草案。应创建一个单独的 `vN.x-proposal` 分支，用于跟踪 `vN.x` 分支。此分支将包含发布提交草案（以及变更日志草案）。
 
 通知 `@nodejs/npm` 团队在发布提案 PR 中知晓即将发布的版本。
 
-为了在发布日期之前保持分支同步，可以简单地执行以下操作：
-
-> 请确保检查没有带有 `dont-land-on-vX.x` 标签的 PR。
-
-```bash
-git checkout vN.x
-git reset --hard upstream/main
-git checkout vN.x-staging
-git reset --hard upstream/main
-git push upstream vN.x
-git push upstream vN.x-staging
-```
-
-### 更新 `NODE_MODULE_VERSION`
+##### 更新 `NODE_MODULE_VERSION`
 
 `src/node_version.h` 中的此宏用于指示原生插件的 ABI 版本。它目前在社区中有两个常见用途：
 
-* 确定编译原生插件要针对的 API，例如 [NAN](https://github.com/nodejs/nan) 使用它来形成它包装的大部分内容的兼容层。
-* 确定下载原生插件预编译二进制文件的 ABI，例如 [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) 使用此值（通过 `process.versions.modules` 暴露）来帮助确定在安装时下载的适当二进制文件。
+* 确定编译原生插件时应使用的 API，例如，[NAN](https://github.com/nodejs/nan) 使用它为其封装的大部分内容构建兼容层。
+* 确定下载原生插件预构建二进制文件时使用的 ABI，例如，[node-pre-gyp](https://github.com/mapbox/node-pre-gyp) 使用通过 `process.versions.modules` 暴露的此值，帮助确定安装时应下载的适当二进制文件。
 
-一般规则是，当存在_破坏性 ABI_更改以及非平凡的 API 更改时，增加此版本。规则尚未严格定义，因此如有疑问，请咨询具有更丰富知识的人员，例如 NAN 团队的成员。
+一般规则是，在发生 _破坏性 ABI_ 变更时，以及发生非简单 API 变更时，都应递增此版本。相关规则尚未严格定义，因此如有疑问，请咨询具有更丰富相关经验的人，例如 NAN 团队成员。
 
-目前使用的 `NODE_MODULE_VERSION` 值的注册表维护在 <https://github.com/nodejs/node/blob/HEAD/doc/abi_version_registry.json>。在增加 `NODE_MODULE_VERSION` 时，您应该选择一个注册表中未列出的新值。同时在您的提交中包含对注册表的更改，以反映新使用​​的值。确保发布提交删除正在准备的主要版本的 `-pre` 后缀。
+当前使用的 `NODE_MODULE_VERSION` 值注册表维护在 <https://github.com/nodejs/node/blob/HEAD/doc/abi_version_registry.json>。
 
-根据当前的 TSC 政策，在 ABI 更改时会增加主要版本。如果您发现在主要版本发布之外需要增加 `NODE_MODULE_VERSION`，则应咨询 TSC。提交可能需要被撤销，或者可能需要增加主要版本。
+递增 `NODE_MODULE_VERSION` 时，应选择注册表中未列出的新值。同时，在提交中加入对注册表的修改，以反映新使用的值。确保发布提交移除正在准备的重大版本的 `-pre` 后缀。
 
-### 测试发布和发布候选
+根据当前 TSC 政策，ABI 发生变更时应递增重大版本。如果你认为有必要在重大版本发布之外递增 `NODE_MODULE_VERSION`，则应咨询 TSC。可能需要回退提交，或者可能需要递增重大版本。
 
-应从大约发布前 6 周的 `vN.x-proposal` 分支生成测试构建。
+##### 变更日志
 
-应从大约发布前 4 周的 `vN.x-proposal` 分支生成发布候选，目标是每周一个发布候选。
+生成重大版本发布的变更日志比生成次要版本和补丁版本的变更日志更复杂一些。
 
-始终通过 Canary in the Goldmine 工具运行测试发布和发布候选以进行额外测试。
+###### 创建变更日志文件
 
-### 变更日志
+在 `doc/changelogs` 目录中，创建一个新的 `CHANGELOG_V{N}.md` 文件，其中 `{N}` 是发布版本的重大版本号。遵循现有 `CHANGELOG_V*.md` 文件的结构。
 
-生成主要版本变更日志比次要和补丁版本变更日志要复杂一些。
+必须更新所有 `CHANGELOG_V*.md` 文件中的导航标题，以包含新的 `CHANGELOG_V{N}.md` 文件。
 
-#### 创建变更日志文件
+文件创建后，必须更新根目录下的 `CHANGELOG.md` 文件，使其引用新创建的重大版本发布 `CHANGELOG_V{N}.md`。
 
-在 `doc/changelogs` 目录中，创建一个新的 `CHANGELOG_V{N}.md` 文件，其中 `{N}` 是发布的主要版本。遵循现有 `CHANGELOG_V*.md` 文件的结构。
+###### 生成变更日志
 
-所有 `CHANGELOG_V*.md` 文件中的导航标题必须更新，以包含新的 `CHANGELOG_V{N}.md` 文件。
+要生成规范的重大版本发布变更日志，请使用 `branch-diff` 工具比较 `vN.x` 分支和 `vN-1.x` 分支（例如，对于 Node.js 12.0，我们会将 `v12.x` 分支与最新的 `v11.x` 分支进行比较）。确保本地的旧版本分支副本是最新的。
 
-创建文件后，必须更新根 `CHANGELOG.md` 文件以引用新创建的主要版本 `CHANGELOG_V{N}.md`。
+随后必须整理生成的变更日志中的提交：
 
-#### 生成变更日志
-
-要生成正确的重大版本变更日志，请使用 `branch-diff` 工具比较 `vN.x` 分支与 `vN-1.x` 分支（例如，对于 Node.js 12.0，我们比较 `v12.x` 分支与最新的 `v11.x` 分支）。确保下级分支的本地副本是最新的。
-
-然后必须组织生成的变更日志中的提交：
-
-* 从列表中删除所有发布提交
-* 删除所有已撤销的提交及其撤销
-* 将所有 SEMVER-MAJOR、SEMVER-MINOR 和 SEMVER-PATCH 提交分开到列表中
+* 从列表中移除所有发布提交
+* 移除所有已回退的提交及其回退提交
+* 将所有 SEMVER-MAJOR、SEMVER-MINOR 和 SEMVER-PATCH 提交分别整理到不同的列表中
 
 ```console
 $ branch-diff upstream/vN-1.x upstream/vN.x --require-label=semver-major --group --filter-release --markdown # 获取所有 majors
@@ -1172,13 +1184,33 @@ $ branch-diff upstream/vN-1.x upstream/vN.x --require-label=semver-minor --group
 $ branch-diff upstream/vN-1.x upstream/vN.x --exclude-label=semver-major,semver-minor --group --filter-release --markdown # 获取所有 patches
 ```
 
-#### 生成值得注意的更改
+##### 更新预期资源
 
-对于主要版本发布，所有非严格内部、测试或文档相关的 SEMVER-MAJOR 提交都应列为值得注意的更改。一些 SEMVER-MINOR 提交可以根据具体情况列为值得注意的更改。在此处运用您的判断。
+升级脚本会进行基本检查，以确认预期文件存在。
 
-### 更新预期的资产
+在 Build 仓库中创建一个拉取请求，为新的发布线添加预期文件列表。将其作为新文件 `v{N}.x`（其中 `{N}` 是发布版本的重大版本号）添加到[预期资源][]文件夹中。发布升级前，必须由[build-infra 团队][]成员将此变更部署到 Web 服务器。
 
-推广脚本会检查预期的文件是否存在。在 Build 仓库中打开一个 PR，将新发布线（`v{N}.x`，其中 `{N}` 是发布的主要版本）的预期文件列表作为新文件添加到 [预期资产][] 文件夹中。在发布推广之前，需要由 [构建基础设施团队][] 的成员将更改部署到 Web 服务器上。
+### Semver-major 发布（4 月）
+
+#### 发布提案
+
+应在发布前 6 周创建发布提案草案。应创建一个单独的 `vN.x-proposal` 分支，用于跟踪 `vN.x` 分支。此分支将包含发布提交草案（以及变更日志草案）。
+
+通知 `@nodejs/npm` 团队在发布提案 PR 中知晓即将发布的版本。
+
+重大版本发布提案应只包含一个提交，即发布提交。所有 semver-major 变更都必须在重大版本发布前已进入某个 Alpha 版本。错过 Alpha 阶段的 semver-major 变更将包含在下一条重大版本发布线中。
+
+##### 将发布线标记为“退出 Alpha”
+
+要将发布线标记为稳定，必须对 `src/node_version.h` 进行以下修改：
+
+* 移除 `NODE_ALPHA_MAJOR_VERSION`、`NODE_ALPHA_MINOR_VERSION` 和 `NODE_ALPHA_PATCH_VERSION`。
+
+#### 生成重要变更
+
+对于重大版本发布，所有并非严格属于内部、测试或文档相关的 SEMVER-MAJOR 提交都应列为重要变更。某些 SEMVER-MINOR 提交也可以根据具体情况列为重要变更。请自行判断。
+
+在适用的情况下，加入 Alpha 版本中的重要变更。
 
 ### Snap
 

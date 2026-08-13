@@ -560,7 +560,7 @@ changes:
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_INCREMENTAL`
 * `perf_hooks.constants.NODE_PERFORMANCE_GC_WEAKCB`
 
-### 垃圾回收 ('gc') 详情
+### 垃圾回收（'gc'）详情
 
 当 `performanceEntry.type` 等于 `'gc'` 时，`performanceNodeEntry.detail` 属性将是一个包含两个属性的 {Object}：
 
@@ -579,17 +579,17 @@ changes:
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_FLAGS_ALL_EXTERNAL_MEMORY`
   * `perf_hooks.constants.NODE_PERFORMANCE_GC_FLAGS_SCHEDULE_IDLE`
 
-### HTTP ('http') 详情
+### HTTP（'http'）详情
 
 当 `performanceEntry.type` 等于 `'http'` 时，`performanceNodeEntry.detail` 属性将是一个包含附加信息的 {Object}。
 
-如果 `performanceEntry.name` 等于 `HttpClient`，`detail` 将包含以下属性：`req`, `res`。`req` 属性将是一个包含 `method`, `url`, `headers` 的 {Object}，`res` 属性将是一个包含 `statusCode`, `statusMessage`, `headers` 的 {Object}。
+如果 `performanceEntry.name` 等于 `HttpClient`，`detail` 将包含以下属性：`req`、`res`。`req` 属性将是一个包含 `method`、`url`、`headers` 的 {Object}，`res` 属性将是一个包含 `statusCode`、`statusMessage`、`headers` 的 {Object}。
 
-如果 `performanceEntry.name` 等于 `HttpRequest`，`detail` 将包含以下属性：`req`, `res`。`req` 属性将是一个包含 `method`, `url`, `headers` 的 {Object}，`res` 属性将是一个包含 `statusCode`, `statusMessage`, `headers` 的 {Object}。
+如果 `performanceEntry.name` 等于 `HttpRequest`，`detail` 将包含以下属性：`req`、`res`。`req` 属性将是一个包含 `method`、`url`、`headers` 的 {Object}，`res` 属性将是一个包含 `statusCode`、`statusMessage`、`headers` 的 {Object}。
 
 这可能会增加额外的内存开销，应仅用于诊断目的，默认情况下不应在生产环境中保持开启。
 
-### HTTP/2 ('http2') 详情
+### HTTP/2（'http2'）详情
 
 当 `performanceEntry.type` 等于 `'http2'` 时，`performanceNodeEntry.detail` 属性将是一个包含附加性能信息的 {Object}。
 
@@ -614,25 +614,25 @@ changes:
 * `streamCount` {number} `Http2Session` 处理的 `Http2Stream` 实例数。
 * `type` {string} `'server'` 或 `'client'`，用于标识 `Http2Session` 的类型。
 
-### Timerify ('function') 详情
+### Timerify（'function'）详情
 
 当 `performanceEntry.type` 等于 `'function'` 时，`performanceNodeEntry.detail` 属性将是一个 {Array}，列出计时函数的输入参数。
 
-### Net ('net') 详情
+### Net（'net'）详情
 
 当 `performanceEntry.type` 等于 `'net'` 时，`performanceNodeEntry.detail` 属性将是一个包含附加信息的 {Object}。
 
-如果 `performanceEntry.name` 等于 `connect`，`detail` 将包含以下属性：`host`, `port`。
+如果 `performanceEntry.name` 等于 `connect`，`detail` 将包含以下属性：`host`、`port`。
 
-### DNS ('dns') 详情
+### DNS（'dns'）详情
 
 当 `performanceEntry.type` 等于 `'dns'` 时，`performanceNodeEntry.detail` 属性将是一个包含附加信息的 {Object}。
 
-如果 `performanceEntry.name` 等于 `lookup`，`detail` 将包含以下属性：`hostname`, `family`, `hints`, `verbatim`, `addresses`。
+如果 `performanceEntry.name` 等于 `lookup`，`detail` 将包含以下属性：`hostname`、`family`、`hints`、`verbatim`、`addresses`。
 
-如果 `performanceEntry.name` 等于 `lookupService`，`detail` 将包含以下属性：`host`, `port`, `hostname`, `service`。
+如果 `performanceEntry.name` 等于 `lookupService`，`detail` 将包含以下属性：`host`、`port`、`hostname`、`service`。
 
-如果 `performanceEntry.name` 等于 `queryxxx` 或 `getHostByAddr`，`detail` 将包含以下属性：`host`, `ttl`, `result`。`result` 的值与 `queryxxx` 或 `getHostByAddr` 的结果相同。
+如果 `performanceEntry.name` 等于 `queryxxx` 或 `getHostByAddr`，`detail` 将包含以下属性：`host`、`ttl`、`result`。`result` 的值与 `queryxxx` 或 `getHostByAddr` 的结果相同。
 
 ## 类：`PerformanceNodeTiming`
 
@@ -1437,7 +1437,7 @@ added:
   * `active` {number}
   * `utilization` {number}
 
-`eventLoopUtilization()` 函数返回一个对象，该对象包含事件循环处于空闲和活动状态的累计持续时间，作为高分辨率毫秒计时器。`utilization` 值是计算出的事件循环利用率 (ELU)。
+`eventLoopUtilization()` 函数返回一个对象，该对象包含事件循环处于空闲和活动状态的累计持续时间，作为高分辨率毫秒计时器。`utilization` 值是计算出的事件循环利用率（ELU）。
 
 如果主线程上的引导尚未完成，则属性的值为 `0`。由于引导发生在事件循环内，因此 ELU 在 [工作线程][] 上立即可用。
 
@@ -1631,6 +1631,41 @@ added:
 
 直方图记录的样本数。
 
+### `histogram.ccdf(value)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `value` {number} 要查询的值。
+* 返回：{number} 介于 0.0 和 1.0 之间的概率。
+
+返回给定值的互补累积分布函数（CCDF）值，表示记录值超过
+`value` 的概率。等价于 `1 - histogram.cdf(value)`。
+
+### `histogram.cdf(value)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `value` {number} 要查询的值。
+* 返回：{number} 介于 0.0 和 1.0 之间的概率。
+
+返回给定值的累积分布函数（CDF）值，表示记录值小于或等于
+`value` 的概率。这是 `histogram.percentile()` 的逆操作。
+
+### `histogram.countAt(value)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `value` {number} 要查询的值。
+* 返回：{number}
+
+返回落在给定值对应值范围内的记录值数量。
+
 ### `histogram.exceeds`
 
 <!-- YAML
@@ -1652,6 +1687,55 @@ added:
 * 类型：{bigint}
 
 事件循环延迟超过最大 1 小时事件循环延迟阈值的次数。
+
+### `histogram.ksTest(other)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `other` {Histogram} 要与之比较的直方图。
+* 返回：{number} 介于 0.0 和 1.0 之间的 KS D 统计量。
+
+计算此直方图的分布与 `other` 的比较结果的 Kolmogorov-Smirnov
+检验统计量。值为 0 表示分布完全相同；接近 1 的值表示分布完全不相交。
+通过比较变更前后的直方图，可用于检测性能回归。
+
+### `histogram.kurtosis`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{number}
+
+记录值的超额峰度。用于衡量分布尾部相对于正态分布的厚重程度。正值
+表示尾部较厚（极端离群值更多）；负值表示尾部较轻。
+
+### `histogram.linearBuckets(stepSize)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `stepSize` {number} 每个线性桶的宽度。
+* 返回：{Map} 一个将桶边界值映射到计数的映射。
+
+返回按 `stepSize` 重新划分为等间距区间的直方图数据。
+适用于可视化和导出。
+
+### `histogram.logBuckets(firstBucket, base)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `firstBucket` {number} 第一个桶边界的值。
+* `base` {number} 桶宽度增长所使用的对数基数。必须大于 1。
+* 返回：{Map} 一个将桶边界值映射到计数的映射。
+
+返回重新划分为对数间距区间的直方图数据，其中每个桶的宽度乘以
+`base`。适用于可视化和导出。
 
 ### `histogram.max`
 
@@ -1753,6 +1837,18 @@ added:
 
 返回一个 `Map` 对象，详细说明累积的百分位分布。
 
+### `histogram.percentilesAt(percentiles)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `percentiles` {number\[]} 范围在 (0, 100] 内的百分位值数组。
+* 返回：{Map} 一个将百分位值映射到其对应直方图值的映射。
+
+返回指定百分位处的值，在一次高效遍历直方图数据的过程中计算得出。
+比多次调用 `histogram.percentile()` 更高效。
+
 ### `histogram.reset()`
 
 <!-- YAML
@@ -1760,6 +1856,17 @@ added: v11.10.0
 -->
 
 重置收集的直方图数据。
+
+### `histogram.skewness`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* 类型：{number}
+
+记录值的偏度。用于衡量分布的不对称性。正值表示右偏分布
+（右尾更长，延迟数据中较为常见）；负值表示左偏分布。
 
 ### `histogram.stddev`
 
@@ -1857,7 +1964,121 @@ added:
   - v14.18.0
 -->
 
-计算自上次调用 `recordDelta()` 以来经过的时间量（纳秒），并将该量记录在直方图中。
+计算自上次调用 `recordDelta()` 以来经过的时间量（以纳秒为单位），并将该时间量记录到直方图中。
+
+### `histogram.recordCorrected(val, expectedInterval)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `val` {number|bigint} 要记录的值。
+* `expectedInterval` {number|bigint} 预期的记录间隔。
+
+使用协调遗漏校正记录一个值。当系统停顿导致无法及时记录时，此方法会在上次记录的值与 `val` 之间，以 `expectedInterval` 为步长补录中间值。这样可以弥补测量间隔，否则这些间隔会导致延迟被低估。
+
+### `histogram.subtract(other)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `other` {RecordableHistogram}
+
+从此直方图中减去 `other` 的值。两个直方图应具有兼容的配置。可能变为负数的桶计数会被限制为零。
+
+## Histogram 分析示例
+
+`Histogram` 类提供了适用于性能监控、SLO 执行和回归检测的统计分析方法。
+
+### 分布形状分析
+
+```js
+const { createHistogram } = require('node:perf_hooks');
+
+const h = createHistogram();
+
+// Simulate a right-skewed latency distribution
+for (let i = 0; i < 1000; i++) {
+  h.record(Math.ceil(Math.random() * 100));
+}
+// Add some outliers
+for (let i = 0; i < 10; i++) {
+  h.record(500 + Math.ceil(Math.random() * 500));
+}
+
+console.log('Skewness:', h.skewness.toFixed(4));  // Positive = right-skewed
+console.log('Kurtosis:', h.kurtosis.toFixed(4));  // Positive = heavy tails
+```
+
+### 使用 CDF 监控 SLO
+
+```js
+const { createHistogram } = require('node:perf_hooks');
+
+const latency = createHistogram();
+
+// Record request latencies (in nanoseconds)...
+
+// "What fraction of requests complete within 100ms?"
+const withinSLO = latency.cdf(100_000_000);
+console.log(`${(withinSLO * 100).toFixed(1)}% of requests within SLO`);
+
+// "What fraction of requests exceed 500ms?"
+const violating = latency.ccdf(500_000_000);
+console.log(`${(violating * 100).toFixed(1)}% of requests violating SLO`);
+```
+
+### 使用 KS 检验进行回归检测
+
+```js
+const { createHistogram } = require('node:perf_hooks');
+
+const baseline = createHistogram();
+const current = createHistogram();
+
+// Record baseline and current latencies...
+
+// D-statistic: 0 = identical, 1 = completely different
+const d = baseline.ksTest(current);
+if (d > 0.1) {
+  console.log(`Possible regression detected (D=${d.toFixed(4)})`);
+}
+```
+
+### 批量百分位数查询
+
+```js
+const { createHistogram } = require('node:perf_hooks');
+
+const h = createHistogram();
+// Record values...
+
+// Efficiently query common monitoring percentiles in one pass
+const p = h.percentilesAt([50, 75, 90, 95, 99, 99.9]);
+console.log('p50:', p.get(50));
+console.log('p99:', p.get(99));
+```
+
+### 使用 subtract 进行快照差异比较
+
+```js
+const { createHistogram } = require('node:perf_hooks');
+
+const total = createHistogram();
+const snapshot = createHistogram();
+
+// Record values into total...
+// Periodically snapshot for "last interval" analysis:
+snapshot.add(total);
+
+// Later, take a new snapshot and diff:
+const newSnapshot = createHistogram();
+newSnapshot.add(total);
+newSnapshot.subtract(snapshot);
+// newSnapshot now contains only the values recorded since the last snapshot
+console.log('Recent p99:', newSnapshot.percentile(99));
+```
 
 ## 示例
 

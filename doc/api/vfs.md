@@ -299,6 +299,6 @@ VFS `Stats` 对象是一个真正的 [`fs.Stats`][] 实例（如果请求 `{ big
 [`RealFSProvider`]: #class-realfsprovider
 [`VirtualFileSystem`]: #class-virtualfilesystem
 [`VirtualProvider`]: #class-virtualprovider
-[`fs.BigIntStats`]: fs.md#class-fsbigintstats
+[`fs.BigIntStats`]: fs.md#class-fsstats
 [`fs.Stats`]: fs.md#class-fsstats
 [`node:fs`]: fs.md

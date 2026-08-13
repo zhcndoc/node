@@ -313,7 +313,7 @@ added: v26.1.0
 
 返回的函数具有一个 `.pointer` 属性，其中包含原生函数地址（作为 `bigint`）。
 
-如果同一个符号已经被解析过，随后使用不同的签名再次请求它将抛出异常。
+如果同一个符号已经解析过，再次使用不同的签名请求它会抛出异常。使用相同的签名再次请求它会返回同一个函数，从 [`library.functions`][] 中读取它也是如此。
 
 ```cjs
 const { DynamicLibrary, suffix } = require('node:ffi');
@@ -674,5 +674,6 @@ added: v26.6.0
 [权限模型]: permissions.md#permission-model
 [`--allow-ffi`]: cli.md#--allow-ffi
 [`ffi.toBuffer(pointer, length, copy)`]: #ffitobufferpointer-length-copy
+[`library.functions`]: #libraryfunctions
 [`using`]: https://tc39.es/proposal-explicit-resource-management/#sec-using-declarations
 [类型名称]: #type-names。

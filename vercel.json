@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npx @node-core/doc-kit generate --config-file doc-kit.config.mjs",
+  "buildCommand": "pnpm build",
   "framework": null,
-  "installCommand": "npx --version",
+  "installCommand": "pnpm install --frozen-lockfile",
   "outputDirectory": "out"
 }

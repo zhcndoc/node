@@ -221,9 +221,13 @@ diagnostics_channel.unsubscribe('my-channel', onMessage);
 added:
  - v19.9.0
  - v18.19.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64525
+    description: Marked as stable.
 -->
 
-> 稳定性：1 - 实验性
+> 稳定性：2 - 稳定
 
 * 创建：{string|TracingChannel} 通道名称或包含所有 [TracingChannel 通道][] 的对象
 * 返回：{TracingChannel} 用于追踪的通道集合
@@ -688,11 +692,17 @@ added: v26.1.0
 added:
  - v19.9.0
  - v18.19.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64525
+    description: Marked as stable.
 -->
 
-> 稳定性：1 - 实验性
+> 稳定性：2 - 稳定
 
-`TracingChannel` 类是 [TracingChannel 通道][] 的集合，共同表示单个可追踪的操作。它用于形式化并简化生成用于追踪应用程序流的事件的过程。[`diagnostics_channel.tracingChannel()`][] 用于构造 `TracingChannel`。与 `Channel` 一样，建议在文件顶层创建并重用单个 `TracingChannel`，而不是动态创建它们。
+`TracingChannel` 类是 [TracingChannel Channels][] 的集合，这些通道共同表示单个可追踪操作。它用于规范化并简化生成用于追踪应用程序流程的事件的过程。
+
+使用 [`diagnostics_channel.tracingChannel()`][] 构造 `TracingChannel`。与 `Channel` 一样，建议在文件顶层创建并复用单个 `TracingChannel`，而不是动态创建它们。
 
 #### `tracingChannel.subscribe(subscribers)`
 

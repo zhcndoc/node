@@ -1,8 +1,8 @@
 {
   "app_dir": "/",
-  "build_command": "npx @node-core/doc-kit generate --config-file doc-kit.config.mjs",
+  "build_command": "pnpm build",
   "ignore_dockerfile": false,
-  "install_command": "npm install -g @node-core/doc-kit",
+  "install_command": "pnpm install --frozen-lockfile",
   "output_dir": "out",
   "start_command": ""
 }

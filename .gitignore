@@ -10,6 +10,7 @@
 !test/fixtures/**/.*
 !.clang-format
 !.cpplint
+!.dockerignore
 !.editorconfig
 !.gitattributes
 !.github

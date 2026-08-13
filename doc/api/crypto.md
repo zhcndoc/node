@@ -4631,6 +4631,9 @@ console.log(key.toString('hex'));  // '3745e48...08d59ae'
 added: v0.11.14
 changes:
   - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65073
+    description: The `mgf1Hash` option was added.
+  - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63188
     description: 传入 CryptoKey 作为 `privateKey` 已不再受支持。
   - version:
@@ -4656,8 +4659,11 @@ changes:
 <!--lint disable maximum-line-length remark-lint-->
 
 * `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|URL}
-  * `oaepHash` {string} 用于 OAEP 填充和 MGF1 的哈希函数。
-    **默认值：** `'sha1'`
+  * `oaepHash` {string} 用于 OAEP 填充和, unless
+    `mgf1Hash` is set, MGF1 的哈希函数。 **默认值：** `'sha1'`
+  * `mgf1Hash` {string} The hash function to use for the MGF1 mask generation
+    function of OAEP padding. If not specified, the value of `oaepHash` is used.
+    This allows the OAEP digest and the MGF1 digest to differ.
   * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于 OAEP 填充的标签。如果未指定，则不使用标签。
   * `padding` {crypto.constants} 在 `crypto.constants` 中定义的可选填充值，可以是：`crypto.constants.RSA_NO_PADDING`、`crypto.constants.RSA_PKCS1_PADDING` 或
     `crypto.constants.RSA_PKCS1_OAEP_PADDING`。
@@ -4748,6 +4754,9 @@ changes:
 added: v0.11.14
 changes:
   - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65073
+    description: The `mgf1Hash` option was added.
+  - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63188
     description: 作为 `key` 传递 CryptoKey 已不再受支持。
   - version: v15.0.0
@@ -4769,8 +4778,11 @@ changes:
 * `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
   * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
     PEM 编码的公钥或私钥，或者 {KeyObject}。
-  * `oaepHash` {string} 用于 OAEP 填充和 MGF1 的哈希函数。
-    **默认值：** `'sha1'`
+  * `oaepHash` {string} 用于 OAEP 填充和, unless
+    `mgf1Hash` is set, MGF1 的哈希函数。 **默认值：** `'sha1'`
+  * `mgf1Hash` {string} The hash function to use for the MGF1 mask generation
+    function of OAEP padding. If not specified, the value of `oaepHash` is used.
+    This allows the OAEP digest and the MGF1 digest to differ.
   * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于
     OAEP 填充的标签。如果未指定，则不使用标签。
   * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} 私钥的可选
