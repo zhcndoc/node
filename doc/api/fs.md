@@ -1191,6 +1191,8 @@ changes:
    description: No longer experimental.
 -->
 
+* Returns: {Promise}
+
 Calls `filehandle.close()` and returns a promise that fulfills when the
 filehandle is closed.
 
@@ -1331,6 +1333,10 @@ changes:
 
 Asynchronously copies `src` to `dest`. By default, `dest` is overwritten if it
 already exists.
+
+Symbolic links are followed. If `src` is a symbolic link, the target file is
+copied. If `dest` is a symbolic link, the target file is overwritten unless
+`mode` contains `fs.constants.COPYFILE_EXCL`.
 
 No guarantees are made about the atomicity of the copy operation. If an
 error occurs after the destination file has been opened for writing, an attempt
@@ -2849,6 +2855,10 @@ already exists. No arguments other than a possible exception are given to the
 callback function. Node.js makes no guarantees about the atomicity of the copy
 operation. If an error occurs after the destination file has been opened for
 writing, Node.js will attempt to remove the destination.
+
+Symbolic links are followed. If `src` is a symbolic link, the target file is
+copied. If `dest` is a symbolic link, the target file is overwritten unless
+`mode` contains `fs.constants.COPYFILE_EXCL`.
 
 `mode` is an optional integer that specifies the behavior
 of the copy operation. It is possible to create a mask consisting of the bitwise
@@ -6019,6 +6029,10 @@ already exists. Returns `undefined`. Node.js makes no guarantees about the
 atomicity of the copy operation. If an error occurs after the destination file
 has been opened for writing, Node.js will attempt to remove the destination.
 
+Symbolic links are followed. If `src` is a symbolic link, the target file is
+copied. If `dest` is a symbolic link, the target file is overwritten unless
+`mode` contains `fs.constants.COPYFILE_EXCL`.
+
 `mode` is an optional integer that specifies the behavior
 of the copy operation. It is possible to create a mask consisting of the bitwise
 OR of two or more values (e.g.
@@ -7351,6 +7365,8 @@ changes:
    description: No longer experimental.
 -->
 
+* Returns: {Promise}
+
 Calls `dir.close()` if the directory handle is open, and returns a promise that
 fulfills when disposal is complete.
 
@@ -7390,6 +7406,13 @@ directory entry is a combination of the file name and file type pairs.
 Additionally, when [`fs.readdir()`][] or [`fs.readdirSync()`][] is called with
 the `withFileTypes` option set to `true`, the resulting array is filled with
 {fs.Dirent} objects, rather than strings or {Buffer}s.
+
+When a directory is read, such as with [`fs.readdir()`][] or
+[`fs.opendir()`][], the file type of each entry is the type reported by the
+operating system and may depend on the file system; for example, some file
+systems may report a type that differs from what [`fs.lstat()`][] returns.
+Node.js calls [`fs.lstat()`][] on such an entry only when the reported type
+is unknown. Use [`fs.lstat()`][] when an accurate file type is required.
 
 #### `dirent.isBlockDevice()`
 
@@ -8416,6 +8439,7 @@ of bytes written is passed as the first argument to the event handler.
     * `writeBufferLen` {number}
     * `remainingBufferLen`: {number}
   * `sync`: {boolean} Perform writes synchronously.
+* Returns: {fs.Utf8Stream}
 
 #### `utf8Stream.append`
 
