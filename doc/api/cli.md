@@ -3486,19 +3486,21 @@ When both are set, `--use-env-proxy` takes precedence.
 added:
  - v13.6.0
  - v12.17.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65389
+    description: This option is now a no-op.
 -->
 
-Re-map the Node.js static code to large memory pages at startup. If supported on
-the target system, this will cause the Node.js static code to be moved onto 2
-MiB pages instead of 4 KiB pages.
+This option is no longer supported and a no-op. It used to re-map the Node.js
+static code to large memory pages at startup.
 
-The following values are valid for `mode`:
+It still accepts the following values for compatibility:
 
 * `off`: No mapping will be attempted. This is the default.
-* `on`: If supported by the OS, mapping will be attempted. Failure to map will
-  be ignored and a message will be printed to standard error.
-* `silent`: If supported by the OS, mapping will be attempted. Failure to map
-  will be ignored and will not be reported.
+* `on`: No mapping will be attempted and a message will be printed to
+  standard error stating it's no longer supported.
+* `silent`: Same as `off`.
 
 ### `--use-system-ca`
 
@@ -3734,8 +3736,9 @@ Enable the [module compile cache][] for the Node.js instance. See the documentat
 
 ### `NODE_COMPILE_CACHE_PORTABLE=1`
 
-When set to 1, the [module compile cache][]  can be reused across different directory
-locations as long as the module layout relative to the cache directory remains the same.
+When set to 1, the [module compile cache][] can be reused across different directory
+locations as long as the module layout relative to the cache directory remains the same,
+and by any user (the cache subdirectory is not suffixed with the creating user's uid).
 
 ### `NODE_DEBUG=module[,…]`
 
@@ -4278,8 +4281,15 @@ added: v6.11.0
 Load an OpenSSL configuration file on startup. The file can be used as part of
 a [FIPS mode][] configuration.
 
+If the variable is set to an empty value, Node.js starts without loading any
+OpenSSL configuration file. This is a way past a default configuration file
+that exists but cannot be read, for example when `/etc/ssl` is not accessible
+to the user Node.js runs as, which is otherwise fatal at startup. No
+configuration is applied in that case, including any [FIPS mode][] setup the
+file would have performed.
+
 If the [`--openssl-config`][] command-line option is used, the environment
-variable is ignored.
+variable is ignored, and an empty value has no effect.
 
 ### `SSL_CERT_DIR=dir`
 
@@ -4563,7 +4573,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # prints 12
 [conditional exports]: packages.md#conditional-exports
 [context-aware]: addons.md#context-aware-addons
 [debugger]: debugger.md
-[debugging security implications]: https://nodejs.org/en/docs/guides/debugging-getting-started/#security-implications
+[debugging security implications]: https://nodejs.org/learn/getting-started/debugging#security-implications
 [deprecation warnings]: deprecations.md#list-of-deprecated-apis
 [dtls documentation]: dtls.md
 [emit_warning]: process.md#processemitwarningwarning-options
