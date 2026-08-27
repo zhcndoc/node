@@ -801,7 +801,7 @@ A `TypeError` will be thrown if `size` is not a number.
 <!-- YAML
 added: v5.10.0
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/65003
     description: Added the `alignment` argument.
   - version: v20.0.0
@@ -881,7 +881,7 @@ additional performance that [`Buffer.allocUnsafe()`][] provides.
 <!-- YAML
 added: v5.12.0
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/65003
     description: Added the `alignment` argument.
   - version: v20.0.0
@@ -2109,7 +2109,9 @@ console.log(buf.fill('zz', 'hex'));
 <!-- YAML
 added: v5.3.0
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/62390
     description: Added the `end` parameter.
   - version:
@@ -2177,7 +2179,9 @@ console.log(buf.includes('this', 4));
 <!-- YAML
 added: v1.5.0
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/62390
     description: Added the `end` parameter.
   - version: v8.0.0
@@ -2360,7 +2364,9 @@ for (const key of buf.keys()) {
 <!-- YAML
 added: v6.0.0
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/62390
     description: Added the `end` parameter.
   - version: v8.0.0
@@ -5339,7 +5345,7 @@ added:
   - v19.6.0
   - v18.15.0
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/64504
     description: Detached `ArrayBuffer`s and views backed by them are treated
                  as empty.
@@ -5360,7 +5366,7 @@ added:
   - v19.4.0
   - v18.14.0
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/64504
     description: Detached `ArrayBuffer`s and views backed by them are treated
                  as empty.

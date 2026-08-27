@@ -386,6 +386,7 @@ added: v10.0.0
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 > Stability: 1 - Experimental
@@ -464,6 +465,7 @@ run().catch(console.error);
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 > Stability: 1 - Experimental
@@ -1068,6 +1070,7 @@ the end of the file.
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 > Stability: 1 - Experimental
@@ -1421,6 +1424,9 @@ behavior is similar to `cp dir1/ dir2/`.
 <!-- YAML
 added: v22.0.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64003
+    description: Add support for the `maxDepth` option.
   - version:
      - v26.1.0
      - v24.16.0
@@ -1457,6 +1463,8 @@ changes:
     not supported.
   * `followSymlinks` {boolean} When `true`, symbolic links to directories are
     followed while expanding `**` patterns. **Default:** `false`.
+  * `maxDepth` {integer} Maximum number of directory levels to traverse.
+    The `cwd` directory has a depth of `0`. **Default:** `Infinity`.
   * `withFileTypes` {boolean} `true` if the glob should return paths as Dirents,
     `false` otherwise. **Default:** `false`.
 * Returns: {AsyncIterator} An AsyncIterator that yields the paths of files
@@ -1551,7 +1559,7 @@ link(2) documentation for more detail.
 <!-- YAML
 added: v10.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/63143
     description: Accepts an additional `signal` option to allow aborting the
                  operation.
@@ -2097,7 +2105,7 @@ Removes files and directories (modeled on the standard POSIX `rm` utility).
 <!-- YAML
 added: v10.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/63143
     description: Accepts an additional `signal` option to allow aborting the
                  operation.
@@ -2967,7 +2975,7 @@ behavior is similar to `cp dir1/ dir2/`.
 <!-- YAML
 added: v0.1.31
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/63851
     description: Add the `windowsHandle` option.
   - version: v16.10.0
@@ -3104,7 +3112,7 @@ If `options` is a string, then it specifies the encoding.
 <!-- YAML
 added: v0.1.31
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/63851
     description: Add the `windowsHandle` option.
   - version: v22.0.0
@@ -3460,7 +3468,7 @@ exception are given to the completion callback.
 <!-- YAML
 added: v0.1.95
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/63143
     description: Accepts an additional `signal` option to allow aborting the
                  operation.
@@ -3629,6 +3637,9 @@ descriptor. See [`fs.utimes()`][].
 <!-- YAML
 added: v22.0.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64003
+    description: Add support for the `maxDepth` option.
   - version:
      - v26.1.0
      - v24.16.0
@@ -3663,6 +3674,8 @@ changes:
     `true` to exclude the item, `false` to include it. **Default:** `undefined`.
   * `followSymlinks` {boolean} When `true`, symbolic links to directories are
     followed while expanding `**` patterns. **Default:** `false`.
+  * `maxDepth` {integer} Maximum number of directory levels to traverse.
+    The `cwd` directory has a depth of `0`. **Default:** `Infinity`.
   * `withFileTypes` {boolean} `true` if the glob should return paths as Dirents,
     `false` otherwise. **Default:** `false`.
 
@@ -3833,7 +3846,7 @@ exception are given to the completion callback.
 <!-- YAML
 added: v0.1.30
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/63143
     description: Accepts an additional `signal` option to allow aborting the
                  operation.
@@ -6273,6 +6286,9 @@ Synchronous version of [`fs.futimes()`][]. Returns `undefined`.
 <!-- YAML
 added: v22.0.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64003
+    description: Add support for the `maxDepth` option.
   - version:
      - v26.1.0
      - v24.16.0
@@ -6306,6 +6322,8 @@ changes:
     `true` to exclude the item, `false` to include it. **Default:** `undefined`.
   * `followSymlinks` {boolean} When `true`, symbolic links to directories are
     followed while expanding `**` patterns. **Default:** `false`.
+  * `maxDepth` {integer} Maximum number of directory levels to traverse.
+    The `cwd` directory has a depth of `0`. **Default:** `Infinity`.
   * `withFileTypes` {boolean} `true` if the glob should return paths as Dirents,
     `false` otherwise. **Default:** `false`.
 * Returns: {string\[]} paths of files that match the pattern.
