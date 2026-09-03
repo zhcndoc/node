@@ -7278,12 +7278,18 @@ startup. The following controls are also available:
 * [`--enable-fips`][] and [`--force-fips`][] enable the property query and
   additionally require the configured provider named `fips` to initialize and
   pass its self-test. Node.js exits if that check fails. `--force-fips` also
-  prevents FIPS mode from being disabled from script code.
+  prevents FIPS mode from being disabled from script code. With
+  `--force-fips=strict`, Node.js also rejects non-approved operations reported
+  through the OpenSSL FIPS indicator callback.
 * [`crypto.setFips()`][] changes the FIPS/property-query state. On OpenSSL 3, it
   does not install, load, initialize, or validate a provider. Implementations
   fetched before the call are not changed.
 * [`crypto.getFips()`][] reports the FIPS/property-query state. On OpenSSL 3, a
   return value of `1` does not prove that a FIPS provider is loaded or validated.
+* With [`--enable-fips-indicator-events`][], the
+  [`'crypto.fips.indicator'`][] diagnostics channel reports non-approved
+  operations permitted by an OpenSSL 3.4 or later FIPS provider configured for
+  backwards compatibility.
 
 With OpenSSL 1.1.1, these controls use the library's FIPS mode support and
 require a FIPS-capable OpenSSL build.
@@ -7612,7 +7618,9 @@ See the [list of SSL OP Flags][] for details.
 [SIV and GCM-SIV modes]: #siv-and-gcm-siv-modes
 [Web Crypto API documentation]: webcrypto.md
 [XTS mode]: #xts-mode
+[`'crypto.fips.indicator'`]: diagnostics_channel.md#event-cryptofipsindicator
 [`--allow-openssl-store`]: cli.md#--allow-openssl-store
+[`--enable-fips-indicator-events`]: cli.md#--enable-fips-indicator-events
 [`--enable-fips`]: cli.md#--enable-fips
 [`--force-fips`]: cli.md#--force-fips
 [`--openssl-config`]: cli.md#--openssl-configfile
