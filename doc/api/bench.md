@@ -11,7 +11,8 @@ added: REPLACEME
 <!-- source_link=lib/bench.js -->
 
 The `node:bench` module supports defining and running JavaScript benchmarks in
-the current process. To access it:
+the current process, and running one benchmark file in a fresh child process.
+To access it:
 
 ```mjs
 import { bench, suite } from 'node:bench';
@@ -38,12 +39,17 @@ suite('URL', () => {
     params: { input: 'short' },
   }, (b) => {
     const operations = 10_000;
+    let totalLength = 0;
 
     b.start();
     for (let i = 0; i < operations; i++) {
-      new URL(input);
+      totalLength += new URL(input).href.length;
     }
     b.end(operations);
+
+    if (totalLength !== operations * input.length) {
+      throw new Error('Unexpected URL result');
+    }
   });
 });
 ```
@@ -77,9 +83,69 @@ system load can all affect results. Keep raw samples when comparing results and
 investigate noisy or skewed distributions rather than treating a confidence
 interval as a pass/fail threshold.
 
+### Measurement integrity
+
+A statistically consistent result does not prove that a benchmark measured the
+intended work. An optimizing runtime can remove work whose result is unused or
+specialize it more narrowly than the workload being modeled. Framework and loop
+overhead can also dominate operations that are too short. To reduce these risks:
+
+* Make values produced by measured work observable outside the measured
+  interval, for example by validating an aggregate derived from every result.
+  Passing them only through unused local computations is insufficient.
+* Perform enough operations in each sample to amortize fixed timer reads and
+  calls to `context.start()` and `context.end()`. If loop bookkeeping is material
+  relative to one operation, batch multiple operations per iteration and report
+  the total operation count.
+* Inspect raw `samples` for trends that indicate insufficient warmup or
+  optimization tiering, pauses consistent with garbage collection, and
+  multimodal distributions.
+* Validate surprising results with an independent benchmark shape that performs
+  the same intended work differently.
+
+`node:bench` does not force a particular optimization state or infer whether an
+engine eliminated work. Such controls and diagnostics are runtime-specific and
+heuristic, and do not replace validating the benchmark workload.
+
+### Dynamic sampling and variable batches
+
 Calling `context.done()` during a measured sample completes the benchmark after
 that sample. This allows a higher-level tool to treat `samples` as a maximum and
 implement a dynamic sampling policy.
+
+The number of operations can differ between samples. Summary statistics treat
+each sample's `rate` as one equally weighted observation. In particular,
+`summary.mean` is the arithmetic mean of the per-sample rates. It is not the
+pooled throughput calculated as:
+
+```text
+1_000_000_000 * sum(sample.operations) / sum(sample.duration_ns)
+```
+
+The two values can differ when sample durations vary because pooled throughput
+weights each per-sample rate by its duration. A higher-level tool that varies
+batch sizes should choose the aggregation that matches its analysis. It can
+calculate pooled throughput from the raw `samples`; operation counts should be
+summed as `bigint` values because their total can exceed
+`Number.MAX_SAFE_INTEGER` even though each count cannot.
+
+### Comparing benchmark results
+
+`node:bench` does not designate a benchmark as a baseline or produce a pass/fail
+comparison between runs. It exposes raw samples, stable benchmark identities,
+parameters, and tags so that comparison policy can remain in higher-level
+tools. A tool can use `benchId` to match the same declaration and parameters
+across compatible source layouts, and use a tag or its own metadata to identify
+a baseline.
+
+Comparison tools should retain the raw sample rates and verify that execution
+plans and relevant environment details are comparable. The appropriate analysis
+depends on the experimental design and distribution. For example, independent
+samples might use Welch's t-test or a rank-based test, while observations that
+were deliberately paired require paired analysis. Tools should also consider
+effect sizes, uncertainty, and correction when testing multiple benchmarks.
+The general-purpose {Histogram} statistics in `node:perf_hooks` can support such
+analysis, but the runner does not select a method or significance threshold.
 
 ## Reusable runners
 
@@ -132,10 +198,31 @@ they do not corrupt reporter output.
 has lower startup overhead, but module, heap, and process state carry between
 files, and user writes share stdout and stderr with reporters.
 
+Worker-thread isolation is not a CLI mode. Each newly constructed {Worker} has a
+separate V8 isolate, JavaScript heap, and event loop, typically with lower
+startup cost than a child process. Reusing a worker preserves its module and heap
+state. Workers also share libuv's process-wide thread pool and can share
+process-global native or addon state, so they do not provide the same boundary
+as process isolation.
+
+Higher-level tools can experiment with worker isolation by loading benchmark
+code inside a worker, measuring there, transferring structured sample data, and
+passing it to [`context.record()`][]. The reported `duration_ns` can exclude
+message transport when the worker captures both timestamps. Tools should
+identify worker modules and workloads explicitly. They should not stringify
+arbitrary functions or closures to move them between isolates, because closures
+cannot be reconstructed with their original lexical environment.
+
 Benchmark files passed to `--bench` should declare benchmarks but must not call
 `run()`. The CLI supports `--bench-name-pattern`, `--bench-samples`,
 `--bench-warmup`, `--bench-reporter`, and `--bench-reporter-destination`. See
 the [command-line options documentation][] for details.
+
+Preload modules passed through `--require` or `--import` should not declare
+benchmarks. Such declarations are not associated with an entry file and have
+an `entryFile` value of `null`. Their `fileRunId` identifies the runner or child
+execution in which they occurred. With process isolation, a preload is evaluated
+and its declarations run once for every benchmark child process.
 
 ## Benchmark reporters
 
@@ -229,6 +316,9 @@ added: REPLACEME
 * `name` {string} The benchmark name. **Default:** The `name` property of `fn`,
   or `'<anonymous>'` when `fn` has no name.
 * `options` {Object}
+  * `diagnosticChannels` {Array} String diagnostics channel names, deduplicated
+    and inherited from containing suites by union. Symbol values in the array
+    are silently ignored. **Default:** `[]`.
   * `only` {boolean} When any benchmark or containing suite has `only` set,
     benchmarks without `only` in their hierarchy are skipped. **Default:**
     `false`.
@@ -259,12 +349,33 @@ samples, but their samples are discarded. An exception, rejection, timeout,
 abort, missing timing call, or duplicate timing call stops the current
 benchmark. Later benchmarks continue to run.
 
+After a timeout or abort, the runner briefly waits for asynchronous benchmark
+work to settle before continuing. If it remains pending, all later benchmarks
+that were selected to run fail without running so that their measurements
+cannot overlap with that work.
+
+For each warmup and measured callback, the runner subscribes to the configured
+diagnostics channels. Each publication queues a context diagnostic whose
+`message` is `{ name, message }`, containing the string channel name and the
+published message. Subscriptions are removed when the callback settles or is
+aborted.
+
 A timeout or abort cannot interrupt synchronous JavaScript and does not forcibly
 cancel asynchronous work that ignores `context.signal`.
 
-The stable `benchId` is based on the source file, hierarchical suite and
-benchmark names, and canonicalized parameters. Declaring the same identity
-more than once reports an error rather than merging the samples.
+The `benchId` is based on the declaration source file, hierarchical suite and
+benchmark names, and canonicalized parameters. It is stable for repeated runs
+from the same source location, but the embedded source value is not normalized
+across checkout roots, module formats, operating systems, or path casing.
+
+Execution scope is represented separately. A `runId` identifies one logical
+run, while `fileRunId` identifies a file runner or child execution within that
+run. The `entryFile` field records which entry-file import caused a declaration
+and is `null` for declarations made by preload modules.
+The same `benchId` can therefore occur under multiple `fileRunId` values when
+entry files use a shared declaration helper. Declaring the same `benchId` more
+than once within one file execution scope reports an error rather than merging
+the samples.
 
 ### `bench.skip([name][, options], fn)`
 
@@ -291,6 +402,9 @@ added: REPLACEME
 * `name` {string} The suite name. **Default:** The `name` property of `fn`, or
   `'<anonymous>'` when `fn` has no name.
 * `options` {Object}
+  * `diagnosticChannels` {Array} String diagnostics channel names inherited by
+    nested suites and benchmarks. Symbol values in the array are silently
+    ignored. **Default:** `[]`.
   * `only` {boolean} Selects all benchmarks nested in this suite. **Default:**
     `false`.
   * `skip` {boolean|string} Skips all benchmarks nested in this suite.
@@ -400,6 +514,55 @@ for await (const { type, data } of run()) {
   }
 }
 ```
+
+## `runFile(path[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `path` {string|Buffer|URL} The path of one benchmark module.
+* `options` {Object}
+  * `env` {Object} The child process environment. Property values must be
+    strings or `undefined`. This replaces, rather than extends, the parent
+    environment. **Default:** A snapshot of `process.env`.
+  * `execArgv` {string\[]} Node.js command-line options for the child process.
+    This replaces, rather than extends, inherited options. Benchmark runner
+    options, positional arguments, and options that select another execution
+    mode are not allowed. **Default:** Compatible options inherited from the
+    current process.
+  * `signal` {AbortSignal} Terminates the child process when aborted.
+* Returns: {BenchmarksStream}
+
+Runs exactly one benchmark module in a fresh child process and returns its
+object-mode event stream. A relative `path` is resolved from the current working
+directory when `runFile()` is called. `path` is not interpreted as a glob.
+Unless the signal is aborted or the stream is destroyed before startup, every
+call uses a new child. Input discovery, ordering, concurrency, retries, and
+multi-file scheduling remain the caller's responsibility.
+
+When the Permission Model is enabled, the caller must have file system read
+access to `path` and permission to create child processes.
+
+Records use advanced child process serialization, preserving supported
+structured values such as `bigint` and errors. Child writes to stdout and stderr
+become `'bench:diagnostic'` records. A permission failure, module loading error,
+abnormal child exit, or cancellation also emits an error diagnostic and produces
+a terminal `'bench:summary'` whose `success` property is `false`; these execution
+failures do not error the stream. If module evaluation fails after declaring
+benchmarks, those declarations still run before the unsuccessful summary.
+
+`env`, effective inherited options, and an explicitly provided `execArgv` are
+copied when `runFile()` is called. The runner removes `NODE_OPTIONS`, replaces
+IPC-related environment variables, and sets its private child-context, run
+identity, and file identity variables, overriding properties with those names
+in `env`. Pass child Node.js options through `execArgv`, not `NODE_OPTIONS`.
+Standard `child_process` environment propagation still applies, including
+`NODE_V8_COVERAGE`, permission-model options, and required z/OS variables.
+Aborting `signal` before the child starts produces an `AbortError` diagnostic
+without spawning it. Aborting during execution sends `SIGTERM` to the child and
+escalates to `SIGKILL` if it does not exit. Destroying the returned stream
+follows the same termination procedure.
 
 ## Class: `BenchContext`
 
@@ -511,6 +674,34 @@ useful when a higher-level tool measures work in a worker and needs to exclude
 message transport from the duration. `record()` is mutually exclusive with
 `start()` and `end()` within one callback and must be called exactly once.
 
+### `context.diagnostic(message[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `message` {any} A structured-cloneable diagnostic value. With CLI process
+  isolation, it must also be supported by advanced child process serialization.
+* `options` {Object}
+  * `level` {string} Either `'info'` or `'warning'`. **Default:** `'info'`.
+  * `detail` {any} Additional structured-cloneable diagnostic data. With CLI
+    process isolation, it must also be supported by advanced child process
+    serialization.
+* Returns: {undefined}
+
+Queues a diagnostic associated with the current benchmark, phase, and sample
+index. Multiple diagnostics preserve call order. They are emitted after the
+sample callback settles and before that sample's `'bench:sample'` event. Warmup
+diagnostics are emitted even though warmup samples are not. Diagnostics queued
+before a callback failure are emitted before the failed `'bench:complete'`
+event and do not themselves cause the benchmark to fail. If a timeout or abort
+wins before the callback settles, queued diagnostics might not be emitted.
+
+The message and detail are cloned synchronously. Options are also validated
+synchronously. Calling `diagnostic()` between `context.start()` and
+`context.end()` therefore includes that work in the measured duration. Invalid
+arguments or an uncloneable message or detail violate the sample contract.
+
 ### `context.done()`
 
 <!-- YAML
@@ -531,20 +722,83 @@ both emitted as a named event and made available on the stream as
 
 The events are emitted in execution order:
 
+* `'bench:plan'`
 * `'bench:start'`
 * `'bench:sample'`
 * `'bench:complete'`
 * `'bench:diagnostic'`
 * `'bench:summary'`
 
-Every benchmark-scoped event contains `benchId` and `parentId`.
+Named event payloads, readable records, and benchmark completion values are
+independent snapshots. Mutating a value received through one delivery mechanism
+does not change values received through the others. As with other
+{EventEmitter} events, multiple listeners for the same named event receive the
+same event payload. Memory referenced through a {SharedArrayBuffer} remains
+shared, following structured clone semantics.
+
+Once a consumer starts reading, the runner honors the stream's object-mode
+high-water mark and waits between records when the consumer is slower than the
+producer. These waits occur after sample timing has ended, and records are not
+dropped. Snapshot creation and delivery waits are excluded from benchmark
+timeout accounting. Before readable consumption starts, records accumulate in
+the standard readable buffer and are included in `readableLength`. This keeps an
+unread stream and a consumer using only named events from deadlocking, but the
+buffer can grow without bound. A named-event-only consumer that does not need
+readable records should call `stream.resume()` to discard them. Destroying the
+stream stops readable delivery but does not cancel benchmark execution, so
+benchmark completion promises still settle. Automatically scheduled
+module-level runs drain their stream internally.
+
+With process isolation, each record sent by a child is acknowledged only after
+the parent has accepted it. A child sends no additional record until it receives
+that acknowledgement, bounding the IPC relay when a reporter is slow.
+
+Every benchmark-scoped event contains `runId`, `fileRunId`, `entryFile`,
+`benchId`, `parentId`, and `namePath`. `runId` and `fileRunId` are opaque and
+change between runs. `entryFile` identifies the top-level benchmark file whose
+loading caused the declaration, while `file` identifies the source location of
+the declaration itself. `parentId` is based on the containing suite's source
+file and hierarchical name path.
+
+After asynchronous suite declarations settle, an in-process runner emits one
+`'bench:plan'` event for every benchmark it collected, in declaration order.
+All plans from that runner are emitted before its suite hooks or benchmark
+callbacks run. With process isolation, files run in separate children, so plans
+for a later file are emitted after an earlier child has completed. With no
+isolation, all files share one runner and their plans are emitted before any
+benchmark executes. Plan data contains the benchmark-scoped identity, location,
+tags, and parameters described in [benchmark result][], together with:
+
+* `diagnosticChannels` {string\[]} The inherited string channel names
+  subscribed to during each callback.
+* `samples` {number} The effective maximum number of measured callback
+  invocations after run-level overrides.
+* `warmup` {number} The effective number of unreported warmup callback
+  invocations after run-level overrides.
+* `timeout` {number|null} The timeout in milliseconds, or `null` when no timeout
+  is configured.
+* `yieldBetweenSamples` {boolean} Whether an event loop turn is scheduled between
+  sample callbacks.
+* `selected` {boolean} Whether the benchmark is eligible to run after applying
+  `skip`, `only`, and `namePattern` selection. Execution can still be prevented
+  by a duplicate declaration, suite build, hook, abort, or other runtime failure.
+* `skip` {boolean|string} When `selected` is `false`, the explicit skip value or
+  the selection reason, such as `'only'` or `'name pattern'`.
+
+The plan contains execution settings known to the runner. Runtime version,
+operating system, processor, and other environment metadata are intentionally
+left for reporters and higher-level tools to collect.
+
 `'bench:complete'` data contains a [benchmark result][]. A failed result has an
 additional `error` property and may contain samples recorded before the error.
 A skipped result has an additional `skip` property and an empty `samples`
-array. `'bench:diagnostic'` reports suite and hook errors. `'bench:summary'`
-contains overall `success`, `counts`, `duration_ns`, and `file` properties. The
-`file` is {string|null}; it is `null` when the summary aggregates multiple
-files.
+array. `'bench:diagnostic'` reports loading, suite, and hook errors as well as
+public context diagnostics. A context diagnostic contains the benchmark-scoped
+identity fields, `phase`, `index`, `message`, `level`, source location, and
+optional `detail`. `'bench:summary'` contains overall `runId`, `fileRunId`,
+`entryFile`, `success`, `counts`, `duration_ns`, and `file` properties.
+`fileRunId`, `entryFile`, and `file` are {string|null}; they are `null` when the
+summary aggregates multiple files.
 
 ## Sample result
 
@@ -560,17 +814,24 @@ Each measured sample has the following properties:
 
 A completed benchmark result contains:
 
-* `benchId` {string} The stable benchmark identity.
+* `runId` {string} The opaque logical run identity.
+* `fileRunId` {string} The opaque file runner or child execution identity.
+* `entryFile` {string|null} The top-level file that caused this declaration.
+* `benchId` {string} The stable declaration identity within the same source
+  layout.
 * `parentId` {string|null} The stable containing suite identity.
 * `name` {string} The benchmark name.
-* `file` {string} The source file.
+* `namePath` {string\[]} The hierarchical suite and benchmark names.
+* `file` {string} The declaration source file.
 * `line` {number} The source line.
 * `column` {number} The source column.
 * `tags` {string\[]} The inherited canonical tags.
 * `params` {Object} The canonical parameter metadata.
-* `samples` {Object\[]} The exact measured samples.
+* `samples` {Object\[]} The exact measured samples in measurement invocation
+  order.
 * `summary` {Object}
-  * `mean` {number} The arithmetic mean of per-sample rates.
+  * `mean` {number} The equally weighted arithmetic mean of per-sample rates,
+    not pooled throughput across all operations and durations.
   * `median` {number} The median per-sample rate.
   * `min` {number} The minimum per-sample rate.
   * `max` {number} The maximum per-sample rate.
@@ -582,6 +843,7 @@ A completed benchmark result contains:
     interval for the median rate, with `lower` and `upper` properties.
   * `skewness` {number} The skewness of the scaled rate histogram.
 
+[`context.record()`]: #contextrecordsample
 [`run()`]: #runoptions
 [benchmark result]: #benchmark-result
 [command-line options documentation]: cli.md#--bench

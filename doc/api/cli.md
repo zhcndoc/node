@@ -512,6 +512,8 @@ benchmark runner process. This reduces startup overhead but allows module,
 heap, and process state to carry between files. User writes to stdout or stderr
 also share destinations with benchmark reporters in this mode.
 
+The supported modes are `'process'` and `'none'`.
+
 ### `--bench-name-pattern=pattern`
 
 <!-- YAML
