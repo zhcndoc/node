@@ -166,6 +166,17 @@ process.permission.has('fs.read', 'custom-require.js'); // true
 process.permission.has('fs.read', 'custom-require-2.js'); // true
 .Ed
 .
+.It Fl -allow-fs-vfs
+When using the Permission Model, a virtual file system cannot be
+mounted by default: \fBvfs.mount()\fR throws \fBERR_INVALID_STATE\fR unless the
+user explicitly passes the \fB--allow-fs-vfs\fR flag when starting Node.js.
+A mounted VFS serves paths that the file system permissions do not describe,
+so mounting one is gated on its own flag rather than on \fB--allow-fs-read\fR or
+\fB--allow-fs-write\fR.
+.Bd -literal
+$ node --experimental-vfs --permission --allow-fs-vfs app.js
+.Ed
+.
 .It Fl -allow-fs-write
 This flag configures file system write permissions using
 the Permission Model.
@@ -1209,6 +1220,10 @@ For more information, see the TypeScript type-stripping documentation.
 .It Fl -no-warnings
 Silence all process warnings (including deprecations).
 .
+.It Fl -no-worker-snapshot
+Start worker threads by running the internal bootstrap from scratch instead of
+deserializing the bootstrapped context from the built-in startup snapshot.
+.
 .It Fl -node-memory-debug
 Enable extra debug checks for memory leaks in Node.js internals. This is
 usually only useful for developers debugging Node.js itself.
@@ -2014,6 +2029,8 @@ one is included in the list below.
 .It
 \fB--allow-fs-read\fR
 .It
+\fB--allow-fs-vfs\fR
+.It
 \fB--allow-fs-write\fR
 .It
 \fB--allow-inspector\fR
@@ -2197,6 +2214,8 @@ one is included in the list below.
 \fB--no-warnings\fR
 .It
 \fB--no-webstorage\fR
+.It
+\fB--no-worker-snapshot\fR
 .It
 \fB--node-memory-debug\fR
 .It
