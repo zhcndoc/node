@@ -397,6 +397,32 @@ error object, such as a {Proxy}.
 Indicates the failure of an assertion. For details, see
 [`Class: assert.AssertionError`][].
 
+## Class: `DOMException`
+
+<!-- YAML
+added: v17.0.0
+-->
+
+* Extends: {errors.Error}
+
+The Web IDL {DOMException} class. These errors are thrown by web-platform APIs
+in Node.js such as [`fetch()`][], {AbortController}, {AbortSignal}, and Web
+Streams. For details, see also [`Class: DOMException`][] on the Globals page.
+
+The [`domException.name`][] property identifies the type of the exception (for
+example, `'AbortError'`). Unlike most errors in Node.js, the
+[`domException.code`][] property is a number that corresponds to a
+[legacy error code name][Web IDL error names] (for example, `20` for
+`ABORT_ERR`).
+
+Node.js-specific APIs that support {AbortSignal} (such as
+[`events.once()`][]) throw a Node.js `AbortError` (a native {errors.Error} with
+`name` of `'AbortError'` and `code` of [`'ABORT_ERR'`][ABORT_ERR]) rather than a
+{DOMException}. To identify abort errors in either case, checking
+`err?.name === 'AbortError'` is sufficient.
+
+See also [`ABORT_ERR`][].
+
 ## Class: `RangeError`
 
 * Extends: {errors.Error}
@@ -3057,8 +3083,9 @@ A call was made and the UDP subsystem was not running.
 ### `ERR_SOCKET_HANDLE_ADOPTED`
 
 An operation was attempted on a [`BoundSocket`][] that had already been adopted
-by a [`net.Server`][] or [`net.Socket`][]. Once a bound socket is adopted, its
-`address()` and `close()` methods can no longer be used.
+by a [`net.Server`][] or [`net.Socket`][], or transferred to another thread.
+Once a bound socket is adopted or transferred, its `address()` and `close()`
+methods can no longer be used.
 
 <a id="ERR_SOURCE_MAP_CORRUPT"></a>
 
@@ -3626,9 +3653,10 @@ The `Response` that has been passed to `WebAssembly.compileStreaming` or to
 
 ### `ERR_WORKER_HANDLE_NOT_TRANSFERABLE`
 
-An attempt was made to transfer a `net.Socket` or `net.Server` to another thread
-via a `worker_threads` `postMessage()` call while it was not in a transferable
-state, for example because it had already started reading or had buffered data.
+An attempt was made to transfer a `net.Socket`, `net.Server` or
+`net.BoundSocket` to another thread via a `worker_threads` `postMessage()` call
+while it was not in a transferable state, for example because it had already
+started reading, had buffered data, or had already been adopted.
 
 <a id="ERR_WORKER_INIT_FAILED"></a>
 
@@ -4680,6 +4708,7 @@ The public key in the certificate SubjectPublicKeyInfo could not be read.
 
 An error occurred trying to allocate memory. This should never happen.
 
+[ABORT_ERR]: #abort_err
 [ES Module]: esm.md
 [ICU]: intl.md#internationalization-support
 [JSON Web Key Elliptic Curve Registry]: https://www.iana.org/assignments/jose/jose.xhtml#web-key-elliptic-curve
@@ -4693,6 +4722,7 @@ An error occurred trying to allocate memory. This should never happen.
 [V8's stack trace API]: https://v8.dev/docs/stack-trace-api
 [WHATWG Supported Encodings]: util.md#whatwg-supported-encodings
 [WHATWG URL API]: url.md#the-whatwg-url-api
+[Web IDL error names]: https://webidl.spec.whatwg.org/#dfn-error-names-table
 [`"exports"`]: packages.md#exports
 [`"imports"`]: packages.md#imports
 [`'uncaughtException'`]: process.md#event-uncaughtexception
@@ -4700,7 +4730,9 @@ An error occurred trying to allocate memory. This should never happen.
 [`--force-fips`]: cli.md#--force-fips
 [`--no-addons`]: cli.md#--no-addons
 [`--unhandled-rejections`]: cli.md#--unhandled-rejectionsmode
+[`ABORT_ERR`]: #abort_err
 [`BoundSocket`]: net.md#class-netboundsocket
+[`Class: DOMException`]: globals.md#class-domexception
 [`Class: assert.AssertionError`]: assert.md#class-assertassertionerror
 [`ERR_INCOMPATIBLE_OPTION_PAIR`]: #err_incompatible_option_pair
 [`ERR_INVALID_ARG_TYPE`]: #err_invalid_arg_type
@@ -4729,10 +4761,13 @@ An error occurred trying to allocate memory. This should never happen.
 [`dgram.createSocket()`]: dgram.md#dgramcreatesocketoptions-callback
 [`dgram.disconnect()`]: dgram.md#socketdisconnect
 [`dgram.remoteAddress()`]: dgram.md#socketremoteaddress
+[`domException.code`]: https://developer.mozilla.org/en-US/docs/Web/API/DOMException/code
 [`domException.name`]: https://developer.mozilla.org/en-US/docs/Web/API/DOMException/name
 [`errno`(3) man page]: https://man7.org/linux/man-pages/man3/errno.3.html
 [`error.code`]: #errorcode
 [`error.message`]: #errormessage
+[`events.once()`]: events.md#eventsonceemitter-name-options
+[`fetch()`]: globals.md#fetch
 [`fs.Dir`]: fs.md#class-fsdir
 [`fs.cp()`]: fs.md#fscpsrc-dest-options-callback
 [`fs.readFileSync`]: fs.md#fsreadfilesyncpath-options

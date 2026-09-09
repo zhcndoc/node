@@ -99,7 +99,9 @@ Adds a rule to block the given IP address.
 ### `blockList.addAddresses(addresses[, type])`
 
 <!-- YAML
-added: v26.8.0
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `addresses` {string\[]|net.SocketAddress\[]} An array of IPv4 or IPv6
@@ -114,7 +116,9 @@ are inserted under a single internal lock acquisition.
 ### `blockList.addCIDR(cidr)`
 
 <!-- YAML
-added: v26.8.0
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `cidr` {string} An IPv4 or IPv6 subnet in CIDR notation (e.g.
@@ -128,7 +132,9 @@ the parsed network address, prefix length, and family.
 ### `blockList.addCIDRs(cidrs)`
 
 <!-- YAML
-added: v26.8.0
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `cidrs` {string\[]} An array of IPv4 or IPv6 subnets in CIDR notation.
@@ -202,7 +208,9 @@ console.log(blockList.check('::ffff:123.123.123.123', 'ipv6')); // Prints: true
 ### `blockList.clear()`
 
 <!--
-added: v26.8.0
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 Clears all rules from the `BlockList`.
@@ -245,7 +253,9 @@ added:
 ### `BlockList.PRIVATE_RANGES`
 
 <!-- YAML
-added: v26.8.0
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * Type: {string\[]}
@@ -277,7 +287,9 @@ console.log(blockList.check('8.8.8.8'));       // Prints: false
 ### `blockList.removeAddress(address[, type])`
 
 <!-- YAML
-added: v26.8.0
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `address` {string|net.SocketAddress} An IPv4 or IPv6 address.
@@ -290,7 +302,9 @@ specified address does not exist, this is a no-op.
 ### `blockList.removeCIDR(cidr)`
 
 <!-- YAML
-added: v26.8.0
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `cidr` {string} An IPv4 or IPv6 subnet in CIDR notation (e.g.
@@ -304,7 +318,9 @@ and family. If the specified subnet does not exist, this is a no-op.
 ### `blockList.removeRange(start, end[, type])`
 
 <!-- YAML
-added: v26.8.0
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `start` {string|net.SocketAddress} The starting IPv4 or IPv6 address in the
@@ -319,7 +335,9 @@ If the specified range does not exist, this is a no-op.
 ### `blockList.removeSubnet(net, prefix[, type])`
 
 <!-- YAML
-added: v26.8.0
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `net` {string|net.SocketAddress} The network IPv4 or IPv6 address.
@@ -347,7 +365,9 @@ The list of rules added to the blocklist.
 ### `blockList.size`
 
 <!-- YAML
-added: v26.8.0
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * Type: {number}
@@ -985,6 +1005,13 @@ server.listen(8000);
 
 A listening [`net.Server`][] can be transferred the same way, which moves the
 listening socket itself (and its pending accept queue) to the receiving thread.
+
+An un-adopted TCP [`BoundSocket`][] can also be transferred, which moves the
+bound (but not yet listening or connected) socket. This allows a port to be
+reserved synchronously on one thread and adopted by a server or outgoing
+connection on another. Pipe binds are not transferable. After the transfer, the
+source `BoundSocket` behaves as if it had been adopted: `address()`, `fd()` and
+`close()` throw [`ERR_SOCKET_HANDLE_ADOPTED`][].
 
 ### `new net.Socket([options])`
 
@@ -1921,6 +1948,13 @@ file system entry; abstract and TCP binds have none to remove.
 When a pipe `BoundSocket` bound to a source `path` is adopted as a client, that
 path is reported as the socket's `localAddress` once it connects.
 
+An un-adopted TCP `BoundSocket` can be moved to another thread by listing it in
+the `transferList` of a [`worker_threads`][] `postMessage()` call, see
+[Transferring TCP handles to other threads][]. It can likewise be sent to a
+child process as the `sendHandle` argument of [`subprocess.send()`][]. In both
+cases the source is left in the adopted state. Pipe binds cannot be moved
+either way.
+
 When an adopted `BoundSocket` connects to a numeric IP literal, `connect(2)` is
 issued synchronously, so [`socket.localAddress`][] is resolved once
 [`socket.connect()`][] returns. Connection failures are still reported via a
@@ -2644,6 +2678,7 @@ console.log('listening on', server.address().port);
 [`socket.setTimeout()`]: #socketsettimeouttimeout-callback
 [`socket.setTimeout(timeout)`]: #socketsettimeouttimeout-callback
 [`stream.getDefaultHighWaterMark()`]: stream.md#streamgetdefaulthighwatermarkobjectmode
+[`subprocess.send()`]: child_process.md#subprocesssendmessage-sendhandle-options-callback
 [`worker_threads`]: worker_threads.md
 [`writable.destroy()`]: stream.md#writabledestroyerror
 [`writable.destroyed`]: stream.md#writabledestroyed
