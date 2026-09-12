@@ -3034,8 +3034,7 @@ changes:
 Checks whether the certificate matches the given email address.
 
 If the `'subject'` option is undefined or set to `'default'`, the certificate
-subject is only considered if the subject alternative name extension either does
-not exist or does not contain any email addresses.
+subject is considered according to OpenSSL's default behavior.
 
 If the `'subject'` option is set to `'always'` and if the subject alternative
 name extension either does not exist or does not contain a matching email
@@ -3079,9 +3078,7 @@ comparisons are case-insensitive, the returned subject name might also differ
 from the given `name` in capitalization.
 
 If the `'subject'` option is undefined or set to `'default'`, the certificate
-subject is only considered if the subject alternative name extension either does
-not exist or does not contain any DNS names. This behavior is consistent with
-[RFC 2818][] ("HTTP Over TLS").
+subject is considered according to OpenSSL's default behavior.
 
 If the `'subject'` option is set to `'always'` and if the subject alternative
 name extension either does not exist or does not contain a matching DNS name,
@@ -5518,6 +5515,39 @@ const derivedKey = hkdfSync('sha512', 'key', 'salt', 'info', 64);
 console.log(Buffer.from(derivedKey).toString('hex'));  // '24156e2...5391653'
 ```
 
+### `crypto.parsePKCS12(bundle[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `bundle` {ArrayBuffer|Buffer|TypedArray|DataView} A DER-encoded PKCS#12
+  (`.p12` or `.pfx`) bundle.
+* `options` {Object}
+  * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} The passphrase
+    protecting the bundle. Omitting this option is equivalent to passing `''`.
+* Returns: {Object}
+  * `privateKey` {KeyObject|null} The first private key in the bundle, or
+    `null` if none is present.
+  * `certificate` {X509Certificate|null} The certificate matching `privateKey`,
+    or `null` if no matching certificate is present.
+  * `additionalCertificates` {X509Certificate\[]} All other certificates in
+    the bundle. If there is no private key, this contains all certificates.
+    May be empty.
+
+Parses a PKCS#12 bundle, commonly stored with a `.p12` or `.pfx` extension,
+and returns its private key and certificates.
+
+```mjs
+import { parsePKCS12 } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+
+const { privateKey, certificate, additionalCertificates } = parsePKCS12(
+  readFileSync('bundle.p12'),
+  { passphrase: 'secret' },
+);
+```
+
 ### `crypto.pbkdf2(password, salt, iterations, keylen, digest, callback)`
 
 <!-- YAML
@@ -7607,7 +7637,6 @@ See the [list of SSL OP Flags][] for details.
 [Permission Model]: permissions.md#permission-model
 [RFC 1421]: https://www.rfc-editor.org/rfc/rfc1421.txt
 [RFC 2409]: https://www.rfc-editor.org/rfc/rfc2409.txt
-[RFC 2818]: https://www.rfc-editor.org/rfc/rfc2818.txt
 [RFC 3526]: https://www.rfc-editor.org/rfc/rfc3526.txt
 [RFC 3610]: https://www.rfc-editor.org/rfc/rfc3610.txt
 [RFC 4055]: https://www.rfc-editor.org/rfc/rfc4055.txt
