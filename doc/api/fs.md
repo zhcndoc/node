@@ -1424,7 +1424,7 @@ behavior is similar to `cp dir1/ dir2/`.
 <!-- YAML
 added: v22.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.9.0
     pr-url: https://github.com/nodejs/node/pull/64003
     description: Add support for the `maxDepth` option.
   - version:
@@ -3654,7 +3654,7 @@ descriptor. See [`fs.utimes()`][].
 <!-- YAML
 added: v22.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.9.0
     pr-url: https://github.com/nodejs/node/pull/64003
     description: Add support for the `maxDepth` option.
   - version:
@@ -6311,7 +6311,7 @@ Synchronous version of [`fs.futimes()`][]. Returns `undefined`.
 <!-- YAML
 added: v22.0.0
 changes:
-  - version: REPLACEME
+  - version: v26.9.0
     pr-url: https://github.com/nodejs/node/pull/64003
     description: Add support for the `maxDepth` option.
   - version:
@@ -6576,6 +6576,20 @@ with the [`using`][] syntax.
 
 The optional `options` argument can be a string specifying an encoding, or an
 object with an `encoding` property specifying the character encoding to use.
+
+### `fs.openAsBlobSync(path[, options])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `path` {string|Buffer|URL}
+* `options` {Object}
+  * `type` {string} An optional mime type for the blob.
+* Returns: {Blob}
+
+For detailed information, see the documentation of the Promise-returning
+version of this API: [`fs.openAsBlob()`][].
 
 ### `fs.opendirSync(path[, options])`
 
@@ -9584,6 +9598,7 @@ the file contents.
 [`fs.mkdir()`]: #fsmkdirpath-options-callback
 [`fs.mkdtemp()`]: #fsmkdtempprefix-options-callback
 [`fs.open()`]: #fsopenpath-flags-mode-callback
+[`fs.openAsBlob()`]: #fsopenasblobpath-options
 [`fs.opendir()`]: #fsopendirpath-options-callback
 [`fs.opendirSync()`]: #fsopendirsyncpath-options
 [`fs.read()`]: #fsreadfd-buffer-offset-length-position-callback
