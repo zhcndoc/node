@@ -106,7 +106,7 @@ added: v26.10.0
   * `create` {Function} Called with the resolved path and its [`fs.Stats`][].
     Returns the {VirtualProvider} backing the source.
 
-Registers a provider that [`--vfs-mount`][] can select for a source it
+Registers a provider that [`--vfs-load`][] can select for a source it
 recognizes, so a file format Node.js has no built-in provider for can still be
 mounted.
 
@@ -118,7 +118,7 @@ source, the built-in providers handle it: a directory with
 [`RealFSProvider`][], and a file whose bytes are a ZIP archive with
 [`ZipProvider`][].
 
-Providers must be registered before the mounts are created. Register from a
+Providers must be registered before the source is mounted. Register from a
 module preloaded with [`--require`][] or [`--import`][]:
 
 ```cjs
@@ -645,11 +645,11 @@ the VFS API. `provider.readonly` reflects the archive's own
 `ZipFile` is writable only when opened with `{ writable: true }`.
 
 Directories are recognized both explicitly (an entry whose name ends in `/`)
-and implicitly (any entry name starting with `"<dir>/"`). `readdir()` does
-not support `{ recursive: true }`. Because a ZIP member cannot be edited or
-read in place - only fully written or fully decompressed - a file opened for
-writing only commits its content (as a new archive entry) when the handle is
-closed.
+and implicitly (any entry name starting with `"<dir>/"`), and are listed by
+`readdir()`, including with `{ recursive: true }`, either way. Because a ZIP
+member cannot be edited or read in place - only fully written or fully
+decompressed - a file opened for writing only commits its content (as a new
+archive entry) when the handle is closed.
 
 Every method has a synchronous counterpart (`openSync()`, `statSync()`,
 `readdirSync()`, and so on), backed by the equally complete synchronous
@@ -702,7 +702,7 @@ fields use synthetic but stable values:
 [Single Executable Application]: single-executable-applications.md
 [`--import`]: cli.md#--importmodule
 [`--require`]: cli.md#-r---require-module
-[`--vfs-mount`]: cli.md#--vfs-mountsource
+[`--vfs-load`]: cli.md#--vfs-loadsource
 [`MemoryProvider`]: #class-memoryprovider
 [`RealFSProvider`]: #class-realfsprovider
 [`VirtualFileSystem`]: #class-virtualfilesystem
