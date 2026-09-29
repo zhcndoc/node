@@ -55,14 +55,36 @@ added: v0.5.8
 
 <!-- YAML
 added: v0.7.7
+changes:
+  - version:
+     - v26.8.0
+     - v24.21.0
+    pr-url: https://github.com/nodejs/node/pull/64140
+    description: The `mode` argument supports `'raw'` and `'io'`.
 -->
 
-* `mode` {boolean} 如果为 `true`，配置 `tty.ReadStream` 作为原始设备运行。如果为 `false`，配置 `tty.ReadStream` 以其默认模式运行。`readStream.isRaw` 属性将设置为结果模式。
+* `mode` {boolean|string} 如果为 `true` 或 `'raw'`，则将 `tty.ReadStream` 配置为作为原始设备运行。如果为 `'io'`，则将 `tty.ReadStream` 配置为以二进制安全 I/O 模式运行。如果为 `false`，则将 `tty.ReadStream` 配置为以默认模式运行。`readStream.isRaw` 属性将被设为一个值，以指示流是否处于原始模式；`readStream.rawMode` 属性将被设为最终模式。
 * 返回：{this} 读取流实例。
 
 允许配置 `tty.ReadStream` 使其作为原始设备运行。
 
 处于原始模式时，输入总是逐字符可用，不包括修饰键。此外，终端对输入字符的所有特殊处理都会被禁用，包括回显输入字符。处于此模式时，<kbd>Ctrl</kbd>+<kbd>C</kbd> 将不再导致 `SIGINT`。此模式不会影响终端输出处理，例如 Unix 终端上的换行翻译。
+
+在 Windows 上，`setRawMode()` 需要对控制台输入缓冲区拥有写入权限。使用 [`fs.open()`][] 系列 API 打开 `"\\\\.\\CONIN$"`（以传递给 `new tty.ReadStream()`）时，请务必使用诸如 `'r+'` 这样的读写标志。
+
+处于二进制安全 I/O 模式时，终端输出处理也会被禁用。这对应于 libuv 的 `UV_TTY_MODE_IO` 模式，且 Windows 不支持此模式。
+
+### `readStream.rawMode`
+
+<!-- YAML
+added:
+ - v26.8.0
+ - v24.21.0
+-->
+
+* {boolean|string}
+
+`tty.ReadStream` 当前的原始模式。当流处于默认模式时，此值为 `false`；启用原始输入模式时为 `'raw'`；启用二进制安全 I/O 模式时为 `'io'`。
 
 ## 类：`tty.WriteStream`
 
@@ -283,7 +305,8 @@ added: v0.5.8
 
 如果给定的 `fd` 与 TTY 关联，`tty.isatty()` 方法返回 `true`，如果不关联则返回 `false`，包括当 `fd` 不是非负整数时。
 
-[`net.Socket` 构造函数]: net.md#new-netsocketoptions
+[`fs.open()`]: fs.md#fsopenpath-flags-mode-callback
+[`net.Socket` constructor]: net.md#new-netsocketoptions
 [`process.stderr`]: process.md#processstderr
 [`process.stdin`]: process.md#processstdin
 [`process.stdout`]: process.md#processstdout

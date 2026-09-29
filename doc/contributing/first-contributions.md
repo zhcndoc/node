@@ -126,9 +126,11 @@ rebase 之后，你还需要审查者给出新的批准。
 
 ### Q: 我的拉取请求需要通过哪些 CI 检查？
 
-Node.js 使用两个 CI 系统：[Jenkins](https://ci.nodejs.org/) 和 GitHub Actions。Jenkins 是用于测试拉取请求的主要
-CI 系统，而 GitHub Actions 用于快速检查和额外验证。仅涉及文档的拉取请求只需要通过 GitHub Actions
-检查。凡是涉及文档以外内容的拉取请求都会被标记为 `needs-ci`，并且在合并前需要先运行 Jenkins CI。
+Node.js 使用两套 CI 系统：[Jenkins](https://ci.nodejs.org/) 和 GitHub Actions。Jenkins 是用于测试拉取请求的主要
+CI 系统，而 GitHub Actions 用于快速检查和额外验证。只修改文档的拉取请求只需通过 GitHub Actions
+检查。影响 `node` 二进制文件的拉取请求还需要通过 Jenkins CI，才能被合并。自动化会根据更改的文件
+判断这项要求，并可能添加 `needs-ci` 标签。该标签说明所需的 CI 类型；它并不表示 CI 仍在等待运行，并且
+在成功运行后仍然适用。移除该标签并不能免除 CI 要求。
 
 ### Q: 我如何触发 CI 运行？
 
@@ -162,10 +164,12 @@ Node.js 的 CI 已知存在不稳定性。请查阅
 
 ### Q: 我的拉取请求已经有足够的批准并且通过了 CI，但仍然没有合并。我该怎么办？
 
-拉取请求需要由协作者或 triager 合并（通常是通过添加 `commit-queue` 标签）。
-[commit queue 自动化](../../.github/workflows/commit-queue.yml)会在合并前验证拉取请求是否满足所有要求，
-但是否触发 commit queue 仍然需要人工判断，并且取决于志愿者。
-你可以像请求审查和触发 CI 运行那样，在拉取请求中或 Slack 频道里寻求帮助。
+拉取请求需要由协作者或 triager 合并（通常通过添加 `commit-queue`
+标签）。拉取请求作者确认已准备就绪且当前 CI 已通过后，协作者无需等待第二个批准，就可以将其
+加入队列。[commit queue 自动化](../../.github/workflows/commit-queue.yml)会验证相关要求，
+并等待拉取请求满足以下任一条件：获得两个批准且已开放 48 小时，或获得一个批准且已开放七天。
+触发 commit queue 仍然需要人工判断，并依赖志愿者。
+你可以在拉取请求中或 Slack 频道里寻求帮助，方式与请求协助审查和触发 CI 运行类似。
 
 ### Q: 有评论说我的拉取请求已经落地了，但我看到的却是我的拉取请求被关闭了，这是怎么回事？
 

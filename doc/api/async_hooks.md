@@ -717,8 +717,9 @@ const server = net.createServer((conn) => {
 
 ```js
 const server = net.createServer((conn) => {
-  // 导致（或触发）调用此回调的资源是新连接的资源。因此 triggerAsyncId()
-  // 的返回值是 "conn" 的 asyncId。
+  // Returns the triggerAsyncId of the server, not of the new connection,
+  // because the callback runs in the execution scope of the server's
+  // MakeCallback().
   async_hooks.triggerAsyncId();
 
 }).listen(port, () => {
@@ -857,4 +858,4 @@ Promise.resolve(1729);
 [`init` callback]: #initasyncid-type-triggerasyncid-resource
 [`process.getActiveResourcesInfo()`]: process.md#processgetactiveresourcesinfo
 [`promiseResolve` callback]: #promiseresolveasyncid
-[promise execution tracking]: #promise-execution-tracking
+[promise 执行跟踪]: #promise-execution-tracking

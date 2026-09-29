@@ -790,7 +790,7 @@ added: v0.1.26
 
 移除所有监听器，或指定 `eventName` 的监听器。
 
-移除代码其他地方添加的监听器是不好的做法，特别是当 `EventEmitter` 实例是由其他组件或模块（例如 sockets 或 file streams）创建时。
+移除代码其他地方添加的监听器是不好的做法，特别是当 `EventEmitter` 实例是由其他组件或模块（例如套接字或文件流）创建时。
 
 返回 `EventEmitter` 的引用，以便可以链式调用。
 
@@ -1727,6 +1727,10 @@ added:
  - v20.5.0
  - v18.18.0
 changes:
+ - version: REPLACEME
+   pr-url: https://github.com/nodejs/node/pull/65640
+   description: 当信号已中止时，监听器现在会收到一个
+                `abort` 事件，并且释放会取消待处理的调用。
  - version:
    - v24.0.0
    - v22.16.0
@@ -1745,6 +1749,8 @@ changes:
 此 API 允许在 Node.js API 中安全地使用 `AbortSignal`，通过监听事件使得 `stopImmediatePropagation` 不会阻止监听器运行，从而解决这两个问题。
 
 返回一个 disposable，以便更容易取消订阅。
+
+如果 `signal` 已经中止，监听器会在微任务中收到一个 `abort` 事件。在该微任务运行之前释放，会取消此次调用。
 
 ```cjs
 const { addAbortListener } = require('node:events');
@@ -1914,10 +1920,10 @@ Node.js `EventTarget` 与 [`EventTarget` Web API][] 之间有两个主要区别�
 
 ### `NodeEventTarget` 与 `EventEmitter`
 
-`NodeEventTarget` 对象实现了 `EventEmitter` API 的修改子集，使其在某些情况下能够 closely _模拟_ `EventEmitter`。`NodeEventTarget` _不是_ `EventEmitter` 的实例，在大多数情况下不能代替 `EventEmitter` 使用。
+`NodeEventTarget` 对象实现了 `EventEmitter` API 的修改子集，使其在某些情况下能够紧密 _模拟_ `EventEmitter`。`NodeEventTarget` _不是_ `EventEmitter` 的实例，在大多数情况下不能代替 `EventEmitter` 使用。
 
 1. 与 `EventEmitter` 不同，任何给定的 `listener` 每个事件 `type` 最多只能注册一次。尝试多次注册 `listener` 将被忽略。
-2. `NodeEventTarget` 不模拟完整的 `EventEmitter` API。 Specifically the `prependListener()`、`prependOnceListener()`、`rawListeners()` 和 `errorMonitor` API 未被模拟。`'newListener'` 和 `'removeListener'` 事件也不会被触发。
+2. `NodeEventTarget` 不模拟完整的 `EventEmitter` API。具体来说，`prependListener()`、`prependOnceListener()`、`rawListeners()` 和 `errorMonitor` API 未被模拟。`'newListener'` 和 `'removeListener'` 事件也不会被触发。
 3. `NodeEventTarget` 不对类型为 `'error'` 的事件实现任何特殊的默认行为。
 4. `NodeEventTarget` 支持 `EventListener` 对象以及函数作为所有事件类型的处理器。
 

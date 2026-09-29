@@ -3,13 +3,13 @@
 <!--introduced_in=v0.10.0-->
 
 * [关于本文档](documentation.md)
-* [用法和示例](synopsis.md)
 
 <hr class="line"/>
 
 * [断言测试](assert.md)
 * [异步上下文跟踪](async_context.md)
 * [异步钩子](async_hooks.md)
+* [基准测试运行器](bench.md)
 * [Buffer](buffer.md)
 * [C++ 插件](addons.md)
 * [使用 Node-API 的 C/C++ 插件](n-api.md)

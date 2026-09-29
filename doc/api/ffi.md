@@ -24,7 +24,7 @@ import ffi from 'node:ffi';
 const ffi = require('node:ffi');
 ```
 
-在启用 FFI 支持的构建中，该模块仅在 `node:` 方案下可用，并且需要通过 `--experimental-ffi` 标志进行启用。
+此模块仅在支持 FFI 的构建中通过 `node:` 方案提供。可以使用 `--no-experimental-ffi` 标志禁用它。
 
 通过捆绑的 `libffi` 在 `libffi` 提供兼容的静态后端的平台上，可以使用 `node:ffi` 支持构建 Node.js；或者在使用共享 `libffi` 的情况下通过 `--shared-ffi` 配置标志启用。
 非官方的 GN 构建不支持 `node:ffi`。
@@ -53,23 +53,41 @@ FFI 签名使用字符串类型名称。
 
 * `void`
 * `char`
-* `i8`, `int8`
-* `u8`, `uint8`, `bool`
-* `i16`, `int16`
-* `u16`, `uint16`
-* `i32`, `int32`
-* `u32`, `uint32`
-* `i64`, `int64`
-* `u64`, `uint64`
-* `f32`, `float`, `float32`
-* `f64`, `double`, `float64`
-* `pointer`, `ptr`
-* `string`, `str`
+* `int8`
+* `uint8`
+* `int16`
+* `uint16`
+* `int32`
+* `uint32`
+* `int64`
+* `uint64`
+* `float32`
+* `float64`
+* `pointer`
+* `string`
 * `buffer`
 * `arraybuffer`
 * `function`
 
-这些类型名称也作为常量暴露在 `ffi.types` 上：
+<details>
+<summary>其他拼写形式</summary>
+
+* `i8` 表示 `int8`
+* `u8` 和 `bool` 表示 `uint8`
+* `i16` 表示 `int16`
+* `u16` 表示 `uint16`
+* `i32` 表示 `int32`
+* `u32` 表示 `uint32`
+* `i64` 表示 `int64`
+* `u64` 表示 `uint64`
+* `f32` 和 `float` 表示 `float32`
+* `f64` 和 `double` 表示 `float64`
+* `ptr` 表示 `pointer`
+* `str` 表示 `string`
+
+</details>
+
+这些类型名称也作为常量公开在 `ffi.types` 上：
 
 * `ffi.types.VOID` = `'void'`
 * `ffi.types.POINTER` = `'pointer'`
@@ -98,13 +116,26 @@ FFI 签名使用字符串类型名称。
 
 在原生调用处于活动状态时（包括通过 FFI 回调等可重入 JavaScript 进行的操作），调整、转移、分离或以其他方式使该底层存储失效都不受支持且是危险的。这样做可能导致进程崩溃、产生不正确的输出，或破坏内存。
 
-`char` 类型遵循平台 C ABI。在普通 C `char` 为有符号的那些平台上，它表现得如同 `i8`；否则表现得如同 `u8`。
+`char` 类型遵循平台 C ABI。在普通 C `char` 为有符号的平台上，它的行为类似于 `int8`；否则，它的行为类似于 `uint8`。
 
 `bool` 类型会以 8 位无符号整数的形式进行封送（marshaled）。传入诸如 `0` 和 `1` 这类数值；不接受 JavaScript 的 `true` 和 `false`。
 
-在优化的 Fast FFI 调用中，`pointer`、`ptr` 和 `function` 参数接受原始指针 `bigint` 值。对于类似指针的参数，`null`、`undefined`、字符串、`Buffer`、类型化数组、`DataView` 和 `ArrayBuffer` 值会在调用优化后的原生包装器之前先在 JavaScript 侧进行转换。
+在优化的 Fast FFI 调用中，`pointer` 和 `function` 参数接受原始指针 `bigint` 值。对于类似指针的参数，`null`、`undefined`、字符串、`Buffer`、类型化数组、`DataView` 和 `ArrayBuffer` 值会在调用优化的原生包装器之前在 JavaScript 端进行转换。
 
-优化后的 Fast FFI 调用最多支持 8 个函数参数，但具体限制取决于架构和参数类型，因为每个参数都必须适配平台跳板所使用的寄存器。整数和指针参数在 AArch64 上最多为 7 个，在 x86-64 上最多为 6 个，而浮点参数在两者上都最多可用 8 个。超过这些限制的函数，包括任何参数多于 8 个的函数，都会改用通用 FFI 调用路径。
+当函数的参数或返回类型不符合特定平台的快速跳板要求时，优化的 Fast FFI 调用会回退到另一个[调用路径][call paths]。Fast FFI 调用最多支持 8 个总参数，寄存器和参数限制因架构而异：
+
+| 架构                       | 整数/指针参数上限                  | 浮点参数上限 | 类 Buffer 参数 | 类 Buffer 与浮点参数同时出现 | 窄（8/16 位）返回值 |
+| -------------------------- | ----------------------------------------- | ----------------------- | ------------------ | --------------------------- | ------------------------ |
+| AArch64                    | 7（存在类 buffer 参数时为 6） | 8                       | 支持          | 不支持               | 支持                |
+| x86-64，Linux/macOS（SysV） | 6（存在类 buffer 参数时为 4） | 8                       | 支持          | 不支持               | 支持                |
+| x86-64，Windows（Win64）    | 3（总参数也限制为 3）      | 3                       | 不支持      | 不适用                         | 支持                |
+| s390x                      | 4                                         | 4                       | 不支持      | 不适用                         | 不支持            |
+| PPC64LE                    | 7                                         | 8                       | 不支持      | 不适用                         | 不支持            |
+| LoongArch64                | 7                                         | 8                       | 不支持      | 不适用                         | 不支持            |
+| RISC-V（64 位）            | 7                                         | 8                       | 不支持      | 不适用                         | 不支持            |
+
+PPC64BE 没有快速调用跳板，因此始终使用通用调用路径。
+“类 Buffer 参数”指作为类似指针参数传入的 `Buffer`、类型化数组、`DataView` 或 `ArrayBuffer` 值。参数或返回类型超出当前平台限制的函数会改用其他[调用路径][]。
 
 ## 签名对象
 
@@ -117,8 +148,8 @@ FFI 签名使用字符串类型名称。
 
 ```js
 const signature = {
-  return: 'i32',
-  arguments: ['i32', 'i32'],
+  return: 'int32',
+  arguments: ['int32', 'int32'],
 };
 ```
 
@@ -148,6 +179,11 @@ const path = `libsqlite3.${suffix}`;
 
 <!-- YAML
 added: v26.1.0
+changes:
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65909
+    description: Library paths inside a mounted virtual file system are now
+                 supported.
 -->
 
 * `path` {string|null} 动态库的路径，或使用 `null` 从当前进程映像中解析符号。
@@ -158,7 +194,9 @@ added: v26.1.0
 
 在 Windows 上不支持传入 `null`。
 
-当省略 `definitions` 时，在显式解析符号之前，`functions` 会作为空对象返回。
+支持位于已挂载[虚拟文件系统][]中的 `path`：操作系统的动态加载器无法打开虚拟路径，因此会从 VFS 读取库的字节，并从一个私有的、自行清理的临时映像中加载；同时，`lib.path` 仍会报告虚拟路径。真实文件系统上的库不受影响，仍会直接加载。
+
+省略 `definitions` 时，在显式解析符号之前，`functions` 将作为空对象返回。
 
 返回的对象包含：
 
@@ -172,7 +210,7 @@ import { dlopen, suffix } from 'node:ffi';
 
 {
   using handle = dlopen(`./mylib.${suffix}`, {
-    add_i32: { arguments: ['i32', 'i32'], return: 'i32' },
+    add_i32: { arguments: ['int32', 'int32'], return: 'int32' },
   });
   console.log(handle.functions.add_i32(20, 22));
 } // 这会自动调用 handle.lib.close()。
@@ -182,8 +220,8 @@ import { dlopen, suffix } from 'node:ffi';
 import { dlopen, suffix } from 'node:ffi';
 
 const { lib, functions } = dlopen(`./mylib.${suffix}`, {
-  add_i32: { arguments: ['i32', 'i32'], return: 'i32' },
-  string_length: { arguments: ['pointer'], return: 'u64' },
+  add_i32: { arguments: ['int32', 'int32'], return: 'int32' },
+  string_length: { arguments: ['pointer'], return: 'uint64' },
 });
 
 console.log(functions.add_i32(20, 22));
@@ -193,8 +231,8 @@ console.log(functions.add_i32(20, 22));
 const { dlopen, suffix } = require('node:ffi');
 
 const { lib, functions } = dlopen(`./mylib.${suffix}`, {
-  add_i32: { arguments: ['i32', 'i32'], return: 'i32' },
-  string_length: { arguments: ['pointer'], return: 'u64' },
+  add_i32: { arguments: ['int32', 'int32'], return: 'int32' },
+  string_length: { arguments: ['pointer'], return: 'uint64' },
 });
 
 console.log(functions.add_i32(20, 22));
@@ -236,11 +274,21 @@ added: v26.1.0
 
 ### `new DynamicLibrary(path)`
 
-* `path` {string|null} 动态库的路径，或使用 `null` 从当前进程映像中解析符号。
+<!-- YAML
+changes:
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65909
+    description: Library paths inside a mounted virtual file system are now
+                 supported.
+-->
+
+* `path` {string|null} 动态库的路径，或传入 `null` 以从当前进程映像中解析符号。
 
 加载动态库，但不会急切解析任何函数。
 
 在 Windows 上不支持传入 `null`。
+
+位于已挂载[虚拟文件系统][]中的 `path` 的加载方式与 [`ffi.dlopen()`][] 相同。
 
 ```cjs
 const { DynamicLibrary, suffix } = require('node:ffi');
@@ -320,8 +368,8 @@ const { DynamicLibrary, suffix } = require('node:ffi');
 
 const lib = new DynamicLibrary(`./mylib.${suffix}`);
 const add = lib.getFunction('add_i32', {
-  arguments: ['i32', 'i32'],
-  return: 'i32',
+  arguments: ['int32', 'int32'],
+  return: 'int32',
 });
 
 console.log(add(20, 22));
@@ -368,7 +416,7 @@ const { DynamicLibrary, suffix } = require('node:ffi');
 const lib = new DynamicLibrary(`./mylib.${suffix}`);
 
 const callback = lib.registerCallback(
-  { arguments: ['i32'], return: 'i32' },
+  { arguments: ['int32'], return: 'int32' },
   (value) => value * 2,
 );
 ```
@@ -419,7 +467,7 @@ const callback = lib.registerCallback(
 对于 8 位、16 位和 32 位整数类型以及浮点类型，请传入与声明类型匹配的
 JavaScript `number` 值。
 
-对于 64 位整数类型（`i64` 和 `u64`），请传入 JavaScript `bigint` 值。
+对于 64 位整数类型（`int64` 和 `uint64`），请传入 JavaScript `bigint` 值。
 
 指针类参数：
 
@@ -431,7 +479,73 @@ JavaScript `number` 值。
 
 指针返回值将以 `bigint` 地址形式暴露。
 
-## 原语内存访问辅助函数
+## 调用路径
+
+通过 [`ffi.dlopen()`][]、[`library.getFunction`][] 或 [`library.getFunctions`][] 解析符号时，Node.js 会为返回的包装器选择三种原生调用路径之一。选择依据是声明的签名、当前平台以及当前进程的功能。选择只会在创建函数时进行，无法配置，也无法从 JavaScript 观察到。
+
+每种调用路径都旨在接受相同的 JavaScript 值、执行相同的验证并抛出相同的错误，以便应用无需了解特定函数使用了哪种调用路径。它们在每次调用所执行的工作量上有所不同。这些路径的存在是为了让常见签名能够以尽可能低的开销调用，同时确保所有受支持的签名都能正常工作。
+
+Node.js 按以下顺序尝试调用路径，并使用第一个支持该签名的路径：
+
+1. [Fast API 调用路径][]，允许优化后的 JavaScript 通过为每个签名生成的跳板直接调用原生符号。
+2. [共享缓冲区调用路径][]，通过预分配缓冲区传递参数，而不是在每次调用时都跨越 JavaScript 和 C++ 边界转换每个参数。
+3. [通用调用路径][]，在 C++ 中转换每个参数，并通过 `libffi` 调用符号。此路径支持所有签名。
+
+贡献者指南 [FFI Fast API 内部实现][]详细介绍了这些调用路径的实现。
+
+### Fast API 调用路径
+
+Fast API 调用路径会将包装器绑定为 V8 Fast API 函数。当调用包装器的 JavaScript 代码经过 V8 优化后，调用会从优化后的代码直接进入一个小型原生跳板。Node.js 会在创建函数时针对确切的签名生成这个跳板。该跳板会将参数移入原生符号所需的寄存器，并调用该符号。对于标量入口点，C++ 不会进行中间参数转换。
+
+此路径上的函数也保留了常规原生入口点。来自 V8 尚未优化或已被 V8 反优化的代码的调用会使用该入口点，其行为与[通用调用路径][]相同。调用方对此无感知。
+
+类似指针的参数会在跳板运行前于 JavaScript 中进行准备：
+
+* `null` 和 `undefined` 会变为 null 指针。
+* `string` 值会在调用期间复制到临时的 NUL 终止 UTF-8 缓冲区中。
+* `Buffer`、typed array、`DataView` 和 `ArrayBuffer` 值会转换为原始指针 `bigint` 值，除非下文所述的备用入口点处理这些值。
+* `bigint` 值会原样传递。
+
+对于具有单个 `pointer`、`buffer` 或 `arraybuffer` 参数的签名，Node.js 还会创建一个备用 Fast API 入口点，该入口点直接接收 `Buffer`、typed array、`DataView` 和 `ArrayBuffer` 值。如果参数是这类值，JavaScript 包装器会分派到该入口点，而原生辅助函数会从后备存储中提取指针，而不是在 JavaScript 中转换该值。
+
+函数仅在满足以下所有条件时使用此调用路径：
+
+* 进程运行在受支持的 64 位架构上：AArch64、x86-64、PPC64LE、LoongArch64、RISC-V 64 或 s390x。32 位平台和大端序 PPC64 始终使用其他调用路径。
+* 进程能够分配可执行内存。Node.js 会在每个进程中检查一次是否能够分配内存并将其标记为可执行。如果检查失败，则会为整个进程禁用此路径。
+* 返回类型和所有参数类型均不是 `function`。
+* 签名最多有 8 个参数，并且每个参数都能放入当前平台上 trampoline 可用的参数寄存器中。需要通过原生栈传递的参数不受支持。
+
+寄存器限制因平台而异。整数和类指针参数共用一组寄存器，浮点参数共用另一组寄存器。各架构的限制列在 [Type names][] 中。
+
+不满足上述任一检查条件的签名并非错误。函数会在下一条支持它的调用路径上创建。
+
+### 共享缓冲区调用路径
+
+共享缓冲区调用路径用于 Fast API 调用路径不支持的签名。创建函数时，Node.js 会为每个函数分配一个小型缓冲区，其中包含一个用于返回值的 8 字节槽位，以及每个参数各一个 8 字节槽位。每次调用时，JavaScript 包装器都会验证参数，将它们写入各自的槽位，通过 `libffi` 调用原生符号而不传递任何 JavaScript 参数，然后再从缓冲区读取返回值。这样可以避免在 JavaScript 与 C++ 边界之间逐个转换参数。
+
+函数在满足以下所有条件时会使用此调用路径：
+
+* 对于该签名，Fast API 调用路径不可用。
+* 主机为小端序。
+* 签名至少有一个参数。零参数函数无法从共享缓冲区中获益，因此会改用其他调用路径。
+
+此路径支持所有类型名称，且参数数量没有限制。
+
+类指针参数（`pointer`、`string`、`buffer`、`arraybuffer` 和 `function`）只有在值为 `bigint`、`null` 或 `undefined` 时才会写入共享缓冲区。当调用向类指针参数传递字符串、`Buffer`、typed array、`DataView` 或 `ArrayBuffer` 时，该次调用会交由[通用调用路径][]处理，并由其在 C++ 中执行转换。函数本身仍会在后续调用中使用共享缓冲区调用路径。
+
+每个函数都有自己的私有共享缓冲区。同一函数的重入调用（例如来自 FFI 回调的调用）是安全的，因为原生侧会在调用符号前将参数从缓冲区复制出来。
+
+### 通用调用路径
+
+通用调用路径会在 C++ 中将每个 JavaScript 参数转换为其原生表示，并通过 `libffi` 调用符号。它支持 `node:ffi` 接受的所有签名，也是其他调用路径复现参数验证和错误行为时所依据的参考实现。
+
+当 Fast API 调用路径不可用，且主机为大端序或签名没有参数时，函数会直接在此调用路径上创建。
+
+通用调用路径还负责处理由其他调用路径转交的单次调用，例如 Fast API 函数未优化或反优化调用点的调用，以及传递非 `bigint` 类指针值的共享缓冲区调用。
+
+使用 [`library.registerCallback()`][] 创建的回调始终通过 `libffi` 闭包实现。它们独立于任何函数所使用的调用路径。
+
+## 原始内存访问辅助函数
 
 以下辅助函数在原生指针处读取和写入原语值，且可以选择带字节偏移：
 
@@ -489,7 +603,7 @@ added: v26.1.0
 -->
 
 * 偏移量 {bigint}
-* 返回值: {string|null}
+* 返回值：{string|null}
 
 从原生内存读取一个 NUL 终止的 UTF-8 字符串。
 
@@ -514,7 +628,7 @@ added: v26.1.0
 * `pointer` {bigint}
 * `length` {number}
 * `copy` {boolean} 当 `false` 时，创建零拷贝视图。**默认：** `true`。
-* 返回: {Buffer}
+* 返回：{Buffer}
 
 从原生内存创建一个 Buffer。
 
@@ -541,7 +655,7 @@ added: v26.1.0
 * `pointer` {bigint}
 * `length` {number}
 * `copy` {boolean} 当 `false` 时，创建零拷贝视图。**默认：** `true`。
-* 返回: {ArrayBuffer}
+* 返回：{ArrayBuffer}
 
 从原生内存创建一个 ArrayBuffer。
 
@@ -671,9 +785,19 @@ added: v26.6.0
 
 作为一般规则，除非必须要零拷贝访问，否则请优先使用拷贝值，并在原生侧保持回调和指针生命周期的显式管理。
 
-[权限模型]: permissions.md#permission-model
+[FFI Fast API internals]: https://github.com/nodejs/node/blob/HEAD/doc/contributing/ffi-fast-api-internals.md
+[Fast API call path]: #fast-api-call-path
+[Permission Model]: permissions.md#permission-model
 [`--allow-ffi`]: cli.md#--allow-ffi
+[`ffi.dlopen()`]: #ffidlopenpath-definitions
 [`ffi.toBuffer(pointer, length, copy)`]: #ffitobufferpointer-length-copy
 [`library.functions`]: #libraryfunctions
-[`using`]: https://tc39.es/proposal-explicit-resource-management/#sec-using-declarations
-[类型名称]: #type-names。
+[`library.getFunction()`]: #librarygetfunctionname-signature
+[`library.getFunctions()`]: #librarygetfunctionsdefinitions
+[`library.registerCallback()`]: #libraryregistercallbacksignature-callback
+[`using`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using
+[call paths]: #call-paths
+[generic call path]: #generic-call-path
+[shared buffer call path]: #shared-buffer-call-path
+[type names]: #type-names
+[virtual file system]: vfs.md

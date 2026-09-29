@@ -711,6 +711,9 @@ changes:
 
 <!-- YAML
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65074
+    description: Runtime deprecation.
   - version:
     - v6.12.0
     - v4.8.6
@@ -721,9 +724,9 @@ changes:
     description: 仅文档弃用。
 -->
 
-类型：仅文档
+类型：运行时
 
-[`domain`][] 模块已弃用，不应使用。
+[`domain`][] 模块已弃用，不应使用。加载该模块会发出运行时弃用警告。
 
 ### DEP0033: `EventEmitter.listenerCount()`
 
@@ -836,7 +839,7 @@ changes:
     description: 仅文档弃用。
 -->
 
-Type: 弃用已撤销
+类型：弃用已撤销
 
 [`fs.lchownSync(path, uid, gid)`][] API 曾被弃用。弃用已撤销，因为必要的支持 API 已添加到 libuv 中。
 
@@ -1179,7 +1182,7 @@ changes:
 npx codemod@latest @nodejs/util-is
 ```
 
-### DEP0051: `util.isNullOrUndefined()`
+### DEP0051：`util.isNullOrUndefined()`
 
 <!-- YAML
 changes:
@@ -1211,7 +1214,7 @@ changes:
 npx codemod@latest @nodejs/util-is
 ```
 
-### DEP0052: `util.isNumber()`
+### DEP0052：`util.isNumber()`
 
 <!-- YAML
 changes:
@@ -1243,7 +1246,7 @@ changes:
 npx codemod@latest @nodejs/util-is
 ```
 
-### DEP0053: `util.isObject()`
+### DEP0053：`util.isObject()`
 
 <!-- YAML
 changes:
@@ -1307,7 +1310,7 @@ changes:
 npx codemod@latest @nodejs/util-is
 ```
 
-### DEP0055: `util.isRegExp()`
+### DEP0055：`util.isRegExp()`
 
 <!-- YAML
 changes:
@@ -1403,7 +1406,7 @@ changes:
 npx codemod@latest @nodejs/util-is
 ```
 
-### DEP0058: `util.isUndefined()`
+### DEP0058：`util.isUndefined()`
 
 <!-- YAML
 changes:
@@ -1435,7 +1438,7 @@ changes:
 npx codemod@latest @nodejs/util-is
 ```
 
-### DEP0059: `util.log()`
+### DEP0059：`util.log()`
 
 <!-- YAML
 changes:
@@ -1495,7 +1498,7 @@ changes:
 npx codemod@latest @nodejs/util-extend-to-object-assign
 ```
 
-### DEP0061: `fs.SyncWriteStream`
+### DEP0061：`fs.SyncWriteStream`
 
 <!-- YAML
 changes:
@@ -1514,7 +1517,7 @@ changes:
 
 `fs.SyncWriteStream` 类从未打算成为公开可访问的 API，已被移除。没有可用的替代 API。请使用用户空间中的替代方案。
 
-### DEP0062: `node --debug`
+### DEP0062：`node --debug`
 
 <!-- YAML
 changes:
@@ -1530,7 +1533,7 @@ changes:
 
 `--debug` 激活了遗留的 V8 调试器接口，该接口自 V8 5.8 起已被移除。它已被 Inspector 取代，后者通过 `--inspect` 激活。
 
-### DEP0063: `ServerResponse.prototype.writeHeader()`
+### DEP0063：`ServerResponse.prototype.writeHeader()`
 
 <!-- YAML
 changes:
@@ -1551,7 +1554,7 @@ changes:
 
 `ServerResponse.prototype.writeHeader()` 方法从未被记录为官方支持的 API。
 
-### DEP0064: `tls.createSecurePair()`
+### DEP0064：`tls.createSecurePair()`
 
 <!-- YAML
 changes:
@@ -1605,7 +1608,7 @@ changes:
 
 `NODE_REPL_MODE` 环境变量用于设置交互式 `node` 会话的底层 `replMode`。其值 `magic` 也被移除。请改用 `sloppy`。
 
-### DEP0066: `OutgoingMessage.prototype._headers, OutgoingMessage.prototype._headerNames`
+### DEP0066：`OutgoingMessage.prototype._headers, OutgoingMessage.prototype._headerNames`
 
 <!-- YAML
 changes:
@@ -1632,7 +1635,7 @@ changes:
 npx codemod@latest @nodejs/http-outgoingmessage-headers
 ```
 
-### DEP0067: `OutgoingMessage.prototype._renderHeaders`
+### DEP0067：`OutgoingMessage.prototype._renderHeaders`
 
 <!-- YAML
 changes:
@@ -1647,7 +1650,7 @@ changes:
 
 `OutgoingMessage.prototype._renderHeaders` 属性从未被记录为官方支持的 API。
 
-### DEP0068: `node debug`
+### DEP0068：`node debug`
 
 <!-- YAML
 changes:
@@ -2269,7 +2272,7 @@ changes:
 
 `--with-lttng` 编译时选项已被移除。
 
-### DEP0102: 在 `Buffer#(read|write)` 操作中使用 `noAssert`
+### DEP0102：在 `Buffer#(read|write)` 操作中使用 `noAssert`
 
 <!-- YAML
 changes:
@@ -2302,7 +2305,7 @@ changes:
 
 此弃用已被 `process.binding()` API 的弃用所取代 ([DEP0111](#DEP0111))。
 
-### DEP0104: `process.env` 字符串强制转换
+### DEP0104：`process.env` 字符串强制转换
 
 <!-- YAML
 changes:
@@ -2317,7 +2320,7 @@ changes:
 隐式转换为字符串。如果分配的值不是字符串、布尔值或数字，则此行为已弃用。将来，此类分配可能会
 导致抛出错误。请在将其分配给 `process.env` 之前将属性转换为字符串。
 
-### DEP0105: `decipher.finaltol`
+### DEP0105：`decipher.finaltol`
 
 <!-- YAML
 changes:
@@ -2335,7 +2338,7 @@ changes:
 [`decipher.final()`][] 的别名。此 API 已被移除，建议使用
 [`decipher.final()`][] 代替。
 
-### DEP0106: `crypto.createCipher` 和 `crypto.createDecipher`
+### DEP0106：`crypto.createCipher` 和 `crypto.createDecipher`
 
 <!-- YAML
 changes:
@@ -2382,7 +2385,7 @@ changes:
 这是一个未文档化的辅助函数，不适用于 Node.js
 核心之外的使用，并且随着 NPN（下一代协议协商）支持的移除而过时。
 
-### DEP0108: `zlib.bytesRead`
+### DEP0108：`zlib.bytesRead`
 
 <!-- YAML
 changes:
@@ -2428,7 +2431,7 @@ changes:
 URL 解析器，该解析器需要严格有效的 URL。传递无效 URL 已
 弃用，支持将在未来移除。
 
-### DEP0110: `vm.Script` 缓存数据
+### DEP0110：`vm.Script` 缓存数据
 
 <!-- YAML
 changes:
@@ -2460,7 +2463,7 @@ changes:
 
 虽然 `process.binding()` 通常尚未达到生命周期结束状态，但在启用 [权限模型][] 时不可用。
 
-### DEP0112: `dgram` 私有 API
+### DEP0112：`dgram` 私有 API
 
 <!-- YAML
 changes:
@@ -2481,7 +2484,7 @@ changes:
 `Socket.prototype._healthCheck()`、`Socket.prototype._stopReceiving()` 和
 `dgram._createSocketHandle()`。这些已被移除。
 
-### DEP0113: `Cipher.setAuthTag()`、`Decipher.getAuthTag()`
+### DEP0113：`Cipher.setAuthTag()`、`Decipher.getAuthTag()`
 
 <!-- YAML
 changes:
@@ -2498,7 +2501,7 @@ changes:
 `Cipher.setAuthTag()` 和 `Decipher.getAuthTag()` 不再可用。它们
 从未被文档化，并且在调用时会抛出错误。
 
-### DEP0114: `crypto._toBuf()`
+### DEP0114：`crypto._toBuf()`
 
 <!-- YAML
 changes:
@@ -2516,7 +2519,7 @@ changes:
 
 <!--lint disable nodejs-yaml-comments -->
 
-### DEP0115: `crypto.prng()`、`crypto.pseudoRandomBytes()`、`crypto.rng()`
+### DEP0115：`crypto.prng()`、`crypto.pseudoRandomBytes()`、`crypto.rng()`
 
 <!-- YAML
 changes:
@@ -2638,7 +2641,7 @@ Windows 性能计数器支持已从 Node.js 中移除。
 `COUNTER_HTTP_SERVER_RESPONSE()`、`COUNTER_HTTP_CLIENT_REQUEST()` 和
 `COUNTER_HTTP_CLIENT_RESPONSE()` 函数已弃用。
 
-### DEP0121: `net._setSimultaneousAccepts()`
+### DEP0121：`net._setSimultaneousAccepts()`
 
 <!-- YAML
 changes:
@@ -2657,7 +2660,7 @@ changes:
 无用，正在被移除。参见此处的讨论：
 <https://github.com/nodejs/node/issues/18391>
 
-### DEP0122: `tls` `Server.prototype.setOptions()`
+### DEP0122：`tls` `Server.prototype.setOptions()`
 
 <!-- YAML
 changes:
@@ -2673,7 +2676,7 @@ changes:
 
 请改用 `Server.prototype.setSecureContext()`。
 
-### DEP0123: 将 TLS ServerName 设置为 IP 地址
+### DEP0123：将 TLS ServerName 设置为 IP 地址
 
 <!-- YAML
 changes:
@@ -2705,7 +2708,7 @@ changes:
 
 此属性是对实例本身的引用。
 
-### DEP0125: `require('node:_stream_wrap')`
+### DEP0125：`require('node:_stream_wrap')`
 
 <!-- YAML
 changes:
@@ -2721,7 +2724,7 @@ changes:
 
 `node:_stream_wrap` 模块已弃用。
 
-### DEP0126: `timers.active()`
+### DEP0126：`timers.active()`
 
 <!-- YAML
 changes:
@@ -2788,7 +2791,7 @@ changes:
 `index.js` 文件。这已弃用，并将在未来的
 Node.js 版本中抛出错误。
 
-### DEP0129: `ChildProcess._channel`
+### DEP0129：`ChildProcess._channel`
 
 <!-- YAML
 changes:
@@ -2832,7 +2835,7 @@ changes:
 npx codemod@latest @nodejs/create-require-from-path
 ```
 
-### DEP0131: 传统 HTTP 解析器
+### DEP0131：传统 HTTP 解析器
 
 <!-- YAML
 changes:
@@ -2870,7 +2873,7 @@ changes:
 传递回调给 [`worker.terminate()`][] 已弃用。请改用返回的
 `Promise`，或监听 worker 的 `'exit'` 事件。
 
-### DEP0133: `http` `connection`
+### DEP0133：`http` `connection`
 
 <!-- YAML
 changes:
@@ -2898,7 +2901,7 @@ changes:
 `process._tickCallback` 属性从未被文档化为
 官方支持的 API。
 
-### DEP0135: `WriteStream.open()` 和 `ReadStream.open()` 是内部的
+### DEP0135：`WriteStream.open()` 和 `ReadStream.open()` 是内部的
 
 <!-- YAML
 changes:
@@ -2916,7 +2919,7 @@ changes:
 API，在用户空间中使用没有意义。文件流应始终通过其相应的工厂方法 [`fs.createWriteStream()`][]
 和 [`fs.createReadStream()`][] 打开，或在选项中传递文件描述符。
 
-### DEP0136: `http` `finished`
+### DEP0136：`http` `finished`
 
 <!-- YAML
 changes:
@@ -2972,7 +2975,7 @@ async function openAndClose() {
 }
 ```
 
-### DEP0138: `process.mainModule`
+### DEP0138：`process.mainModule`
 
 <!-- YAML
 changes:
@@ -3043,7 +3046,7 @@ changes:
 `node:repl` 模块导出了输入和输出流两次。请改用 `.input`
 而不是 `.inputStream`，改用 `.output` 而不是 `.outputStream`。
 
-### DEP0142: `repl._builtinLibs`
+### DEP0142：`repl._builtinLibs`
 
 <!-- YAML
 changes:
@@ -3063,7 +3066,7 @@ changes:
 npx codemod@latest @nodejs/repl-builtin-modules
 ```
 
-### DEP0143: 生命周期结束的废弃项
+### DEP0143：生命周期结束的废弃项
 
 <!-- YAML
 changes:
@@ -3111,7 +3114,7 @@ const moduleParents = Object.values(require.cache)
   .filter((m) => m.children.includes(module));
 ```
 
-### DEP0145: `socket.bufferSize`
+### DEP0145：`socket.bufferSize`
 
 <!-- YAML
 changes:
@@ -3194,7 +3197,7 @@ changes:
 不再支持在 [子路径导出][] 或 [子路径导入][] 字段中使用尾部 `"/"` 来定义子路径文件夹映射。
 请改用 [子路径模式][]。
 
-### DEP0149: `http.IncomingMessage#connection`
+### DEP0149：`http.IncomingMessage#connection`
 
 <!-- YAML
 changes:
@@ -3207,7 +3210,7 @@ changes:
 
 首选 [`message.socket`][] 而不是 [`message.connection`][]。
 
-### DEP0150: 更改 `process.config` 的值
+### DEP0150：更改 `process.config` 的值
 
 <!-- YAML
 changes:
@@ -3266,7 +3269,7 @@ changes:
 这些属性现在可在 `PerformanceEntry` 对象的标准 `detail` 属性中使用。已弃用的访问器已被
 移除。
 
-### DEP0153: `dns.lookup` 和 `dnsPromises.lookup` 选项类型强制转换
+### DEP0153：`dns.lookup` 和 `dnsPromises.lookup` 选项类型强制转换
 
 <!-- YAML
 changes:
@@ -3311,7 +3314,7 @@ changes:
 npx codemod@latest @nodejs/crypto-rsa-pss-update
 ```
 
-### DEP0155: 模式标识符解析中的尾部斜杠
+### DEP0155：模式标识符解析中的尾部斜杠
 
 <!-- YAML
 changes:
@@ -3323,7 +3326,7 @@ changes:
     description: "支持 `--pending-deprecation` 的仅文档弃用。"
 -->
 
-Type: 运行时
+类型：运行时
 
 对于包 `"exports"` 和 `"imports"` 模式解析，以 `"/"` 结尾的标识符（如 `import 'pkg/x/'`）的重映射已弃用。
 
@@ -3400,7 +3403,7 @@ changes:
 
 请改用 [`buffer.subarray`][]，它执行相同的操作。
 
-### DEP0159: `ERR_INVALID_CALLBACK`
+### DEP0159：`ERR_INVALID_CALLBACK`
 
 <!-- YAML
 changes:
@@ -3413,13 +3416,13 @@ changes:
 
 此错误代码已被移除，因为它给用于值类型验证的错误增加了更多的混淆。
 
-提供了自动迁移工具（[源代码](https://github.com/nodejs/userland-migrations/tree/main/recipes/err-invalid-callback)）：
+提供了自动迁移工具（[来源](https://github.com/nodejs/userland-migrations/tree/main/recipes/err-invalid-callback)）：
 
 ```bash
 npx codemod @nodejs/err-invalid-callback
 ```
 
-### DEP0160: `process.on('multipleResolves', handler)`
+### DEP0160：`process.on('multipleResolves', handler)`
 
 <!-- YAML
 changes:
@@ -3886,6 +3889,9 @@ OpenSSL 3 已弃用对自定义引擎的支持，并建议切换到其新的提�
 
 <!-- YAML
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/64849
+    description: 生命周期结束。
   - version: v24.0.0
     pr-url: https://github.com/nodejs/node/pull/55718
     description: 运行时弃用。
@@ -3896,9 +3902,9 @@ changes:
     description: 仅文档弃用。
 -->
 
-类型：运行时
+类型：生命周期结束
 
-实例化 `node:zlib` 模块导出的类时不使用 `new` 限定符已被弃用。建议改用 `new` 限定符。这适用于所有 Zlib 类，例如 `Deflate`、`DeflateRaw`、`Gunzip`、`Inflate`、`InflateRaw`、`Unzip` 和 `Zlib`。
+实例化 `node:zlib` 模块导出的类时不使用 `new` 限定符已不再受支持。必须改用 `new` 限定符。这适用于所有 Zlib 类，例如 `Deflate`、`DeflateRaw`、`Gunzip`、`Inflate`、`InflateRaw`、`Unzip`、`BrotliCompress`、`BrotliDecompress`、`ZstdCompress` 和 `ZstdDecompress`。
 
 ### DEP0185：实例化 `node:repl` 类时不使用 `new`
 
@@ -3921,7 +3927,7 @@ changes:
 
 实例化 `node:repl` 模块导出的类时不使用 `new` 限定符已被弃用。必须改用 `new` 限定符。这适用于所有 REPL 类，包括 `REPLServer` 和 `Recoverable`。
 
-提供自动迁移工具 ([源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-classes-with-new)）：
+提供自动迁移工具（[源码](https://github.com/nodejs/userland-migrations/tree/main/recipes/repl-classes-with-new)）：
 
 ```bash
 npx codemod@latest @nodejs/repl-classes-with-new
@@ -4017,7 +4023,7 @@ changes:
 npx codemod@latest @nodejs/repl-builtin-modules
 ```
 
-### DEP0192: `require('node:_tls_common')` 和 `require('node:_tls_wrap')`
+### DEP0192：`require('node:_tls_common')` 和 `require('node:_tls_wrap')`
 
 <!-- YAML
 changes:
@@ -4036,7 +4042,7 @@ changes:
 
 `node:_tls_common` 和 `node:_tls_wrap` 模块已弃用，因为它们应被视为内部 Node.js 实现而不是公开 API，请改用 `node:tls`。
 
-### DEP0193: `require('node:_stream_*')`
+### DEP0193：`require('node:_stream_*')`
 
 <!-- YAML
 changes:
@@ -4055,7 +4061,7 @@ changes:
 
 `node:_stream_duplex`、`node:_stream_passthrough`、`node:_stream_readable`、`node:_stream_transform`、`node:_stream_wrap` 和 `node:_stream_writable` 模块已弃用，因为它们应被视为 Node.js 的内部实现，而不是公开 API，请改用 `node:stream`。
 
-### DEP0194: HTTP/2 优先级信令
+### DEP0194：HTTP/2 优先级信令
 
 <!-- YAML
 changes:
@@ -4127,7 +4133,7 @@ changes:
 
 要使 [`child_process.exec`][] 调用默认 shell，要么省略 `shell` 选项，要么将其设置为 nullish 值。如果意图是不调用 shell，请改用 [`child_process.execFile`][]。
 
-### DEP0197: `util.types.isNativeError()`
+### DEP0197：`util.types.isNativeError()`
 
 <!-- YAML
 changes:
@@ -4302,7 +4308,7 @@ changes:
 
 向 `node:crypto` 函数传递 [`CryptoKey`][] 已不再受支持。
 
-### DEP0204: `KeyObject.from()` 与不可提取的 `CryptoKey`
+### DEP0204：`KeyObject.from()` 与不可提取的 `CryptoKey`
 
 <!-- YAML
 changes:
@@ -4324,7 +4330,7 @@ changes:
 向 [`KeyObject.from()`][] 传递不可提取的 [`CryptoKey`][] 已
 不再受支持。
 
-### DEP0205: `module.register()`
+### DEP0205：`module.register()`
 
 <!-- YAML
 changes:
@@ -4363,7 +4369,7 @@ changes:
 
 多次调用 `hmac.digest()` 会返回一个空缓冲区，而不是抛出错误。此行为与 `hash.digest()` 不一致，并可能导致隐蔽的错误。在已完成最终化的 `Hmac` 实例上调用 `hmac.digest()` 将在未来版本中抛出错误。
 
-### DEP0207: `.aborted` 属性和 `'aborted'` 事件在 `http2` 中
+### DEP0207：`node:http2` 中的 `.aborted` 属性和 `'aborted'` 事件
 
 <!-- YAML
 changes:
@@ -4417,7 +4423,7 @@ server.on('stream', (stream) => {
 
 <!-- YAML
 changes:
-  - version: REPLACEME
+  - version: v26.8.2
     pr-url: https://github.com/nodejs/node/pull/64794
     description: 运行时弃用。
 -->
@@ -4425,6 +4431,112 @@ changes:
 类型：运行时
 
 `net.Server.prototype._listen2` 是一个未公开的别名，指向用于设置监听句柄的内部函数。保留它仅仅是为了让替换该函数的代码继续被 [`server.listen()`][] 调用；它将在 Node.js 的未来版本中移除。请使用 [`server.listen()`][]，不要调用或重写 `_listen2`。
+
+### DEP0209：使用 `AbortSignal` 释放资源
+
+<!-- YAML
+changes:
+  - version: v26.8.2
+    pr-url: https://github.com/nodejs/node/pull/64342
+    description: 仅文档弃用。
+-->
+
+类型：仅文档
+
+使用 `AbortSignal` 销毁长生命周期资源已弃用。建议使用
+`using` 清理资源。
+
+`AbortSignal` 仍适用于取消操作、从外部传播取消信号以及处理超时。
+
+```js
+// 已弃用
+async function example() {
+  const ac = new AbortController();
+  const server = http.createServer(handler);
+  server.listen({ port: 3000, signal: ac.signal });
+
+  await doWork();
+  ac.abort();
+}
+```
+
+```js
+// 请改用此方式
+async function example() {
+  await using server = http.createServer(handler);
+  server.listen(3000);
+
+  await doWork();
+}
+```
+
+```js
+// 已弃用
+async function example() {
+  const ac = new AbortController();
+  const stream = addAbortSignal(ac.signal, fs.createReadStream(file));
+
+  await consume(stream);
+  ac.abort();
+}
+```
+
+```js
+// 请改用此方式
+async function example() {
+  await using stream = fs.createReadStream(file);
+
+  await consume(stream);
+}
+```
+
+```js
+// 已弃用
+async function example() {
+  const ac = new AbortController();
+  const child = spawn(command, args, { signal: ac.signal });
+
+  await doWork();
+  ac.abort();
+}
+```
+
+```js
+// 请改用此方式
+async function example() {
+  using child = spawn(command, args);
+
+  await doWork();
+}
+```
+
+### DEP0210：`sqlite.DatabaseSync`
+
+<!-- YAML
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65988
+    description: 仅文档弃用。
+-->
+
+类型：仅文档
+
+`node:sqlite` 的 `DatabaseSync` 类已重命名为 `Database`。`DatabaseSync`
+作为已弃用的别名保留。请改用 `Database`。
+
+### DEP0211：`sqlite.StatementSync`
+
+<!-- YAML
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65988
+    description: 仅文档弃用。
+-->
+
+类型：仅文档
+
+`node:sqlite` 的 `StatementSync` 类已重命名为 `Statement`。
+`StatementSync` 作为已弃用的别名保留。请改用 `Statement`。
 
 [DEP0142]: #dep0142-repl_builtinlibs
 [DEP0156]: #dep0156-aborted-property-and-abort-aborted-event-in-http
@@ -4575,7 +4687,7 @@ changes:
 [`zlib.bytesWritten`]: zlib.md#zlibbyteswritten
 [alloc]: buffer.md#static-method-bufferallocsize-fill-encoding
 [alloc_unsafe_size]: buffer.md#static-method-bufferallocunsafesize-alignment
-[caveats of asynchronous customization hooks]: module.md#caveats-of-asynchronous-customization-hooks
+[异步自定义钩子的注意事项]: module.md#caveats-of-asynchronous-customization-hooks
 [from_arraybuffer]: buffer.md#static-method-bufferfromarraybuffer-byteoffset-length
 [from_string_encoding]: buffer.md#static-method-bufferfromstring-encoding
 [旧版 URL API]: url.md#legacy-url-api

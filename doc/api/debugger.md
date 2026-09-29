@@ -213,7 +213,9 @@ added:
   - v26.1.0
   - v24.16.0
 changes:
-  - version: v26.6.0
+  - version:
+     - v26.6.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/64328
     description: 添加每个探测的 `--cond <expr>` 选项，仅当条件在探测位置为真值时才记录命中。
   - version:

@@ -32,14 +32,14 @@ import sqlite from 'node:sqlite';
 const sqlite = require('node:sqlite');
 ```
 
-此模块仅在 `node:` 命名空间下可用。
+此模块仅在 `node:` 方案下可用。SQL 跟踪事件可以通过 [`diagnostics_channel`][] 模块观察。详情请参阅 [`'sqlite.db.query'`][]。
 
 下面的示例演示了 `node:sqlite` 模块的基本用法，
 用于打开一个内存数据库、向其中写入数据，然后再读取出来。
 
 ```mjs
-import { DatabaseSync } from 'node:sqlite';
-const database = new DatabaseSync(':memory:');
+import { Database } from 'node:sqlite';
+const database = new Database(':memory:');
 
 // 从字符串执行 SQL 语句。
 database.exec(`
@@ -64,8 +64,8 @@ query.close();
 ```
 
 ```cjs
-const { DatabaseSync } = require('node:sqlite');
-const database = new DatabaseSync(':memory:');
+const { Database } = require('node:sqlite');
+const database = new Database(':memory:');
 
 // 从字符串执行 SQL 语句。
 database.exec(`
@@ -97,18 +97,19 @@ query.close();
 
 | 存储类        | JavaScript 到 SQLite                                          | SQLite 到 JavaScript                  |
 | ------------- | --------------------------------------------------------------- | ------------------------------------- |
-| `NULL`        | {null}                                                          | {null}                                |
-| `INTEGER`     | {number}、{bigint} 或 {boolean}                                | {number} 或 {bigint} _（可配置）_ |
+| `NULL`        | {null} 或 {undefined}                                           | {null}                                |
+| `INTEGER`     | {number}、{bigint} 或 {boolean}                                 | {number} 或 {bigint} _(可配置)_       |
 | `REAL`        | {number}                                                        | {number}                              |
 | `TEXT`        | {string}                                                        | {string}                              |
 | `BLOB`        | {TypedArray}、{DataView}、{ArrayBuffer} 或 {SharedArrayBuffer} | {Uint8Array}                          |
 
 布尔值会被写入为 `INTEGER` 值 `1` 和 `0`。与其他 `INTEGER` 值一样，读取时默认会将它们作为 {number} 返回；启用 BigInt 读取后，则会作为 {bigint} 值（`1n` 和 `0n`）返回。写入无法容纳在有符号 64 位整数中的 {bigint} 时，会抛出 `ERR_INVALID_ARG_VALUE` 错误。
 
-用于从 SQLite 读取值的 API 提供了一个配置选项，用于决定 `INTEGER` 值在 JavaScript 中被转换为 `number` 还是 `bigint`，例如语句的 `readBigInts` 选项以及用户定义函数的 `useBigIntArguments` 选项。
-如果 Node.js 从 SQLite 读取的 `INTEGER` 值超出了 JavaScript [安全整数][] 范围，并且未启用读取 BigInt 的选项，则会抛出 `ERR_OUT_OF_RANGE` 错误。
+`undefined` 会被写入为 `NULL`，因此显式传入它等同于省略一个命名参数。读取 `NULL` 时始终会得到 {null}，而不会得到 `undefined`。
 
-## 类：`DatabaseSync`
+从 SQLite 读取值的 API 具有一个配置选项，用于确定在 JavaScript 中将 `INTEGER` 值转换为 `number` 还是 `bigint`，例如语句的 `readBigInts` 选项和用户定义函数的 `useBigIntArguments` 选项。如果 Node.js 从 SQLite 读取的 `INTEGER` 值超出了 JavaScript [安全整数][]范围，且未启用读取 BigInt 的选项，则会抛出 `ERR_OUT_OF_RANGE` 错误。
+
+## Class：`Database`
 
 <!-- YAML
 added: v22.5.0
@@ -127,7 +128,9 @@ changes:
 
 此类表示到 SQLite 数据库的一个单一 [连接][]。此类暴露的所有 API 都是同步执行的。
 
-### `new DatabaseSync(path[, options])`
+`DatabaseSync` 是 `Database` 的弃用别名，为兼容此类之前的名称而保留。请参阅 [DEP0210](deprecations.md#dep0210-sqlitedatabasesync)。
+
+### `new Database(path[, options])`
 
 <!-- YAML
 added: v22.5.0
@@ -177,7 +180,7 @@ changes:
     * `variableNumber` {number} SQL 变量的最大数量。
     * `triggerDepth` {number} 触发器递归的最大深度。
 
-构造一个新的 `DatabaseSync` 实例。
+构造一个新的 `Database` 实例。
 
 ### `database.aggregate(name, options)`
 
@@ -189,23 +192,23 @@ added:
 
 向 SQLite 数据库注册一个新的聚合函数。此方法是对 [`sqlite3_create_window_function()`][] 的封装。
 
-* `name` {string} 要创建的 SQLite 函数名称。
+* `name` {string} 要创建的 SQLite 函数的名称。
 * `options` {Object} 函数配置设置。
   * `deterministic` {boolean} 如果为 `true`，则在创建的函数上设置 [`SQLITE_DETERMINISTIC`][] 标志。**默认：** `false`。
   * `directOnly` {boolean} 如果为 `true`，则在创建的函数上设置 [`SQLITE_DIRECTONLY`][] 标志。**默认：** `false`。
-  * `useBigIntArguments` {boolean} 如果为 `true`，则 `options.step` 和 `options.inverse` 的整数参数会转换为 `BigInt`。如果为 `false`，整数参数将作为 JavaScript 数字传递。**默认：** `false`。
-  * `varargs` {boolean} 如果为 `true`，则 `options.step` 和 `options.inverse` 可以使用任意数量的参数调用（介于零和 [`SQLITE_MAX_FUNCTION_ARG`][] 之间）。如果为 `false`，`inverse` 和 `step` 必须使用恰好 `length` 个参数调用。**默认：** `false`。
-  * `start` {number | string | null | Array | Object | Function} 聚合函数的初始值。该值在聚合函数初始化时使用。当传入 {Function} 时，初始值将为其返回值。
-  * `step` {Function} 在聚合中的每一行都会调用的函数。该函数接收当前状态和行值。此函数的返回值应为新状态。
-  * `result` {Function} 用于获取聚合结果的函数。该函数接收最终状态，并应返回聚合的结果。
-  * `inverse` {Function} 当提供此函数时，`aggregate` 方法将作为窗口函数工作。该函数接收当前状态和要丢弃的行值。此函数的返回值应为新状态。
+  * `useBigIntArguments` {boolean} 如果为 `true`，则将传递给 `options.step` 和 `options.inverse` 的整数参数转换为 `BigInt`。如果为 `false`，则整数参数会以 JavaScript 数字的形式传递。**默认：** `false`。
+  * `varargs` {boolean} 如果为 `true`，则调用 `options.step` 和 `options.inverse` 时可以传入任意数量的参数（从零到 [`SQLITE_MAX_FUNCTION_ARG`][]）。如果为 `false`，则调用 `inverse` 和 `step` 时必须传入恰好 `length` 个参数，且它们的 `length` 属性必须是整数。**默认：** `false`。
+  * `start` {number | string | null | Array | Object | Function} 聚合函数的恒等值。初始化聚合函数时会使用此值。如果传入 {Function}，则恒等值为该函数的返回值。
+  * `step` {Function} 对聚合中的每一行调用的函数。该函数接收当前状态和行值。此函数的返回值应为新状态。
+  * `result` {Function} 用于获取聚合结果的函数。该函数接收最终状态，并应返回聚合结果。
+  * `inverse` {Function} 提供此函数时，`aggregate` 方法将作为窗口函数工作。该函数接收当前状态和被移除的行值。此函数的返回值应为新状态。
 
-当作为窗口函数使用时，`result` 函数将被多次调用。
+作为窗口函数使用时，`result` 函数将被多次调用。
 
 ```cjs
-const { DatabaseSync } = require('node:sqlite');
+const { Database } = require('node:sqlite');
 
-const db = new DatabaseSync(':memory:');
+const db = new Database(':memory:');
 db.exec(`
   CREATE TABLE t3(x, y);
   INSERT INTO t3 VALUES ('a', 4),
@@ -225,9 +228,9 @@ query.get(); // { total: 21 }
 ```
 
 ```mjs
-import { DatabaseSync } from 'node:sqlite';
+import { Database } from 'node:sqlite';
 
-const db = new DatabaseSync(':memory:');
+const db = new Database(':memory:');
 db.exec(`
   CREATE TABLE t3(x, y);
   INSERT INTO t3 VALUES ('a', 4),
@@ -252,7 +255,7 @@ query.get(); // { total: 21 }
 added: v22.5.0
 -->
 
-关闭数据库连接。如果数据库未打开，则会抛出异常。如果在语句正在执行时调用该方法，例如在用户定义函数、聚合函数或授权器回调中调用，则会抛出 [`ERR_INVALID_STATE`][] 错误。此方法是对 [`sqlite3_close_v2()`][] 的封装。
+关闭数据库连接。如果数据库未打开，则会抛出异常。如果在语句执行期间（例如在用户定义函数、聚合函数、授权器回调或 [`'sqlite.db.query'`][] 订阅者内部）调用此方法，则会抛出 [`ERR_INVALID_STATE`][] 错误。此方法是对 [`sqlite3_close_v2()`][] 的封装。
 
 ### `database.loadExtension(path[, entryPoint])`
 
@@ -265,11 +268,11 @@ added:
 * `path` {string} 要加载的共享库路径。
 * `entryPoint` {string} 扩展入口点函数的名称。省略时，SQLite 会从共享库文件名推导入口点；当推导出的名称不匹配时，请显式传入此参数。
 
-将共享库加载到数据库连接中。此方法是对 [`sqlite3_load_extension()`][] 的封装。构造 `DatabaseSync` 实例时必须启用 `allowExtension` 选项。
+将共享库加载到数据库连接中。此方法是对 [`sqlite3_load_extension()`][] 的封装。构造 `Database` 实例时必须启用 `allowExtension` 选项。
 
 ```mjs
-import { DatabaseSync } from 'node:sqlite';
-const database = new DatabaseSync(':memory:', { allowExtension: true });
+import { Database } from 'node:sqlite';
+const database = new Database(':memory:', { allowExtension: true });
 
 // 使用从文件名推导出的入口点进行加载。
 database.loadExtension('./decimal.dylib');
@@ -279,8 +282,8 @@ database.loadExtension('./base64.dylib', 'sqlite3_base64_init');
 ```
 
 ```cjs
-const { DatabaseSync } = require('node:sqlite');
-const database = new DatabaseSync(':memory:', { allowExtension: true });
+const { Database } = require('node:sqlite');
+const database = new Database(':memory:', { allowExtension: true });
 
 // 使用从文件名推导出的入口点进行加载。
 database.loadExtension('./decimal.dylib');
@@ -345,13 +348,13 @@ added:
   - v22.13.0
 -->
 
-* `name` {string} 要创建的 SQLite 函数名称。
+* `name` {string} 要创建的 SQLite 函数的名称。
 * `options` {Object} 函数的可选配置设置。支持以下属性：
   * `deterministic` {boolean} 如果为 `true`，则在创建的函数上设置 [`SQLITE_DETERMINISTIC`][] 标志。**默认：** `false`。
   * `directOnly` {boolean} 如果为 `true`，则在创建的函数上设置 [`SQLITE_DIRECTONLY`][] 标志。**默认：** `false`。
-  * `useBigIntArguments` {boolean} 如果为 `true`，则 `function` 的整数参数会转换为 `BigInt`。如果为 `false`，整数参数将作为 JavaScript 数字传递。**默认：** `false`。
-  * `varargs` {boolean} 如果为 `true`，则 `function` 可以使用任意数量的参数调用（介于零和 [`SQLITE_MAX_FUNCTION_ARG`][] 之间）。如果为 `false`，`function` 必须使用恰好 `function.length` 个参数调用。**默认：** `false`。
-* `fn` {Function} 当调用 SQLite 函数时要执行的 JavaScript 函数。该函数的返回值应为有效的 SQLite 数据类型：参见 [JavaScript 与 SQLite 类型转换][]。如果返回值是 `undefined`，则结果默认为 `NULL`。
+  * `useBigIntArguments` {boolean} 如果为 `true`，则将传递给 `function` 的整数参数转换为 `BigInt`。如果为 `false`，则整数参数会以 JavaScript 数字的形式传递。**默认：** `false`。
+  * `varargs` {boolean} 如果为 `true`，则调用 `function` 时可以传入任意数量的参数（从零到 [`SQLITE_MAX_FUNCTION_ARG`][]）。如果为 `false`，则调用 `function` 时必须传入恰好 `function.length` 个参数，且该值必须是整数。**默认：** `false`。
+* `fn` {Function} 调用 SQLite 函数时要调用的 JavaScript 函数。此函数的返回值应为有效的 SQLite 数据类型：请参阅 [JavaScript 与 SQLite 类型转换][]。如果返回值为 `undefined`，则结果默认为 `NULL`。
 
 此方法用于创建 SQLite 用户定义函数。此方法是对 [`sqlite3_create_function_v2()`][] 的封装。
 
@@ -359,6 +362,11 @@ added:
 
 <!-- YAML
 added: v24.10.0
+changes:
+  - version: v26.8.0
+    pr-url: https://github.com/nodejs/node/pull/65156
+    description: Accessing the invoking database connection from the authorizer
+                 callback now throws.
 -->
 
 * `callback` {Function|null} 要设置的授权器函数，或使用 `null` 清除当前授权器。
@@ -380,9 +388,17 @@ added: v24.10.0
 * `SQLITE_DENY` - 拒绝该操作（会导致错误）。
 * `SQLITE_IGNORE` - 忽略该操作（静默跳过）。
 
+SQLite 要求授权器回调不得修改调用它的数据库连接，包括预编译和步进执行语句。在回调仍位于调用栈上时，任何会执行此类操作的方法都会抛出代码为 `ERR_INVALID_STATE` 的错误，包括 `database.prepare()`、`database.exec()`、该连接语句的执行方法、迭代器和标签存储的方法，以及 `database.setAuthorizer()` 本身。其他连接仍可使用。
+
+SQLite 也可能在执行期间因模式发生变化而重新预编译语句，因此回调也可能在 `statement.run()`、`statement.get()` 等类似方法内部被调用。
+
+另外，当前正在执行的语句无法重新进入。对它调用 `statement.close()` 会释放正在运行的虚拟机，而通过 `statement.run()`、`statement.get()`、`statement.all()`、`statement.iterate()`、`iterator.next()`、`iterator.return()` 或等效的标签存储方法重新运行它，则会在执行过程中重置该虚拟机。这些操作都会改为抛出 `ERR_INVALID_STATE` 错误。这适用于 SQLite 在执行期间调用的任何回调，例如用户定义的函数。连接上的其他语句仍可使用。
+
+在回调中仍可使用不涉及 SQLite 状态的操作：`sqlTagStore.clear()`（它只会丢弃缓存的语句），以及对已经耗尽的迭代器调用 `next()` 和 `return()`（它们会继续返回 `{ done: true }`）。
+
 ```cjs
-const { DatabaseSync, constants } = require('node:sqlite');
-const db = new DatabaseSync(':memory:');
+const { Database, constants } = require('node:sqlite');
+const db = new Database(':memory:');
 
 // 设置一个拒绝所有建表操作的授权器
 db.setAuthorizer((actionCode) => {
@@ -405,8 +421,8 @@ try {
 ```
 
 ```mjs
-import { DatabaseSync, constants } from 'node:sqlite';
-const db = new DatabaseSync(':memory:');
+import { Database, constants } from 'node:sqlite';
+const db = new Database(':memory:');
 
 // 设置一个拒绝所有建表操作的授权器
 db.setAuthorizer((actionCode) => {
@@ -462,7 +478,7 @@ added:
 每个属性对应一个 SQLite 限制，都可以读取或写入。
 
 ```js
-const db = new DatabaseSync(':memory:');
+const db = new Database(':memory:');
 
 // 读取当前限制
 console.log(db.limits.length);
@@ -486,7 +502,7 @@ db.limits.sqlLength = Infinity;
 added: v22.5.0
 -->
 
-打开 `DatabaseSync` 构造函数中 `path` 参数指定的数据库。此方法仅应在数据库未由构造函数打开时使用。如果数据库已经打开，则会抛出异常。
+打开 `Database` 构造函数 `path` 参数指定的数据库。仅当数据库不是通过构造函数打开时，才应使用此方法。如果数据库已经打开，则会抛出异常。
 
 ### `database.serialize([dbName])`
 
@@ -504,9 +520,9 @@ added:
 这对于保存、克隆或传输内存数据库很有用。此方法是对 [`sqlite3_serialize()`][] 的封装。
 
 ```mjs
-import { DatabaseSync } from 'node:sqlite';
+import { Database } from 'node:sqlite';
 
-const db = new DatabaseSync(':memory:');
+const db = new Database(':memory:');
 db.exec('CREATE TABLE t(key INTEGER PRIMARY KEY, value TEXT)');
 db.exec("INSERT INTO t VALUES (1, 'hello')");
 const buffer = db.serialize();
@@ -514,9 +530,9 @@ console.log(buffer.length); // 打印数据库的字节长度
 ```
 
 ```cjs
-const { DatabaseSync } = require('node:sqlite');
+const { Database } = require('node:sqlite');
 
-const db = new DatabaseSync(':memory:');
+const db = new Database(':memory:');
 db.exec('CREATE TABLE t(key INTEGER PRIMARY KEY, value TEXT)');
 db.exec("INSERT INTO t VALUES (1, 'hello')");
 const buffer = db.serialize();
@@ -540,15 +556,15 @@ added:
 将序列化的数据库加载到此连接中，替换当前数据库。反序列化后的数据库可写。即使后续操作失败，也会在尝试反序列化之前完成现有预准备语句。如果在数据库回调位于调用堆栈中时调用此方法，例如用户定义的函数、聚合函数、授权器，或变更集筛选器或冲突处理程序，则会抛出 [`ERR_INVALID_STATE`][] 错误。此方法是 [`sqlite3_deserialize()`][] 的包装器。
 
 ```mjs
-import { DatabaseSync } from 'node:sqlite';
+import { Database } from 'node:sqlite';
 
-const original = new DatabaseSync(':memory:');
+const original = new Database(':memory:');
 original.exec('CREATE TABLE t(key INTEGER PRIMARY KEY, value TEXT)');
 original.exec("INSERT INTO t VALUES (1, 'hello')");
 const buffer = original.serialize();
 original.close();
 
-const clone = new DatabaseSync(':memory:');
+const clone = new Database(':memory:');
 clone.deserialize(buffer);
 using query = clone.prepare('SELECT value FROM t');
 console.log(query.get());
@@ -556,15 +572,15 @@ console.log(query.get());
 ```
 
 ```cjs
-const { DatabaseSync } = require('node:sqlite');
+const { Database } = require('node:sqlite');
 
-const original = new DatabaseSync(':memory:');
+const original = new Database(':memory:');
 original.exec('CREATE TABLE t(key INTEGER PRIMARY KEY, value TEXT)');
 original.exec("INSERT INTO t VALUES (1, 'hello')");
 const buffer = original.serialize();
 original.close();
 
-const clone = new DatabaseSync(':memory:');
+const clone = new Database(':memory:');
 clone.deserialize(buffer);
 using query = clone.prepare('SELECT value FROM t');
 console.log(query.get());
@@ -576,24 +592,28 @@ console.log(query.get());
 <!-- YAML
 added: v22.5.0
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
+    pr-url: https://github.com/nodejs/node/pull/62757
+    description: Add the `persistent` option.
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/65157
     description: Throw `ERR_INVALID_ARG_VALUE` if `sql` contains no statements.
 -->
 
 * `sql` {string} 要编译为预准备语句的 SQL 字符串。
 * `options` {Object} 预准备语句的可选配置。
-  * `readBigInts` {boolean} 如果为 `true`，则将整数字段读取为 `BigInt`。
-    **默认值：**继承自数据库选项或 `false`。
-  * `returnArrays` {boolean} 如果为 `true`，则将结果作为数组返回。
-    **默认值：**继承自数据库选项或 `false`。
-  * `allowBareNamedParameters` {boolean} 如果为 `true`，则允许绑定不带前缀字符的命名参数。**默认值：**继承自数据库选项或 `true`。
-  * `allowUnknownNamedParameters` {boolean} 如果为 `true`，则忽略未知的命名参数。
-    **默认值：**继承自数据库选项或 `false`。
-* 返回：{StatementSync} 预准备语句。
+  * `readBigInts` {boolean} 如果为 `true`，整数类型的字段将作为 `BigInt` 读取。
+    **默认值：** 继承自数据库选项，或为 `false`。
+  * `returnArrays` {boolean} 如果为 `true`，结果将以数组形式返回。
+    **默认值：** 继承自数据库选项，或为 `false`。
+  * `allowBareNamedParameters` {boolean} 如果为 `true`，允许绑定不带前缀字符的命名参数。**默认值：** 继承自数据库选项，或为 `true`。
+  * `allowUnknownNamedParameters` {boolean} 如果为 `true`，则忽略未知的命名参数。**默认值：** 继承自数据库选项，或为 `false`。
+  * `persistent` {boolean} 如果为 `true`，则向 SQLite 提示此语句将长期保留，并且可能会多次重用。SQLite 目前会通过避免使用旁路内存来响应此提示。对应于 [`SQLITE_PREPARE_PERSISTENT`][] 标志。**默认值：** `false`。
+* 返回：{Statement} 预准备语句。
 
-将 SQL 语句编译为[预准备语句][]. 此方法是对
-[`sqlite3_prepare_v2()`][] 的封装。
+将 SQL 语句编译为[预准备语句][]。此方法是 [`sqlite3_prepare_v3()`][] 的包装器。
 
 ### `database.createTagStore([maxSize])`
 
@@ -659,9 +679,9 @@ sqlTagStore.get`select * from t1 where id = ${id} and active = 1`;
 在带标签语句中绑定参数的唯一方式是使用 `${value}` 语法。不要在 SQL 查询字符串本身中添加参数绑定占位符（例如 `?`）。
 
 ```mjs
-import { DatabaseSync } from 'node:sqlite';
+import { Database } from 'node:sqlite';
 
-const db = new DatabaseSync(':memory:');
+const db = new Database(':memory:');
 const sql = db.createTagStore();
 
 db.exec('CREATE TABLE users (id INT, name TEXT)');
@@ -686,9 +706,9 @@ console.log(allUsers);
 ```
 
 ```cjs
-const { DatabaseSync } = require('node:sqlite');
+const { Database } = require('node:sqlite');
 
-const db = new DatabaseSync(':memory:');
+const db = new Database(':memory:');
 const sql = db.createTagStore();
 
 db.exec('CREATE TABLE users (id INT, name TEXT)');
@@ -710,6 +730,95 @@ console.log(allUsers);
 //   { id: 1, name: 'Alice' },
 //   { id: 2, name: 'Bob' }
 // ]
+```
+
+### `database.createModule(name, options)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `name` {string} 虚拟表模块的名称。此名称用于
+  `CREATE VIRTUAL TABLE ... USING name` 语句，也用作同名表名称。
+* `options` {Object} 模块配置设置。
+  * `columns` {Array} 列定义数组。每个元素都是一个对象，具有以下属性：
+    * `name` {string} 列的名称。
+    * `type` {string} 列声明的类型。必须是
+      `'INTEGER'`、`'TEXT'`、`'REAL'`、`'BLOB'` 或 `'ANY'` 之一。
+    * `hidden` {boolean} 如果为 `true`，则该列为隐藏列，并作为表值函数用法的参数。**默认值：** `false`。
+  * `rows` {Function} 查询虚拟表时调用以生成行的函数。此函数会按定义顺序接收隐藏列（参数）的值。必须返回一个可迭代对象（例如数组或生成器），其中每个元素都是列值数组。
+  * `directOnly` {boolean} 如果为 `true`，则虚拟表只能用于顶层 SQL 语句，不能用于触发器或视图中。**默认值：** `false`。
+  * `useBigIntArguments` {boolean} 如果为 `true`，传递给 `rows` 的整数参数将转换为 `BigInt`。**默认值：** `false`。
+
+向数据库注册虚拟表模块。此方法是 [`sqlite3_create_module_v2()`][] 的包装器。虚拟表允许 JavaScript 代码为 SQL 表提供底层数据。注册的模块可以通过两种方式使用：
+
+* **同名表**：直接查询模块名称，无需创建表（例如，`SELECT * FROM module_name`）。
+* **命名虚拟表**：使用 `CREATE VIRTUAL TABLE t USING module_name` 创建持久化虚拟表。
+
+隐藏列可用于使用表值函数语法向 `rows` 函数传递参数（例如，`SELECT * FROM module_name(param1, param2)`）。
+
+`rows` 生成的值遵循 [JavaScript 与 SQLite 之间的类型转换][]规则：{number} 存储为 `REAL`，{bigint} 存储为 `INTEGER`，无论列声明的 `type` 为何。与普通表不同，虚拟表不会对返回的值应用列亲和性，因此，如果某列需要以 `INTEGER` 类型存储，请生成 {bigint}：
+
+```js
+db.createModule('counter', {
+  columns: [{ name: 'value', type: 'INTEGER' }],
+  *rows() {
+    yield [1];   // typeof(value) is 'real'
+    yield [2n];  // typeof(value) is 'integer'
+  },
+});
+```
+
+```cjs
+const { Database } = require('node:sqlite');
+
+const db = new Database(':memory:');
+
+db.createModule('generate_series', {
+  columns: [
+    { name: 'value', type: 'INTEGER' },
+    { name: 'start', type: 'INTEGER', hidden: true },
+    { name: 'stop', type: 'INTEGER', hidden: true },
+    { name: 'step', type: 'INTEGER', hidden: true },
+  ],
+  *rows(start, stop, step) {
+    start ??= 0;
+    stop ??= 10;
+    step ??= 1;
+    for (let i = start; i <= stop; i += step) {
+      yield [i];
+    }
+  },
+});
+
+console.log(db.prepare('SELECT * FROM generate_series(1, 5, 1)').all());
+// 打印： [ { value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }, { value: 5 } ]
+```
+
+```mjs
+import { Database } from 'node:sqlite';
+
+const db = new Database(':memory:');
+
+db.createModule('generate_series', {
+  columns: [
+    { name: 'value', type: 'INTEGER' },
+    { name: 'start', type: 'INTEGER', hidden: true },
+    { name: 'stop', type: 'INTEGER', hidden: true },
+    { name: 'step', type: 'INTEGER', hidden: true },
+  ],
+  *rows(start, stop, step) {
+    start ??= 0;
+    stop ??= 10;
+    step ??= 1;
+    for (let i = start; i <= stop; i += step) {
+      yield [i];
+    }
+  },
+});
+
+console.log(db.prepare('SELECT * FROM generate_series(1, 5, 1)').all());
+// 打印： [ { value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }, { value: 5 } ]
 ```
 
 ### `database.createSession([options])`
@@ -762,10 +871,10 @@ added:
 如果数据库未打开，则会抛出异常。此方法是对 [`sqlite3changeset_apply()`][] 的封装。
 
 ```mjs
-import { DatabaseSync } from 'node:sqlite';
+import { Database } from 'node:sqlite';
 
-const sourceDb = new DatabaseSync(':memory:');
-const targetDb = new DatabaseSync(':memory:');
+const sourceDb = new Database(':memory:');
+const targetDb = new Database(':memory:');
 
 sourceDb.exec('CREATE TABLE data(key INTEGER PRIMARY KEY, value TEXT)');
 targetDb.exec('CREATE TABLE data(key INTEGER PRIMARY KEY, value TEXT)');
@@ -782,10 +891,10 @@ targetDb.applyChangeset(changeset);
 ```
 
 ```cjs
-const { DatabaseSync } = require('node:sqlite');
+const { Database } = require('node:sqlite');
 
-const sourceDb = new DatabaseSync(':memory:');
-const targetDb = new DatabaseSync(':memory:');
+const sourceDb = new Database(':memory:');
+const targetDb = new Database(':memory:');
 
 sourceDb.exec('CREATE TABLE data(key INTEGER PRIMARY KEY, value TEXT)');
 targetDb.exec('CREATE TABLE data(key INTEGER PRIMARY KEY, value TEXT)');
@@ -852,8 +961,7 @@ added:
 
 ### `session.close()`
 
-关闭会话。如果数据库或会话未打开，则抛出异常。此方法是
-对 [`sqlite3session_delete()`][] 的封装。
+关闭会话。如果数据库或会话未打开，或者会话当前正在生成变更集或补丁集，则会抛出异常。如果在 SQLite 调用的回调中调用此方法，例如授权器回调、用户定义函数或 [`'sqlite.db.query'`][] 订阅者，则会抛出 [`ERR_INVALID_STATE`][] 错误，因为 SQLite 可能仍在使用该会话。此方法是对 [`sqlite3session_delete()`][] 的封装。
 
 ### `session[Symbol.dispose]()`
 
@@ -862,9 +970,9 @@ added:
   - v24.9.0
 -->
 
-关闭会话。如果会话已关闭，则不执行任何操作。
+关闭会话。如果会话已经关闭，则此操作不执行任何操作。如果会话当前正在生成变更集或补丁集，或者在 SQLite 调用的回调中调用此方法，且符合 [`session.close()`][] 的相同条件，则会抛出 [`ERR_INVALID_STATE`][] 错误。
 
-## 类：`StatementSync`
+## 类：`Statement`
 
 <!-- YAML
 added: v22.5.0
@@ -875,10 +983,10 @@ added: v22.5.0
 `database.prepare()` 方法创建的。此类暴露的所有 API 均执行
 同步。
 
-预准备语句是用于创建它的 SQL 的高效二进制表示。预准备语句是可参数化的，
-并且可以使用不同的绑定值多次调用。参数还提供针对
-[SQL 注入][] 攻击的保护。出于这些原因，在处理用户输入时，预准备语句优于
-手工编写的 SQL 字符串。
+`StatementSync` 是 `Statement` 的弃用别名，为了与该类先前的名称保持向后兼容而保留。请参阅
+[DEP0211](deprecations.md#dep0211-sqlitestatementsync)。
+
+预准备语句是用于创建它的 SQL 的高效二进制表示形式。预准备语句支持参数化，可以使用不同的绑定值多次调用。参数还可以防止 [SQL 注入][] 攻击。因此，处理用户输入时，推荐使用预准备语句，而不是手工编写 SQL 字符串。
 
 ### 绑定参数
 
@@ -910,17 +1018,26 @@ db.prepare('SELECT $k AS a, $k AS b').get({ k: 7 });
 
 如果绑定的键不是该语句的参数名称，则会抛出 `ERR_INVALID_STATE` 错误，除非忽略未知的命名参数。请参见 [`statement.setAllowUnknownNamedParameters()`][]。
 
-有关可以绑定的值，请参见 [JavaScript 与 SQLite 之间的类型转换][]。绑定任何其他值都会抛出 `ERR_INVALID_ARG_TYPE` 错误。
+从未绑定的参数值为 `NULL`，绑定 `undefined` 也会产生相同效果，因此 `{ $a: undefined }` 和 `{}` 等效。由于 `undefined` 不是对象，将其作为 `namedParameters` 传入时，它会被绑定为匿名参数。
+
+有关可绑定的值，请参阅 [JavaScript 与 SQLite 之间的类型转换][]。绑定任何其他值都会抛出 `ERR_INVALID_ARG_TYPE` 错误。
 
 ### `statement.all([namedParameters][, ...anonymousParameters])`
 
 <!-- YAML
 added: v22.5.0
 changes:
-  - version: REPLACEME
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65709
+    description: Bind `undefined` to `NULL`.
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62001
-    description: 为绑定参数添加对布尔值的支持。
-  - version: REPLACEME
+    description: Add support for boolean values in bound parameters.
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62061
     description: 为绑定参数添加对 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
   - version:
@@ -930,23 +1047,21 @@ changes:
     description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
-* `namedParameters` {Object} 用于绑定命名参数的可选对象。
-  此对象的键用于配置映射。
-* `...anonymousParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+* `namedParameters` {Object} 用于绑定命名参数的可选对象。此对象的键用于配置映射。
+* `...anonymousParameters`
+  {undefined|null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
   要绑定到匿名参数的零个或多个值。
-* 返回值：{Array} 对象数组。每个对象对应于执行预处理语句所返回的一行。
-  每个对象的键和值分别对应于该行的列名和值。
+* 返回值：{Array} 对象数组。每个对象对应于执行预准备语句所返回的一行。每个对象的键和值对应于该行的列名和值。
 
 此方法执行预处理语句，并以对象数组的形式返回所有结果。如果预处理语句不返回任何结果，此方法将返回一个空数组。预处理语句的[参数将使用][] `namedParameters` 和 `anonymousParameters` 中的值进行绑定。参见[绑定参数][]。
 
 ### `statement.close()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
-完成预准备语句。如果语句已经完成，则会抛出异常。此方法是
-[`sqlite3_finalize()`][] 的封装。
+终结预准备语句。如果语句已经终结，则会抛出异常。如果此语句当前正在执行，则会抛出 [`ERR_INVALID_STATE`][] 错误；当从语句本身触发的回调中调用此方法时，就会发生这种情况，例如用户定义函数、聚合函数或 [`'sqlite.db.query'`][] 订阅者。从这类回调中可以终结同一连接上的空闲语句。此方法是对 [`sqlite3_finalize()`][] 的封装。
 
 ### `statement.columns()`
 
@@ -982,10 +1097,17 @@ added: v22.5.0
 <!-- YAML
 added: v22.5.0
 changes:
-  - version: REPLACEME
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65709
+    description: Bind `undefined` to `NULL`.
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62001
-    description: 为绑定参数添加对布尔值的支持。
-  - version: REPLACEME
+    description: Add support for boolean values in bound parameters.
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62061
     description: 为绑定参数中的 `ArrayBuffer` 和 `SharedArrayBuffer` 对象添加支持。
   - version:
@@ -995,12 +1117,11 @@ changes:
     description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
-* `namedParameters` {Object} 用于绑定命名参数的可选对象。
-  此对象的键用于配置映射。
-* `...anonymousParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+* `namedParameters` {Object} 用于绑定命名参数的可选对象。此对象的键用于配置映射。
+* `...anonymousParameters`
+  {undefined|null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
   要绑定到匿名参数的零个或多个值。
-* 返回值：{Object|undefined} 执行准备好的语句所返回的第一行对应的对象。
-  对象的键和值分别对应行的列名和值。如果数据库未返回任何行，则此方法返回 `undefined`。
+* 返回值：{Object|undefined} 对象，对应于执行预准备语句返回的第一行。该对象的键和值对应于该行的列名和值。如果数据库没有返回任何行，则此方法返回 `undefined`。
 
 此方法执行准备好的语句，并将第一个结果作为对象返回。如果准备好的语句不返回任何结果，则此方法返回 `undefined`。准备好的语句的[参数使用][] `namedParameters` 和 `anonymousParameters` 中的值进行绑定。参见[绑定参数][]。
 
@@ -1011,10 +1132,17 @@ added:
   - v23.4.0
   - v22.13.0
 changes:
-  - version: REPLACEME
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65709
+    description: Bind `undefined` to `NULL`.
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62001
-    description: 添加对绑定参数中布尔值的支持。
-  - version: REPLACEME
+    description: Add support for boolean values in bound parameters.
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62061
     description: 添加对绑定参数中 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
   - version:
@@ -1024,25 +1152,39 @@ changes:
     description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
-* `namedParameters` {Object} 用于绑定命名参数的可选对象。
-  此对象的键用于配置映射。
-* `...anonymousParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+* `namedParameters` {Object} 用于绑定命名参数的可选对象。此对象的键用于配置映射。
+* `...anonymousParameters`
+  {undefined|null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
   要绑定到匿名参数的零个或多个值。
-* 返回：{Iterator} 一个由对象组成的可迭代迭代器。每个对象对应于执行预准备语句所返回的一行。
-  每个对象的键和值分别对应于该行的列名和值。
+* 返回值：{Iterator} 对象的可迭代迭代器。每个对象对应于执行预准备语句所返回的一行。每个对象的键和值对应于该行的列名和值。
 
 此方法执行预准备语句，并返回一个由对象组成的迭代器。如果预准备语句不返回任何结果，此方法将返回一个空迭代器。预准备语句的[参数将使用 `namedParameters` 和 `anonymousParameters` 中的值进行绑定][Binding parameters][]。参见
 [绑定参数][]。
+
+### `statement.resetStats()`
+
+<!-- YAML
+added: v26.8.0
+-->
+
+将 [`statement.stat()`][] 报告的每个计数器重置为零，但 `memused` 除外；该计数器报告当前内存使用量，无法重置。此方法是对 [`sqlite3_stmt_status()`][] 的封装，可用于衡量特定工作负载，而不受同一预准备语句此前执行所累积的计数影响。
 
 ### `statement.run([namedParameters][, ...anonymousParameters])`
 
 <!-- YAML
 added: v22.5.0
 changes:
-  - version: REPLACEME
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65709
+    description: Bind `undefined` to `NULL`.
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62001
-    description: 支持绑定参数中的布尔值。
-  - version: REPLACEME
+    description: Add support for boolean values in bound parameters.
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62061
     description: 支持绑定参数中的 `ArrayBuffer` 和 `SharedArrayBuffer` 对象。
   - version:
@@ -1052,18 +1194,13 @@ changes:
     description: "为 `anonymousParameters` 添加对 `DataView` 和类型化数组对象的支持。"
 -->
 
-* `namedParameters` {Object} 用于绑定命名参数的可选对象。
-  此对象的键用于配置映射。
-* `...anonymousParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
-  用于绑定匿名参数的零个或多个值。
+* `namedParameters` {Object} 用于绑定命名参数的可选对象。此对象的键用于配置映射。
+* `...anonymousParameters`
+  {undefined|null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+  要绑定到匿名参数的零个或多个值。
 * 返回值：{Object}
-  * `changes` {number|bigint} 最近完成的 `INSERT`、`UPDATE` 或 `DELETE` 语句
-    修改、插入或删除的行数。
-    此字段的类型取决于预处理语句的配置，可以是 number 或 `BigInt`。
-    此属性是 [`sqlite3_changes64()`][] 的结果。
-  * `lastInsertRowid` {number|bigint} 最近插入的行 ID。此字段的类型取决于
-    预处理语句的配置，可以是 number 或 `BigInt`。此属性是
-    [`sqlite3_last_insert_rowid()`][] 的结果。
+  * `changes` {number|bigint} 最近完成的 `INSERT`、`UPDATE` 或 `DELETE` 语句所修改、插入或删除的行数。此字段的类型取决于预准备语句的配置，可以是数字或 `BigInt`。此属性是 [`sqlite3_changes64()`][] 的结果。
+  * `lastInsertRowid` {number|bigint} 最近插入行的 rowid。此字段的类型取决于预准备语句的配置，可以是数字或 `BigInt`。此属性是 [`sqlite3_last_insert_rowid()`][] 的结果。
 
 此方法执行预处理语句，并返回一个概述所产生更改的对象。预处理语句的[参数使用绑定]，绑定时使用 `namedParameters` 和 `anonymousParameters` 中的值。请参阅[绑定参数][]。
 
@@ -1145,10 +1282,34 @@ added: v22.5.0
 ### `statement[Symbol.dispose]()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
-完成预准备语句。如果预准备语句已经完成，则此操作不执行任何操作。
+终结预准备语句。如果预准备语句已经终结，则此操作不执行任何操作。如果此语句当前正在执行，且符合 [`statement.close()`][] 的相同条件，则会抛出 [`ERR_INVALID_STATE`][] 错误。
+
+### `statement.stat(counter)`
+
+<!-- YAML
+added: v26.8.0
+-->
+
+* `counter` {string} 要读取的计数器名称。可选值包括：
+
+  * `'fullscanStep'` SQLite 执行全表扫描时在表中向前步进的次数。
+  * `'sort'` 排序操作发生的次数。
+  * `'autoindex'` 为帮助加快联接而自动创建的临时索引中插入的行数。
+  * `'vmStep'` 预准备语句执行的虚拟机操作次数。
+  * `'reprepare'` 由于架构变更或绑定参数变更，语句自动重新准备的次数。
+  * `'run'` 预准备语句启动的执行周期数。
+  * `'filterMiss'` Bloom 过滤器返回结果、导致联接步骤必须照常处理的次数。
+  * `'filterHit'` Bloom 过滤器返回未找到结果、导致跳过联接步骤的次数。
+  * `'memused'` 用于存储预准备语句的堆内存近似字节数。
+
+* 返回值：{number} 所请求计数器的当前值。
+
+返回 SQLite 为此预编译语句跟踪的一个运行时计数器。此方法是 [`sqlite3_stmt_status()`][] 的封装，不会重置计数器。断言语句不会执行全表扫描（`statement.stat('fullscanStep') === 0`）是防止性能退化的有效检查。
+
+`'filterMiss'` 和 `'filterHit'` 计数器需要 SQLite 3.38.0 或更高版本。使用较旧 SQLite 并通过 `--shared-sqlite` 链接的构建不会公开这些计数器，传入任一名称都会抛出 `ERR_INVALID_ARG_VALUE`。
 
 ## 类：`SQLTagStore`
 
@@ -1167,16 +1328,24 @@ added: v24.9.0
 <!-- YAML
 added: v24.9.0
 changes:
-  - version: REPLACEME
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65709
+    description: 将 `undefined` 绑定到 `NULL`。
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62001
     description: 添加对绑定参数中布尔值的支持。
-  - version: REPLACEME
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62061
     description: 添加对绑定参数中 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
 -->
 
 * `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
-* `...boundParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+* `...boundParameters`
+  {undefined|null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
   要绑定到模板字符串中占位符的参数值。
 * 返回值：{Array} 一个对象数组，表示查询返回的行。
 
@@ -1189,18 +1358,26 @@ changes:
 <!-- YAML
 added: v24.9.0
 changes:
-  - version: REPLACEME
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65709
+    description: 将 `undefined` 绑定到 `NULL`。
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62001
     description: 添加对绑定参数中布尔值的支持。
-  - version: REPLACEME
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62061
     description: 添加对绑定参数中 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
 -->
 
 * `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
-* `...boundParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+* `...boundParameters`
+  {undefined|null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
   要绑定到模板字符串中占位符的参数值。
-* 返回值：{Object | undefined} 一个对象，表示查询返回的第一行；如果没有返回任何行，则为 `undefined`。
+* 返回值：{Object | undefined} 一个对象，表示查询返回的第一行；如果没有返回行，则为 `undefined`。
 
 执行给定的 SQL 查询并将第一行结果作为对象返回。
 
@@ -1211,16 +1388,24 @@ changes:
 <!-- YAML
 added: v24.9.0
 changes:
-  - version: REPLACEME
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65709
+    description: 将 `undefined` 绑定到 `NULL`。
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62001
     description: 添加对绑定参数中布尔值的支持。
-  - version: REPLACEME
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62061
     description: 添加对绑定参数中 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
 -->
 
 * `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
-* `...boundParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+* `...boundParameters`
+  {undefined|null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
   要绑定到模板字符串中占位符的参数值。
 * 返回值：{Iterator} 一个迭代器，生成表示查询返回行的对象。
 
@@ -1233,18 +1418,26 @@ changes:
 <!-- YAML
 added: v24.9.0
 changes:
-  - version: REPLACEME
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65709
+    description: 将 `undefined` 绑定到 `NULL`。
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62001
     description: 添加对绑定参数中布尔值的支持。
-  - version: REPLACEME
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/62061
     description: 添加对绑定参数中 `ArrayBuffer` 和 `SharedArrayBuffer` 对象的支持。
 -->
 
 * `stringElements` {string\[]} 包含 SQL 查询的模板字面量元素。
-* `...boundParameters` {null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
+* `...boundParameters`
+  {undefined|null|number|bigint|boolean|string|Buffer|TypedArray|DataView|ArrayBuffer|SharedArrayBuffer}
   要绑定到模板字符串中占位符的参数值。
-* 返回值：{Object} 一个对象，包含执行相关的信息，包括 `changes` 和 `lastInsertRowid`。
+* 返回值：{Object} 一个对象，包含有关执行的信息，包括 `changes` 和 `lastInsertRowid`。
 
 执行给定的 SQL 查询，预期不返回任何行（例如，INSERT、UPDATE、DELETE）。
 
@@ -1282,9 +1475,9 @@ added: v24.9.0
 added: v24.9.0
 -->
 
-* 类型：{DatabaseSync}
+* 类型：{Database}
 
-一个只读属性，返回与此 `SQLTagStore` 关联的 `DatabaseSync` 对象。
+一个只读属性，返回与此 `SQLTagStore` 关联的 `Database` 对象。
 
 ### `sqlTagStore.clear()`
 
@@ -1306,24 +1499,24 @@ changes:
     description: "`path` 参数现在支持 Buffer 和 URL 对象。"
 -->
 
-* `sourceDb` {DatabaseSync} 要备份的数据库。源数据库必须处于打开状态。
+* `sourceDb` {Database} 要备份的数据库。源数据库必须处于打开状态。
 * `path` {string | Buffer | URL} 创建备份的路径。如果文件已存在，其内容将被覆盖。
 * `options` {Object} 备份的可选配置。支持以下属性：
-  * `source` {string} 源数据库的名称。可以是 `'main'`（默认的主数据库），也可以是通过 [`ATTACH DATABASE`][] 添加的任何其他数据库。**默认值：**`'main'`。
-  * `target` {string} 目标数据库的名称。可以是 `'main'`（默认的主数据库），也可以是通过 [`ATTACH DATABASE`][] 添加的任何其他数据库。**默认值：**`'main'`。
-  * `rate` {integer} 备份每批传输的页数，必须为正数。**默认值：**`100`。
-  * `progress` {Function} 可选的回调函数，在每个备份步骤之后调用。传递给此回调的参数是一个 {Object}，包含 `remainingPages` 和 `totalPages` 属性，用于描述备份操作的当前进度。
-* 返回：{Promise} 备份完成时兑现为已备份页的总数；如果发生错误则拒绝。
+  * `source` {string} 源数据库的名称。可以是 `'main'`（默认主数据库），也可以是通过 [`ATTACH DATABASE`][] 添加的任何其他数据库。**默认值：** `'main'`。
+  * `target` {string} 目标数据库的名称。可以是 `'main'`（默认主数据库），也可以是通过 [`ATTACH DATABASE`][] 添加的任何其他数据库。**默认值：** `'main'`。
+  * `rate` {integer} 备份过程中每批要传输的正页数。**默认值：** `100`。
+  * `progress` {Function} 可选的回调函数，在每个备份步骤后调用。传递给此回调的参数是一个 {Object}，包含 `remainingPages` 和 `totalPages` 属性，用于描述备份操作的当前进度。
+* 返回值：{Promise} 一个 Promise，完成时兑现为已备份页面总数；如果发生错误，则拒绝。
 
 此方法进行数据库备份。此方法抽象了 [`sqlite3_backup_init()`][]、[`sqlite3_backup_step()`][] 和 [`sqlite3_backup_finish()`][] 函数。
 
-备份的数据库在备份过程中可以正常使用。来自同一连接（同一 {DatabaseSync} 对象）的变更会立即反映在备份中。但是，来自其他连接的变更会导致备份过程重新启动。
+备份过程中可以正常使用备份的数据库。来自同一连接（即同一个 {Database} 对象）的变更会立即反映在备份中。不过，来自其他连接的变更会导致备份过程重新开始。
 
 ```cjs
-const { backup, DatabaseSync } = require('node:sqlite');
+const { backup, Database } = require('node:sqlite');
 
 (async () => {
-  const sourceDb = new DatabaseSync('source.db');
+  const sourceDb = new Database('source.db');
   const totalPagesTransferred = await backup(sourceDb, 'backup.db', {
     rate: 1, // 一次复制一页。
     progress: ({ totalPages, remainingPages }) => {
@@ -1336,9 +1529,9 @@ const { backup, DatabaseSync } = require('node:sqlite');
 ```
 
 ```mjs
-import { backup, DatabaseSync } from 'node:sqlite';
+import { backup, Database } from 'node:sqlite';
 
-const sourceDb = new DatabaseSync('source.db');
+const sourceDb = new Database('source.db');
 const totalPagesTransferred = await backup(sourceDb, 'backup.db', {
   rate: 1, // 一次复制一页。
   progress: ({ totalPages, remainingPages }) => {
@@ -1388,15 +1581,15 @@ added:
   </tr>
   <tr>
     <td><code>SQLITE_CHANGESET_CONSTRAINT</code></td>
-    <td>如果启用了外键处理，并且应用变更集使数据库处于包含外键违规的状态，则在提交变更集之前恰好一次使用此常量调用冲突处理程序。如果冲突处理程序返回 <code>SQLITE_CHANGESET_OMIT</code>，则提交更改，包括导致外键约束违规的更改。或者，如果它返回 <code>SQLITE_CHANGESET_ABORT</code>，则回滚变更集。</td>
+    <td>如果应用变更时发生任何其他约束冲突（即 UNIQUE、CHECK 或 NOT NULL 约束），则会使用此常量调用冲突处理程序。</td>
   </tr>
   <tr>
     <td><code>SQLITE_CHANGESET_FOREIGN_KEY</code></td>
-    <td>如果在应用变更时发生任何其他约束违规（即 UNIQUE、CHECK 或 NOT NULL 约束），则使用此常量调用冲突处理程序。</td>
+    <td>如果启用了外键处理，并且应用变更集后数据库处于包含外键冲突的状态，则在提交变更集之前，会恰好使用此常量调用冲突处理程序一次。如果冲突处理程序返回 <code>SQLITE_CHANGESET_OMIT</code>，则会提交这些变更，包括导致外键约束冲突的变更。或者，如果它返回 <code>SQLITE_CHANGESET_ABORT</code>，则会回滚变更集。</td>
   </tr>
 </table>
 
-以下常量之一必须从传递给 [`database.applyChangeset()`][] 的 `onConflict` 冲突解决处理程序返回。另请参阅 SQLite 文档中的 [从冲突处理程序返回的常量][]。
+以下常量之一必须由传递给 [`database.applyChangeset()`][] 的 `onConflict` 冲突解决处理程序返回。另请参阅 SQLite 文档中的 [从冲突处理程序返回的常量][]。
 
 <table>
   <tr>
@@ -1591,14 +1784,15 @@ added:
   </tr>
 </table>
 
-[绑定参数]: #binding-parameters
-[变更集和补丁集]: https://www.sqlite.org/sessionintro.html#changesets_and_patchsets
-[传递给冲突处理程序的常量]: https://www.sqlite.org/session/c_changeset_conflict.html
-[从冲突处理程序返回的常量]: https://www.sqlite.org/session/c_changeset_abort.html
-[限制常量]: https://www.sqlite.org/c3ref/c_limit_attached.html
-[运行时限制]: https://www.sqlite.org/c3ref/limit.html
-[SQL 注入]: https://en.wikipedia.org/wiki/SQL_injection
-[JavaScript 与 SQLite 之间的类型转换]: #type-conversion-between-javascript-and-sqlite
+[Binding parameters]: #binding-parameters
+[Changesets and Patchsets]: https://www.sqlite.org/sessionintro.html#changesets_and_patchsets
+[Constants Passed To The Conflict Handler]: https://www.sqlite.org/session/c_changeset_conflict.html
+[Constants Returned From The Conflict Handler]: https://www.sqlite.org/session/c_changeset_abort.html
+[Limit Constants]: https://www.sqlite.org/c3ref/c_limit_attached.html
+[Run-Time Limits]: https://www.sqlite.org/c3ref/limit.html
+[SQL injection]: https://en.wikipedia.org/wiki/SQL_injection
+[Type conversion between JavaScript and SQLite]: #type-conversion-between-javascript-and-sqlite
+[`'sqlite.db.query'`]: diagnostics_channel.md#event-sqlitedbquery
 [`ATTACH DATABASE`]: https://www.sqlite.org/lang_attach.html
 [`ERR_INVALID_STATE`]: errors.md#err_invalid_state
 [`PRAGMA foreign_keys`]: https://www.sqlite.org/pragma.html#pragma_foreign_keys
@@ -1606,11 +1800,14 @@ added:
 [`SQLITE_DETERMINISTIC`]: https://www.sqlite.org/c3ref/c_deterministic.html
 [`SQLITE_DIRECTONLY`]: https://www.sqlite.org/c3ref/c_deterministic.html
 [`SQLITE_MAX_FUNCTION_ARG`]: https://www.sqlite.org/limits.html#max_function_arg
+[`SQLITE_PREPARE_PERSISTENT`]: https://sqlite.org/c3ref/c_prepare_dont_log.html#sqlitepreparepersistent
 [`SQLTagStore`]: #class-sqltagstore
 [`database.applyChangeset()`]: #databaseapplychangesetchangeset-options
 [`database.createTagStore()`]: #databasecreatetagstoremaxsize
 [`database.serialize()`]: #databaseserializedbname
 [`database.setAuthorizer()`]: #databasesetauthorizercallback
+[`diagnostics_channel`]: diagnostics_channel.md
+[`session.close()`]: #sessionclose
 [`sqlite3_backup_finish()`]: https://www.sqlite.org/c3ref/backup_finish.html#sqlite3backupfinish
 [`sqlite3_backup_init()`]: https://www.sqlite.org/c3ref/backup_finish.html#sqlite3backupinit
 [`sqlite3_backup_step()`]: https://www.sqlite.org/c3ref/backup_finish.html#sqlite3backupstep
@@ -1622,6 +1819,7 @@ added:
 [`sqlite3_column_origin_name()`]: https://www.sqlite.org/c3ref/column_database_name.html
 [`sqlite3_column_table_name()`]: https://www.sqlite.org/c3ref/column_database_name.html
 [`sqlite3_create_function_v2()`]: https://www.sqlite.org/c3ref/create_function.html
+[`sqlite3_create_module_v2()`]: https://www.sqlite.org/c3ref/create_module.html
 [`sqlite3_create_window_function()`]: https://www.sqlite.org/c3ref/create_function.html
 [`sqlite3_db_filename()`]: https://sqlite.org/c3ref/db_filename.html
 [`sqlite3_deserialize()`]: https://sqlite.org/c3ref/deserialize.html
@@ -1631,19 +1829,22 @@ added:
 [`sqlite3_get_autocommit()`]: https://sqlite.org/c3ref/get_autocommit.html
 [`sqlite3_last_insert_rowid()`]: https://www.sqlite.org/c3ref/last_insert_rowid.html
 [`sqlite3_load_extension()`]: https://www.sqlite.org/c3ref/load_extension.html
-[`sqlite3_prepare_v2()`]: https://www.sqlite.org/c3ref/prepare.html
+[`sqlite3_prepare_v3()`]: https://www.sqlite.org/c3ref/prepare.html
 [`sqlite3_serialize()`]: https://sqlite.org/c3ref/serialize.html
 [`sqlite3_set_authorizer()`]: https://sqlite.org/c3ref/set_authorizer.html
 [`sqlite3_sql()`]: https://www.sqlite.org/c3ref/expanded_sql.html
+[`sqlite3_stmt_status()`]: https://www.sqlite.org/c3ref/stmt_status.html
 [`sqlite3changeset_apply()`]: https://www.sqlite.org/session/sqlite3changeset_apply.html
 [`sqlite3session_attach()`]: https://www.sqlite.org/session/sqlite3session_attach.html
 [`sqlite3session_changeset()`]: https://www.sqlite.org/session/sqlite3session_changeset.html
 [`sqlite3session_create()`]: https://www.sqlite.org/session/sqlite3session_create.html
 [`sqlite3session_delete()`]: https://www.sqlite.org/session/sqlite3session_delete.html
 [`sqlite3session_patchset()`]: https://www.sqlite.org/session/sqlite3session_patchset.html
+[`statement.close()`]: #statementclose
 [`statement.setAllowBareNamedParameters()`]: #statementsetallowbarenamedparametersenabled
 [`statement.setAllowUnknownNamedParameters()`]: #statementsetallowunknownnamedparametersenabled
-[忙等待超时]: https://sqlite.org/c3ref/busy_timeout.html
+[`statement.stat()`]: #statementstatcounter
+[忙碌超时]: https://sqlite.org/c3ref/busy_timeout.html
 [连接]: https://www.sqlite.org/c3ref/sqlite3.html
 [数据类型]: https://www.sqlite.org/datatype3.html
 [双引号字符串字面量]: https://www.sqlite.org/quirks.html#dblquote

@@ -2,17 +2,29 @@
 
 <!--introduced_in=v12.20.0-->
 
+> 稳定性：2 - 稳定
+
+<!-- source_link=lib/module.js -->
+
+`node:module` 模块提供了用于与 Node.js 模块系统交互的实用工具。
+
+可以通过以下方式访问：
+
+```mjs
+import module from 'node:module';
+```
+
+## 类：`Module`
+
 <!-- YAML
-added: v0.3.7
+added: v0.3.5
 -->
 
-## `Module` 对象
+[CommonJS][] 模块中的 `module` 对象是此类的实例。
 
-* 类型：{Object}
+参见 CommonJS 文档中的[ `module` 对象][]。
 
-在与 `Module` 实例交互时提供通用实用方法，[`module`][] 变量常见于 [CommonJS][] 模块中。通过 `import 'node:module'` 或 `require('node:module')` 访问。
-
-### `module.builtinModules`
+## `module.builtinModules`
 
 <!-- YAML
 added:
@@ -27,23 +39,18 @@ changes:
 
 * 类型：{string\[]}
 
-Node.js 提供的所有模块名称列表。可用于验证模块是否由第三方维护。
-
-此上下文中的 `module` 与 [模块包装器][] 提供的对象不同。要访问它，需要 `Module` 模块：
+Node.js 提供的所有模块的名称列表。
 
 ```mjs
-// module.mjs
-// 在 ECMAScript 模块中
-import { builtinModules as builtin } from 'node:module';
+import { builtinModules } from 'node:module';
+console.log(builtinModules.filter((name) => name.startsWith('path')));
+// Prints: [ 'path', 'path/posix', 'path/win32' ]
 ```
 
-```cjs
-// module.cjs
-// 在 CommonJS 模块中
-const builtin = require('node:module').builtinModules;
-```
+要测试模块名称是否对应内置模块，请使用
+[`module.isBuiltin()`][]。
 
-### `module.createRequire(filename)`
+## `module.createRequire(filename)`
 
 <!-- YAML
 added: v12.2.0
@@ -60,7 +67,7 @@ const require = createRequire(import.meta.url);
 const siblingModule = require('./sibling-module');
 ```
 
-### `module.findPackageJSON(specifier[, base])`
+## `module.findPackageJSON(specifier[, base])`
 
 <!-- YAML
 added:
@@ -135,7 +142,7 @@ findPackageJSON('@foo/qux', __filename);
 // '/path/to/project/packages/qux/package.json'
 ```
 
-### `module.isBuiltin(moduleName)`
+## `module.isBuiltin(moduleName)`
 
 <!-- YAML
 added:
@@ -153,7 +160,7 @@ isBuiltin('fs'); // true
 isBuiltin('wss'); // false
 ```
 
-### `module.register(specifier[, parentURL][, options])`
+## `module.register(specifier[, parentURL][, options])`
 
 <!-- YAML
 added:
@@ -188,11 +195,11 @@ changes:
   * `data` {any} 任何任意的、可克隆的 JavaScript 值，传递给 [`initialize`][] 钩子。
   * `transferList` {Object\[]} [可传输对象][] 传递给 `initialize` 钩子。
 
-注册导出 [钩子][] 的模块，以自定义 Node.js 模块解析和加载行为。参见 [自定义钩子][]。
+注册导出[钩子][]的模块，以自定义 Node.js 模块解析和加载行为。参见[自定义钩子][]。
 
-如果与 [权限模型][] 一起使用，此功能需要 `--allow-worker`。
+如果与[权限模型][]一起使用，此功能需要 `--allow-worker`。
 
-### `module.registerHooks(options)`
+## `module.registerHooks(options)`
 
 <!-- YAML
 added:
@@ -209,15 +216,15 @@ changes:
 > 稳定性：1.2 - 发布候选
 
 * `options` {Object}
-  * `load` {Function|undefined} 参见 [加载钩子][]。**默认值：** `undefined`。
-  * `resolve` {Function|undefined} 参见 [解析钩子][]。**默认值：** `undefined`。
+  * `load` {Function|undefined} 参见[加载钩子][]。**默认值：** `undefined`。
+  * `resolve` {Function|undefined} 参见[解析钩子][]。**默认值：** `undefined`。
 * 返回：{Object} 包含以下属性的对象：
   * `deregister()` {Function} 移除已注册的钩子，使其不再被调用。否则，钩子会在运行中的进程的整个生命周期内保留。
   * `[Symbol.dispose]` {Function} 与 `deregister` 相同。
 
-注册 [钩子][] 以自定义 Node.js 模块解析和加载行为。参见 [自定义钩子][]。返回的对象可用于 [注销同步自定义钩子][同步自定义钩子的注销]。
+注册[钩子][]以自定义 Node.js 模块解析和加载行为。参见[自定义钩子][]。返回的对象可用于[注销同步自定义钩子][同步自定义钩子的注销]。
 
-### `module.stripTypeScriptTypes(code[, options])`
+## `module.stripTypeScriptTypes(code[, options])`
 
 <!-- YAML
 added:
@@ -240,7 +247,7 @@ changes:
 
 `module.stripTypeScriptTypes()` 从 TypeScript 代码中移除类型注解。它可用于在使用 `vm.runInContext()` 或 `vm.compileFunction()` 运行 TypeScript 代码之前剥离类型注解。
 
-默认情况下，如果代码包含需要转换的 TypeScript 功能（例如 `enum`），它将抛出错误。有关更多信息，请参阅 [类型剥离][]。
+默认情况下，如果代码包含需要转换的 TypeScript 功能（例如 `enum`），它将抛出错误。有关更多信息，请参阅[类型剥离][]。
 
 _警告_：由于 TypeScript 解析器的变化，此函数的输出不应被视为在 Node.js 版本之间稳定。
 
@@ -278,7 +285,7 @@ console.log(strippedCode);
 // 打印：const a         = 1\n\n//# sourceURL=source.ts;
 ```
 
-### `module.syncBuiltinESMExports()`
+## `module.syncBuiltinESMExports()`
 
 <!-- YAML
 added: v12.12.0
@@ -339,6 +346,8 @@ changes:
 
 默认情况下，当被缓存模块的绝对路径更改时，缓存会失效。为了在项目目录移动后保持缓存工作，请启用便携编译缓存。这允许以前编译的模块在不同的目录位置之间重用，只要相对于缓存目录的布局保持不变。这将尽力而为。如果 Node.js 无法计算模块相对于缓存目录的位置，则该模块将被缓存。
 
+便携缓存也不会按用户拆分：在具有 uid 的平台上，非便携缓存的缓存子目录会附加创建该缓存的用户的 uid，因此只有该用户可以找到它；而便携缓存对所有用户使用相同的子目录。这样，生成一次的缓存（例如在构建时生成，然后以只读方式随应用程序一起发布）就可以供运行代码的任何人读取；无法写入该目录的用户仍然可以读取它，而写入失败只意味着模块会再次编译。
+
 有两种方法可以启用便携模式：
 
 1. 使用 [`module.enableCompileCache()`][] 中的便携选项：
@@ -353,7 +362,11 @@ changes:
 
 2. 设置环境变量：[`NODE_COMPILE_CACHE_PORTABLE=1`][]
 
-### 编译缓存的局限性
+### 只读编译缓存
+
+预先生成的缓存（例如在构建时生成并随应用程序包一起发布的缓存）可以通过 `readOnly: true`（或 [`NODE_COMPILE_CACHE_READONLY=1`][]）启用。Node.js 随后会加载目录中的所有条目，但不会写入该目录：没有可用条目的模块会像往常一样编译，但不会持久化，[`module.flushCompileCache()`][] 不执行任何操作，且如果目录不存在，也不会创建该目录。
+
+### 编译缓存的限制
 
 目前，当将编译缓存与 [V8 JavaScript 代码覆盖率][] 一起使用时，V8 收集的覆盖率在从代码缓存反序列化的函数中可能不够精确。建议在运行测试以生成精确覆盖率时关闭此功能。
 
@@ -371,7 +384,7 @@ changes:
     description: 此功能不再是实验性的。
 -->
 
-以下常量作为 [`module.enableCompileCache()`][] 返回的对象中的 `status` 字段返回，以指示启用 [模块编译缓存][] 的尝试结果。
+以下常量作为 [`module.enableCompileCache()`][] 返回的对象中的 `status` 字段返回，以指示启用[模块编译缓存][]的尝试结果。
 
 <table>
   <tr>
@@ -409,6 +422,9 @@ changes:
 <!-- YAML
 added: v22.8.0
 changes:
+  - version: v26.8.0
+    pr-url: https://github.com/nodejs/node/pull/65302
+    description: 添加 `readOnly` 选项。
   - version:
      - v25.4.0
      - v24.15.0
@@ -426,13 +442,14 @@ changes:
     description: "将未发布的 `path` 选项重命名为 `directory` 以保持一致性。"
 -->
 
-* `options` {string|Object} 可选。如果传递字符串，则被视为 `options.directory`。
-  * `directory` {string} 可选。存储编译缓存的目录。如果未指定，如果设置了 [`NODE_COMPILE_CACHE=dir`][] 环境变量，则将使用该环境变量指定的目录，否则使用 `path.join(os.tmpdir(), 'node-compile-cache')`。
-  * `portable` {boolean} 可选。如果为 `true`，则启用便携编译缓存，以便即使项目目录被移动，缓存也可以重用。这是一个尽力而为的功能。如果未指定，将取决于是否设置了环境变量 [`NODE_COMPILE_CACHE_PORTABLE=1`][]。
-* 返回：{Object}
+* `options` {string|Object} 可选。如果传入字符串，则视为 `options.directory`。
+  * `directory` {string} 可选。用于存储编译缓存的目录。如果未指定，则在设置了 [`NODE_COMPILE_CACHE=dir`][] 环境变量时使用该变量指定的目录，否则使用 `path.join(os.tmpdir(), 'node-compile-cache')`。
+  * `portable` {boolean} 可选。如果为 `true`，则启用可移植编译缓存，以便即使项目目录被移动，也可以重复使用缓存。这是一项尽力而为的功能。如果未指定，则取决于是否设置了 [`NODE_COMPILE_CACHE_PORTABLE=1`][] 环境变量。
+  * `readOnly` {boolean} 可选。如果为 `true`，则使用 `directory` 中已有的缓存条目，但不会向其中写入任何内容；如果目录不存在，也不会创建该目录（此时启用操作会失败）。适用于预先生成并随应用程序一起发布的缓存。如果未指定，则取决于是否设置了 [`NODE_COMPILE_CACHE_READONLY=1`][] 环境变量。
+* 返回值：{Object}
   * `status` {integer} [`module.constants.compileCacheStatus`][] 之一
-  * `message` {string|undefined} 如果 Node.js 无法启用编译缓存，则包含错误消息。仅当 `status` 为 `module.constants.compileCacheStatus.FAILED` 时设置。
-  * `directory` {string|undefined} 如果启用了编译缓存，则包含存储编译缓存的目录。仅当 `status` 为 `module.constants.compileCacheStatus.ENABLED` 或 `module.constants.compileCacheStatus.ALREADY_ENABLED` 时设置。
+  * `message` {string|undefined} 如果 Node.js 无法启用编译缓存，此字段包含错误消息。仅当 `status` 为 `module.constants.compileCacheStatus.FAILED` 时设置。
+  * `directory` {string|undefined} 如果已启用编译缓存，此字段包含存储编译缓存的目录。仅当 `status` 为 `module.constants.compileCacheStatus.ENABLED` 或 `module.constants.compileCacheStatus.ALREADY_ENABLED` 时设置。
 
 在当前 Node.js 实例中启用 [模块编译缓存][]。
 
@@ -470,7 +487,7 @@ changes:
     description: 此功能不再是实验性的。
 -->
 
-* 返回：{string|undefined} 如果启用了 [模块编译缓存][] 目录，则为路径，否则为 `undefined`。
+* 返回值：{string|undefined} 如果启用了 [模块编译缓存][] 目录，则为路径，否则为 `undefined`。
 
 <i id="module_customization_hooks"></i>
 
@@ -734,7 +751,7 @@ changes:
 * `nextResolve` {Function} 链中的后续 `resolve` 钩子，或在最后一个用户提供的 `resolve` 钩子之后的 Node.js 默认 `resolve` 钩子
   * `specifier` {string}
   * `context` {Object|undefined} 省略时，提供默认值。提供时，默认值与提供的属性合并，优先使用提供的属性。
-* 返回：{Object}
+* 返回值：{Object}
   * `format` {string|null|undefined} 给 `load` 钩子的提示（可能会被忽略）。它可以是模块格式（如 `'commonjs'` 或 `'module'`）或任意值如 `'css'` 或 `'yaml'`。
   * `importAttributes` {Object|undefined} 缓存模块时使用的导入属性（可选；如果排除将使用输入）
   * `shortCircuit` {undefined|boolean} 一个信号，表明此钩子打算终止 `resolve` 钩子链。**默认值：** `false`
@@ -799,7 +816,7 @@ changes:
   * `url` {string}
   * `context` {Object|undefined} 省略时，提供默认值。提供时，默认值与提供的属性合并，优先使用提供的属性。在默认 `nextLoad` 中，如果 `url` 指向的模块没有明确的模块类型信息，则 `context.format` 是必需的。
     <!-- TODO(joyeecheung): 使其至少可选地非必需，允许在格式未知时进行 JS 风格/TS 风格模块检测 -->
-* 返回：{Object}
+* 返回值：{Object}
   * `format` {string} [下方][可接受的最终格式] 列出的可接受模块格式之一。
   * `shortCircuit` {undefined|boolean} 一个信号，表明此钩子打算终止 `load` 钩子链。**默认值：** `false`
   * `source` {string|ArrayBuffer|TypedArray} 供 Node.js 评估的源
@@ -1694,6 +1711,7 @@ added:
 [`--require`]: cli.md#-r---require-module
 [`NODE_COMPILE_CACHE=dir`]: cli.md#node_compile_cachedir
 [`NODE_COMPILE_CACHE_PORTABLE=1`]: cli.md#node_compile_cache_portable1
+[`NODE_COMPILE_CACHE_READONLY=1`]: cli.md#node_compile_cache_readonly1
 [`NODE_DISABLE_COMPILE_CACHE=1`]: cli.md#node_disable_compile_cache1
 [`NODE_V8_COVERAGE=dir`]: cli.md#node_v8_coveragedir
 [`Object.freeze()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
@@ -1703,26 +1721,26 @@ added:
 [`module.enableCompileCache()`]: #moduleenablecompilecacheoptions
 [`module.flushCompileCache()`]: #moduleflushcompilecache
 [`module.getCompileCacheDir()`]: #modulegetcompilecachedir
+[`module.isBuiltin()`]: #moduleisbuiltinmodulename
 [`module.registerHooks()`]: #moduleregisterhooksoptions
 [`module.setSourceMapsSupport()`]: #modulesetsourcemapssupportenabled-options
-[`module`]: #the-module-object
 [`os.tmpdir()`]: os.md#ostmpdir
 [`register`]: #moduleregisterspecifier-parenturl-options
 [`util.TextDecoder`]: util.md#class-utiltextdecoder
-[接受的最终格式]: #accepted-final-formats-returned-by-load
-[异步 `load` 钩子]: #asynchronous-loadurl-context-nextload
-[异步 `resolve` 钩子]: #asynchronous-resolvespecifier-context-nextresolve
-[异步钩子函数]: #asynchronous-hooks-accepted-by-moduleregister
-[异步自定义钩子的注意事项]: #caveats-of-asynchronous-customization-hooks
-[同步自定义钩子的注销]: #deregistration-of-synchronous-customization-hooks
-[钩子]: #customization-hooks
-[load 钩子]: #synchronous-loadurl-context-nextload
-[模块编译缓存]: #module-compile-cache
-[模块包装器]: modules.md#the-module-wrapper
+[accepted final formats]: #accepted-final-formats-returned-by-load
+[asynchronous `load` hook]: #asynchronous-loadurl-context-nextload
+[asynchronous `resolve` hook]: #asynchronous-resolvespecifier-context-nextresolve
+[asynchronous hook functions]: #asynchronous-hooks-accepted-by-moduleregister
+[caveats of asynchronous customization hooks]: #caveats-of-asynchronous-customization-hooks
+[deregistration of synchronous customization hooks]: #deregistration-of-synchronous-customization-hooks
+[hooks]: #customization-hooks
+[load hook]: #synchronous-loadurl-context-nextload
+[module compile cache]: #module-compile-cache
 [realm]: https://tc39.es/ecma262/#realm
-[resolve 钩子]: #synchronous-resolvespecifier-context-nextresolve
-[source map directive]: https://tc39.es/ecma426/#sec-linking-generated-code
-[同步钩子函数]: #hook-functions-accepted-by-moduleregisterhooks
-[`Worker` 的文档]: worker_threads.md#new-workerfilename-options
-[可传输对象]: worker_threads.md#portpostmessagevalue-transferlist
-[类型剥离]: typescript.md#type-stripping
+[resolve hook]: #synchronous-resolvespecifier-context-nextresolve
+[source map include directives]: https://tc39.es/ecma426/#sec-linking-generated-code
+[synchronous hook functions]: #hook-functions-accepted-by-moduleregisterhooks
+[the `module` object]: modules.md#the-module-object
+[the documentation of `Worker`]: worker_threads.md#new-workerfilename-options
+[transferable objects]: worker_threads.md#portpostmessagevalue-transferlist
+[type-stripping]: typescript.md#type-stripping

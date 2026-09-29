@@ -8,7 +8,6 @@ Node.js 除了其自身代码外，还依赖于其他组件。这些依赖项提
 * [acorn][]
 * [ada][]
 * [amaro][]
-* [base64][]
 * [brotli][]
 * [c-ares][]
 * [merve][]
@@ -20,7 +19,6 @@ Node.js 除了其自身代码外，还依赖于其他组件。这些依赖项提
 * [libffi][]
 * [libuv][]
 * [llhttp][]
-* [minimatch][]
 * [nghttp2][]
 * [nghttp3][]
 * [ngtcp2][]
@@ -166,9 +164,9 @@ C++ 测试和模拟框架。
 ### histogram
 
 [histogram](https://github.com/HdrHistogram/HdrHistogram_c) 依赖项是
-高动态范围 (HDR) 直方图的 C 移植版。
+高动态范围（HDR）直方图的 C 移植版。
 
-### icu
+### icu-small
 
 [icu](http://site.icu-project.org) 是广泛使用的 C/C++
 和 Java 库集，为软件应用程序提供 Unicode 和全球化支持。
@@ -197,11 +195,6 @@ C++ 测试和模拟框架。
 Node.js 使用的 HTTP 解析器。
 有关更多信息，请参阅 [维护 HTTP][]。
 
-### minimatch
-
-[minimatch](https://github.com/isaacs/minimatch) 依赖项是一个
-最小匹配实用程序。
-
 ### nghttp2
 
 [nghttp2](https://github.com/nghttp2/nghttp2) 依赖项是实现
@@ -219,8 +212,8 @@ ngtcp2 和 nghttp3 依赖项提供了 QUIC 和 HTTP/3 的核心功能。
 
 源文件来自：
 
-* ngtcp2: <https://github.com/ngtcp2/ngtcp2>
-* nghttp3: <https://github.com/ngtcp2/nghttp3>
+* ngtcp2：<https://github.com/ngtcp2/ngtcp2>
+* nghttp3：<https://github.com/ngtcp2/nghttp3>
 
 在 `ngtcp2` 和 `nghttp3` 的 git 仓库中，活动开发都发生在默认分支（目前在每个仓库中都命名为 `main`）。标记版本并不总是指向默认分支。
 
@@ -302,7 +295,6 @@ WASI 系统调用 API，以便 WebAssembly 运行时可以轻松实现 WASI 调�
 [acorn]: #acorn
 [ada]: #ada
 [amaro]: #amaro
-[base64]: #base64
 [brotli]: #brotli
 [c-ares]: #c-ares
 [corepack]: #corepack
@@ -321,7 +313,6 @@ WASI 系统调用 API，以便 WebAssembly 运行时可以轻松实现 WASI 调�
 [维护 openssl]: ./maintaining-openssl.md
 [维护 WebAssembly]: ./maintaining-web-assembly.md
 [merve]: #merve
-[minimatch]: #minimatch
 [nghttp2]: #nghttp2
 [nghttp3]: #nghttp3
 [ngtcp2]: #ngtcp2

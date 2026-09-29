@@ -1156,12 +1156,14 @@ circularData.foo = circularData;
 port2.postMessage(circularData);
 ```
 
-`transferList` 可能是 {ArrayBuffer}、[`MessagePort`][]、[`FileHandle`][]、{net.Server} 和 {net.Socket} 对象的列表。
-传输后，它们在通道发送端将不再可用（即使它们不包含在 `value` 中也是如此）。
+`transferList` 可以是 {ArrayBuffer}、[`MessagePort`][],
+[`FileHandle`][], {net.Server}、{net.Socket} 和 {net.BoundSocket} 对象的列表。
+传输后，这些对象在通道的发送端将无法再使用（即使它们未包含在 `value` 中）。
 
-传输 {net.Server} 会将其监听套接字（以及接受队列中的任何待处理连接）移动到接收线程的事件循环中。
-传输 {net.Socket} 会移动单个连接；该套接字必须是刚刚接受或创建的 TCP 连接，且尚未开始读取并且没有缓冲数据，否则 `postMessage()` 会抛出 `ERR_WORKER_HANDLE_NOT_TRANSFERABLE`。
-这样可以在一个线程上接受连接，并将其分配到工作线程池中的多个工作线程。
+传输 {net.Server} 会将其监听套接字——以及接受队列中的任何待处理连接——移动到接收线程的事件循环中。
+传输 {net.Socket} 会移动单个连接；该套接字必须是刚刚接受或创建的 TCP 连接，且尚未开始读取并且没有缓冲数据，否则 `postMessage()` 会抛出
+`ERR_WORKER_HANDLE_NOT_TRANSFERABLE`。这样就可以在一个线程上接受连接，并将它们分配到一组 worker 线程中。
+传输 {net.BoundSocket} 会移动尚未接管的预绑定套接字，因此可以在一个线程上同步预留端口，并在另一个线程上接管。
 仅支持 TCP 句柄。
 
 如果 `value` 包含 {SharedArrayBuffer} 实例，则它们可从任一线程访问。它们不能列在 `transferList` 中。
@@ -1476,69 +1478,64 @@ changes:
   如果 `options.eval` 为 `true`，则这是一个包含 JavaScript 代码
   的字符串，而不是路径。
 * `options` {Object}
-  * `argv` {any\[]} 将被字符串化并追加到
-    worker 中的 `process.argv` 的参数列表。这与 `workerData`
-    非常相似，但这些值在全局 `process.argv` 上可用，就像它们
-    作为 CLI 选项传递给脚本一样。
-  * `env` {Object} 如果设置，指定 Worker 线程内部
-    `process.env` 的初始值。作为一个特殊值，[`worker.SHARE_ENV`][] 可用于
-    指定父线程和子线程应共享它们的
-    环境变量；在这种情况下，对一个线程的 `process.env`
-    对象的更改也会影响另一个线程。**默认：** `process.env`。
-  * `eval` {boolean} 如果为 `true` 且第一个参数是 `string`，则将
-    构造函数的第一个参数解释为一旦
-    worker 上线就执行的脚本。
+  * `argv` {any\[]} 一组参数，会转换为字符串并追加到
+    worker 中的 `process.argv`。这在很大程度上与 `workerData` 类似，
+    但这些值可在全局 `process.argv` 上使用，就像它们是作为 CLI 选项
+    传递给脚本一样。
+  * `env` {Object} 如果设置，则指定 Worker 线程内 `process.env` 的初始值。
+    作为一种特殊值，可以使用 [`worker.SHARE_ENV`][] 指定父线程和子线程
+    共享其环境变量；在这种情况下，对一个线程的 `process.env` 对象所做的更改
+    也会影响另一个线程。**默认值：** `process.env`。
+  * `eval` {boolean} 如果为 `true` 且第一个参数是 `string`，则将传递给构造函数的
+    第一个参数解释为脚本，并在 worker 上线后执行。
   * `execArgv` {string\[]} 传递给 worker 的 node CLI 选项列表。
-    V8 选项（如 `--max-old-space-size`）和影响
-    进程的选项（如 `--title`）不受支持。如果设置，这将作为
-    worker 内部的 [`process.execArgv`][] 提供。默认情况下，选项
-    从父线程继承。
-  * `stdin` {boolean} 如果设置为 `true`，则 `worker.stdin`
-    提供一个可写流，其内容在 Worker 内部显示为 `process.stdin`
-    。默认情况下，不提供数据。
-  * `stdout` {boolean} 如果设置为 `true`，则 `worker.stdout`
-    不会自动管道传输到父级的 `process.stdout`。
-  * `stderr` {boolean} 如果设置为 `true`，则 `worker.stderr`
-    不会自动管道传输到父级的 `process.stderr`。
-  * `workerData` {any} 任何被克隆并作为
-    [`require('node:worker_threads').workerData`][] 可用的 JavaScript 值。克隆
-    如 [HTML 结构化克隆算法][] 中所述，如果对象无法被克隆（例如因为它包含
+    不支持 V8 选项（例如 `--max-old-space-size`）以及影响进程的选项
+    （例如 `--title`）。如果设置，该值会作为 worker 内部的
+    [`process.execArgv`][] 提供。默认情况下，选项继承自父线程。
+    传递显式的 `execArgv`（包括空数组）会替换这种继承：worker 只会接收列出的标志。
+    在[权限模型](permissions.md#permission-model)下，这意味着显式的 `execArgv`
+    可能会丢弃父线程的 `--permission` / `--allow-*` 授权。
+    省略 `execArgv` 以保留父线程的 CLI 标志。这是预期行为。请参阅
+    [权限模型的限制](permissions.md#limitations-and-known-issues)。
+  * `stdin` {boolean} 如果设置为 `true`，则 `worker.stdin` 会提供一个可写流，
+    其内容会在 Worker 内部显示为 `process.stdin`。默认情况下，不提供任何数据。
+  * `stdout` {boolean} 如果设置为 `true`，则 `worker.stdout` 不会自动传输到
+    父线程中的 `process.stdout`。
+  * `stderr` {boolean} 如果设置为 `true`，则 `worker.stderr` 不会自动传输到
+    父线程中的 `process.stderr`。
+  * `workerData` {any} 任意 JavaScript 值，会被克隆并作为
+    [`require('node:worker_threads').workerData`][] 提供。克隆过程如
+    [HTML 结构化克隆算法][]所述，如果对象无法克隆（例如因为它包含
     `function`），则会抛出错误。
-  * `trackUnmanagedFds` {boolean} 如果设置为 `true`，则 Worker
-    跟踪通过 [`fs.open()`][] 和
-    [`fs.close()`][] 管理的原始文件描述符，并在 Worker 退出时关闭它们，类似于通过
-    [`FileHandle`][] API 管理的网络套接字或文件描述符等其他
-    资源。此选项会自动被所有
-    嵌套 `Worker` 继承。**默认：** `true`。
-  * `transferList` {Object\[]} 如果一个或多个 `MessagePort` 类对象
-    在 `workerData` 中传递，则这些
-    项需要 `transferList`，否则将抛出 [`ERR_MISSING_MESSAGE_PORT_IN_TRANSFER_LIST`][]。
-    参见 [`port.postMessage()`][] 以获取更多信息。
-  * `resourceLimits` {Object} 新 JS
-    引擎实例的一组可选资源限制。达到这些限制会导致 `Worker`
-    实例终止。这些限制仅影响 JS 引擎，不影响外部数据，
-    包括 `ArrayBuffer`。即使设置了这些限制，如果进程遇到全局内存不足情况，
-    仍可能中止。
-    * `maxOldGenerationSizeMb` {number} 主堆的最大大小，单位为
-      MB。如果设置了命令行参数 [`--max-old-space-size`][]，它将
-      覆盖此设置。
-    * `maxYoungGenerationSizeMb` {number} 最近创建的对象的堆空间的最大大小。如果设置了命令行参数
-      [`--max-semi-space-size`][]，它将覆盖此设置。
-    * `codeRangeSizeMb` {number} 用于生成代码的预分配内存范围的大小。
-    * `stackSizeMb` {number} 线程的默认最大栈大小。
-      小值可能导致 Worker 实例不可用。**默认：** `4`。
-  * `name` {string} 一个可选的 `name`，用于替换线程名称
-    和工作线程标题，以便调试/识别，
-    使最终标题为 `[worker ${id}] ${name}`。
-    此参数有一个最大允许大小，取决于操作
-    系统。如果提供的名称超过限制，它将被截断。
-    * 最大大小：
-      * Windows: 32,767 个字符
-      * macOS: 64 个字符
-      * Linux: 16 个字符
-      * NetBSD: 限制为 `PTHREAD_MAX_NAMELEN_NP`
-      * FreeBSD 和 OpenBSD: 限制为 `MAXCOMLEN`
-        **默认：** `'WorkerThread'`。
+  * `trackUnmanagedFds` {boolean} 如果设置为 `true`，则 Worker 会跟踪通过
+    [`fs.open()`][] 和 [`fs.close()`][] 管理的原始文件描述符，并在 Worker 退出时关闭它们，
+    类似于网络套接字或通过 [`FileHandle`][] API 管理的文件描述符等其他资源。
+    此选项会自动由所有嵌套的 `Worker` 继承。**默认值：** `true`。
+  * `transferList` {Object\[]} 如果在 `workerData` 中传递了一个或多个类似
+    `MessagePort` 的对象，则这些对象必须包含在 `transferList` 中，否则会抛出
+    [`ERR_MISSING_MESSAGE_PORT_IN_TRANSFER_LIST`][]。有关更多信息，请参阅
+    [`port.postMessage()`][]。
+  * `resourceLimits` {Object} 新 JS 引擎实例的一组可选资源限制。达到这些限制会导致
+    `Worker` 实例终止。这些限制仅影响 JS 引擎，不影响任何外部数据，
+    包括任何 `ArrayBuffer`。即使设置了这些限制，如果遇到全局内存不足，
+    进程仍可能中止。
+    * `maxOldGenerationSizeMb` {number} 主堆的最大大小，单位为 MB。如果设置了命令行参数
+      [`--max-old-space-size`][]，则该参数会覆盖此设置。
+    * `maxYoungGenerationSizeMb` {number} 最近创建的对象所用堆空间的最大大小。
+      如果设置了命令行参数 [`--max-semi-space-size`][]，则该参数会覆盖此设置。
+    * `codeRangeSizeMb` {number} 用于生成代码的预分配内存范围大小。
+    * `stackSizeMb` {number} 线程的默认最大堆栈大小。较小的值可能会导致 Worker 实例无法使用。
+      **默认值：** `4`。
+  * `name` {string} 可选的 `name`，用于替换线程名称中的名称，并作为 worker 标题，
+    以便调试或识别，最终标题的格式为 `[worker ${id}] ${name}`。
+    此参数的最大允许大小取决于操作系统。如果提供的名称超出限制，则会被截断
+    * 最大长度：
+      * Windows：32,767 个字符
+      * macOS：64 个字符
+      * Linux：16 个字符
+      * NetBSD：受 `PTHREAD_MAX_NAMELEN_NP` 限制
+      * FreeBSD 和 OpenBSD：受 `MAXCOMLEN` 限制
+        **默认值：** `'WorkerThread'`。
 
 ### 事件：`'error'`
 
@@ -1629,9 +1626,9 @@ changes:
 
 * `options` {Object}
   * `exposeInternals` {boolean} 如果为 true，则在堆快照中暴露内部信息。
-    **默认：** `false`。
+    **默认值：** `false`。
   * `exposeNumericValues` {boolean} 如果为 true，则在
-    人工字段中暴露数值。**默认：** `false`。
+    人工字段中暴露数值。**默认值：** `false`。
 * 返回：{Promise} 一个包含
   V8 堆快照的可读流的 Promise
 
@@ -1749,7 +1746,7 @@ added: v10.5.0
 * `value` {any}
 * `transferList` {Object\[]}
 
-发送消息给 worker，该消息通过
+向 worker 发送消息，该消息通过
 [`require('node:worker_threads').parentPort.on('message')`][] 接收。
 参见 [`port.postMessage()`][] 以获取更多详情。
 
@@ -1759,7 +1756,7 @@ added: v10.5.0
 added: v10.5.0
 -->
 
-`unref()` 的反操作，对之前调用过 `unref()` 的 worker 调用 `ref()`
+`unref()` 的反操作。对之前调用过 `unref()` 的 worker 调用 `ref()`
 _不会_ 让程序退出，如果它是唯一活动的句柄（默认
 行为）。如果 worker 已经调用过 `ref()`，再次调用 `ref()`
 没有效果。

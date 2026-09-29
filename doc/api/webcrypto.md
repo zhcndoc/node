@@ -2,6 +2,9 @@
 
 <!-- YAML
 changes:
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65759
+    description: 现已支持混合 KEM 算法。
   - version:
      - v25.9.0
      - v24.18.0
@@ -130,6 +133,9 @@ WICG 提案：
 * `'ML-KEM-512'`[^openssl35]
 * `'ML-KEM-768'`[^openssl35]
 * `'ML-KEM-1024'`[^openssl35]
+* `'MLKEM768-P256'`[^openssl35]
+* `'MLKEM768-X25519'`[^openssl35]
+* `'MLKEM1024-P384'`[^openssl35]
 * `'SHA3-256'`
 * `'SHA3-384'`
 * `'SHA3-512'`
@@ -513,7 +519,7 @@ Crypto API 实现所支持的算法，以及每种算法所支持的 API：
 
 ### 密钥管理 API
 
-* [`subtle.generateKey()`][], [`subtle.exportKey()`][] 和
+* [`subtle.generateKey()`][]、[`subtle.exportKey()`][] 和
   [`subtle.importKey()`][] 支持 `'AES-CBC'`、`'AES-CTR'`、`'AES-GCM'`、
   `'AES-KW'`、`'AES-OCB'`、`'ChaCha20-Poly1305'`[^modern-algos]、`'HMAC'`、
   `'KMAC128'`[^modern-algos] 和 `'KMAC256'`[^modern-algos]。
@@ -524,9 +530,10 @@ Crypto API 实现所支持的算法，以及每种算法所支持的 API：
   `'ECDSA'`、`'Ed25519'`、`'Ed448'`[^secure-curves]、
   `'ML-DSA-44'`[^modern-algos]、`'ML-DSA-65'`[^modern-algos]、
   `'ML-DSA-87'`[^modern-algos]、`'ML-KEM-512'`[^modern-algos]、
-  `'ML-KEM-768'`[^modern-algos]、`'ML-KEM-1024'`[^modern-algos]、`'RSA-OAEP'`、
-  `'RSA-PSS'`、`'RSASSA-PKCS1-v1_5'`、`'X25519'` 和
-  `'X448'`[^secure-curves]。
+  `'ML-KEM-768'`[^modern-algos]、`'ML-KEM-1024'`[^modern-algos]、
+  `'MLKEM768-P256'`[^modern-algos]、`'MLKEM768-X25519'`[^modern-algos]、
+  `'MLKEM1024-P384'`[^modern-algos]、`'RSA-OAEP'`、`'RSA-PSS'`、
+  `'RSASSA-PKCS1-v1_5'`、`'X25519'` 和 `'X448'`[^secure-curves]。
 
 ### 加密操作 API
 
@@ -546,8 +553,10 @@ Crypto API 实现所支持的算法，以及每种算法所支持的 API：
   `'ChaCha20-Poly1305'`[^modern-algos] 和 `'RSA-OAEP'`。
 * [`subtle.encapsulateBits()`][]、[`subtle.decapsulateBits()`][]、
   [`subtle.encapsulateKey()`][] 和 [`subtle.decapsulateKey()`][] 支持
-  `'ML-KEM-512'`[^modern-algos]、`'ML-KEM-768'`[^modern-algos] 和
-  `'ML-KEM-1024'`[^modern-algos]。
+  `'ML-KEM-512'`[^modern-algos]、`'ML-KEM-768'`[^modern-algos]、
+  `'ML-KEM-1024'`[^modern-algos]、`'MLKEM768-P256'`[^modern-algos]、
+  `'MLKEM768-X25519'`[^modern-algos] 和
+  `'MLKEM1024-P384'`[^modern-algos]。
 * [`subtle.digest()`][] 支持 `'cSHAKE128'`[^modern-algos]、
   `'cSHAKE256'`[^modern-algos]、`'KT128'`[^modern-algos]、
   `'KT256'`[^modern-algos]、`'SHA-1'`、`'SHA-256'`、`'SHA-384'`、`'SHA-512'`、
@@ -559,26 +568,30 @@ Crypto API 实现所支持的算法，以及每种算法所支持的 API：
 
 以下列表描述 [`subtle.importKey()`][] 和 [`subtle.exportKey()`][] 所支持的格式。
 
-* **`'AES-CBC'`、`'AES-CTR'`、`'AES-GCM'`、`'AES-KW'` 和 `'HMAC'`** 可以使用
-  `'jwk'`、`'raw'` 和 `'raw-secret'`[^modern-algos] 进行导入和导出。
+* **`'AES-CBC'`、`'AES-CTR'`、`'AES-GCM'`、`'AES-KW'` 和 `'HMAC'`** 可以使用 `'jwk'`、`'raw'` 和
+  `'raw-secret'`[^modern-algos] 导入和导出。
 * **`'AES-OCB'`[^modern-algos]、`'ChaCha20-Poly1305'`[^modern-algos]、
-  `'KMAC128'`[^modern-algos] 和 `'KMAC256'`[^modern-algos]** 可以使用
-  `'jwk'` 和 `'raw-secret'`[^modern-algos] 进行导入和导出。
+  `'KMAC128'`[^modern-algos] 和 `'KMAC256'`[^modern-algos]** 可以使用 `'jwk'` 和
+  `'raw-secret'`[^modern-algos] 导入和导出。
 * **`'Argon2d'`[^modern-algos]、`'Argon2i'`[^modern-algos] 和
   `'Argon2id'`[^modern-algos]** 可以使用
   `'raw-secret'`[^modern-algos] 导入；不支持导出。
-* **`'ECDH'`、`'ECDSA'`、`'Ed25519'`、`'Ed448'`[^secure-curves]、`'X25519'`、
-  和 `'X448'`[^secure-curves]** 可以使用 `'spki'`、`'pkcs8'`、`'jwk'`、
-  `'raw'` 和 `'raw-public'`[^modern-algos] 进行导入和导出。
+* **`'ECDH'`、`'ECDSA'`、`'Ed25519'`、`'Ed448'`[^secure-curves]、`'X25519'`
+  和 `'X448'`[^secure-curves]** 可以使用 `'spki'`、
+  `'pkcs8'`、`'jwk'`、`'raw'` 和 `'raw-public'`[^modern-algos] 导入和导出。
 * **`'HKDF'` 和 `'PBKDF2'`** 可以使用 `'raw'` 和
   `'raw-secret'`[^modern-algos] 导入；不支持导出。
 * **`'ML-DSA-44'`[^modern-algos]、`'ML-DSA-65'`[^modern-algos]、
   `'ML-DSA-87'`[^modern-algos]、`'ML-KEM-512'`[^modern-algos]、
   `'ML-KEM-768'`[^modern-algos] 和 `'ML-KEM-1024'`[^modern-algos]** 可以使用
   `'spki'`、`'pkcs8'`、`'jwk'`、
-  `'raw-public'`[^modern-algos] 和 `'raw-seed'`[^modern-algos] 进行导入和导出。
+  `'raw-public'`[^modern-algos] 和 `'raw-seed'`[^modern-algos] 导入和导出。
+* **`'MLKEM768-P256'`[^modern-algos]、
+  `'MLKEM768-X25519'`[^modern-algos] 和
+  `'MLKEM1024-P384'`[^modern-algos]** 可以使用
+  `'jwk'`、`'raw-public'`[^modern-algos] 和 `'raw-seed'`[^modern-algos] 导入和导出。
 * **`'RSA-OAEP'`、`'RSA-PSS'` 和 `'RSASSA-PKCS1-v1_5'`** 可以使用
-  `'spki'`、`'pkcs8'` 和 `'jwk'` 进行导入和导出。
+  `'spki'`、`'pkcs8'` 和 `'jwk'` 导入和导出。
 
 ## 类：`Crypto`
 
@@ -735,7 +748,7 @@ added: v24.7.0
 
 <!--lint disable maximum-line-length remark-lint-->
 
-* `operation` {string} "encrypt", "decrypt", "sign", "verify", "digest", "generateKey", "deriveKey", "deriveBits", "importKey", "exportKey", "getPublicKey", "wrapKey", "unwrapKey", "encapsulateBits", "encapsulateKey", "decapsulateBits" 或 "decapsulateKey"
+* `operation` {string} "encrypt"、"decrypt"、"sign"、"verify"、"digest"、"generateKey"、"deriveKey"、"deriveBits"、"importKey"、"exportKey"、"getPublicKey"、"wrapKey"、"unwrapKey"、"encapsulateBits" 或 "decapsulateBits" 或 "decapsulateKey"
 * `algorithm` {string|Algorithm}
 * `lengthOrAdditionalAlgorithm` {null|number|string|Algorithm|undefined} 取决于操作，这要么被忽略，要么是操作为 "deriveBits" 时的 length 参数值，要么是操作为 "deriveKey" 时要派生的密钥的算法，要么是操作为 "wrapKey" 时在包装前要导出的密钥的算法，要么是操作为 "unwrapKey" 时在解包后要导入的密钥的算法，要么是操作为 "encapsulateKey" 或 "decapsulateKey" 时在封装或解封装密钥后要导入的密钥的算法。**默认值：** 当操作为 "deriveBits" 时为 `null`，否则为 `undefined`。
 * 返回：{boolean} 指示实现是否支持给定的操作
@@ -768,6 +781,9 @@ added: v24.7.0
 * `'ML-KEM-512'`[^modern-algos]
 * `'ML-KEM-768'`[^modern-algos]
 * `'ML-KEM-1024'`[^modern-algos]
+* `'MLKEM768-P256'`[^modern-algos]
+* `'MLKEM768-X25519'`[^modern-algos]
+* `'MLKEM1024-P384'`[^modern-algos]
 
 ### `subtle.decapsulateKey(decapsulationAlgorithm, decapsulationKey, ciphertext, sharedKeyAlgorithm, extractable, keyUsages)`
 
@@ -792,6 +808,9 @@ added: v24.7.0
 * `'ML-KEM-512'`[^modern-algos]
 * `'ML-KEM-768'`[^modern-algos]
 * `'ML-KEM-1024'`[^modern-algos]
+* `'MLKEM768-P256'`[^modern-algos]
+* `'MLKEM768-X25519'`[^modern-algos]
+* `'MLKEM1024-P384'`[^modern-algos]
 
 ### `subtle.decrypt(algorithm, key, data)`
 
@@ -970,7 +989,10 @@ added: v24.7.0
 
 * `'ML-KEM-512'`[^modern-algos]
 * `'ML-KEM-768'`[^modern-algos]
-* `'ML-KEM-1024'`[^modern-algos]。
+* `'ML-KEM-1024'`[^modern-algos]
+* `'MLKEM768-P256'`[^modern-algos]
+* `'MLKEM768-X25519'`[^modern-algos]
+* `'MLKEM1024-P384'`[^modern-algos]
 
 ### `subtle.encapsulateKey(encapsulationAlgorithm, encapsulationKey, sharedKeyAlgorithm, extractable, keyUsages)`
 
@@ -994,6 +1016,9 @@ added: v24.7.0
 * `'ML-KEM-512'`[^modern-algos]
 * `'ML-KEM-768'`[^modern-algos]
 * `'ML-KEM-1024'`[^modern-algos]
+* `'MLKEM768-P256'`[^modern-algos]
+* `'MLKEM768-X25519'`[^modern-algos]
+* `'MLKEM1024-P384'`[^modern-algos]
 
 ### `subtle.encrypt(algorithm, key, data)`
 
@@ -1029,6 +1054,9 @@ changes:
 <!-- YAML
 added: v15.0.0
 changes:
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65759
+    description: 现已支持混合 KEM 算法。
   - version:
     - v26.1.0
     - v24.18.0
@@ -1089,6 +1117,9 @@ added: v24.7.0
 <!-- YAML
 added: v15.0.0
 changes:
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65759
+    description: 现已支持混合 KEM 算法。
   - version: v24.8.0
     pr-url: https://github.com/nodejs/node/pull/59647
     description: KMAC 算法现已支持。
@@ -1127,6 +1158,9 @@ changes:
 * `'ML-KEM-512'`[^modern-algos]
 * `'ML-KEM-768'`[^modern-algos]
 * `'ML-KEM-1024'`[^modern-algos]
+* `'MLKEM768-P256'`[^modern-algos]
+* `'MLKEM768-X25519'`[^modern-algos]
+* `'MLKEM1024-P384'`[^modern-algos]
 * `'RSA-OAEP'`
 * `'RSA-PSS'`
 * `'RSASSA-PKCS1-v1_5'`
@@ -1150,6 +1184,9 @@ changes:
 <!-- YAML
 added: v15.0.0
 changes:
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/65759
+    description: 现已支持混合 KEM 算法。
   - version:
     - v26.1.0
     - v24.18.0
@@ -1305,6 +1342,9 @@ changes:
 * `'ML-KEM-512'`[^modern-algos]
 * `'ML-KEM-768'`[^modern-algos]
 * `'ML-KEM-1024'`[^modern-algos]
+* `'MLKEM768-P256'`[^modern-algos]
+* `'MLKEM768-X25519'`[^modern-algos]
+* `'MLKEM1024-P384'`[^modern-algos]
 * `'RSA-OAEP'`
 * `'RSA-PSS'`
 * `'RSASSA-PKCS1-v1_5'`
@@ -1705,6 +1745,8 @@ changes:
     description: "`cShakeParams.length` 重命名为 `cShakeParams.outputLength`。"
 -->
 
+当 `functionName` 和 `customization` 均为空或为 `undefined` 时，cSHAKE 等同于普通 SHAKE。
+
 #### `cShakeParams.name`
 
 <!-- YAML
@@ -1721,7 +1763,7 @@ added:
  - v24.15.0
 -->
 
-* 类型：{number} 表示请求的输出长度（位）。
+* 类型：{number} 表示请求的输出长度（位）。必须是 8 的倍数。
 
 #### `cShakeParams.functionName`
 
@@ -1737,10 +1779,9 @@ changes:
 
 * 类型：{ArrayBuffer|TypedArray|DataView|Buffer|undefined}
 
-`functionName` 成员表示 NIST 的函数名字节字符串，用于
-将构建于 cSHAKE 之上的函数进行域分离。可接受的值为：
+`functionName` 成员表示用于对基于 cSHAKE 构建的函数进行域分离的 NIST 函数名称字节字符串。非空值需要 OpenSSL 4.0 或更高版本。接受的值包括：
 
-* 空值或 `undefined`，在这种情况下 cSHAKE 等同于普通 SHAKE
+* 空值或 `undefined`
 * ASCII 字节序列 `'KMAC'`
 * ASCII 字节序列 `'TupleHash'`
 * ASCII 字节序列 `'ParallelHash'`
@@ -1759,12 +1800,10 @@ changes:
 
 如果你的目标是：
 
-1. **把这些占位符还原成真实术语/类名**
-2. **翻译成完整中文**
-3. **整理成可读的文档**
+`customization` 成员表示自定义数据。非空值需要 OpenSSL 4.0 或更高版本。接受的值包括：
 
-我可以继续帮你做。  
-你只要回复我一句：
+* 空值或 `undefined`
+* 最多 512 字节且不包含空字节的数据
 
 - “帮我还原占位符”
 - “帮我整理成完整中文文档”
@@ -1830,7 +1869,9 @@ added:
  - v25.9.0
  - v24.18.0
 changes:
-  - version: v26.6.0
+  - version:
+     - v26.6.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/64557
     description: 将自定义字符串限制为 512 字节。
 -->
@@ -1874,7 +1915,7 @@ added: v24.8.0
 
 * 类型：{number}
 
-KMAC 密钥的可选位数。这是可选的，在大多数情况下应省略。
+KMAC 密钥中的可选位数。此项为可选，在大多数情况下应省略。密钥长度必须至少为 32 位，且必须是 8 的倍数。
 
 #### `kmacImportParams.name`
 
@@ -1923,7 +1964,7 @@ added: v24.8.0
 * 类型：{number}
 
 要为 KMAC 密钥生成的位数。如果省略，长度将由所用的 KMAC 算法确定。
-这是可选的，在大多数情况下应省略。
+这是可选的，在大多数情况下应省略。必须至少为 32 位，且必须是 8 的倍数。
 
 #### `kmacKeyGenParams.name`
 
@@ -1961,7 +2002,7 @@ added:
  - v24.15.0
 -->
 
-* 类型：{number} 表示请求的输出长度（位）。
+* 类型：{number} 表示请求的输出长度（位）。必须是 8 的倍数。
 
 #### `kmacParams.customization`
 

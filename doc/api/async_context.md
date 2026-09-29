@@ -129,7 +129,7 @@ changes:
 -->
 
 * `options` {Object}
-  * `defaultValue` {any} 当未提供存储时使用的默认值。
+  * `defaultValue` {any} 未提供存储时使用的默认值。
   * `name` {string} `AsyncLocalStorage` 值的名称。
 
 创建 `AsyncLocalStorage` 的新实例。存储仅在 `run()` 调用内或 `enterWith()` 调用后提供。
@@ -178,7 +178,7 @@ const result = asyncLocalStorage.run(321, () => runInAsyncScope(() => asyncLocal
 console.log(result);  // 返回 123
 ```
 
-AsyncLocalStorage.snapshot() 可以替代 AsyncResource 用于简单的异步上下文跟踪目的，例如：
+AsyncLocalStorage.snapshot() 可以替代 AsyncResource，用于简单的异步上下文跟踪目的，例如：
 
 ```js
 class Foo {
@@ -249,7 +249,7 @@ someAsyncOperation(() => {
 ```
 
 此转换将持续整个同步执行。
-这意味着，例如，如果上下文是在事件处理程序中进入的，则后续的事件处理程序也将在那该上下文中运行，除非专门使用 `AsyncResource` 绑定到另一个上下文。这就是为什么除非有强烈的理由使用后一种方法，否则应首选 `run()` 而不是 `enterWith()`。
+这意味着，例如，如果上下文是在事件处理程序中进入的，则后续的事件处理程序也将在该上下文中运行，除非专门使用 `AsyncResource` 绑定到另一个上下文。这就是为什么除非有强烈的理由使用后一种方法，否则应首选 `run()` 而不是 `enterWith()`。
 
 ```js
 const store = { id: 1 };
@@ -289,7 +289,7 @@ added:
 * `...args` {any}
 
 在上下文中同步运行函数并返回其返回值。存储不能在回调函数之外访问。
-存储可访问在回调内创建的任何异步操作。
+存储可在回调内创建的任何异步操作中访问。
 
 可选的 `args` 传递给回调函数。
 
@@ -355,6 +355,7 @@ try {
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
@@ -362,7 +363,7 @@ added:
 * `store` {any}
 * 返回：{RunScope}
 
-创建一个一次性作用域，进入给定存储并在作用域处置时自动恢复之前的存储值。此方法旨在与 JavaScript 的显式资源管理（`using` 语法）一起使用。
+创建一个一次性作用域，进入给定存储，并在作用域处置时自动恢复之前的存储值。此方法旨在与 JavaScript 的显式资源管理（`using` 语法）一起使用。
 
 示例：
 
@@ -392,7 +393,7 @@ const asyncLocalStorage = new AsyncLocalStorage();
 console.log(asyncLocalStorage.getStore()); // 打印：undefined
 ```
 
-`withScope()` 方法对于在同步代码中管理上下文特别有用，你希望确保在退出块时恢复之前的存储值，即使抛出了错误。
+`withScope()` 方法对于在同步代码中管理上下文特别有用，因为你希望确保在退出代码块时恢复之前的存储值，即使抛出了错误。
 
 ```mjs
 import { AsyncLocalStorage } from 'node:async_hooks';
@@ -424,7 +425,7 @@ try {
 }
 ```
 
-**重要：** 在异步函数中的第一个 `await` 之前使用 `withScope()` 时，请注意作用域更改将影响调用者的上下文。异步函数的同步部分（在第一个 `await` 之前）在调用时立即运行，当它到达第一个 `await` 时，它将 promise 返回给调用者。此时，作用域更改在调用者的上下文中变得可见，并将持续到后续的同步代码中，直到其他内容更改作用域值。对于异步操作，首选使用 `run()`，它可以正确地跨异步边界隔离上下文。
+**重要：** 在异步函数中的第一个 `await` 之前使用 `withScope()` 时，请注意作用域更改将影响调用者的上下文。异步函数的同步部分（在第一个 `await` 之前）在调用时立即运行，当它到达第一个 `await` 时，它会将 promise 返回给调用者。此时，作用域更改在调用者的上下文中变得可见，并将持续到后续的同步代码中，直到其他内容更改作用域值。对于异步操作，首选使用 `run()`，它可以正确地跨异步边界隔离上下文。
 
 ```mjs
 import { AsyncLocalStorage } from 'node:async_hooks';
@@ -438,15 +439,15 @@ async function example() {
   console.log(asyncLocalStorage.getStore()); // 打印：my-store
 }
 
-// 调用 without await
+// 调用时不使用 await
 example(); // 同步部分运行，然后在第一个 await 处暂停
-// 在 promise 返回后，作用域 'my-store' 现在在调用者中激活了！
+// promise 返回后，作用域 'my-store' 现在已在调用者中激活！
 console.log(asyncLocalStorage.getStore()); // 打印：my-store（意外！）
 ```
 
 ### 与 `async/await` 一起使用
 
-如果在异步函数中，只有一个 `await` 调用要在上下文中运行，则应使用以下模式：
+如果在异步函数中，只有一个 `await` 调用需要在上下文中运行，则应使用以下模式：
 
 ```js
 async function fn() {
@@ -461,17 +462,18 @@ async function fn() {
 
 ### 故障排除：上下文丢失
 
-在大多数情况下，`AsyncLocalStorage` 工作没有问题。在极少数情况下，当前存储在其中一个异步操作中丢失。
+在大多数情况下，`AsyncLocalStorage` 工作正常。在极少数情况下，当前存储可能会在某个异步操作中丢失。
 
-如果你的代码是基于回调的，只需使用 [`util.promisify()`][] 对其进行 Promise 化，以便它开始使用原生 Promise。
+如果你的代码基于回调，只需使用 [`util.promisify()`][] 将其转换为 Promise API，以便它开始使用原生 Promise。
 
-如果你需要使用基于回调的 API 或你的代码假设了自定义 thenable 实现，请使用 [`AsyncResource`][] 类将异步操作与正确的执行上下文关联。通过在你怀疑负责丢失的调用之后记录 `asyncLocalStorage.getStore()` 的内容来查找负责上下文丢失的函数调用。当代码记录 `undefined` 时，最后调用的回调可能是负责上下文丢失的原因。
+如果你需要使用基于回调的 API，或者你的代码依赖自定义 thenable 实现，请使用 [`AsyncResource`][] 类将异步操作与正确的执行上下文关联起来。通过在你怀疑导致上下文丢失的调用之后记录 `asyncLocalStorage.getStore()` 的内容，找出导致上下文丢失的函数调用。当代码记录 `undefined` 时，最后调用的回调可能就是上下文丢失的原因。
 
 ## 类：`RunScope`
 
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
@@ -485,6 +487,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 显式结束作用域并恢复之前的存储值。此方法是幂等的：多次调用它与调用一次的效果相同。

@@ -225,6 +225,10 @@ undefined
 undefined
 ```
 
+### 错误处理
+
+默认情况下，REPL 中未捕获的异常会打印到输出流（如上面的 `Uncaught Error: REPL await`）。可以在独立 REPL 和嵌套 REPL 中自由添加 `uncaughtException` 监听器。[`repl.start()`][] 的 `handleError` 选项可以自定义此行为，包括通过返回 `'unhandled'` 将异常转发到 [`'uncaughtException'`][]。
+
 ### 反向 i 搜索
 
 <!-- YAML
@@ -414,6 +418,8 @@ const options = { useColors: true };
 const firstInstance = repl.start(options);
 const secondInstance = new repl.REPLServer(options);
 ```
+
+不使用 `new` 关键字调用 `repl.REPLServer()` 会抛出 `TypeError`（参见 [DEP0185][]）。
 
 ### 事件：`'exit'`
 
@@ -734,7 +740,7 @@ alias node="env NODE_NO_READLINE=1 rlwrap node"
 
 可以针对单个正在运行的 Node.js 实例创建并运行多个 REPL 实例，它们共享单个 `global` 对象（通过将 `useGlobal` 选项设置为 `true`），但具有单独的 I/O 接口。
 
-例如，以下代码在 `stdin`、Unix socket 和 TCP socket 上提供单独的 REPL，所有这些都共享相同的 `global` 对象：
+例如，以下代码在 `stdin`、Unix 套接字和 TCP 套接字上提供单独的 REPL，所有这些都共享相同的 `global` 对象：
 
 ```mjs
 import net from 'node:net';
@@ -825,9 +831,9 @@ net.createServer((socket) => {
 }).listen(5001);
 ```
 
-从命令行运行此应用程序将在 stdin 上启动 REPL。其他 REPL 客户端可以通过 Unix socket 或 TCP socket 连接。例如，`telnet` 对于连接 TCP sockets 很有用，而 `socat` 可用于连接 Unix 和 TCP sockets。
+从命令行运行此应用程序将在 stdin 上启动 REPL。其他 REPL 客户端可以通过 Unix 套接字或 TCP 套接字连接。例如，`telnet` 对于连接 TCP 套接字很有用，而 `socat` 可用于连接 Unix 和 TCP 套接字。
 
-通过从基于 Unix socket 的服务器启动 REPL 而不是从 stdin 启动，可以在不重启的情况下连接到长期运行的 Node.js 进程。
+通过从基于 Unix 套接字的服务器启动 REPL 而不是从 stdin 启动，可以在不重启的情况下连接到长期运行的 Node.js 进程。
 
 ### 示例
 
@@ -1006,7 +1012,8 @@ server.listen(8000);
 
 原始代码来自 <https://gist.github.com/TooTallNate/2053342>。
 
-[TTY 键绑定]: readline.md#tty-keybindings
+[DEP0185]: deprecations.md#dep0185-instantiating-noderepl-classes-without-new
+[TTY keybindings]: readline.md#tty-keybindings
 [ZSH]: https://en.wikipedia.org/wiki/Z_shell
 [`'uncaughtException'`]: process.md#event-uncaughtexception
 [`curl()`]: https://curl.haxx.se/docs/manpage.html

@@ -185,14 +185,12 @@ QUIC 传输参数会在 TLS 握手期间交换，用于协商各种传输级设�
 
 流是 QUIC 中承载数据的主要抽象。在会话建立后，流可以由本地 endpoint 或远程对等方发起。
 
-流可以是双向的（数据双向流动）或单向的（数据只向一个方向流动）。`quic` 模块为创建这两种流分别提供了独立的 API：
-[`session.createBidirectionalStream()`][] 和
-[`session.createUnidirectionalStream()`][]。由远程对等方发起的流会通过 [`session.onstream`][] 回调传递。
+流可以是双向的（数据双向流动），也可以是单向的（数据仅单向流动）。`quic` 模块提供了分别用于创建这两种流的 API：[`session.createBidirectionalStream()`][] 和 [`session.createUnidirectionalStream()`][]。远程对等方发起的流会通过 [`session.onstream`][] 回调传递。当协商出的应用协议支持流级回调（例如 HTTP/3）且配置了 `onheaders` 回调时，也可以完全通过该回调消费传入流，此时注册 `onstream` 为可选操作。
 
 向流写入数据有两种方式：
 
-* **正文来源** — 在创建流时传递 `body` 选项（或调用 [`stream.setBody()`][]）。正文可以是字符串、`ArrayBuffer`、`ArrayBufferView`、`Blob`、`FileHandle`、`AsyncIterable`、同步 `Iterable`，或解析为这些类型之一的 `Promise`。`null` 正文会立即关闭可写端。当数据事先可用，或者可以表示为可迭代对象时，这是最简单的方法。
-* **写入器** — 访问 [`stream.writer`][] 以增量推送数据。写入器提供同步方法（`writeSync()`、`writevSync()`、`endSync()`），它们会立即返回，也提供异步对应方法（`write()`、`writev()`、`end()`），在受到背压时会等待 drain。`writeSync()` 在写入缓冲区已满时返回 `false`；调用方应在重试前等待 drain。
+* **Body source** — 创建流时传入 `body` 选项（或调用 [`stream.setBody()`][]）。body 可以是字符串、`ArrayBuffer`、`ArrayBufferView`、`Blob`、`FileHandle`、`AsyncIterable`、同步 `Iterable`，或解析为以上任意类型的 `Promise`。`null` body 会立即关闭可写端。当数据预先可用或可以表示为可迭代对象时，这是最简单的做法。
+* **Writer** — 访问 [`stream.writer`][] 以增量推送数据。writer 提供立即返回的同步方法（`writeSync()`、`writevSync()`、`endSync()`），以及对应的异步方法（`write()`、`writev()`、`end()`）。异步 `write()` 和 `writev()` 方法采用 stream/iter 严格背压策略：写入缓冲区已满时，它们会以 `ERR_INVALID_STATE` 拒绝，而不是等待可用容量。如果 drain 已在等待中，`end()` 会先等待它完成再关闭。写入前请检查 `writer.canWrite`。若要等待可用容量，请使用 `node:stream/iter` 中的 `ondrain()`，然后重试写入。流的 `onblocked` 回调会报告传输流控已阻止进度，但不会表示 writer 的容量已恢复可用。缓冲区已满时，`writeSync()` 会返回 `false`；调用方应先使用 `ondrain()` 等待，再重试。
 
 这两种方式对于同一流而言是互斥的。
 
@@ -240,7 +238,7 @@ QUIC 支持 0-RTT 早期数据，允许之前曾连接到服务器的客户端�
 3. 打开流、发送数据报并交换数据。
 4. 调用 [`session.close()`][] 发起优雅关闭。现有流被允许完成，然后会话被销毁。返回的 Promise（也可通过 `session.closed` 访问）会在拆除完成时解析。
 
-在服务器端，使用回调调用 [`quic.listen()`][]。该回调会在 TLS 握手开始后针对每个传入会话触发。传入流通过 [`session.onstream`][] 回调到达。
+在服务器端，调用 [`quic.listen`][] 并传入回调。TLS 握手开始后，每个传入会话都会触发该回调。传入流通过 [`session.onstream`][] 回调到达；对于配置了 `onheaders` 回调的 HTTP/3 会话，则会直接通过该回调传递（参见[最小 HTTP/3 服务器][]示例）。
 
 [`session.destroy()`][] 可用于立即拆除——所有打开的流都会被销毁，会话也会在不等待它们完成的情况下关闭。
 
@@ -345,7 +343,9 @@ QUIC 会话，请传递 `endpoint` 选项，其参数为
 ## `quic.listEndpoints([options])`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.20.0
 -->
 
 * `options` {object}
@@ -357,7 +357,9 @@ added: v26.4.0
 ## `quic.constants`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * {Object}
@@ -486,7 +488,9 @@ added: v23.8.0
 ### `endpoint.listening`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{boolean}
@@ -496,7 +500,9 @@ added: v26.2.0
 ### `endpoint.maxConnectionsPerHost`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{number}
@@ -509,7 +515,9 @@ added: v26.2.0
 ### `endpoint.maxConnectionsTotal`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{number}
@@ -713,7 +721,9 @@ added: v23.8.0
 ### `session.applicationOptions`
 
 <!-- YAML
-added: v26.3.0
+added:
+ - v26.3.0
+ - v24.20.0
 -->
 
 * 类型：{quic.ApplicationOptions}
@@ -751,7 +761,9 @@ added: v26.3.0
 ### `session.opened`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Promise} 一个关于 {Object} 的 promise
@@ -789,7 +801,9 @@ added: v23.8.0
 ### `session.closing`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{boolean}
@@ -832,7 +846,9 @@ added: v23.8.0
 ### `session.localTransportParams`
 
 <!-- YAML
-added: v26.3.0
+added:
+ - v26.3.0
+ - v24.20.0
 -->
 
 * 类型：{quic.TransportParams|null}
@@ -852,7 +868,9 @@ added: REPLACEME
 ### `session.onapplication`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.20.0
 -->
 
 * 类型：{quic.OnApplicationCallback}
@@ -862,7 +880,9 @@ added: v26.4.0
 ### `session.onerror`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Function|undefined}
@@ -887,6 +907,8 @@ added: v23.8.0
 
 当远程对等方发起新流时调用的回调。读/写。
 
+如果未设置 `onstream` 回调且该流没有其他使用者，则传入流会在到达时被销毁并发出警告。当协商的应用协议支持 `onheaders` 回调（例如 HTTP/3）时，该回调会被视为使用者，因为它会针对每个传入请求流调用。其他流级回调（`ontrailers`、`oninfo`、`onwanttrailers`）则不算，因为它们是有条件触发的或仅用于出站流，会导致该流无法被观察到。完全通过 `onheaders` 处理请求的 HTTP/3 服务器无需设置 `onstream`。
+
 ### `session.ondatagram`
 
 <!-- YAML
@@ -910,7 +932,9 @@ added: v23.8.0
 ### `session.onearlyrejected`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Function|undefined}
@@ -966,7 +990,9 @@ added: v23.8.0
 ### `session.onnewtoken`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{quic.OnNewTokenCallback}
@@ -977,7 +1003,9 @@ added: v26.2.0
 ### `session.onorigin`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{quic.OnOriginCallback}
@@ -988,7 +1016,9 @@ added: v26.2.0
 ### `session.ongoaway`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Function}
@@ -1012,7 +1042,9 @@ added: v26.2.0
 ### `session.onkeylog`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{quic.OnKeylogCallback}
@@ -1028,7 +1060,9 @@ Wireshark 等工具解密数据包捕获非常有用。读/写。
 ### `session.onqlog`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{quic.OnQlogCallback}
@@ -1131,7 +1165,9 @@ added: v23.8.0
 ### `session.remoteTransportParams`
 
 <!-- YAML
-added: v26.3.0
+added:
+ - v26.3.0
+ - v24.20.0
 -->
 
 * 类型：{quic.TransportParams|null|undefined}
@@ -1183,7 +1219,9 @@ added: v23.8.0
 ### `session.servername`
 
 <!-- YAML
-added: v26.6.0
+added:
+ - v26.6.0
+ - v24.20.0
 -->
 
 * 类型：{string|boolean|null}
@@ -1195,7 +1233,9 @@ added: v26.6.0
 ### `session.alpnProtocol`
 
 <!-- YAML
-added: v26.6.0
+added:
+ - v26.6.0
+ - v24.20.0
 -->
 
 * 类型：{string|null}
@@ -1205,7 +1245,9 @@ added: v26.6.0
 ### `session.certificate`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{crypto.X509Certificate|undefined}
@@ -1218,7 +1260,9 @@ added: v26.2.0
 ### `session.peerCertificate`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{crypto.X509Certificate|undefined}
@@ -1229,7 +1273,9 @@ added: v26.2.0
 ### `session.ephemeralKeyInfo`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Object|undefined}
@@ -1241,7 +1287,9 @@ added: v26.2.0
 ### `session.maxDatagramSize`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{number}
@@ -1254,7 +1302,9 @@ added: v26.2.0
 ### `session.maxPendingDatagrams`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{number}
@@ -1491,7 +1541,9 @@ added: v23.8.0
 ## 类：`QuicError`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1526,7 +1578,9 @@ Node.js 错误码固定为 `'ERR_QUIC_STREAM_ABORTED'`，这样 catch 块无需�
 ### `new QuicError(message, options)`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `message` {string} 错误的人类可读描述。
@@ -1558,7 +1612,9 @@ console.log(custom.code);    // 'ERR_MY_QUIC_FAILURE'
 ### `error.errorCode`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{bigint}
@@ -1568,7 +1624,9 @@ added: v26.2.0
 ### `error.type`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{string}
@@ -1580,6 +1638,17 @@ added: v26.2.0
 <!-- YAML
 added: v23.8.0
 -->
+
+### `stream.opened`
+
+<!-- YAML
+added: v26.10.0
+-->
+
+* 类型：{Promise}
+
+如果流符合流量控制限制，则此 promise 会立即兑现；如果流处于挂起状态，则会在创建后兑现。
+如果挂起的流在创建前因错误而关闭，则此 promise 会拒绝。
 
 ### `stream.closed`
 
@@ -1598,7 +1667,9 @@ added: v23.8.0
 <!-- YAML
 added: v23.8.0
 changes:
-  - version: v26.2.0
+  - version:
+     - v26.2.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/62876
     description: 添加了接受 `code` 和 `reason` 的 `options` 参数。
 -->
@@ -1696,7 +1767,9 @@ added: v23.8.0
 ### `stream.early`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{boolean}
@@ -1719,7 +1792,9 @@ added: v26.2.0
 ### `stream.budget`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{number}
@@ -1743,7 +1818,9 @@ added: v23.8.0
 ### `stream.onerror`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Function|undefined}
@@ -1781,7 +1858,9 @@ added: v23.8.0
 ### `stream.onstopsending`
 
 <!-- YAML
-added: v26.7.0
+added:
+ - v26.7.0
+ - v24.20.0
 -->
 
 * 类型：{quic.OnStreamErrorCallback}
@@ -1795,7 +1874,9 @@ added: v26.7.0
 ### `stream.headers`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Object|undefined}
@@ -1809,7 +1890,9 @@ added: v26.2.0
 ### `stream.onheaders`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Function}
@@ -1821,7 +1904,9 @@ added: v26.2.0
 ### `stream.ontrailers`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Function}
@@ -1832,7 +1917,9 @@ added: v26.2.0
 ### `stream.oninfo`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Function}
@@ -1844,7 +1931,9 @@ added: v26.2.0
 ### `stream.onwanttrailers`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Function}
@@ -1855,7 +1944,9 @@ added: v26.2.0
 ### `stream.pendingTrailers`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Object|undefined}
@@ -1867,7 +1958,9 @@ added: v26.2.0
 ### `stream.sendHeaders(headers[, options])`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `headers` {Object} 带字符串键以及字符串或字符串数组值的头部对象。伪头部（`:method`、`:path` 等）
@@ -1883,7 +1976,9 @@ added: v26.2.0
 ### `stream.sendInformationalHeaders(headers)`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `headers` {Object} 头部对象。必须包含 `:status` 且值为 1xx（例如 `{ ':status': '103', 'link': '</style.css>; rel=preload' }`）。
@@ -1894,7 +1989,9 @@ added: v26.2.0
 ### `stream.sendTrailers(headers)`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `headers` {Object} 尾部标头对象。尾部不得包含伪标头。
@@ -1906,7 +2003,9 @@ added: v26.2.0
 ### `stream.priority`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Object|null}
@@ -1922,7 +2021,9 @@ added: v26.2.0
 ### `stream.setPriority([options])`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `options` {Object}
@@ -1934,10 +2035,12 @@ added: v26.2.0
 设置流的优先级。如果会话不支持优先级（例如非 HTTP/3），则抛出 `ERR_INVALID_STATE`。
 如果流已被销毁，则无效。
 
-### `stream[Symbol.asyncIterator]()` 
+### `stream[Symbol.asyncIterator]()`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 返回：{AsyncIterableIterator} 产出 {Uint8Array\[]}
@@ -1968,7 +2071,9 @@ await Stream.pipeTo(stream, someWriter);
 ### 写入器
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{Object}
@@ -1981,35 +2086,36 @@ try-sync-fallback-to-async 模式的 stream/iter Writer 接口。
 
 Writer 具有以下方法：
 
-* `writeSync(chunk)` — 同步写入。如果接受则返回 `true`，如果受流控制则返回 `false`。
-  返回 `false` 时不会接受数据。
-* `write(chunk[, options])` — 带等待 drain 的异步写入。进入时会检查 `options.signal`，
-  但写入期间不会观察它。
+* `writeSync(chunk)` — 同步写入。接受时返回 `true`，受流控时返回 `false`。返回 `false` 时，数据不会被接受。
+* `write(chunk[, options])` — 异步写入。流受流控时会以 `ERR_INVALID_STATE` 拒绝，而不是等待可用容量。`options.signal` 会在入口处检查，但写入期间不会继续监听。
 * `writevSync(chunks)` — 同步向量化写入。要么全部写入，要么全部不写入。
-* `writev(chunks[, options])` — 异步向量化写入。
-* `endSync()` — 同步关闭。返回字节总数或 `-1`。
-* `end([options])` — 异步关闭。
-* `fail(reason)` — 使流出错（向对端发送 `RESET_STREAM`）。
-  当 `reason` 是 [`QuicError`][] 时，其 [`error.errorCode`][] 会被用作结果
-  `RESET_STREAM` 帧中的线上错误码；否则线上错误码会回退到协商出的应用协议的
-  “内部错误”码（HTTP/3 使用 `H3_INTERNAL_ERROR`（`0x102`），原生 QUIC 使用
-  QUIC 传输层的 `INTERNAL_ERROR`（`0x1`））。有关同时通过 `STOP_SENDING`
-  重置可读侧的完整流中止，请参见 [`stream.destroy()`][]。
-* `canWrite` — 如果会接受写入则为 `true`，如果已达到容量上限则为 `false`，
-  如果已关闭或出错则为 `null`。
+* `writev(chunks[, options])` — 异步向量化写入。流受流控时会以 `ERR_INVALID_STATE` 拒绝，而不是等待可用容量。
+* `endSync()` — 同步关闭。返回总字节数或 `-1`。
+* `end([options])` — 异步关闭。如果已有待处理的排空操作，则会等待其完成后再关闭。
+* `fail(reason)` — 使流出错（向对等方发送 `RESET_STREAM`）。当 `reason` 是 [`QuicError`][] 时，生成的 `RESET_STREAM` 帧会将其 [`error.errorCode`][] 用作线路错误码；否则，线路错误码会回退为协商后的应用协议“内部错误”代码（HTTP/3 为 `H3_INTERNAL_ERROR`（`0x102`），原始 QUIC 为 QUIC 传输层 `INTERNAL_ERROR`（`0x1`））。有关同时通过 `STOP_SENDING` 重置可读侧的完整流中止操作，请参见 [`stream.destroy()`][]。
+* `canWrite` — 写入会被接受时为 `true`，达到容量上限时为 `false`，已关闭或出错时为 `null`。当 `writeSync()` 返回 `false` 时，使用 `node:stream/iter` 中的 `ondrain()` 等待后再重试。如果 `ondrain()` 返回 `null`，则没有可用的排空等待操作，不应重试写入。
 
-每个 `writeSync()` / `writevSync()` / `write()` / `writev()` 输入块中的字节都会被复制到内部缓冲区，
-因此调用方的源缓冲区不会改变，并且可在调用返回后立即复用或修改。希望确保源缓冲区在交出后不能被修改的调用方，
-可以在传入缓冲区之前自行调用 `ArrayBuffer.prototype.transfer()`。
+```mjs
+import { ondrain } from 'node:stream/iter';
+
+while (!writer.writeSync(chunk)) {
+  const drain = ondrain(writer);
+  if (drain === null) break;
+  await drain;
+}
+```
+
+每个 `writeSync()` / `writevSync()` / `write()` / `writev()` 输入块中的字节都会被复制到内部缓冲区，因此调用方的源缓冲区不会改变，并且可在调用返回后立即复用或修改。希望确保源缓冲区在交出后不能被修改的调用方，可以在传入缓冲区之前自行调用 `ArrayBuffer.prototype.transfer()`。
 
 ### 出站主体源
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
-* `body` {string | ArrayBuffer | SharedArrayBuffer | ArrayBufferView |
-  Blob | FileHandle | AsyncIterable | Iterable | Promise | null}
+* `body` {string | ArrayBuffer | SharedArrayBuffer | ArrayBufferView | Blob | FileHandle | AsyncIterable | Iterable | Promise | null}
 
 设置该流的出站主体源。只能调用一次。与 [`stream.writer`][] 互斥。
 
@@ -2017,14 +2123,9 @@ added: v26.2.0
 
 * `null` — 可写侧立即关闭（发送不带数据的 FIN）。
 * `string` — 以 UTF-8 编码并作为单个块发送。
-* `ArrayBuffer`、`SharedArrayBuffer`、`ArrayBufferView` — 作为单个块发送。
-  字节会被复制到内部缓冲区，因此调用方的源缓冲区不会改变，并且可在调用返回后立即复用或修改。
-  希望确保源在交出后不能被修改的调用方，可以在传入缓冲区之前自行调用
-  `ArrayBuffer.prototype.transfer()`。
+* `ArrayBuffer`、`SharedArrayBuffer`、`ArrayBufferView` — 作为单个块发送。字节会被复制到内部缓冲区，因此调用方的源缓冲区不会改变，并且可在调用返回后立即复用或修改。希望确保源在交出后不能被修改的调用方，可以在传入缓冲区之前自行调用 `ArrayBuffer.prototype.transfer()`。
 * `Blob` — 从 Blob 底层的数据队列发送。
-* {FileHandle} — 通过基于文件描述符的数据源异步读取文件内容。`FileHandle` 必须以读方式打开
-  （例如通过 [`fs.promises.open(path, 'r')`][]）。一旦作为主体传入，该 `FileHandle` 就会被锁定，
-  不能再用作另一个流的主体。流结束时会自动关闭 `FileHandle`。
+* {FileHandle} — 通过基于文件描述符的数据源异步读取文件内容。`FileHandle` 必须以读方式打开（例如通过 [`fs.promises.open(path, 'r')`][]）。一旦作为主体传入，该 `FileHandle` 就会被锁定，不能再用作另一个流的主体。流结束时会自动关闭 `FileHandle`。
 * `AsyncIterable`、`Iterable` — 逐个将每个产出的块（字符串或 `Uint8Array`）以流式模式增量写入。
 * `Promise` — 等待其兑现；将兑现值用作主体（并遵循相同的类型规则）。
 
@@ -2067,7 +2168,9 @@ added: v23.8.0
 ### `streamStats.bytesAccumulated`
 
 <!-- YAML
-added: v26.3.0
+added:
+ - v26.3.0
+ - v24.20.0
 -->
 
 * 类型：{bigint}
@@ -2125,7 +2228,9 @@ added: v23.8.0
 ### `streamStats.maxBytesAccumulated`
 
 <!-- YAML
-added: v26.3.0
+added:
+ - v26.3.0
+ - v24.20.0
 -->
 
 * 类型：{bigint}
@@ -2177,7 +2282,9 @@ added: v23.8.0
 ### 类型：`ApplicationOptions`
 
 <!-- YAML
-added: v26.3.0
+added:
+ - v26.3.0
+ - v24.20.0
 -->
 
 * 类型：{Object}
@@ -2267,10 +2374,8 @@ added: v23.8.0
 
 控制如何解释 [`endpointOptions.blockList`][]：
 
-* `'deny'` — 来自与阻止列表匹配的地址的数据包会被丢弃。
-  其他所有地址都会被接受。这是典型的 blocklist 模式。
-* `'allow'` — 只有来自与阻止列表匹配的地址的数据包才会被接受。
-  其他所有地址都会被丢弃。这是一种用于限制已知客户端访问的 allowlist 模式。
+* `'deny'` — 来自与阻止列表匹配的地址的数据包会被丢弃。其他所有地址都会被接受。这是典型的阻止列表模式。
+* `'allow'` — 只有来自与阻止列表匹配的地址的数据包才会被接受。其他所有地址都会被丢弃。这是一种用于限制已知客户端访问的允许列表模式。
 
 如果未配置阻止列表，则此选项无效。
 
@@ -2282,12 +2387,14 @@ added: v23.8.0
 
 * 类型：{bigint|number}
 
-端点会维护一个已验证套接字地址的内部缓存，以提升性能。此选项设置可缓存的最大地址数量。这是一个高级选项，用户通常无需指定。
+端点维护一个已验证套接字地址的内部缓存，以优化性能。此选项设置缓存的地址数量上限。该值必须大于 `0`。这是一个高级选项，用户通常无需指定。
 
 #### `endpointOptions.disableStatelessReset`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{boolean}
@@ -2297,7 +2404,9 @@ added: v26.2.0
 #### `endpointOptions.idleTimeout`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{number}
@@ -2361,8 +2470,7 @@ added: v23.8.0
 * 类型：{number}
 * **默认值：** `100`
 
-端点每秒最多发送的 QUIC 重试数据包数量。
-这是一个全局速率限制（不是按主机限制），用于限制整个服务器的重试响应速率，防止伪造源地址的洪泛消耗无限资源。
+端点每秒最多发送的 QUIC 重试数据包数量。这是一个全局速率限制（不是按主机限制），用于限制整个服务器的重试响应速率，防止伪造源地址的洪泛消耗无限资源。
 
 #### `endpointOptions.retryBurst`
 
@@ -2418,8 +2526,7 @@ added: v23.8.0
 * 类型：{number}
 * **默认值：** `50`
 
-单个远程地址每秒可创建的新会话最大数量。这是一个按主机计算的速率限制，记录在地址验证 LRU 缓存中。它可防止已验证的远程地址以比服务器处理能力更快的速度不断创建和放弃会话（快速打开并丢弃连接）。
-对于流量来自单一来源的基准测试，可将其设置为较高值。
+单个远程地址每秒可创建的新会话最大数量。这是一个按主机计算的速率限制，记录在地址验证 LRU 缓存中。它可防止已验证的远程地址以比服务器处理能力更快的速度不断创建和放弃会话（快速打开并丢弃连接）。对于流量来自单一来源的基准测试，可将其设置为较高值。
 
 #### `endpointOptions.sessionCreationBurst`
 
@@ -2522,7 +2629,7 @@ ALPN（应用层协议协商）标识符。
 
 对于 **客户端** 会话，这是指定客户端想要使用的协议的单个字符串（例如 `'h3'`）。
 
-对于 **服务器** 会话，这是服务器支持的协议名称列表，按首选项排序（例如 `['h3', 'h3-29']`）。在 TLS 握手期间，服务器会从其列表中选择客户端也支持的第一个协议。
+对于 **服务器** 会话，这是一个按首选顺序排列的非空协议名称数组，表示服务器支持的协议（例如 `['h3', 'h3-29']`）。在 TLS 握手期间，服务器会从其列表中选择客户端也支持的第一个协议。
 
 协商的 ALPN 决定了用于会话的应用实现。`'h3'` 和 `'h3-*'` 变体选择 HTTP/3 应用；所有其他值选择默认应用。
 
@@ -2531,7 +2638,9 @@ ALPN（应用层协议协商）标识符。
 #### `sessionOptions.application`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{quic.ApplicationOptions}
@@ -2569,8 +2678,7 @@ added: v23.8.0
 
 * 类型：{string}
 
-指定将要使用的拥塞控制算法。
-必须设置为 `'reno'`、`'cubic'` 或 `'bbr'` 之一。
+指定将要使用的拥塞控制算法。必须设置为 `'reno'`、`'cubic'` 或 `'bbr'` 之一。
 
 这是一个高级选项，用户通常无需指定。
 
@@ -2587,7 +2695,9 @@ added: v23.8.0
 #### `sessionOptions.certificateCompression`
 
 <!-- YAML
-added: v26.6.0
+added:
+ - v26.6.0
+ - v24.20.0
 -->
 
 * 类型：{string\[]} `'zlib'`、`'brotli'` 或 `'zstd'` 中的一个或多个，按首选项排序。
@@ -2623,7 +2733,9 @@ added: v23.8.0
 #### `sessionOptions.enableEarlyData`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{boolean} **默认值：** `true`
@@ -2738,7 +2850,9 @@ added: v23.8.0
 #### `sessionOptions.datagramDropPolicy`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{string}
@@ -2767,7 +2881,9 @@ added: v26.2.0
 #### `sessionOptions.drainingPeriodMultiplier`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{number}
@@ -2788,7 +2904,9 @@ added: v23.8.0
 #### `sessionOptions.initialRtt`
 
 <!-- YAML
-added: v26.3.0
+added:
+ - v26.3.0
+ - v24.20.0
 -->
 
 * 类型：{bigint|number}
@@ -2799,13 +2917,26 @@ added: v26.3.0
 #### `sessionOptions.keepAlive`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{bigint|number}
 * **默认值：** `0`（已禁用）
 
 指定保活超时时间，单位为毫秒。当设置为非零值时，会自动发送 PING 帧，以便在空闲超时触发之前保持连接存活。该值应小于有效的空闲超时（`maxIdleTimeout` 传输参数），这样才有意义。
+
+#### `sessionOptions.truncatedReads`
+
+* 类型：{string} 取值为 `'error'` 或 `'ignore'` 之一。
+* **默认值：** `'error'`
+
+控制读取流时如何报告截断读取。流的读取端可能在未收到 QUIC FIN 的情况下结束，这意味着对等方从未发出信号表明整个流已发送，且收到的数据可能不完整。此选项指定流的异步迭代器如何报告这种情况：
+
+* `'error'` - 默认值。预期对等方始终会发送 FIN，以明确结束其数据，因此任何截断都是错误。迭代器会先返回已到达的数据，然后抛出错误，因此不完整的流绝不会被误认为完整。未完成的流会抛出携带对等方错误代码的 `ERR_QUIC_STREAM_RESET`、连接错误，或其他情况下的 `ERR_QUIC_STREAM_ABORTED`。
+
+* `'ignore'` - 忽略截断本身：只报告流错误或连接错误，任何正常的中止、取消或类似情况都会直接结束流。非零的对等方重置、非零的本地 stop-sending 或连接错误仍会导致失败，但没有错误的截断（空闲超时、正常关闭或普通的 `stopSending()`）会以已接收的数据正常结束读取。这与 `stream.closed` 一致，该属性仅在发生错误时拒绝。
 
 #### `sessionOptions.verifyPeer`（仅限客户端）
 
@@ -2881,7 +3012,9 @@ added: v23.8.0
 #### `sessionOptions.token`（仅限客户端）
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{ArrayBufferView}
@@ -2911,7 +3044,9 @@ added: v23.8.0
 #### `sessionOptions.rejectUnauthorized`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{boolean} **默认值：** `true`
@@ -2921,7 +3056,9 @@ added: v26.2.0
 #### `sessionOptions.reuseEndpoint`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * 类型：{boolean}
@@ -2972,7 +3109,9 @@ added: v23.8.0
 #### `transportParams.initialSCID`
 
 <!-- YAML
-added: v26.3.0
+added:
+ - v26.3.0
+ - v24.20.0
 -->
 
 * 类型：{string}
@@ -2982,7 +3121,9 @@ added: v26.3.0
 #### `transportParams.originalDCID`
 
 <!-- YAML
-added: v26.3.0
+added:
+ - v26.3.0
+ - v24.20.0
 -->
 
 * 类型：{string}
@@ -3099,7 +3240,9 @@ added: v23.8.0
 #### `transportParams.retrySCID`
 
 <!-- YAML
-added: v26.3.0
+added:
+ - v26.3.0
+ - v24.20.0
 -->
 
 * 类型：{string}
@@ -3247,7 +3390,9 @@ added: v23.8.0
 ### 回调：`OnNewTokenCallback`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `this` {quic.QuicSession}
@@ -3257,7 +3402,9 @@ added: v26.2.0
 ### 回调：`OnOriginCallback`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `this` {quic.QuicSession}
@@ -3266,7 +3413,9 @@ added: v26.2.0
 ### 回调：`OnKeylogCallback`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `this` {quic.QuicSession}
@@ -3281,7 +3430,9 @@ TLS 1.3 握手期间会发出多行，每行包含一个密钥标签、客户端
 ### 回调：`OnQlogCallback`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `this` {quic.QuicSession}
@@ -3313,7 +3464,9 @@ added: v23.8.0
 ### 回调：`OnHeadersCallback`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `this` {quic.QuicStream}
@@ -3326,7 +3479,9 @@ added: v26.2.0
 ### 回调：`OnTrailersCallback`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `this` {quic.QuicStream}
@@ -3337,7 +3492,9 @@ added: v26.2.0
 ### 回调：`OnInfoCallback`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `this` {quic.QuicStream}
@@ -3349,7 +3506,9 @@ added: v26.2.0
 ## HTTP/3 支持
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 当协商得到的 ALPN 标识符是 `'h3'`（或 `'h3-*'`
@@ -3447,7 +3606,9 @@ import { listen } from 'node:quic';
 const encoder = new TextEncoder();
 
 const endpoint = await listen((session) => {
-  // 每当有新的客户端发起流时，session.onstream 回调都会触发。
+  // The session.onstream callback fires for each new client-initiated
+  // stream. It is optional here: with `onheaders` configured below,
+  // request streams are consumed through that callback.
 }, {
   sni: { '*': { keys: [defaultKey], certs: [defaultCert] } },
   // ALPN 默认为 'h3'。
@@ -3501,7 +3662,9 @@ console.log('listening on', endpoint.address);
 ## 性能测量
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 QUIC 会话、流和端点会发出 `[`PerformanceEntry`][]` 对象，
@@ -3591,7 +3754,9 @@ obs.observe({ entryTypes: ['quic'] });
 ### 通道：`quic.endpoint.connect`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `endpoint` {quic.QuicEndpoint}
@@ -3755,7 +3920,9 @@ GOAWAY 帧时）。
 ### 通道：`quic.session.error`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `session` {quic.QuicSession}
@@ -3810,7 +3977,9 @@ GOAWAY 帧时）。
 ### 通道：`quic.session.new.token`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `token` {Buffer} NEW_TOKEN 令牌数据。
@@ -3846,7 +4015,9 @@ GOAWAY 帧时）。
 ### 通道：`quic.session.receive.origin`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `origins` {string\[]} 服务器具有权威性的来源列表。
@@ -3875,7 +4046,9 @@ GOAWAY 帧时）。
 ### 通道：`quic.session.goaway`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `session` {quic.QuicSession}
@@ -3889,7 +4062,9 @@ GOAWAY 帧时）。
 ### 通道：`quic.session.early.rejected`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `session` {quic.QuicSession}
@@ -3900,7 +4075,9 @@ GOAWAY 帧时）。
 ### 通道：`quic.stream.closed`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3914,7 +4091,9 @@ GOAWAY 帧时）。
 ### 通道：`quic.stream.headers`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3929,7 +4108,9 @@ GOAWAY 帧时）。
 ### 通道：`quic.stream.trailers`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3941,7 +4122,9 @@ GOAWAY 帧时）。
 ### 通道：`quic.stream.info`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3954,7 +4137,9 @@ GOAWAY 帧时）。
 ### 通道：`quic.stream.reset`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -3966,7 +4151,9 @@ GOAWAY 帧时）。
 ### 通道：`quic.stream.blocked`
 
 <!-- YAML
-已添加：v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 * `stream` {quic.QuicStream}
@@ -4073,5 +4260,6 @@ GOAWAY 帧时）。
 [`stream.writer`]: #streamwriter
 [`writer.fail()`]: #streamwriter
 [`writer.fail(reason)`]: #streamwriter
+[minimal HTTP/3 server]: #minimal-http3-server
 [qlog]: https://datatracker.ietf.org/doc/draft-ietf-quic-qlog-main-schema/
 [qvis]: https://qvis.quictools.info/

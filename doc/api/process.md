@@ -32,7 +32,7 @@ added: v0.11.12
 
 监听器回调函数被调用时，会传入 [`process.exitCode`][] 的值作为唯一参数。
 
- `'beforeExit'` 事件_不_会针对导致显式终止的条件发出，例如调用 [`process.exit()`][] 或未捕获的异常。
+`'beforeExit'` 事件_不_会针对导致显式终止的条件发出，例如调用 [`process.exit()`][] 或未捕获的异常。
 
 除非打算调度额外的工作，否则_不应_将 `'beforeExit'` 用作 `'exit'` 事件的替代方案。
 
@@ -328,7 +328,7 @@ changes:
 * `reason` {Error|any} 拒绝 promise 的对象（通常是 [`Error`][] 对象）。
 * `promise` {Promise} 被拒绝的 promise。
 
-每当 `Promise` 被拒绝且在事件循环的一个轮次内没有错误处理程序附加到该 promise 时，就会发出 `'unhandledRejection'` 事件。当使用 Promise 编程时，异常被封装为“被拒绝的 promise"。可以使用 [`promise.catch()`][] 捕获和处理拒绝，并通过 `Promise` 链传播。`'unhandledRejection'` 事件对于检测和跟踪那些被拒绝但尚未处理拒绝的 promise 很有用。
+每当 `Promise` 被拒绝且在事件循环的一个轮次内没有错误处理程序附加到该 promise 时，就会发出 `'unhandledRejection'` 事件。当使用 Promise 编程时，异常被封装为“被拒绝的 promise”。可以使用 [`promise.catch()`][] 捕获和处理拒绝，并通过 `Promise` 链传播。`'unhandledRejection'` 事件对于检测和跟踪那些被拒绝但尚未处理拒绝的 promise 很有用。
 
 ```mjs
 import process from 'node:process';
@@ -528,17 +528,17 @@ process.on('SIGTERM', handle);
 ```
 
 * `'SIGUSR1'` 由 Node.js 保留用于启动 [调试器][]。可以安装监听器，但这样做可能会干扰调试器。
-* `'SIGTERM'` 和 `'SIGINT'` 在非 Windows 平台上有默认处理程序，在退出前重置终端模式，退出代码为 `128 + 信号编号`。如果安装了这些信号之一的监听器，其默认行为将被移除（Node.js 将不再退出）。
-* `'SIGPIPE'` 默认被忽略。可以安装监听器。
-* `'SIGHUP'` 在关闭控制台窗口时在 Windows 上生成，在其他平台上在各种类似条件下生成。请参阅 signal(7)。可以安装监听器，但是 Node.js 将在大约 10 秒后被 Windows 无条件终止。在非 Windows 平台上，`SIGHUP` 的默认行为是终止 Node.js，但一旦安装了监听器，其默认行为将被移除。
-* `'SIGTERM'` 在 Windows 上不受支持，可以监听。
-* `'SIGINT'` 来自终端在所有平台上都受支持，通常可以使用 <kbd>Ctrl</kbd>+<kbd>C</kbd> 生成（尽管这可能是可配置的）。当启用 [终端原始模式][] 并使用 <kbd>Ctrl</kbd>+<kbd>C</kbd> 时，不会生成它。
-* `'SIGBREAK'` 在按下 <kbd>Ctrl</kbd>+<kbd>Break</kbd> 时在 Windows 上发送。在非 Windows 平台上，可以监听，但无法发送或生成它。
-* `'SIGWINCH'` 在控制台调整大小时发送。在 Windows 上，这仅在写入控制台时光标移动时发生，或者当在原始模式下使用可读 tty 时发生。
-* `'SIGKILL'` 不能安装监听器，它将在所有平台上无条件终止 Node.js。
-* `'SIGSTOP'` 不能安装监听器。
-* `'SIGBUS'`、`'SIGFPE'`、`'SIGSEGV'` 和 `'SIGILL'`，当不使用 kill(2) 人为引发时，本质上会使进程处于不安全调用 JS 监听器的状态。这样做可能会导致进程停止响应。
-* `0` 可以发送以测试进程是否存在，如果进程存在则没有效果，但如果进程不存在将抛出错误。
+* `'SIGTERM'` 和 `'SIGINT'` 在非 Windows 平台上有默认处理程序，会在退出并返回代码 `128 + 信号编号` 前重置终端模式。如果为其中一个信号安装了监听器，其默认行为将被移除。信号事件会异步发出，因此如果事件循环中没有其他活动，Node.js 可能会在调用监听器之前退出。
+* `'SIGPIPE'` 默认会被忽略。可以为其安装监听器。
+* `'SIGHUP'` 在 Windows 上会于控制台窗口关闭时生成，在其他平台上则会在各种类似情况下生成。请参阅 signal(7)。可以为其安装监听器，但大约 10 秒后，Windows 将无条件终止 Node.js。在非 Windows 平台上，`SIGHUP` 的默认行为是终止 Node.js，但安装监听器后，其默认行为将被移除。
+* Windows 不支持 `'SIGTERM'`，但可以监听该信号。
+* 所有平台都支持来自终端的 `'SIGINT'`，通常可以通过 <kbd>Ctrl</kbd>+<kbd>C</kbd> 生成（不过此操作可能可配置）。启用[终端原始模式][]并使用 <kbd>Ctrl</kbd>+<kbd>C</kbd> 时，不会生成该信号。
+* 在 Windows 上，按下 <kbd>Ctrl</kbd>+<kbd>Break</kbd> 时会收到 `'SIGBREAK'`。在非 Windows 平台上，可以监听该信号，但无法发送或生成该信号。
+* 控制台大小调整时会收到 `'SIGWINCH'`。在 Windows 上，只有在移动光标时向控制台写入内容，或者在原始模式下使用可读 tty 时，才会发生这种情况。
+* 不能为 `'SIGKILL'` 安装监听器；该信号将在所有平台上无条件终止 Node.js。
+* 不能为 `'SIGSTOP'` 安装监听器。
+* 如果不是通过 kill(2) 人为触发，`'SIGBUS'`、`'SIGFPE'`、`'SIGSEGV'` 和 `'SIGILL'` 会使进程处于无法安全调用 JS 监听器的状态。这样做可能导致进程停止响应。
+* 可以发送 `0` 来测试进程是否存在；如果进程存在，则不会产生任何影响；如果进程不存在，则会抛出错误。
 
 Windows 不支持信号，因此没有通过信号终止的等效方法，但 Node.js 通过 [`process.kill()`][] 和 [`subprocess.kill()`][] 提供了一些模拟：
 
@@ -661,7 +661,7 @@ added: v0.1.27
 
 * 类型：{string\[]}
 
-`process.argv` 属性返回一个数组，包含启动 Node.js 进程时传递的命令行参数。第一个元素将是 [`process.execPath`][]。如果需要访问 `argv[0]` 的原始值，请参阅 `process.argv0`。如果提供了 [程序入口点][]，第二个元素将是其绝对路径。其余元素是额外的命令行参数。
+`process.argv` 属性返回一个数组，包含启动 Node.js 进程时传递的命令行参数。第一个元素将是 [`process.execPath`][]。如果需要访问 `argv[0]` 的原始值，请参阅 `process.argv0`。如果提供了[程序入口点][]，第二个元素将是其绝对路径。其余元素是额外的命令行参数。
 
 例如，假设 `process-args.js` 的脚本如下：
 
@@ -749,7 +749,7 @@ changes:
 
 * 类型：{Object}
 
-如果 Node.js 进程是使用 IPC 通道生成的（请参阅 [子进程][] 文档），则 `process.channel` 属性是对 IPC 通道的引用。如果不存在 IPC 通道，则此属性为 `undefined`。
+如果 Node.js 进程是使用 IPC 通道生成的（请参阅[子进程][]文档），则 `process.channel` 属性是对 IPC 通道的引用。如果不存在 IPC 通道，则此属性为 `undefined`。
 
 ### `process.channel.ref()`
 
@@ -860,7 +860,7 @@ added: v0.7.2
 
 * 类型：{boolean}
 
-如果 Node.js 进程是使用 IPC 通道生成的（请参阅 [子进程][] 和 [集群][] 文档），只要 IPC 通道已连接，`process.connected` 属性将返回 `true`，并且在调用 `process.disconnect()` 之后将返回 `false`。
+如果 Node.js 进程是使用 IPC 通道生成的（请参阅[子进程][]和[集群][]文档），只要 IPC 通道已连接，`process.connected` 属性将返回 `true`，并且在调用 `process.disconnect()` 之后将返回 `false`。
 
 一旦 `process.connected` 为 `false`，就不再可能使用 `process.send()` 通过 IPC 通道发送消息。
 
@@ -980,7 +980,7 @@ process.debugPort = 5858;
 added: v0.7.2
 -->
 
-如果 Node.js 进程是使用 IPC 通道生成的（参见 [子进程][] 和 [集群][] 文档），`process.disconnect()` 方法将关闭到父进程的 IPC 通道，允许子进程在没有其他连接保持存活时优雅地退出。
+如果 Node.js 进程是使用 IPC 通道生成的（参见[子进程][]和[集群][]文档），`process.disconnect()` 方法将关闭到父进程的 IPC 通道，允许子进程在没有其他连接保持存活时优雅地退出。
 
 调用 `process.disconnect()` 的效果与从父进程调用 [`ChildProcess.disconnect()`][] 相同。
 
@@ -1454,9 +1454,9 @@ changes:
 
 * `code` {integer|string|null|undefined} 退出代码。对于字符串类型，仅允许整数字符串（例如，'1'）。**默认：** `0`。
 
-`process.exit()` 方法指示 Node.js 以 `code` 退出状态同步终止进程。如果省略 `code`，exit 使用 'success' 代码 `0` 或 `process.exitCode` 的值（如果已设置）。Node.js 不会终止，直到所有 [`'exit'`][] 事件监听器被调用。
+`process.exit()` 方法指示 Node.js 以 `code` 退出状态同步终止进程。如果省略 `code`，exit 使用“成功”代码 `0` 或 `process.exitCode` 的值（如果已设置）。Node.js 不会终止，直到所有 [`'exit'`][] 事件监听器被调用。
 
-要以 'failure' 代码退出：
+要以“失败”代码退出：
 
 ```mjs
 import { exit } from 'node:process';
@@ -1827,7 +1827,7 @@ class Test {
 added: v22.5.0
 -->
 
-> 稳定性：1.1 - активно 开发中
+> 稳定性：1.1 - 正在积极开发中
 
 * `ref` {Object | Function} 对正在跟踪的资源的引用。
 * `callback` {Function} 资源完成终结时调用的回调函数。
@@ -2698,6 +2698,7 @@ added: v20.0.0
 * `fs.read` - 文件系统读取操作
 * `fs.write` - 文件系统写入操作
 * `child` - 子进程创建操作
+* `env` - 环境变量
 * `openssl.store` - 通过 OpenSSL STORE 加载器加载密钥
 * `worker` - Worker 线程创建操作
 * `ffi` - 外部函数接口操作
@@ -2712,7 +2713,9 @@ process.permission.has('fs.read');
 ### `process.permission.drop(scope[, reference])`
 
 <!-- YAML
-added: v26.3.0
+added:
+ - v26.3.0
+ - v24.20.0
 -->
 
 > 稳定性：1.1 - Active Development
@@ -2739,6 +2742,7 @@ added: v26.3.0
 * `fs.read` - 文件系统读取操作
 * `fs.write` - 文件系统写入操作
 * `child` - 子进程创建操作
+* `env` - 环境变量。删除变量会将其从环境中移除
 * `openssl.store` - 通过 OpenSSL STORE 加载器加载密钥
 * `worker` - Worker 线程创建操作
 * `net` - 网络操作
@@ -2846,13 +2850,15 @@ console.log(`父进程的 pid 是 ${ppid}`);
 added:
   - v23.6.0
   - v22.14.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/66213
+    description: This API is no longer experimental.
 -->
 
-> 稳定性：1 - 实验性
+* `maybeRefable` {any} 一个可能“可引用”的对象。
 
-* `maybeRefable` {any} 一个可能是“refable”的对象。
-
-如果一个对象实现了 Node.js “Refable 协议”，则它是“refable”的。具体来说，这意味着该对象实现了 `Symbol.for('nodejs.ref')` 和 `Symbol.for('nodejs.unref')` 方法。“Ref'd”对象将使 Node.js 事件循环保持活动状态，而“unref'd”对象则不会。历史上，这是通过直接在对象上使用 `ref()` 和 `unref()` 方法来实现的。然而，此模式正被弃用，转而支持“Refable 协议”，以便更好地支持 Web 平台 API 类型，这些类型的 API 无法被修改以添加 `ref()` 和 `unref()` 方法，但仍需要支持该行为。
+如果一个对象实现了 Node.js“Refable 协议”，则它是“可引用的”。具体来说，这意味着该对象实现了 `Symbol.for('nodejs.ref')` 和 `Symbol.for('nodejs.unref')` 方法。“已引用”的对象会使 Node.js 事件循环保持活动状态，而“已取消引用”的对象则不会。历史上，这是通过直接在对象上使用 `ref()` 和 `unref()` 方法来实现的。然而，此模式正被弃用，转而支持“Refable 协议”，以便更好地支持 Web 平台 API 类型；这些 API 类型无法被修改以添加 `ref()` 和 `unref()` 方法，但仍需要支持该行为。
 
 ## `process.release`
 
@@ -2874,7 +2880,7 @@ changes:
 * `sourceUrl` {string} 指向包含当前版本源代码的 _`.tar.gz`_ 文件的绝对 URL。
 * `headersUrl`{string} 指向仅包含当前版本源代码头文件的 _`.tar.gz`_ 文件的绝对 URL。此文件比完整源代码文件小得多，可用于编译 Node.js 原生附加组件。
 * `libUrl` {string|undefined} 指向与当前版本的架构和版本匹配的 _`node.lib`_ 文件的绝对 URL。此文件用于编译 Node.js 原生附加组件。_此属性仅存在于 Node.js 的 Windows 构建版本上，在所有其他平台上将缺失。_
-* `lts` {string|undefined} 标识此版本 [LTS][] 标签的字符串标签。此属性仅存在于 LTS 版本，对于所有其他版本类型（包括 _Current_ 版本）均为 `undefined`。有效值包括 LTS 版本代号（包括不再支持的代号）。
+* `lts` {string|undefined} 标识此版本 [LTS][] 标签的字符串标签。此属性仅存在于 LTS 版本，对于所有其他版本类型（包括 _当前_ 版本）均为 `undefined`。有效值包括 LTS 版本代号（包括不再支持的代号）。
   * `'Fermium'` 对应始于 14.15.0 的 14.x LTS 系列。
   * `'Gallium'` 对应始于 16.13.0 的 16.x LTS 系列。
   * `'Hydrogen'` 对应始于 18.12.0 的 18.x LTS 系列。
@@ -3382,24 +3388,24 @@ added: v0.1.31
 import process from 'node:process';
 
 if (process.getgid && process.setgid) {
-  console.log(`Current gid: ${process.getgid()}`);
+  console.log(`当前 gid: ${process.getgid()}`);
   try {
     process.setgid(501);
-    console.log(`New gid: ${process.getgid()}`);
+    console.log(`新的 gid: ${process.getgid()}`);
   } catch (err) {
-    console.error(`Failed to set gid: ${err}`);
+    console.error(`设置 gid 失败: ${err}`);
   }
 }
 ```
 
 ```cjs
 if (process.getgid && process.setgid) {
-  console.log(`Current gid: ${process.getgid()}`);
+  console.log(`当前 gid: ${process.getgid()}`);
   try {
     process.setgid(501);
-    console.log(`New gid: ${process.getgid()}`);
+    console.log(`新的 gid: ${process.getgid()}`);
   } catch (err) {
-    console.error(`Failed to set gid: ${err}`);
+    console.error(`设置 gid 失败: ${err}`);
   }
 }
 ```
@@ -3460,12 +3466,12 @@ added: v0.1.28
 import process from 'node:process';
 
 if (process.getuid && process.setuid) {
-  console.log(`Current uid: ${process.getuid()}`);
+  console.log(`当前 uid: ${process.getuid()}`);
   try {
     process.setuid(501);
-    console.log(`New uid: ${process.getuid()}`);
+    console.log(`新的 uid: ${process.getuid()}`);
   } catch (err) {
-    console.error(`Failed to set uid: ${err}`);
+    console.error(`设置 uid 失败: ${err}`);
   }
 }
 ```
@@ -3775,11 +3781,13 @@ console.log(
 added:
   - v23.6.0
   - v22.14.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/66213
+    description: This API is no longer experimental.
 -->
 
-> 稳定性：1 - 实验性
-
-* `maybeRefable` {any} 一个可以被“取消引用”（unref）的对象。
+* `maybeRefable` {any} 一个可能需要“取消引用”的对象。
 
 如果一个对象实现了 Node.js“可引用协议”（Refable Protocol），则它是“可取消引用的”（unrefable）。
 具体来说，这意味着该对象实现了 `Symbol.for('nodejs.ref')`
@@ -3902,46 +3910,21 @@ console.log(versions);
 当没有更多待处理的异步操作时，Node.js 通常会以 `0` 状态码退出。以下状态码用于其他
 情况：
 
-* `1` **未捕获的致命异常**：发生了未捕获的异常，
-  并且它未被域或 [`'uncaughtException'`][] 事件
-  处理程序处理。
-* `2`: 未使用（由 Bash 保留用于内置命令误用）
-* `3` **内部 JavaScript 解析错误**：Node.js 引导过程中的内部 JavaScript 源代码
-  导致了解析错误。这种情况极为罕见，通常只发生在
-  Node.js 本身的开发过程中。
-* `4` **内部 JavaScript 求值失败**：Node.js 引导过程中的内部 JavaScript
-  源代码在求值时未能返回函数值。这种情况极为罕见，通常
-  只发生在 Node.js 本身的开发过程中。
-* `5` **致命错误**：V8 中发生了致命的不可恢复错误。
-  通常会在 stderr 打印一条消息，前缀为 `FATAL
-  ERROR`。
-* `6` **非函数内部异常处理程序**：发生了
-  未捕获的异常，但内部致命异常处理程序
-  函数以某种方式被设置为非函数，无法被调用。
-* `7` **内部异常处理程序运行时失败**：发生了
-  未捕获的异常，并且内部致命异常处理程序
-  函数本身在尝试处理它时抛出了错误。这
-  可能发生，例如，如果 [`'uncaughtException'`][] 或
-  `domain.on('error')` 处理程序抛出了错误。
-* `8`: 未使用。在早期版本的 Node.js 中，退出码 8 有时
-  表示未捕获的异常。
-* `9` **无效参数**：指定了未知选项，
-  或者提供了需要值的选项但没有提供值。
-* `10` **内部 JavaScript 运行时失败**：Node.js 引导过程中的内部 JavaScript
-  源代码在调用引导函数时抛出了错误。这种情况极为罕见，
-  通常只发生在 Node.js 本身的开发过程中。
-* `12` **无效调试参数**：设置了 `--inspect` 和/或 `--inspect-brk`
-  选项，但选择的端口号无效或不可用。
-* `13` **未决的顶层 Await**：在顶层代码的函数外部使用了 `await`，但传入的 `Promise` 从未决出。
-* `14` **快照失败**：启动 Node.js 以构建 V8 启动
-  快照，但由于未满足应用程序状态的某些要求而失败。
-* `>128` **信号退出**：如果 Node.js 接收到致命信号，例如
-  `SIGKILL` 或 `SIGHUP`，则其退出码将为 `128` 加上
-  信号代码的值。这是标准的 POSIX 做法，因为
-  退出码被定义为 7 位整数，信号退出设置
-  高位，然后包含信号代码的值。
-  例如，信号 `SIGABRT` 的值为 `6`，所以预期的退出
-  码将是 `128` + `6`，即 `134`。
+* `1` **未捕获的致命异常**：发生了未捕获的异常，且该异常未由 domain 或 [`'uncaughtException'`][] 事件处理程序处理。
+* `2`：未使用（Bash 保留供内置命令误用时使用）
+* `3` **内部 JavaScript 解析错误**：Node.js 引导进程中的内部 JavaScript 源代码导致了解析错误。这种情况极其罕见，通常只会在开发 Node.js 本身时发生。
+* `4` **内部 JavaScript 求值失败**：Node.js 引导进程中的内部 JavaScript 源代码在求值时未能返回函数值。这种情况极其罕见，通常只会在开发 Node.js 本身时发生。
+* `5` **致命错误**：V8 中发生了致命且无法恢复的错误。通常会向 stderr 输出一条以 `FATAL ERROR` 为前缀的消息。
+* `6` **非函数型内部异常处理程序**：发生了未捕获的异常，但内部致命异常处理程序函数因某种原因被设置为非函数，因此无法调用。
+* `7` **内部异常处理程序运行时失败**：发生了未捕获的异常，并且内部致命异常处理程序函数在尝试处理异常时自身抛出了错误。例如，如果 [`'uncaughtException'`][] 或 `domain.on('error')` 处理程序抛出错误，就可能发生这种情况。
+* `8`：未使用。在 Node.js 的早期版本中，退出码 8 有时表示发生了未捕获的异常。
+* `9` **无效参数**：指定了未知选项，或者提供了需要值的选项但未提供值。
+* `10` **内部 JavaScript 运行时失败**：Node.js 引导进程中的内部 JavaScript 源代码在调用引导函数时抛出了错误。这种情况极其罕见，通常只会在开发 Node.js 本身时发生。
+* `12` **无效调试参数**：设置了 `--inspect` 和／或 `--inspect-brk` 选项，但所选端口号无效或不可用。
+* `13` **未解决的顶层 Await**：在顶层代码的函数外使用了 `await`，但传入的 `Promise` 始终未得到解决。
+* `14` **快照失败**：启动 Node.js 以构建 V8 启动快照，但由于应用程序状态不满足某些要求而失败。
+* `124` **进程超时**：由 [`--process-timeout`][] 设置的时长已过，但进程仍在运行。
+* `>128` **信号退出**：如果 Node.js 收到 `SIGKILL` 或 `SIGHUP` 等致命信号，其退出码将为 `128` 加上信号代码的值。这是标准的 POSIX 做法，因为退出码定义为 7 位整数，而信号退出会设置最高位，并包含信号代码的值。例如，信号 `SIGABRT` 的值为 `6`，因此预期退出码为 `128` + `6`，即 `134`。
 
 [`child_process` 的高级序列化]: child_process.md#advanced-serialization
 [Android 构建]: https://github.com/nodejs/node/blob/HEAD/BUILDING.md#android
@@ -3963,6 +3946,7 @@ console.log(versions);
 [`--no-deprecation`]: cli.md#--no-deprecation
 [`--permission-audit`]: cli.md#--permission-audit
 [`--permission`]: cli.md#--permission
+[`--process-timeout`]: cli.md#--process-timeoutduration
 [`--unhandled-rejections`]: cli.md#--unhandled-rejectionsmode
 [`Buffer`]: buffer.md
 [`ChildProcess.disconnect()`]: child_process.md#subprocessdisconnect

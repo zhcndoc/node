@@ -93,7 +93,9 @@ added:
 ### `blockList.addAddresses(addresses[, type])`
 
 <!-- YAML
-added: REPLACEME
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `addresses` {string\[]|net.SocketAddress\[]} IPv4 或 IPv6 地址数组。
@@ -107,7 +109,9 @@ added: REPLACEME
 ### `blockList.addCIDR(cidr)`
 
 <!-- YAML
-added: REPLACEME
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `cidr` {string} 使用 CIDR 表示法表示的 IPv4 或 IPv6 子网（例如
@@ -120,7 +124,9 @@ added: REPLACEME
 ### `blockList.addCIDRs(cidrs)`
 
 <!-- YAML
-added: REPLACEME
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `cidrs` {string\[]} 使用 CIDR 表示法表示的 IPv4 或 IPv6 子网数组。
@@ -192,7 +198,9 @@ console.log(blockList.check('::ffff:123.123.123.123', 'ipv6')); // 输出：true
 ### `blockList.clear()`
 
 <!--
-added: REPLACEME
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 清除 `BlockList` 中的所有规则。
@@ -230,12 +238,14 @@ added:
 -->
 
 * `value` {any} 任意 JS 值
-* 如果 `value` 是 `net.BlockList`，则返回 `true`。
+* 返回 {boolean} 如果 `value` 是 `net.BlockList`，则为 `true`。
 
 ### `BlockList.PRIVATE_RANGES`
 
 <!-- YAML
-added: REPLACEME
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * 类型：{string\[]}
@@ -266,7 +276,9 @@ console.log(blockList.check('8.8.8.8'));       // 输出：false
 ### `blockList.removeAddress(address[, type])`
 
 <!-- YAML
-added: REPLACEME
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `address` {string|net.SocketAddress} 一个 IPv4 或 IPv6 地址。
@@ -278,7 +290,9 @@ added: REPLACEME
 ### `blockList.removeCIDR(cidr)`
 
 <!-- YAML
-added: REPLACEME
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `cidr` {string} 使用 CIDR 表示法表示的 IPv4 或 IPv6 子网（例如
@@ -291,7 +305,9 @@ added: REPLACEME
 ### `blockList.removeRange(start, end[, type])`
 
 <!-- YAML
-added: REPLACEME
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `start` {string|net.SocketAddress} 范围中的起始 IPv4 或 IPv6 地址。
@@ -305,7 +321,9 @@ added: REPLACEME
 ### `blockList.removeSubnet(net, prefix[, type])`
 
 <!-- YAML
-added: REPLACEME
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `net` {string|net.SocketAddress} 网络 IPv4 或 IPv6 地址。
@@ -333,7 +351,9 @@ added:
 ### `blockList.size`
 
 <!-- YAML
-added: REPLACEME
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * 类型：{number}
@@ -740,9 +760,10 @@ changes:
 [`server.listen(path[, backlog][, callback])`][`server.listen(path)`] 相同。
 如果都未指定，则会抛出错误。
 
-如果 `exclusive` 为 `false`（默认值），则集群工作进程将使用相同的
-底层句柄，从而允许共享连接处理职责。当 `exclusive` 为 `true` 时，句柄不会共享，且尝试共享端口
-会导致错误。下面展示了一个在独占端口上监听的示例。
+> 将 `signal` 选项用作资源清理机制来销毁长期运行的服务器已弃用。`signal` 选项仍适用于取消操作、外部传播的中止以及超时。参见
+> [DEP0209](deprecations.md#dep0209-using-abortsignal-to-dispose-of-resources)。
+
+如果 `exclusive` 为 `false`（默认值），则集群工作进程将使用相同的底层句柄，从而可以共享连接处理工作。当 `exclusive` 为 `true` 时，句柄不会共享，并且尝试共享端口会导致错误。下面展示了一个监听独占端口的示例。
 
 ```js
 server.listen({
@@ -911,6 +932,8 @@ server.listen(8000);
 ```
 
 监听中的 [`net.Server`][] 也可以用相同的方式传递，这会将监听 socket 本身（以及其待处理的 accept 队列）移动到接收线程。
+
+一个尚未接管的 TCP [`BoundSocket`][] 也可以传递，这会移动已绑定（但尚未监听或连接）的套接字。这使得可以在一个线程上同步保留端口，并在另一个线程上由服务器或出站连接接管。管道绑定不可传递。传递后，源 `BoundSocket` 的行为将如同已被接管：`address()`、`fd()` 和 `close()` 会抛出 [`ERR_SOCKET_HANDLE_ADOPTED`][]。
 
 ### `new net.Socket([options])`
 
@@ -1293,14 +1316,14 @@ added: v0.1.90
 * `error` {Object}
 * 返回：{net.Socket}
 
-确保此 Socket 上不再发生 I/O 活动。  
+确保当前连接上不再发生 I/O 活动。
 销毁流并关闭连接。
 
 详见 [`writable.destroy()`][] 以获取更多详情。
 
 ### `socket.destroyed`
 
-* 类型：{boolean} 指示连接是否已销毁。一旦连接被销毁，不能再使用它传输任何数据。
+* 类型：{boolean} 指示连接是否已销毁。已销毁的连接无法再传输数据。
 
 详见 [`writable.destroyed`][] 以获取更多详情。
 
@@ -1477,7 +1500,7 @@ added: v0.1.90
 
 设置 `interval`（以毫秒为单位）可设置 keepalive 探测开始后连续探测之间的延迟（`TCP_KEEPINTVL`）。将 `count` 设置为在连接被断开前发送但未得到确认的探测次数（`TCP_KEEPCNT`）。这两个参数仅在启用 keep-alive 时生效。省略 `interval` 或 `count` 时，分别使用 `1000` 毫秒和 `10` 的默认值。与 `initialDelay` 一样，非正的 `interval` 或 `count` 会使相应的系统默认值保持不变。
 
-`initialDelay` 和 `interval` 以毫秒为单位指定，但底层 socket 选项会按整秒配置；在应用之前，这些值会除以 `1000` 并向下取整。
+`initialDelay` 和 `interval` 以毫秒为单位指定，但底层套接字选项以整秒为单位配置；应用前会将这些值除以 `1000` 并向下取整。例如，将 `initialDelay` 设置为 `400` 将使 `TCP_KEEPIDLE` 为 `0` 秒（因为 `400 / 1000` 向下取整为 `0`）。
 
 启用 keep-alive 功能将设置以下 socket 选项：
 
@@ -1689,7 +1712,9 @@ added:
 
 当绑定到源 `path` 的管道 `BoundSocket` 作为客户端被接管后，连接成功时，该路径会作为套接字的 `localAddress` 报告。
 
-当被接管的 `BoundSocket` 连接到数字 IP 字面量时，会同步发出 `connect(2)`，因此 [`socket.connect()`][] 返回后即可解析 [`socket.localAddress`][]。连接失败仍会通过延迟触发的 `'error'` 事件报告。
+未被接管的 TCP `BoundSocket` 可以通过将其列入 [`worker_threads`][] `postMessage()` 调用的 `transferList`，移动到另一个线程中，参见[将 TCP 句柄转移到其他线程][]。同样，也可以将它作为 [`subprocess.send()`][] 的 `sendHandle` 参数发送到子进程中。在这两种情况下，源句柄都会处于已接管状态。管道绑定无法通过这两种方式移动。
+
+已接管的 `BoundSocket` 连接到数字 IP 字面量时，会同步调用 `connect(2)`，因此 [`socket.connect()`][] 返回后即可解析 [`socket.localAddress`][]。连接失败仍会通过延迟触发的 `'error'` 事件报告。
 
 ```mjs
 import net from 'node:net';
@@ -1709,7 +1734,9 @@ added:
  - v26.4.0
  - v24.19.0
 changes:
-  - version: v26.7.0
+  - version:
+     - v26.7.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/64399
     description: 支持 `path` 选项。
 -->
@@ -1728,7 +1755,9 @@ added:
  - v26.4.0
  - v24.19.0
 changes:
-  - version: v26.7.0
+  - version:
+     - v26.7.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/64399
     description: 对管道绑定返回已绑定的路径。
 -->
@@ -1740,7 +1769,9 @@ changes:
 ### `boundSocket.isPipe`
 
 <!-- YAML
-added: v26.7.0
+added:
+ - v26.7.0
+ - v24.20.0
 -->
 
 * {boolean}
@@ -2166,14 +2197,16 @@ added: v0.3.0
 * `input` {string}
 * 返回：{integer}
 
-如果 `input` 是 IPv6 地址，则返回 `6`。如果 `input` 是 [点分十进制表示法][] 且没有前导零的 IPv4 地址，则返回 `4`。否则，返回 `0`。
+如果 `input` 是 IPv6 地址（包括 IPv4 映射的 IPv6 地址），则返回 `6`。
+如果 `input` 是不带前导零的 [点分十进制表示法][] IPv4 地址，则返回 `4`。否则，返回 `0`。
 
 ```js
-net.isIP('::1'); // 返回 6
-net.isIP('127.0.0.1'); // 返回 4
-net.isIP('127.000.000.001'); // 返回 0
-net.isIP('127.0.0.1/24'); // 返回 0
-net.isIP('fhqwhgads'); // 返回 0
+net.isIP('::1'); // returns 6
+net.isIP('::ffff:127.0.0.1'); // returns 6
+net.isIP('127.0.0.1'); // returns 4
+net.isIP('127.000.000.001'); // returns 0
+net.isIP('127.0.0.1/24'); // returns 0
+net.isIP('fhqwhgads'); // returns 0
 ```
 
 ## `net.isIPv4(input)`
@@ -2203,11 +2236,13 @@ added: v0.3.0
 * `input` {string}
 * 返回：{boolean}
 
-如果 `input` 是 IPv6 地址，则返回 `true`。否则，返回 `false`。
+如果 `input` 是 IPv6 地址（包括 IPv4 映射的 IPv6 地址），则返回 `true`。
+否则，返回 `false`。
 
 ```js
-net.isIPv6('::1'); // 返回 true
-net.isIPv6('fhqwhgads'); // 返回 false
+net.isIPv6('::1'); // returns true
+net.isIPv6('::ffff:127.0.0.1'); // returns true
+net.isIPv6('fhqwhgads'); // returns false
 ```
 
 ## `net/promises` API
@@ -2334,6 +2369,7 @@ console.log('listening on', server.address().port);
 [`socket.setTimeout()`]: #socketsettimeouttimeout-callback
 [`socket.setTimeout(timeout)`]: #socketsettimeouttimeout-callback
 [`stream.getDefaultHighWaterMark()`]: stream.md#streamgetdefaulthighwatermarkobjectmode
+[`subprocess.send()`]: child_process.md#subprocesssendmessage-sendhandle-options-callback
 [`worker_threads`]: worker_threads.md
 [`writable.destroy()`]: stream.md#writabledestroyerror
 [`writable.destroyed`]: stream.md#writabledestroyed

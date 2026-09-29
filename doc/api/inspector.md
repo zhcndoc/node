@@ -107,7 +107,7 @@ added: v8.0.0
 added: v12.11.0
 -->
 
-将会话连接到主线程检查器后端。如果未在工作线程上调用此 API，将抛出异常。
+将会话连接到主线程检查器后端。如果未在 Worker 线程上调用此 API，或者使用了 [`--process-timeout`][]，则会抛出异常，因为该会话可能会暂停主线程。
 
 #### `session.disconnect()`
 
@@ -267,7 +267,7 @@ added: v8.0.0
 added: v12.11.0
 -->
 
-将会话连接到主线程检查器后端。如果未在工作线程上调用此 API，将抛出异常。
+将会话连接到主线程检查器后端。如果未在 Worker 线程上调用此 API，或者使用了 [`--process-timeout`][]，则会抛出异常，因为该会话可能会暂停主线程。
 
 #### `session.disconnect()`
 
@@ -405,6 +405,8 @@ changes:
 
 请参阅关于 `host` 参数用法的 [安全警告][]。
 
+如果使用了 [`--process-timeout`][]，则会抛出 [`ERR_INSPECTOR_NOT_AVAILABLE`][] 错误。
+
 ### `inspector.url()`
 
 * 返回：{string|undefined}
@@ -470,7 +472,7 @@ added:
 
 此功能仅在启用 `--experimental-network-inspection` 标志时可用。
 
-将 `Network.dataReceived` 事件广播到连接的前端，如果尚未针对给定请求调用 `Network.streamResourceContent` 命令，则缓冲数据。
+将 `Network.dataReceived` 事件广播到连接的前端，如果尚未针对给定请求调用 `Network.streamResourceContent` 命令，则会缓冲数据。
 
 同时启用 `Network.getResponseBody` 命令以检索响应数据。
 
@@ -597,10 +599,10 @@ added:
 
 此功能仅在启用 `--experimental-inspector-network-resource` 标志时可用。
 
-inspector.NetworkResources.put 方法用于为通过 Chrome DevTools 协议 (CDP) 发出的 loadNetworkResource 请求提供响应。
+`inspector.NetworkResources.put` 方法用于为通过 Chrome DevTools 协议（CDP）发出的 loadNetworkResource 请求提供响应。
 这通常在指定源映射的 URL 时触发，并且 DevTools 前端（如 Chrome）请求资源以检索源映射。
 
-此方法允许开发者预定义资源内容以响应此类 CDP 请求。
+此方法允许开发者预定义资源内容，以响应此类 CDP 请求。
 
 ```js
 const inspector = require('node:inspector');
@@ -735,7 +737,9 @@ Chrome DevTools 协议的 [`Debugger` 域][] 允许一个
 [调试器]: debugger.md
 [堆性能分析器]: https://chromedevtools.github.io/devtools-protocol/v8/HeapProfiler
 [`'Debugger.paused'`]: https://chromedevtools.github.io/devtools-protocol/v8/Debugger#event-paused
+[`--process-timeout`]: cli.md#--process-timeoutduration
 [`Debugger` 域]: https://chromedevtools.github.io/devtools-protocol/v8/Debugger
+[`ERR_INSPECTOR_NOT_AVAILABLE`]: errors.md#err_inspector_not_available
 [`inspector.close()`]: #inspectorclose
 [`session.connect()`]: #sessionconnect
 [`session.connectToMainThread()`]: #sessionconnecttomainthread

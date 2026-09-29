@@ -93,7 +93,7 @@ if (status != napi_ok) {
 
 ### ABI 稳定性中的枚举值
 
-Node-API 中定义的所有枚举数据类型都应视为固定大小的 `int32_t` 值。位标志枚举类型应有明确文档说明，它们作为位值与位运算符（如位或 (`|`)）配合使用。除非另有说明，否则枚举类型应被视为可扩展的。
+Node-API 中定义的所有枚举数据类型都应视为固定大小的 `int32_t` 值。位标志枚举类型应有明确文档说明，它们作为位值与位运算符（如位或（`|`））配合使用。除非另有说明，否则枚举类型应被视为可扩展的。
 
 新的枚举值将添加到枚举定义的末尾。枚举值不会被移除或重命名。
 
@@ -129,7 +129,8 @@ npm install --global windows-build-tools
 
 #### node-gyp
 
-[node-gyp][] 是一个基于 Google 的 [GYP][] 工具的 [gyp-next][] 分支的构建系统，并与 npm 捆绑在一起。GYP，因此 node-gyp，需要安装 Python。
+[node-gyp][] 是一个基于 [gyp-next][] 工具的构建系统，并随 npm 一同捆绑。
+node-gyp 要求安装 Python。
 
 历史上，node-gyp 一直是构建原生插件的首选工具。它具有广泛的采用率和文档。但是，一些开发者在 node-gyp 中遇到了限制。
 
@@ -2083,6 +2084,7 @@ JavaScript `ArrayBuffer` 在 ECMAScript 语言规范的
 added:
  - v26.1.0
  - v24.16.0
+ - v22.23.3
 -->
 
 ```c
@@ -2095,16 +2097,16 @@ node_api_create_external_sharedarraybuffer(napi_env env,
                                            napi_value* result)
 ```
 
-* `[in] env`: 在该 API 调用所处的环境。
-* `[in] external_data`: 指向 `SharedArrayBuffer` 的
+* `[in] env`：调用 API 所处的环境。
+* `[in] external_data`：指向 `SharedArrayBuffer` 的
   底层字节缓冲区的指针。
-* `[in] byte_length`: 底层缓冲区的字节长度。
-* `[in] finalize_cb`: 当 `SharedArrayBuffer` 正在被
+* `[in] byte_length`：底层缓冲区的字节长度。
+* `[in] finalize_cb`：当 `SharedArrayBuffer` 正在被
   收集时调用的可选回调。该回调在任意线程上调用。
   因为 `SharedArrayBuffer` 可能比其创建时的环境存活更久，
   所以该回调不会接收 `env` 的引用。
-* `[in] finalize_hint`: 在收集期间传递给 finalize 回调的可选提示。
-* `[out] result`: 表示 JavaScript `SharedArrayBuffer` 的 `napi_value`。
+* `[in] finalize_hint`：在收集期间传递给 finalize 回调的可选提示。
+* `[out] result`：表示 JavaScript `SharedArrayBuffer` 的 `napi_value`。
 
 如果 API 成功则返回 `napi_ok`。
 
@@ -2281,8 +2283,9 @@ added: v8.0.0
 napiVersion: 1
 changes:
   - version:
-    - v26.2.0
-    - v24.18.0
+     - v26.2.0
+     - v24.18.0
+     - v22.23.3
     pr-url: https://github.com/nodejs/node/pull/62710
     description: 已添加对 `SharedArrayBuffer` 的支持。
 -->
@@ -2550,8 +2553,8 @@ napi_status napi_create_bigint_words(napi_env env,
 此 API 将无符号 64 位字数组转换为单个 `BigInt`
 值。
 
-生成的 `BigInt` 计算为：(–1)<sup>`sign_bit`</sup> (`words[0]`
-× (2<sup>64</sup>)<sup>0</sup> + `words[1]` × (2<sup>64</sup>)<sup>1</sup> + …)
+生成的 `BigInt` 计算为：（–1）<sup>`sign_bit`</sup> （`words[0]`
+× (2<sup>64</sup>)<sup>0</sup> + `words[1]` × (2<sup>64</sup>)<sup>1</sup> + …）
 
 #### `napi_create_string_latin1`
 
@@ -2604,17 +2607,17 @@ node_api_create_external_string_latin1(napi_env env,
 * `[in] str`：表示 ISO-8859-1 编码字符串的字符缓冲区。
 * `[in] length`：字符串的字节长度，如果它是空终止的则为 `NAPI_AUTO_LENGTH`。
 * `[in] finalize_callback`：当字符串被
-  收集时调用的函数。该函数将使用以下参数调用：
+  回收时调用的函数。该函数将使用以下参数调用：
   * `[in] env`：addon 运行的环境。如果字符串作为 worker 或主 Node.js 实例
-    终止的一部分被收集，此值
+    终止的一部分被回收，此值
     可能为 null。
   * `[in] data`：这是作为 `void*` 指针的值 `str`。
   * `[in] finalize_hint`：这是传递给
     API 的值 `finalize_hint`。
     [`napi_finalize`][] 提供更多详细信息。
     此参数是可选的。传递 null 值意味着当相应的 JavaScript 字符串被
-    收集时不需要通知 addon。
-* `[in] finalize_hint`：在收集期间传递给 finalize 回调的可选提示。
+    回收时不需要通知 addon。
+* `[in] finalize_hint`：在回收期间传递给 finalize 回调的可选提示。
 * `[out] result`：表示 JavaScript `string` 的 `napi_value`。
 * `[out] copied`：字符串是否被复制。如果是，终结器将
   已被调用以销毁 `str`。
@@ -2681,17 +2684,17 @@ node_api_create_external_string_utf16(napi_env env,
 * `[in] length`：字符串的双字节代码单元长度，如果它是空终止的则为
   `NAPI_AUTO_LENGTH`。
 * `[in] finalize_callback`：当字符串被
-  收集时调用的函数。该函数将使用以下参数调用：
+  回收时调用的函数。该函数将使用以下参数调用：
   * `[in] env`：addon 运行的环境。如果字符串作为 worker 或主 Node.js 实例
-    终止的一部分被收集，此值
+    终止的一部分被回收，此值
     可能为 null。
   * `[in] data`：这是作为 `void*` 指针的值 `str`。
   * `[in] finalize_hint`：这是传递给
     API 的值 `finalize_hint`。
     [`napi_finalize`][] 提供更多详细信息。
     此参数是可选的。传递 null 值意味着当相应的 JavaScript 字符串被
-    收集时不需要通知 addon。
-* `[in] finalize_hint`：在收集期间传递给 finalize 回调的可选提示。
+    回收时不需要通知 addon。
+* `[in] finalize_hint`：在回收期间传递给 finalize 回调的可选提示。
 * `[out] result`：表示 JavaScript `string` 的 `napi_value`。
 * `[out] copied`：字符串是否被复制。如果是，终结器将
   已被调用以销毁 `str`。
@@ -2742,7 +2745,7 @@ JavaScript `string` 类型在 ECMAScript 语言规范的
 如果新的 JavaScript 字符串打算用作属性键，那么对于
 某些 JavaScript 引擎，使用本节中的函数会更高效。否则，使用 `napi_create_string_utf8` 或
 `node_api_create_external_string_utf8` 系列函数，因为使用属性键
-创建方法创建/存储字符串可能会有
+创建方法创建／存储字符串可能会有
 额外开销。
 
 #### `node_api_create_property_key_latin1`
@@ -3339,9 +3342,9 @@ napiVersion: 1
 napi_status napi_get_boolean(napi_env env, bool value, napi_value* result)
 ```
 
-* `[in] env`: 调用 API 所处的环境。
-* `[in] value`: 要检索的布尔值。
-* `[out] result`: 代表要检索的 JavaScript `Boolean` 单例对象的 `napi_value`。
+* `[in] env`：调用 API 所处的环境。
+* `[in] value`：要检索的布尔值。
+* `[out] result`：代表要检索的 JavaScript `Boolean` 单例对象的 `napi_value`。
 
 如果 API 成功则返回 `napi_ok`。
 
@@ -3403,13 +3406,11 @@ napi_status napi_get_undefined(napi_env env, napi_value* result)
 
 ## 使用 JavaScript 值和抽象操作
 
-Node-API 公开了一组 API，用于对 JavaScript
-值执行一些抽象操作。
+Node-API 公开了一组 API，用于对 JavaScript 值执行一些抽象操作。
 
 这些 API 支持执行以下操作之一：
 
-1. 将 JavaScript 值强制转换为特定的 JavaScript 类型（例如 `number` 或
-   `string`）。
+1. 将 JavaScript 值强制转换为特定的 JavaScript 类型（例如 `number` 或 `string`）。
 2. 检查 JavaScript 值的类型。
 3. 检查两个 JavaScript 值是否相等。
 
@@ -3523,13 +3524,11 @@ napi_status napi_typeof(napi_env env, napi_value value, napi_valuetype* result)
 * 如果 `value` 的类型不是已知的 ECMAScript 类型且
   `value` 不是 External 值，则返回 `napi_invalid_arg`。
 
-此 API 表示的行为类似于在对象上调用 `typeof` 运算符，
-如 ECMAScript 语言规范
+此 API 表示的行为类似于在对象上调用 `typeof` 运算符，如 ECMAScript 语言规范
 [typeof 运算符章节][] 中所定义。但是，存在一些差异：
 
 1. 它支持检测 External 值。
-2. 它将 `null` 检测为单独的类型，而 ECMAScript `typeof` 会将其检测
-   为 `object`。
+2. 它将 `null` 检测为单独的类型，而 ECMAScript `typeof` 会将其检测为 `object`。
 
 如果 `value` 具有无效的类型，则返回错误。
 
@@ -3550,13 +3549,11 @@ napi_status napi_instanceof(napi_env env,
 * `[in] env`：调用此 API 所处的环境。
 * `[in] object`：要检查的 JavaScript 值。
 * `[in] constructor`：要对照检查的构造函数对象的 JavaScript 函数对象。
-* `[out] result`：布尔值，如果 `object instanceof constructor`
-  为 true，则设置为 true。
+* `[out] result`：布尔值，如果 `object instanceof constructor` 为 true，则设置为 true。
 
 如果 API 成功，则返回 `napi_ok`。
 
-此 API 表示在对象上调用 `instanceof` 运算符，如
-ECMAScript 语言规范 [instanceof 运算符章节][] 中所定义。
+此 API 表示在对象上调用 `instanceof` 运算符，如 ECMAScript 语言规范 [instanceof 运算符章节][] 中所定义。
 
 ### `napi_is_array`
 
@@ -3575,8 +3572,7 @@ napi_status napi_is_array(napi_env env, napi_value value, bool* result)
 
 如果 API 成功，则返回 `napi_ok`。
 
-此 API 表示在对象上调用 `IsArray` 操作，
-如 ECMAScript 语言规范 [IsArray 章节][] 中所定义。
+此 API 表示在对象上调用 `IsArray` 操作，如 ECMAScript 语言规范 [IsArray 章节][] 中所定义。
 
 ### `napi_is_arraybuffer`
 
@@ -3610,8 +3606,7 @@ napi_status napi_is_buffer(napi_env env, napi_value value, bool* result)
 
 * `[in] env`：调用此 API 所处的环境。
 * `[in] value`：要检查的 JavaScript 值。
-* `[out] result`：给定 `napi_value` 是否表示 `node::Buffer` 或
-  `Uint8Array` 对象。
+* `[out] result`：给定 `napi_value` 是否表示 `node::Buffer` 或 `Uint8Array` 对象。
 
 如果 API 成功，则返回 `napi_ok`。
 
@@ -3634,8 +3629,7 @@ napi_status napi_is_date(napi_env env, napi_value value, bool* result)
 
 * `[in] env`：调用此 API 所处的环境。
 * `[in] value`：要检查的 JavaScript 值。
-* `[out] result`：给定 `napi_value` 是否表示 JavaScript `Date`
-  对象。
+* `[out] result`：给定 `napi_value` 是否表示 JavaScript `Date` 对象。
 
 如果 API 成功，则返回 `napi_ok`。
 
@@ -4380,8 +4374,7 @@ napi_status napi_delete_element(napi_env env,
 * `[in] env`：调用 Node-API 的环境。
 * `[in] object`：要查询的对象。
 * `[in] index`：要删除的属性索引。
-* `[out] result`：元素删除是否成功。`result` 可以
-  通过传递 `NULL` 选择性地忽略。
+* `[out] result`：元素删除是否成功。`result` 可以通过传递 `NULL` 选择性地忽略。
 
 如果 API 成功则返回 `napi_ok`。
 
@@ -4450,9 +4443,7 @@ napi_status napi_object_seal(napi_env env,
 
 如果 API 成功则返回 `napi_ok`。
 
-此方法密封给定对象。这防止将新属性添加
-到它，并将所有现有属性标记为不可配置。
-这在 ECMA-262 规范的 [第 19.1.2.20 节](https://tc39.es/ecma262/#sec-object.seal) 中描述。
+此方法密封给定对象。这防止将新属性添加到它，并将所有现有属性标记为不可配置。这在 ECMA-262 规范的 [第 19.1.2.20 节](https://tc39.es/ecma262/#sec-object.seal) 中描述。
 
 #### `node_api_set_prototype`
 
@@ -4480,19 +4471,13 @@ napi_status node_api_set_prototype(napi_env env,
 
 ## 使用 JavaScript 函数
 
-Node-API 提供了一组 API，允许 JavaScript 代码
-回调到原生代码。支持回调到
-原生代码的 Node-API 接受由
-`napi_callback` 类型表示的回调函数。当 JavaScript 虚拟机回调到
-原生代码时，提供的 `napi_callback` 函数将被调用。本节中记录的 API 允许回调函数执行以下操作：
+Node-API 提供了一组 API，允许 JavaScript 代码回调到原生代码。支持回调到原生代码的 Node-API 接受由 `napi_callback` 类型表示的回调函数。当 JavaScript 虚拟机回调到原生代码时，提供的 `napi_callback` 函数将被调用。本节中记录的 API 允许回调函数执行以下操作：
 
 * 获取关于回调被调用时的上下文信息。
 * 获取传递给回调的参数。
 * 从回调返回一个 `napi_value`。
 
-此外，Node-API 提供了一组函数，允许从原生代码调用
-JavaScript 函数。既可以像常规 JavaScript 函数调用那样调用函数，也可以作为构造函数
-调用。
+此外，Node-API 提供了一组函数，允许从原生代码调用 JavaScript 函数。既可以像常规 JavaScript 函数调用那样调用函数，也可以作为构造函数调用。
 
 任何通过 `napi_property_descriptor` 项的 `data` 字段传递到此 API 的非 `NULL` 数据，都可以与 `object` 关联，并在 `object` 被垃圾回收时通过将 `object` 和数据传递给 [`napi_add_finalizer`][] 来释放。
 
@@ -4590,8 +4575,7 @@ napi_status napi_create_function(napi_env env,
 
 在此调用之后，新创建的函数不会自动从脚本中可见。相反，必须在任何对 JavaScript 可见的对象上显式设置属性，以便脚本可以访问该函数。
 
-为了将函数作为插件模块导出的一部分公开，请将新创建的函数设置在 exports
-对象上。示例模块可能如下所示：
+为了将函数作为插件模块导出的一部分公开，请将新创建的函数设置在 exports 对象上。示例模块可能如下所示：
 
 ```c
 napi_value SayHello(napi_env env, napi_callback_info info) {
@@ -5581,8 +5565,8 @@ NAPI_EXTERN napi_status napi_run_script(napi_env env,
 
 此函数会执行一段 JavaScript 代码字符串并返回其结果，但有以下限制：
 
-* 与 `eval` 不同，此函数不允许脚本访问当前词法作用域，因此也不允许访问 [模块作用域][]. 这意味着像 `require` 这样的伪全局变量将不可用。
-* 脚本可以访问 [全局作用域][]. 脚本中的函数和 `var` 声明会被添加到 [`global`][] 对象上。使用 `let` 和 `const` 的变量声明在全局可见，但不会被添加到 [`global`][] 对象上。
+* 与 `eval` 不同，此函数不允许脚本访问当前词法作用域，因此也不允许访问 [模块作用域][]。这意味着像 `require` 这样的伪全局变量将不可用。
+* 脚本可以访问 [全局作用域][]。脚本中的函数和 `var` 声明会被添加到 [`global`][] 对象上。使用 `let` 和 `const` 的变量声明在全局可见，但不会被添加到 [`global`][] 对象上。
 * 脚本中 `this` 的值是 [`global`][]。
 
 ## libuv 事件循环
@@ -5851,7 +5835,7 @@ node_api_get_module_file_name(node_api_basic_env env, const char** result);
 
 如果 addon 的加载过程在加载期间无法确定 addon 的文件名，则 `result` 可能为空字符串。
 
-[ABI 稳定性]: https://nodejs.org/en/docs/guides/abi-stability/
+[ABI Stability]: https://nodejs.org/learn/modules/abi-stability
 [AppVeyor]: https://www.appveyor.com
 [C++ 插件]: addons.md
 [CMake]: https://cmake.org
@@ -5859,8 +5843,7 @@ node_api_get_module_file_name(node_api_basic_env env, const char** result);
 [ECMAScript 语言规范]: https://tc39.es/ecma262/
 [错误处理]: #error-handling
 [GCC]: https://gcc.gnu.org
-[GYP]: https://gyp.gsrc.io
-[GitHub 发布]: https://help.github.com/en/github/administering-a-repository/about-releases
+[GitHub releases]: https://help.github.com/en/github/administering-a-repository/about-releases
 [LLVM]: https://llvm.org
 [Node.js 原生抽象]: https://github.com/nodejs/nan
 [Node-API 媒体]: https://github.com/nodejs/abi-stable-node/blob/HEAD/node-api-media.md

@@ -277,7 +277,7 @@ changes:
 * `pattern` {string} 用于检查路径的 glob 模式。
 * 返回：{boolean} `path` 是否匹配 `pattern`。
 
-`path.matchesGlob()` 方法确定 `path` 是否匹配 `pattern`。
+`path.matchesGlob()` 方法确定 `path` 是否与 `pattern` 匹配。有关 `pattern` 接受的语法，请参阅 [Glob 模式][]。
 
 例如：
 
@@ -514,8 +514,7 @@ added: v0.3.4
 
 `path.resolve()` 方法将一系列路径或路径段解析为绝对路径。
 
-给定的路径序列从右到左处理，每个后续的 `path`  prepended 直到构造出绝对路径。
-例如，给定路径段序列：`/foo`、`/bar`、`baz`，调用 `path.resolve('/foo', '/bar', 'baz')` 将返回 `/bar/baz`，因为 `'baz'` 不是绝对路径，但 `'/bar' + '/' + 'baz'` 是。
+给定的路径序列从右到左处理，每个后续的 `path` 会添加到前面，直到构造出绝对路径。例如，给定路径段序列：`/foo`、`/bar`、`baz`，调用 `path.resolve('/foo', '/bar', 'baz')` 将返回 `/bar/baz`，因为 `'baz'` 不是绝对路径，但 `'/bar' + '/' + 'baz'` 是。
 
 如果在处理完所有给定的 `path` 段后尚未生成绝对路径，则使用当前工作目录。
 
@@ -597,6 +596,7 @@ changes:
 
 该 API 可通过 `require('node:path').win32` 或 `require('node:path/win32')` 访问。
 
+[Glob patterns]: fs.md#glob-patterns
 [MSDN-Rel-Path]: https://docs.microsoft.com/en-us/windows/desktop/FileIO/naming-a-file#fully-qualified-vs-relative-paths
 [`TypeError`]: errors.md#class-typeerror
 [`path.parse()`]: #pathparsepath

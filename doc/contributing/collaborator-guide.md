@@ -5,36 +5,38 @@
 * [问题与拉取请求](#issues-and-pull-requests)
   * [欢迎首次贡献者](#welcoming-first-time-contributors)
   * [关闭问题与拉取请求](#closing-issues-and-pull-requests)
+  * [过时的问题与拉取请求](#stale-issues-and-pull-requests)
   * [作者就绪的拉取请求](#author-ready-pull-requests)
   * [处理自己的拉取请求](#handling-own-pull-requests)
-  * [安全问题的管理](#managing-security-issues)
+  * [仓库分类视图](#repository-triage-views)
+  * [安全问题](#managing-security-issues)
 * [接受修改](#accepting-modifications)
   * [代码审查](#code-reviews)
   * [寻求共识](#consensus-seeking)
   * [等待批准](#waiting-for-approvals)
   * [测试与 CI](#testing-and-ci)
     * [有用的 Jenkins CI 任务](#useful-jenkins-ci-jobs)
-    * [启动一个 Jenkins CI 任务](#starting-a-jenkins-ci-job)
-  * [内部 API 与公开 API](#internal-vs-public-api)
+    * [启动 Jenkins CI 任务](#starting-a-jenkins-ci-job)
+  * [内部 API 与公共 API](#internal-vs-public-api)
   * [破坏性变更](#breaking-changes)
     * [破坏性变更与弃用](#breaking-changes-and-deprecations)
     * [对内部元素的破坏性变更](#breaking-changes-to-internal-elements)
-    * [非预期的破坏性变更](#unintended-breaking-changes)
+    * [意外的破坏性变更](#unintended-breaking-changes)
       * [回滚提交](#reverting-commits)
   * [引入新模块](#introducing-new-modules)
-  * [对 Node-API 的新增](#additions-to-node-api)
+  * [对 Node-API 的新增内容](#additions-to-node-api)
   * [弃用](#deprecations)
-  * [牵涉 TSC](#involving-the-tsc)
+  * [邀请 TSC 参与](#involving-the-tsc)
 * [合并拉取请求](#landing-pull-requests)
-  * [使用 GitHub 的提交队列标签](#using-the-commit-queue-github-labels)
+  * [使用 commit queue GitHub 标签](#using-the-commit-queue-github-labels)
   * [使用 `git-node`](#using-git-node)
-  * [技术 HOWTO](#technical-howto)
-  * [故障排查](#troubleshooting)
-  * [我犯了错](#i-made-a-mistake)
+  * [技术操作指南](#technical-howto)
+  * [故障排除](#troubleshooting)
+  * [我犯了一个错误](#i-made-a-mistake)
   * [长期支持](#long-term-support)
-    * [LTS 是什么？](#what-is-lts)
-    * [LTS 分支如何管理？](#how-are-lts-branches-managed)
-    * [我能如何帮助？](#how-can-i-help)
+    * [什么是 LTS？](#what-is-lts)
+    * [如何管理 LTS 分支？](#how-are-lts-branches-managed)
+    * [我能如何提供帮助？](#how-can-i-help)
 * [在问题跟踪器中需要抄送谁](#who-to-cc-in-the-issue-tracker)
 
 本文件解释协作者如何管理 Node.js 项目。协作者应理解
@@ -59,16 +61,29 @@
 协作者可以关闭任何与 Node.js 项目未来无关的
 问题或拉取请求。如果不清楚这一点，请保留问题或拉取请求数天以便讨论。如果在不久的讨论后仍没有证据表明该问题或拉取请求与未来相关，则将其关闭。请记住：如有必要，问题与拉取请求始终可以重新打开。
 
+### 过时的问题与拉取请求
+
+[过时工作流](../../.github/workflows/stale.yml) 会对所有未关闭的问题
+和拉取请求运行。它会在 90 天无活动后添加 `stale` 标签，并在
+再过 30 天无活动后关闭项目。新的活动会自动移除 `stale` 标签。
+
+`never-stale` 标签可让问题和拉取请求免于此自动化流程。`confirmed-bug`
+标签也可让问题免于此流程。仅当项目需要永久豁免时才使用
+`never-stale`。否则，若项目仍然相关，请发布更新；若不再相关，则将其关闭。
+
 ### 作者就绪的拉取请求
 
 当满足以下条件时，一个拉取请求处于 _作者就绪_ 状态：
 
-* CI 正在运行或已完成。
-* 至少有一位协作者已批准。
-* 没有未处理的审查评论。
+* There is a CI run in progress or completed.
+* There is at least one collaborator approval.
+* There are no outstanding review comments.
+* There are no conflicts with the base branch.
 
 在这种情况下，请务必为拉取请求添加 `author ready` 标签。
 一旦条件不再满足，请务必立刻移除此标签。
+
+批准符合条件的拉取请求时，请添加 `author ready`，如果需要 Jenkins CI 运行但尚未启动，还要添加 `request-ci`。当拉取请求作者不是协作者时，跟进 CI 运行直至完成，并在所需 CI 结果为绿色后添加 `commit-queue`，会很有帮助。
 
 ### 处理自己的拉取请求
 
@@ -78,7 +93,24 @@
 放到其他拉取请求上。如果你的拉取请求尚未准备好合并，但已是 [作者就绪](#author-ready-pull-requests)，请添加
 `author ready` 标签。如果你希望由自己来合并该拉取请求，请使用“指派给自己”链接进行自我指派。
 
-### 安全问题的管理
+### 仓库分类视图
+
+该仓库有多个置顶的
+[分类视图](https://github.com/nodejs/node/issues/views)，用于管理拉取
+请求：
+
+* [PR 操作队列](https://github.com/nodejs/node/issues/views/15196)：
+  未过时、由人工创建，带有 `author ready` 或
+  `review wanted` 标签，且尚未进入 commit queue 的拉取请求。
+* [PR 关注队列](https://github.com/nodejs/node/issues/views/15058)：
+  未过时、等待第二次批准、请求快速通道或正在处理不稳定测试的拉取请求。
+* [Bot PR 队列](https://github.com/nodejs/node/issues/views/15198)：尚未进入
+  commit queue 的、未关闭且未过时的 Node.js GitHub Bot 和 Dependabot 拉取请求。
+* [我的活跃 PR](https://github.com/nodejs/node/issues/views/15142)：由已登录的查看者创建、尚未进入 commit queue 的未关闭拉取请求。
+
+请确保 `author ready`、`review wanted`、`commit-queue` 和 `stale` 标签准确无误，以便这些视图持续发挥作用。
+
+### 安全问题
 
 使用 [SECURITY.md][] 中概述的流程来报告安全问题。如果用户在公开仓库中打开了安全问题：
 
@@ -155,11 +187,12 @@ TSC 成员以及其他协作者提出的修改。在合并到代码库之前，�
   * 破坏工作流的回归（红色 CI 或编译失败）。
   * 在发布前后出现的回归，或在发布后不久报告的回归。
 
-要提议对拉取请求进行快速通道，请应用 `fast-track` 标签。随后 GitHub Actions 工作流会发表评论，协作者可以对该评论进行赞成投票（upvote）。
+要提议让拉取请求走快速通道，请添加 `fast-track` 标签。随后 GitHub
+Actions 工作流会添加一条评论。协作者可通过对该评论添加 👍 表情反应来批准快速通道请求。对拉取请求其他位置的反应不计入。
 
 如果有人不同意快速通道请求，请移除该标签。在这种情况下，不要将拉取请求走快速通道。
 
-当有两位协作者批准该快速通道请求时，该拉取请求就可以走快速通道。要合并，该拉取请求本身仍需两位协作者批准，并且 CI 必须通过。
+如果有两位协作者批准快速通道请求，该拉取请求即可走快速通道。快速通道批准是对代码审查批准的补充，而不是替代。要合并该拉取请求，仍然需要两位协作者批准该拉取请求本身，并且 CI 必须通过。
 
 协作者可以请求对他们未创建的拉取请求进行快速通道。在这种情况下，只有请求本身也同样算作一次快速通道批准。无论如何，请对该评论进行赞成投票，以避免任何疑虑。
 
@@ -168,6 +201,8 @@ TSC 成员以及其他协作者提出的修改。在合并到代码库之前，�
 所有修复都必须包含一个展示缺陷的测试用例。该测试在变更之前应当失败，在变更之后应当通过。
 
 在必要的通过型 CI 运行完成之前，不要合并任何拉取请求。必须要求 GitHub Actions CI 的通过结果（绿色）。如果该拉取请求包含会影响 `node` 二进制的变更，还必须要求通过的（绿色或黄色）[Jenkins CI](https://ci.nodejs.org/)。这是因为 GitHub Actions CI 不覆盖 Node.js 支持的全部运行环境。
+
+`needs-ci` 标签用于标记需要完整 Jenkins CI 运行的拉取请求。它是一种分类标签，而非表示 CI 仍在等待中的标记。CI 完成后仍应保留该标签。移除该标签不会免除相应的 CI 要求，也不会使拉取请求在缺少必要检查的情况下具备合并资格。移除该标签还会使发布人员在准备发布提案时更难识别变更范围。
 
 <details>
 <summary>影响 `node` 二进制的变更</summary>
@@ -228,10 +263,10 @@ TSC 成员以及其他协作者提出的修改。在合并到代码库之前，�
 
 你通常只需要在表单中输入以下一个或两个选项：
 
-* `GIT_REMOTE_REF`: 更改 git refspec 的远程部分。
+* `GIT_REMOTE_REF`：更改 git refspec 的远程部分。
   通过这种方式指定分支时，使用 `refs/heads/BRANCH`（例如 `main` -> `refs/heads/main`）。
   对于拉取请求，它会类似 `refs/pull/PR_NUMBER/head`（例如拉取请求 #42 -> `refs/pull/42/head`）。
-* `REBASE_ONTO`: 将其更改为 `origin/main`，以便将该拉取请求 rebase 到 `main` 上。对于那些已经打开一段时间的拉取请求，这尤其重要。
+* `REBASE_ONTO`：将其更改为 `origin/main`，以便将该拉取请求 rebase 到 `main` 上。对于那些已经打开一段时间的拉取请求，这尤其重要。
 
 查看左侧“构建历史”下的任务列表，并复制你刚刚启动的那一个任务的链接（它会在最上方；但仍要点进去确认页面上写的是诸如“已开始 5 秒前”（右上角）以及“由用户 ... 启动”。
 
@@ -244,7 +279,13 @@ TSC 成员以及其他协作者提出的修改。在合并到代码库之前，�
 CI 任务。一旦添加该标签，`github-actions bot` 会自动启动
 `node-test-pull-request`。如果 `github-actions bot` 无法启动该任务，它会把该标签更新为 `request-ci-failed`。
 
-### 内部 API 与公开 API
+要恢复现有的 CI 运行，请向拉取请求添加 `resume-ci` 标签。与 `request-ci` 一样，该拉取请求必须有一项批准审查。Bot 处理请求时会移除 `resume-ci`。如果无法恢复该任务，它会添加 `resume-ci-failed`，并发布命令输出以及工作流运行的链接。
+
+不要同时使用 `request-ci` 和 `resume-ci`。如果两个标签同时存在，bot 会移除两个标签，添加 `request-ci-failed` 和 `resume-ci-failed`，并只报告一次冲突，不会启动或恢复 CI。
+
+该任务必须处于失败或中止状态，并且能够恢复；其经过 CI 批准的提交仍必须与拉取请求的 HEAD 相匹配。如果可用的失败诊断信息引用了拉取请求所更改的文件，则会拒绝恢复。需要全新 CI 运行时，请使用 `request-ci`。
+
+### 内部 API 与公共 API
 
 官方 Node.js 文档中的所有功能都属于公共
 API。任何未被文档化的对象、属性、方法、参数、行为或事件都属于内部内容。对这条规则有例外。Node.js 用户已经依赖于一些未被文档化的行为。协作者会将其中许多未文档化行为当作公开行为来对待。
@@ -316,6 +357,8 @@ API。任何未被文档化的对象、属性、方法、参数、行为或事�
 ##### 回滚提交
 
 使用 `git revert <HASH>` 或 `git revert <FROM>..<TO>` 回滚提交。生成的提交信息不会包含 subsystem，并且可能违反单行长度规则。这没问题。请在追加回滚原因之后附上任何 `Refs` 或 `Fixes` 元数据。像其他任何变更一样，创建一个拉取请求。
+
+对回滚拉取请求及其对应的原始拉取请求应用 `dont-land-on-v?.x` 标签，除非原始拉取请求已经被反向移植。
 
 ### 引入新模块
 
@@ -697,22 +740,27 @@ git push upstream main
 
 ### 通用标签
 
-* `confirmed-bug`：你已验证的 bug
-* `discuss`：需要更大范围讨论的事项
-* `fast-track`：需要更快落地的 PR —— 见
-  [等待审批](#waiting-for-approvals)
-* `feature request`：任何请求新功能的 issue
-* `good first issue`：适合新手修复的 issue
+* `confirmed-bug`：已验证的问题
+* `commit-queue`：已排队等待自动合并的拉取请求。请参见[提交队列指南][commit-queue.md]
+* `discuss`：需要进一步讨论的事项
+* `fast-track`：需要更快合并的 PR——请参见[等待审批](#waiting-for-approvals)
+* `feature request`：请求新增功能的问题
+* `good first issue`：适合新手修复的问题
+* `lacks-second-approval`：自动管理的标签，用于标记已排队等待另一个审批或等待规定时间结束的拉取请求
 * `meta`：治理、政策、流程等
-* `request-ci`：当此标签被添加到 PR 时，CI 将会自动启动。参见 [启动 Jenkins CI 作业](#starting-a-jenkins-ci-job)
-* `tsc-agenda`：带有此标签的开放 issue 和 pull request 将被加入技术指导委员会（TSC）会议议程
+* `needs-ci`：需要完整 Jenkins CI 运行的拉取请求。请参见[测试和 CI](#testing-and-ci)
+* `never-stale`：不受自动过期处理影响的问题和拉取请求
+* `request-ci`：向 PR 添加此标签后，将自动启动 CI。请参见[启动 Jenkins CI 作业](#starting-a-jenkins-ci-job)
+* `resume-ci`：向 PR 添加此标签后，如果符合条件，将恢复最近一次关联的 CI 运行。请参见[启动 Jenkins CI 作业](#starting-a-jenkins-ci-job)
+* `stale`：90 天内没有活动的问题和拉取请求。请参见[过期的问题和拉取请求](#stale-issues-and-pull-requests)
+* `tsc-agenda`：带有此标签的未解决问题和拉取请求将被加入技术指导委员会会议议程
 
 ***
 
-* `author-ready`：当以下条件满足时，PR 处于 _作者已就绪_ 状态：
-  * 当前或已完成有一个 CI 运行
-  * 至少有一项合作者批准（对于 `semver-major` PR 则需要两项 TSC 批准）
-  * 没有未解决的评审评论
+* `author ready` - 满足以下条件时，拉取请求即为 _author ready_：
+  * 有正在运行或已完成的 CI 运行。
+  * 至少有一位协作者批准（对于 semver-major 拉取请求，则需要两位 TSC 成员批准）。
+  * 没有尚未解决的评审评论。
 
 请始终为符合条件的 PR 添加 `author ready` 标签。
 请在条件不再满足时（例如 CI 运行失败或发布了新的未解决评审评论）务必将其移除。

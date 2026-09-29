@@ -1,4 +1,4 @@
-# WebAssembly 系统接口 (WASI)
+# WebAssembly 系统接口（WASI）
 
 <!--introduced_in=v12.16.0-->
 
@@ -167,7 +167,7 @@ added: v19.8.0
 { wasi_unstable: wasi.wasiImport }
 ```
 
-如果构造函数传入了版本 `preview1` 或未指定版本，它将返回：
+如果构造函数传入了版本 `preview1`，它将返回：
 
 ```json
 { wasi_snapshot_preview1: wasi.wasiImport }

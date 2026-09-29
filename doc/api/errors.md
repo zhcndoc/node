@@ -303,6 +303,22 @@ makeFaster();
 表示断言失败。详细信息，请参阅
 [` 类：assert.AssertionError`][]
 
+## 类：`DOMException`
+
+<!-- YAML
+added: v17.0.0
+-->
+
+* 继承：{errors.Error}
+
+Web IDL {DOMException} 类。这些错误由 Node.js 中的 Web 平台 API 抛出，例如 [`fetch()`][]、{AbortController}、{AbortSignal} 和 Web Streams。详情也请参阅全局对象页面上的 [`类：DOMException`][]。
+
+[`domException.name`][] 属性用于标识异常的类型（例如，`'AbortError'`）。与 Node.js 中的大多数错误不同，[`domException.code`][] 属性是一个数字，对应于[旧版错误代码名称][Web IDL error names]（例如，`ABORT_ERR` 对应 `20`）。
+
+支持 {AbortSignal} 的 Node.js 特定 API（例如 [`events.once()`][]）会抛出 Node.js `AbortError`（一种 `name` 为 `'AbortError'`、`code` 为 [`'ABORT_ERR'`][ABORT_ERR] 的原生 {errors.Error}），而不是 {DOMException}。要在两种情况下识别中止错误，检查 `err?.name === 'AbortError'` 即可。
+
+另请参阅 [`ABORT_ERR`][]。
+
 ## 类：`RangeError`
 
 * 继承：{errors.Error}
@@ -820,7 +836,7 @@ added:
 
 ### `ERR_CRYPTO_HASH_UPDATE_FAILED`
 
-[`hash.update()`][] 因任何原因失败。这种情况应该很少发生，甚至几乎不会发生。
+[`hash.update()`][] 因未指定的原因失败。
 
 <a id="ERR_CRYPTO_INCOMPATIBLE_KEY"></a>
 
@@ -936,6 +952,16 @@ added: v15.0.0
 
 给定的加密密钥对象类型对所尝试的操作无效。
 
+<a id="ERR_CRYPTO_INVALID_MAC"></a>
+
+### `ERR_CRYPTO_INVALID_MAC`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+指定了无效的 MAC 算法。
+
 <a id="ERR_CRYPTO_INVALID_MESSAGELEN"></a>
 
 ### `ERR_CRYPTO_INVALID_MESSAGELEN`
@@ -1007,6 +1033,36 @@ added: v24.7.0
 
 试图使用 KEM 操作，而 Node.js 编译时未使用
 支持 KEM 的 OpenSSL。
+
+<a id="ERR_CRYPTO_MAC_FINALIZED"></a>
+
+### `ERR_CRYPTO_MAC_FINALIZED`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+在尝试完成 `Mac` 对象或底层 MAC 更新失败后，仍尝试对其执行操作。
+
+<a id="ERR_CRYPTO_MAC_NOT_SUPPORTED"></a>
+
+### `ERR_CRYPTO_MAC_NOT_SUPPORTED`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+Node.js 构建时未包含对 OpenSSL `EVP_MAC` API 的支持。
+
+<a id="ERR_CRYPTO_MAC_UPDATE_FAILED"></a>
+
+### `ERR_CRYPTO_MAC_UPDATE_FAILED`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+[`mac.update()`][] 因未指定的原因失败。
 
 <a id="ERR_CRYPTO_OPERATION_FAILED"></a>
 
@@ -1195,7 +1251,7 @@ added: v15.0.0
 
 ### `ERR_EXECUTION_ENVIRONMENT_NOT_AVAILABLE`
 
-JS 执行上下文不与 Node.js 环境关联。
+JS 执行上下文未与 Node.js 环境关联。
 当 Node.js 用作嵌入式库且某些 JS 引擎钩子
 未正确设置时，可能会发生这种情况。
 
@@ -1347,7 +1403,7 @@ HTTP/2 ALTSVC 帧需要有效的源。
 
 ### `ERR_HTTP2_ALTSVC_LENGTH`
 
-HTTP/2 ALTSVC 帧限制为最大 16,382 有效载荷字节。
+HTTP/2 ALTSVC 帧限制为最大 16,382 个有效载荷字节。
 
 <a id="ERR_HTTP2_CONNECT_AUTHORITY"></a>
 
@@ -1359,7 +1415,7 @@ HTTP/2 ALTSVC 帧限制为最大 16,382 有效载荷字节。
 
 ### `ERR_HTTP2_CONNECT_PATH`
 
-对于使用 `CONNECT` 方法的 HTTP/2 请求，禁止 `:path` 伪头。
+对于使用 `CONNECT` 方法的 HTTP/2 请求，禁止使用 `:path` 伪头。
 
 <a id="ERR_HTTP2_CONNECT_SCHEME"></a>
 
@@ -1714,7 +1770,7 @@ added:
 
 ### `ERR_HTTP_SOCKET_ENCODING`
 
-根据 [RFC 7230 第 3 节][]，不允许更改 socket 编码。
+根据 [RFC 7230 第 3 节][]，不允许更改套接字编码。
 
 <a id="ERR_HTTP_TRAILER_INVALID"></a>
 
@@ -1904,7 +1960,7 @@ Node.js API 不理解提供的地址族。
 ### `ERR_INVALID_FILE_URL_HOST`
 
 使用 `file:` URL 的 Node.js API（例如 [`fs`][] 模块中的某些函数）遇到具有不兼容主机的文件 URL。这种情况
-仅发生在 Unix-like 系统上，其中仅支持 `localhost` 或空
+仅发生在类 Unix 系统上，其中仅支持 `localhost` 或空
 主机。
 
 <a id="ERR_INVALID_FILE_URL_PATH"></a>
@@ -1920,8 +1976,7 @@ Node.js API 不理解提供的地址族。
 
 ### `ERR_INVALID_HANDLE_TYPE`
 
-试图通过 IPC 通信  
-通道向子进程发送不支持的 "handle"。有关更多信息，请参阅 [`subprocess.send()`][] 和 [`process.send()`][]。
+试图通过 IPC 通信通道向子进程发送不支持的“句柄”。有关更多信息，请参阅 [`subprocess.send()`][] 和 [`process.send()`][]。
 
 <a id="ERR_INVALID_HTTP_TOKEN"></a>
 
@@ -1951,8 +2006,7 @@ added:
   - v14.18.0
 -->
 
-试图加载不存在或以其他方式
-无效的模块。
+试图加载不存在或以其他方式无效的模块。
 
 <a id="ERR_INVALID_MODULE_SPECIFIER"></a>
 
@@ -1988,8 +2042,7 @@ added:
 
 ### `ERR_INVALID_REPL_EVAL_CONFIG`
 
-在 [`REPL`][] 配置中同时设置了 `breakEvalOnSigint` 和 `eval` 选项，
-这是不支持的。
+在 [`REPL`][] 配置中同时设置了 `breakEvalOnSigint` 和 `eval` 选项，这是不支持的。
 
 <a id="ERR_INVALID_RETURN_PROPERTY"></a>
 
@@ -2007,8 +2060,7 @@ added:
 
 ### `ERR_INVALID_RETURN_VALUE`
 
-当函数选项在执行时未返回预期值
-类型时抛出，例如当函数期望返回 promise 时。
+当函数选项在执行时未返回预期值类型时抛出，例如当函数期望返回 promise 时。
 
 <a id="ERR_INVALID_STATE"></a>
 
@@ -2018,16 +2070,13 @@ added:
 added: v15.0.0
 -->
 
-表示由于无效状态无法完成操作。
-例如，对象可能已被销毁，或可能正在
-执行另一个操作。
+表示由于无效状态无法完成操作。例如，对象可能已被销毁，或可能正在执行另一个操作。
 
 <a id="ERR_INVALID_SYNC_FORK_INPUT"></a>
 
 ### `ERR_INVALID_SYNC_FORK_INPUT`
 
-将 `Buffer`、`TypedArray`、`DataView` 或 `string` 作为 stdio 输入提供给
-异步分叉。有关更多信息，请参阅 [`child_process`][] 模块的文档。
+将 `Buffer`、`TypedArray`、`DataView` 或 `string` 作为 stdio 输入提供给异步分叉。有关更多信息，请参阅 [`child_process`][] 模块的文档。
 
 <a id="ERR_INVALID_THIS"></a>
 
@@ -2047,10 +2096,7 @@ urlSearchParams.has.call(buf, 'foo');
 
 ### `ERR_INVALID_TUPLE`
 
-传递给 [WHATWG][WHATWG URL API]
-[`URLSearchParams` 构造函数][`new URLSearchParams(iterable)`] 的 `iterable` 中的元素并不
-表示 `[name, value]` 元组——也就是说，如果某个元素不可迭代，或者
-不恰好由两个元素组成。
+传递给 [WHATWG][WHATWG URL API] [`URLSearchParams` 构造函数][`new URLSearchParams(iterable)`] 的 `iterable` 中的元素并不表示 `[name, value]` 元组——也就是说，如果某个元素不可迭代，或者不恰好由两个元素组成。
 
 <a id="ERR_INVALID_TYPESCRIPT_SYNTAX"></a>
 
@@ -2080,25 +2126,19 @@ changes:
 
 ### `ERR_INVALID_URL`
 
-将无效的 URL 传递给 [WHATWG][WHATWG URL API] [`URL`
-构造函数][`new URL(input)`] 或遗留的 [`url.parse()`][] 进行解析。
-抛出的错误对象通常具有附加属性 `'input'`，其中
-包含解析失败的 URL。
+将无效的 URL 传递给 [WHATWG][WHATWG URL API] [`URL` 构造函数][`new URL(input)`] 或遗留的 [`url.parse()`][] 进行解析。抛出的错误对象通常具有附加属性 `'input'`，其中包含解析失败的 URL。
 
 <a id="ERR_INVALID_URL_PATTERN"></a>
 
 ### `ERR_INVALID_URL_PATTERN`
 
-将无效的 URLPattern 传递给 [WHATWG][WHATWG URL API]
-[`URLPattern` 构造函数][`new URLPattern(input)`] 进行解析。
+将无效的 URLPattern 传递给 [WHATWG][WHATWG URL API] [`URLPattern` 构造函数][`new URLPattern(input)`] 进行解析。
 
 <a id="ERR_INVALID_URL_SCHEME"></a>
 
 ### `ERR_INVALID_URL_SCHEME`
 
-试图使用不兼容方案（协议）的 URL 用于
-特定目的。它仅用于 [`fs`][] 模块中的 [WHATWG URL API][] 支持（仅接受具有 `'file'` 方案的 URL），但将来也可能用于
-其他 Node.js API。
+试图将使用不兼容方案（协议）的 URL 用于特定目的。它仅用于 [`fs`][] 模块中的 [WHATWG URL API][] 支持（仅接受具有 `'file'` 方案的 URL），但将来也可能用于其他 Node.js API。
 
 <a id="ERR_IPC_CHANNEL_CLOSED"></a>
 
@@ -2140,8 +2180,7 @@ added:
   - v16.17.0
 -->
 
-ESM 加载器钩子返回时未调用 `next()` 且未显式
-指示短路。
+ESM 加载器钩子返回时未调用 `next()` 且未显式指示短路。
 
 <a id="ERR_LOAD_SQLITE_EXTENSION"></a>
 
@@ -2159,8 +2198,7 @@ added:
 
 ### `ERR_MEMORY_ALLOCATION_FAILED`
 
-试图分配内存（通常在 C++ 层）但
-失败。
+试图分配内存（通常在 C++ 层）但失败。
 
 <a id="ERR_MESSAGE_TARGET_CONTEXT_UNAVAILABLE"></a>
 
@@ -2172,9 +2210,7 @@ added:
   - v12.19.0
 -->
 
-发布到 [`MessagePort`][] 的消息无法在目标
-[vm][] `Context` 中反序列化。此时并非所有 Node.js 对象都可以成功实例化在任何上下文中，尝试使用 `postMessage()` 传输它们
-在这种情况下可能在接收端失败。
+发布到 [`MessagePort`][] 的消息无法在目标 [vm][] `Context` 中反序列化。此时并非所有 Node.js 对象都可以在任何上下文中成功实例化，尝试使用 `postMessage()` 传输它们在这种情况下可能会在接收端失败。
 
 <a id="ERR_METHOD_NOT_IMPLEMENTED"></a>
 
@@ -2186,11 +2222,7 @@ added:
 
 ### `ERR_MISSING_ARGS`
 
-未传递 Node.js API 的必需参数。这仅用于
-严格符合 API 规范（某些情况下可能接受
-`func(undefined)` 但不接受 `func()`）。在大多数原生 Node.js API 中，
-`func(undefined)` 和 `func()` 被视为相同，并且可以使用
-[`ERR_INVALID_ARG_TYPE`][] 错误代码。
+未传递 Node.js API 的必需参数。这仅用于严格符合 API 规范（某些情况下可能接受 `func(undefined)` 但不接受 `func()`）。在大多数原生 Node.js API 中，`func(undefined)` 和 `func()` 被视为相同，并且可以使用 [`ERR_INVALID_ARG_TYPE`][] 错误代码。
 
 <a id="ERR_MISSING_OPTION"></a>
 
@@ -2208,9 +2240,7 @@ added:
 
 ### `ERR_MISSING_PLATFORM_FOR_WORKER`
 
-此 Node.js 实例使用的 V8 平台不支持创建  
-Worker。这是由于缺乏对 Worker 的嵌入者支持。特别是，  
-此错误不会在 Node.js 的标准构建中发生。
+此 Node.js 实例使用的 V8 平台不支持创建 Worker。这是由于缺乏对 Worker 的嵌入者支持。特别是，此错误不会在 Node.js 的标准构建中发生。
 
 <a id="ERR_MODULE_LINK_MISMATCH"></a>
 
@@ -2318,8 +2348,7 @@ added:
 added: v26.2.0
 -->
 
-有人尝试使用需要 [`Temporal`][] 的功能，但 Node.js 在编译时未启用 `Temporal` 支持，或者它已在当前环境中被禁用
-（例如，在使用 `--no-harmony-temporal` 运行时）。
+有人尝试使用需要 [`Temporal`][] 的功能，但 Node.js 在编译时未启用 `Temporal` 支持，或者它已在当前环境中被禁用（例如，在使用 `--no-harmony-temporal` 运行时）。
 
 <a id="ERR_NO_TYPESCRIPT"></a>
 
@@ -2372,10 +2401,12 @@ added:
 ### `ERR_PACKAGE_MAP_EXTERNAL_FILE`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.20.0
 -->
 
-模块尝试使用 [包映射][] 解析一个裸说明符，但导入文件不位于映射中定义的任何包内。
+模块尝试使用[包映射][]解析一个裸说明符，但导入文件不位于映射中定义的任何包内。
 
 ```console
 $ node --experimental-package-map=./package-map.json /tmp/script.js
@@ -2389,10 +2420,12 @@ Error [ERR_PACKAGE_MAP_EXTERNAL_FILE]: Cannot resolve "dep-a" from "/tmp/script.
 ### `ERR_PACKAGE_MAP_INVALID`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.20.0
 -->
 
-[package map][] 配置文件无效。这种情况可能发生在以下情形：
+[包映射][]配置文件无效。这种情况可能发生在以下情形：
 
 * 文件在指定路径下不存在。
 * 文件包含无效的 JSON。
@@ -2410,7 +2443,9 @@ Error [ERR_PACKAGE_MAP_INVALID]: 无效的 package map 位于 "./missing.json"�
 ### `ERR_PACKAGE_MAP_KEY_NOT_FOUND`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.20.0
 -->
 
 在[包映射][]中，包的 `dependencies` 对象引用了一个未在 `packages` 对象中定义的包键。
@@ -2478,7 +2513,7 @@ added:
 
 ### `ERR_PERFORMANCE_INVALID_TIMESTAMP`
 
-为 performance 标记或测量提供了无效的时间戳值。
+为性能标记或测量提供了无效的时间戳值。
 
 <a id="ERR_PERFORMANCE_MEASURE_INVALID_OPTIONS"></a>
 
@@ -2565,26 +2600,28 @@ added:
 ### `ERR_QUIC_STREAM_ABORTED`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
 
-用于抛出 `QuicError` 的 Node.js 错误代码，以使用显式应用程序或传输错误代码中止 QUIC 流
-或会话。
+用于抛出 `QuicError` 的 Node.js 错误代码，以使用显式应用程序或传输错误代码中止 QUIC 流或会话。
 
 <a id="ERR_QUIC_STREAM_RESET"></a>
 
 ### `ERR_QUIC_STREAM_RESET`
 
 <!-- YAML
-added: v26.2.0
+added:
+ - v26.2.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
 
-QUIC 流被对端重置。错误包含
-对端提供的重置代码。
+QUIC 流被对端重置。错误包含对端提供的重置代码。
 
 <a id="ERR_QUIC_TRANSPORT_ERROR"></a>
 
@@ -2620,16 +2657,16 @@ QUIC 会话失败，因为需要进行版本协商。
 
 <!-- YAML
 changes:
-  - version: v26.5.0
+  - version:
+     - v26.5.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/64260
     description: 添加了 `requireStack` 和 `topLevelAwaitLocations` 属性。
 -->
 
-尝试 `require()` 一个 [ES 模块][] 时，该模块被发现是异步的。
-也就是说，它包含顶层 await。
+尝试 `require()` 一个 [ES 模块][] 时，该模块被发现是异步的。也就是说，它包含顶层 await。
 
-在未被捕获时，标志 `--experimental-print-required-tla` 会将
-图中顶层 await 的位置打印到 stderr。
+在未被捕获时，标志 `--experimental-print-required-tla` 会将图中顶层 await 的位置打印到 stderr。
 
 此错误具有以下额外的不可枚举属性：
 
@@ -2645,8 +2682,7 @@ changes:
 
 ### `ERR_REQUIRE_CYCLE_MODULE`
 
-尝试 `require()` 一个 [ES 模块][] 时，CommonJS 到 ESM 或 ESM 到 CommonJS 的边参与了一个即时循环。
-这是不允许的，因为 ES 模块无法在自身已经处于求值过程时进行求值。
+尝试 `require()` 一个 [ES 模块][] 时，CommonJS 到 ESM 或 ESM 到 CommonJS 的边参与了一个即时循环。这是不允许的，因为 ES 模块无法在自身已经处于求值过程时进行求值。
 
 为避免循环，参与循环的 `require()` 调用不应位于 ES 模块（通过 `createRequire()`）或 CommonJS 模块的顶层，而应在内部函数中延迟执行。
 
@@ -2788,7 +2824,7 @@ added:
 
 ### `ERR_SOCKET_HANDLE_ADOPTED`
 
-对已被 [`BoundSocket`][] 或 [`net.Server`][] 接管的 [`net.Socket`][] 尝试执行了操作。一旦绑定套接字被接管，其 `address()` 和 `close()` 方法将不再可用。
+尝试对已经被 [`net.Server`][] 或 [`net.Socket`][] 接管，或已转移到另一个线程的 [`BoundSocket`][] 执行操作。绑定的套接字一旦被接管或转移，其 `address()` 和 `close()` 方法便无法再使用。
 
 <a id="ERR_SOURCE_MAP_CORRUPT"></a>
 
@@ -2925,6 +2961,12 @@ Node.js 进程中发生了未指定或非特定的系统错误。错误对象将
 
 此错误表示测试失败。有关该失败的更多信息可以通过 `cause` 属性获取。`failureType` 属性指定了测试在发生失败时正在执行的操作。
 
+<a id="ERR_THROTTLED"></a>
+
+### `ERR_THROTTLED`
+
+由于受限制的函数无法立即调用该函数，或其待处理队列已满，因此调用被丢弃。
+
 <a id="ERR_TLS_ALPN_CALLBACK_INVALID_RESULT"></a>
 
 ### `ERR_TLS_ALPN_CALLBACK_INVALID_RESULT`
@@ -3047,7 +3089,7 @@ TLS 套接字必须已连接并安全建立。确保在继续之前发出 'secur
 
 ### `ERR_TRACE_EVENTS_UNAVAILABLE`
 
-无法加载 `node:trace_events` 模块，因为 Node.js 是使用 `--without-v8-platform` 标志编译的。
+由于 Node.js 编译时使用了 `--without-v8-platform` 标志，或进程由提供自身 V8 平台的嵌入程序初始化，因此无法加载 `node:trace_events` 模块。
 
 <a id="ERR_TRAILING_JUNK_AFTER_STREAM_END"></a>
 
@@ -3205,6 +3247,12 @@ added:
 
 使用 Performance Timing API（`perf_hooks`）时，未找到有效的性能条目类型。
 
+<a id="ERR_VFS_INVALID_TARGET"></a>
+
+### `ERR_VFS_INVALID_TARGET`
+
+`--vfs-load` 源不存在、既不是常规文件也不是目录，或没有提供程序认领该源。
+
 <a id="ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING"></a>
 
 ### `ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING`
@@ -3295,7 +3343,7 @@ added: v18.1.0
 
 ### `ERR_WORKER_HANDLE_NOT_TRANSFERABLE`
 
-尝试通过 `worker_threads` 的 `postMessage()` 调用将 `net.Socket` 或 `net.Server` 传输到另一个线程，但它当时并不处于可传输状态，例如因为它已经开始读取或已经有了缓冲数据。
+尝试通过 `worker_threads` 的 `postMessage()` 调用将 `net.Socket`、`net.Server` 或 `net.BoundSocket` 转移到另一个线程，但该对象不处于可转移状态，例如它已经开始读取、存在缓冲数据或已被接管。
 
 <a id="ERR_WORKER_INIT_FAILED"></a>
 
@@ -3421,15 +3469,13 @@ ZIP 归档条目声明的大小超过了配置的限制，或者提供的条目�
 
 ### `ERR_ZIP_NOT_WRITABLE`
 
-在未使用 `{ writable: true }` 打开的 [`ZipFile`][] 上调用了变更方法（例如
-`zipFile.addEntry()` 或 `zipFile.delete()`）。
+在未使用 `{ writable: true }` 打开的 [`ZipFile`][] 上调用了变更方法（例如 `zipFile.addEntry()` 或 `zipFile.delete()`）。
 
 <a id="ERR_ZIP_UNSUPPORTED_FEATURE"></a>
 
 ### `ERR_ZIP_UNSUPPORTED_FEATURE`
 
-ZIP 归档使用了此实现不支持的功能，
-例如条目加密、不受支持的压缩方法或多磁盘归档。
+ZIP 归档使用了此实现不支持的功能，例如条目加密、不受支持的压缩方法或多磁盘归档。
 
 <a id="ERR_ZLIB_INITIALIZATION_FAILED"></a>
 
@@ -4086,19 +4132,19 @@ removed: v10.0.0
 
 #### `CRL_NOT_YET_VALID`
 
-证书吊销列表 (CRL) 具有未来的签发日期。
+证书吊销列表（CRL）具有未来的签发日期。
 
 <a id="CRL_HAS_EXPIRED"></a>
 
 #### `CRL_HAS_EXPIRED`
 
-证书吊销列表 (CRL) 已过期。
+证书吊销列表（CRL）已过期。
 
 <a id="CERT_REVOKED"></a>
 
 #### `CERT_REVOKED`
 
-证书已被吊销；它位于证书吊销列表 (CRL) 上。
+证书已被吊销；它位于证书吊销列表（CRL）上。
 
 <a id="Trust or Chain Related Errors"></a>
 
@@ -4150,7 +4196,7 @@ removed: v10.0.0
 
 #### `CERT_UNTRUSTED`
 
-根证书颁发机构 (CA) 未标记为用于指定目的的可信机构。
+根证书颁发机构（CA）未标记为用于指定目的的可信机构。
 
 <a id="Basic Extension Errors"></a>
 
@@ -4208,7 +4254,7 @@ basicConstraints pathlength 参数已超出。
 
 #### `CRL_SIGNATURE_FAILURE`
 
-证书吊销列表 (CRL) 的签名无效。
+证书吊销列表（CRL）的签名无效。
 
 <a id="ERROR_IN_CERT_NOT_BEFORE_FIELD"></a>
 
@@ -4244,7 +4290,7 @@ CRL nextUpdate 字段包含无效时间。
 
 #### `UNABLE_TO_DECRYPT_CRL_SIGNATURE`
 
-证书吊销列表 (CRL) 签名无法解密：这意味着无法确定实际签名值，而不是它与预期值不匹配。
+证书吊销列表（CRL）签名无法解密：这意味着无法确定实际签名值，而不是它与预期值不匹配。
 
 <a id="UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY"></a>
 
@@ -4262,7 +4308,8 @@ CRL nextUpdate 字段包含无效时间。
 
 尝试分配内存时发生错误。这绝不应该发生。
 
-[ES 模块]: esm.md
+[ABORT_ERR]: #abort_err
+[ES Module]: esm.md
 [ICU]: intl.md#internationalization-support
 [JSON Web Key 椭圆曲线注册表]: https://www.iana.org/assignments/jose/jose.xhtml#web-key-elliptic-curve
 [JSON Web Key 类型注册表]: https://www.iana.org/assignments/jose/jose.xhtml#web-key-types
@@ -4275,6 +4322,7 @@ CRL nextUpdate 字段包含无效时间。
 [V8 的堆栈跟踪 API]: https://v8.dev/docs/stack-trace-api
 [WHATWG 支持的编码]: util.md#whatwg-supported-encodings
 [WHATWG URL API]: url.md#the-whatwg-url-api
+[Web IDL error names]: https://webidl.spec.whatwg.org/#dfn-error-names-table
 [`"exports"`]: packages.md#exports
 [`"imports"`]: packages.md#imports
 [`'uncaughtException'`]: process.md#event-uncaughtexception
@@ -4282,7 +4330,9 @@ CRL nextUpdate 字段包含无效时间。
 [`--force-fips`]: cli.md#--force-fips
 [`--no-addons`]: cli.md#--no-addons
 [`--unhandled-rejections`]: cli.md#--unhandled-rejectionsmode
+[`ABORT_ERR`]: #abort_err
 [`BoundSocket`]: net.md#class-netboundsocket
+[`Class: DOMException`]: globals.md#class-domexception
 [`Class: assert.AssertionError`]: assert.md#class-assertassertionerror
 [`ERR_INCOMPATIBLE_OPTION_PAIR`]: #err_incompatible_option_pair
 [`ERR_INVALID_ARG_TYPE`]: #err_invalid_arg_type
@@ -4311,10 +4361,13 @@ CRL nextUpdate 字段包含无效时间。
 [`dgram.createSocket()`]: dgram.md#dgramcreatesocketoptions-callback
 [`dgram.disconnect()`]: dgram.md#socketdisconnect
 [`dgram.remoteAddress()`]: dgram.md#socketremoteaddress
+[`domException.code`]: https://developer.mozilla.org/en-US/docs/Web/API/DOMException/code
 [`domException.name`]: https://developer.mozilla.org/en-US/docs/Web/API/DOMException/name
 [`errno`(3) 手册页]: https://man7.org/linux/man-pages/man3/errno.3.html
 [`error.code`]: #errorcode
 [`error.message`]: #errormessage
+[`events.once()`]: events.md#eventsonceemitter-name-options
+[`fetch()`]: globals.md#fetch
 [`fs.Dir`]: fs.md#class-fsdir
 [`fs.cp()`]: fs.md#fscpsrc-dest-options-callback
 [`fs.readFileSync`]: fs.md#fsreadfilesyncpath-options
@@ -4328,6 +4381,7 @@ CRL nextUpdate 字段包含无效时间。
 [`http`]: http.md
 [`https`]: https.md
 [`libuv Error handling`]: https://docs.libuv.org/en/v1.x/errors.html
+[`mac.update()`]: crypto.md#macupdatedata-inputencoding
 [`net.Server`]: net.md#class-netserver
 [`net.Socket.write()`]: net.md#socketwritedata-encoding-callback
 [`net.Socket`]: net.md#class-net-socket

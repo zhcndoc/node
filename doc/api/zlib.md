@@ -978,7 +978,7 @@ added: v0.5.8
 ## 类：`zlib.ZipBuffer`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 > 稳定性：1.0 - 早期开发阶段
@@ -1024,7 +1024,7 @@ main();
 ### `new zlib.ZipBuffer(buffer)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer} 完整的 ZIP 归档。
@@ -1036,7 +1036,7 @@ added: REPLACEME
 ### `zipBuffer.add(filename, data[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `filename` {string} 归档中条目的名称。以 `/` 结尾表示目录条目。
@@ -1050,7 +1050,7 @@ options))`。
 ### `zipBuffer.addSync(filename, data[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `filename` {string} 归档中条目的名称。以 `/` 结尾表示目录条目。
@@ -1064,7 +1064,7 @@ added: REPLACEME
 ### `zipBuffer.addEntry(entry)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `entry` {ZipEntry}
@@ -1075,7 +1075,7 @@ added: REPLACEME
 ### `zipBuffer.clear()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 移除所有条目。
@@ -1083,7 +1083,7 @@ added: REPLACEME
 ### `zipBuffer.comment`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{string}
@@ -1093,7 +1093,7 @@ added: REPLACEME
 ### `zipBuffer.delete(name)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `name` {string}
@@ -1102,7 +1102,7 @@ added: REPLACEME
 ### `zipBuffer.entries()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 返回：包含 `[name, entry]` 对的 {Iterator}，其中 `entry` 是 [`ZipEntry`][]。
@@ -1110,7 +1110,7 @@ added: REPLACEME
 ### `zipBuffer.forEach(callback[, thisArg])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `callback` {Function}
@@ -1121,7 +1121,7 @@ added: REPLACEME
 ### `zipBuffer.get(name)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `name` {string}
@@ -1132,7 +1132,7 @@ added: REPLACEME
 ### `zipBuffer.has(name)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `name` {string}
@@ -1141,7 +1141,7 @@ added: REPLACEME
 ### `zipBuffer.keys()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 返回：包含条目名称的 {Iterator}。
@@ -1149,7 +1149,7 @@ added: REPLACEME
 ### `zipBuffer.size`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{number}
@@ -1159,7 +1159,7 @@ added: REPLACEME
 ### `zipBuffer.toBuffer([options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `options` {string|Object} 归档注释，可简写为
@@ -1173,7 +1173,7 @@ added: REPLACEME
 ### `zipBuffer.toBufferSync([options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `options` {string|Object} 参见 [`zipBuffer.toBuffer()`][]。
@@ -1184,7 +1184,7 @@ added: REPLACEME
 ### `zipBuffer.values()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 返回：包含 [`ZipEntry`][] 的 {Iterator}。
@@ -1192,7 +1192,7 @@ added: REPLACEME
 ### `zipBuffer.writable`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{boolean}
@@ -1202,7 +1202,7 @@ added: REPLACEME
 ## 类：`zlib.ZipEntry`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 > 稳定性：1.0 - 早期开发阶段
@@ -1217,7 +1217,7 @@ Node.js 事件循环以及后续的 JavaScript 执行，直到操作（包括任
 ### 静态方法：`zlib.ZipEntry.create(filename, data[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `filename` {string} 存档中条目的名称。末尾的 `/` 表示目录条目。
@@ -1241,7 +1241,7 @@ ZIP 用于 `modified` 的 MS-DOS 日期/时间字段精度为 2 秒且不包含�
 ### 静态方法：`zlib.ZipEntry.createStream(filename, source[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `filename` {string} 存档中的条目名称。不得以 `/` 结尾。
@@ -1278,7 +1278,7 @@ added: REPLACEME
 ### 静态方法：`zlib.ZipEntry.createSymlink(filename, target[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `filename` {string} 条目在存档中的名称。
@@ -1297,7 +1297,7 @@ added: REPLACEME
 ### 静态方法：`zlib.ZipEntry.createSync(filename, data[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `filename` {string} 归档中的条目名称。末尾的 `/`
@@ -1312,7 +1312,7 @@ added: REPLACEME
 ### 静态方法：`zlib.ZipEntry.read(buffer)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `buffer` {Buffer|TypedArray|DataView|ArrayBuffer} 一个完整的 ZIP 归档。
@@ -1326,7 +1326,7 @@ added: REPLACEME
 ### `zipEntry.comment`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{string}
@@ -1334,7 +1334,7 @@ added: REPLACEME
 ### `zipEntry.compressed`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{boolean}
@@ -1344,7 +1344,7 @@ added: REPLACEME
 ### `zipEntry.compressedSize`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型: {number}
@@ -1352,7 +1352,7 @@ added: REPLACEME
 ### `zipEntry.content([options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `options` {Object}
@@ -1366,7 +1366,7 @@ added: REPLACEME
 ### `zipEntry.contentSync([options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `options` {Object} 参见 [`zipEntry.content()`][]。
@@ -1377,7 +1377,7 @@ added: REPLACEME
 ### `zipEntry.contentIterator([options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `options` {Object}
@@ -1396,7 +1396,7 @@ added: REPLACEME
 ### `zipEntry.crc32`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{number}
@@ -1404,7 +1404,7 @@ added: REPLACEME
 ### `zipEntry.flags`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型: {number}
@@ -1414,7 +1414,7 @@ added: REPLACEME
 ### `zipEntry.isDirectory`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{boolean}
@@ -1424,7 +1424,7 @@ added: REPLACEME
 ### `zipEntry.isFile`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{boolean}
@@ -1435,7 +1435,7 @@ added: REPLACEME
 ### `zipEntry.isSymlink`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{boolean}
@@ -1448,7 +1448,7 @@ added: REPLACEME
 ### `zipEntry.mode`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{number}
@@ -1459,7 +1459,7 @@ added: REPLACEME
 ### `zipEntry.modified`
 
 <!-- YAML
-added: 待替换
+added: v26.8.0
 -->
 
 * 类型：{Date}
@@ -1471,7 +1471,7 @@ added: 待替换
 ### `zipEntry.method`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{number}
@@ -1482,7 +1482,7 @@ added: REPLACEME
 ### `zipEntry.name`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{string}
@@ -1495,7 +1495,7 @@ added: REPLACEME
 ### `zipEntry.nameBuffer`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{Buffer}
@@ -1505,7 +1505,7 @@ added: REPLACEME
 ### `zipEntry.rawContent`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{Buffer|null}
@@ -1518,7 +1518,7 @@ added: REPLACEME
 ### `zipEntry.size`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{number}
@@ -1528,7 +1528,7 @@ added: REPLACEME
 ## 类：`zlib.ZipFile`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 > 稳定性：1.0 - 早期开发
@@ -1582,7 +1582,7 @@ main();
 ### 静态方法：`zlib.ZipFile.open(filename[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `filename` {string}
@@ -1595,7 +1595,7 @@ added: REPLACEME
 ### 静态方法：`zlib.ZipFile.openSync(filename[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `filename` {string}
@@ -1607,7 +1607,7 @@ added: REPLACEME
 ### `zipFile.add(filename, data[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `filename` {string} 存档中文件条目的名称。以 `/` 结尾表示目录条目。
@@ -1621,7 +1621,7 @@ options))`。
 ### `zipFile.addEntry(entry)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `entry` {ZipEntry}
@@ -1634,7 +1634,7 @@ added: REPLACEME
 ### `zipFile.addEntrySync(entry)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `entry` {ZipEntry}
@@ -1647,7 +1647,7 @@ added: REPLACEME
 ### `zipFile.addSync(filename, data[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `filename` {string} 条目在存档中的名称。末尾的 `/`
@@ -1663,7 +1663,7 @@ added: REPLACEME
 ### `zipFile.close()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 返回：{Promise}
@@ -1675,7 +1675,7 @@ added: REPLACEME
 ### `zipFile.closeSync()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 [`zipFile.close()`][] 的同步版本。
@@ -1683,7 +1683,7 @@ added: REPLACEME
 ### `zipFile.comment`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{string}
@@ -1693,7 +1693,7 @@ added: REPLACEME
 ### `zipFile.compact([comment])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `comment` {string} 归档注释。**默认值：**[`zipFile.comment`][]。
@@ -1710,7 +1710,7 @@ zip.compact().pipe(createWriteStream('compacted.zip'));
 ### `zipFile.compactSync([comment])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `comment` {string} 压缩包注释。**默认值：**[`zipFile.comment`][]。
@@ -1722,7 +1722,7 @@ added: REPLACEME
 ### `zipFile.delete(name)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `name` {string}
@@ -1735,7 +1735,7 @@ added: REPLACEME
 ### `zipFile.deleteSync(name)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `name` {string}
@@ -1747,7 +1747,7 @@ added: REPLACEME
 ### `zipFile.entries()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 返回：由 `[name, entry]` 对组成的 {Iterator}，其中 `entry` 是一个
@@ -1756,7 +1756,7 @@ added: REPLACEME
 ### `zipFile.entriesSync()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 返回：由 `[name, entry]` 对组成的 {Iterator}，其中 `entry` 是已解析的
@@ -1767,7 +1767,7 @@ added: REPLACEME
 ### `zipFile.forEach(callback[, thisArg])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `callback` {Function}
@@ -1776,19 +1776,19 @@ added: REPLACEME
 ### `zipFile.forEachSync(callback[, thisArg])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `callback` {Function}
 * `thisArg` {any}
 
-[`zipFile.forEach()`][] 的同步版本：`callback` 将接收已解析的 [`ZipEntry`][]，
+[`zipFile.forEach()`][] 的同步版本：`callback` 将接收已解析的 [`ZipEntry`][],
 而不是 `Promise`。
 
 ### `zipFile.get(name)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `name` {string}
@@ -1799,7 +1799,7 @@ added: REPLACEME
 ### `zipFile.getSync(name)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `name` {string}
@@ -1810,7 +1810,7 @@ added: REPLACEME
 ### `zipFile.has(name)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `name` {string}
@@ -1819,7 +1819,7 @@ added: REPLACEME
 ### `zipFile.keys()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 返回：包含条目名称的 {Iterator}。
@@ -1827,7 +1827,7 @@ added: REPLACEME
 ### `zipFile.size`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型: {number}
@@ -1837,7 +1837,7 @@ added: REPLACEME
 ### `zipFile.stream(name[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * `name` {string}
@@ -1851,7 +1851,7 @@ added: REPLACEME
 ### `zipFile.values()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 返回：由 {Promise} 对象组成的 {Iterator}，每个对象兑现后得到一个
@@ -1860,7 +1860,7 @@ added: REPLACEME
 ### `zipFile.valuesSync()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 返回：已解析的 [`ZipEntry`][] 值的 {Iterator}（不是 `Promise`）。
@@ -1870,7 +1870,7 @@ added: REPLACEME
 ### `zipFile.writable`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 * 类型：{boolean}
@@ -1921,8 +1921,10 @@ added: v0.9.4
 added: v0.5.8
 -->
 
-* `kind` **默认：** 基于 zlib 的流为 `zlib.constants.Z_FULL_FLUSH`，基于 Brotli 的流为 `zlib.constants.BROTLI_OPERATION_FLUSH`。
-* `callback` {函数}
+* `kind` **默认值：** 基于 zlib 的流为 `zlib.constants.Z_FULL_FLUSH`，
+  基于 Brotli 的流为 `zlib.constants.BROTLI_OPERATION_FLUSH`，基于 Zstd 的流为
+  `zlib.constants.ZSTD_e_flush`。
+* `callback` {Function}
 
 刷新待处理数据。不要随意调用此方法，过早刷新会对压缩算法的有效性产生负面影响。
 
@@ -1946,9 +1948,24 @@ added: v0.11.4
 
 <!-- YAML
 added: v0.7.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/66157
+    description: Brotli streams preserve parameters and dictionary on reset.
 -->
 
-将压缩器/解压缩器重置为工厂默认值。仅适用于 inflate 和 deflate 算法。
+对于 inflate 和 deflate 流，将压缩器/解压缩器重置为出厂默认值。
+
+对于 Brotli 流，开始新的压缩或解压缩会话，同时保留已配置的参数和字典。
+
+对于 Zstd 流，取消当前帧并开始新的会话，同时保留已配置的参数和字典。如果为 Zstd 压缩器配置了 `pledgedSrcSize`，它会再次应用于下一帧。
+
+如果 gzip 流在尚未完成的成员输出数据后被重置，则流会因 `ERR_ZLIB_INCOMPLETE_FRAME` 而出错。在这种情况下重置会丢弃成员状态，而已经写出的字节仍留在输出流开头，使其无法解码。请改为调用 `.end()`，或使用新的 gzip 流重新开始。
+zlib 封装的 deflate 在刷新后仍可调用 `reset()`；重用压缩器的调用方会丢弃第一段输出。Raw deflate 没有封装头，因此刷新后调用 `reset()` 仍会进行拼接。
+
+在写入进行期间调用 `reset()` 会抛出一个 `Error`。
+
+如果不完整的 Zstd 压缩帧在输出数据后被重置，则流会因 `ERR_ZLIB_INCOMPLETE_FRAME` 而出错。在这种情况下重置会丢弃帧状态，而已经写出的字节仍留在输出流开头，使其无法解码。请改为调用 `.end()`，或使用新的流重新开始。
 
 ## 类：`ZstdOptions`
 
@@ -1959,7 +1976,9 @@ added:
   - v23.8.0
   - v22.15.0
 changes:
-  - version: v26.7.0
+  - version:
+     - v26.7.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/64599
     description: "`dictionary` 选项可以是 `TypedArray`、`DataView` 或 `ArrayBuffer`。"
   - version:
@@ -1973,14 +1992,15 @@ changes:
 
 每个基于 Zstd 的类都接受一个 `options` 对象。所有选项都是可选的。
 
-* `flush` {integer} **Default:** `zlib.constants.ZSTD_e_continue`
-* `finishFlush` {integer} **Default:** `zlib.constants.ZSTD_e_end`
-* `chunkSize` {integer} **Default:** `16 * 1024`
-* `params` {Object} 包含带索引的 [Zstd parameters][] 的键值对象。
-* `maxOutputLength` {integer} 使用[便捷方法][convenience methods][]时限制输出大小。**Default:** [`buffer.kMaxLength`][]
-* `info` {boolean} 如果为 `true`，则返回一个包含 `buffer` 和 `engine` 的对象。**Default:** `false`
-* `dictionary` {Buffer|TypedArray|DataView|ArrayBuffer} 可选的字典，用于在压缩或解压缩与字典具有共同模式的数据时提高压缩效率。
-* `rejectGarbageAfterEnd` {boolean} 如果为 `true`，则当第一个完整的压缩流之后仍有输入时，解压缩会失败。**Default:** `false`
+* `flush` {integer} **默认值：** `zlib.constants.ZSTD_e_continue`
+* `finishFlush` {integer} **默认值：** `zlib.constants.ZSTD_e_end`
+* `chunkSize` {integer} **默认值：** `16 * 1024`
+* `params` {Object} 包含带索引的 [Zstd 参数][] 的键值对象。
+* `pledgedSrcSize` {number} 预期的未压缩输入总大小。它必须是非负安全整数，并且必须与压缩完成时的输入大小一致。仅适用于 Zstd 压缩器。
+* `maxOutputLength` {integer} 使用[便捷方法][]时限制输出大小。**默认值：** [`buffer.kMaxLength`][]
+* `info` {boolean} 如果为 `true`，则返回包含 `buffer` 和 `engine` 的对象。**默认值：** `false`
+* `dictionary` {Buffer|TypedArray|DataView|ArrayBuffer} 可选字典，用于在压缩或解压缩与字典具有相同常见模式的数据时提高压缩效率。
+* `rejectGarbageAfterEnd` {boolean} 如果为 `true`，则在完整的 Zstd 帧序列之后仍有输入时，解压缩会失败。**默认值：** `false`
 
 例如：
 
@@ -2016,7 +2036,7 @@ added:
   - v22.15.0
 -->
 
-使用 Zstd 算法解压缩数据。
+使用 Zstd 算法解压缩数据。拼接的 Zstd 帧和可跳过帧会被解码为单个流。
 
 ## `zlib.constants`
 
@@ -2038,7 +2058,7 @@ added:
 * `value` {整数} 可选的起始值。它必须是 32 位无符号整数。**默认：** `0`
 * 返回：{整数} 一个包含校验和的 32 位无符号整数。
 
-计算 `data` 的 32 位 [循环冗余校验][] 校验和。如果指定了 `value`，则将其用作校验和的起始值，否则，使用 0 作为起始值。
+计算 `data` 的 32 位[循环冗余校验][]校验和。如果指定了 `value`，则将其用作校验和的起始值，否则，使用 0 作为起始值。
 
 CRC 算法旨在计算校验和并检测数据传输中的错误。它不适用于加密身份验证。
 
@@ -2171,7 +2191,7 @@ added: v0.5.8
 ## `zlib.createZipArchive(entries[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 > 稳定性：1.0 - 早期开发
@@ -2258,25 +2278,25 @@ createZipArchive(entries, { baseOffset: prefix.byteLength }).pipe(out);
 ## `zlib.createZipArchiveSync(entries[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 > 稳定性：1.0 - 早期开发阶段
 
-ZIP 存档 API 尚处于实验阶段。使用其中的任何部分（包括此函数）都会在首次使用时发出实验性警告；仅导入 `node:zlib` 不会发出警告。
+ZIP 归档 API 尚处于实验阶段。使用其中的任何部分（包括此函数）都会在首次使用时发出实验性警告；仅导入 `node:zlib` 不会发出警告。
 
 * `entries` [`ZipEntry`][] 的 {Iterable}。
 * `options` {string|Object} 参见 [`zlib.createZipArchive()`][]。
-* 返回：由构成序列化存档的 {Buffer} 分块组成的 {Iterator}。
+* 返回：由构成序列化归档的 {Buffer} 分块组成的 {Iterator}。
 
-[`zlib.createZipArchive()`][] 的同步版本。在生成整个存档（包括所有 deflate 过程）之前，会阻塞 Node.js 事件循环以及后续的 JavaScript 执行；仅应在适合同步执行的场景中使用（例如短生命周期脚本或启动代码），不要在必须保持响应的代码中使用。`entries` 必须是普通的（同步）`Iterable` —— 使用 [`zlib.ZipEntry.createStream()`][] 创建的流式条目在轮到其进行序列化时会抛出异常，因为排空其异步源没有同步等价方式。
+[`zlib.createZipArchive()`][] 的同步版本。在生成整个归档（包括所有 deflate 过程）之前，会阻塞 Node.js 事件循环以及后续的 JavaScript 执行；仅应在适合同步执行的场景中使用（例如短生命周期脚本或启动代码），不要在必须保持响应的代码中使用。`entries` 必须是普通的（同步）`Iterable` —— 使用 [`zlib.ZipEntry.createStream()`][] 创建的流式条目在轮到其进行序列化时会抛出异常，因为排空其异步源没有同步等价方式。
 
 与 [`zlib.createZipArchive()`][] 一样，这些条目归返回的迭代器所有，不得重复使用。如果迭代提前停止——包括因流式条目而抛出异常的情况——导致停止的条目以及其后仍在队列中的每个条目都会被释放，从而释放它们持有的任何源。
 
 ## `zlib.zipFiles(files[, options])`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 > 稳定性：1.0 - 早期开发阶段
@@ -2339,7 +2359,7 @@ added:
 ## `zlib.getMaxZipContentSize()`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 > 稳定性：1.0 - 早期开发阶段
@@ -2353,12 +2373,12 @@ ZIP 归档 API 仍处于实验阶段。首次使用其中的任何部分（包�
 ## `zlib.setMaxZipContentSize(size)`
 
 <!-- YAML
-added: REPLACEME
+added: v26.8.0
 -->
 
 > 稳定性：1.0 - 早期开发阶段
 
-ZIP 存档 API 仍处于实验阶段。首次使用其中的任何部分（包括此函数）都会发出实验性警告；仅导入
+ZIP 归档 API 仍处于实验阶段。首次使用其中的任何部分（包括此函数）都会发出实验性警告；仅导入
 `node:zlib` 不会发出警告。
 
 * `size` {number}
@@ -2739,6 +2759,8 @@ added:
 使用 [`ZstdCompress`][] 压缩一块数据。
 
 ### `zlib.zstdDecompress(buffer[, options], callback)`
+
+> 稳定性：1 - 实验性
 
 <!-- YAML
 added:

@@ -156,6 +156,40 @@ Error: 此 API 的访问已被限制
 
 此行为也适用于 `child_process.spawn()`，但在这种情况下，标志是通过 `NODE_OPTIONS` 环境变量传播的，而不是直接通过进程参数。
 
+### `--allow-env`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.1 - 积极开发中
+
+当使用 [权限模型][] 时，进程启动时不会包含未获准访问的环境变量。在启动时，所有与 `--allow-env` 不匹配的变量都会从进程环境中移除。被移除的变量不会出现在 `process.env`、诊断报告、调用 `getenv()` 的原生代码，以及子进程和工作线程的环境中。
+
+有效值为：
+
+* `*` - 授予对所有环境变量的访问权限。
+* 一个变量名，例如 `--allow-env=DATABASE_URL`。
+* 一个后缀为 `*` 的变量名前缀，例如 `--allow-env=APP_*`。
+
+可以通过重复此标志或用逗号分隔来传递多个值：`--allow-env=PORT,APP_*`。在 Windows 上，变量名不区分大小写。
+
+示例：
+
+```js
+console.log(process.env.DATABASE_URL);
+console.log(process.env.AWS_SECRET_ACCESS_KEY);
+```
+
+```console
+$ node --permission --allow-fs-read=* --allow-env=DATABASE_URL index.js
+postgres://localhost/app
+undefined
+(node:1234) Warning: The permission model removed the environment variable "AWS_SECRET_ACCESS_KEY" at startup. Use --allow-env to manage permissions.
+```
+
+Node.js 及其捆绑依赖项读取的变量（例如 `NODE_OPTIONS`、`PATH`、`HOME`、`TZ` 和 `SSL_CERT_FILE`）始终会保留，[`--env-file`][] 文件中定义的变量也会保留。默认情况下不会保留 `NODE_ENV`，因此读取该变量的应用程序和库需要使用 `--allow-env=NODE_ENV`。详情请参阅[环境变量权限][]。
+
 ### `--allow-ffi`
 
 <!-- YAML
@@ -164,11 +198,7 @@ added: v26.1.0
 
 > 稳定性：1.1 - 积极开发中
 
-当使用 [Permission Model][] 时，进程默认将无法使用 FFI
-API。尝试使用 FFI API 将抛出一个 `ERR_ACCESS_DENIED`
-异常，除非用户在启动 Node.js 时显式传递 `--allow-ffi` 标志。
-[`node:ffi`][] 模块还需要
-`--experimental-ffi` 标志，并且仅在具备 FFI 支持的构建中可用。
+当使用 [权限模型][] 时，进程默认将无法使用 FFI API。除非用户在启动 Node.js 时显式传递 `--allow-ffi` 标志，否则尝试使用 FFI API 将抛出 `ERR_ACCESS_DENIED` 异常。只有在启用了 FFI 支持的构建中，才提供 [`node:ffi`][] 模块。
 
 示例：
 
@@ -178,8 +208,8 @@ const lib = new DynamicLibrary(`./mylib.${suffix}`);
 ```
 
 ```console
-$ node --permission --experimental-ffi index.js
-Error: 对此 API 的访问已受限制。使用 --allow-ffi 来管理权限。
+$ node --permission index.js
+Error: Access to this API has been restricted. Use --allow-ffi to manage permissions.
     at node:internal/main/run_main_module:17:47 {
   code: 'ERR_ACCESS_DENIED',
   permission: 'FFI'
@@ -230,7 +260,23 @@ process.permission.has('fs.read', 'custom-require.js'); // 真
 process.permission.has('fs.read', 'custom-require-2.js'); // 真
 ```
 
-### 文件系统写入权限
+### `--allow-fs-vfs`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1.1 - 积极开发中
+
+当使用 [权限模型][] 时，默认情况下无法挂载[虚拟文件系统][]：除非用户在启动 Node.js 时显式传递 `--allow-fs-vfs` 标志，否则 [`vfs.mount()`][] 会抛出 `ERR_INVALID_STATE`。
+
+已挂载的 VFS 提供的路径不由文件系统权限描述，因此挂载 VFS 由其自身的标志控制，而不是由 `--allow-fs-read` 或 `--allow-fs-write` 控制。
+
+```console
+$ node --experimental-vfs --permission --allow-fs-vfs app.js
+```
+
+### `--allow-fs-write`
 
 <!-- YAML
 added: v20.0.0
@@ -321,7 +367,9 @@ $ node --permission index.js
 ### `--allow-openssl-store`
 
 <!-- YAML
-added: v26.7.0
+added:
+ - v26.7.0
+ - v24.21.0
 -->
 
 > 稳定性：1.1 - 开发中
@@ -333,6 +381,8 @@ added: v26.7.0
 [`permission.drop()`][] 移除。
 
 此标志向已配置的 OpenSSL STORE 加载器授予广泛权限。加载器可能会访问文件、设备、令牌或网络。加载器执行的访问不受 `fs.read`、`fs.write` 或 `net` 权限范围的限制。
+
+不过，加载器及其加载的模块受 [`--allow-env`][] 约束。除非使用 `--allow-env` 显式授予权限，否则它们依赖的环境变量（例如 SoftHSM 使用的 `SOFTHSM2_CONF`）会在启动时被移除。详情请参阅[环境变量权限][]。
 
 ### `--allow-wasi`
 
@@ -400,6 +450,93 @@ Error: 对此 API 的访问已受限制
 }
 ```
 
+### `--bench`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1 - 实验性
+
+启动 Node.js 命令行基准测试运行器。必须至少指定一个文件或 glob 模式：
+
+```console
+node --experimental-bench --bench benchmark.mjs
+node --experimental-bench --bench 'benchmarks/**/*.js'
+```
+
+使用此标志或任何其他 `--bench-*` 选项都需要 `--experimental-bench` 标志。
+
+请将 glob 模式括起来，防止 shell 对其展开。匹配的文件会排序后依次执行。默认情况下，每个文件都在单独的子进程中运行。基准测试文件使用 `node:bench` 声明基准测试；不得自行调用 `run()`。更多详情请参阅[基准测试运行器][]文档。
+
+此标志不能与 `--test`、`--watch`、`--watch-path`、`--check`、`--eval` 或 `--interactive` 一起使用。
+
+### `--bench-isolation=mode`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1 - 实验性
+
+配置基准测试文件的隔离方式。当 `mode` 为 `'process'` 时，每个匹配的文件都会在单独的子进程中运行。这是默认模式。文件仍会依次运行，因此其测量的工作不会重叠。
+
+当 `mode` 为 `'none'` 时，所有匹配的文件和基准测试都会在基准测试运行器进程中依次运行。这会减少启动开销，但会使模块、堆和进程状态在文件之间延续。在此模式下，用户向标准输出或标准错误的写入也会与基准测试报告器共用目标位置。
+
+支持的模式为 `'process'` 和 `'none'`。
+
+### `--bench-name-pattern=pattern`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1 - 实验性
+
+仅运行完整层级名称与 JavaScript 正则表达式 `pattern` 匹配的基准测试。不匹配的基准测试会报告为已跳过。
+
+### `--bench-reporter-destination=destination`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1 - 实验性
+
+指定相应基准测试报告器的目标位置。值可以是 `stdout`、`stderr` 或文件路径。如果未指定目标位置，则单个报告器默认使用 `stdout`。
+
+### `--bench-reporter=reporter`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1 - 实验性
+
+指定基准测试报告器。内置报告器为 `spec` 和 `json`。`json` 报告器会输出以换行符分隔的 JSON。可以使用从当前工作目录解析的模块说明符指定自定义报告器。
+
+此选项可以重复指定。指定多个报告器时，每个报告器都必须有对应的 `--bench-reporter-destination`。默认报告器为 `spec`。
+
+### `--bench-samples=count`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1 - 实验性
+
+覆盖每个选定基准测试的回调调用次数上限。基准测试可以通过调用 `context.done()` 提前结束。`count` 必须是介于 `1` 和 `4294967295` 之间的整数。
+
+### `--bench-warmup=count`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1 - 实验性
+
+覆盖每个选定基准测试未报告的预热回调调用次数。`count` 必须是介于 `0` 和 `4294967295` 之间的整数。
+
 ### `--build-sea=config`
 
 <!-- YAML
@@ -409,7 +546,7 @@ added:
 
 > 稳定性：1.1 - 积极开发中
 
-从 JSON 配置文件生成[单可执行应用程序][single executable application]。参数必须是配置文件的路径。如果路径不是绝对路径，则相对于当前工作目录解析。
+根据 JSON 配置文件生成[单可执行应用程序][single executable application]。参数必须是配置文件的路径。如果路径不是绝对路径，则相对于当前工作目录解析。
 
 有关配置字段、跨平台说明和资源 API，请参阅[单可执行应用程序][single executable application]文档。
 
@@ -471,19 +608,19 @@ changes:
     - v25.4.0
     - v24.13.1
     pr-url: https://github.com/nodejs/node/pull/60954
-    description: The snapshot build process is no longer experimental.
+    description: 快照构建过程不再是实验性的。
 -->
 
-Specifies the path to a JSON configuration file that configures snapshot creation behavior.
+指定用于配置快照创建行为的 JSON 配置文件的路径。
 
-The following options are currently supported:
+目前支持以下选项：
 
-* `builder` {string} Required. Provides the name of the script to execute before building the snapshot, as if [`--build-snapshot`][] had been passed with `builder` as the main script name.
-* `withoutCodeCache` {boolean} Optional. Including the code cache reduces the time spent on functions included in the compiled snapshot, at the cost of a larger snapshot size and potentially breaking snapshot portability.
+* `builder` {string} 必需。提供在构建快照之前执行的脚本名称，其效果等同于将 `builder` 作为主脚本名称传递给 [`--build-snapshot`][]。
+* `withoutCodeCache` {boolean} 可选。包含代码缓存可以减少编译快照中所含函数的执行时间，但会增大快照大小，并可能破坏快照的可移植性。
 
-When this flag is used, other script files provided on the command line will not be executed, but will instead be interpreted as regular command-line arguments.
+使用此标志时，命令行中提供的其他脚本文件不会被执行，而是会被解释为常规命令行参数。
 
-### `-c`, `--check`
+### `-c`、`--check`
 
 <!-- YAML
 added:
@@ -657,7 +794,9 @@ added:
   - v21.3.0
   - v20.11.0
 changes:
-  - version: v26.7.0
+  - version:
+     - v26.7.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/64742
     description: "`--disable-warning` 标志现已稳定。"
 -->
@@ -760,6 +899,16 @@ added: v6.0.0
 在启动时启用 [FIPS 模式][]。使用 OpenSSL 3 时，必须有一个名为
 `fips` 的已配置提供程序，并且该提供程序必须成功初始化。使用 OpenSSL 1.1.1
 时，Node.js 必须基于支持 FIPS 的 OpenSSL 构建。
+
+### `--enable-fips-indicator-events`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+将 OpenSSL FIPS 指示器结果发布到
+[`'crypto.fips.indicator'`][] 诊断通道。此选项要求 OpenSSL
+3.4 或更高版本。它不会启用 [FIPS 模式][]，也不会改变操作是否被允许。
 
 ### `--enable-source-maps`
 
@@ -887,7 +1036,7 @@ export USERNAME="nodejs" # 将导致 `nodejs` 作为值。
 
 如果您想从可能不存在的文件加载环境变量，可以改用 [`--env-file-if-exists`][] 标志。
 
-### `-e`, `--eval "script"`
+### `-e`、`--eval "script"`
 
 <!-- YAML
 added: v0.5.2
@@ -926,7 +1075,17 @@ changes:
 
 启用对 `.node` 插件的实验性导入支持。
 
-### `--experimental-config-file=path`, `--experimental-config-file`
+### `--experimental-bench`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1 - 实验性
+
+启用实验性的 `node:bench` 模块和命令行基准测试运行器。
+
+### `--experimental-config-file=path`、`--experimental-config-file`
 
 <!-- YAML
 added:
@@ -1075,7 +1234,7 @@ added:
 ### `--experimental-dtls`
 
 <!-- YAML
-added: REPLACEME
+added: v26.9.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1092,18 +1251,6 @@ added:
 -->
 
 在全局范围启用 [EventSource Web API][] 的暴露。
-
-### `--experimental-ffi`
-
-<!-- YAML
-added: v26.1.0
--->
-
-> 稳定性：1 - 实验性
-
-启用实验性的 [`node:ffi`][] 模块。
-
-此标志仅在具备 FFI 支持的构建中可用。
 
 ### `--experimental-import-meta-resolve`
 
@@ -1185,7 +1332,9 @@ added:
 ### `--experimental-package-map=<path>`
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1208,7 +1357,9 @@ added:
   - v22.0.0
   - v20.17.0
 changes:
-  - version: v26.5.0
+  - version:
+     - v26.5.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/64154
     description: 在不执行模块的情况下打印顶层 await。
 -->
@@ -1264,6 +1415,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1307,7 +1459,7 @@ changes:
 
 如果与 [权限模型][] 一起使用，此功能需要 `--allow-worker`。
 
-### `--experimental-test-tag-filter=<tag>`
+### `--experimental-test-tag-filter='<expr>'`
 
 <!-- YAML
 added:
@@ -1317,13 +1469,13 @@ added:
 
 > 稳定性：1.0 - 早期开发
 
-仅运行其标签集合包含 `<tag>` 的测试。测试通过
-`tags` 选项在 `test()`、`it()`、`suite()` 或 `describe()` 上声明标签；标签
-通过并集从套件继承到嵌套测试。过滤不区分大小写。
+仅运行与提供的布尔标签筛选表达式匹配的测试。测试通过 `test()`、`it()`、`suite()` 或 `describe()` 上的 `tags` 选项声明标签。标签通过并集从套件继承到嵌套测试。
 
-该标志可以指定多次；测试必须包含**每一个**
-过滤值才能运行。有关声明和
-继承标签的详细信息，请参阅 [测试标签][].
+表达式支持布尔运算符（`and`/`&&`、`or`/`||`、`not`/`!`）、用于分组的括号，以及标识符中的 `*` 通配符。遵循标准优先级：`not` 的绑定强度高于 `and`，而 `and` 的绑定强度高于 `or`。完整语法和行为请参阅 [Test tags][]。
+
+该标志可以指定多次；多个表达式按 AND 组合，因此测试必须满足每个表达式才能运行。
+
+格式错误的表达式会导致测试运行器在运行任何测试之前以非零状态退出。
 
 ### `--experimental-vfs`
 
@@ -1362,6 +1514,14 @@ changes:
 
 启用实验性的 WebAssembly 系统接口（WASI）支持。
 
+### `--experimental-web-worker`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+启用对 Web Worker API 的实验性支持。
+
 ### `--experimental-worker-inspection`
 
 <!-- YAML
@@ -1382,13 +1542,24 @@ added: v12.12.0
 
 禁止加载不具备[上下文感知能力][]的原生插件。
 
-### `--force-fips`
+### `--force-fips[=mode]`
 
 <!-- YAML
 added: v6.0.0
+changes:
+  - version: v26.9.0
+    pr-url: https://github.com/nodejs/node/pull/65645
+    description: 添加可选的 `provider` 和 `strict` 模式。
 -->
 
 在启动时启用 [FIPS 模式][]，并阻止通过脚本代码禁用该模式。适用于与 [`--enable-fips`][] 相同的 OpenSSL 要求。
+
+可以使用 `--force-fips=mode` 指定可选模式：
+
+* `provider`：保留 OpenSSL FIPS provider 对未获批准操作的已配置处理方式。不指定模式时，这是当前默认值。
+* `strict`：拒绝通过 OpenSSL FIPS 指示器回调报告的未获批准操作。此模式需要 OpenSSL 3.4 或更高版本。
+
+`strict` 模式仅涵盖通过 OpenSSL 默认库上下文的回调报告的操作。它不涵盖使用其他 `OSSL_LIB_CTX` 或另一份 `libcrypto` 的原生插件，也不涵盖不会调用该回调的特定于操作的指示器。
 
 ### `--force-node-api-uncaught-exceptions-policy`
 
@@ -1817,6 +1988,18 @@ changes:
 
 禁用使用 [语法检测][] 来确定模块类型。
 
+### `--no-experimental-ffi`
+
+<!-- YAML
+added: v26.1.0
+-->
+
+> 稳定性：1 - 实验性
+
+禁用实验性的 [`node:ffi`][] 模块。
+
+此标志仅适用于支持 FFI 的构建版本。
+
 ### `--no-experimental-global-navigator`
 
 <!-- YAML
@@ -1825,7 +2008,7 @@ added: v21.2.0
 
 > 稳定性：1 - 实验性
 
-禁用在全局作用域上暴露 [Navigator API][].
+禁用在全局作用域上暴露 [Navigator API][]。
 
 ### `--no-experimental-require-module`
 
@@ -1864,14 +2047,6 @@ changes:
 -->
 
 禁用实验性的 [`node:sqlite`][] 模块。
-
-### `--no-experimental-websocket`
-
-<!-- YAML
-added: v22.0.0
--->
-
-禁用在全局作用域上暴露 {WebSocket}。
 
 ### `--no-experimental-webstorage`
 
@@ -1982,6 +2157,16 @@ added: v6.0.0
 
 静默所有进程警告（包括弃用）。
 
+### `--no-worker-snapshot`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1 - 实验性
+
+启动工作线程时，从头运行内部引导程序，而不是从内置启动快照反序列化已引导的上下文。
+
 ### `--node-memory-debug`
 
 <!-- YAML
@@ -2061,19 +2246,22 @@ changes:
 > 该模式会记录违规行为，但不会拒绝访问。
 
 * 文件系统 - 可通过
-  [`--allow-fs-read`][]、[`--allow-fs-write`][] 标志进行管理
-* 网络 - 可通过 [`--allow-net`][] 标志进行管理
-* 子进程 - 可通过 [`--allow-child-process`][] 标志进行管理
-* Worker 线程 - 可通过 [`--allow-worker`][] 标志进行管理
-* WASI - 可通过 [`--allow-wasi`][] 标志进行管理
-* 原生插件 - 可通过 [`--allow-addons`][] 标志进行管理
-* FFI - 可通过 [`--allow-ffi`](#--allow-ffi) 标志进行管理
-* OpenSSL STORE 加载器 - 可通过 [`--allow-openssl-store`][] 标志进行管理。
+  [`--allow-fs-read`][]、[`--allow-fs-write`][] 标志管理
+* 网络 - 可通过 [`--allow-net`][] 标志管理
+* 环境变量 - 可通过 [`--allow-env`][] 标志管理
+* 子进程 - 可通过 [`--allow-child-process`][] 标志管理
+* 工作线程 - 可通过 [`--allow-worker`][] 标志管理
+* WASI - 可通过 [`--allow-wasi`][] 标志管理
+* 插件 - 可通过 [`--allow-addons`][] 标志管理
+* FFI - 可通过 [`--allow-ffi`](#--allow-ffi) 标志管理
+* OpenSSL STORE 加载器 - 可通过 [`--allow-openssl-store`][] 标志管理
 
 ### `--permission-audit`
 
 <!-- YAML
-added: v25.8.0
+added:
+ - v25.8.0
+ - v24.20.0
 -->
 
 启用权限模型的审计模式。启用后会执行权限检查，但**不会**拒绝访问——不会抛出 `ERR_ACCESS_DENIED` 错误。相反，每次权限违规都会通过
@@ -2157,6 +2345,44 @@ changes:
 -->
 
 与 `-e` 相同，但会打印结果。
+
+### `--process-timeout=duration`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.1 - 积极开发中
+
+如果进程在 `duration` 时间后仍在运行，则以代码 `124` 退出，计时从进程启动时开始。`duration` 是一个正整数，后跟单位：`ms`、`s`、`m` 或 `h`，例如 `500ms`、`30s`、`5m` 或
+`1h`。退出码与 `timeout(1)` 命令使用的退出码相同。
+
+退出前，Node.js 会将主线程正在执行的操作以及使事件循环保持活动状态的资源打印到 stderr：
+
+```console
+$ node --process-timeout=5s server.js
+(node:25418) Process timed out after 5s (--process-timeout). Exiting with code 124.
+Main thread was not executing JavaScript.
+Resources keeping the event loop alive:
+    TCPServerWrap (listening on [::]:3000, fd 20)
+    Timeout x2 (next due in 2931ms)
+```
+
+如果主线程正在执行 JavaScript，则会改为打印其堆栈跟踪。
+使用 [`--report-on-process-timeout`][] 还可生成[诊断报告][]。
+
+进程退出时不会触发 `'beforeExit'` 和 `'exit'` 事件，因为可能是 JavaScript 代码使进程保持运行。代码覆盖率和性能分析文件（例如通过 [`NODE_V8_COVERAGE=dir`][] 或
+[`--cpu-prof`][] 启用的文件）仍会写入。
+
+如果主线程在两秒内没有响应，例如因阻塞于 [`child_process.execSync()`][] 等同步操作，Node.js 将立即退出，不打印堆栈跟踪和资源信息。
+
+此选项不能用于 [`NODE_OPTIONS`][]，也不能与启用检查器的选项组合使用，例如 `--inspect`、
+`--inspect-brk`、`--inspect-wait`、`--inspect-port` 和
+`--inspect-publish-uid`；它也不能与 `node inspect`、`--run` 或
+`--build-snapshot` 组合使用。启用此选项期间，调用 [`inspector.open()`][] 和
+[`session.connectToMainThread()`][] 会抛出异常，并且会忽略通过 `SIGUSR1` 激活检查器的请求。
+
+继承 `process.execArgv` 的子进程（例如通过 [`child_process.fork()`][] 创建的子进程）会从各自启动时开始应用超时。使用 [`--watch`][] 时，超时适用于应用程序的每次运行，而不是监视更改的进程。在[从命令行运行测试][]时，测试运行器进程会将超时应用于整个运行过程，每个在独立进程中运行的测试文件也会应用超时。
 
 ### `--prof`
 
@@ -2271,6 +2497,18 @@ changes:
 
 启用在导致应用程序终止的致命错误（Node.js 运行时内的内部错误，如内存不足）上触发报告。有助于检查各种诊断数据元素，如堆、堆栈、事件循环状态、资源消耗等，以推理致命错误。
 
+### `--report-on-process-timeout`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+> 稳定性：1.1 - 积极开发中
+
+启用 [`--process-timeout`][] 超时时生成报告，除了打印到 stderr 的摘要之外。可用于检查 JavaScript 和原生堆栈、事件循环状态以及资源消耗，以推断进程未能退出的原因。需要 [`--process-timeout`][]。
+
+如果工作线程在两秒内没有提供其报告部分，例如因阻塞于 [`child_process.execSync()`][] 等同步操作，则不会将其纳入报告。
+
 ### `--report-on-signal`
 
 <!-- YAML
@@ -2356,6 +2594,9 @@ changes:
 <!-- YAML
 added: v22.0.0
 changes:
+  - version: v26.9.0
+    pr-url: https://github.com/nodejs/node/pull/64606
+    description: 不带命令传入 `--run` 时，会列出可用脚本。
   - version: v22.3.0
     pr-url: https://github.com/nodejs/node/pull/53032
     description: 添加了 NODE_RUN_SCRIPT_NAME 环境变量。
@@ -2370,8 +2611,15 @@ changes:
 这将从 package.json 的 `"scripts"` 对象运行指定命令。
 如果未提供 `"command"`，它将列出可用的脚本。
 
-`--run` 将向上遍历到根目录并找到 `package.json`
-文件以从中运行命令。
+不带命令传入 `--run` 时，会列出可用脚本并以非零退出码退出：
+
+```console
+$ node --run
+Available scripts are:
+  test: node --test
+```
+
+`--run` 会向上遍历到根目录，并找到一个 `package.json` 文件以从中运行命令。
 
 `--run` 会将当前目录每个祖先目录中的 `./node_modules/.bin` 添加到
 `PATH` 中，以便在存在多个 `node_modules` 目录时，从不同文件夹中执行二进制文件，
@@ -3081,19 +3329,20 @@ added:
 added:
  - v13.6.0
  - v12.17.0
+changes:
+  - version: v26.9.0
+    pr-url: https://github.com/nodejs/node/pull/65389
+    description: 此选项现已无效。
 -->
 
-启动时将 Node.js 静态代码重映射到大内存页。如果在
-目标系统上支持，这将导致 Node.js 静态代码移动到 2
-MiB 页而不是 4 KiB 页。
+此选项已不再受支持，且不起作用。它过去会在启动时将 Node.js
+静态代码重新映射到大内存页。
 
-`mode` 的有效值如下：
+为兼容性起见，此选项仍接受以下值：
 
 * `off`：不会尝试映射。这是默认值。
-* `on`：如果操作系统支持，将尝试映射。映射失败将
-  被忽略，并且消息将打印到标准错误。
-* `silent`：如果操作系统支持，将尝试映射。映射失败将
-  被忽略，并且不会报告。
+* `on`：不会尝试映射，并会向标准错误输出一条消息，说明此选项已不再受支持。
+* `silent`：与 `off` 相同。
 
 ### `--use-system-ca`
 
@@ -3119,8 +3368,8 @@ Node.js 使用系统存储中存在的受信任 CA 证书，以及
 * 默认和系统钥匙串
   * 信任：
     * 任何“使用此证书时”标志设置为“始终信任”的证书，或
-    * 任何“安全套接字层 (SSL)"标志设置为“始终信任”的证书。
-  * 证书还必须有效，且"X.509 基本策略”设置为“始终信任”。
+    * 任何“安全套接字层（SSL）”标志设置为“始终信任”的证书。
+  * 证书还必须有效，且“X.509 基本策略”设置为“始终信任”。
 
 在 Windows 上，尊重以下设置：
 
@@ -3181,6 +3430,39 @@ added: v0.1.3
 -->
 
 打印 node 的版本。
+
+### `--vfs-load=source`
+
+<!-- YAML
+added: v26.10.0
+-->
+
+* `source` {string} 要挂载并运行的目录或归档文件。
+
+需要 [`--experimental-vfs`][]。最多只能指定一次。
+
+将 `source` 挂载为虚拟文件系统（[`node:vfs`][]），并通过该挂载而非真实文件系统解析入口点及后续所有 `require()`/`import`。挂载点是 Node.js 指定的保留挂载点，因此不会遮蔽真实路径，也无法选择目标位置。入口点的获取方式与 `node <directory>` 相同：使用挂载中的 `package.json` 的 `"main"`，或 `index.js`。任何位置命令行参数都属于程序自身的参数（可从 `process.argv[2]` 起获取），而不是入口点覆盖参数。
+
+`process.argv[1]` 报告的是 `source`，而非保留挂载点，因为挂载点是一个不透明的实现细节。
+
+用于挂载 source 的提供程序根据 source 本身而非其文件名选择：
+
+* 目录使用以该目录为根的 [`RealFSProvider`][] 挂载。
+* 字节内容为 ZIP 归档的文件使用 [`ZipProvider`][] 挂载，因此归档可以使用任意名称。
+
+首先会按注册顺序的逆序查询通过 `vfs.registerProvider()` 注册的提供程序（通常来自使用 [`--require`][] 或 [`--import`][] 预加载的模块），它们可以认领目录和文件。如果没有提供程序认领该 source，Node.js 将退出并报错。
+
+在工作线程中，`--vfs-load` 会挂载但不会加载：工作线程会继承该挂载并运行自己的入口点，而入口点本身可能位于该挂载中。
+
+源在每个挂载它的线程中都会挂载到相同的保留挂载点，无论该线程还挂载了什么，因此指向挂载内的路径在所有线程中都表示相同内容。
+
+使用自己的 `execArgv` 创建的工作线程不会继承父线程的任何选项，因此根本不会挂载源。要运行来自该挂载的脚本，必须再次为此类工作线程提供相同的选项，即 `--experimental-vfs` 和 `--vfs-load`；否则，该线程没有可供脚本加载的挂载，工作线程将无法加载脚本。`--experimental-vfs` 也用于让工作线程自己的代码能够使用 [`node:vfs`][]。脚本来自其他位置（例如真实文件系统）的工作线程则无需添加任何内容。
+
+[`NODE_OPTIONS`][] 中不允许使用 `--vfs-load`：运行哪个入口点由命令行决定，环境不得重定向它。
+
+```console
+$ node --experimental-vfs --vfs-load=app.zip
+```
 
 ### `--watch`
 
@@ -3318,11 +3600,19 @@ changes:
     description: 此功能不再处于实验阶段。
 -->
 
-为 Node.js 实例启用 [模块编译缓存][]。有关详细信息，请参阅 [模块编译缓存][] 的文档。
+为 Node.js 实例启用[模块编译缓存][]。有关详细信息，请参阅[模块编译缓存][]的文档。
 
 ### `NODE_COMPILE_CACHE_PORTABLE=1`
 
-当设置为 1 时，只要模块布局相对于缓存目录保持不变，[模块编译缓存][] 就可以在不同的目录位置之间重用。
+设置为 1 时，只要模块相对于缓存目录的布局保持不变，[模块编译缓存][]就可以在不同目录位置之间重复使用，并且可供任何用户使用（缓存子目录不会附加创建用户的 uid）。
+
+### `NODE_COMPILE_CACHE_READONLY=1`
+
+<!-- YAML
+added: v26.8.0
+-->
+
+设置为 1 时，[模块编译缓存][]只会从其目录中读取现有条目：不会向其中写入任何内容，如果目录不存在，也不会创建它。
 
 ### `NODE_DEBUG=module[,…]`
 
@@ -3352,7 +3642,7 @@ added: v22.8.0
 
 > 稳定性：1.1 - 积极开发中
 
-为 Node.js 实例禁用 [模块编译缓存][]。有关详细信息，请参阅 [模块编译缓存][] 的文档。
+为 Node.js 实例禁用[模块编译缓存][]。有关详细信息，请参阅[模块编译缓存][]的文档。
 
 ### `NODE_EXTRA_CA_CERTS=file`
 
@@ -3390,43 +3680,51 @@ added: v6.11.0
 added: v8.0.0
 -->
 
-A space-separated list of command-line options. `options...` is parsed before the command-line options, so command-line options will override anything in `options...` or combine with what follows it. Node.js will exit with an error if an option that is not allowed in the environment is used (such as `-p` or a script file).
+以空格分隔的命令行选项列表。`options...` 会在命令行选项之前解析，因此命令行选项会覆盖 `options...` 中的任何内容，或与其后续内容组合。如果使用了不允许在环境中使用的选项（例如 `-p` 或脚本文件），Node.js 将以错误退出。
 
-If an option value contains spaces, you can escape them using double quotes:
+如果选项值包含空格，可以使用双引号对其进行转义：
 
 ```bash
 NODE_OPTIONS='--require "./my path/file.js"'
 ```
 
-Singleton flags passed as command-line options will override the same flags passed to `NODE_OPTIONS`:
+作为命令行选项传递的单例标志会覆盖传递给 `NODE_OPTIONS` 的相同标志：
 
 ```bash
-# The inspector will be available on port 5555
+# 检查器将在端口 5555 上可用
 NODE_OPTIONS='--inspect=localhost:4444' node --inspect=localhost:5555
 ```
 
-Flags that can be passed multiple times will be processed in the order of first passing their `NODE_OPTIONS` instances, followed by their command-line instances:
+可多次传递的标志将按照先处理 `NODE_OPTIONS` 实例、再处理命令行实例的顺序进行处理：
 
 ```bash
 NODE_OPTIONS='--require "./a.js"' node --require "./b.js"
-# Equivalent to:
+# 等同于：
 node --require "./a.js" --require "./b.js"
 ```
 
-The following Node.js options are allowed. If an option supports both the --XX and --no-XX variants, both are supported, but only one of them is included in the list below.
+允许使用以下 Node.js 选项。如果某个选项同时支持 --XX 和 --no-XX 形式，则两者都受支持，但下方列表中只包含其中一种形式。
 
 <!-- node-options-node start -->
 
 * `--allow-addons`
 * `--allow-child-process`
+* `--allow-env`
 * `--allow-ffi`
 * `--allow-fs-read`
+* `--allow-fs-vfs`
 * `--allow-fs-write`
 * `--allow-inspector`
 * `--allow-net`
 * `--allow-openssl-store`
 * `--allow-wasi`
 * `--allow-worker`
+* `--bench-isolation`
+* `--bench-name-pattern`
+* `--bench-reporter-destination`
+* `--bench-reporter`
+* `--bench-samples`
+* `--bench-warmup`
 * `--conditions`, `-C`
 * `--cpu-prof-dir`
 * `--cpu-prof-interval`
@@ -3438,16 +3736,17 @@ The following Node.js options are allowed. If an option supports both the --XX a
 * `--disable-warning`
 * `--disable-wasm-trap-handler`
 * `--dns-result-order`
+* `--enable-fips-indicator-events`
 * `--enable-fips`
 * `--enable-network-family-autoselection`
 * `--enable-source-maps`
 * `--entry-url`
 * `--experimental-abortcontroller`
 * `--experimental-addon-modules`
+* `--experimental-bench`
 * `--experimental-detect-module`
 * `--experimental-dtls`
 * `--experimental-eventsource`
-* `--experimental-ffi`
 * `--experimental-import-meta-resolve`
 * `--experimental-import-text`
 * `--experimental-json-modules`
@@ -3456,6 +3755,7 @@ The following Node.js options are allowed. If an option supports both the --XX a
 * `--experimental-package-map`
 * `--experimental-print-required-tla`
 * `--experimental-quic`
+* `--experimental-repl-await`
 * `--experimental-require-module`
 * `--experimental-shadow-realm`
 * `--experimental-specifier-resolution`
@@ -3465,6 +3765,8 @@ The following Node.js options are allowed. If an option supports both the --XX a
 * `--experimental-vfs`
 * `--experimental-vm-modules`
 * `--experimental-wasi-unstable-preview1`
+* `--experimental-web-worker`
+* `--experimental-websocket`
 * `--force-context-aware`
 * `--force-fips`
 * `--force-node-api-uncaught-exceptions-policy`
@@ -3492,10 +3794,10 @@ The following Node.js options are allowed. If an option supports both the --XX a
 * `--no-addons`
 * `--no-async-context-frame`
 * `--no-deprecation`
+* `--no-experimental-ffi`
 * `--no-experimental-global-navigator`
 * `--no-experimental-sqlite`
 * `--no-experimental-strip-types`
-* `--no-experimental-websocket`
 * `--no-experimental-webstorage`
 * `--no-extra-info-on-fatal-exception`
 * `--no-force-async-hooks-checks`
@@ -3504,6 +3806,7 @@ The following Node.js options are allowed. If an option supports both the --XX a
 * `--no-strip-types`
 * `--no-warnings`
 * `--no-webstorage`
+* `--no-worker-snapshot`
 * `--node-memory-debug`
 * `--openssl-config`
 * `--openssl-legacy-provider`
@@ -3586,7 +3889,7 @@ The following Node.js options are allowed. If an option supports both the --XX a
 
 <!-- node-options-node end -->
 
-The following V8 options are allowed:
+允许使用以下 V8 选项：
 
 <!-- node-options-v8 start -->
 
@@ -3609,9 +3912,9 @@ The following V8 options are allowed:
 
 <!-- node-options-others start -->
 
-`--perf-basic-prof-only-functions`, `--perf-basic-prof`, `--perf-prof-unwinding-info`, and `--perf-prof` are available only on Linux.
+`--perf-basic-prof-only-functions`、`--perf-basic-prof`、`--perf-prof-unwinding-info` 和 `--perf-prof` 仅在 Linux 上可用。
 
-`--enable-etw-stack-walking` is available only on Windows.
+`--enable-etw-stack-walking` 仅在 Windows 上可用。
 
 <!-- node-options-others end -->
 
@@ -3621,7 +3924,7 @@ The following V8 options are allowed:
 added: v0.1.32
 -->
 
-前缀添加到模块搜索路径的 `':'` 分隔目录列表。
+添加到模块搜索路径前缀的 `':'` 分隔目录列表。
 
 在 Windows 上，这是一个 `';'` 分隔的列表。
 
@@ -3711,7 +4014,7 @@ added:
 
 仅在代理是受信任且经授权用于该部署时才使用此功能。代理支持旨在通过授权的
 代理服务器访问外部网络，例如防火墙要求使用代理时。它并不是用于隐藏
-流量或规避网络策略。参见 [内置代理支持][]。
+流量或规避网络策略。参见[内置代理支持][]。
 
 这也可以通过 [`--use-env-proxy`][] 命令行标志启用。
 当两者都设置时，`--use-env-proxy` 优先。
@@ -3805,7 +4108,9 @@ added: v6.11.0
 
 在启动时加载 OpenSSL 配置文件。该文件可用作 [FIPS 模式][] 配置的一部分。
 
-如果使用了 [`--use-openssl-ca`][] 命令行选项，则会忽略该环境变量。
+如果该变量设置为空值，Node.js 将在不加载任何 OpenSSL 配置文件的情况下启动。这是绕过默认配置文件的一种方式，例如，当 Node.js 运行用户无法访问 `/etc/ssl` 时，虽然该文件存在但无法读取，否则这会导致启动失败。在这种情况下，不会应用任何配置，包括该文件本来会执行的任何 [FIPS 模式][] 设置。
+
+如果使用了 [`--openssl-config`][] 命令行选项，则会忽略环境变量，空值也不会产生任何影响。
 
 ### `NODE_OPTIONS`
 
@@ -3961,6 +4266,7 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [CommonJS module]: modules.md
 [DEP0025 warning]: deprecations.md#dep0025-requirenodesys
 [ECMAScript module]: esm.md#modules-ecmascript-modules
+[Environment variable permissions]: permissions.md#environment-variable-permissions
 [EventSource Web API]: https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events
 [ExperimentalWarning: `vm.measureMemory` is an experimental feature]: vm.md#vmmeasurememoryoptions
 [FIPS mode]: crypto.md#fips-mode
@@ -3981,8 +4287,10 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [V8 Inspector integration for Node.js]: debugger.md#v8-inspector-integration-for-nodejs
 [V8 JavaScript code coverage]: https://v8project.blogspot.com/2017/12/javascript-code-coverage.html
 [`"type"`]: packages.md#type
+[`'crypto.fips.indicator'`]: diagnostics_channel.md#event-cryptofipsindicator
 [`--allow-addons`]: #--allow-addons
 [`--allow-child-process`]: #--allow-child-process
+[`--allow-env`]: #--allow-env
 [`--allow-fs-read`]: #--allow-fs-read
 [`--allow-fs-write`]: #--allow-fs-write
 [`--allow-net`]: #--allow-net
@@ -3991,12 +4299,14 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`--allow-worker`]: #--allow-worker
 [`--build-snapshot`]: #--build-snapshot
 [`--cpu-prof-dir`]: #--cpu-prof-dir
+[`--cpu-prof`]: #--cpu-prof
 [`--diagnostic-dir`]: #--diagnostic-dirdirectory
 [`--disable-sigusr1`]: #--disable-sigusr1
 [`--enable-fips`]: #--enable-fips
 [`--env-file-if-exists`]: #--env-file-if-existsfile
 [`--env-file`]: #--env-filefile
 [`--experimental-sea-config`]: single-executable-applications.md#1-generating-single-executable-preparation-blobs
+[`--experimental-vfs`]: #--experimental-vfs
 [`--heap-prof-dir`]: #--heap-prof-dir
 [`--import`]: #--importmodule
 [`--no-require-module`]: #--no-require-module
@@ -4004,10 +4314,13 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`--openssl-config`]: #--openssl-configfile
 [`--preserve-symlinks`]: #--preserve-symlinks
 [`--print`]: #-p---print-script
+[`--process-timeout`]: #--process-timeoutduration
 [`--redirect-warnings`]: #--redirect-warningsfile
+[`--report-on-process-timeout`]: #--report-on-process-timeout
 [`--require`]: #-r---require-module
 [`--use-env-proxy`]: #--use-env-proxy
 [`--use-system-ca`]: #--use-system-ca
+[`--watch`]: #--watch
 [`AsyncLocalStorage`]: async_context.md#class-asynclocalstorage
 [`Buffer`]: buffer.md#class-buffer
 [`CRYPTO_secure_malloc_init`]: https://www.openssl.org/docs/man3.0/man3/CRYPTO_secure_malloc_init.html
@@ -4015,15 +4328,21 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX`]: errors.md#err_unsupported_typescript_syntax
 [`NODE_OPTIONS`]: #node_optionsoptions
 [`NODE_USE_ENV_PROXY=1`]: #node_use_env_proxy1
+[`NODE_V8_COVERAGE=dir`]: #node_v8_coveragedir
 [`NO_COLOR`]: https://no-color.org
+[`RealFSProvider`]: vfs.md#class-realfsprovider
 [`Web Storage`]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
 [`YoungGenerationSizeFromSemiSpaceSize`]: https://chromium.googlesource.com/v8/v8.git/+/refs/tags/10.3.129/src/heap/heap.cc#328
+[`ZipProvider`]: vfs.md#class-zipprovider
+[`child_process.execSync()`]: child_process.md#child_processexecsynccommand-options
+[`child_process.fork()`]: child_process.md#child_processforkmodulepath-args-options
 [`crypto.createPrivateKey()`]: crypto.md#cryptocreateprivatekeykey
 [`dns.lookup()`]: dns.md#dnslookuphostname-options-callback
 [`dns.setDefaultResultOrder()`]: dns.md#dnssetdefaultresultorderorder
 [`dnsPromises.lookup()`]: dns.md#dnspromiseslookuphostname-options
 [`import.meta.url`]: esm.md#importmetaurl
-[`import` 标识符]: esm.md#import-specifiers
+[`import` specifier]: esm.md#import-specifiers
+[`inspector.open()`]: inspector.md#inspectoropenport-host-wait
 [`net.getDefaultAutoSelectFamilyAttemptTimeout()`]: net.md#netgetdefaultautoselectfamilyattempttimeout
 [`node:ffi`]: ffi.md
 [`node:sqlite`]: sqlite.md
@@ -4031,41 +4350,46 @@ node --stack-trace-limit=12 -p -e "Error.stackTraceLimit" # 输出 12
 [`node:vfs`]: vfs.md
 [`permission.drop()`]: permissions.md#permissiondropscope-reference
 [`process.setUncaughtExceptionCaptureCallback()`]: process.md#processsetuncaughtexceptioncapturecallbackfn
+[`session.connectToMainThread()`]: inspector.md#sessionconnecttomainthread
 [`tls.DEFAULT_MAX_VERSION`]: tls.md#tlsdefault_max_version
 [`tls.DEFAULT_MIN_VERSION`]: tls.md#tlsdefault_min_version
 [`unhandledRejection`]: process.md#event-unhandledrejection
 [`v8.startupSnapshot.addDeserializeCallback()`]: v8.md#v8startupsnapshotadddeserializecallbackcallback-data
 [`v8.startupSnapshot.setDeserializeMainFunction()`]: v8.md#v8startupsnapshotsetdeserializemainfunctioncallback-data
 [`v8.startupSnapshot` API]: v8.md#startup-snapshot-api
-[异步模块自定义钩子]: module.md#asynchronous-customization-hooks
-[被 Node.js 内置快照捕获]: https://github.com/nodejs/node/blob/b19525a33cc84033af4addd0f80acd4dc33ce0cf/test/parallel/test-bootstrap-modules.js#L24
-[从测试中收集代码覆盖率]: test.md#collecting-code-coverage
-[条件导出]: packages.md#conditional-exports
-[上下文感知]: addons.md#context-aware-addons
-[调试器]: debugger.md
-[调试安全影响]: https://nodejs.org/en/docs/guides/debugging-getting-started/#security-implications
-[弃用警告]: deprecations.md#list-of-deprecated-apis
-[DTLS 文档]: dtls.md
+[`vfs.mount()`]: vfs.md#vfsmount
+[asynchronous module customization hooks]: module.md#asynchronous-customization-hooks
+[benchmark runner]: bench.md#command-line-runner
+[captured by the built-in snapshot of Node.js]: https://github.com/nodejs/node/blob/b19525a33cc84033af4addd0f80acd4dc33ce0cf/test/parallel/test-bootstrap-modules.js#L24
+[collecting code coverage from tests]: test.md#collecting-code-coverage
+[conditional exports]: packages.md#conditional-exports
+[context-aware]: addons.md#context-aware-addons
+[debugger]: debugger.md
+[debugging security implications]: https://nodejs.org/learn/getting-started/debugging#security-implications
+[deprecation warnings]: deprecations.md#list-of-deprecated-apis
+[diagnostic report]: report.md
+[dtls documentation]: dtls.md
 [emit_warning]: process.md#processemitwarningwarning-options
-[环境变量]: #environment-variables_1
-[按名称过滤测试]: test.md#filtering-tests-by-name
-[全局设置和清理]: test.md#global-setup-and-teardown
+[environment_variables]: #environment-variables-1
+[filtering tests by name]: test.md#filtering-tests-by-name
+[global setup and teardown]: test.md#global-setup-and-teardown
 [jitless]: https://v8.dev/blog/jitless
-[libuv 线程池文档]: https://docs.libuv.org/en/latest/threadpool.html
-[模块编译缓存]: module.md#module-compile-cache
-[预加载异步模块自定义钩子]: module.md#registration-of-asynchronous-customization-hooks
-[随机化测试执行顺序]: test.md#randomizing-tests-execution-order
-[远程代码执行]: https://www.owasp.org/index.php/Code_Injection
-[从命令行运行测试]: test.md#running-tests-from-the-command-line
-[Scavenge 垃圾收集器]: https://v8.dev/blog/orinoco-parallel-scavenger
-[安全警告]: #warning-binding-inspector-to-a-public-ipport-combination-is-insecure
-[半空间]: https://www.memorymanagement.org/glossary/s.html#semi.space
-[单可执行应用程序]: single-executable-applications.md
-[快照测试]: test.md#snapshot-testing
-[语法检测]: packages.md#syntax-detection
-[测试报告器]: test.md#test-reporters
-[测试重跑]: test.md#rerunning-failed-tests
-[测试运行器执行模型]: test.md#test-runner-execution-model
-[时区 ID]: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-[用户态快照的追踪问题]: https://github.com/nodejs/node/issues/44014
-[TZ 在其他环境中的处理方式]: https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html
+[libuv threadpool documentation]: https://docs.libuv.org/en/latest/threadpool.html
+[module compile cache]: module.md#module-compile-cache
+[preloading asynchronous module customization hooks]: module.md#registration-of-asynchronous-customization-hooks
+[randomizing tests execution order]: test.md#randomizing-tests-execution-order
+[remote code execution]: https://www.owasp.org/index.php/Code_Injection
+[running tests from the command line]: test.md#running-tests-from-the-command-line
+[scavenge garbage collector]: https://v8.dev/blog/orinoco-parallel-scavenger
+[security warning]: #warning-binding-inspector-to-a-public-ipport-combination-is-insecure
+[semi-space]: https://v8.dev/blog/trash-talk#minor-gc
+[single executable application]: single-executable-applications.md
+[snapshot testing]: test.md#snapshot-testing
+[syntax detection]: packages.md#syntax-detection
+[test reporters]: test.md#test-reporters
+[test reruns]: test.md#rerunning-failed-tests
+[test runner execution model]: test.md#test-runner-execution-model
+[timezone IDs]: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+[tracking issue for user-land snapshots]: https://github.com/nodejs/node/issues/44014
+[virtual file system]: vfs.md
+[ways that `TZ` is handled in other environments]: https://www.gnu.org/software/libc/manual/html_node/TZ-Variable.html

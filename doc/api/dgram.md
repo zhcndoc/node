@@ -818,7 +818,7 @@ added: v8.7.0
 设置 `SO_RCVBUF` 套接字选项。  
 设置最大套接字接收缓冲区（字节）。
 
-如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][].
+如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][]。
 
 ### `socket.setSendBufferSize(size)`
 
@@ -831,7 +831,7 @@ added: v8.7.0
 设置 `SO_SNDBUF` 套接字选项。  
 设置最大套接字发送缓冲区（字节）。
 
-如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][].
+如果在未绑定的套接字上调用此方法，将抛出 [`ERR_SOCKET_BUFFER_SIZE`][]。
 
 ### `socket.setTTL(ttl)`
 
@@ -893,35 +893,21 @@ changes:
     description: "支持 `lookup` 选项。"
 -->
 
-* `options` {Object} 可用选项如下：
-  * `type` {string} 套接字的族。必须是 `'udp4'` 或 `'udp6'`。
-    必填。
-  * `reuseAddr` {boolean} 当为 `true` 时，[`socket.bind()`][] 将重用该
-    地址，即使另一个进程已经在其上绑定了一个套接字，但
-    只有一个套接字可以接收数据。
-    **默认：** `false`。
-  * `reusePort` {boolean} 当为 `true` 时，[`socket.bind()`][] 将重用该
-    端口，即使另一个进程已经在其上绑定了一个套接字。传入
-    数据报会分发到监听套接字。该选项仅在某些平台上可用，例如 Linux 3.9+、DragonFlyBSD 3.6+、FreeBSD 12.0+、
-    Solaris 11.4 和 AIX 7.2.5+。在不支持的平台上，此选项在套接字绑定时会抛出
-    错误。
-    **默认：** `false`。
-  * `ipv6Only` {boolean} 将 `ipv6Only` 设为 `true` 会
-    禁用双栈支持，也就是说，绑定到 `::` 不会使
-    `0.0.0.0` 也被绑定。**默认：** `false`。
+* `options` {Object} 可用选项：
+  * `type` {string} 套接字族。必须是 `'udp4'` 或 `'udp6'`。
+    必需。
+  * `reuseAddr` {boolean} 当为 `true` 时，[`socket.bind()`][] 将重用该地址，即使另一个进程已经绑定了该地址上的套接字，但只能有一个套接字接收数据。
+    **默认值：** `false`。
+  * `reusePort` {boolean} 当为 `true` 时，[`socket.bind()`][] 将重用该端口，即使另一个进程已经绑定了该端口上的套接字。传入的数据报会分发到正在监听的套接字。此选项仅在部分平台上可用，例如 Linux 3.9+、DragonFlyBSD 3.6+、FreeBSD 12.0+、Solaris 11.4 和 AIX 7.2.5+。在不支持此选项的平台上，绑定套接字时会引发错误。
+    **默认值：** `false`。
+  * `ipv6Only` {boolean} 将 `ipv6Only` 设置为 `true` 将禁用双栈支持，即绑定到地址 `::` 不会同时绑定 `0.0.0.0`。**默认值：** `false`。
   * `recvBufferSize` {number} 设置 `SO_RCVBUF` 套接字值。
   * `sendBufferSize` {number} 设置 `SO_SNDBUF` 套接字值。
-  * `lookup` {Function} 自定义查找函数。**默认：** [`dns.lookup()`][]。
-    当使用默认值时，套接字族的字面 IP 地址
-    会直接解析为其自身，而不会调用 [`dns.lookup()`][]。
+  * `lookup` {Function} 自定义查找函数。**默认值：** [`dns.lookup()`][]。
+    套接字族的字面 IP 地址会解析为其自身；不会为其调用查找函数。
   * `signal` {AbortSignal} 可用于关闭套接字的 AbortSignal。
-  * `receiveBlockList` {net.BlockList} `receiveBlockList` 可用于丢弃
-    来自特定 IP 地址、IP 范围或 IP 子网的入站数据报。这在服务器位于反向代理、NAT 等之后时
-    不起作用，因为与阻止列表进行比对的地址是代理的地址，或者是
-    由 NAT 指定的地址。
-  * `sendBlockList` {net.BlockList} `sendBlockList` 可用于禁用
-    到特定 IP 地址、IP 范围或 IP 子网的出站
-    访问。
+  * `receiveBlockList` {net.BlockList} `receiveBlockList` 可用于丢弃来自特定 IP 地址、IP 范围或 IP 子网的入站数据报。如果服务器位于反向代理、NAT 等之后，则此功能不起作用，因为与阻止列表进行检查的地址是代理地址或 NAT 指定的地址。
+  * `sendBlockList` {net.BlockList} `sendBlockList` 可用于禁用对特定 IP 地址、IP 范围或 IP 子网的出站访问。
 * `callback` {Function} 作为 `'message'` 事件的监听器附加。可选。
 * 返回：{dgram.Socket}
 

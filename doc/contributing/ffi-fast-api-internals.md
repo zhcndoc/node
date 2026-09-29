@@ -10,15 +10,27 @@ Fast API 路径是 FFI 调用的一层优化，适用于那些签名可以
 可用的最快可调用实现，并在不支持的调用形态、已优化失效的 V8 调用，
 以及必须与公共 FFI API 保持一致的校验行为中保留通用路径可用。
 
+## 调用路径概览
+
+`node:ffi` 有三条原生调用路径。`src/node_ffi.cc` 中的 `DynamicLibrary::CreateFunction()` 会按以下顺序为每个已解析函数选择且仅选择其中一条作为主要可调用路径：
+
+| 调用路径    | 选择条件                                                                                         | 原生入口点                       | JavaScript 包装器                                                       |
+| ------------ | ----------------------------------------------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------ |
+| Fast API     | `CreateFastFFIMetadata()` 成功：JIT 内存可用，且 `IsFastCallEligible()` 接受该签名 | 通过 `v8::CFunction` 生成的跳板 | `lib/internal/ffi/fast-api.js`（在需要时执行转换和校验） |
+| SharedBuffer | Fast API 拒绝，`IsSBEligibleSignature()` 接受：小端序主机且至少有一个参数    | `DynamicLibrary::InvokeFunctionSB`       | `lib/internal/ffi-shared-buffer.js`（槽位打包）                       |
+| Generic      | 以上两种情况都不符合                                                                                  | `DynamicLibrary::InvokeFunction`         | 无                                                                     |
+
+每条优化路径也会保留通用调用器，以供自身无法处理的调用使用：对于未优化或去优化的调用点，V8 会使用 Fast API 函数的常规回调；SharedBuffer 包装器会将非 BigInt 指针参数的调用转发给 `kSbInvokeSlow` 调用器。关于这些路径的用户级概要，请参阅 `node:ffi` API 文档中的[调用路径][]部分；本文档介绍其实现。
+
 ## 目标
 
 Fast API 的实现围绕以下目标设计：
 
 * 将高频的标量 FFI 调用从通用 `v8::FunctionCallbackInfo` 路径中移出。
 * 避免对常见的数值和类指针签名进行每次调用分配。
-* 保留公共 `node:ffi` 行为和错误形状。
+* 保留公共 `node:ffi` 行为和错误形态。
 * 将字符串生命周期管理保留在 JavaScript 中，在那里可以显式
-  拥有临时缓冲区。
+  持有临时缓冲区。
 * 将 SharedBuffer 和 Fast API 路由保持分离，并由 `lib/ffi.js` 组合
   这两层包装。
 * 使用按签名生成的本地代码，而不是在中转函数内部使用运行时循环。
@@ -381,5 +393,6 @@ JavaScript 包装器会保留选定的公共函数元数据：
 * `length`
 * `pointer`
 
-`pointer` 属性会镜像原始函数的指针描述符，因此读取或重新赋值它的用户
-代码在通过包装器时仍可正常工作。内部以 Symbol 作为键的元数据不会转发到包装器。
+`pointer` 属性会镜像原始函数的指针描述符，因此通过包装器读取或重新赋值该属性的用户代码仍可正常工作。以内部 Symbol 为键的元数据不会转发给包装器。
+
+[调用路径]: ../api/ffi.md#call-paths

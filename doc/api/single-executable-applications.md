@@ -102,12 +102,14 @@ Node.js 支持创建 [单可执行应用程序][]，方法是允许注入一个�
   "mainFormat": "commonjs", // 默认值："commonjs"，选项："commonjs", "module"
   "executable": "/path/to/node/binary", // 可选，如果未指定，则使用当前的 Node.js 二进制文件
   "output": "/path/to/write/the/generated/executable",
-  "disableExperimentalSEAWarning": true, // 默认值：false
-  "useSnapshot": false,  // 默认值：false
-  "useCodeCache": true, // 默认值：false
-  "execArgv": ["--no-warnings", "--max-old-space-size=4096"], // 可选
-  "execArgvExtension": "env", // 默认值："env"，选项："none", "env", "cli"
-  "assets": {  // 可选
+  "disableExperimentalSEAWarning": true, // Default: false
+  "useSnapshot": false,  // Default: false
+  "useCodeCache": true, // Default: false
+  "useVfs": true, // Default: false
+  "vfsArchive": "/path/to/assets.zip", // Optional
+  "execArgv": ["--no-warnings", "--max-old-space-size=4096"], // Optional
+  "execArgvExtension": "env", // Default: "env", options: "none", "env", "cli"
+  "assets": {  // Optional
     "a.dat": "/path/to/a.dat",
     "b.txt": "/path/to/b.txt"
   }
@@ -158,6 +160,98 @@ const raw = getRawAsset('a.jpg');
 有关更多信息，请参阅 [`sea.getAsset()`][]、[`sea.getAssetAsBlob()`][]、
 [`sea.getRawAsset()`][] 和 [`sea.getAssetKeys()`][] API 的文档。
 
+### 资源的虚拟文件系统（VFS）
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1.0 - 早期开发阶段
+
+除了使用 `node:sea` API 访问单个资源外，还可以将捆绑的资源公开为只读的[虚拟文件系统][]，并通过标准的 `node:fs` API 访问。要启用此功能，请在 SEA 配置中设置 `"useVfs": true`。
+
+虚拟文件系统不会遮蔽真实文件系统：它挂载在一个无法存在于真实文件系统中的保留挂载点上，并且挂载点是在运行时选择的，而不是固定路径。启用 `useVfs` 后，注入的主脚本本身会放置在挂载点的根目录下并从那里执行，因此 `__filename` 和 `__dirname` 指向虚拟文件系统内部，而不是反映 [`process.execPath`][]。因此，捆绑的代码可以通过相对于 `__dirname` 的路径和相对 [`require()`][] 调用访问资源，而无需知道挂载点：
+
+```cjs
+const fs = require('node:fs');
+const path = require('node:path');
+
+// __dirname is the root of the virtual file system holding the assets.
+const rawConfig = fs.readFileSync(path.join(__dirname, 'config.json'), 'utf8');
+const data = fs.readFileSync(path.join(__dirname, 'data/file.txt'));
+
+// Directory operations work too.
+const files = fs.readdirSync(path.join(__dirname, 'assets'));
+
+// Check if a bundled file exists.
+if (fs.existsSync(path.join(__dirname, 'optional.json'))) {
+  // ...
+}
+```
+
+VFS 支持用于读取文件和目录的 `node:fs` 操作。由于 SEA VFS 是只读的，写入操作会以 `EROFS` 失败。有关支持操作的完整列表，请参阅 [VFS 文档][]。
+
+#### 在 SEA 中从 VFS 加载模块
+
+启用 `useVfs` 后，主脚本会在虚拟文件系统内执行，并且 `require()` 会使用 VFS 的[模块加载器集成][]从捆绑的资源中加载模块。这既支持相对 require（例如 `require('./helper.js')`），也支持限定在挂载点内的 `node_modules` 包查找：
+
+```cjs
+// Require bundled modules using relative paths.
+const myModule = require('./lib/mymodule.js');
+
+// Packages bundled under the node_modules asset prefix also resolve.
+const dep = require('some-package');
+```
+
+#### ESM 入口点
+
+`"useVfs": true` 也支持 `"mainFormat": "module"`。ESM 主脚本通过 ESM 加载器从挂载点内加载，因此 `import.meta.url`、`import.meta.filename` 和 `import.meta.dirname` 反映主脚本在虚拟文件系统中的位置，并且静态和动态导入会根据捆绑的资源进行解析：
+
+```mjs
+import fs from 'node:fs';
+import path from 'node:path';
+
+// import.meta.dirname is the root of the virtual file system.
+const data = fs.readFileSync(
+  path.join(import.meta.dirname, 'data/file.txt'));
+
+// Relative and bare specifier imports resolve inside the mount.
+import myModule from './lib/mymodule.mjs';
+const lazy = await import('./lib/lazy.mjs');
+```
+
+模块格式检测方式与真实文件系统相同：将捆绑的 ES 模块命名为 `.mjs` 扩展名（或将相关的 `package.json` 文件作为资源提供），以便将它们解释为 ESM。
+
+#### 使用 `"vfsArchive"` 从 ZIP 存档提供资源
+
+配置可以将 `"vfsArchive"` 指向预先构建的 ZIP 存档，而不是逐个列出 `"assets"`。存档会原样嵌入可执行文件，虚拟文件系统提供其中的文件，并在读取每个文件时将其解压。当资源可压缩（例如 JavaScript、JSON 或其他文本）时，使用 deflate 压缩的存档可以大幅减小生成的可执行文件大小。
+
+可以使用任何 ZIP 工具构建存档，也可以使用 [`node:zlib`][] 中的 ZIP 支持：
+
+```mjs
+import { zipFiles } from 'node:zlib';
+import { createWriteStream } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
+
+await pipeline(
+  zipFiles([
+    ['./dist/config.json', 'config.json'],
+    ['./dist/data.txt', 'data/data.txt'],
+  ]),
+  createWriteStream('assets.zip'),
+);
+```
+
+挂载的文件树与使用 `"assets"` 时相同：条目使用其存档名称显示在挂载点下，主脚本放在挂载点根目录中，并且通过相对于 `__dirname` 的路径、`require()` 和 `import` 进行访问的方式不变。但是，`sea.getAsset()` 和 `sea.getAssetAsBlob()` 不会提供单个文件，因为可执行文件只嵌入了存档；请改用文件系统 API 读取文件。`"vfsArchive"` 要求设置 `"useVfs": true`，并且不能与 `"assets"` 同时使用。
+
+#### 快照和代码缓存的限制
+
+`"useVfs": true` 不能与 `"useSnapshot": true` 或 `"useCodeCache": true` 一起使用。代码缓存限制是由于实现尚不完整，而非技术上不可行。如果启动性能很重要，请考虑捆绑应用程序，并且在这种情况下不要依赖从 VFS 加载模块。
+
+#### 原生插件的限制
+
+由于 `process.dlopen()` 要求文件位于真实文件系统中，因此无法直接从 VFS 加载原生插件（`.node` 文件）。要在使用 VFS 的 SEA 中使用原生插件，请先将资源写入临时文件。示例请参阅[在注入的主脚本中使用原生插件][]。
+
 ### 启动快照支持
 
 `useSnapshot` 字段可用于启用启动快照支持。在这种情况下，`main`
@@ -196,8 +290,6 @@ const raw = getRawAsset('a.jpg');
 准备数据块的一部分并注入到最终可执行文件中。当单
 可执行应用程序启动时，Node.js 将使用代码缓存来加速编译，而不是从头编译 `main` 脚本，然后
 执行脚本，这将提高启动性能。
-
-**注意：** 当 `useCodeCache` 为 `true` 时，`import()` 不起作用。
 
 ### 执行参数
 
@@ -407,7 +499,8 @@ require = createRequire(__filename);
 
 <!-- TODO(joyeecheung)：支持并记录 module.registerHooks -->
 
-当使用 `"mainFormat": "module"` 时，`import()` 可用于动态加载内置模块。尝试使用 `import()` 从文件系统加载模块将抛出错误。
+在 CommonJS 和 ESM（`"mainFormat": "module"`）单可执行应用程序中，都可以使用 `import()` 动态加载内置模块。
+尝试使用 `import()` 从文件系统加载模块会引发错误。
 
 ### 在注入的主脚本中使用原生插件
 
@@ -575,7 +668,10 @@ fs.rmSync(addonPath);
 [生成单可执行准备 blob]: #1-%E7%94%9F%E6%88%90%E5%8D%95%E5%8F%AF%E6%89%A7%E8%A1%8C%E5%87%86%E5%A4%87blob
 [Mach-O]: https://en.wikipedia.org/wiki/Mach-O
 [PE]: https://en.wikipedia.org/wiki/Portable_Executable
+[Using native addons in the injected main script]: #using-native-addons-in-the-injected-main-script
+[VFS documentation]: vfs.md
 [Windows SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/
+[`node:zlib`]: zlib.md
 [`process.execPath`]: process.md#processexecpath
 [`require()`]: modules.md#requireid
 [`require.main`]: modules.md#accessing-the-main-module
@@ -587,8 +683,10 @@ fs.rmSync(addonPath);
 [`v8.startupSnapshot` API]: v8.md#startup-snapshot-api
 [有关 Node.js 中启动快照支持的文档]: cli.md#--build-snapshot
 [fuse]: https://www.electronjs.org/docs/latest/tutorial/fuses
+[module loader integration]: vfs.md#module-loader-integration
 [postject]: https://github.com/nodejs/postject
 [postject-linux-arm64-issue]: https://github.com/nodejs/postject/issues/105
 [signtool]: https://learn.microsoft.com/en-us/windows/win32/seccrypto/signtool
-[单可执行应用程序]: https://github.com/nodejs/single-executable
-[Node.js 支持]: https://github.com/nodejs/node/blob/main/BUILDING.md#platform-list
+[single executable applications]: https://github.com/nodejs/single-executable
+[supported by Node.js]: https://github.com/nodejs/node/blob/main/BUILDING.md#platform-list
+[virtual file system]: vfs.md

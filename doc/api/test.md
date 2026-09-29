@@ -450,9 +450,7 @@ added:
 
 > 稳定性：1.0 - 早期开发
 
-标签使用任意字符串标签为测试和套件添加注释。[`--experimental-test-tag-filter`][] CLI 标志（或 [`run()`][] 上的 `testTagFilters`
-选项）会选择其标签集合包含每个
-提供的过滤值的测试。
+标签使用任意字符串为测试和套件添加标注。[`--experimental-test-tag-filter`][] CLI 标志（或 [`run`][] 上的 `testTagFilters` 选项）根据这些标签的布尔表达式选择测试。
 
 标签是将元数据编码到测试名称之外的一种替代方式。它们
 适用于诸如子系统、速度等级、易波动性
@@ -484,35 +482,72 @@ describe('database', { tags: ['db'] }, () => {
 });
 ```
 
-标签值必须是非空字符串。标签匹配时不区分大小写；
-规范形式为小写。同一 `tags` 数组内的重复项会按小写形式折叠，
-并保留首次出现的声明顺序。
+标签值必须是非空字符串，且不能包含空白字符或运算符字符（`& | ! ( ) *`），也不能是任何大小写形式的保留字 `'and'`、`'or'` 或 `'not'`。标签匹配时不区分大小写；规范形式为小写。同一个 `tags` 数组中的重复标签会按小写形式合并，并保留首次声明的顺序。
 
 钩子（`before`、`after`、`beforeEach`、`afterEach`）不会声明它们自己的
 标签。它们作为其所属套件的一部分运行，而该套件承载
 套件的标签。
 
-### 按标签过滤
+### 过滤语法
 
-每个 [`--experimental-test-tag-filter`][] 值都是一个字面标签名。一个
-测试只有在其标签集合包含该名称时才会运行。该标志可以
-多次指定；测试必须匹配 **每个** 过滤条件才能运行。`run()`[] 上的 `testTagFilters`
-数组也同样适用。过滤器不区分大小写，并与 [`--test-name-pattern`][]、
-[`--test-skip-pattern`][] 和 `.only` 过滤进行 AND 组合。
+过滤表达式支持：
 
-在任何非空过滤条件下，未加标签的测试都会被排除，因为过滤条件
-要求标签存在。
+* 标识符——任何非空白、非运算符字符。字面标识符匹配值相同的标签（不区分大小写）。
+* 标识符内的 `*` 通配符匹配任意字符序列。单独的 `*` 匹配任何带标签的测试。
+* 两种等价形式的布尔运算符：
+  * `and` / `&&`
+  * `or` / `||`
+  * `not` / `!`
+* 用于分组的括号。
 
-### 从测试内部读取标签
+单词形式（`and`、`or`、`not`）要求用空白分隔；标点形式不要求。
+
+#### 运算符优先级
+
+表达式按标准优先级计算：`not > and > or`。二元运算符按从左到右结合。
+
+| 表达式         | 等价分组          |
+| -------------- | ----------------- |
+| `a or b and c` | `a or (b and c)`  |
+| `not a and b`  | `(not a) and b`   |
+
+使用括号改变优先级：
+
+| 表达式                         | 选择                                       |
+| ------------------------------ | ------------------------------------------ |
+| `(unit or smoke) and not slow` | 不属于 slow 的 unit 或 smoke 测试         |
+| `db && !flaky`                 | 不属于 flaky 的 db 测试                    |
+| `*`                            | 每个带标签的测试                           |
+
+#### 未加标签的测试
+
+未加标签的测试视为具有空标签集。因此：
+
+| 过滤表达式             | 未加标签的测试 | 原因                                           |
+| ---------------------- | -------------- | ---------------------------------------------- |
+| `db`                   | 排除           | 对空标签集进行正向匹配的结果为 false          |
+| `*`                    | 排除           | 裸通配符要求至少有一个标签                     |
+| `db or unit`           | 排除           | 两个分支对空标签集的结果都为 false             |
+| `not flaky`            | 包含           | 对空标签集取反的结果为 true                    |
+| `not flaky and not slow` | 包含         | 两个取反的结果对空标签集都为 true              |
+| `db or not flaky`      | 包含           | 取反的分支结果为 true                          |
+
+例如，`--experimental-test-tag-filter='not flaky'` 会运行所有未标记为 `flaky` 的测试，包括所有未加标签的测试。
+
+#### 组合多个过滤器
+
+[`--experimental-test-tag-filter`][] 可在命令行中指定多次。多个表达式以 AND 组合——测试必须满足每个表达式才能运行。将数组传递给 [`run`][] 中的 `testTagFilters` 时也同样如此。标签筛选还会与 [`--test-name-pattern`][]、[`--test-skip-pattern`][] 和 `.only` 筛选进行 AND 运算。
+
+#### 在测试内部读取标签
 
 [`TestContext`][] 对象通过 [`context.tags`][] 将测试的标签作为一个冻结数组暴露，
 因此测试可以根据自己的元数据进行分支。
 
-### 错误
+#### 错误
 
 违反上述验证规则的标签值会在注册位置抛出
-`ERR_INVALID_ARG_VALUE`，且发生在任何测试运行之前。
-非数组的 `tags` 值会抛出 `ERR_INVALID_ARG_TYPE`。
+`ERR_INVALID_ARG_VALUE`，此时尚未运行任何测试。非数组的
+`tags` 值会抛出 `ERR_INVALID_ARG_TYPE`。CLI 中格式错误的筛选表达式会导致测试运行器以非零状态退出，且不会运行任何测试文件。
 
 ## 多余的异步活动
 
@@ -738,16 +773,16 @@ describe('math', () => {
 
 在进程隔离模式下运行测试时（默认模式），生成的子进程会继承父进程的 Node.js 选项，包括[配置文件][]中指定的选项。不过，为了确保测试运行器正常运行，某些标志会被过滤掉：
 
-* `--test` - 防止递归执行测试
+* `--test` - 为避免递归执行测试而被禁用
 * `--experimental-test-coverage` - 由测试运行器管理
-* `--experimental-test-tag-filter` - 过滤值由父进程验证后重新发送给子进程
-* `--watch` - 监视模式由父进程处理
+* `--experimental-test-tag-filter` - 筛选表达式由父进程验证并重新发送给子进程
+* `--watch` - 监视模式在父进程级别处理
 * `--experimental-default-config-file` - 配置文件加载由父进程处理
 * `--test-reporter` - 报告由父进程管理
 * `--test-reporter-destination` - 输出目标由父进程控制
 * `--experimental-config-file` - 配置文件路径由父进程管理
-* `--test-randomize` - 随机化由父进程管理，并传递给子进程
-* `--test-random-seed` - 随机化种子由父进程管理，并传递给子进程
+* `--test-randomize` - 随机化由父进程管理并传递给子进程
+* `--test-random-seed` - 随机化种子由父进程管理并传递给子进程
 
 命令行参数、环境变量和配置文件中的所有其他 Node.js 选项都会由子进程继承。
 
@@ -1051,8 +1086,7 @@ test('模拟具有初始时间的 Date 对象', (context) => {
 });
 ```
 
-你可以使用 `.setTime()` 方法手动将模拟的日期移动到另一个
-时间。此方法仅接受正整数。
+你可以使用 `.setTime()` 方法手动将模拟的日期移动到另一个时间。此方法仅接受正整数。
 
 **注意：** 此方法**不会**执行任何在新时间之前过去的模拟计时器。
 
@@ -1090,8 +1124,7 @@ test('设置日期对象的时间', (context) => {
 });
 ```
 
-当你调用 `setTime()` 时，过去安排的计时器**不会**运行。要执行这些计时器，你可以使用
-`.tick()` 方法从新时间向前移动。
+当你调用 `setTime()` 时，过去安排的计时器**不会**运行。要执行这些计时器，你可以使用 `.tick()` 方法从新时间向前移动。
 
 ```mjs
 import assert from 'node:assert';
@@ -1143,8 +1176,7 @@ test('setTime 不会执行计时器', (context) => {
 });
 ```
 
-使用 `.runAll()` 将执行当前队列中的所有计时器。这
-也会将模拟的日期推进到最后执行的计时器的时间，就像时间已经过去了一样。
+使用 `.runAll()` 将执行当前队列中的所有计时器。这也会将模拟的日期推进到最后执行的计时器的时间，就像时间已经过去了一样。
 
 ```mjs
 import assert from 'node:assert';
@@ -1255,9 +1287,7 @@ changes:
   `tap` 报告器以 [TAP][] 格式输出测试结果。
 
 * `dot`
-  `dot` 报告器以紧凑格式输出测试结果，
-  其中每个通过的测试由一个 `.` 表示，
-  每个失败的测试由一个 `X` 表示。
+  `dot` 报告器以紧凑格式输出测试结果，其中每个通过的测试由一个 `.` 表示，每个失败的测试由一个 `X` 表示。
 
 * `junit`
   `junit` 报告器以 jUnit XML 格式输出测试结果
@@ -1279,10 +1309,7 @@ const { tap, spec, dot, junit, lcov } = require('node:test/reporters');
 
 ### 自定义报告器
 
-[`--test-reporter`][] 可用于指定自定义报告器的路径。
-自定义报告器是一个导出值的模块，
-该值被 [stream.compose][] 接受。
-报告器应转换由 {TestsStream} 发出的事件
+[`--test-reporter`][] 可用于指定自定义报告器的路径。自定义报告器是一个导出值的模块，该值被 [stream.compose][] 接受。报告器应转换由 {TestsStream} 发出的事件
 
 使用 {stream.Transform} 的自定义报告器示例：
 
@@ -1474,13 +1501,9 @@ module.exports = async function * customReporter(source) {
 
 ### 多个报告器
 
-[`--test-reporter`][] 标志可以指定多次，以多种格式报告测试结果。在这种情况下，
-需要使用 [`--test-reporter-destination`][] 为每个报告器指定一个目标。
-目标可以是 `stdout`、`stderr` 或文件路径。
-报告器和目标根据它们指定的顺序进行配对。
+[`--test-reporter`][] 标志可以指定多次，以多种格式报告测试结果。在这种情况下，需要使用 [`--test-reporter-destination`][] 为每个报告器指定一个目标。目标可以是 `stdout`、`stderr` 或文件路径。报告器和目标根据它们指定的顺序进行配对。
 
-在以下示例中，`spec` 报告器将输出到 `stdout`，
-而 `dot` 报告器将输出到 `file.txt`：
+在以下示例中，`spec` 报告器将输出到 `stdout`，而 `dot` 报告器将输出到 `file.txt`：
 
 ```bash
 node --test-reporter=spec --test-reporter=dot --test-reporter-destination=stdout --test-reporter-destination=file.txt
@@ -1534,80 +1557,66 @@ changes:
     description: 添加 testNamePatterns 选项。
 -->
 
-* `options` {Object} 运行测试的配置选项。支持以下属性：
-  * `concurrency` {number|boolean} 如果提供一个数字，则会并行运行相应数量的测试进程，其中每个进程对应一个测试文件。
+* `options` {Object} 用于运行测试的配置选项。支持以下属性：
+  * `concurrency` {number|boolean} 如果提供数字，则会有相应数量的测试进程并行运行，每个进程对应一个测试文件。
     如果为 `true`，则会并行运行 `os.availableParallelism() - 1` 个测试文件。
     如果为 `false`，则一次只运行一个测试文件。
-    **默认值：** `false`。
+    **默认：** `false`。
   * `cwd` {string} 指定测试运行器使用的当前工作目录。
-    作为解析文件的基准路径，就像[从命令行运行测试][]时从该目录运行一样。
-    **默认值：** `process.cwd()`。
-  * `files` {Array} 要运行的文件列表。
-    **默认值：** 与[从命令行运行测试][]相同。
-  * `forceExit` {boolean} 配置测试运行器，使其在所有已知测试执行完毕后退出进程，即使事件循环原本仍会保持活动状态。**默认值：** `false`。
-  * `globPatterns` {Array} 用于匹配测试文件的 glob 模式列表。此选项不能与 `files` 同时使用。
-    **默认值：** 与[从命令行运行测试][]相同。
-  * `inspectPort` {number|Function} 设置测试子进程的检查器端口。
-    可以是一个数字，也可以是不接受参数并返回数字的函数。如果提供空值，则每个进程都会获得自己的端口，该端口从主进程的 `process.debugPort` 开始递增。如果将 `isolation` 选项设置为 `'none'`，则会忽略此选项，因为不会生成子进程。**默认值：** `undefined`。
-  * `isolation` {string} 配置测试隔离类型。如果设置为 `'process'`，则每个测试文件都会在单独的子进程中运行。如果设置为 `'none'`，则所有测试文件都在当前进程中运行。**默认值：**
-    `'process'`。
-  * `only` {boolean} 如果为真，则测试上下文只运行设置了 `only` 选项的测试
-  * `setup` {Function} 接受 `TestsStream` 实例的函数，可用于在运行任何测试前设置监听器。
-    **默认值：** `undefined`。
-  * `execArgv` {Array} 生成子进程时传递给 `node` 可执行文件的 CLI 标志数组。当 `isolation` 为 `'none'` 时，此选项无效。
-    **默认值：** `[]`
-  * `argv` {Array} 生成子进程时传递给每个测试文件的 CLI 标志数组。当 `isolation` 为 `'none'` 时，此选项无效。
-    **默认值：** `[]`。
+    作为解析文件时的基准路径，效果相当于从该目录[通过命令行运行测试][]。
+    **默认：** `process.cwd()`。
+  * `files` {Array} 包含要运行的文件列表的数组。
+    **默认：** 与[通过命令行运行测试][]相同。
+  * `forceExit` {boolean} 配置测试运行器在所有已知测试执行完毕后退出进程，即使事件循环仍会保持活动状态也是如此。**默认：** `false`。
+  * `globPatterns` {Array} 包含用于匹配测试文件的 glob 模式列表的数组。此选项不能与 `files` 一起使用。
+    **默认：** 与[通过命令行运行测试][]相同。
+  * `inspectPort` {number|Function} 设置测试子进程的检查器端口。可以是一个数字，也可以是不接受参数并返回数字的函数。如果提供的是 nullish 值，每个进程都会获得自己的端口，端口从主进程的 `process.debugPort` 开始递增。如果 `isolation` 选项设置为 `'none'`，则会忽略此选项，因为不会生成子进程。**默认：** `undefined`。
+  * `isolation` {string} 配置测试隔离类型。如果设置为 `'process'`，每个测试文件都会在单独的子进程中运行。如果设置为 `'none'`，所有测试文件都会在当前进程中运行。**默认：** `'process'`。
+  * `only` {boolean} 如果为真值，测试上下文将只运行设置了 `only` 选项的测试
+  * `setup` {Function} 接受 `TestsStream` 实例的函数，可用于在运行任何测试之前设置监听器。
+    **默认：** `undefined`。
+  * `execArgv` {Array} 生成子进程时传递给 `node` 可执行文件的 CLI 标志数组。`isolation` 为 `'none'` 时，此选项无效。
+    **默认：** `[]`
+  * `argv` {Array} 生成子进程时传递给每个测试文件的 CLI 标志数组。`isolation` 为 `'none'` 时，此选项无效。
+    **默认：** `[]`。
   * `signal` {AbortSignal} 允许中止正在进行的测试执行。
-  * `testNamePatterns` {string|RegExp|Array} 字符串、RegExp 或 RegExp 数组，可用于仅运行名称与所提供模式匹配的测试。
-    测试名称模式会被解释为 JavaScript 正则表达式。
-    对于每个执行的测试，也会运行相应的测试钩子，例如 `beforeEach()`。
-    **默认值：** `undefined`。
-  * `testSkipPatterns` {string|RegExp|Array} 字符串、RegExp 或 RegExp 数组，可用于排除运行名称与所提供模式匹配的测试。
-    测试名称模式会被解释为 JavaScript 正则表达式。
-    对于每个执行的测试，也会运行相应的测试钩子，例如 `beforeEach()`。
-    **默认值：** `undefined`。
-  * `testTagFilters` {string|string\[]} 用于根据测试声明的标签筛选测试的标签名称或标签名称数组。测试必须包含列出的每个标签才能运行。等同于在命令行中传递 [`--experimental-test-tag-filter`][]。参见[测试标签][]。**默认值：** `undefined`。
-  * `timeout` {number} 测试执行在指定的毫秒数后失败。
-    如果未指定，子测试会从其父测试继承此值。
-    **默认值：** `Infinity`。
-  * `watch` {boolean} 是否以监听模式运行。**默认值：** `false`。
-  * `shard` {Object} 在特定分片中运行测试。**默认值：** `undefined`。
-    * `index` {number} 一个介于 1 和 `<total>` 之间的正整数，用于指定要运行的分片索引。此选项是_必需的_。
-    * `total` {number} 一个正整数，用于指定要将测试文件拆分成的分片总数。此选项是_必需的_。
-  * `randomize` {boolean} 随机化测试文件和排队测试的执行顺序。
-    此选项不支持与 `watch: true` 一起使用。
-    **默认值：** `false`。
-  * `randomSeed` {number} 随机化执行顺序时使用的种子。如果设置此选项，则运行可以确定性地重现相同的随机顺序，并且设置此选项也会启用随机化。该值必须是介于 `0` 和 `4294967295` 之间的整数。
-    **默认值：** `undefined`。
-  * `rerunFailuresFilePath` {string} 测试运行器用于存储测试状态的文件路径，以便在下次运行时只重新运行失败的测试。
-    有关更多信息，请参阅\[重新运行失败的测试]\[]。
-    **默认值：** `undefined`。
+  * `testNamePatterns` {string|RegExp|Array} 字符串、RegExp 或 RegExp 数组，可用于仅运行名称与所提供模式匹配的测试。测试名称模式会被解释为 JavaScript 正则表达式。对于执行的每个测试，还会运行相应的测试钩子，例如 `beforeEach()`。
+    **默认：** `undefined`。
+  * `testSkipPatterns` {string|RegExp|Array} 字符串、RegExp 或 RegExp 数组，可用于排除名称与所提供模式匹配的测试。测试名称模式会被解释为 JavaScript 正则表达式。对于执行的每个测试，还会运行相应的测试钩子，例如 `beforeEach()`。
+    **默认：** `undefined`。
+  * `testTagFilters` {string|string\[]} 布尔表达式或布尔表达式数组，用于根据测试声明的标签筛选测试。多个表达式按 AND 组合。等同于在命令行中传入 [`--experimental-test-tag-filter`][]。参见[测试标签][]。**默认：** `undefined`。
+  * `timeout` {number} 测试执行在多少毫秒后失败。
+    如果未指定，子测试将从其父测试继承此值。
+    **默认：** `Infinity`。
+  * `watch` {boolean} 是否以监视模式运行。**默认：** `false`。
+  * `shard` {Object} 在特定分片中运行测试。**默认：** `undefined`。
+    * `index` {number} 是介于 1 和 `<total>` 之间的正整数，用于指定要运行的分片索引。此选项为_必需_。
+    * `total` {number} 是一个正整数，用于指定将测试文件拆分成的分片总数。此选项为_必需_。
+  * `randomize` {boolean} 随机化测试文件和排队测试的执行顺序。此选项不支持与 `watch: true` 一起使用。
+    **默认：** `false`。
+  * `randomSeed` {number} 随机化执行顺序时使用的种子。设置此选项后，可确定性地重放相同的随机顺序，同时也会启用随机化。该值必须是介于 `0` 和 `4294967295` 之间的整数。
+    **默认：** `undefined`。
+  * `rerunFailuresFilePath` {string} 测试运行器用于存储测试状态的文件路径，以便在下次运行时只重新运行失败的测试。有关详细信息，请参见 \[重新运行失败的测试]\[]。
+    **默认：** `undefined`。
   * `coverage` {boolean} 启用[代码覆盖率][]收集。
-    **默认值：** `false`。
-  * `coverageExcludeGlobs` {string|Array} 使用 glob 模式排除代码覆盖率中的特定文件，该模式可以匹配绝对文件路径和相对文件路径。
-    此属性仅在将 `coverage` 设置为 `true` 时适用。
-    如果同时提供 `coverageExcludeGlobs` 和 `coverageIncludeGlobs`，则文件必须同时满足这两个条件才能包含在覆盖率报告中。
-    **默认值：** `undefined`。
-  * `coverageIncludeGlobs` {string|Array} 使用 glob 模式将特定文件包含在代码覆盖率中，该模式可以匹配绝对文件路径和相对文件路径。
-    此属性仅在将 `coverage` 设置为 `true` 时适用。
-    如果同时提供 `coverageExcludeGlobs` 和 `coverageIncludeGlobs`，则文件必须同时满足这两个条件才能包含在覆盖率报告中。
-    **默认值：** `undefined`。
-  * `coverageIncludeAll` {boolean} 将测试运行期间从未加载的源文件包含在覆盖率报告中，并将其报告为覆盖率为零。候选文件会在 `cwd` 中搜索，并接受与报告其余部分相同的 `coverageIncludeGlobs` 和 `coverageExcludeGlobs` 筛选。此属性仅在将 `coverage` 设置为 `true` 时适用。
-    **默认值：** `false`。
-  * `lineCoverage` {number} 要求达到最低行覆盖率百分比。如果代码覆盖率未达到指定阈值，进程将以代码 `1` 退出。
-    **默认值：** `0`。
-  * `branchCoverage` {number} 要求达到最低分支覆盖率百分比。如果代码覆盖率未达到指定阈值，进程将以代码 `1` 退出。
-    **默认值：** `0`。
-  * `functionCoverage` {number} 要求达到最低函数覆盖率百分比。如果代码覆盖率未达到指定阈值，进程将以代码 `1` 退出。
-    **默认值：** `0`。
-  * `env` {Object} 指定要传递给测试进程的环境变量。
-    此选项不能与 `isolation='none'` 一起使用。这些变量将覆盖主进程中的变量，并且不会与 `process.env` 合并。
-    **默认值：** `process.env`。
-* 返回：{TestsStream}
+    **默认：** `false`。
+  * `coverageExcludeGlobs` {string|Array} 使用 glob 模式从代码覆盖率中排除特定文件，该模式可匹配绝对和相对文件路径。此属性仅在 `coverage` 设置为 `true` 时适用。如果同时提供 `coverageExcludeGlobs` 和 `coverageIncludeGlobs`，文件必须同时符合**这两项**条件，才能包含在覆盖率报告中。
+    **默认：** `undefined`。
+  * `coverageIncludeGlobs` {string|Array} 使用 glob 模式将特定文件纳入代码覆盖率，该模式可匹配绝对和相对文件路径。此属性仅在 `coverage` 设置为 `true` 时适用。如果同时提供 `coverageExcludeGlobs` 和 `coverageIncludeGlobs`，文件必须同时符合**这两项**条件，才能包含在覆盖率报告中。
+    **默认：** `undefined`。
+  * `coverageIncludeAll` {boolean} 将测试运行期间从未加载的源文件也纳入覆盖率报告，并将其覆盖率报告为零。候选文件会在 `cwd` 中搜索，并接受与报告其余部分相同的 `coverageIncludeGlobs` 和 `coverageExcludeGlobs` 筛选。此属性仅在 `coverage` 设置为 `true` 时适用。
+    **默认：** `false`。
+  * `lineCoverage` {number} 要求达到的最低行覆盖率百分比。如果代码覆盖率未达到指定阈值，进程将以代码 `1` 退出。
+    **默认：** `0`。
+  * `branchCoverage` {number} 要求达到的最低分支覆盖率百分比。如果代码覆盖率未达到指定阈值，进程将以代码 `1` 退出。
+    **默认：** `0`。
+  * `functionCoverage` {number} 要求达到的最低函数覆盖率百分比。如果代码覆盖率未达到指定阈值，进程将以代码 `1` 退出。
+    **默认：** `0`。
+  * `env` {Object} 指定要传递给测试进程的环境变量。此选项不能与 `isolation='none'` 一起使用。这些变量会覆盖主进程中的相应变量，且不会与 `process.env` 合并。
+    **默认：** `process.env`。
+* 返回值：{TestsStream}
 
-**注意：** `shard` 用于在机器或进程之间水平并行化测试运行，
-适用于跨不同环境的大规模执行。它与 `watch` 模式不兼容，后者旨在通过在文件更改时自动重新运行测试来实现快速代码迭代。
+**注意：** `shard` 用于在机器或进程之间水平并行化测试运行，适用于跨不同环境的大规模执行。它与 `watch` 模式不兼容，后者旨在通过在文件更改时自动重新运行测试来实现快速代码迭代。
 
 ```mjs
 import { tap } from 'node:test/reporters';
@@ -1738,14 +1747,12 @@ changes:
 
 `test()` 函数是从 `test` 模块导入的一个值。每次调用此函数都会向 {TestsStream} 报告一个测试。
 
-传递给 `fn` 参数的 `TestContext` 对象可用于执行与当前测试相关的操作。示例包括跳过测试、添加
-额外的诊断信息，或创建子测试。
+传递给 `fn` 参数的 `TestContext` 对象可用于执行与当前测试相关的操作。示例包括跳过测试、添加额外的诊断信息，或创建子测试。
 
 `test()` 返回一个在测试完成后兑现的 `Promise`。
 如果在套件内调用 `test()`，它会立即兑现。
 顶层测试的返回值通常可以忽略。
-但是，子测试的返回值应当使用，以防止父测试
-过早结束并取消子测试，如以下示例所示。
+但是，子测试的返回值应当使用，以防止父测试过早结束并取消子测试，如以下示例所示。
 
 ```js
 test('顶层测试', async (t) => {
@@ -1759,9 +1766,7 @@ test('顶层测试', async (t) => {
 });
 ```
 
-`timeout` 选项可用于在测试执行时间超过 `timeout` 毫秒时使其失败。但是，这不是
-一种可靠的取消测试机制，因为正在运行的测试可能会阻塞应用程序线程，
-从而阻止计划中的取消。
+`timeout` 选项可用于在测试执行时间超过 `timeout` 毫秒时使其失败。但是，这不是一种可靠的取消测试机制，因为正在运行的测试可能会阻塞应用程序线程，从而阻止计划中的取消。
 
 ## `test.skip([name][, options][, fn])`
 
@@ -1938,16 +1943,16 @@ added:
   - v16.18.0
 -->
 
-* `fn` {Function|AsyncFunction} The hook function.
-  If the hook uses a callback, the callback function is passed as the second argument. **Default:** A no-op function.
-* `options` {Object} Hook configuration options. Supports the following properties:
-  * `signal` {AbortSignal} Allows the hook in progress to be aborted.
-  * `timeout` {number} The number of milliseconds before the hook fails.
-    If not specified, subtests will inherit this value from their parent test.
-    **Default:** `Infinity`.
+* `fn` {Function|AsyncFunction} 钩子函数。
+  如果钩子使用回调函数，则该回调函数会作为第二个参数传入。**默认值：** 空操作函数。
+* `options` {Object} 钩子配置选项。支持以下属性：
+  * `signal` {AbortSignal} 允许中止正在执行的钩子。
+  * `timeout` {number} 钩子失败前的毫秒数。
+    如果未指定，子测试将从其父测试继承此值。
+    **默认值：** `Infinity`。
 
-This function creates a hook that runs after each test in the current test suite.
-The `afterEach()` hook runs even if the test fails.
+此函数会创建一个钩子，在当前测试套件中的每项测试之后运行。
+即使测试失败，`afterEach()` 钩子也会运行。
 
 ```js
 describe('tests', async () => {
@@ -2208,7 +2213,7 @@ added:
 * `value` {any} 用作 `onAccess` 指定调用编号的 mock 实现的值。
 * `onAccess` {integer} 将使用 `value` 的调用编号。如果
   指定的调用已经发生，则会抛出异常。
-  **默认：** 下一次调用的编号。
+  **默认值：** 下一次调用的编号。
 
 此函数用于更改单次现有 mock 的行为。一旦发生 `onAccess` 调用，mock 将恢复为在未调用 `mockImplementationOnce()` 时本应使用的行为。
 
@@ -2259,10 +2264,10 @@ added:
 -->
 
 * `original` {Function|AsyncFunction} 可选函数，用于在其基础上创建 mock。
-  **默认：** 一个空操作函数。
-* `implementation` {Function|AsyncFunction} 可选函数，用作 `original` 的 mock 实现。这对于创建在指定次数内按一种方式运行，然后恢复为 `original` 行为的 mock 很有用。**默认：** 由 `original` 指定的函数。
+  **默认值：** 一个空操作函数。
+* `implementation` {Function|AsyncFunction} 可选函数，用作 `original` 的 mock 实现。这对于创建在指定次数内按一种方式运行，然后恢复为 `original` 行为的 mock 很有用。**默认值：** 由 `original` 指定的函数。
 * `options` {Object} mock 函数的可选配置项。支持以下属性：
-  * `times` {integer} mock 将使用 `implementation` 行为的次数。一旦 mock 函数被调用 `times` 次，它将自动恢复为 `original` 的行为。该值必须是正整数。**默认：** `Infinity`。
+  * `times` {integer} mock 将使用 `implementation` 行为的次数。一旦 mock 函数被调用 `times` 次，它将自动恢复为 `original` 的行为。该值必须是正整数。**默认值：** `Infinity`。
 * 返回：{Proxy} 被 mock 的函数。被 mock 的函数包含一个特殊的 `mock` 属性，它是 [`MockFunctionContext`][] 的一个实例，可用于检查和更改被 mock 函数的行为。
 
 此函数用于创建 mock 函数。
@@ -2315,13 +2320,13 @@ added:
 * `methodName` {string|symbol} `object` 上要 mock 的方法标识符。
   如果 `object[methodName]` 不是函数，则会抛出错误。
 * `implementation` {Function|AsyncFunction} 可选函数，用作
-  `object[methodName]` 的 mock 实现。**默认：** `object[methodName]` 指定的原始方法。
+  `object[methodName]` 的 mock 实现。**默认值：** `object[methodName]` 指定的原始方法。
 * `options` {Object} mock 方法的可选配置项。支持以下属性：
   * `getter` {boolean} 如果为 `true`，`object[methodName]` 将被视为 getter。
-    此选项不能与 `setter` 选项同时使用。**默认：** false。
+    此选项不能与 `setter` 选项同时使用。**默认值：** false。
   * `setter` {boolean} 如果为 `true`，`object[methodName]` 将被视为 setter。
-    此选项不能与 `getter` 选项同时使用。**默认：** false。
-  * `times` {integer} mock 将使用 `implementation` 行为的次数。一旦被 mock 的方法被调用 `times` 次，它将自动恢复为原始行为。该值必须是正整数。**默认：** `Infinity`。
+    此选项不能与 `getter` 选项同时使用。**默认值：** false。
+  * `times` {integer} mock 将使用 `implementation` 行为的次数。一旦被 mock 的方法被调用 `times` 次，它将自动恢复为原始行为。该值必须是正整数。**默认值：** `Infinity`。
 * 返回：{Proxy} 被 mock 的方法。被 mock 的方法包含一个特殊的
   `mock` 属性，它是 [`MockFunctionContext`][] 的一个实例，可用于检查和更改被 mock 方法的行为。
 
@@ -2371,7 +2376,7 @@ changes:
 * `specifier` {string|URL} 标识要模拟的模块的字符串。
 * `options` {Object} mock 模块的可选配置项。支持以下属性：
   * `cache` {boolean} 如果为 `false`，每次调用 `require()` 或 `import()` 都会生成一个新的模拟模块。如果为 `true`，后续调用将返回相同的模块 mock，并且该 mock 模块将被插入 CommonJS 缓存。
-    **默认：** false。
+    **默认值：** false。
   * `exports` {Object} 可选的 mock 导出。如果提供了 `default` 属性，它将被用作 mock 模块的默认导出。其他所有自有可枚举属性都作为具名导出使用。
     **此选项不能与 `defaultExport` 或 `namedExports` 一起使用。**
     * 如果 mock 是 CommonJS 或内置模块，则 `exports.default` 用作 `module.exports` 的值。
@@ -2443,7 +2448,7 @@ added:
 * `object` {Object} 要对其值进行 mock 的对象。
 * `propertyName` {string|symbol} `object` 上要 mock 的属性标识符。
 * `value` {any} 可选值，用作 `object[propertyName]` 的 mock 值。
-  **默认：** 原始属性值。
+  **默认值：** 原始属性值。
 * 返回：{Proxy} 被 mock 对象的代理。被 mock 对象包含一个
   特殊的 `mock` 属性，它是 [`MockPropertyContext`][] 的一个实例，并且
   可用于检查和更改被 mock 属性的行为。
@@ -2549,7 +2554,7 @@ changes:
     如果未提供数组，则默认模拟所有与时间相关的 API（`'setInterval'`、`'clearInterval'`、
     `'setTimeout'`、`'clearTimeout'`、`'setImmediate'`、`'clearImmediate'` 和
     `'Date'`）。
-  * `now` {number | Date} 表示初始时间的可选数字或 Date 对象，单位为毫秒，将用于设置 `Date.now()` 的值。**默认值：** `0`。
+  * `now` {number | Date} 表示初始时间的可选数字或 Date 对象，单位为毫秒，用于设置 `Date.now()` 的值。**默认值：** `0`。
 
 **注意：** 为特定计时器启用模拟时，其关联的清除函数也会被隐式模拟。
 
@@ -2682,7 +2687,7 @@ test('mocks setTimeout to be executed synchronously without having to actually w
 });
 ```
 
-另外，`.tick` 可以多次调用
+此外，`.tick` 可以多次调用
 
 ```mjs
 import assert from 'node:assert';
@@ -2810,7 +2815,7 @@ test('mocks setTimeout to be executed synchronously without having to actually w
 
 #### 使用 Node.js 定时器模块
 
-一旦启用了定时器模拟，[node:timers](./timers.md)、
+启用定时器模拟后，[node:timers](./timers.md)、
 [node:timers/promises](./timers.md#timers-promises-api) 模块，
 以及 Node.js 全局上下文中的定时器都会被启用：
 
@@ -3091,7 +3096,9 @@ added:
   - v18.9.0
   - v16.19.0
 changes:
-  - version: v26.6.0
+  - version:
+     - v26.6.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/64309
     description: 为在进程隔离模式下运行测试时从子进程转发的事件添加了 `entryFile`
   - version:
@@ -3121,8 +3128,8 @@ changes:
 | 声明顺序（缓冲）           | 执行顺序（立即）                                  |
 | -------------------------- | -------------------------------------------------- |
 | [`'test:start'`][]         | [`'test:enqueue'`][] 后跟 [`'test:dequeue'`][]    |
-| [`'test:pass'`][]          | [`'test:complete'`][] (`details.passed` 为 `true`) |
-| [`'test:fail'`][]          | [`'test:complete'`][] (`details.passed` 为 `false`) |
+| [`'test:pass'`][]          | [`'test:complete'`][]（`details.passed` 为 `true`） |
+| [`'test:fail'`][]          | [`'test:complete'`][]（`details.passed` 为 `false`） |
 | [`'test:plan'`][]          |                                                    |
 | [`'test:diagnostic'`][]    |                                                    |
 |                            | [`'test:log'`][]                                   |
@@ -3150,6 +3157,68 @@ changes:
 | [`'test:watch:restarted'`][] | 仅限监视模式。                    |
 
 根测试还会在运行结束时发出 [`'test:plan'`][] 和 [`'test:diagnostic'`][] 事件，以报告运行级别的总计。
+
+### 事件生命周期
+
+上面的表格对事件进行了分组；下图则将它们放置在时间线上。声明顺序事件构成主干线，并经过缓冲，以便报告器看到它们时与源代码中的顺序一致；而每个执行顺序的对应事件都会在实际工作发生时立即发出。特别是，[`'test:start'`][] 标记测试开始_报告_自身及其子测试状态的时刻，而不是其主体开始执行的时刻；主体开始执行的时刻是 [`'test:dequeue'`][]。
+
+```text
+                     node:test reporter event lifecycle
+   main spine = DECLARATION order (buffered; matches source order)
+   right side = EXECUTION order (emitted immediately); ◄ marks each twin
+
+  LEAF TEST
+  ─────────
+   ┌──────────────┐                   test:enqueue
+   │ test:start   │ ◄──── twins ────  (queued for execution;
+   └──────────────┘                    type: 'suite' | 'test')
+        │  begins REPORTING           test:dequeue
+        │  (not the start of          (about to run; emitted right
+        │   the test body)             before the test body runs)
+        │
+        │     [ between the twins, on the execution timeline, the test
+        │       body runs: context.log() emits test:log live, and
+        │       test:stdout / test:stderr stream with --test ]
+        │
+        ▼
+   ┌───────────────────────┐
+   │ test:pass │ test:fail │ ◄──── twin ────  test:complete
+   └───────────────────────┘   result         (details.passed says which)
+        │
+        ▼
+   test:diagnostic    the test's own context.diagnostic() messages,
+                      buffered while it runs, flushed after its result
+
+
+  SUITE / PARENT TEST   (each subtest is the whole LEAF flow above)
+  ───────────────────
+   test:start ─► [ full flow of each subtest ... ] ─►
+        test:plan (count = subtests) ─► test:pass │ test:fail ─►
+        test:diagnostic
+
+
+  RUN-LEVEL FINALE   (root, after all top-level tests)
+  ────────────────
+   test:plan         top-level count
+        │
+        ▼
+   test:diagnostic   x N   tests, suites, pass, fail, cancelled,
+        │                  skipped, todo, duration_ms (+ coverage errors)
+        ▼
+   test:coverage     only if coverage is enabled
+        │
+        ▼
+   test:summary  ─►  stream ends
+
+
+  INTERRUPTION   (SIGINT, e.g. Ctrl+C, while tests are still running)
+  ────────────
+   test:interrupted   the innermost tests still running at that moment
+        │             (not emitted if none were running)
+        ▼
+   the run exits immediately — the buffered spine never flushes, so
+   neither the finale above nor those tests' own results are emitted
+```
 
 ### 事件：`'test:coverage'`
 
@@ -3335,7 +3404,9 @@ added:
 ### 事件：`'test:log'`
 
 <!-- YAML
-added: v26.6.0
+added:
+ - v26.6.0
+ - v24.20.0
 -->
 
 * `data` {Object}
@@ -3367,7 +3438,7 @@ added: v26.6.0
   * `name` {string} 测试名称。
   * `nesting` {number} 测试的嵌套层级。
   * `parentId` {number|undefined} 包含该测试的父测试的 `testId`；对于顶层测试为 `undefined`。可让自定义报告器在同一嵌套层级的并发同级测试交错执行时跟踪其血缘关系。
-  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平后的小写标签，按声明顺序排列。未加标签的测试为空。参见 [Test tags][]。
+  * `tags` {string\[]} 在测试及其祖先套件上声明的、展平后的小写标签，按声明顺序排列。未加标签的测试为空。参见 [测试标签][]。
   * `testId` {number} 此测试实例的数值标识符，在测试文件的进程内唯一。对于同一测试实例，在所有事件中保持一致，便于自定义报告器进行可靠关联。
   * `testNumber` {number} 测试的序号。
   * `todo` {string|boolean|undefined} 当调用 [`context.todo`][] 时存在
@@ -3434,7 +3505,7 @@ added: v26.6.0
 ### 事件：`'test:stdout'`
 
 * `data` {Object}
-  * `entryFile` {string|undefined} 作为触发此事件的子进程入口点执行的测试文件路径。仅当测试以进程隔离方式运行时存在。
+  * `entryFile` {string|undefined} 作为触发此事件的子进程入口点而执行的测试文件路径。仅当测试以进程隔离方式运行时存在。
   * `file` {string} 测试文件的路径。
   * `message` {string} 写入 `stdout` 的消息。
 
@@ -3776,7 +3847,9 @@ test('顶级测试', (t) => {
 ### `context.log(message[, data])`
 
 <!-- YAML
-added: v26.6.0
+added:
+ - v26.6.0
+ - v24.20.0
 -->
 
 * `message` {string} 要报告的消息。
@@ -3879,7 +3952,7 @@ added:
 
 * 类型：{number|undefined}
 
-运行当前测试文件的工作线程的唯一标识符。此值源自 `NODE_TEST_WORKER_ID` 环境变量。当使用 `--test-isolation=process`（默认值）运行测试时，每个测试文件在单独的子进程中运行，并被分配一个从 1 到 N 的工作线程 ID，其中 N 是并发工作线程的数量。当使用 `--test-isolation=none` 运行时，所有测试在同一进程中运行，工作线程 ID 始终为 1。当不在测试上下文中运行时，此值为 `undefined`。
+运行当前测试文件的 Worker 的唯一标识符。此值派生自 `NODE_TEST_WORKER_ID` 环境变量。使用 `--test-isolation=process`（默认值）运行测试时，每个测试文件都会在单独的子进程中运行，并分配一个从 1 到 N 的 Worker ID，其中 N 是并发 Worker 的数量。同时运行的两个测试文件不会共享同一个 Worker ID。一个测试文件结束后，其 Worker ID 会被下一个启动的测试文件复用。使用 `--test-isolation=none` 运行时，所有测试都在同一进程中运行，Worker ID 始终为 1。在测试上下文之外运行时，此值为 `undefined`。
 
 此属性可用于在并发测试文件之间分割资源（如数据库连接或服务器端口）：
 
@@ -4144,7 +4217,8 @@ added:
 ### `context.filePath`
 
 <!-- YAML
-added: v22.6.0
+added:
+  - v22.6.0
 -->
 
 创建当前套件的测试文件的绝对路径。如果测试文件导入了生成套件的其他模块，导入的套件将返回根测试文件的路径。
@@ -4226,7 +4300,9 @@ test.describe('my suite', (suite) => {
 ### `context.log(message[, data])`
 
 <!-- YAML
-added: v26.6.0
+added:
+ - v26.6.0
+ - v24.20.0
 -->
 
 * `message` {string} 要报告的消息。

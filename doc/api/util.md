@@ -335,6 +335,136 @@ fn2(); // 不发出弃用警告，因为它具有相同的代码
 
 `--throw-deprecation` 命令行标志和 `process.throwDeprecation` 属性优先于 `--trace-deprecation` 和 `process.traceDeprecation`。
 
+## `util.debounce(fn, wait[, options])`
+
+<!-- YAML
+added: v26.10.0
+-->
+
+* `fn` {Function} 要防抖的函数。
+* `wait` {integer} 延迟调用 `fn` 的毫秒数。
+* `options` {Object}
+  * `leading` {boolean} 为 `true` 时，在新的防抖窗口开始时立即调用 `fn`。**默认值：** `false`。
+  * `rejectOnCancel` {boolean} 为 `true` 时，被后续调用取代的调用将以 `AbortError` 拒绝。**默认值：** `false`。
+  * `signal` {AbortSignal} 一个 `AbortSignal`，中止时会取消待处理的调用并阻止后续调用。
+* 返回值：{Function} 防抖函数。
+
+创建一个函数，在距离最近一次调用经过 `wait` 毫秒后才调用 `fn`。防抖函数会返回一个 {Promise}，其值为 `fn` 返回的值。如果 `fn` 抛出异常或返回被拒绝的 promise，则返回的 promise 会以相同原因被拒绝。
+
+如果在延迟到期前多次调用防抖函数，`fn` 会收到最近一次调用的参数。默认情况下，所有调用返回的 promise 都会以该次调用的结果解析或拒绝。如果 `options.rejectOnCancel` 为 `true`，则被取代调用的 promise 会以 `AbortError` 拒绝。
+
+当 `options.leading` 为 `true` 时，防抖窗口中的首次调用会立即调用 `fn`。在该窗口期间进行的调用将延迟，直到距离最近一次调用经过 `wait` 毫秒。只有在窗口期间再次调用防抖函数时，才会发生尾随调用。窗口会在调用 `fn` 之前开始，因此，如果递归调用或在异步 `fn` 仍处于待处理状态时进行的调用发生在延迟到期前，它们都属于同一个窗口。同步 `fn` 返回后、延迟到期前进行的调用也同样如此。
+
+如果 `options.signal` 被中止，待处理和后续调用将以 `AbortError` 拒绝，并将 signal 的原因设置为错误的 `cause`，且这些调用不会调用 `fn`。如果 signal 已经中止，`debounce()` 会抛出 `AbortError`。
+
+返回的函数具有以下属性：
+
+* `cancel([reason])` 取消当前防抖窗口。其待处理的 promise 会以 `AbortError` 拒绝。如果提供了 `reason`，则会将其设置为错误的 `cause`。
+* `flush()` 取消延迟并立即调用 `fn`。如果没有待处理的调用，则不起作用。
+* `pending` {Promise|null} 当前防抖窗口中最近一次调用返回的 promise；如果没有待处理的调用，则为 `null`。
+* `pendingCount` {integer} 当前防抖窗口中等待调用的次数。
+* `ref()` 使待处理及后续的 timeout 保持 Node.js 事件循环处于活动状态。返回防抖函数。
+* `unref()` 允许事件循环在有待处理的 timeout 时退出。此设置也适用于后续 timeout。返回防抖函数。
+
+调用时，`fn` 的 `this` 值为防抖函数。尾随调用之后，即使 `fn` 返回的 promise 仍处于待处理状态，也可以开始新的防抖窗口。防抖函数会保留 `fn` 的 `name` 和 `length`。
+
+```mjs
+import { setTimeout as wait } from 'node:timers/promises';
+import { debounce } from 'node:util';
+
+const fn = debounce(async (value) => {
+  await wait(100);
+  return value;
+}, 50);
+
+const first = fn(1);
+const second = fn(2);
+
+console.log(await first);  // 2
+console.log(await second); // 2
+```
+
+防抖函数可用于在一段时间没有活动后触发操作。每次调用都会重置 timeout：
+
+```cjs
+const { debounce } = require('node:util');
+
+const onInactivity = debounce(() => {
+  console.log('No activity for 5 seconds');
+}, 5_000).unref();
+
+process.stdin.on('data', (data) => {
+  console.log(`Received ${data.length} bytes`);
+  onInactivity();
+});
+
+// 启动初始的无活动 timeout。
+onInactivity();
+```
+
+## `util.throttle(fn, limit, interval[, options])`
+
+<!-- YAML
+added: v26.10.0
+-->
+
+* `fn` {Function} 要节流的函数。
+* `limit` {integer} 在一个 interval 内调用 `fn` 的最大次数。必须大于 `0`。
+* `interval` {integer} 每个 interval 的长度，以毫秒为单位。
+* `options` {Object}
+  * `concurrency` {number} 返回值可同时尚未完成的 `fn` 调用的最大数量。必须为正整数或 `Infinity`。**默认值：** `Infinity`。
+  * `maxPending` {number} 当 `overflow` 为 `'queue'` 时可排队的最大调用数。必须为非负整数或 `Infinity`。**默认值：** `Infinity`。
+  * `overflow` {string} 确定如何处理超出限制的调用。**默认值：** `'queue'`。
+    * `'queue'`：按接收顺序将调用加入队列。
+    * `'drop'`：立即拒绝调用，不将其加入队列。
+  * `signal` {AbortSignal} 一个 `AbortSignal`，中止时会取消待处理的调用并阻止后续调用。
+  * `strict` {boolean} 为 `true` 时，确保任何滚动 interval 内调用次数都不会超过 `limit`。**默认值：** `false`。
+* 返回值：{Function} 节流函数。
+
+创建一个用于限制调用 `fn` 频率的函数。默认情况下，超出限制的调用会按接收顺序加入队列，而不是丢弃。节流函数会返回一个 {Promise}，其值为 `fn` 返回的值。如果 `fn` 抛出异常或返回被拒绝的 promise，则返回的 promise 会以相同原因被拒绝。
+
+只有在速率和并发容量都可用时，才会开始调用。容量会在 `fn` 开始时消耗，而不是在调用进入队列时消耗。并发容量会在 `fn` 返回的值完成时释放。非 promise 值会在下一个微任务期间完成。
+
+当 `options.overflow` 为 `'drop'` 时，没有可用速率或并发容量时进行的调用会立即被拒绝。当 `options.overflow` 为 `'queue'` 且已有 `options.maxPending` 个调用排队时，额外的调用也会立即被拒绝。当 `overflow` 为 `'drop'` 时，`maxPending` 不起作用。
+
+这两种情况下，被拒绝的调用都会返回一个以 `ERR_THROTTLED` 错误拒绝的 promise。被拒绝的 promise 会被标记为已处理，因此忽略它不会触发 `'unhandledRejection'` 事件。等待该 promise 或显式处理它仍可观察到拒绝。被拒绝的调用不会消耗速率或并发容量，不会进入队列，也不会安排 timeout。
+
+默认情况下，interval 会在新窗口中的首次调用 `fn` 时开始。该窗口内最多可以调用 `fn` `limit` 次。后续每个窗口开始时，排队的调用会按每组最多 `limit` 次进行处理。这种窗口式行为可能导致调用在窗口边界附近密集发生。
+
+当 `options.strict` 为 `true` 时，会单独跟踪每次调用的时间。这可确保任何滚动 interval 内开始的调用都不超过 `limit` 次，但需要额外的簿记操作。
+
+如果 `options.signal` 被中止，待处理和后续调用将以 `AbortError` 拒绝，并将 signal 的原因设置为错误的 `cause`，且这些调用不会调用 `fn`。如果 signal 已经中止，`throttle()` 会抛出 `AbortError`。
+
+返回的函数具有以下属性：
+
+* `cancel([reason])` 取消所有排队的调用并重置当前节流窗口。排队调用的 promise 会以 `AbortError` 拒绝。如果提供了 `reason`，则会将其设置为错误的 `cause`。不会取消已经开始的调用。
+* `hasImmediateCapacity()` 如果此时进行的调用可以调用 `fn`，而不被加入队列或拒绝，则返回 `true`。此检查不会预留容量，而且节流函数在被调用时始终会再次检查。只要有调用排队，为了保留调用顺序，该方法就会返回 `false`。调用方可以仅在此方法返回 `true` 时调用节流函数，从而避免创建 timeout。
+* `pending` {Promise|null} 最近一次排队调用返回的 promise；如果没有排队调用，则为 `null`。
+* `pendingCount` {integer} 等待调用的次数。
+* `activeCount` {integer} 返回值尚未完成的调用次数。
+* `ref()` 使待处理及后续的 timeout 保持 Node.js 事件循环处于活动状态。返回节流函数。
+* `unref()` 允许事件循环在有待处理的 timeout 时退出。此设置也适用于后续 timeout。返回节流函数。
+
+已经调用过 `fn` 的调用不会受到 `cancel()` 或 signal 中止的影响。调用时，`fn` 的 `this` 值为节流函数。节流函数会保留 `fn` 的 `name` 和 `length`。
+
+```mjs
+import { throttle } from 'node:util';
+
+const request = throttle(async (id) => {
+  const response = await fetch(`https://example.com/items/${id}`);
+  return response.json();
+}, 2, 1_000);
+
+// At most two requests begin during each one-second interval. All other calls
+// remain queued and retain their original arguments.
+const results = await Promise.all([
+  request(1),
+  request(2),
+  request(3),
+  request(4),
+]);
+```
+
 ## `util.diff(actual, expected)`
 
 <!-- YAML
@@ -349,13 +479,13 @@ added:
 
 * `expected` {Array|string} 要比较的第二个值
 
-* 返回：{Array} 差异条目数组。每个条目是一个包含两个元素的数组：
+* 返回值：{Array} 差异条目数组。每个条目是一个包含两个元素的数组：
   * `0` {number} 操作代码：`-1` 表示删除，`0` 表示无操作/未更改，`1` 表示插入
   * `1` {string} 与该操作关联的值
 
 * 算法复杂度：O(N\*D)，其中：
 
-* N 是两个序列的总长度 (N = actual.length + expected.length)
+* N 是两个序列的总长度（N = actual.length + expected.length）
 
 * D 是编辑距离（将一个序列转换为另一个序列所需的最少操作数）。
 
@@ -433,28 +563,18 @@ changes:
 
 * `format` {string} 一个 `printf` 风格的格式字符串。
 
-`util.format()` 方法使用第一个参数作为 `printf` 风格的格式字符串返回一个格式化字符串，
-该字符串可以包含零个或多个格式说明符。每个说明符都被替换为相应参数的转换值。支持的说明符有：
+`util.format()` 方法使用第一个参数作为 `printf` 风格的格式字符串，返回一个格式化字符串。该字符串可以包含零个或多个格式说明符。每个说明符都会被替换为相应参数的转换值。支持的说明符有：
 
-* `%s`: 将使用 `String` 来转换除 `BigInt`、`Object`
-  和 `-0` 之外的所有值。`BigInt` 值将以 `n` 表示，而没有用户定义的 `toString` 函数或 `Symbol.toPrimitive` 函数的对象将使用 `util.inspect()`
-  进行检查，并带有 `{ depth: 0, colors: false, compact: 3 }` 选项。
-* `%d`: 将使用 `Number` 来转换除 `BigInt` 和
-  `Symbol` 之外的所有值。
-* `%i`: 除 `BigInt` 和
-  `Symbol` 之外的所有值都使用 `parseInt(value, 10)`。
-* `%f`: 除 `Symbol` 之外的所有值都使用 `parseFloat(value)`。
-* `%j`: JSON。如果参数包含
-  循环引用，则替换为字符串 `'[Circular]'`。
-* `%o`: `Object`。使用通用 JavaScript
-  对象格式化方式表示对象的字符串。类似于带有 `{ showHidden: true, showProxy: true }` 选项的 `util.inspect()`。这将显示完整对象，
-  包括不可枚举属性和代理。
-* `%O`: `Object`。使用通用 JavaScript
-  对象格式化方式表示对象的字符串。类似于不带选项的 `util.inspect()`。这将显示完整对象，
-  但不包括不可枚举属性和代理。
-* `%c`: `CSS`。此说明符会被忽略，并会跳过传入的任何 CSS。
-* `%%`: 单个百分号（`'%'`）。这不会消耗参数。
-* Returns: {string} 格式化后的字符串
+* `%s`：将使用 `String` 转换除 `BigInt`、`Object` 和 `-0` 之外的所有值。`BigInt` 值将以 `n` 表示，而没有用户定义的 `toString` 函数或 `Symbol.toPrimitive` 函数的对象将使用 `util.inspect()` 进行检查，并带有 `{ depth: 0, colors: false, compact: 3 }` 选项。
+* `%d`：将使用 `Number` 转换除 `BigInt` 和 `Symbol` 之外的所有值。
+* `%i`：除 `BigInt` 和 `Symbol` 之外的所有值都使用 `parseInt(value, 10)`。
+* `%f`：除 `Symbol` 之外的所有值都使用 `parseFloat(value)`。
+* `%j`：JSON。如果参数包含循环引用，则替换为字符串 `'[Circular]'`。
+* `%o`：`Object`。使用通用 JavaScript 对象格式化方式表示对象的字符串。类似于带有 `{ showHidden: true, showProxy: true }` 选项的 `util.inspect()`。这将显示完整对象，包括不可枚举属性和代理。
+* `%O`：`Object`。使用通用 JavaScript 对象格式化方式表示对象的字符串。类似于不带选项的 `util.inspect()`。这将显示完整对象，但不包括不可枚举属性和代理。
+* `%c`：`CSS`。此说明符会被忽略，并会跳过传入的任何 CSS。
+* `%%`：单个百分号（`'%'`）。这不会消耗参数。
+* 返回值：{string} 格式化后的字符串
 
 如果说明符没有相应的参数，则不会被替换：
 
@@ -465,28 +585,28 @@ util.format('%s:%s', 'foo');
 
 不属于格式字符串部分的值，如果其类型不是 `string`，则使用 `util.inspect()` 进行格式化。
 
-如果传递给 `util.format()` 方法的参数多于说明符的数量，则额外的参数会连接到返回的字符串，用空格分隔：
+如果传递给 `util.format()` 方法的参数多于说明符的数量，则额外的参数会用空格分隔并连接到返回的字符串中：
 
 ```js
 util.format('%s:%s', 'foo', 'bar', 'baz');
 // 返回：'foo:bar baz'
 ```
 
-如果第一个参数不包含有效的格式说明符，`util.format()` 返回一个字符串，该字符串是所有参数用空格连接而成的：
+如果第一个参数不包含有效的格式说明符，`util.format()` 会返回一个由所有参数以空格连接而成的字符串：
 
 ```js
 util.format(1, 2, 3);
 // 返回：'1 2 3'
 ```
 
-如果只传递一个参数给 `util.format()`，则原样返回，不进行任何格式化：
+如果只传递一个参数给 `util.format()`，则会原样返回，不进行任何格式化：
 
 ```js
 util.format('%% %s');
 // 返回：'%% %s'
 ```
 
-`util.format()` 是一个旨在作为调试工具的同步方法。
+`util.format()` 是一个旨在用作调试工具的同步方法。
 某些输入值可能会产生显著的性能开销，从而阻塞事件循环。请谨慎使用此函数，切勿在热点代码路径中使用。
 
 ## `util.formatWithOptions(inspectOptions, format[, ...args])`
@@ -498,8 +618,7 @@ added: v10.0.0
 * `inspectOptions` {Object}
 * `format` {string}
 
-此函数与 [`util.format()`][] 相同，不同之处在于它接受一个 `inspectOptions` 参数，
-该参数指定传递给 [`util.inspect()`][] 的选项。
+此函数与 [`util.format()`][] 相同，不同之处在于它接受一个 `inspectOptions` 参数，该参数指定传递给 [`util.inspect()`][] 的选项。
 
 ```js
 util.formatWithOptions({ colors: true }, 'See object %O', { foo: 42 });
@@ -535,7 +654,7 @@ changes:
 * `options` {Object} 可选
   * `sourceMap` {boolean} 从源映射重建堆栈跟踪中的原始位置。
     默认情况下通过标志 `--enable-source-maps` 启用。
-* 返回：{Object\[]} 调用站点对象数组
+* 返回值：{Object\[]} 调用站点对象数组
   * `functionName` {string} 返回与此调用站点关联的函数名称。
   * `scriptName` {string} 返回包含此调用站点函数脚本的资源名称。
   * `scriptId` {string} 返回脚本的唯一 id，如 Chrome DevTools 协议 [`Runtime.ScriptId`][] 中所述。
@@ -675,7 +794,7 @@ added: v9.7.0
 
 返回来自 Node.js API 的数字错误代码的字符串名称。
 错误代码和错误名称之间的映射取决于平台。
-参见 [常见系统错误][] 以了解常见错误的名称。
+参见[常见系统错误][]以了解常见错误的名称。
 
 ```js
 fs.access('file/that/does/not/exist', (err) => {
@@ -696,7 +815,7 @@ added:
 
 返回 Node.js API 可用的所有系统错误代码的 Map。
 错误代码和错误名称之间的映射取决于平台。
-参见 [常见系统错误][] 以了解常见错误的名称。
+参见[常见系统错误][]以了解常见错误的名称。
 
 ```js
 fs.access('file/that/does/not/exist', (err) => {
@@ -754,9 +873,9 @@ changes:
 * `constructor` {Function}
 * `superConstructor` {Function}
 
-不推荐使用 `util.inherits()`。请使用 ES6 `class` 和 `extends` 关键字以获得语言级别的继承支持。另请注意，这两种风格在 [语义上不兼容][]。
+不推荐使用 `util.inherits()`。请使用 ES6 `class` 和 `extends` 关键字以获得语言级别的继承支持。另请注意，这两种风格在[语义上不兼容][]。
 
-将一个 [构造函数][] 的原型方法继承到另一个构造函数中。`constructor` 的原型将被设置为从 `superConstructor` 创建的新对象。
+将一个[构造函数][]的原型方法继承到另一个构造函数中。`constructor` 的原型将被设置为从 `superConstructor` 创建的新对象。
 
 这主要在 `Object.setPrototypeOf(constructor.prototype, superConstructor.prototype)` 之上添加了一些输入验证。作为额外的便利，`superConstructor` 将通过 `constructor.super_` 属性访问。
 
@@ -1270,7 +1389,7 @@ console.log(inspect(bigDecimal, { numericSeparator: true }));
 * `magenta`
 * `cyan`
 * `white`
-* `gray` (别名：`grey`, `blackBright`)
+* `gray` (别名：`grey`、`blackBright`)
 * `redBright`
 * `greenBright`
 * `yellowBright`
@@ -1289,7 +1408,7 @@ console.log(inspect(bigDecimal, { numericSeparator: true }));
 * `bgMagenta`
 * `bgCyan`
 * `bgWhite`
-* `bgGray` (别名：`bgGrey`, `bgBlackBright`)
+* `bgGray`（别名：`bgGrey`、`bgBlackBright`）
 * `bgRedBright`
 * `bgGreenBright`
 * `bgYellowBright`
@@ -1516,6 +1635,32 @@ console.log(util.isDeepStrictEqual(foo, bar, true));
 
 有关深度严格相等的更多信息，请参阅 [`assert.deepStrictEqual()`][]。
 
+## `util.isPartialDeepStrictEqual(val1, val2)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `val1` {any}
+* `val2` {any}
+* 返回值：{boolean}
+
+如果 `val1` 和 `val2` 之间存在部分深度严格相等，则返回 `true`。否则，返回 `false`。
+
+“部分”相等意味着只会比较 `val2` 上存在的属性。
+
+有关部分深度严格相等的更多信息，请参阅 [`assert.partialDeepStrictEqual()`][]。
+
+## `util.markPromiseAsHandled(promise)`
+
+<!-- YAML
+added: v26.10.0
+-->
+
+* `promise` {Promise} 要标记为已处理的 promise
+
+将 promise 标记为已处理，以便忽略未处理的拒绝，并且不会将其报告给 `'unhandledrejection'` 事件。
+
 ## 类：`util.MIMEType`
 
 <!-- YAML
@@ -1714,7 +1859,9 @@ console.log(JSON.stringify(myMIMES));
 ### `MIMEType.parse(string)`
 
 <!--
-added: REPLACEME
+added:
+ - v26.8.0
+ - v24.21.0
 -->
 
 * `string` {string} 要解析的输入 MIME
@@ -2755,7 +2902,7 @@ added: v10.0.0
 * `value` {any}
 * 返回：{boolean}
 
-如果值是 {ArrayBuffer} 视图之一的实例，例如类型化数组对象或 {DataView}，则返回 `true`。等同于 [`ArrayBuffer.isView()`][].
+如果值是 {ArrayBuffer} 视图之一的实例，例如类型化数组对象或 {DataView}，则返回 `true`。等同于 [`ArrayBuffer.isView()`][]。
 
 ```js
 util.types.isArrayBufferView(new Int8Array());  // 返回 true
@@ -3612,6 +3759,7 @@ npx codemod@latest @nodejs/util-is
 [`Object.freeze()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze
 [`Runtime.ScriptId`]: https://chromedevtools.github.io/devtools-protocol/1-3/Runtime/#type-ScriptId
 [`assert.deepStrictEqual()`]: assert.md#assertdeepstrictequalactual-expected-message
+[`assert.partialDeepStrictEqual()`]: assert.md#assertpartialdeepstrictequalactual-expected-message
 [`console.error()`]: console.md#consoleerrordata-args
 [`mime.toString()`]: #mimetostring
 [`mimeParams.entries()`]: #mimeparamsentries

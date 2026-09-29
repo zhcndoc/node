@@ -328,7 +328,7 @@ import submodule from 'es-module-package/private-module.js';
 
 ##### 目标必须是相对 URL
 
-[`"exports"`][] 映射中的所有目标路径（与导出键关联的值）必须是相对 `./` 开头的 URL 字符串。
+[`"exports"`][] 映射中的所有目标路径（与导出键关联的值）必须是以 `./` 开头的相对 URL 字符串。
 
 ```json
 // package.json
@@ -429,7 +429,7 @@ changes:
 
 与 `"exports"` 字段不同，`"imports"` 字段允许映射到外部包。
 
-导入字段的解析规则 otherwise 类似于导出字段。
+导入字段的解析规则与导出字段类似。
 
 ### 子路径模式
 
@@ -724,7 +724,9 @@ $ node other.js
 ## 包映射
 
 <!-- YAML
-added: v26.4.0
+added:
+ - v26.4.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性。使用 [`--experimental-package-map`][] 启用此 API。
@@ -865,13 +867,13 @@ added: v26.4.0
 在上面的示例中，`lib-old` 和 `lib-new` 都使用同一个 `./lib` 文件夹来
 存储它们的源文件，唯一的区别在于它们在执行 `require` 调用或使用 `import` 时会访问哪个版本的 `react`。
 
-由于多个包条目共享同一个 URL，因此除非已知来源包 ID，否则从该 URL 内的文件解析裸 specifier 会产生歧义。如果无法确定包 ID（例如，因为调用方没有从先前的解析中传递它），Node.js 会直接抛出错误，而不是进行猜测。
+由于多个包条目共享同一个 URL，因此除非已知来源包 ID，否则从该 URL 内的文件解析裸说明符会产生歧义。如果无法确定包 ID（例如，因为调用方没有从先前的解析中传递它），Node.js 会直接抛出错误，而不是进行猜测。
 
 为了支持这种模式，实现者必须按包 ID 为模块实例建立键，并将其从每个解析结果传播到后续的解析请求。这样可以确保当 `lib` 需要 `react` 时，运行时能够知道该请求来自 `lib-old` 还是 `lib-new`，并选择正确的依赖项。
 
 ### 与其他解析方式的交互
 
-包映射仅适用于不是 Node.js 内置模块的裸 specifier。以下情况不受包映射影响，并继续使用标准解析：
+包映射仅适用于不是 Node.js 内置模块的裸说明符。以下情况不受包映射影响，并继续使用标准解析：
 
 * 相对路径或 URL（`./` 或 `../`）。
 * 绝对路径或 URL。
@@ -1100,7 +1102,7 @@ imports 字段中的条目必须是以 `#` 开头的字符串。
 [`--conditions` / `-C` 标志]: #resolving-user-conditions
 [`--experimental-addon-modules`]: cli.md#--experimental-addon-modules
 [`--experimental-package-map`]: cli.md#--experimental-package-mappath
-[`--no-addons` flag]: cli.md#--no-addons
+[`--no-addons` 标志]: cli.md#--no-addons
 [`ERR_PACKAGE_MAP_EXTERNAL_FILE`]: errors.md#err_package_map_external_file
 [`ERR_PACKAGE_PATH_NOT_EXPORTED`]: errors.md#err_package_path_not_exported
 [`ERR_UNKNOWN_FILE_EXTENSION`]: errors.md#err_unknown_file_extension
@@ -1112,11 +1114,11 @@ imports 字段中的条目必须是以 `#` 开头的字符串。
 [导入映射]: https://github.com/WICG/import-maps
 [从 CommonJS 模块加载 ECMAScript 模块]: modules.md#loading-ecmascript-modules-using-require
 [merve]: https://github.com/anonrig/merve
-[packages folder mapping]: https://github.com/WICG/import-maps#packages-via-trailing-slashes
-[resolution algorithm pseudo-code]: modules.md#all-together
-[self-reference]: #self-referencing-a-package-using-its-name
-[subpath exports]: #subpath-exports
-[subpath imports]: #subpath-imports
-[the dual CommonJS/ES module packages section]: #dual-commonjses-module-packages
-[the full specifier path]: esm.md#mandatory-file-extensions
-[the package examples repository]: https://github.com/nodejs/package-examples
+[包文件夹映射]: https://github.com/WICG/import-maps#packages-via-trailing-slashes
+[解析算法伪代码]: modules.md#all-together
+[使用包名自引用]: #self-referencing-a-package-using-its-name
+[子路径导出]: #subpath-exports
+[子路径导入]: #subpath-imports
+[双重 CommonJS/ES 模块包部分]: #dual-commonjses-module-packages
+[完整的说明符路径]: esm.md#mandatory-file-extensions
+[包示例仓库]: https://github.com/nodejs/package-examples

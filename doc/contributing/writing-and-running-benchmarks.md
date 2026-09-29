@@ -14,10 +14,13 @@
   * [使用 run.js 指定基准测试的 CPU 核心](#specifying-cpu-cores-for-benchmarks-with-runjs)
   * [过滤基准测试](#filtering-benchmarks)
   * [比较 Node.js 版本](#comparing-nodejs-versions)
+    * [使用 `--analyze`（无需外部工具）](#using---analyze-no-external-tools-needed)
+    * [使用 R 脚本或 node-benchmark-compare](#using-r-scripts-or-node-benchmark-compare)
   * [比较参数](#comparing-parameters)
+  * [评估 `node:bench` 移植](#evaluating-nodebench-ports)
   * [在 CI 上运行基准测试](#running-benchmarks-on-the-ci)
 * [创建基准测试](#creating-a-benchmark)
-  * [基准测试基础](#basics-of-a-benchmark)
+  * [基准测试基础知识](#basics-of-a-benchmark)
   * [创建 HTTP 基准测试](#creating-an-http-benchmark)
 
 ## 前置条件
@@ -73,18 +76,23 @@ node benchmark/http2/simple.js benchmarker=h2load
 
 ### 基准分析要求
 
-要对结果进行统计分析，你可以使用
-[node-benchmark-compare][] 工具或 R 脚本 `benchmark/compare.R`。
+要对结果进行统计分析，有三种选择：
 
-[node-benchmark-compare][] 是一个 Node.js 脚本，可以通过
-`npm install -g node-benchmark-compare` 安装。
+* **`--analyze` 标志**（内置，无依赖）：在基准测试完成后，将 `--analyze` 传递给
+  `benchmark/compare.js`，即可直接执行 Welch t 检验。这会使用直方图 API 的统计测试
+  方法，无需外部工具。
+* **R 脚本**（`benchmark/compare.R`、`benchmark/bar.R`）：执行与 `--analyze` 相同的
+  Welch t 检验分析，并额外支持生成图表。需要安装带有 `ggplot2` 和 `plyr` 包的 R。
+* **[node-benchmark-compare][]**（旧版）：一个 Node.js 脚本，可以通过
+  `npm install -g node-benchmark-compare` 安装。它会读取 `benchmark/compare.js` 的 CSV
+  输出。它早于内置的 `--analyze` 标志，对于大多数工作流程来说已不再需要。
 
-要在分析结果时绘制对比图，需要安装 `R`。
-可以使用可用的包管理器安装，或者从
-<https://www.r-project.org/> 下载。
+对于大多数使用场景，`--analyze` 是最简单的选择，因为除了 Node.js 本身之外不需要
+其他任何东西。
 
-还会用到 R 包 `ggplot2` 和 `plyr`，可以在
-R REPL 中安装。
+要安装 R 以生成图表，请使用可用的包管理器之一，或从 <https://www.r-project.org/> 下载。
+
+R 包 `ggplot2` 和 `plyr` 可以使用 R REPL 安装。
 
 ```console
 $ R
@@ -387,24 +395,60 @@ _提示：`benchmark/compare.js` 有一些有用的选项。例如，
 模块，可以使用 `--filter` 选项：_
 
 ```console
-  --new      ./new-node-binary  新的 node 二进制文件（必需）
-  --old      ./old-node-binary  旧的 node 二进制文件（必需）
-  --runs     30                 样本数量
-  --filter   pattern            用于过滤基准测试脚本的字符串
-  --exclude  pattern            排除匹配 <pattern> 的脚本（可
-                                重复）
-  --set      variable=value     设置基准变量（可重复）
-  --no-progress                 不显示基准测试进度指示器
-
-    示例：
-    --set CPUSET=0            在 CPU 核心 0 上运行基准测试。
-    --set CPUSET=0-2          指定基准测试应在 CPU 核心 0 到 2 上运行。
-
-  注意：CPUSET 格式应符合 'taskset' 命令的规范
+  --new      ./new-node-binary  new node binary (required)
+  --old      ./old-node-binary  old node binary (required)
+  --runs     30                 number of samples
+  --filter   pattern            string to filter benchmark scripts
+  --exclude  pattern            excludes scripts matching <pattern> (can be
+                                repeated)
+  --set      variable=value     set benchmark variable (can be repeated)
+  --no-progress                 don't show benchmark progress indicator
+  --analyze                     perform statistical analysis inline (no R needed)
+  --csv      filename           write csv output to filename (can be combined
+                                with --analyze)
+  --scale    1000               rate multiplier for --analyze precision
+  --max-regression  N           exit with code 1 if any significant regression
+                                exceeds N% (implies --analyze)
 ```
 
-要分析基准测试结果，请使用 [node-benchmark-compare][] 或 R
-脚本：
+#### 使用 `--analyze`（无需外部工具）
+
+获取统计结果最简单的方法是传递 `--analyze`：
+
+```bash
+node benchmark/compare.js --old ./node-main --new ./node-pr-5134 --analyze string_decoder
+```
+
+使用 `--csv` 保留原始基准测试结果。如果同时传递 `--csv` 和
+`--analyze`，原始结果和分析结果都会打印出来：
+
+```bash
+node benchmark/compare.js --old ./node-main --new ./node-pr-5134 \
+  --analyze --csv compare-pr-5134.csv string_decoder
+```
+
+这会运行基准测试并直接打印分析结果：
+
+```console
+                                                                                             confidence   improvement   accuracy (*)    (**)   (***)
+string_decoder/string-decoder.js n=2500000 chunkLen=16 inLen=128 encoding='ascii'            ***            -3.76 %   ±1.36%  ±1.82%  ±2.40%
+string_decoder/string-decoder.js n=2500000 chunkLen=16 inLen=128 encoding='utf8'              **            -0.81 %   ±0.53%  ±0.71%  ±0.93%
+...
+```
+
+使用 `-csv -` 将原始结果与分析结果一起输出到 stdout。
+
+```bash
+node benchmark/compare.js --old ./node-main --new ./node-pr-5134 \
+  --analyze --csv - string_decoder
+```
+
+`--analyze` 模式使用直方图 API 的 `welchTest()` 方法执行与 R 脚本相同的 Welch t 检验。基准测试速率会缩放为直方图所用的整数（由 `--scale` 控制，默认值为 1000）。使用默认设置时，结果与 R 脚本在小数点后两位的精度上完全一致。
+
+#### 使用 R 脚本或 node-benchmark-compare
+
+或者，保存 CSV 输出并使用
+[node-benchmark-compare][] 或 R 脚本单独分析：
 
 * `benchmark/compare.R`
 * `benchmark/bar.R`
@@ -420,13 +464,10 @@ $ node-benchmark-compare compare-pr-5134.csv # 或 cat compare-pr-5134.csv | Rsc
 ...
 ```
 
-在输出中，_improvement_ 是新版本的相对改进幅度，
-理想情况下它应为正值。_confidence_ 表示是否有足够的
-统计证据来验证 _improvement_。如果证据足够，
-那么至少会有一个星号 (`*`)，星号越多越好。**然而
-如果没有星号，就不要根据
-_improvement_ 得出任何结论。**有时这是没问题的，例如如果没有预期
-改进，那么就不应该有星号。
+当需要生成图表（通过 `compare.R --plot` 生成箱线图，通过
+`scatter.R --plot` 生成散点图），或者想要分析之前保存的 CSV 文件时，R 方法仍然很有用。
+
+输出中的 _improvement_ 是新版本的相对改进幅度，希望它是正值。_confidence_ 表示是否有足够的统计证据来验证 _improvement_。如果证据充足，就会显示至少一个星号（`*`），星号越多越好。**但是，如果没有星号，就不要根据 _improvement_ 得出任何结论。** 有时这完全正常，例如，如果没有预期的改进，那么就不应该出现任何星号。
 
 **注意：统计并不是万无一失的工具。** 如果某个基准测试显示
 统计上显著的差异，那么这种差异实际上不存在的概率有 5%。
@@ -470,8 +511,92 @@ $ cat compare-pr-5134.csv | sed '1p;/encoding='"'"ascii"'"'/!d' | Rscript benchm
 node benchmark/scatter.js benchmark/string_decoder/string-decoder.js > scatter.csv
 ```
 
-生成 csv 后，可以使用 `scatter.R` 工具创建比较表。
-更有用的是，在使用 `--plot filename` 选项时它会生成实际的散点图。
+#### 不使用 R 分析结果
+
+传入 `--analyze`，即可直接汇总结果，而无需生成 csv
+或安装 R。它需要 `--xaxis` 来指定要汇总的基准测试变量，还可选用
+`--category`，按第二个变量对每个数据点进行细分。其他任何非恒定变量都会被
+求平均，并作为聚合变量报告。
+
+```bash
+node benchmark/scatter.js --analyze --xaxis chunkLen --category encoding \
+    benchmark/string_decoder/string-decoder.js
+```
+
+```console
+chunkLen  encoding   samples          rate  confidence.interval        median    median.interval
+      16  'ascii'          6   2,248,111.0    61,570.3 (±2.74%)   2,241,996.7   [-3.75%, +4.47%]
+      16  'utf16le'        6   2,004,145.9    33,363.7 (±1.66%)   1,990,015.9   [-1.03%, +3.44%]
+      16  'utf8'           6   1,156,990.9    84,288.2 (±7.29%)   1,186,284.7  [-16.23%, +1.15%]  (!)
+     256  'ascii'          6  11,271,912.4   398,786.9 (±3.54%)  10,991,001.5   [-0.47%, +7.61%]
+     256  'utf16le'        6  10,243,336.8   792,495.2 (±7.74%)   9,908,838.3  [-4.73%, +17.25%]  (!)
+     256  'utf8'           6   8,247,482.7   316,510.5 (±3.84%)   8,282,009.5   [-5.80%, +3.19%]
+    1024  'ascii'          6  11,130,650.9   438,019.6 (±3.94%)  10,838,937.5   [-1.34%, +7.10%]
+    1024  'utf16le'        6   9,786,274.4   186,207.1 (±1.90%)   9,690,675.1   [-0.77%, +4.20%]
+    1024  'utf8'           6   8,479,690.1   405,762.8 (±4.79%)   8,525,516.7   [-9.01%, +4.06%]  (!)
+
+速率单位为每秒操作数；数值越大，速度越快。│ 表示均值，阴影带（░）表示其 95% 置信区间，因此区间重叠的柱状条无法明确区分。
+
+                                  0                           11,670,699.3
+                                  +--------------------------------------+
+chunkLen=16 encoding='ascii'      ███████│                                   2,248,111.0
+chunkLen=16 encoding='utf16le'    ██████│                                    2,004,145.9
+chunkLen=16 encoding='utf8'       ███│                                       1,156,990.9
+
+chunkLen=256 encoding='ascii'     █████████████████████████████████████░│░  11,271,912.4
+chunkLen=256 encoding='utf16le'   ████████████████████████████████░░░│░░    10,243,336.8
+chunkLen=256 encoding='utf8'      ███████████████████████████░│              8,247,482.7
+
+chunkLen=1024 encoding='ascii'    █████████████████████████████████████░│░  11,130,650.9
+chunkLen=1024 encoding='utf16le'  █████████████████████████████████│         9,786,274.4
+chunkLen=1024 encoding='utf8'     ████████████████████████████░│             8,479,690.1
+
+连续 chunkLen 值之间的变化（Mann-Whitney U，Cliff's delta）：
+
+  encoding='ascii'
+    16 -> 256    +401.39%  16.0x  exponent=+0.58  p=0.0039  delta=+1.000 (large)
+    256 -> 1024    -1.25%   4.0x  exponent=-0.01  p=0.3367  delta=-0.333 (medium)
+
+  encoding='utf16le'
+    16 -> 256    +411.11%  16.0x  exponent=+0.59  p=0.0039  delta=+1.000 (large)
+    256 -> 1024    -4.46%   4.0x  exponent=-0.03  p=0.1495  delta=-0.500 (large)
+
+  encoding='utf8'
+    16 -> 256    +612.84%  16.0x  exponent=+0.71  p=0.0039  delta=+1.000 (large)
+    256 -> 1024    +2.82%   4.0x  exponent=+0.02  p=0.2002  delta=+0.444 (medium)
+```
+
+该表针对每个分组给出均值速率及其 95% 置信区间，以及中位数及其中位数的 95% 置信区间。中位数区间使用精确二项式方法计算，该方法不对分布形状作任何假设，因此当基准测试结果有噪声时，它更值得信赖。
+
+标记为 `(!)` 的行正是这类情况：中位数落在均值的置信区间之外，或样本明显偏斜。这意味着少数异常慢或异常快的运行拉动了均值，通常是由 GC 或 JIT 分层导致的；增加 `--runs` 不一定能解决问题。
+
+最后一部分回答了通常需要通过这类扫描来确定的问题：参数是否会改变速率。它通过 [Mann-Whitney U 检验][] 和 [Cliff's delta][]，在类别不变的情况下，将每个 x 轴取值与前一个取值进行比较。这两种方法都是非参数方法，因为参数扫描通常会改变分布的形状和离散程度，而不仅仅是改变其中心。上面的结果显示，从 `chunkLen=16` 增加到 `256` 对每种编码都是显著且明确的提升，而从 `256` 增加到 `1024` 的效果可以忽略不计——基准测试的性能已经趋于平稳。
+
+当 x 轴为数值时，每次比较还会报告参数变化的幅度及由此得到的缩放指数，这正是通常运行此类扫描要回答的复杂度问题。上面的结果显示，块大小增加 16 倍时，指数接近 `+0.6`（明显低于线性增长）；接下来的 4 倍增加则得到 `-0.01`（已趋于饱和）。指数按每个步骤报告，而不是对整个扫描结果只拟合一个指数，因为用一个指数描述发生了阶段变化的曲线，无法准确描述其中任何一段。
+
+p 值必须结合检验所能产生的结果来解读。每组运行次数低于约 6 次时，Mann-Whitney 检验能返回的最小 p 值会高于通常的阈值——在 `--runs 2` 时，最小值为 `0.1213`，因此无论真实效果有多大，比较结果都无法达到显著性。`scatter.js` 会计算这个最小值，并在因此无法从非显著结果中获得任何信息时发出警告。
+
+聚合变量会连同其所解释的组内方差占比一起报告。这一点比听起来更重要：如果运行上面的示例时不加 `--set inLen=128`，就会报告
+
+```console
+aggregating variable: inLen (explains >99% of within-group variance)
+
+Note: inLen explains most of the spread within each group, so the intervals
+below describe that variable rather than the benchmark's own noise, and more
+--runs will not narrow them. Pin it with --set inLen=<value>, or pass as
+--category, for intervals that can be acted on.
+```
+
+置信区间会从约 ±3% 扩大到超过 ±50%。这种离散程度是被平均变量真实造成的影响，而不是抽样噪声，因此增加 `--runs` 并不能缩小区间。
+
+较长或不可打印的变量值会在输出中缩写，并在末尾的 `Abbreviated values:` 下完整列出。
+
+传入 `--no-chart` 可省略条形图，传入 `--no-progress` 可隐藏进度指示器。
+
+#### 使用 R 分析结果
+
+生成 csv 后，可以使用 `scatter.R` 工具创建比较表。更有用的是，使用
+`--plot filename` 选项还可以生成实际的散点图。
 
 ```console
 $ cat scatter.csv | Rscript benchmark/scatter.R --xaxis chunkLen --category encoding --plot scatter-plot.png --log
@@ -501,14 +626,14 @@ chunkLen     encoding      rate confidence.interval
     1024         utf8 1824266.6           359628.52
 ```
 
-因为散点图只能展示两个变量（此处是 _chunkLen_
+由于散点图只能展示两个变量（此处是 _chunkLen_
 和 _encoding_），其余数据会被聚合。有时聚合会成为问题，这
 可以通过过滤来解决。可以在基准测试时使用
 `--set` 参数完成（例如 `--set encoding=ascii`），或者在之后使用
 `sed` 或 `grep` 等工具过滤结果。在 `sed` 的情况下，请务必保留第一行，因为它包含头部信息。
 
 ```console
-$ cat scatter.csv | sed -E '1p;/([^,]+, ){3}128,/!d' | Rscript benchmark/scatter.R --xaxis chunkLen --category encoding --plot scatter-plot.png --log
+$ cat scatter.csv | sed -E '1p;/([^,]+,){3}128,/!d' | Rscript benchmark/scatter.R --xaxis chunkLen --category encoding --plot scatter-plot.png --log
 
 chunkLen     encoding      rate confidence.interval
       16        ascii 1302078.5            71692.27
@@ -534,6 +659,26 @@ chunkLen     encoding      rate confidence.interval
 ```
 
 ![compare 工具散点图](doc_img/scatter-plot.png)
+
+### 评估 `node:bench` 移植版本
+
+实验性的 `compare-node-bench.js` 和 `scatter-node-bench.js` 工具是现有工具针对显式 `node:bench` 文件的并行版本。它们不会修改或替换旧版基准测试框架。对于一个基准测试标识，每次重复观测都会使用单独进程调用中的一个测量样本。同一文件中声明的配置仍会在该进程中串行执行，与旧版框架在配置级别隔离进程的方式不同，并且可能共享运行时状态。
+
+这两个并行工具都支持内联分析。`scatter-node-bench.js --analyze`
+使用 `scatter.js` 中介绍的相同 `--xaxis`、`--category` 和 `--no-chart` 接口。`compare-node-bench.js --analyze` 执行 Welch t 检验，而
+`--max-regression N` 会添加经过校正的回归门槛。该门槛要求针对 `N%` 阈值的单侧 p 值经过 Holm-Bonferroni 校正后小于 0.05，且 95% 置信区间完全低于 `-N%`；仅凭点估计不能使命令判定失败。
+Scatter 分析会将聚合配置缩减为每个外层进程一个值，并在连续的 Mann-Whitney 比较中使用互不重叠的进程集合，以免将共享进程的配置视为独立样本。
+
+以下划线开头的移植版本会放在选定的旧版基准测试旁边，并从旧版发现机制中排除。例如：
+
+```console
+./node benchmark/scatter.js --runs 30 \
+  benchmark/crypto/create-hash.js > legacy.csv
+./node benchmark/scatter-node-bench.js --runs 30 -- \
+  benchmark/crypto/_create-hash.node-bench.js > node-bench.csv
+```
+
+该移植版本使用旧版相对文件名作为基准测试名称，并保留相同的参数名称。因此，可以使用相同的脚本分析这两个 CSV 文件，以检查它们的速率分布和测量单位是否一致。参见 [`benchmark/README.md`][]，其中有 compare 和 scatter 示例。
 
 ### 在 CI 上运行基准测试
 
@@ -705,13 +850,16 @@ function main(conf) {
 * `path` - 默认值为 `/`
 * `connections` - 要使用的并发连接数，默认值为 100
 * `duration` - 基准测试持续时间（秒），默认值为 10
-* `benchmarker` - 要使用的 benchmarker，默认值为第一个可用的 http
-  benchmarker
+* `benchmarker` - 要使用的基准测试工具，默认值为第一个可用的 HTTP
+  基准测试工具
 
+[Cliff's delta]: https://en.wikipedia.org/wiki/Effect_size#Effect_size_for_ordinal_data
+[Mann-Whitney U test]: https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test
+[`benchmark/README.md`]: ../../benchmark/README.md#nodebench-evaluation-tools
 [autocannon]: https://github.com/mcollina/autocannon
 [benchmark-ci]: https://github.com/nodejs/benchmarking/blob/HEAD/docs/core_benchmarks.md
 [git-for-windows]: https://git-scm.com/download/win
 [nghttp2.org]: https://nghttp2.org
 [node-benchmark-compare]: https://github.com/targos/node-benchmark-compare
 [t-test]: https://en.wikipedia.org/wiki/Student%27s_t-test#Equal_or_unequal_sample_sizes%2C_unequal_variances_%28sX1_%3E_2sX2_or_sX2_%3E_2sX1%29
-[wrk]: https://github.com/wg/wrk
+[wrk]: https://github.com/wg/wrk񎟆

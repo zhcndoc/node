@@ -222,9 +222,9 @@ added:
  - v19.9.0
  - v18.19.0
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/64525
-    description: Marked as stable.
+    description: 已标记为稳定。
 -->
 
 > 稳定性：2 - 稳定
@@ -693,14 +693,14 @@ added:
  - v19.9.0
  - v18.19.0
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/64525
-    description: Marked as stable.
+    description: 已标记为稳定。
 -->
 
 > 稳定性：2 - 稳定
 
-`TracingChannel` 类是 [TracingChannel Channels][] 的集合，这些通道共同表示单个可追踪操作。它用于规范化并简化生成用于追踪应用程序流程的事件的过程。
+`TracingChannel` 类是 [TracingChannel 通道][] 的集合，这些通道共同表示单个可追踪操作。它用于规范化并简化生成用于追踪应用程序流程的事件的过程。
 
 使用 [`diagnostics_channel.tracingChannel()`][] 构造 `TracingChannel`。与 `Channel` 一样，建议在文件顶层创建并复用单个 `TracingChannel`，而不是动态创建它们。
 
@@ -950,34 +950,6 @@ added:
 追踪接收回调的函数调用。预期回调遵循错误作为第一个参数的约定。这将始终在函数执行的同步部分周围产生 [`start` 事件][] 和 [`end` 事件][]，并在回调执行周围产生 [`asyncStart` 事件][] 和 [`asyncEnd` 事件][]。如果给定函数抛出或传递给回调的第一个参数被设置，也可能产生 [`error` 事件][]。这将在 `start` 通道上使用 [`channel.runStores(context, ...)`][] 运行给定函数，确保所有事件都将任何绑定的存储设置为与此追踪上下文匹配。
 
 为确保只形成正确的追踪图，只有在开始追踪之前存在订阅者时才会发布事件。在追踪开始后添加的订阅将不会接收来自该追踪的未来事件，只会看到未来的追踪。
-
-```mjs
-import diagnostics_channel from 'node:diagnostics_channel';
-
-const channels = diagnostics_channel.tracingChannel('my-channel');
-
-channels.traceCallback((arg1, callback) => {
-  // 做点什么
-  callback(null, 'result');
-}, 1, {
-  some: 'thing',
-}, thisArg, arg1, callback);
-```
-
-```cjs
-const diagnostics_channel = require('node:diagnostics_channel');
-
-const channels = diagnostics_channel.tracingChannel('my-channel');
-
-channels.traceCallback((arg1, callback) => {
-  // 做点什么
-  callback(null, 'result');
-}, 1, {
-  some: 'thing',
-}, thisArg, arg1, callback);
-```
-
-回调也将使用 [`channel.runStores(context, ...)`][] 运行，这在某些情况下启用上下文丢失恢复。
 
 ```mjs
 import diagnostics_channel from 'node:diagnostics_channel';
@@ -1398,6 +1370,42 @@ TracingChannel 是若干 diagnostics_channels 的集合，表示单个可跟踪�
 
 当调用 `console.error()` 时发出。接收传递给 `console.error()` 的参数数组。
 
+#### Crypto
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1 - 实验性
+
+##### 事件：`'crypto.fips.indicator'`
+
+* `operation` {string} 提供程序定义的操作类型。
+* `reason` {string} 提供程序定义的、说明操作未获批准的原因。
+* `blocked` {boolean} 指示器回调是否阻止了操作。
+* `count` {number} 此消息表示的匹配待处理指示器调用次数。
+* `dropped` {number} 此消息送达前丢弃的其他指示器调用次数。
+
+当 Node.js 使用的 OpenSSL FIPS 提供程序在相应的提供程序检查被放宽后，检测到未获 FIPS 批准的操作时发出。配置提供程序以实现向后兼容时，可能会执行此类操作。`operation` 和 `reason` 值来自提供程序，应视为不透明字符串，而不是稳定的枚举值。
+
+使用 [`--enable-fips-indicator-events`][] 启动 Node.js 以启用此通道。未提供该选项时，订阅不会安装 OpenSSL 回调，也不会发布任何消息。
+
+订阅此通道仅用于观察，绝不会改变操作的结果。Node.js 会保留在其初始化加密支持之前安装的任何原生指示器回调所产生的结果。使用 [`--force-fips=strict`][] 时，无论是否启用了指示器事件或通道是否有订阅者，Node.js 都会拒绝回调指示的未获批准操作。
+
+由于 OpenSSL 指示器可能来自 Worker 或其他线程，消息会异步发布到主线程。只有主线程上的订阅才能接收消息。消息相对于源操作的送达顺序未定义，且无法将消息关联到特定调用或 Worker。
+
+一次加密操作可能多次调用 OpenSSL 指示器。匹配的待处理调用会合并，并反映在 `count` 中，该值不一定表示加密操作的次数。队列中最多可有 256 条不同的消息。其他调用会通过队列中第一条消息的 `dropped` 字段报告。排队的消息不会使事件循环保持活动状态，因此此通道适用于尽力而为的诊断，而不是权威审计日志。
+
+此通道会观察 Node.js 使用的默认 OpenSSL 库上下文。它不会观察原生插件或使用其他 `OSSL_LIB_CTX` 或其他 `libcrypto` 副本的代码。此功能适用于 OpenSSL 3.4 及更高版本，不适用于 BoringSSL。直接配置为拒绝检查的提供程序（包括严格的 OpenSSL FIPS 提供程序）可能会拒绝操作而不发出指示器。收到或未收到消息，均不能证明 Node.js 或某项加密操作已通过 FIPS 验证。
+
+```mjs
+import diagnosticsChannel from 'node:diagnostics_channel';
+
+diagnosticsChannel.subscribe('crypto.fips.indicator', (message) => {
+  console.error('Non-approved cryptographic operation', message);
+});
+```
+
 #### HTTP
 
 > 稳定性：1 - 实验性
@@ -1558,7 +1566,7 @@ TracingChannel 是若干 diagnostics_channels 的集合，表示单个可跟踪�
 
 当执行 `require()` 时发出。参见 [`start` 事件][]。
 
-##### Event: `'tracing:module.require:end'`
+##### 事件：`'tracing:module.require:end'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `require()` 的参数。模块名称。
@@ -1566,7 +1574,7 @@ TracingChannel 是若干 diagnostics_channels 的集合，表示单个可跟踪�
 
 当 `require()` 调用返回时发出。参见 [`end` 事件][]。
 
-##### Event: `'tracing:module.require:error'`
+##### 事件：`'tracing:module.require:error'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `require()` 的参数。模块名称。
@@ -1575,7 +1583,7 @@ TracingChannel 是若干 diagnostics_channels 的集合，表示单个可跟踪�
 
 当 `require()` 抛出错误时发出。参见 [`error` 事件][]。
 
-##### Event: `'tracing:module.import:asyncStart'`
+##### 事件：`'tracing:module.import:asyncStart'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `import()` 的参数。模块名称。
@@ -1583,7 +1591,7 @@ TracingChannel 是若干 diagnostics_channels 的集合，表示单个可跟踪�
 
 当调用 `import()` 时发出。参见 [`asyncStart` 事件][]。
 
-##### Event: `'tracing:module.import:asyncEnd'`
+##### 事件：`'tracing:module.import:asyncEnd'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `import()` 的参数。模块名称。
@@ -1591,7 +1599,7 @@ TracingChannel 是若干 diagnostics_channels 的集合，表示单个可跟踪�
 
 当 `import()` 完成时发出。参见 [`asyncEnd` 事件][]。
 
-##### Event: `'tracing:module.import:error'`
+##### 事件：`'tracing:module.import:error'`
 
 * `event` {Object} 包含以下属性
   * `id` 传递给 `import()` 的参数。模块名称。
@@ -1680,7 +1688,7 @@ added: v16.18.0
 
 当 [`child_process.spawn()`][] 遇到错误时发出。
 
-##### Event: `'process.execve'`
+##### 事件：`'process.execve'`
 
 * `execPath` {string}
 * `args` {string\[]}
@@ -1745,10 +1753,33 @@ added: v16.18.0
 
 当创建新线程时发出。
 
-[BoundedChannel 通道]: #boundedchannel-channels
-[TracingChannel 通道]: #tracingchannel-channels
+#### SQLite
+
+<!-- YAML
+added: v26.8.0
+-->
+
+> 稳定性：1 - 实验性
+
+##### 事件：`'sqlite.db.query'`
+
+* `sql` {string} 替换了绑定参数值后的展开 SQL。如果展开失败，则改用未替换占位符的源 SQL。
+* `database` {Database} 执行该语句的 [`Database`][] 实例。
+* `duration` {number} SQLite 对语句运行时间的内部估算值，单位为纳秒。该值仅反映 C 层执行时间，不包括参数封送或结果行构造等 JavaScript 绑定开销。
+
+对 [`Database`][] 实例执行 SQL 语句并完成后发出。这是一个**性能分析**事件：每条语句完成时触发一次，并报告 SQLite 内部分析器给出的估算耗时。它不是分布式跟踪 span。它没有对应的开始事件，不会传播异步上下文，也没有父 span 关联。如果需要与 OpenTelemetry 兼容的 span 或异步上下文传播，请改为在 JavaScript 层使用 [`TracingChannel`][] 包装 SQLite 调用。
+
+没有订阅者时，发布不会产生任何开销。
+
+对于在迭代中途被放弃并随后终结的语句，不会发出事件；无论是通过 [`statement.close()`][] 显式终结，还是语句被垃圾回收。事件送达期间，数据库和语句仍在使用中，订阅者不得关闭它们；请参阅 [`database.close()`][] 和 [`statement.close()`][]。
+
+[BoundedChannel Channels]: #boundedchannel-channels
+[TracingChannel Channels]: #tracingchannel-channels
 [`'uncaughtException'`]: process.md#event-uncaughtexception
+[`--enable-fips-indicator-events`]: cli.md#--enable-fips-indicator-events
+[`--force-fips=strict`]: cli.md#--force-fips
 [`BoundedChannel`]: #class-boundedchannel
+[`Database`]: sqlite.md#class-database
 [`TracingChannel`]: #class-tracingchannel
 [`asyncEnd` 事件]: #asyncendevent
 [`asyncStart` 事件]: #asyncstartevent
@@ -1759,6 +1790,7 @@ added: v16.18.0
 [`channel.unsubscribe(onMessage)`]: #channelunsubscribeonmessage
 [`channel.withStoreScope(data)`]: #channelwithstorescopedata
 [`child_process.spawn()`]: child_process.md#child_processspawncommand-args-options
+[`database.close()`]: sqlite.md#databaseclose
 [`diagnostics_channel.channel(name)`]: #diagnostics_channelchannelname
 [`diagnostics_channel.subscribe(name, onMessage)`]: #diagnostics_channelsubscribename-onmessage
 [`diagnostics_channel.tracingChannel()`]: #diagnostics_channeltracingchannelnameorchannels
@@ -1767,7 +1799,8 @@ added: v16.18.0
 [`locks.request()`]: worker_threads.md#locksrequestname-options-callback
 [`net.Server.listen()`]: net.md#serverlisten
 [`process.execve()`]: process.md#processexecvefile-args-env
-[`start` 事件]: #startevent
+[`start` event]: #startevent
+[`statement.close()`]: sqlite.md#statementclose
 [`worker_threads.locks`]: worker_threads.md#worker_threadslocks
 [上下文丢失]: async_context.md#troubleshooting-context-loss
 [thenable 对象]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise#thenables

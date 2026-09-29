@@ -174,7 +174,7 @@ added: v11.3.0
 
 ### `server.maxHeadersCount`
 
-* 类型：{number} **默认值：** `2000`
+* 类型：{number} **默认值：** `1000`
 
 详见 `node:http` 模块中的 [`server.maxHeadersCount`][]。
 

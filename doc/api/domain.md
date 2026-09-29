@@ -3,6 +3,10 @@
 <!-- YAML
 deprecated: v1.4.2
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65074
+    description: Loading the module now emits a runtime deprecation warning
+                 (`DEP0032`).
   - version: v8.8.0
     pr-url: https://github.com/nodejs/node/pull/15695
     description: "在 VM 上下文中创建的任何 `Promise` 不再拥有 `.domain` 属性。然而，它们的处理程序仍然在正确的域中执行，并且在主上下文中创建的 `Promise` 仍然拥有 `.domain` 属性。"
@@ -17,7 +21,7 @@ changes:
 
 <!-- source_link=lib/domain.js -->
 
-**此模块待弃用。** 一旦替代 API 最终确定，此模块将被完全弃用。大多数开发人员**不**应该有理由使用此模块。绝对需要域提供的功能的用户可以暂时依赖它，但应该期望将来必须迁移到不同的解决方案。
+**此模块已弃用，不应使用。** 加载此模块会发出运行时弃用警告（`DEP0032`）。大多数开发者**不应**有理由使用此模块。绝对需要域所提供功能的用户目前可以继续依赖它，但应做好将来迁移到其他解决方案的准备。
 
 域提供了一种将多个不同的 IO 操作作为单个组来处理的方法。如果注册到域的任何事件发射器或回调发出 `'error'` 事件或抛出错误，则域对象将被通知，而不是在 `process.on('uncaughtException')` 处理程序中丢失错误上下文，或导致程序立即以错误代码退出。
 

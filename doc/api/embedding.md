@@ -60,6 +60,41 @@ int main(int argc, char** argv) {
 }
 ```
 
+### 限制对环境变量的访问
+
+<!-- YAML
+added: REPLACEME
+-->
+
+当传递给 `node::InitializeOncePerProcess()` 的参数启用了[权限模型][]，但未指定 `--allow-env=*` 时，进程环境中不得包含任何未由 [`--allow-env`][] 授权访问的变量。否则，`node::InitializeOncePerProcess()` 会失败。与 `node` 可执行文件不同，嵌入器拥有进程环境，因此 Node.js 不会自行移除这些变量。
+
+`node::ScrubProcessEnvironment()` 会移除这些变量。由于它会在没有任何锁的情况下修改进程环境，而调用 `getenv()` 的原生代码不会参与此锁，因此必须在启动任何可能读取环境的线程之前，以及在调用 `node::InitializeOncePerProcess()` 之前调用它：
+
+```cpp
+int main(int argc, char** argv) {
+  argv = uv_setup_args(argc, argv);
+  std::vector<std::string> args(argv, argv + argc);
+
+  // 除了 Node.js 读取的变量之外，保留嵌入器自身读取的变量
+  // （参见 node::GetRuntimeEnvironmentDefaults()）。
+  node::ProcessEnvironmentScrubOptions scrub_options;
+  scrub_options.allow = {"PORT", "APP_*"};
+  if (node::ScrubProcessEnvironment(scrub_options).IsNothing()) {
+    return 1;
+  }
+
+  // args 包含例如 --permission --allow-env=PORT
+  std::unique_ptr<node::InitializationResult> result =
+      node::InitializeOncePerProcess(args, {
+        node::ProcessInitializationFlags::kNoInitializeV8,
+        node::ProcessInitializationFlags::kNoInitializeNodeV8Platform
+      });
+  // ...
+}
+```
+
+`process.permission.drop('env', name)` 会从进程环境中移除一个变量，因此从在未使用 `node::EnvironmentFlags::kOwnsProcessState` 的情况下创建的 `node::Environment` 中调用时会抛出异常。
+
 ### 设置每实例状态
 
 <!-- YAML
@@ -70,14 +105,16 @@ changes:
       添加了 `CommonEnvironmentSetup` 和 `SpinEventLoop` 工具。
 -->
 
-Node.js 有一个"Node.js 实例”的概念，通常被称为 `node::Environment`。每个 `node::Environment` 关联着：
+Node.js 有一个“Node.js 实例”的概念，通常被称为 `node::Environment`。每个 `node::Environment` 关联着：
 
 * 恰好一个 `v8::Isolate`，即一个 JS 引擎实例，
 * 恰好一个 `uv_loop_t`，即一个事件循环，
 * 若干个 `v8::Context`，但恰好一个主 `v8::Context`，以及
 * 一个 `node::IsolateData` 实例，其中包含可由多个 `node::Environment` 共享的信息。嵌入器应确保 `node::IsolateData` 仅在共享相同 `v8::Isolate` 的 `node::Environment` 之间共享，Node.js 不执行此检查。
 
-为了设置 `v8::Isolate`，需要提供一个 `v8::ArrayBuffer::Allocator`。一个可能的选择是默认的 Node.js 分配器，可以通过 `node::ArrayBufferAllocator::Create()` 创建。使用 Node.js 分配器可以在插件使用 Node.js C++ `Buffer` API 时允许轻微的性能优化，并且是跟踪 [`process.memoryUsage()`][] 中 `ArrayBuffer` 内存所必需的。
+共享 `node::IsolateData` 的 `node::Environment` 也共享其 `uv_loop_t`。`node::FreeEnvironment()` 会运行该循环，直到要释放的 `node::Environment` 的句柄关闭为止；在此期间，整个 `v8::Isolate` 上都不允许执行 JavaScript，因此，同一循环上属于其他 `node::Environment` 的待处理计时器、I/O 回调和线程池任务完成回调都可能在该调用期间运行，但无法调用 JavaScript。相互独立地释放的 `node::Environment` 应各自使用自己的 `uv_loop_t` 和 `node::IsolateData`，或者嵌入器应确保释放其中一个时，其他实例没有待处理的工作。
+
+要设置 `v8::Isolate`，需要提供一个 `v8::ArrayBuffer::Allocator`。一种可能的选择是 Node.js 默认分配器，它可以通过 `node::ArrayBufferAllocator::Create()` 创建。当插件使用 Node.js C++ `Buffer` API 时，使用 Node.js 分配器可以进行一些小幅性能优化；此外，为了在 [`process.memoryUsage()`][] 中跟踪 `ArrayBuffer` 内存，也必须使用该分配器。
 
 此外，每个用于 Node.js 实例的 `v8::Isolate` 都需要向 `MultiIsolatePlatform` 实例注册和注销（如果正在使用），以便平台知道为该 `v8::Isolate` 调度的任务使用哪个事件循环。
 
@@ -141,7 +178,9 @@ int RunNodeInstance(MultiIsolatePlatform* platform,
 }
 ```
 
-[命令行选项]: cli.md
+[CLI options]: cli.md
+[Permission Model]: permissions.md#permission-model
+[`--allow-env`]: cli.md#--allow-env
 [`process.memoryUsage()`]: process.md#processmemoryusage
 [弃用策略]: deprecations.md
 [embedtest.cc]: https://github.com/nodejs/node/blob/HEAD/test/embedding/embedtest.cc

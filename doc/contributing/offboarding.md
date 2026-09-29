@@ -10,4 +10,8 @@
 * 将其从 [`@nodejs`](https://github.com/orgs/nodejs/people) GitHub 组织中移除，除非他们因协作者之外的其他原因而成为该组织成员。
 * 在 nodejs/build 仓库中 [提交一个 issue](https://github.com/nodejs/build/issues/new)，标题为 `Remove Collaborator from Coverity`，请求将该协作者从 Node.js coverity 项目中移除，前提是他们拥有访问权限。
 
+荣誉协作者之后可以请求 TSC 恢复其活跃状态。
+请参阅[恢复荣誉协作者身份][]。
+
+[恢复荣誉协作者身份]: https://github.com/nodejs/node/blob/HEAD/GOVERNANCE.md#restoring-emeritus-collaborators
 [`@nodejs/collaborators`]: https://github.com/orgs/nodejs/teams/collaborators/members

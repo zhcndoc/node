@@ -462,7 +462,9 @@ added:
   - v20.16.0
 -->
 
-`blob.bytes()` 方法将 `Blob` 对象的字节作为 `Promise<Uint8Array>` 返回。
+* 返回：{Promise}
+
+`blob.bytes()` 方法以 `Promise<Uint8Array>` 的形式返回 `Blob` 对象的字节。
 
 ```js
 const blob = new Blob(['hello']);
@@ -492,6 +494,7 @@ added:
 * `start` {number} 起始索引。
 * `end` {number} 结束索引。
 * `type` {string} 新 `Blob` 的内容类型
+* 返回：{Blob}
 
 创建并返回一个新的 `Blob`，包含此 `Blob` 对象
 数据的子集。原始 `Blob` 不会被更改。
@@ -715,7 +718,7 @@ console.log(buf);
 <!-- YAML
 added: v5.10.0
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/65003
     description: 添加 `alignment` 参数。
   - version: v20.0.0
@@ -793,9 +796,9 @@ console.log(buf);
 <!-- YAML
 added: v5.12.0
 changes:
-  - version: REPLACEME
+  - version: v26.8.0
     pr-url: https://github.com/nodejs/node/pull/65003
-    description: Added the `alignment` argument.
+    description: 添加 `alignment` 参数。
   - version: v20.0.0
     pr-url: https://github.com/nodejs/node/pull/45796
     description: "对于无效的输入参数，抛出 ERR_INVALID_ARG_TYPE 或 ERR_OUT_OF_RANGE 而不是ERR_INVALID_ARG_VALUE。"
@@ -920,6 +923,51 @@ console.log(`${str}: ${str.length} characters, ` +
 
 当 `string` 是 {Buffer|DataView|TypedArray|ArrayBuffer|SharedArrayBuffer} 时，
 返回 `.byteLength` 报告的字节长度。
+
+### 静态方法：`Buffer.stringLength(input[, encoding])`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `input` {Buffer | ArrayBuffer | TypedArray} 将被解码的字节。
+* `encoding` {string} 解码 `input` 时使用的字符编码。
+  **默认值：** `'utf8'`。
+* 返回：{integer}
+
+返回对相同字节调用 `buf.toString(encoding)` 将生成的字符串的 UTF-16 代码单元长度，而不对其进行解码。这是 [`Buffer.byteLength()`][] 的对应方法，后者返回字符串编码后所需的字节数。
+
+对于 `'utf8'`，无效字节序列按照解码时的方式计数：每个最长的无效子序列会变成一个 `U+FFFD` 替换字符。对于所有其他编码，结果仅根据 `input.byteLength` 计算。
+
+已分离的 `ArrayBuffer` 或由其支持的 `TypedArray` 会被视为空值。
+
+结果不会被限制：解码前请将其与 [`buffer.constants.MAX_STRING_LENGTH`][] 比较，以判断解码是否能够成功。包含 `n` 个代码单元的字符串占用 `n` 到 `2 * n` 字节的内存。
+
+```mjs
+import { Buffer, constants } from 'node:buffer';
+
+const buf = Buffer.from('€ 100', 'utf8');
+
+console.log(Buffer.stringLength(buf));
+// 打印：5
+console.log(Buffer.stringLength(buf, 'hex'));
+// 打印：14
+console.log(Buffer.stringLength(buf) <= constants.MAX_STRING_LENGTH);
+// 打印：true
+```
+
+```cjs
+const { Buffer, constants } = require('node:buffer');
+
+const buf = Buffer.from('€ 100', 'utf8');
+
+console.log(Buffer.stringLength(buf));
+// 打印：5
+console.log(Buffer.stringLength(buf, 'hex'));
+// 打印：14
+console.log(Buffer.stringLength(buf) <= constants.MAX_STRING_LENGTH);
+// 打印：true
+```
 
 ### 静态方法：`Buffer.compare(buf1, buf2)`
 
@@ -2002,7 +2050,9 @@ console.log(buf.fill('zz', 'hex'));
 <!-- YAML
 added: v5.3.0
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/62390
     description: 添加了 `end` 参数。
   - version:
@@ -2070,7 +2120,9 @@ console.log(buf.includes('this', 4));
 <!-- YAML
 added: v1.5.0
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/62390
     description: 添加了 `end` 参数。
   - version: v8.0.0
@@ -2208,7 +2260,7 @@ added: v1.1.0
 
 * 返回值：{Iterator}
 
-创建并返回一个 [iterator][]，其中包含 `buf` 的键（索引）。
+创建并返回一个 [迭代器][]，其中包含 `buf` 的键（索引）。
 
 ```mjs
 import { Buffer } from 'node:buffer';
@@ -2249,7 +2301,9 @@ for (const key of buf.keys()) {
 <!-- YAML
 added: v6.0.0
 changes:
-  - version: v26.1.0
+  - version:
+     - v26.1.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/62390
     description: 添加了 `end` 参数。
   - version: v8.0.0
@@ -2930,9 +2984,9 @@ changes:
 
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - byteLength`。
-* `byteLength` {integer} 要读取的字节数。必须满足 `0 < byteLength <= 6`。
-* 返回值：{integer}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - byteLength`。
+* `byteLength` {整数} 要读取的字节数。必须满足 `0 < byteLength <= 6`。
+* 返回值：{整数}
 
 从 `buf` 中指定的 `offset` 处读取 `byteLength` 个字节，并将结果解释为小端二进制补码有符号值，支持高达 48 位的精度。
 
@@ -2969,8 +3023,8 @@ changes:
     description: 移除了 noAssert，并且不再将 offset 隐式强制转换为 uint32。
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 1`。**默认值：** `0`。
-* 返回值：{integer}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 1`。**默认值：** `0`。
+* 返回值：{整数}
 
 从 `buf` 中指定的 `offset` 处读取一个无符号 8 位整数。
 
@@ -3017,8 +3071,8 @@ changes:
     description: 移除了 noAssert，并且不再将 offset 隐式强制转换为 uint32。
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 2`。**默认值：** `0`。
-* 返回值：{integer}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 2`。**默认值：** `0`。
+* 返回值：{整数}
 
 从 `buf` 中指定的 `offset` 处读取一个无符号的大端 16 位整数。
 
@@ -3061,8 +3115,8 @@ changes:
     description: 移除了 noAssert，并且不再将 offset 隐式强制转换为 uint32。
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 2`。**默认值：** `0`。
-* 返回值：{integer}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 2`。**默认值：** `0`。
+* 返回值：{整数}
 
 从 `buf` 中指定的 `offset` 处读取一个无符号的小端 16 位整数。
 
@@ -3109,8 +3163,8 @@ changes:
     description: 移除了 noAssert，并且不再将 offset 隐式强制转换为 uint32。
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 4`。**默认值：** `0`。
-* 返回值：{integer}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 4`。**默认值：** `0`。
+* 返回值：{整数}
 
 从 `buf` 中指定的 `offset` 处读取一个无符号的大端 32 位整数。
 
@@ -3149,8 +3203,8 @@ changes:
     description: 移除了 noAssert，并且不再将 offset 隐式强制转换为 uint32。
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 4`。**默认值：** `0`。
-* 返回值：{integer}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - 4`。**默认值：** `0`。
+* 返回值：{整数}
 
 从 `buf` 中指定的 `offset` 处读取一个无符号的小端 32 位整数。
 
@@ -3198,9 +3252,9 @@ changes:
     description: 移除了 noAssert，并且不再将 offset 和 byteLength 隐式强制转换为 uint32。
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - byteLength`。
-* `byteLength` {integer} 要读取的字节数。必须满足 `0 < byteLength <= 6`。
-* 返回值：{integer}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - byteLength`。
+* `byteLength` {整数} 要读取的字节数。必须满足 `0 < byteLength <= 6`。
+* 返回值：{整数}
 
 从 `buf` 中指定的 `offset` 处读取 `byteLength` 个字节，并将结果解释为无符号大端整数，支持高达 48 位的精度。
 
@@ -3248,9 +3302,9 @@ changes:
     description: 移除了 noAssert，并且不再将 offset 和 byteLength 隐式强制转换为 uint32。
 -->
 
-* `offset` {integer} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - byteLength`。
-* `byteLength` {integer} 要读取的字节数。必须满足 `0 < byteLength <= 6`。
-* 返回值：{integer}
+* `offset` {整数} 开始读取前要跳过的字节数。必须满足 `0 <= offset <= buf.length - byteLength`。
+* `byteLength` {整数} 要读取的字节数。必须满足 `0 < byteLength <= 6`。
+* 返回值：{整数}
 
 从 `buf` 中指定的 `offset` 处读取 `byteLength` 个字节，并将结果解释为无符号小端整数，支持高达 48 位的精度。
 
@@ -3280,8 +3334,8 @@ console.log(buf.readUIntLE(0, 6).toString(16));
 added: v3.0.0
 -->
 
-* `start` {integer} 新 `Buffer` 的起始位置。**默认值：** `0`。
-* `end` {integer} 新 `Buffer` 的结束位置（不包含）。**默认值：** [`buf.length`][]。
+* `start` {整数} 新 `Buffer` 的起始位置。**默认值：** `0`。
+* `end` {整数} 新 `Buffer` 的结束位置（不包含）。**默认值：** [`buf.length`][]。
 * 返回值：{Buffer}
 
 返回一个新的 `Buffer`，它引用与原始对象相同的内存，但根据 `start` 和 `end` 索引进行偏移和裁剪。
@@ -5027,6 +5081,7 @@ added:
 > 稳定性：3 - 遗留。请改用 `Buffer.from(data, 'base64')`。
 
 * `data` {any} Base64 编码的输入字符串。
+* 返回：{string}
 
 将 Base64 编码的数据字符串解码为字节，并使用 Latin-1 (ISO-8859-1) 将这些字节编码为字符串。
 
@@ -5050,7 +5105,8 @@ added:
 
 > 稳定性：3 - 遗留。请改用 `buf.toString('base64')`。
 
-* `data` {any} 一个 ASCII (Latin1) 字符串。
+* `data` {any} ASCII（Latin1）字符串。
+* 返回：{string}
 
 使用 Latin-1 (ISO-8859) 将字符串解码为字节，并使用 Base64 将这些字节编码为字符串。
 
@@ -5071,10 +5127,11 @@ added:
   - v19.6.0
   - v18.15.0
 changes:
-  - version: REPLACEME
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/64504
-    description: Detached `ArrayBuffer`s and views backed by them are treated
-                 as empty.
+    description: 分离的 `ArrayBuffer` 及由其支持的视图将被视为空。
 -->
 
 * `input` {Buffer | ArrayBuffer | TypedArray} 要验证的输入。
@@ -5084,6 +5141,41 @@ changes:
 
 分离的 `ArrayBuffer`，或由其支持的 `TypedArray`，将被视为空。
 
+### `buffer.isLatin1(input)`
+
+<!-- YAML
+added: REPLACEME
+-->
+
+* `input` {string} 要验证的字符串。
+* 返回：{boolean}
+
+如果 `input` 可以使用 Node.js [`'latin1'`][character encodings] 编码无损编码（包括 `input` 为空的情况），此函数将返回 `true`。也就是说，如果 `input` 中的每个 UTF-16 代码单元都在 `U+0000` 到 `U+00FF` 范围内，它就会返回 `true`。这样的字符串也是有效的 [WebIDL `ByteString`][]。
+
+此检查使用 Node.js 对 `'latin1'` 的定义，其中从 `U+0000` 到 `U+00FF` 的每个代码单元都直接映射到相同值的字节。它不使用 [WHATWG Encoding Standard][] 的定义；在该定义中，`'latin1'` 标签是 `windows-1252` 的别名。例如，此函数会将 `'\u0080'` 视为 latin1，而不会将 `'€'`（`U+20AC`，`windows-1252` 将其编码为 `0x80`）视为 latin1。
+
+与 [`buffer.isAscii()`][] 和 [`buffer.isUtf8()`][] 不同，此函数验证的是字符串，而不是 `Buffer`、`TypedArray` 或 `ArrayBuffer`。任何字节序列都必然是有效的 `'latin1'`，因为每个字节都映射到小于或等于 `0xFF` 的代码单元。
+
+```mjs
+import { isLatin1 } from 'node:buffer';
+
+isLatin1('hello');   // true
+isLatin1('café');    // true
+isLatin1('\u00ff');  // true
+isLatin1('\u0100');  // false
+isLatin1('€');       // false
+```
+
+```cjs
+const { isLatin1 } = require('node:buffer');
+
+isLatin1('hello');   // true
+isLatin1('café');    // true
+isLatin1('\u00ff');  // true
+isLatin1('\u0100');  // false
+isLatin1('€');       // false
+```
+
 ### `buffer.isUtf8(input)`
 
 <!-- YAML
@@ -5091,10 +5183,11 @@ added:
   - v19.4.0
   - v18.14.0
 changes:
-  - version: REPLACEME
+  - version:
+     - v26.8.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/64504
-    description: Detached `ArrayBuffer`s and views backed by them are treated
-                 as empty.
+    description: 分离的 `ArrayBuffer` 及由其支持的视图将被视为空。
 -->
 
 * `input` {Buffer | ArrayBuffer | TypedArray} 要验证的输入。
@@ -5324,7 +5417,7 @@ fs.open('/dev/sda', flags, (err, fd) => {
 
 即使没有接口强制要求，对齐也可能纯粹为了性能而值得请求。将一个高频使用的 `Buffer` 按缓存行大小（当代大多数 CPU 上为 64 字节）对齐，可以避免它跨越不必要的额外缓存行，使得一个小型结构只需一次缓存未命中即可获取，而不是两次；按页（4096 字节）对齐的分配同样有助于映射或固定内存的接口。这些都是微优化：在采用它们之前应先进行测量，因为额外的字节并非没有代价。
 
-由于无法直接选择 `Buffer` 内存的地址，因此必须分配或跳过额外的字节，以到达对齐的地址。[`Buffer.allocUnsafeSlow()`][] 会额外分配最多 `alignment - 1` 个字节，并将返回的 `Buffer` 放置在其中第一个适当对齐的字节处。[`Buffer.allocUnsafe()`][] 则会将其偏移量填充到共享内部内存池中；该内存池的起始位置始终按 64 字节对齐，只有当 `alignment` 大于该值时才会退回到独立分配。无论哪种方式，[`buf.byteOffset`][] 通常都不是 0，并且 [`buf.buffer`][] 大于 `size`，因此访问 `Buffer` 底层 `ArrayBuffer` 中超出该 `Buffer` 范围的代码必须考虑偏移量；对于池化的 `Buffer` 也是如此。
+由于无法直接选择 `Buffer` 内存的地址，必须分配或跳过额外的字节才能到达对齐的地址。[`Buffer.allocUnsafeSlow()`][] 会额外分配 `alignment` 个字节；如果 `alignment` 小于该值，则额外分配 8 个字节，并将返回的 `Buffer` 放置在其中第一个满足对齐要求的字节处。[`Buffer.allocUnsafe()`][] 则会在共享内部池中填充其偏移量，该池的起始位置始终按 64 字节对齐；只有当 `alignment` 大于此值时，才会退回到单独分配。无论哪种情况，[`buf.byteOffset`][] 通常都不为 0，并且 [`buf.buffer`][] 大于 `size`，因此访问 `Buffer` 底层 `ArrayBuffer` 中超出 `Buffer` 范围的代码必须考虑偏移量，访问池化的 `Buffer` 时也一样。
 
 对齐是返回的 `Buffer` 的属性，并且在其整个生命周期内都会保留，但不会被其他视图继承：[`buf.subarray`][]、[`buf.slice()`][] 和 `structuredClone()` 都可能生成未对齐的 `Buffer`。
 
@@ -5338,10 +5431,12 @@ fs.open('/dev/sda', flags, (err, fd) => {
 [UTF-16]: https://en.wikipedia.org/wiki/UTF-16
 [UTF-8]: https://en.wikipedia.org/wiki/UTF-8
 [WHATWG Encoding Standard]: https://encoding.spec.whatwg.org/
+[WebIDL `ByteString`]: https://webidl.spec.whatwg.org/#idl-ByteString
 [`--build-snapshot`]: cli.md#--build-snapshot
 [`Buffer.alloc()`]: #static-method-bufferallocsize-fill-encoding
 [`Buffer.allocUnsafe()`]: #static-method-bufferallocunsafesize-alignment
 [`Buffer.allocUnsafeSlow()`]: #static-method-bufferallocunsafeslowsize-alignment
+[`Buffer.byteLength()`]: #static-method-bufferbytelengthstring-encoding
 [`Buffer.concat()`]: #static-method-bufferconcatlist-totallength
 [`Buffer.copyBytesFrom()`]: #static-method-buffercopybytesfromview-offset-length
 [`Buffer.from(array)`]: #static-method-bufferfromarray
@@ -5376,10 +5471,13 @@ fs.open('/dev/sda', flags, (err, fd) => {
 [`buf.values()`]: #bufvalues
 [`buffer.constants.MAX_LENGTH`]: #bufferconstantsmax_length
 [`buffer.constants.MAX_STRING_LENGTH`]: #bufferconstantsmax_string_length
+[`buffer.isAscii()`]: #bufferisasciiinput
+[`buffer.isUtf8()`]: #bufferisutf8input
 [`buffer.kMaxLength`]: #bufferkmaxlength
 [`util.inspect()`]: util.md#utilinspectobject-options
 [`v8.startupSnapshot.setDeserializeMainFunction()`]: v8.md#v8startupsnapshotsetdeserializemainfunctioncallback-data
 [`v8::Uint8Array::kMaxLength`]: https://v8.github.io/api/head/classv8_1_1Uint8Array.html#a7677e3d0c9c92e4d40bef7212f5980c6
 [base64url]: https://tools.ietf.org/html/rfc4648#section-5
+[character encodings]: #buffers-and-character-encodings
 [endianness]: https://en.wikipedia.org/wiki/Endianness
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols

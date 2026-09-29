@@ -307,37 +307,66 @@ OpenSSL 库强制执行安全级别以控制加密操作可接受的最低安全
 
 ```mjs
 import { createServer, connect } from 'node:tls';
-const port = 443;
+import { readFileSync } from 'node:fs';
+const port = 8000;
 
-createServer({ ciphers: 'DEFAULT@SECLEVEL=0', minVersion: 'TLSv1' }, function(socket) {
-  console.log('客户端使用的协议连接：', socket.getProtocol());
+createServer({
+  key: readFileSync('server-key.pem'),
+  cert: readFileSync('server-cert.pem'),
+  ciphers: 'DEFAULT@SECLEVEL=0',
+  minVersion: 'TLSv1',
+}, function(socket) {
+  console.log('Client connected with protocol:', socket.getProtocol());
   socket.end();
   this.close();
 })
 .listen(port, () => {
-  connect(port, { ciphers: 'DEFAULT@SECLEVEL=0', maxVersion: 'TLSv1' });
+  connect(port, {
+    ciphers: 'DEFAULT@SECLEVEL=0',
+    minVersion: 'TLSv1',
+    maxVersion: 'TLSv1',
+    ca: [ readFileSync('server-cert.pem') ],
+  });
 });
 ```
 
 ```cjs
 const { createServer, connect } = require('node:tls');
-const port = 443;
+const { readFileSync } = require('node:fs');
+const port = 8000;
 
-createServer({ ciphers: 'DEFAULT@SECLEVEL=0', minVersion: 'TLSv1' }, function(socket) {
-  console.log('客户端使用的协议连接：', socket.getProtocol());
+createServer({
+  key: readFileSync('server-key.pem'),
+  cert: readFileSync('server-cert.pem'),
+  ciphers: 'DEFAULT@SECLEVEL=0',
+  minVersion: 'TLSv1',
+}, function(socket) {
+  console.log('Client connected with protocol:', socket.getProtocol());
   socket.end();
   this.close();
 })
 .listen(port, () => {
-  connect(port, { ciphers: 'DEFAULT@SECLEVEL=0', maxVersion: 'TLSv1' });
+  connect(port, {
+    ciphers: 'DEFAULT@SECLEVEL=0',
+    minVersion: 'TLSv1',
+    maxVersion: 'TLSv1',
+    ca: [ readFileSync('server-cert.pem') ],
+  });
 });
 ```
 
 此方法将安全级别设置为 0，允许使用旧版功能，同时仍利用默认 OpenSSL 加密套件。
 
+要为此示例生成证书和密钥，请运行：
+
+```bash
+openssl req -x509 -newkey rsa:2048 -nodes -sha256 -subj '/CN=localhost' \
+  -keyout server-key.pem -out server-cert.pem
+```
+
 ### 使用 [`--tls-cipher-list`][]
 
-您也可以使用 `--tls-cipher-list=DEFAULT@SECLEVEL=X` 从命令行设置安全级别和加密套件，如 [修改默认 TLS 加密套件][] 中所述。但是，通常不推荐使用命令行选项来设置加密套件，最好在应用程序代码中为各个上下文配置加密套件，因为这种方法提供更细粒度的控制，并降低全局降低安全级别的风险。
+您也可以使用 `--tls-cipher-list=DEFAULT@SECLEVEL=X` 从命令行设置安全级别和加密套件，如[修改默认 TLS 加密套件][]中所述。但是，通常不推荐使用命令行选项来设置加密套件，最好在应用程序代码中为各个上下文配置加密套件，因为这种方法提供更细粒度的控制，并降低全局降低安全级别的风险。
 
 ## X509 证书错误代码
 
@@ -348,34 +377,34 @@ createServer({ ciphers: 'DEFAULT@SECLEVEL=0', minVersion: 'TLSv1' }, function(so
 描述取自 deps/openssl/openssl/crypto/x509/x509_txt.c
 -->
 
-* `'UNABLE_TO_GET_ISSUER_CERT'`: 无法获取颁发者证书。
-* `'UNABLE_TO_GET_CRL'`: 无法获取证书 CRL。
-* `'UNABLE_TO_DECRYPT_CERT_SIGNATURE'`: 无法解密证书的签名。
-* `'UNABLE_TO_DECRYPT_CRL_SIGNATURE'`: 无法解密 CRL 的签名。
-* `'UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY'`: 无法解码颁发者公钥。
-* `'CERT_SIGNATURE_FAILURE'`: 证书签名失败。
-* `'CRL_SIGNATURE_FAILURE'`: CRL 签名失败。
-* `'CERT_NOT_YET_VALID'`: 证书尚未有效。
-* `'CERT_HAS_EXPIRED'`: 证书已过期。
-* `'CRL_NOT_YET_VALID'`: CRL 尚未有效。
-* `'CRL_HAS_EXPIRED'`: CRL 已过期。
-* `'ERROR_IN_CERT_NOT_BEFORE_FIELD'`: 证书的 notBefore 字段格式错误。
-* `'ERROR_IN_CERT_NOT_AFTER_FIELD'`: 证书的 notAfter 字段格式错误。
-* `'ERROR_IN_CRL_LAST_UPDATE_FIELD'`: CRL 的 lastUpdate 字段格式错误。
-* `'ERROR_IN_CRL_NEXT_UPDATE_FIELD'`: CRL 的 nextUpdate 字段格式错误。
-* `'OUT_OF_MEM'`: 内存不足。
-* `'DEPTH_ZERO_SELF_SIGNED_CERT'`: 自签名证书。
-* `'SELF_SIGNED_CERT_IN_CHAIN'`: 证书链中的自签名证书。
-* `'UNABLE_TO_GET_ISSUER_CERT_LOCALLY'`: 无法获取本地颁发者证书。
-* `'UNABLE_TO_VERIFY_LEAF_SIGNATURE'`: 无法验证第一个证书。
-* `'CERT_CHAIN_TOO_LONG'`: 证书链太长。
-* `'CERT_REVOKED'`: 证书已吊销。
-* `'INVALID_CA'`: 无效的 CA 证书。
-* `'PATH_LENGTH_EXCEEDED'`: 超出路径长度约束。
-* `'INVALID_PURPOSE'`: 不支持的证书用途。
-* `'CERT_UNTRUSTED'`: 证书不受信任。
-* `'CERT_REJECTED'`: 证书被拒绝。
-* `'HOSTNAME_MISMATCH'`: 主机名不匹配。
+* `'UNABLE_TO_GET_ISSUER_CERT'`：无法获取颁发者证书。
+* `'UNABLE_TO_GET_CRL'`：无法获取证书 CRL。
+* `'UNABLE_TO_DECRYPT_CERT_SIGNATURE'`：无法解密证书的签名。
+* `'UNABLE_TO_DECRYPT_CRL_SIGNATURE'`：无法解密 CRL 的签名。
+* `'UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY'`：无法解码颁发者公钥。
+* `'CERT_SIGNATURE_FAILURE'`：证书签名失败。
+* `'CRL_SIGNATURE_FAILURE'`：CRL 签名失败。
+* `'CERT_NOT_YET_VALID'`：证书尚未有效。
+* `'CERT_HAS_EXPIRED'`：证书已过期。
+* `'CRL_NOT_YET_VALID'`：CRL 尚未有效。
+* `'CRL_HAS_EXPIRED'`：CRL 已过期。
+* `'ERROR_IN_CERT_NOT_BEFORE_FIELD'`：证书的 notBefore 字段格式错误。
+* `'ERROR_IN_CERT_NOT_AFTER_FIELD'`：证书的 notAfter 字段格式错误。
+* `'ERROR_IN_CRL_LAST_UPDATE_FIELD'`：CRL 的 lastUpdate 字段格式错误。
+* `'ERROR_IN_CRL_NEXT_UPDATE_FIELD'`：CRL 的 nextUpdate 字段格式错误。
+* `'OUT_OF_MEM'`：内存不足。
+* `'DEPTH_ZERO_SELF_SIGNED_CERT'`：自签名证书。
+* `'SELF_SIGNED_CERT_IN_CHAIN'`：证书链中的自签名证书。
+* `'UNABLE_TO_GET_ISSUER_CERT_LOCALLY'`：无法获取本地颁发者证书。
+* `'UNABLE_TO_VERIFY_LEAF_SIGNATURE'`：无法验证第一个证书。
+* `'CERT_CHAIN_TOO_LONG'`：证书链太长。
+* `'CERT_REVOKED'`：证书已吊销。
+* `'INVALID_CA'`：无效的 CA 证书。
+* `'PATH_LENGTH_EXCEEDED'`：超出路径长度约束。
+* `'INVALID_PURPOSE'`：不支持的证书用途。
+* `'CERT_UNTRUSTED'`：证书不受信任。
+* `'CERT_REJECTED'`：证书被拒绝。
+* `'HOSTNAME_MISMATCH'`：主机名不匹配。
 
 当发生诸如 `UNABLE_TO_VERIFY_LEAF_SIGNATURE`、`DEPTH_ZERO_SELF_SIGNED_CERT` 或 `UNABLE_TO_GET_ISSUER_CERT` 之类的证书错误时，Node.js 会附加一个提示，建议如果根 CA 本地安装，尝试使用 `--use-system-ca` 标志运行，以引导开发人员走向安全的解决方案，防止不安全的工作区。
 
@@ -397,7 +426,7 @@ added: v0.3.2
 
 * `socket` {stream.Duplex}
 
-当建立新的 TCP 流时，在 TLS 握手开始之前发出此事件。`socket` 通常是 [`net.Socket`][] 类型的对象，但与 [`net.Server`][] `'connection'` 事件创建的套接字不同，它不会接收事件。通常用户不想访问此事件。
+建立新的 TCP 流时，在 TLS 握手开始之前发出此事件。`socket` 通常是 [`net.Socket`][] 类型的对象，但与 [`net.Server`][] `'connection'` 事件创建的套接字不同，它不会接收事件。通常用户不想访问此事件。
 
 用户也可以显式发出此事件以将连接注入 TLS 服务器。在这种情况下，可以传递任何 [`Duplex`][] 流。
 
@@ -412,9 +441,9 @@ added:
 * `line` {Buffer} ASCII 文本行，采用 NSS `SSLKEYLOGFILE` 格式。
 * `tlsSocket` {tls.TLSSocket} 生成该事件的 `tls.TLSSocket` 实例。
 
-当生成或接收到与此服务器的连接的密钥材料时发出 `keylog` 事件（通常在握手完成之前，但不一定）。可以存储此密钥材料以进行调试，因为它允许解密捕获的 TLS 流量。每个套接字可能会发出多次。
+当生成或接收到与此服务器的连接相关的密钥材料时发出 `keylog` 事件（通常在握手完成之前，但不一定）。可以存储此密钥材料以进行调试，因为它允许解密捕获的 TLS 流量。每个套接字可能会发出多次。
 
-一个典型的用例是将接收到的行附加到公共文本文件，该软件（如 Wireshark）稍后使用该文件来解密流量：
+一个典型的用例是将接收到的行追加到公共文本文件，该文件之后可供 Wireshark 等软件用来解密流量：
 
 ```js
 const logFile = fs.createWriteStream('/tmp/ssl-keys.log', { flags: 'a' });
@@ -452,7 +481,7 @@ changes:
 added: v0.11.13
 -->
 
-当客户端发送证书状态请求时发出 `'OCSPRequest'` 事件。调用监听器回调时传递三个参数：
+客户端发送证书状态请求时发出 `'OCSPRequest'` 事件。调用监听器回调时传递三个参数：
 
 * `certificate` {Buffer} 服务器证书
 * `issuer` {Buffer} 颁发者的证书
@@ -518,7 +547,7 @@ added: v0.3.2
 
 * `tlsSocket` {tls.TLSSocket} 已建立的 TLS 套接字。
 
-`tlsSocket.authorized` 属性是一个 `boolean`，指示客户端是否已由服务器提供的证书授权机构之一验证。如果 `tlsSocket.authorized` 为 `false`，则 `socket.authorizationError` 设置为描述授权失败的原因。根据 TLS 服务器的设置，可能仍会接受未经授权的连接。
+`tlsSocket.authorized` 属性是一个 `boolean`，指示客户端是否已由服务器提供的证书授权机构之一验证。如果 `tlsSocket.authorized` 为 `false`，则 `socket.authorizationError` 设置为描述授权失败原因的内容。根据 TLS 服务器的设置，可能仍会接受未经授权的连接。
 
 可以使用 [`tls.TLSSocket.servername`][] 和 [`tls.TLSSocket.alpnProtocol`][] 属性来检查请求的是哪个服务器名称，以及协商的是哪个协议。
 
@@ -579,7 +608,7 @@ added: v3.0.0
 
 返回会话票证密钥。
 
-有关更多信息，请参阅 [会话恢复][]。
+有关更多信息，请参阅[会话恢复][]。
 
 ### `server.listen()`
 
@@ -608,7 +637,7 @@ added: v3.0.0
 
 票证密钥的更改仅对未来的服务器连接有效。现有或当前待处理的服务器连接将使用以前的密钥。
 
-有关更多信息，请参阅 [会话恢复][].
+有关更多信息，请参阅[会话恢复][]。
 
 ## 类：`tls.TLSSocket`
 
@@ -640,18 +669,18 @@ changes:
 * `socket` {net.Socket|stream.Duplex}
   在服务器端，任何 `Duplex` 流。在客户端，任何 [`net.Socket`][] 实例（对于客户端的通用 `Duplex` 流支持，必须使用 [`tls.connect()`][]）。
 * `options` {Object}
-  * `enableTrace`: 参见 [`tls.createServer()`][]
-  * `isServer`: SSL/TLS 协议是不对称的，TLSSockets 必须知道它们是作为服务器还是客户端行为。如果为 `true`，TLS socket 将实例化为服务器。**默认值：** `false`。
+  * `enableTrace`：参见 [`tls.createServer()`][]
+  * `isServer`：SSL/TLS 协议是不对称的，TLSSockets 必须知道它们是作为服务器还是客户端运行。如果为 `true`，TLS socket 将实例化为服务器。**默认值：** `false`。
   * `server` {net.Server} 一个 [`net.Server`][] 实例。
-  * `requestCert`: 是否通过请求证书来验证远程对等方。客户端总是请求服务器证书。服务器（`isServer` 为 true）可以将 `requestCert` 设置为 true 以请求客户端证书。
-  * `rejectUnauthorized`: 参见 [`tls.createServer()`][]
-  * `ALPNProtocols`: 参见 [`tls.createServer()`][]
-  * `SNICallback`: 参见 [`tls.createServer()`][]
-  * `ALPNCallback`: 参见 [`tls.createServer()`][]
+  * `requestCert`：是否通过请求证书来验证远程对等方。客户端总是请求服务器证书。服务器（`isServer` 为 true）可以将 `requestCert` 设置为 true 以请求客户端证书。
+  * `rejectUnauthorized`：参见 [`tls.createServer()`][]
+  * `ALPNProtocols`：参见 [`tls.createServer()`][]
+  * `SNICallback`：参见 [`tls.createServer()`][]
+  * `ALPNCallback`：参见 [`tls.createServer()`][]
   * `session` {Buffer} 包含 TLS 会话的 `Buffer` 实例。
   * `requestOCSP` {boolean} 如果为 `true`，指定 OCSP 状态请求扩展将添加到客户端 hello 中，并且在建立安全通信之前将在 socket 上发出 `'OCSPResponse'` 事件
-  * `secureContext`: 使用 [`tls.createSecureContext()`][] 创建的 TLS 上下文对象。如果_未_提供 `secureContext`，则将把整个 `options` 对象传递给 `tls.createSecureContext()` 来创建一个。
-  * ...: 如果缺少 `secureContext` 选项，则使用 [`tls.createSecureContext()`][] 选项。否则，它们将被忽略。
+  * `secureContext`：使用 [`tls.createSecureContext()`][] 创建的 TLS 上下文对象。如果_未_提供 `secureContext`，则将把整个 `options` 对象传递给 `tls.createSecureContext()` 来创建一个。
+  * …：如果缺少 `secureContext` 选项，则使用 [`tls.createSecureContext()`][] 选项。否则，它们将被忽略。
 
 从现有的 TCP socket 构造一个新的 `tls.TLSSocket` 对象。
 
@@ -667,7 +696,7 @@ added:
 
 当 socket 生成或接收密钥材料时，会在 `tls.TLSSocket` 上发出 `keylog` 事件。此密钥材料可以存储用于调试，因为它允许解密捕获的 TLS 流量。它可能会发出多次，在握手完成之前或之后。
 
-一个典型的用例是将接收到的行追加到一个公共文本文件中，该软件（例如 Wireshark）稍后使用该文件来解密流量：
+一个典型的用例是将接收到的行追加到一个公共文本文件中，该文件之后可供 Wireshark 等软件用来解密流量：
 
 ```js
 const logFile = fs.createWriteStream('/tmp/ssl-keys.log', { flags: 'a' });
@@ -693,7 +722,7 @@ added: v0.11.13
 added: v0.11.4
 -->
 
-secureConnect 事件在 TLS 握手成功完成并建立安全连接后发出。
+TLS 握手成功完成并建立安全连接后发出 secureConnect 事件。
 
 此事件在客户端和服务器 {tls.TLSSocket} 实例上发出，包括使用 tls.connect 构造函数创建的 socket。
 
@@ -703,9 +732,9 @@ secureConnect 事件在 TLS 握手成功完成并建立安全连接后发出。
 added: v0.11.4
 -->
 
-secure 事件在新连接的握手过程成功完成后发出。无论服务器的证书是否已授权，都将调用监听器回调。客户端有责任检查 authorized 属性以确定服务器证书是否由指定的 CA 之一签名。如果未授权，则可以通过检查 authorizationError 属性找到错误。如果使用了 ALPN，则可以检查 alpnProtocol 属性以确定协商的协议。
+新连接的握手过程成功完成后发出 secure 事件。无论服务器的证书是否已授权，都会调用监听器回调。客户端有责任检查 authorized 属性，以确定服务器证书是否由指定的 CA 之一签名。如果未授权，则可以通过检查 authorizationError 属性找到错误。如果使用了 ALPN，则可以检查 alpnProtocol 属性以确定协商的协议。
 
-当使用 tls.connect 构造函数创建 {tls.TLSSocket} 时，不会发出 secure 事件。
+使用 tls.connect 构造函数创建 {tls.TLSSocket} 时，不会发出 secure 事件。
 
 ### 事件：session
 
@@ -715,13 +744,13 @@ added: v11.10.0
 
 * session {Buffer}
 
-当新会话或 TLS 票据可用时，会在客户端 socket 上发出 session 事件。这可能发生在握手完成之前或之后，具体取决于协商的 TLS 协议版本。该事件不在服务器上发出，或者如果没有创建新会话，例如当连接恢复时。对于某些 TLS 协议版本，该事件可能会发出多次，在这种情况下，所有会话都可用于恢复。
+当新会话或 TLS 票据可用时，会在客户端 socket 上发出 session 事件。这可能发生在握手完成之前或之后，具体取决于协商的 TLS 协议版本。该事件不会在服务器上发出，或者在未创建新会话时（例如连接恢复时）也不会发出。对于某些 TLS 协议版本，该事件可能会发出多次，在这种情况下，所有会话都可用于恢复。
 
 在客户端，session 可以提供给 [tls.connect][] 的 session 选项以恢复连接。
 
-参见 [会话恢复][] 获取更多信息。
+参见[会话恢复][]获取更多信息。
 
-对于 TLSv1.2 及以下版本，一旦握手完成，可以调用 [tlsSocket.getSession][]。对于 TLSv1.3，协议仅允许基于票据的恢复，发送多个票据，并且票据仅在握手完成后发送。因此有必要等待 session 事件来获取可恢复的会话。应用程序应使用 session 事件而不是 secure 以确保它们适用于所有 TLS 版本。仅期望获取或使用一个会话的应用程序应只监听此事件一次：
+对于 TLSv1.2 及以下版本，一旦握手完成，可以调用 [tlsSocket.getSession][]。对于 TLSv1.3，协议仅允许基于票据的恢复，会发送多个票据，并且票据仅在握手完成后发送。因此有必要等待 session 事件来获取可恢复的会话。应用程序应使用 session 事件而不是 secure，以确保它们适用于所有 TLS 版本。仅期望获取或使用一个会话的应用程序应只监听此事件一次：
 
 ```js
 tlsSocket.once('session', (session) => {
@@ -773,13 +802,17 @@ added: v0.11.4
 
 <!-- YAML
 added: v0.11.4
+changes:
+  - version: v26.8.0
+    pr-url: https://github.com/nodejs/node/pull/64677
+    description: 在 TLS 1.3 上，客户端未提供证书的恢复会话不再报告为已授权。
 -->
 
 * 类型：{boolean}
 
 如果对等证书由创建 `tls.TLSSocket` 实例时指定的 CA 之一签名，则此属性为 `true`，否则为 `false`。
 
-对等证书仅在完整的 TLS 握手期间进行验证。当连接通过恢复先前的会话建立时（请参阅[会话恢复][Session Resumption]），不会重复进行验证。如果客户端在初始握手中提供了证书，则 `authorized` 和 `authorizationError` 会携带与该会话一同存储的结果，包括任何验证错误。在 TLS 1.3 中，完全没有发送证书的客户端可以恢复会话，并将 `authorized` 报告为 `true`，而 [`tls.TLSSocket.getPeerCertificate()`][] 返回一个空对象。因此，使用 `rejectUnauthorized: false` 手动授权客户端的服务器还应检查 [`tls.TLSSocket.isSessionReused()`][]，并确认存在对等证书。
+仅在完整 TLS 握手期间验证对等证书。当通过恢复之前的会话建立连接时（参见[会话恢复][]），不会重复验证：`authorized` 和 `authorizationError` 会携带会话中存储的结果，包括任何验证错误，以及客户端完全没有提供证书的情况。
 
 ### `tlsSocket.disableRenegotiation()`
 
@@ -899,7 +932,7 @@ added: v5.0.0
 
 * 返回：{Object}
 
-返回一个描述客户端连接上 [完美前向保密][] 中临时密钥协商的对象。当密钥协商不是临时时，它会返回一个空对象。由于这仅支持客户端 socket；如果在服务器 socket 上调用，则返回 `null`。支持的类型有 `'DH'`、`'ECDH'` 和 `'TLSGroup'`。对于 `'DH'` 和 `'ECDH'`，该对象描述对端临时密钥参数。对于 `'TLSGroup'`，当没有可用的对端临时密钥对象时，该对象标识用于密钥协商的已协商 TLS 支持组。
+返回一个描述客户端连接上[完美前向保密][]中临时密钥协商的对象。当密钥协商不是临时时，它会返回一个空对象。由于这仅支持客户端 socket；如果在服务器 socket 上调用，则返回 `null`。支持的类型有 `'DH'`、`'ECDH'` 和 `'TLSGroup'`。对于 `'DH'` 和 `'ECDH'`，该对象描述对端临时密钥参数。对于 `'TLSGroup'`，当没有可用的对端临时密钥对象时，该对象标识用于密钥协商的已协商 TLS 支持组。
 
 `name` 属性仅在类型为 `'ECDH'` 或 `'TLSGroup'` 时可用。类型为 `'TLSGroup'` 时，`size` 属性不可用。对于 `'TLSGroup'`，`name` 是已协商的 TLS 支持组名称。标准化的 TLS 组名称和代码点列在 [IANA TLS 支持组注册表][] 中。
 
@@ -1068,7 +1101,7 @@ added: v0.11.4
 
 返回 TLS 会话数据，如果没有协商会话则返回 `undefined`。在客户端，数据可以提供给 [`tls.connect()`][] 的 `session` 选项以恢复连接。在服务器上，它可能用于调试。
 
-参见 [会话恢复][] 获取更多信息。
+参见[会话恢复][]获取更多信息。
 
 注意：`getSession()` 仅适用于 TLSv1.2 及以下版本。对于 TLSv1.3，应用程序必须使用 [`'session'`][] 事件（它也适用于 TLSv1.2 及以下版本）。
 
@@ -1116,7 +1149,7 @@ added: v0.5.6
 
 * 返回：{boolean} 如果会话被重用则为 `true`，否则为 `false`。
 
-参见 [会话恢复][] 获取更多信息。
+参见[会话恢复][]获取更多信息。
 
 ### `tlsSocket.localAddress`
 
@@ -1313,24 +1346,24 @@ changes:
 
 * `options` {Object}
   * `enableTrace`：见 [`tls.createServer()`][]
-  * `host` {string} 客户端应连接的主机。**默认:** `'localhost'`。
+  * `host` {string} 客户端应连接的主机。**默认：** `'localhost'`。
   * `port` {number} 客户端应连接的端口。
   * `path` {string} 创建到路径的 Unix 套接字连接。如果指定了此选项，`host` 和 `port` 将被忽略。
   * `socket` {stream.Duplex} 在给定的套接字上建立安全连接，而不是创建新套接字。通常，这是 [`net.Socket`][] 的实例，但允许任何 `Duplex` 流。
     如果指定了此选项，`path`、`host` 和 `port` 将被忽略，证书验证除外。通常，传递给 `tls.connect()` 时套接字已经连接，但也可以稍后连接。
     `socket` 的连接/断开/销毁由用户负责；调用 `tls.connect()` 不会导致调用 `net.connect()`。
-  * `allowHalfOpen` {boolean} 如果设置为 `false`，则当可读端结束时，套接字将自动结束可写端。如果设置了 `socket` 选项，则此选项无效。详见 [`net.Socket`][] 的 `allowHalfOpen` 选项。**默认:** `false`。
-  * `rejectUnauthorized` {boolean} 如果不为 `false`，则将根据提供的 CA 列表验证服务器证书。如果验证失败，将发出 `'error'` 事件；`err.code` 包含 OpenSSL 错误代码。**默认:** `true`。
+  * `allowHalfOpen` {boolean} 如果设置为 `false`，则当可读端结束时，套接字将自动结束可写端。如果设置了 `socket` 选项，则此选项无效。详见 [`net.Socket`][] 的 `allowHalfOpen` 选项。**默认：** `false`。
+  * `rejectUnauthorized` {boolean} 如果不为 `false`，则将根据提供的 CA 列表验证服务器证书。如果验证失败，将发出 `'error'` 事件；`err.code` 包含 OpenSSL 错误代码。**默认：** `true`。
   * `pskCallback` {Function} 对于 TLS-PSK 协商，见 [预共享密钥][]。
   * `ALPNProtocols` {string\[]|Buffer|TypedArray|DataView} 字符串数组，或包含支持的 ALPN 协议的单个 `Buffer`、`TypedArray` 或 `DataView`。缓冲区应具有格式 `[len][name][len][name]...`，例如 `'\x08http/1.1\x08http/1.0'`，其中 `len` 字节是下一个协议名称的长度。传递数组通常更简单，例如 `['http/1.1', 'http/1.0']`。列表中较早的协议比较后的协议具有更高的优先级。
-  * `servername` {string} 用于 SNI (服务器名称指示) TLS 扩展的服务器名称。它是正在连接的主机的名称，必须是主机名，而不是 IP 地址。多宿主服务器可以使用它来选择要向客户端呈现的正确证书，见 [`tls.createServer()`][] 的 `SNICallback` 选项。
+  * `servername` {string} 用于 SNI（服务器名称指示）TLS 扩展的服务器名称。它是正在连接的主机的名称，必须是主机名，而不是 IP 地址。多宿主服务器可以使用它来选择要向客户端呈现的正确证书，见 [`tls.createServer()`][] 的 `SNICallback` 选项。
   * `checkServerIdentity(servername, cert)` {Function} 当根据证书检查服务器的主机名（或显式设置时提供的 `servername`）时使用的回调函数（代替内置的 `tls.checkServerIdentity()` 函数）。如果验证失败，这应返回一个 {Error}。如果 `servername` 和 `cert` 已验证，该方法应返回 `undefined`。
   * `session` {Buffer} `Buffer` 实例，包含 TLS 会话。
   * `requestOCSP` {boolean} 如果为 `true`，指定 OCSP 状态请求扩展将添加到客户端问候中，并且在建立安全通信之前将在套接字上发出 `'OCSPResponse'` 事件。
-  * `minDHSize` {number} 接受 TLS 连接的 DH 参数的最小大小（位）。当服务器提供的 DH 参数大小小于 `minDHSize` 时，TLS 连接将被销毁并抛出错误。**默认:** `1024`。
-  * `highWaterMark` {number} 与可读流 `highWaterMark` 参数一致。**默认:** `16 * 1024`。
-  * `timeout`: {number} 如果设置且内部创建了套接字，将在套接字创建后但在开始连接之前调用 [`socket.setTimeout(timeout)`][]。
-  * `secureContext`: 使用 [`tls.createSecureContext()`][] 创建的 TLS 上下文对象。如果_未_提供 `secureContext`，将通过将整个 `options` 对象传递给 `tls.createSecureContext()` 来创建一个。
+  * `minDHSize` {number} 接受 TLS 连接的 DH 参数的最小大小（位）。当服务器提供的 DH 参数大小小于 `minDHSize` 时，TLS 连接将被销毁并抛出错误。**默认：** `1024`。
+  * `highWaterMark` {number} 与可读流 `highWaterMark` 参数一致。**默认：** `16 * 1024`。
+  * `timeout`：{number} 如果设置且内部创建了套接字，将在套接字创建后但在开始连接之前调用 [`socket.setTimeout(timeout)`][]。
+  * `secureContext`：使用 [`tls.createSecureContext()`][] 创建的 TLS 上下文对象。如果_未_提供 `secureContext`，将通过将整个 `options` 对象传递给 `tls.createSecureContext()` 来创建一个。
   * `onread` {Object} 如果缺少 `socket` 选项，传入数据将存储在单个 `buffer` 中，并在数据到达套接字时传递给提供的 `callback`，否则该选项将被忽略。详见 [`net.Socket`][] 的 `onread` 选项。
   * ...：如果缺少 `secureContext` 选项则使用的 [`tls.createSecureContext()`][] 选项，否则它们将被忽略。
   * ...：任何未列出的 [`socket.connect()`][] 选项。
@@ -1526,33 +1559,33 @@ changes:
     对于 PEM 编码的证书，支持的类型有 "TRUSTED CERTIFICATE"、"X509 CERTIFICATE" 和 "CERTIFICATE"。
   * `cert` {string|string\[]|Buffer|Buffer\[]} PEM 格式的证书链。每个私钥应提供一条证书链。每条证书链应由为所提供私有 `key` 准备的 PEM 格式证书开始，随后按顺序跟随 PEM 格式的中间证书（如果有），且不包括根 CA（根 CA 必须对对等方预先已知，见 `ca`）。当提供多条证书链时，它们不必与 `key` 中私钥的顺序一致。如果未提供中间证书，对等方将无法验证证书，握手将失败。
   * `certificateCompression` {string\[]} 按优先顺序排列的受支持证书压缩算法名称数组。支持的值为 `'zlib'`、`'brotli'` 和 `'zstd'`。设置后，将启用 TLS 证书压缩（[RFC 8879][]），在 TLS 握手期间压缩证书，减小握手大小。仅在 TLSv1.3 中有效。
-    **默认值:** `[]`（禁用）。
+    **默认值：** `[]`（禁用）。
   * `sigalgs` {string} 以冒号分隔的受支持签名算法列表。该列表可以包含摘要算法（`SHA256`、`MD5` 等）、公钥算法（`RSA-PSS`、`ECDSA` 等）、二者组合（例如 `'RSA+SHA384'`）或 TLS v1.3 方案名称（例如 `rsa_pss_pss_sha512`）。
     详情参见 [OpenSSL 手册页](https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set1_sigalgs_list.html)。
   * `ciphers` {string} 密码套件规范，用于替换默认值。更多信息请参见 [修改默认 TLS 密码套件][]。可接受的密码套件可通过 [`tls.getCiphers()`][] 获取。为了让 OpenSSL 接受，密码名称必须大写。
   * `clientCertEngine` {string} 可提供客户端证书的 OpenSSL 引擎名称。**已弃用。**
   * `crl` {string|string\[]|Buffer|Buffer\[]} PEM 格式的 CRL（证书吊销列表）。
   * `dhparam` {string|Buffer} `'auto'` 或自定义 Diffie-Hellman 参数，非 ECDHE [前向保密][] 需要它。如果省略或无效，这些参数会被静默丢弃，DHE 密码将不可用。[ECDHE][] 基于的 [前向保密][] 仍然可用。
-  * `ecdhCurve` {string} 描述命名曲线、TLS 组，或用于密钥协商的由冒号分隔的命名曲线/TLS 组列表的字符串，例如 `P-521:P-384:P-256`、`X25519` 或 `X25519MLKEM768`。此选项的历史名称指的是 TLSv1.2 及以下版本中的 ECDH 密钥协商。在 TLSv1.3 中，此选项用于配置 TLS 栈提供或接受的 TLS Supported Groups 和 key share 组。设为 `auto` 可自动选择组。使用 [`crypto.getCurves()`][] 获取可用椭圆曲线名称列表。对于 TLS 组名称，请使用 `openssl list -tls-groups` 或查阅 [IANA TLS Supported Groups 注册表][]。
-    **默认值:** [`tls.DEFAULT_ECDH_CURVE`][]。
-  * `honorCipherOrder` {boolean} 尝试使用服务器的密码套件偏好，而不是客户端的。为 `true` 时，会在 `secureOptions` 中设置 `SSL_OP_CIPHER_SERVER_PREFERENCE`，更多信息见 [OpenSSL Options][]。
+  * `ecdhCurve` {string} 描述命名曲线、TLS 组，或用于密钥协商的由冒号分隔的命名曲线/TLS 组列表的字符串，例如 `P-521:P-384:P-256`、`X25519` 或 `X25519MLKEM768`。此选项的历史名称指的是 TLSv1.2 及以下版本中的 ECDH 密钥协商。在 TLSv1.3 中，此选项用于配置 TLS 栈提供或接受的 TLS 支持组和密钥共享组。设为 `auto` 可自动选择组。使用 [`crypto.getCurves()`][] 获取可用椭圆曲线名称列表。对于 TLS 组名称，请使用 `openssl list -tls-groups` 或查阅 [IANA TLS 支持组注册表][]。
+    **默认值：** [`tls.DEFAULT_ECDH_CURVE`][]。
+  * `honorCipherOrder` {boolean} 尝试使用服务器的密码套件偏好，而不是客户端的。为 `true` 时，会在 `secureOptions` 中设置 `SSL_OP_CIPHER_SERVER_PREFERENCE`，更多信息见 [OpenSSL 选项][]。
   * `key` {string|string\[]|Buffer|Buffer\[]|Object\[]} PEM 格式的私钥。PEM 允许私钥加密。加密的密钥将使用 `options.passphrase` 解密。可以提供多个使用不同算法的密钥，形式可以是未加密密钥字符串或缓冲区数组，也可以是对象数组，格式为 `{pem: <string|buffer>[, passphrase: <string>]}`。对象形式只能出现在数组中。`object.passphrase` 是可选的。如果提供，加密密钥将使用 `object.passphrase` 解密；否则使用 `options.passphrase`。
   * `privateKeyEngine` {string} 用于获取私钥的 OpenSSL 引擎名称。应与 `privateKeyIdentifier` 一起使用。**已弃用。**
   * `privateKeyIdentifier` {string} 由 OpenSSL 引擎管理的私钥标识符。应与 `privateKeyEngine` 一起使用。
     不应与 `key` 一起设置，因为这两个选项以不同方式定义私钥。**已弃用。**
   * `maxVersion` {string} 可选地设置允许的最大 TLS 版本。可选值为 `'TLSv1.3'`、`'TLSv1.2'`、`'TLSv1.1'` 或 `'TLSv1'`。不能与 `secureProtocol` 选项同时指定；二者选其一。
-    **默认值:** [`tls.DEFAULT_MAX_VERSION`][]。
+    **默认值：** [`tls.DEFAULT_MAX_VERSION`][]。
   * `minVersion` {string} 可选地设置允许的最小 TLS 版本。可选值为 `'TLSv1.3'`、`'TLSv1.2'`、`'TLSv1.1'` 或 `'TLSv1'`。不能与 `secureProtocol` 选项同时指定；二者选其一。避免设置为低于 TLSv1.2，但在互操作性要求下可能需要。TLSv1.2 之前的版本可能需要降低 [OpenSSL 安全级别][]。
-    **默认值:** [`tls.DEFAULT_MIN_VERSION`][]。
+    **默认值：** [`tls.DEFAULT_MIN_VERSION`][]。
   * `passphrase` {string} 用于单个私钥和/或 PFX 的共享密码短语。
   * `pfx` {string|string\[]|Buffer|Buffer\[]|Object\[]} PFX 或 PKCS12 编码的私钥和证书链。`pfx` 是分别提供 `key` 和 `cert` 的替代方案。PFX 通常是加密的，如果是加密的，将使用 `passphrase` 解密它。可以提供多个 PFX，形式可以是未加密 PFX 缓冲区数组，也可以是对象数组，格式为 `{buf: <string|buffer>[, passphrase: <string>]}`。对象形式只能出现在数组中。`object.passphrase` 是可选的。如果提供，加密 PFX 将使用 `object.passphrase` 解密；否则使用 `options.passphrase`。
   * `secureOptions` {number} 可选地影响 OpenSSL 协议行为，通常并非必要。如果要使用，应谨慎！
-    该值是来自 [OpenSSL Options][] 的 `SSL_OP_*` 选项的数值位掩码。
+    该值是来自 [OpenSSL 选项][] 的 `SSL_OP_*` 选项的数值位掩码。
   * `secureProtocol` {string} 选择要使用的 TLS 协议版本的旧机制，它不支持独立控制最小和最大版本，也不支持将协议限制为 TLSv1.3。请改用 `minVersion` 和 `maxVersion`。可选值列于 [SSL\_METHODS][SSL_METHODS]，请将函数名作为字符串使用。例如，使用 `'TLSv1_1_method'` 强制使用 TLS 1.1，或使用 `'TLS_method'` 允许直到 TLSv1.3 的任何 TLS 协议版本。不建议使用低于 1.2 的 TLS 版本，但在互操作性要求下可能需要。
-    **默认值:** 无，见 `minVersion`。
+    **默认值：** 无，见 `minVersion`。
   * `sessionIdContext` {string} 由服务器使用的透明标识符，用于确保会话状态不会在应用之间共享。客户端不使用。
   * `ticketKeys` {Buffer} 48 字节的加密强伪随机数据。更多信息请参见 [会话恢复][]。
-  * `sessionTimeout` {number} 由服务器创建的 TLS 会话在经过多少秒后将不再可恢复。更多信息请参见 [会话恢复][]。**默认值:** `300`。
+  * `sessionTimeout` {number} 由服务器创建的 TLS 会话在经过多少秒后将不再可恢复。更多信息请参见 [会话恢复][]。**默认值：** `300`。
 
 [`tls.createServer()`][] 将 `honorCipherOrder` 选项的默认值设置为 `true`，其他创建安全上下文的 API 则不设置。
 
@@ -1586,7 +1619,7 @@ changes:
     description: "`options` 参数现在可以包含 `ALPNCallback`。"
   - version: v19.0.0
     pr-url: https://github.com/nodejs/node/pull/44031
-    description: "如果设置了 `ALPNProtocols`，发送不含支持协议的ALPN 扩展的传入连接将被终止，并返回致命的 `no_application_protocol` 警报。"
+    description: "如果设置了 `ALPNProtocols`，发送不含支持协议的 ALPN 扩展的传入连接将被终止，并返回致命的 `no_application_protocol` 警报。"
   - version: v12.3.0
     pr-url: https://github.com/nodejs/node/pull/27665
     description: "`options` 参数现在支持 `net.createServer()` 选项。"
@@ -1595,7 +1628,7 @@ changes:
     description: "`options` 参数现在可以包含 `clientCertEngine`。"
   - version: v8.0.0
     pr-url: https://github.com/nodejs/node/pull/11984
-    description: "`ALPNProtocols` 选项现在可以是 `TypedArray` 或`DataView`。"
+    description: "`ALPNProtocols` 选项现在可以是 `TypedArray` 或 `DataView`。"
   - version: v5.0.0
     pr-url: https://github.com/nodejs/node/pull/2564
     description: 现在支持 ALPN 选项。
@@ -1858,7 +1891,7 @@ added: v12.3.0
 
 Node.js 提供的捆绑 CA 存储是发布时固定的 Mozilla CA 存储的快照。它在所有支持的平台上都是相同的。
 
-要获取当前 Node.js 实例实际使用的 CA 证书（可能包括从系统存储加载的证书（如果使用了 `--use-system-ca`）或从 `NODE_EXTRA_CA_CERTS` 指示的文件加载的证书），请使用 [`tls.getCACertificates()`][].
+要获取当前 Node.js 实例实际使用的 CA 证书（可能包括从系统存储加载的证书（如果使用了 `--use-system-ca`）或从 `NODE_EXTRA_CA_CERTS` 指示的文件加载的证书），请使用 [`tls.getCACertificates()`][]。
 
 ## `tls.DEFAULT_ECDH_CURVE`
 
@@ -1958,7 +1991,6 @@ added: v0.11.3
 [`tls.TLSSocket.getProtocol()`]: #tlssocketgetprotocol
 [`tls.TLSSocket.getSession()`]: #tlssocketgetsession
 [`tls.TLSSocket.getTLSTicket()`]: #tlssocketgettlsticket
-[`tls.TLSSocket.isSessionReused()`]: #tlssocketissessionreused
 [`tls.TLSSocket.servername`]: #tlssocketservername
 [`tls.TLSSocket`]: #class-tlstlssocket
 [`tls.connect()`]: #tlsconnectoptions-callback

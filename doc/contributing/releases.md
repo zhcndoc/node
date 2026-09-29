@@ -279,20 +279,22 @@ git checkout -b v1.2.3-proposal upstream/v1.x-staging
 您也可以运行：
 
 ```bash
-git node release -S --prepare --security=../vulnerabilities.json --filterLabel vX.x
+git node release -S --prepare --security=../security-release
 ```
+
+`--security` 标志接受指向 `security-release` 仓库克隆的路径（或直接指向 `vulnerabilities.json` 文件）。系统会根据你所在发布系列的每个条目中的 `affectedVersions` 映射自动选择要 cherry-pick 的报告和依赖项更新，并从同一文件中添加匹配的 `CVE-ID` 尾注。
 
 示例：
 
 ```bash
 git checkout v20.x
-git node release -S --prepare --security=../vulnerabilities.json --filterLabel v20.x
+git node release -S --prepare --security=../security-release
 ```
 
 来自动化直到步骤 6 的其余步骤，或者您可以按照以下步骤手动执行。对于 semver-minor，您可以使用 `--newVersion` 参数显式传递新版本：
 
 ```bash
-git node release -S --prepare --security=../vulnerabilities.json --filterLabel v20.x --newVersion 20.20.0
+git node release -S --prepare --security=../security-release --newVersion 20.20.0
 ```
 
 <details>
@@ -351,14 +353,14 @@ _(如果您使用 `create-release-proposal` 或 `git node release --prepare`，�
 [`changelog-maker`](https://github.com/nodejs/changelog-maker) 执行此操作：
 
 ```bash
-changelog-maker --group --markdown
+changelog-maker --group --format=markdown
 ```
 
 `changelog-maker` 会计算自上次标记以来的提交数，如果仓库中的上次标记不在当前分支上，您可能需要提供
 `--start-ref` 参数：
 
 ```bash
-changelog-maker --group --markdown --filter-release --start-ref v1.2.2
+changelog-maker --group --format=markdown --filter-release --start-ref v1.2.2
 ```
 
 `--filter-release` 将从上一个发布的发布提交中移除。
@@ -1037,13 +1039,12 @@ git node release --prepare --startLTS
 * `NODE_VERSION_LTS_CODENAME` 宏必须设置为为 LTS 发布选择的代号。
 
 例如：
-* The `NODE_MINOR_VERSION` macro must be incremented by one.
-* The `NODE_PATCH_VERSION` macro must be set to `0`.
-* The `NODE_VERSION_IS_LTS` macro must be set to `1`.
-* The `NODE_VERSION_LTS_CODENAME` macro must be set to the code name selected
-  for the LTS release.
+* `NODE_MINOR_VERSION` 宏必须增加一。
+* `NODE_PATCH_VERSION` 宏必须设置为 `0`。
+* `NODE_VERSION_IS_LTS` 宏必须设置为 `1`。
+* `NODE_VERSION_LTS_CODENAME` 宏必须设置为为 LTS 发布选择的代号。
 
-For example:
+例如：
 
 ```diff
 -#define NODE_MINOR_VERSION 12

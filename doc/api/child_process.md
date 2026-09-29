@@ -167,6 +167,8 @@ exec('echo "The \\$HOME variable is $HOME"');
 
 传递给回调的 `stdout` 和 `stderr` 参数将包含子进程的 stdout 和 stderr 输出。默认情况下，Node.js 会将输出解码为 UTF-8 并将字符串传递给回调。`encoding` 选项可用于指定用于解码 stdout 和 stderr 输出的字符编码。如果 `encoding` 为 `'buffer'` 或无法识别的字符编码，则会将 `Buffer` 对象传递给回调。
 
+> 将 `signal` 选项用作资源清理机制来销毁长时间运行的子进程已弃用。`signal` 选项仍适用于取消操作、外部传播的中止以及超时。参见 [DEP0209](deprecations.md#dep0209-using-abortsignal-to-dispose-of-resources)。
+
 ```cjs
 const { exec } = require('node:child_process');
 exec('cat *.js missing_file | wc -l', (error, stdout, stderr) => {
@@ -292,7 +294,9 @@ changes:
 
 `child_process.execFile()` 函数类似于 [`child_process.exec()`][]，不同之处在于它默认不生成 shell。相反，指定的可执行 `file` 直接作为新进程生成，使其比 [`child_process.exec()`][] 稍微更高效。
 
-支持与 [`child_process.exec()`][] 相同的选项。由于未生成 shell，因此不支持 I/O 重定向和文件 globbing 等行为。
+> 将 `signal` 选项用作资源清理机制来销毁长时间运行的子进程已弃用。`signal` 选项仍适用于取消操作、外部传播的中止以及超时。参见 [DEP0209](deprecations.md#dep0209-using-abortsignal-to-dispose-of-resources)。
+
+支持与 [`child_process.exec()`][] 相同的选项。由于不会生成 shell，因此不支持 I/O 重定向和文件通配等行为。
 
 ```cjs
 const { execFile } = require('node:child_process');
@@ -410,19 +414,25 @@ changes:
 * `args` {string\[]} 字符串参数列表。
 * `options` {Object}
   * `cwd` {string|URL} 子进程的当前工作目录。
-  * `detached` {boolean} 准备子进程独立于其父进程运行。具体行为取决于平台（参见 [`options.detached`][]）。
+  * `detached` {boolean} 准备子进程独立于其父进程运行。具体行为取决于平台（参见
+    [`options.detached`][]）。
   * `env` {Object} 环境键值对。**默认值：** `process.env`。
   * `execPath` {string} 用于创建子进程的可执行文件。
-  * `execArgv` {string\[]} 传递给可执行文件的字符串参数列表。**默认值：** `process.execArgv`。
+  * `execArgv` {string\[]} 传递给可执行文件的字符串参数列表。
+    **默认值：** `process.execArgv`。
   * `gid` {number} 设置进程的组身份（参见 setgid(2)）。
-  * `serialization` {string} 指定用于在进程之间发送消息的序列化类型。可能的值为 `'json'` 和 `'advanced'`。参见 [高级序列化][] 了解更多详情。**默认值：** `'json'`。
+  * `serialization` {string} 指定用于在进程之间发送消息的序列化类型。可能的值为 `'json'` 和 `'advanced'`。
+    参见[高级序列化][]了解更多详情。**默认值：** `'json'`。
   * `signal` {AbortSignal} 允许使用 AbortSignal 关闭子进程。
   * `killSignal` {string|integer} 当生成的进程因超时或中止信号而被杀死时使用的信号值。**默认值：** `'SIGTERM'`。
-  * `silent` {boolean} 如果为 `true`，子进程的 stdin、stdout 和 stderr 将被管道传输到父进程，否则它们将从父进程继承，参见 [`child_process.spawn()`][] 的 [`stdio`][] 的 `'pipe'` 和 `'inherit'` 选项了解更多详情。**默认值：** `false`。
-  * `stdio` {Array|string} 参见 [`child_process.spawn()`][] 的 [`stdio`][]。提供此选项时，它将覆盖 `silent`。如果使用数组变体，它必须恰好包含一个值为 `'ipc'` 的项，否则将抛出错误。例如 `[0, 1, 2, 'ipc']`。
+  * `silent` {boolean} 如果为 `true`，子进程的 stdin、stdout 和 stderr 将通过管道传递到父进程；否则，它们将继承自父进程。有关详细信息，请参见 [`child_process.spawn()`][] 的 [`stdio`][] 中的 `'pipe'` 和 `'inherit'` 选项。
+    **默认值：** `false`。
+  * `stdio` {Array|string} 参见 [`child_process.spawn()`][] 的 [`stdio`][]。
+    提供此选项时，它会覆盖 `silent`。如果使用数组形式，则必须恰好包含一个值为 `'ipc'` 的项，否则将抛出错误。例如 `[0, 1, 2, 'ipc']`。
   * `uid` {number} 设置进程的用户身份（参见 setuid(2)）。
+  * `windowsHide` {boolean} 隐藏 Windows 系统上通常创建的子进程控制台窗口。**默认值：** `false`。
   * `windowsVerbatimArguments` {boolean} 在 Windows 上不对参数进行引号或转义。在 Unix 上忽略。**默认值：** `false`。
-  * `timeout` {number} 进程允许运行的最大时间（毫秒）。**默认值：** `undefined`。
+  * `timeout` {number} 进程允许运行的最长时间（毫秒）。**默认值：** `undefined`。
 * 返回：{ChildProcess}
 
 `child_process.fork()` 方法是 [`child_process.spawn()`][] 的一个特例，专门用于生成新的 Node.js 进程。像 [`child_process.spawn()`][] 一样，返回一个 [`ChildProcess`][] 对象。返回的 [`ChildProcess`][] 将具有一个内置的额外通信通道，允许消息在父进程和子进程之间来回传递。详见 [`subprocess.send()`][]。
@@ -431,13 +441,16 @@ changes:
 
 默认情况下，`child_process.fork()` 将使用父进程的 [`process.execPath`][] 生成新的 Node.js 实例。`options` 对象中的 `execPath` 属性允许使用替代执行路径。
 
-使用自定义 `execPath` 启动的 Node.js 进程将使用子进程上环境变量 `NODE_CHANNEL_FD` 标识的文件描述符 (fd) 与父进程通信。
+使用自定义 `execPath` 启动的 Node.js 进程将使用子进程上由环境变量 `NODE_CHANNEL_FD` 标识的文件描述符（fd）与父进程通信。
 
-与 fork(2) POSIX 系统调用不同，`child_process.fork()` 不克隆当前进程。
+与 fork(2) POSIX 系统调用不同，`child_process.fork()` 不会克隆当前进程。
 
 [`child_process.spawn()`][] 中可用的 `shell` 选项不受 `child_process.fork()` 支持，如果设置将被忽略。
 
-如果启用了 `signal` 选项，则在相应的 `AbortController` 上调用 `.abort()` 类似于在子进程上调用 `.kill()`，不同之处在于传递给回调的错误将是 `AbortError`：
+> 将 `signal` 选项用作资源清理机制，以销毁长期运行的子进程，已弃用。`signal` 选项仍适用于取消操作、外部传播的中止和超时。参见
+> [DEP0209](deprecations.md#dep0209-using-abortsignal-to-dispose-of-resources)。
+
+如果启用了 `signal` 选项，在相应的 `AbortController` 上调用 `.abort()` 类似于在子进程上调用 `.kill()`，不同之处在于传递给回调的错误将是 `AbortError`：
 
 ```cjs
 const { fork } = require('node:child_process');
@@ -532,7 +545,7 @@ changes:
   * `detached` {boolean} 准备子进程独立于其父进程运行。具体行为取决于平台（参见 [`options.detached`][]）。
   * `uid` {number} 设置进程的用户身份（参见 setuid(2)）。
   * `gid` {number} 设置进程的组身份（参见 setgid(2)）。
-  * `serialization` {string} 指定用于在进程之间发送消息的序列化类型。可能的值为 `'json'` 和 `'advanced'`。参见 [高级序列化][] 了解更多详情。**默认值：** `'json'`。
+  * `serialization` {string} 指定用于在进程之间发送消息的序列化类型。可能的值为 `'json'` 和 `'advanced'`。参见[高级序列化][]了解更多详情。**默认值：** `'json'`。
   * `shell` {boolean|string} 如果为 `true`，则在 shell 内部运行 `command`。在 Unix 上使用 `'/bin/sh'`，在 Windows 上使用 `process.env.ComSpec`。可以将不同的 shell 指定为字符串。参见 [Shell 要求][] 和 [默认 Windows shell][]。**默认值：** `false`（无 shell）。
   * `windowsVerbatimArguments` {boolean} 在 Windows 上不对参数进行引号或转义。在 Unix 上忽略。当指定 `shell` 且为 CMD 时，此值自动设置为 `true`。**默认值：** `false`。
   * `windowsHide` {boolean} 隐藏 Windows 系统上通常创建的子进程控制台窗口。**默认值：** `false`。
@@ -560,7 +573,10 @@ const defaults = {
 
 `env` 中的 `undefined` 值将被忽略。
 
-运行 `ls -lh /usr` 的示例，捕获 `stdout`、`stderr` 和退出码：
+> 将 `signal` 选项用作资源清理机制，以销毁长期运行的子进程，已弃用。`signal` 选项仍适用于取消操作、外部传播的中止和超时。参见
+> [DEP0209](deprecations.md#dep0209-using-abortsignal-to-dispose-of-resources)。
+
+运行 `ls -lh /usr` 并捕获 `stdout`、`stderr` 和退出代码的示例：
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -596,7 +612,7 @@ const [code] = await once(ls, 'close');
 console.log(`child process exited with code ${code}`);
 ```
 
-示例：运行 `ps ax | grep ssh` 的一种非常详细的方式
+示例：以一种非常详细的方式运行 `ps ax | grep ssh`
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -730,7 +746,7 @@ added: v0.7.10
 
 当使用 `detached` 选项启动长期运行的进程时，除非提供了未连接到父进程的 `stdio` 配置，否则进程在父进程退出后不会在后台保持运行。如果父进程的 `stdio` 被继承，子进程将保持连接到控制终端。
 
-长期运行进程的示例，通过分离并忽略其父进程 `stdio` 文件描述符，以便忽略父进程的终止：
+长期运行进程的示例：通过分离并忽略其父进程的 `stdio` 文件描述符，使其忽略父进程的终止：
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -815,13 +831,14 @@ changes:
 2. `'overlapped'`：与 `'pipe'` 相同，不同之处在于句柄上设置了 `FILE_FLAG_OVERLAPPED` 标志。这对于子进程 stdio 句柄上的重叠 I/O 是必需的。参见 [文档](https://docs.microsoft.com/en-us/windows/win32/fileio/synchronous-and-asynchronous-i-o) 了解更多详情。在非 Windows 系统上，这与 `'pipe'` 完全相同。
 3. `'ipc'`：创建一个 IPC 通道，用于在父进程和子进程之间传递消息/文件描述符。[`ChildProcess`][] 最多可以有一个 IPC stdio 文件描述符。设置此选项将启用 [`subprocess.send()`][] 方法。如果子进程是 Node.js 实例，IPC 通道的存在将启用子进程内的 [`process.send()`][] 和 [`process.disconnect()`][] 方法，以及 [`'disconnect'`][] 和 [`'message'`][] 事件。
 
-   除了 [`process.send()`][] 之外，以任何方式访问 IPC 通道 fd，或将 IPC 通道与非 Node.js 实例的子进程一起使用是不支持的。
-4. `'ignore'`：指示 Node.js 忽略子进程中的 fd。虽然 Node.js 总是为其生成的进程打开 fd 0、1 和 2，但将 fd 设置为 `'ignore'` 将导致 Node.js 打开 `/dev/null` 并将其附加到子进程的 fd。
-5. `'inherit'`：将相应的 stdio 流从/传递给父进程。在前三个位置，这分别等同于 `process.stdin`、`process.stdout` 和 `process.stderr`。在任何其他位置，等同于 `'ignore'`。
-6. {Stream} 对象：与子进程共享引用 tty、文件、socket 或管道的可读或可写流。流的底层文件描述符在子进程中复制到对应于 `stdio` 数组中索引的 fd。流必须具有底层描述符（文件流直到 `'open'` 事件发生后才开始）。
-   **注意：** 虽然技术上可以将 `stdin` 作为可写流传递，或将 `stdout`/`stderr` 作为可读流传递，但不推荐这样做。可读和可写流设计有不同的行为，错误地使用它们（例如，在期望可写流的地方传递可读流）可能导致意外结果或错误。不鼓励这种做法，因为它可能导致未定义的行为，或者如果流遇到错误则导致回调丢失。始终确保 `stdin` 用作可读，`stdout`/`stderr` 用作可写，以维持父进程和子进程之间预期的数据流。
-7. 正整数：整数值被解释为在父进程中打开的文件描述符。它与子进程共享，类似于 {Stream} 对象的共享方式。在 Windows 上不支持传递 socket。
-8. `null`、`undefined`：使用默认值。对于 stdio fd 0、1 和 2（即 stdin、stdout 和 stderr），创建管道。对于 fd 3 及以上，默认值为 `'ignore'`。
+   除了使用 [`process.send()`][] 之外，以任何方式访问 IPC 通道 fd，或者将 IPC 通道用于非 Node.js 实例的子进程，均不受支持。
+4. `'ignore'`：指示 Node.js 忽略子进程中的 fd。尽管 Node.js 始终会为其生成的进程打开 fd 0、1 和 2，但将 fd 设置为 `'ignore'` 会使 Node.js 打开 `/dev/null` 并将其附加到子进程的 fd。
+5. `'inherit'`：将对应的 stdio 流传递给父进程，或从父进程传递过来。在前三个位置，这分别等同于 `process.stdin`、`process.stdout` 和 `process.stderr`。在其他任何位置，则等同于 `'ignore'`。
+6. {Stream} 对象：与子进程共享一个指向 tty、文件、套接字或管道的可读或可写流。该流底层的文件描述符会在子进程中复制到 `stdio` 数组中与其索引对应的 fd。流必须具有底层描述符（文件流会在 `'open'` 事件发生后才开始）。
+   **注意：**虽然在技术上可以将 `stdin` 作为可写流传递，或将 `stdout`/`stderr` 作为可读流传递，但不建议这样做。
+   可读流和可写流具有不同的行为，错误地使用它们（例如，在需要可写流的地方传递可读流）可能会导致意外结果或错误。不建议采用这种做法，因为如果流遇到错误，可能会导致未定义行为或回调被丢弃。请始终确保将 `stdin` 用作可读流，将 `stdout`/`stderr` 用作可写流，以维持父进程与子进程之间预期的数据流。传递到 `stdin` 位置的流是子进程读取输入的来源，而 `stdout`/`stderr` 位置的流则接收子进程写出的输出。这与 [`subprocess.stdin`][]（可写）和 [`subprocess.stdout`][]（可读）正好相反，后者是通过 `'pipe'` 创建的管道在父进程一端的流。
+7. 正整数：该整数值被视为父进程中处于打开状态的文件描述符。它会与子进程共享，与共享 {Stream} 对象的方式类似。Windows 上不支持传递套接字。
+8. `null`、`undefined`：使用默认值。对于 stdio fd 0、1 和 2（即 stdin、stdout 和 stderr），会创建管道。对于 fd 3 及更高值，默认值为 `'ignore'`。
 
 ```cjs
 const { spawn } = require('node:child_process');
@@ -894,26 +911,20 @@ changes:
 * `args` {string\[]} 字符串参数列表。
 * `options` {Object}
   * `cwd` {string|URL} 子进程的当前工作目录。
-  * `input` {string|Buffer|TypedArray|DataView} 将作为 stdin 传递给派生进程的值。如果 `stdio[0]` 设置为 `'pipe'`，提供
-    此值将覆盖 `stdio[0]`。
+  * `input` {string|Buffer|TypedArray|DataView} 将作为 stdin 传递给派生进程的值。如果 `stdio[0]` 设置为 `'pipe'`，提供此值将覆盖 `stdio[0]`。
   * `stdio` {string|Array} 子进程的 stdio 配置。
-    参见 [`child_process.spawn()`][] 的 [`stdio`][]。除非指定了 `stdio`，否则 `stderr` 默认将
-    输出到父进程的 stderr。
+    参见 [`child_process.spawn()`][] 的 [`stdio`][]。除非指定了 `stdio`，否则 `stderr` 默认会输出到父进程的 stderr。
     **默认值：** `'pipe'`。
   * `env` {Object} 环境键值对。**默认值：** `process.env`。
   * `uid` {number} 设置进程的用户身份（参见 setuid(2)）。
-  * `gid` {number} 设置进程的用户组身份（参见 setgid(2)）。
-  * `timeout` {number} 进程允许运行的最大时间（毫秒）。**默认值：** `undefined`。
-  * `killSignal` {string|integer} 用于杀死派生进程的信号值。**默认值：** `'SIGTERM'`。
-  * `maxBuffer` {number} stdout 或 stderr 上允许的最大数据量（字节）。如果超过，子进程将被终止。参见 [`maxBuffer` 和 Unicode][] 处的注意事项。**默认值：** `1024 * 1024`。
-  * `encoding` {string} 用于所有 stdio 输入和输出的编码。
-    **默认值：** `'buffer'`。
-  * `windowsHide` {boolean} 隐藏通常在 Windows 系统上创建的子进程控制台窗口。**默认值：** `false`。
-  * `shell` {boolean|string} 如果为 `true`，则在 shell 内部运行 `command`。在 Unix 上使用
-    `'/bin/sh'`，在 Windows 上使用 `process.env.ComSpec`。可以将不同的
-    shell 指定为字符串。参见 [Shell 要求][] 和
-    [默认 Windows shell][]。**默认值：** `false`（无 shell）。
-* 返回：{Buffer|string} 命令的 stdout。
+  * `gid` {number} 设置进程的组身份（参见 setgid(2)）。
+  * `timeout` {number} 进程允许运行的最长时间，以毫秒为单位。**默认值：** `undefined`。
+  * `killSignal` {string|integer} 派生进程将被终止时使用的信号值。**默认值：** `'SIGTERM'`。
+  * `maxBuffer` {number} stdout 或 stderr 允许的最大数据量（以字节为单位）。如果超出此值，子进程将被终止。参见 [`maxBuffer` 和 Unicode][] 中的注意事项。**默认值：** `1024 * 1024`。
+  * `encoding` {string} 所有 stdio 输入和输出使用的编码。**默认值：** `'buffer'`。
+  * `windowsHide` {boolean} 隐藏通常会在 Windows 系统上创建的子进程控制台窗口。**默认值：** `false`。
+  * `shell` {boolean|string} 如果为 `true`，则在 shell 内运行 `command`。Unix 上使用 `'/bin/sh'`，Windows 上使用 `process.env.ComSpec`。可以用字符串指定不同的 shell。参见 [Shell 要求][] 和 [Windows 默认 shell][]。**默认值：** `false`（不使用 shell）。
+* 返回值：{Buffer|string|null} 如果 `stdio` 为 `'pipe'`，则为命令的 stdout；否则为 null。
 
 `child_process.execFileSync()` 方法通常与
 [`child_process.execFile()`][] 相同，例外情况是该方法直到子进程完全关闭才会返回。当遇到超时且
@@ -1010,27 +1021,24 @@ changes:
 * `command` {string} 要运行的命令。
 * `options` {Object}
   * `cwd` {string|URL} 子进程的当前工作目录。
-  * `input` {string|Buffer|TypedArray|DataView} 将作为 stdin 传递给派生进程的值。如果 `stdio[0]` 设置为 `'pipe'`，提供
-    此值将覆盖 `stdio[0]`。
+  * `input` {string|Buffer|TypedArray|DataView} 将作为 stdin 传递给派生进程的值。如果 `stdio[0]` 设置为 `'pipe'`，提供此值将覆盖 `stdio[0]`。
   * `stdio` {string|Array} 子进程的 stdio 配置。
-    参见 [`child_process.spawn()`][] 的 [`stdio`][]。除非指定了 `stdio`，否则 `stderr` 默认将
-    输出到父进程的 stderr。
+    参见 [`child_process.spawn()`][] 的 [`stdio`][]。除非指定了 `stdio`，否则 `stderr` 默认会输出到父进程的 stderr。
     **默认值：** `'pipe'`。
   * `env` {Object} 环境键值对。**默认值：** `process.env`。
-  * `shell` {string} 用于执行命令的 Shell。参见
-    [Shell 要求][] 和 [默认 Windows shell][]。**默认值：**
-    在 Unix 上为 `'/bin/sh'`，在 Windows 上为 `process.env.ComSpec`。
+  * `shell` {string} 用于执行命令的 shell。参见
+    [Shell 要求][] 和 [Windows 默认 shell][]。**默认值：**
+    Unix 上为 `'/bin/sh'`，Windows 上为 `process.env.ComSpec`。
   * `uid` {number} 设置进程的用户身份。（参见 setuid(2)）。
-  * `gid` {number} 设置进程的用户组身份。（参见 setgid(2)）。
-  * `timeout` {number} 进程允许运行的最大时间（毫秒）。**默认值：** `undefined`。
-  * `killSignal` {string|integer} 用于杀死派生进程的信号值。**默认值：** `'SIGTERM'`。
-  * `maxBuffer` {number} stdout 或 stderr 上允许的最大数据量（字节）。如果超过，子进程将被终止且任何输出将被
-    截断。参见 [`maxBuffer` 和 Unicode][] 处的注意事项。
+  * `gid` {number} 设置进程的组身份。（参见 setgid(2)）。
+  * `timeout` {number} 进程允许运行的最长时间，以毫秒为单位。**默认值：** `undefined`。
+  * `killSignal` {string|integer} 派生进程将被终止时使用的信号值。**默认值：** `'SIGTERM'`。
+  * `maxBuffer` {number} stdout 或 stderr 允许的最大数据量（以字节为单位）。如果超出此值，子进程将被终止，且任何输出都会被截断。参见 [`maxBuffer` 和 Unicode][] 中的注意事项。
     **默认值：** `1024 * 1024`。
-  * `encoding` {string} 用于所有 stdio 输入和输出的编码。
+  * `encoding` {string} 所有 stdio 输入和输出使用的编码。
     **默认值：** `'buffer'`。
-  * `windowsHide` {boolean} 隐藏通常在 Windows 系统上创建的子进程控制台窗口。**默认值：** `false`。
-* 返回：{Buffer|string} 命令的 stdout。
+  * `windowsHide` {boolean} 隐藏通常会在 Windows 系统上创建的子进程控制台窗口。**默认值：** `false`。
+* 返回值：{Buffer|string|null} 如果 `stdio` 为 `'pipe'`，则为命令的 stdout；否则为 null。
 
 `child_process.execSync()` 方法通常与
 [`child_process.exec()`][] 相同，例外情况是该方法直到
@@ -1078,37 +1086,30 @@ changes:
 * `args` {string\[]} 字符串参数列表。
 * `options` {Object}
   * `cwd` {string|URL} 子进程的当前工作目录。
-  * `input` {string|Buffer|TypedArray|DataView} 将作为 stdin 传递给派生进程的值。如果 `stdio[0]` 设置为 `'pipe'`，提供
-    此值将覆盖 `stdio[0]`。
-  * `argv0` {string} 显式设置发送给子
-    进程的 `argv[0]` 的值。如果未指定，这将设置为 `command`。
+  * `input` {string|Buffer|TypedArray|DataView} 将作为 stdin 传递给派生进程的值。如果 `stdio[0]` 设置为 `'pipe'`，提供此值将覆盖 `stdio[0]`。
+  * `argv0` {string} 显式设置发送给子进程的 `argv[0]` 值。如果未指定，则会设置为 `command`。
   * `stdio` {string|Array} 子进程的 stdio 配置。
     参见 [`child_process.spawn()`][] 的 [`stdio`][]。**默认值：** `'pipe'`。
   * `env` {Object} 环境键值对。**默认值：** `process.env`。
   * `uid` {number} 设置进程的用户身份（参见 setuid(2)）。
-  * `gid` {number} 设置进程的用户组身份（参见 setgid(2)）。
-  * `timeout` {number} 进程允许运行的最大时间（毫秒）。**默认值：** `undefined`。
-  * `killSignal` {string|integer} 用于杀死派生进程的信号值。**默认值：** `'SIGTERM'`。
-  * `maxBuffer` {number} stdout 或 stderr 上允许的最大数据量（字节）。如果超过，子进程将被终止且任何输出将被
-    截断。参见 [`maxBuffer` 和 Unicode][] 处的注意事项。
+  * `gid` {number} 设置进程的组身份（参见 setgid(2)）。
+  * `timeout` {number} 进程允许运行的最长时间，以毫秒为单位。**默认值：** `undefined`。
+  * `killSignal` {string|integer} 派生进程将被终止时使用的信号值。**默认值：** `'SIGTERM'`。
+  * `maxBuffer` {number} stdout 或 stderr 允许的最大数据量（以字节为单位）。如果超出此值，子进程将被终止，且任何输出都会被截断。参见 [`maxBuffer` 和 Unicode][] 中的注意事项。
     **默认值：** `1024 * 1024`。
-  * `encoding` {string} 用于所有 stdio 输入和输出的编码。
+  * `encoding` {string} 所有 stdio 输入和输出使用的编码。
     **默认值：** `'buffer'`。
-  * `shell` {boolean|string} 如果为 `true`，则在 shell 内部运行 `command`。在 Unix 上使用
-    `'/bin/sh'`，在 Windows 上使用 `process.env.ComSpec`。可以将不同的
-    shell 指定为字符串。参见 [Shell 要求][] 和
-    [默认 Windows shell][]。**默认值：** `false`（无 shell）。
-  * `windowsVerbatimArguments` {boolean} 在 Windows 上不对参数进行引号或转义。在 Unix 上被忽略。当指定 `shell` 且为 CMD 时，此值自动
-    设置为 `true`。**默认值：** `false`。
-  * `windowsHide` {boolean} 隐藏通常在 Windows 系统上创建的子进程控制台窗口。**默认值：** `false`。
-* 返回：{Object}
+  * `shell` {boolean|string} 如果为 `true`，则在 shell 内运行 `command`。Unix 上使用 `'/bin/sh'`，Windows 上使用 `process.env.ComSpec`。可以用字符串指定不同的 shell。参见 [Shell 要求][] 和 [Windows 默认 shell][]。**默认值：** `false`（不使用 shell）。
+  * `windowsVerbatimArguments` {boolean} 在 Windows 上不对参数进行引号处理或转义。在 Unix 上忽略。当指定 `shell` 且其为 CMD 时，此选项会自动设置为 `true`。**默认值：** `false`。
+  * `windowsHide` {boolean} 隐藏通常会在 Windows 系统上创建的子进程控制台窗口。**默认值：** `false`。
+* 返回值：{Object}
   * `pid` {number} 子进程的 Pid。
-  * `output` {Array} 来自 stdio 输出的结果数组。
-  * `stdout` {Buffer|string} `output[1]` 的内容。
-  * `stderr` {Buffer|string} `output[2]` 的内容。
-  * `status` {number|null} 子进程的退出码，如果子进程因信号终止则为 `null`。
-  * `signal` {string|null} 用于杀死子进程的信号，如果子进程不是因信号终止则为 `null`。
-  * `error` {Error} 如果子进程失败或超时，则为错误对象。
+  * `output` {Array} stdio 输出的结果数组。
+  * `stdout` {Buffer|string|null} 如果 `stdio` 为 `'pipe'`，则为 `output[1]` 的内容；否则为 null。
+  * `stderr` {Buffer|string|null} 如果 `stdio` 为 `'pipe'`，则为 `output[2]` 的内容；否则为 null。
+  * `status` {number|null} 子进程的退出码；如果子进程因信号而终止，则为 `null`。
+  * `signal` {string|null} 用于终止子进程的信号；如果子进程并非因信号而终止，则为 `null`。
+  * `error` {Error} 子进程失败或超时时的错误对象。
 
 `child_process.spawnSync()` 方法通常与
 [`child_process.spawn()`][] 相同，例外情况是该函数直到
@@ -1232,13 +1233,13 @@ added: v0.5.9
 -->
 
 * `message` {Object} 解析后的 JSON 对象或原始值。
-* `sendHandle` {Handle|undefined} `undefined` 或一个 [`net.Socket`][]、[`net.Server`][] 或 [`dgram.Socket`][] 对象。
+* `sendHandle` {Handle|undefined} `undefined`，或 [`net.Socket`][]、[`net.Server`][]、[`net.BoundSocket`][] 或 [`dgram.Socket`][] 对象。
 
 当子进程使用 [`process.send()`][] 发送消息时，会触发 `'message'` 事件。
 
 消息会经过序列化和解析。结果消息可能与最初发送的消息不同。
 
-如果生成子进程时 `serialization` 选项设置为 `'advanced'`，`message` 参数可以包含 JSON 无法表示的数据。详见 [高级序列化][] 了解更多详情。
+如果生成子进程时 `serialization` 选项设置为 `'advanced'`，`message` 参数可以包含 JSON 无法表示的数据。详见[高级序列化][]了解更多详情。
 
 ### 事件：`'spawn'`
 
@@ -1261,12 +1262,12 @@ added: v7.1.0
 changes:
   - version: v14.0.0
     pr-url: https://github.com/nodejs/node/pull/30165
-    description: The object no longer accidentally exposes native C++ bindings.
+    description: 该对象不再意外暴露原生 C++ 绑定。
 -->
 
-* Type: {Object} A pipe representing the IPC channel to the child process.
+* 类型：{Object} 表示与子进程之间 IPC 通道的管道。
 
-The `subprocess.channel` property is a reference to the child process IPC channel. If no IPC channel exists, this property is `undefined`.
+`subprocess.channel` 属性是对子进程 IPC 通道的引用。如果不存在 IPC 通道，此属性为 `undefined`。
 
 #### `subprocess.channel.ref()`
 
@@ -1274,7 +1275,7 @@ The `subprocess.channel` property is a reference to the child process IPC channe
 added: v7.1.0
 -->
 
-If `.unref()` was previously called, this method makes the IPC channel keep the parent process's event loop running.
+如果之前调用过 `.unref()`，此方法会使 IPC 通道保持父进程的事件循环运行。
 
 #### `subprocess.channel.unref()`
 
@@ -1282,7 +1283,7 @@ If `.unref()` was previously called, this method makes the IPC channel keep the 
 added: v7.1.0
 -->
 
-This method makes the IPC channel not keep the parent process's event loop running and allows it to complete while the channel is open.
+此方法使 IPC 通道不再维持父进程的事件循环运行，并允许父进程在通道仍打开时完成退出。
 
 ### `subprocess.connected`
 
@@ -1357,7 +1358,7 @@ grep.kill('SIGHUP');
 
 参见 kill(2) 参考。
 
-在 Windows 上，由于不存在 POSIX 信号，`signal` 参数将被忽略，但 `'SIGKILL'`、`'SIGTERM'`、`'SIGINT'` 和 `'SIGQUIT'` 除外，并且进程将始终被强制且突然地终止（类似于 `'SIGKILL'`）。详见 [信号事件][] 了解更多详情。
+在 Windows 上，由于 POSIX 信号不存在，信号的处理方式如下。`'SIGKILL'`、`'SIGTERM'`、`'SIGINT'` 和 `'SIGQUIT'` 会强制且突然地终止进程（类似于 `'SIGKILL'`）；任何其他在 Windows 上已知名称的信号（例如 `'SIGHUP'`）也会执行相同操作。`'SIGWINCH'` 不会终止进程，也不会被转换：`subprocess.kill()` 会抛出 `ENOSYS` 错误，而子进程会继续运行。在 Windows 上不存在的信号名称（例如 `'SIGSTOP'`）会抛出 `ERR_UNKNOWN_SIGNAL` 错误。详见[信号事件][]了解更多详情。
 
 在 Linux 上，尝试终止父进程时，子进程的子进程不会被终止。当在 shell 中运行新进程或使用 `ChildProcess` 的 `shell` 选项时，可能会发生这种情况：
 
@@ -1489,6 +1490,9 @@ subprocess.ref();
 <!-- YAML
 added: v0.5.9
 changes:
+  - version: v26.10.0
+    pr-url: https://github.com/nodejs/node/pull/64725
+    description: '`net.BoundSocket` 实例现在可以发送。'
   - version: v5.8.0
     pr-url: https://github.com/nodejs/node/pull/5283
     description: "现在支持 `options` 参数，特别是 `keepOpen` 选项。"
@@ -1501,9 +1505,9 @@ changes:
 -->
 
 * `message` {Object}
-* `sendHandle` {Handle|undefined} `undefined`，或一个 [`net.Socket`][]、[`net.Server`][] 或 [`dgram.Socket`][] 对象。
-* `options` {Object} `options` 参数（如果存在）是一个用于参数化发送某些类型句柄的对象。`options` 支持以下属性：
-  * `keepOpen` {boolean} 传递 `net.Socket` 实例时可使用的值。当为 `true` 时，套接字在发送进程中保持打开。**默认值：** `false`。
+* `sendHandle` {Handle|undefined} `undefined`，或 [`net.Socket`][]、[`net.Server`][]、[`net.BoundSocket`][] 或 [`dgram.Socket`][] 对象。
+* `options` {Object} 如果提供，`options` 参数是一个对象，用于配置某些类型句柄的发送。`options` 支持以下属性：
+  * `keepOpen` {boolean} 传递 `net.Socket` 实例时可以使用的值。为 `true` 时，套接字在发送进程中保持打开。**默认值：** `false`。
 * `callback` {Function}
 * 返回：{boolean}
 
@@ -1552,9 +1556,11 @@ process.send({ foo: 'bar', baz: NaN });
 
 发送 `{cmd: 'NODE_foo'}` 消息时有一个特殊情况。`cmd` 属性中包含 `NODE_` 前缀的消息保留用于 Node.js 核心内部使用，不会在子进程的 [`'message'`][] 事件中发出。相反，此类消息使用 `'internalMessage'` 事件发出，并由 Node.js 内部消耗。应用程序应避免使用此类消息或监听 `'internalMessage'` 事件，因为它可能会在不通知的情况下更改。
 
-传递给 `subprocess.send()` 的可选 `sendHandle` 参数用于将 TCP 服务器或套接字对象传递给子进程。子进程将接收该对象作为传递给注册在 [`'message'`][] 事件上的回调函数的第二个参数。套接字中接收和缓冲的任何数据都不会发送给子进程。Windows 上不支持发送 IPC 套接字。
+可选的 `sendHandle` 参数可用于将 TCP 服务器、套接字或 [`net.BoundSocket`][] 对象传递给子进程。子进程将收到该对象，作为传递给在 [`'message'`][] 事件上注册的回调函数的第二个参数。套接字中已接收并缓冲的任何数据都不会发送给子进程。Windows 上不支持发送 IPC 套接字。
 
-可选的 `callback` 是一个在消息发送后但在子进程可能收到之前调用的函数。该函数使用单个参数调用：成功时为 `null`，失败时为 [`Error`][] 对象。
+发送 `net.BoundSocket` 会将其底层 TCP 句柄移交给子进程，使源实例处于已采用状态，就像它已被服务器或套接字采用一样。该绑定套接字不得已被采用或关闭，且不能发送管道（`path`）绑定。
+
+可选的 `callback` 是一个函数，会在消息发送后、子进程可能已收到消息之前调用。该函数使用一个参数调用：成功时为 `null`，失败时为 [`Error`][] 对象。
 
 如果未提供 `callback` 函数且无法发送消息，[`ChildProcess`][] 对象将发出 `'error'` 事件。例如，当子进程已经退出时，可能会发生这种情况。
 
@@ -1584,9 +1590,9 @@ server.listen(1337, () => {
 import { fork } from 'node:child_process';
 import { createServer } from 'node:net';
 
+// 打开服务器对象并发送句柄。
 const subprocess = fork('subprocess.js');
 
-// 打开服务器对象并发送句柄。
 const server = createServer();
 server.on('connection', (socket) => {
   socket.end('handled by parent');
@@ -1724,7 +1730,7 @@ added: v0.1.90
 
 * 类型：{stream.Writable|null|undefined}
 
-表示子进程 `stdin` 的 `Writable Stream`。
+表示子进程 `stdin` 的 `可写流`。
 
 如果子进程等待读取所有输入，则子进程将不会继续，直到此流通过 `end()` 关闭。
 
@@ -1744,7 +1750,7 @@ added: v0.7.10
 
 到子进程的管道稀疏数组，对应于传递给 [`child_process.spawn()`][] 的 [`stdio`][] 选项中已设置为值 `'pipe'` 的位置。`subprocess.stdio[0]`、`subprocess.stdio[1]` 和 `subprocess.stdio[2]` 也可分别作为 `subprocess.stdin`、`subprocess.stdout` 和 `subprocess.stderr` 使用。
 
-在以下示例中，只有子进程的 fd `1` (stdout) 配置为管道，因此只有父进程的 `subprocess.stdio[1]` 是流，数组中的所有其他值均为 `null`。
+在以下示例中，只有子进程的 fd `1`（stdout）配置为管道，因此只有父进程的 `subprocess.stdio[1]` 是流，数组中的所有其他值均为 `null`。
 
 ```cjs
 const assert = require('node:assert');
@@ -1802,7 +1808,7 @@ added: v0.1.90
 
 * 类型：{stream.Readable|null|undefined}
 
-表示子进程 `stdout` 的 `Readable Stream`。
+表示子进程 `stdout` 的 `可读流`。
 
 如果生成子进程时 `stdio[1]` 设置为 `'pipe'` 以外的任何值，则此项将为 `null`。
 
@@ -1871,7 +1877,7 @@ Shell 应该理解 `-c` 开关。如果 shell 是 `'cmd.exe'`，它应该理解 
 
 ## 默认 Windows shell
 
-虽然 Microsoft 指定 `%COMSPEC%` 必须在根环境中包含 `'cmd.exe'` 的路径，但子进程并不总是受相同要求的约束。因此，在可以生成 shell 的 `child_process` 函数中，如果 `process.env.ComSpec` 不可用，则使用 `'cmd.exe'` 作为后备。
+虽然 Microsoft 指定 `%ComSpec%` 必须在根环境中包含 `'cmd.exe'` 的路径，但子进程并不总是受相同要求的约束。因此，在可以生成 shell 的 `child_process` 函数中，如果 `process.env.ComSpec` 不可用，则使用 `'cmd.exe'` 作为后备。
 
 ## 高级序列化
 
@@ -1906,7 +1912,8 @@ added:
 [`child_process.spawn()`]: #child_processspawncommand-args-options
 [`child_process.spawnSync()`]: #child_processspawnsynccommand-args-options
 [`dgram.Socket`]: dgram.md#class-dgramsocket
-[`maxBuffer` 和 Unicode]: #maxbuffer-and-unicode
+[`maxBuffer` and Unicode]: #maxbuffer-and-unicode
+[`net.BoundSocket`]: net.md#class-netboundsocket
 [`net.Server`]: net.md#class-netserver
 [`net.Socket`]: net.md#class-netsocket
 [`options.detached`]: #optionsdetached

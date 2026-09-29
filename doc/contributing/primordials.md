@@ -87,7 +87,9 @@ console.log(JSON.stringify(array)); // [1,2,3,4,5]
 
 有些内建函数接受可变数量的参数（例如：`Math.max`、`%Array.prototype.push%`）。有时将参数列表作为数组提供会很有用。你可以使用带有 `Apply` 后缀的 primordials 函数（例如：`MathMaxApply`、`ArrayPrototypePushApply`）来实现这一点。
 
-## 已知存在性能问题的 primordials
+## 限制和排除项
+
+### 已知存在性能问题的 Primordials
 
 当前 Node.js API 之所以并非完全防篡改，其中一个原因是性能：有时使用 primordials 会导致 V8 性能回退，而在热点代码路径中，这可能会显著降低 Node.js 代码的性能。
 
@@ -98,22 +100,44 @@ console.log(JSON.stringify(array)); // [1,2,3,4,5]
   * `ArrayPrototypeUnshift`
 * 函数原型的方法：
   * `FunctionPrototypeBind`
-  * `FunctionPrototypeCall`: 在用于调用 super 构造函数时会导致性能问题。
-  * `FunctionPrototype`: 在引用空操作函数时请改用 `() => {}`。
+  * `FunctionPrototypeCall`：在用于调用 super 构造函数时会导致性能问题。
+  * `FunctionPrototype`：在引用空操作函数时请改用 `() => {}`。
 * `SafeArrayIterator`
 * `SafeStringIterator`
 * `SafePromiseAll`
 * `SafePromiseAllSettled`
 * `SafePromiseAny`
 * `SafePromiseRace`
-* `SafePromisePrototypeFinally`: 请改用 `try {} finally {}` 块。
-* `ReflectConstruct`: 也会影响 `Reflect.construct`。
+* `SafePromisePrototypeFinally`：请改用 `try {} finally {}` 块。
+* `ReflectConstruct`：也会影响 `Reflect.construct`。
   `ReflectConstruct` 会在函数内部创建新的类类型。
   更好的替代方案是创建一个共享类。参见 [nodejs/performance#109](https://github.com/nodejs/performance/issues/109)。
 
 一般来说，在发送或审查会修改热点代码路径的 PR 时，请格外谨慎并运行充分的基准测试。
 
-## 用户可修改方法的隐式使用
+### `Array.prototype` 上用户定义的索引属性
+
+在问题／PR 中反复出现的一种情况是，通过 `Array.prototype` 更改索引数组属性的行为会破坏某个 Node.js API。
+
+<!-- eslint-disable accessor-pairs -->
+
+```js
+// User-land
+Object.defineProperty(
+  Array.prototype,
+  '0',
+  { set() {} },
+);
+
+// Core
+const array = [];
+ArrayPrototypePush(array, 'some value');
+console.log(array[0]); // undefined
+```
+
+这些模式可能会破坏 ECMAScript 内建功能和应用程序代码，Node.js 不会尝试防范此类情况。若要防范，就必须在每一次数组交互中使用属性描述符方法，这并不实际。
+
+## 隐式使用用户可修改的方法
 
 ### 不安全的数组迭代
 

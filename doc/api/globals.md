@@ -94,8 +94,7 @@ added:
 ### 静态方法：`AbortSignal.abort([reason])`
 
 <!-- YAML
-added:
-  - v15.12.0
+added: v15.12.0
   - v14.17.0
 changes:
   - version:
@@ -130,7 +129,7 @@ added:
   - v18.17.0
 -->
 
-* `signals` {AbortSignal\[]} 用于组合成新 `AbortSignal` 的 `AbortSignal`。
+* `signals` {Iterable} 用于组合出新的 {AbortSignal} 的 {AbortSignal} 可迭代对象。
 
 返回一个新的 `AbortSignal`，如果任何提供的信号被中止，它也将被中止。其 [`abortSignal.reason`][] 将设置为导致其被中止的任一 `signals`。
 
@@ -314,9 +313,13 @@ added: v0.0.1
 
 <!-- YAML
 added: v23.0.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65284
+    description: 不再可通过 `--no-experimental-websocket` CLI 标志禁用。
 -->
 
-{CloseEvent} 的与浏览器兼容的实现。使用 [`--no-experimental-websocket`][] CLI 标志禁用此 API。
+与浏览器兼容的 {CloseEvent} 实现。
 
 ## 类：`CompressionStream`
 
@@ -1254,6 +1257,9 @@ added:
   - v21.0.0
   - v20.10.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65284
+    description: 不再可通过 `--no-experimental-websocket` CLI 标志禁用。
   - version: v22.4.0
     pr-url: https://github.com/nodejs/node/pull/53352
     description: 不再是实验性的。
@@ -1262,7 +1268,69 @@ changes:
     description: "不再位于 `--experimental-websocket` CLI 标志之后。"
 -->
 
-与浏览器兼容的 {WebSocket} 实现。使用 [`--no-experimental-websocket`][] CLI 标志禁用此 API。
+与浏览器兼容的 {WebSocket} 实现。
+
+## 类：`Worker`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1 - 实验性。使用 [`--experimental-web-worker`][] CLI 标志启用此 API。
+
+基于 [`node:worker_threads`][] 实现的 [HTML Standard][] Web Workers，整体上与浏览器兼容。通过此 API 创建的线程会获得 {DedicatedWorkerGlobalScope} API（`self`、`name`、`location`、`navigator`、`postMessage()`、`close()` 和 `importScripts()`），以及 `process` 等常见的 Node.js 全局对象。
+
+```js
+// worker.js
+addEventListener('message', (event) => {
+  postMessage(`${event.data} from ${name}!`);
+});
+```
+
+```js
+// main.js
+const worker = new Worker('./worker.js', { name: 'greeter' });
+
+worker.addEventListener('message', (event) => {
+  console.log(event.data); // Prints: Hello from greeter!
+  worker.terminate();
+});
+
+worker.postMessage('Hello');
+```
+
+由于其生命周期和共享模型依赖于来源和浏览上下文，Node.js 目前不实现 `SharedWorker`。
+
+### 加载 worker 脚本
+
+worker 脚本是从本地文件系统或内存中同步读取的，而不是通过网络获取，因此可接受的 URL 类型以及错误的报告方式会有所不同：
+
+* `new Worker()` 和 `importScripts()` 仅接受 `file:`、`data:` 和 `blob:` URL。其他任何 scheme 都会导致 `new Worker()` 抛出 `NotSupportedError`，而 `importScripts()` 抛出 `NetworkError`。
+* 无法读取的脚本会导致 `importScripts()` 抛出 `NetworkError`；对于 `new Worker()`，则会在 `Worker` 对象上触发 `error` 事件。
+* 重定向、`nosniff` 检查和 HTTP MIME 类型验证均不适用。仅对 `data:` 和 `blob:` URL 验证 MIME 类型。为保证 API 兼容性，仍会验证 `credentials` 选项，但由于不会发出网络请求，该选项不起作用。
+* 在主线程上，相对脚本 URL 会根据当前工作目录解析，因为不存在文档基准 URL。在 worker 内部，它们会根据 worker 自身的 URL 解析（与规范中的行为相同）。
+* 对于 `blob:` URL，脚本必须保存在内存中，因此不能使用由文件支持的 blob，例如 [`fs.openAsBlob()`][] 返回的 blob。
+
+[类型剥离][type stripping] 仅适用于从 `file:` URL 加载的模块 worker。入口文件如何运行由 `type` 选项决定，而不是由文件扩展名决定，因此 `.cts` 入口仍会作为 ES 模块求值。
+
+### 与 HTML Standard 的差异
+
+除上述脚本加载行为之外：
+
+* Node.js 没有来源模型，因此不存在同源和跨源的区别，并且对于所有受支持的 scheme，`location.origin` 都是 `'null'`。
+* `close()` 会立即终止 worker，而不是遵循规范中的“closing flag”算法，因此调用 `close()` 后当前任务中剩余的代码不会执行。
+* worker 全局对象是普通的 Node.js 全局对象，其原型链中插入了 `DedicatedWorkerGlobalScope`，而不是根据该接口创建一个全新的全局对象。`process`、`Buffer` 和 `require()` 等 Node.js 全局对象仍可供 worker 脚本使用。
+* 在 `Worker` 实例上分发的 `ErrorEvent` 包含 `message` 和 `error`，但 `filename`、`lineno` 和 `colno` 始终分别为 `''`、`0` 和 `0`。未捕获的异常会终止 worker 线程；未处理的 `error` 事件不会进一步传播：既不会到达父级的全局作用域，也不会影响进程的退出代码。
+* 以下 {WorkerGlobalScope} 事件不会被分发，尽管其处理器属性存在：`languagechange`、`online` 和 `offline`，因为这些概念在 Node.js 中不存在；`rejectionhandled` 和 `unhandledrejection`，因为 Node.js 不实现等效机制，也不实现 `PromiseRejectionEvent` 接口或 HTML Standard 要求的、针对每次拒绝的 `preventDefault()` 行为。
+* 从 `file:` URL 加载的模块 worker 支持[类型剥离][]。
+
+### Web Workers 和 `node:worker_threads`
+
+每个 Web Worker 都由 [`node:worker_threads`][] {Worker} 支持，因此这两个 API 共享线程、结构化克隆和传输语义。在 worker 内部，\[`worker_threads.parentPort`]\[] 是 `self.postMessage()` 和 worker 的 `message` 事件背后的端口，`isMainThread` 为 `false`，而 `workerData` 为 `undefined`。
+
+Web Workers 与 `node:worker_threads` worker 一样，默认会使事件循环保持活动状态。在 Node.js 中，Web Workers 实现了 [Refable 协议][]，可以使用 `process.ref(worker)` 和 `process.unref(worker)` 对其进行 ref 和 unref。
+
+一般来说，如果程序需要 `workerData`、自定义 `env` 或 `execArgv`、资源限制、stdio 重定向、`'online'` 和 `'exit'` 事件，或 `worker.threadId`，则应直接使用 [`node:worker_threads`][]；`Worker` 仅接受 `name`、`type` 和 `credentials` 选项，并且按照规范，其 `terminate()` 返回 `undefined`，而不是一个 promise。通过 [`node:worker_threads`][] 启动的线程是普通的 Node.js 线程，不会获得 worker 全局作用域 API。
 
 ## 类：`WritableStream`
 
@@ -1306,16 +1374,18 @@ changes:
 
 与浏览器兼容的 [`WritableStreamDefaultWriter`][] 实现。
 
-[CommonJS 模块]: modules.md
-[CommonJS 模块]: modules.md
-[ECMAScript 模块]: esm.md
+[CommonJS module]: modules.md
+[CommonJS modules]: modules.md
+[ECMAScript module]: esm.md
+[HTML Standard]: https://html.spec.whatwg.org/multipage/workers.html
 [Navigator API]: https://html.spec.whatwg.org/multipage/system-state.html#the-navigator-object
 [RFC 5646]: https://www.rfc-editor.org/rfc/rfc5646.txt
+[Refable protocol]: process.md#processrefmayberefable
 [Web Crypto API]: webcrypto.md
 [`--experimental-eventsource`]: cli.md#--experimental-eventsource
+[`--experimental-web-worker`]: cli.md#--experimental-web-worker
 [`--localstorage-file`]: cli.md#--localstorage-filefile
 [`--no-experimental-global-navigator`]: cli.md#--no-experimental-global-navigator
-[`--no-experimental-websocket`]: cli.md#--no-experimental-websocket
 [`--no-experimental-webstorage`]: cli.md#--no-experimental-webstorage
 [`ByteLengthQueuingStrategy`]: webstreams.md#class-bytelengthqueuingstrategy
 [`CompressionStream`]: webstreams.md#class-compressionstream
@@ -1364,9 +1434,11 @@ changes:
 [`console`]: console.md
 [`exports`]: modules.md#exports
 [`fetch()`]: https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch
+[`fs.openAsBlob()`]: fs.md#fsopenasblobpath-options
 [`globalThis`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/globalThis
 [`localStorage`]: https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
 [`module`]: modules.md#module
+[`node:worker_threads`]: worker_threads.md
 [`perf_hooks.performance`]: perf_hooks.md#perf_hooksperformance
 [`process.nextTick()`]: process.md#processnexttickcallback-args
 [`process` 对象]: process.md#process
@@ -1379,8 +1451,9 @@ changes:
 [`window.navigator`]: https://developer.mozilla.org/en-US/docs/Web/API/Window/navigator
 [`worker_threads.locks`]: worker_threads.md#worker_threadslocks
 [browser `LockManager`]: https://developer.mozilla.org/en-US/docs/Web/API/LockManager
-[buffer 部分]: buffer.md
-[内置对象]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
-[定时器]: timers.md
+[buffer section]: buffer.md
+[built-in objects]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
+[timers]: timers.md
+[type stripping]: typescript.md#type-stripping
 [webassembly-mdn]: https://developer.mozilla.org/en-US/docs/WebAssembly
 [webassembly-org]: https://webassembly.org

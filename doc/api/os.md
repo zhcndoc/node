@@ -246,10 +246,10 @@ added: v0.6.0
 changes:
   - version: v18.4.0
     pr-url: https://github.com/nodejs/node/pull/43054
-    description: "the `family` 属性现在返回字符串而不是数字。"
+    description: "`family` 属性现在返回字符串而不是数字。"
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41431
-    description: "the `family` 属性现在返回数字而不是字符串。"
+    description: "`family` 属性现在返回数字而不是字符串。"
 -->
 
 * 返回值：{Object}
@@ -270,42 +270,42 @@ changes:
 
 ```json
 {
-  "lo:": [
+  "lo": [
     {
-      "address:": "127.0.0.1",
-      "netmask:": "255.0.0.0",
-      "family:": "IPv4",
-      "mac:": "00:00:00:00:00:00",
-      "internal:": true,
-      "cidr:": "127.0.0.1/8"
+      "address": "127.0.0.1",
+      "netmask": "255.0.0.0",
+      "family": "IPv4",
+      "mac": "00:00:00:00:00:00",
+      "internal": true,
+      "cidr": "127.0.0.1/8"
     },
     {
-      "address:": "::1",
-      "netmask:": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
-      "family:": "IPv6",
-      "mac:": "00:00:00:00:00:00",
-      "scopeid:": 0,
-      "internal:": true,
-      "cidr:": "::1/128"
+      "address": "::1",
+      "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+      "family": "IPv6",
+      "mac": "00:00:00:00:00:00",
+      "scopeid": 0,
+      "internal": true,
+      "cidr": "::1/128"
     }
   ],
-  "eth0:": [
+  "eth0": [
     {
-      "address:": "192.168.1.108",
-      "netmask:": "255.255.255.0",
-      "family:": "IPv4",
-      "mac:": "01:02:03:0a:0b:0c",
-      "internal:": false,
-      "cidr:": "192.168.1.108/24"
+      "address": "192.168.1.108",
+      "netmask": "255.255.255.0",
+      "family": "IPv4",
+      "mac": "01:02:03:0a:0b:0c",
+      "internal": false,
+      "cidr": "192.168.1.108/24"
     },
     {
-      "address:": "fe80::a00:27ff:fe4e:66a1",
-      "netmask:": "ffff:ffff:ffff:ffff::",
-      "family:": "IPv6",
-      "mac:": "01:02:03:0a:0b:0c",
-      "scopeid:": 1,
-      "internal:": false,
-      "cidr:": "fe80::a00:27ff:fe4e:66a1/64"
+      "address": "fe80::a00:27ff:fe4e:66a1",
+      "netmask": "ffff:ffff:ffff:ffff::",
+      "family": "IPv6",
+      "mac": "01:02:03:0a:0b:0c",
+      "scopeid": 1,
+      "internal": false,
+      "cidr": "fe80::a00:27ff:fe4e:66a1/64"
     }
   ]
 }
@@ -514,7 +514,7 @@ changes:
   </tr>
   <tr>
     <td><code>SIGALRM</code></td>
-    <td>当系统计时器 elapsed 时发送给进程。</td>
+    <td>当系统计时器已过期时发送给进程。</td>
   </tr>
   <tr>
     <td><code>SIGTERM</code></td>
@@ -566,11 +566,11 @@ changes:
   </tr>
   <tr>
     <td><code>SIGVTALRM</code></td>
-    <td>当虚拟计时器 elapsed 时发送给进程。</td>
+    <td>当虚拟计时器已过期时发送给进程。</td>
   </tr>
   <tr>
     <td><code>SIGPROF</code></td>
-    <td>当系统计时器 elapsed 时发送给进程。</td>
+    <td>当系统计时器已过期时发送给进程。</td>
   </tr>
   <tr>
     <td><code>SIGWINCH</code></td>
@@ -643,7 +643,7 @@ changes:
   </tr>
   <tr>
     <td><code>EALREADY</code></td>
-    <td>表示套接字已有 pending 连接。</td>
+    <td>表示套接字已有待处理的连接。</td>
   </tr>
   <tr>
     <td><code>EBADF</code></td>
@@ -767,7 +767,7 @@ changes:
   </tr>
   <tr>
     <td><code>ENETDOWN</code></td>
-    <td>表示网络已 down。</td>
+    <td>表示网络已关闭。</td>
   </tr>
   <tr>
     <td><code>ENETRESET</code></td>
@@ -903,7 +903,7 @@ changes:
   </tr>
   <tr>
     <td><code>ESPIPE</code></td>
-    <td>表示无效的 seek 操作。</td>
+    <td>表示无效的定位操作。</td>
   </tr>
   <tr>
     <td><code>ESRCH</code></td>
@@ -1030,7 +1030,7 @@ changes:
   </tr>
   <tr>
     <td><code>WSAENETDOWN</code></td>
-    <td>表示网络已 down。</td>
+    <td>表示网络已关闭。</td>
   </tr>
   <tr>
     <td><code>WSAENETUNREACH</code></td>
@@ -1062,7 +1062,7 @@ changes:
   </tr>
   <tr>
     <td><code>WSAESHUTDOWN</code></td>
-    <td>表示套接字 shutdown 后无法发送数据。</td>
+    <td>表示套接字关闭后无法发送数据。</td>
   </tr>
   <tr>
     <td><code>WSAETOOMANYREFS</code></td>
@@ -1086,7 +1086,7 @@ changes:
   </tr>
   <tr>
     <td><code>WSAEHOSTDOWN</code></td>
-    <td>表示网络主机已 down。</td>
+    <td>表示网络主机已关闭。</td>
   </tr>
   <tr>
     <td><code>WSAEHOSTUNREACH</code></td>
@@ -1130,7 +1130,7 @@ changes:
   </tr>
   <tr>
     <td><code>WSAEDISCON</code></td>
-    <td>表示正在执行优雅 shutdown。</td>
+    <td>表示正在执行优雅关闭。</td>
   </tr>
   <tr>
     <td><code>WSAENOMORE</code></td>
@@ -1180,7 +1180,7 @@ changes:
 
 ### dlopen 常量
 
-如果操作系统可用，以下常量导出在 `os.constants.dlopen` 中。有关详细信息，请参阅 dlopen(3)。
+如果操作系统支持，以下常量会导出到 `os.constants.dlopen` 中。有关详细信息，请参阅 dlopen(3)。
 
 <table>
   <tr>

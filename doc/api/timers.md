@@ -526,7 +526,7 @@ added:
 调用 `timersPromises.scheduler.yield()` 等同于调用
 不带参数的 `timersPromises.setImmediate()`。
 
-[Event Loop]: https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#setimmediate-vs-settimeout
+[Event Loop]: https://nodejs.org/learn/asynchronous-work/event-loop-timers-and-nexttick#setimmediate-vs-settimeout
 [Scheduling APIs]: https://github.com/WICG/scheduling-apis
 [`AbortController`]: globals.md#class-abortcontroller
 [`TypeError`]: errors.md#class-typeerror

@@ -566,8 +566,10 @@ added:
 
 * `windowSize` {number}
 
-设置本地端点的窗口大小。
-`windowSize` 是要设置的总窗口大小，而不是增量。
+设置本地端点的连接级窗口大小。
+`windowSize` 是要设置的总窗口大小，而非增量值。
+
+增大窗口会立即生效，但减小窗口只有在对等方已获知的窗口被消耗后才会生效，因为已公布的窗口无法撤回。若要从连接开始就使用小于默认值的窗口，请在创建服务器或客户端会话时设置 `connectionWindowSize` 选项。
 
 ```mjs
 import { createServer } from 'node:http2';
@@ -615,7 +617,9 @@ changes:
 <!-- YAML
 added: v8.4.0
 changes:
-  - version: v26.6.0
+  - version:
+     - v26.6.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/64427
     description: 调用 `destroy` 不再抛出异常，而是销毁
                  `Http2Session`。
@@ -937,8 +941,7 @@ changes:
 
 当首次创建 `ClientHttp2Session` 时，套接字可能尚未连接。如果在此期间调用 `clienthttp2session.request()`，实际请求将推迟到套接字准备就绪为止。
 
-如果会话在请求创建之前变得不可用，返回的流将异步发出 `ERR_HTTP2_GOAWAY_SESSION` 或
-`ERR_HTTP2_INVALID_SESSION`。
+如果会话在请求创建之前变得不可用，返回的流将异步发出 `ERR_HTTP2_GOAWAY_SESSION` 或 `ERR_HTTP2_INVALID_SESSION`。
 
 此方法仅在 `http2session.type` 等于 `http2.constants.NGHTTP2_SESSION_CLIENT` 时可用。
 
@@ -1041,14 +1044,10 @@ stream.respond({
 
 <!-- YAML
 added: v8.4.0
-changes:
-  - version: REPLACEME
-    pr-url: https://github.com/nodejs/node/pull/63249
-    description: Documentation-only deprecation.
+deprecated: REPLACEME
 -->
 
-> 稳定性：0 - 已弃用。请改用 `'close'` 和 `'error'`，再加上
-> `stream.destroyed`。
+> 稳定性：0 - 已弃用。请改用 `'close'` 和 `'error'`，再加上 `stream.destroyed`。
 
 当 `Http2Stream` 在可写侧通过 `.end()` 结束之前关闭时，会发出此事件（或通过 `respond({ endStream: true })` 自动结束）。监听器不接收任何参数。
 
@@ -1140,11 +1139,14 @@ added: v10.0.0
 
 <!-- YAML
 added: v8.4.0
+deprecated: REPLACEME
 -->
 
 * 类型：{boolean}
 
-如果 `true` 在可写侧仍然打开时已关闭。设置后，会发出 `'aborted'` 事件。
+> 稳定性：0 - 已弃用
+
+如果 `Http2Stream` 在可写侧仍处于打开状态时关闭，则为 `true`。设置此属性时，已发出 `'aborted'` 事件。
 
 #### `http2stream.bufferSize`
 
@@ -2316,7 +2318,7 @@ added: v8.4.0
 当与服务器关联的 `Http2Session` 发出 `'stream'` 事件时，
 发出 `'stream'` 事件。
 
-另请参阅 [`Http2Session` 的 `'stream'` 事件][].
+另请参阅 [`Http2Session` 的 `'stream'` 事件][]。
 
 ```mjs
 import { createSecureServer, constants } from 'node:http2';
@@ -2431,7 +2433,7 @@ added: v8.4.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 callback 参数传递无效的回调现在会抛出 ERR_INVALID_ARG_TYPE 而不是ERR_INVALID_CALLBACK。"
+    description: "向 callback 参数传递无效的回调现在会抛出 ERR_INVALID_ARG_TYPE 而不是 ERR_INVALID_CALLBACK。"
 -->
 
 * `msecs` {number} **默认值：** `120000`（2 分钟）
@@ -2487,6 +2489,9 @@ added:
 <!-- YAML
 added: v8.4.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65619
+    description: 添加了 `connectionWindowSize` 选项。
   - version:
      - v25.7.0
      - v24.15.0
@@ -2496,7 +2501,7 @@ changes:
      - v25.7.0
      - v24.15.0
     pr-url: https://github.com/nodejs/node/pull/61713
-    description: 添加了 http1Options 选项。Http1IncomingMessage和 Http1ServerResponse 选项现已弃用。
+    description: 添加了 http1Options 选项。Http1IncomingMessage 和 Http1ServerResponse 选项现已弃用。
   - version:
       - v23.0.0
       - v22.10.0
@@ -2528,84 +2533,76 @@ changes:
     description: 添加了 maxSessionInvalidFrames 选项，默认值为 1000。
   - version: v13.0.0
     pr-url: https://github.com/nodejs/node/pull/29144
-    description: "PADDING_STRATEGY_CALLBACK 已等同于提供PADDING_STRATEGY_ALIGNED，并且 selectPadding已被移除。"
+    description: "PADDING_STRATEGY_CALLBACK 已等同于提供 PADDING_STRATEGY_ALIGNED，并且 selectPadding 已被移除。"
   - version: v12.4.0
     pr-url: https://github.com/nodejs/node/pull/27782
-    description: "options 参数现在支持 net.createServer()选项。"
+    description: "options 参数现在支持 net.createServer() 选项。"
   - version: v9.6.0
     pr-url: https://github.com/nodejs/node/pull/15752
-    description: "添加了 Http1IncomingMessage 和 Http1ServerResponse选项。"
+    description: "添加了 Http1IncomingMessage 和 Http1ServerResponse 选项。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/17105
-    description: "添加了 maxOutstandingPings 选项，默认限制为10。"
+    description: "添加了 maxOutstandingPings 选项，默认限制为 10。"
   - version: v8.9.3
     pr-url: https://github.com/nodejs/node/pull/16676
-    description: "添加了 maxHeaderListPairs 选项，默认限制为128 个头对。"
+    description: "添加了 maxHeaderListPairs 选项，默认限制为 128 个头对。"
 -->
 
 * `options` {Object}
-  * `maxDeflateDynamicTableSize` {number} 设置用于压缩头字段的最大动态表大小。**默认值：**`4Kib`。
-  * `maxSettings` {number} 设置每个 `SETTINGS` 帧的最大设置条目数。允许的最小值为 `1`。**默认值：**`32`。
-  * `maxSessionMemory`{number} 设置 `Http2Session` 允许使用的最大内存。该值以兆字节数量表示，例如 `1` 等于 1 兆字节。允许的最小值为 `1`。这是一个基于信用额度的限制，现有的 `Http2Stream`s 可能会导致超过此限制，但当超过此限制时，新的 `Http2Stream` 实例将被拒绝。当前的 `Http2Stream` 会话、头部压缩表当前占用的内存、由打开的流保留的头块、当前排队等待发送的数据，以及未确认的 `PING` 和 `SETTINGS` 帧，都会计入当前限制。**默认值：**`10`。
-  * `maxHeaderListPairs` {number} 设置最大头部条目数。这与 `node:http` 模块中的 [`server.maxHeadersCount`][] 或 [`request.maxHeadersCount`][] 类似。最小值为 `4`。**默认值：**`128`。
-  * `maxOutstandingPings` {number} 设置允许未完成、未确认的 ping 的最大数量。**默认值：**`10`。
-  * `maxSendHeaderBlockLength` {number} 设置序列化后压缩头块的最大允许大小。尝试发送超过此限制的头部将导致发出一个 `'frameError'` 事件，并且流将被关闭并销毁。
-    虽然这会将整个头块的最大允许大小设为上限，但 `nghttp2`（内部 http2 库）对每个解压后的键/值对都有 `65536` 的限制。
-  * `paddingStrategy` {number} 用于确定 `HEADERS` 和 `DATA` 帧所使用填充量的策略。**默认值：**
-    `http2.constants.PADDING_STRATEGY_NONE`。取值可以是以下之一：
-    * `http2.constants.PADDING_STRATEGY_NONE`: 不应用填充。
-    * `http2.constants.PADDING_STRATEGY_MAX`: 应用由内部实现确定的最大填充量。
-    * `http2.constants.PADDING_STRATEGY_ALIGNED`: 尝试应用足够的填充，以确保包括 9 字节
-      帧头在内的总帧长度是 8 的倍数。对于每个帧，可允许的最大填充字节数由当前流控状态和设置决定。如果此最大值小于为确保对齐所需的计算值，则使用最大值，并且总帧长度不一定会对齐到 8 字节。
-  * `peerMaxConcurrentStreams` {number} 设置远程对等方的最大并发
-    流数量，就像已收到一个 `SETTINGS` 帧一样。如果远程对等方为
-    `maxConcurrentStreams` 设置了自己的值，则该值将被覆盖。**默认值：**`100`。
-  * `maxSessionInvalidFrames` {integer} 设置在会话关闭前可容忍的无效
-    帧最大数量。**默认值：**`1000`。
-  * `maxSessionRejectedStreams` {integer} 设置在会话关闭前可容忍的因创建时
-    被拒绝的流最大数量。每次拒绝都会关联一个 `NGHTTP2_ENHANCE_YOUR_CALM`
-    错误，该错误应告知对端不要再打开任何流，因此继续打开流被视为对端行为异常的迹象。**默认值：**`100`。
-  * `settings` {HTTP/2 Settings Object} 连接建立时发送给远程对等方的初始设置。
-  * `streamResetBurst` {number} 和 `streamResetRate` {number} 设置传入流重置（RST\_STREAM 帧）的速率限制。两个设置都必须同时设置才会生效，默认值分别为 1000 和 33。
-  * `remoteCustomSettings` {Array} 该整数值数组决定设置类型，这些类型会包含在接收到的 remoteSettings 的 `CustomSettings` 属性中。有关允许的设置类型，请参阅 `Http2Settings` 对象的 `CustomSettings` 属性。
-  * `Http1IncomingMessage` {http.IncomingMessage} 指定用于 HTTP/1 回退的 `IncomingMessage` 类。用于扩展原始的 `http.IncomingMessage` 很有用。**默认值：**`http.IncomingMessage`。
-    **已弃用。**请改用 `http1Options.IncomingMessage`。参见
-    [DEP0202][]。
-  * `Http1ServerResponse` {http.ServerResponse} 指定用于 HTTP/1 回退的 `ServerResponse` 类。用于扩展原始的
-    `http.ServerResponse` 很有用。**默认值：**`http.ServerResponse`。
-    **已弃用。**请改用 `http1Options.ServerResponse`。参见
-    [DEP0202][]。
-  * `http1Options` {Object} 用于在 `allowHTTP1` 为 `true` 时配置 HTTP/1
-    回退的选项对象。这些选项会传递给
-    底层 HTTP/1 服务器。有关可用选项，请参见 [`http.createServer()`][]。除此之外，还支持以下选项：
-    * `IncomingMessage` {http.IncomingMessage} 指定用于 HTTP/1 回退的
-      `IncomingMessage` 类。
+  * `maxDeflateDynamicTableSize` {number} 设置压缩头字段时动态表的最大大小。**默认值：** `4Kib`。
+  * `maxSettings` {number} 设置每个 `SETTINGS` 帧的最大设置条目数。允许的最小值为 `1`。**默认值：** `32`。
+  * `maxSessionMemory`{number} 设置 `Http2Session` 允许使用的最大内存。该值以兆字节数表示，
+    例如，`1` 等于 1 兆字节。允许的最小值为 `1`。
+    这是一个基于额度的限制，现有的 `Http2Stream` 可能会导致超出此限制，但当超出此限制时，
+    新的 `Http2Stream` 实例将被拒绝。当前 `Http2Stream` 会话数、头压缩表当前使用的内存、
+    打开流保留的头块、当前排队待发送的数据，以及尚未确认的 `PING` 和 `SETTINGS` 帧
+    都计入当前限制。**默认值：** `10`。
+  * `maxHeaderListPairs` {number} 设置头条目的最大数量。
+    这类似于 `node:http` 模块中的 [`server.maxHeadersCount`][] 或
+    [`request.maxHeadersCount`][]。最小值为 `4`。**默认值：** `128`。
+  * `maxOutstandingPings` {number} 设置未确认的待处理 ping 的最大数量。**默认值：** `10`。
+  * `maxSendHeaderBlockLength` {number} 设置序列化压缩头块的最大允许大小。尝试发送
+    超出此限制的头将导致发出 `'frameError'` 事件，并关闭和销毁流。
+    虽然此设置限制了整个头块的最大允许大小，但 `nghttp2`（内部 http2 库）对每个
+    解压后的键值对的限制为 `65536`。
+  * `paddingStrategy` {number} 用于确定 `HEADERS` 和 `DATA` 帧填充量的策略。**默认值：**
+    `http2.constants.PADDING_STRATEGY_NONE`。值可以是以下之一：
+    * `http2.constants.PADDING_STRATEGY_NONE`：不应用填充。
+    * `http2.constants.PADDING_STRATEGY_MAX`：应用内部实现确定的最大填充量。
+    * `http2.constants.PADDING_STRATEGY_ALIGNED`：尝试应用足够的填充，以确保包括 9 字节头部在内的帧总长度是 8 的倍数。对于每个帧，允许的最大填充字节数由当前流控制状态和设置决定。如果此最大值小于确保对齐所需的计算值，则使用最大值，帧总长度不一定与 8 字节对齐。
+  * `peerMaxConcurrentStreams` {number} 将远程对等方的最大并发流数设置为仿佛已收到 `SETTINGS` 帧。如果远程对等方为 `maxConcurrentStreams` 设置了自己的值，则此值将被覆盖。**默认值：** `100`。
+  * `maxSessionInvalidFrames` {integer} 设置会话关闭前可容忍的无效帧最大数量。
+    **默认值：** `1000`。
+  * `maxSessionRejectedStreams` {integer} 设置会话关闭前可容忍的创建时被拒绝流的最大数量。
+    每次拒绝都会关联一个 `NGHTTP2_ENHANCE_YOUR_CALM` 错误，该错误应告知对等方不要再打开更多流，因此继续打开流会被视为对等方行为不当的迹象。
+    **默认值：** `100`。
+  * `connectionWindowSize` {number} 设置每个会话的初始流控制窗口（以字节为单位）。这是远程对等方在必须等待 `WINDOW_UPDATE` 之前可以跨所有流发送的数据总量。等效的单流限制是 `settings.initialWindowSize`。允许的最小值为 `1`，最大值为 2<sup>31</sup>-1。低于 65535 的值只有在使用完初始的协议默认窗口 65535 后才会生效。
+  * `settings` {HTTP/2 Settings Object} 连接时发送给远程对等方的初始设置。
+  * `streamResetBurst` {number} 和 `streamResetRate` {number} 设置传入流重置（RST\_STREAM 帧）的速率限制。必须同时设置这两个选项才会生效，其默认值分别为 1000 和 33。
+  * `remoteCustomSettings` {Array} 整数值数组，用于确定包含在收到的 remoteSettings 的 `CustomSettings` 属性中的设置类型。有关允许的设置类型的更多信息，请参阅 `Http2Settings` 对象的 `CustomSettings` 属性。
+  * `Http1IncomingMessage` {http.IncomingMessage} 指定用于 HTTP/1 回退的 `IncomingMessage` 类。可用于扩展原始的 `http.IncomingMessage`。**默认值：** `http.IncomingMessage`。**已弃用。** 请改用 `http1Options.IncomingMessage`。参阅 [DEP0202][]。
+  * `Http1ServerResponse` {http.ServerResponse} 指定用于 HTTP/1 回退的 `ServerResponse` 类。可用于扩展原始的 `http.ServerResponse`。**默认值：** `http.ServerResponse`。**已弃用。** 请改用 `http1Options.ServerResponse`。参阅 [DEP0202][]。
+  * `http1Options` {Object} 用于在 `allowHTTP1` 为 `true` 时配置 HTTP/1 回退的选项对象。这些选项会传递给底层 HTTP/1 服务器。有关可用选项，请参阅 [`http.createServer()`][]。除其他选项外，还支持以下选项：
+    * `IncomingMessage` {http.IncomingMessage} 指定用于 HTTP/1 回退的 `IncomingMessage` 类。
       **默认值：** `http.IncomingMessage`。
-    * `ServerResponse` {http.ServerResponse} 指定用于 HTTP/1 回退的 `ServerResponse`
-      类。
+    * `ServerResponse` {http.ServerResponse} 指定用于 HTTP/1 回退的 `ServerResponse` 类。
       **默认值：** `http.ServerResponse`。
-    * `keepAliveTimeout` {number} 服务器在最后一个响应写入完成后，
-      在销毁套接字之前，等待后续传入数据的空闲时间（毫秒）。
+    * `keepAliveTimeout` {number} 服务器在写完最后一个响应后，需要等待额外传入数据的不活动毫秒数；等待时间结束后，套接字将被销毁。
       **默认值：** `5000`。
-  * `Http2ServerRequest` {http2.Http2ServerRequest} 指定要使用的
-    `Http2ServerRequest` 类。
-    适用于扩展原始的 `Http2ServerRequest`。
+  * `Http2ServerRequest` {http2.Http2ServerRequest} 指定要使用的 `Http2ServerRequest` 类。
+    可用于扩展原始的 `Http2ServerRequest`。
     **默认值：** `Http2ServerRequest`。
-  * `Http2ServerResponse` {http2.Http2ServerResponse} 指定要使用的
-    `Http2ServerResponse` 类。
-    适用于扩展原始的 `Http2ServerResponse`。
+  * `Http2ServerResponse` {http2.Http2ServerResponse} 指定要使用的 `Http2ServerResponse` 类。
+    可用于扩展原始的 `Http2ServerResponse`。
     **默认值：** `Http2ServerResponse`。
-  * `unknownProtocolTimeout` {number} 指定当触发 [`'unknownProtocol'`][] 时服务器应等待的超时时间（毫秒）。如果
-    到时套接字尚未被销毁，服务器将销毁它。
+  * `unknownProtocolTimeout` {number} 指定发出 [`'unknownProtocol'`][] 时服务器应等待的超时毫秒数。如果到时套接字尚未销毁，服务器将销毁它。
     **默认值：** `10000`。
-  * `strictFieldWhitespaceValidation` {boolean} 如果为 `true`，则会为 HTTP/2 标头字段名称和值启用严格的前导
-    和尾随空白验证，遵循 [RFC-9113](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.2.1) 的规定。
+  * `strictFieldWhitespaceValidation` {boolean} 如果为 `true`，则根据 [RFC-9113](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.2.1)，对 HTTP/2 头字段名称和值启用严格的前导和尾随空白验证。
     **默认值：** `true`。
-  * `strictSingleValueFields` {boolean} 如果为 `true`，则对定义为仅允许单个值的标头和尾随标头使用严格验证，
-    这样当提供多个值时会抛出错误。
+  * `strictSingleValueFields` {boolean} 如果为 `true`，则对定义为只能有一个值的头和尾部信息进行严格验证；如果提供多个值，则会抛出错误。
     **默认值：** `true`。
-  * `...options` {Object} 可提供任意 [`net.createServer()`][] 选项。
-* `onRequestHandler` {Function} 参见 [兼容性 API][]
+  * `...options` {Object} 可以提供任何 [`net.createServer()`][] 选项。
+* `onRequestHandler` {Function} 请参阅 [兼容 API][]
 * 返回：{Http2Server}
 
 返回一个 `net.Server` 实例，该实例创建和管理 `Http2Session`
@@ -2658,6 +2655,9 @@ server.listen(8000);
 <!-- YAML
 added: v8.4.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65619
+    description: 添加了 `connectionWindowSize` 选项。
   - version:
      - v25.7.0
      - v24.15.0
@@ -2707,79 +2707,52 @@ changes:
 -->
 
 * `options` {Object}
-  * `allowHTTP1` {boolean} 当设置为 `true` 时，不支持
-    HTTP/2 的传入客户端连接将降级为 HTTP/1.x。
-    请参见 [`'unknownProtocol'`][] 事件。另请参见 [ALPN 协商][]。
+  * `allowHTTP1` {boolean} 如果设置为 `true`，不支持 HTTP/2 的传入客户端连接将降级为 HTTP/1.x。
+    请参阅 [`'unknownProtocol'`][] 事件。请参阅 [ALPN 协商][]。
     **默认值：** `false`。
-  * `maxDeflateDynamicTableSize` {number} 设置用于压缩头字段的最大动态表大小。
-    **默认值：** `4Kib`。
-  * `maxSettings` {number} 设置每个 `SETTINGS` 帧的最大设置条目数。
-    允许的最小值为 `1`。**默认值：** `32`。
-  * `maxSessionMemory`{number} 设置 `Http2Session` 允许使用的最大内存。
-    该值以兆字节数表示，例如，`1` 等于 1 兆字节。
-    允许的最小值为 `1`。这是一个基于信用额度的限制，现有的 `Http2Stream`s 可能会导致
-    超出此限制，但在超出限制期间将拒绝新的 `Http2Stream` 实例。
-    当前的 `Http2Stream` 会话数、头部压缩表的当前内存使用量、由打开的流保留的头部块、
-    当前排队待发送的数据，以及未确认的 `PING` 和 `SETTINGS` 帧都会计入
-    当前限制。**默认值：** `10`。
-  * `maxHeaderListPairs` {number} 设置头部条目的最大数量。
-    这与 `node:http` 模块中的 [`server.maxHeadersCount`][] 或
-    [`request.maxHeadersCount`][] 类似。允许的最小值
-    为 `4`。**默认值：** `128`。
-  * `maxOutstandingPings` {number} 设置允许未完成、未确认的 ping 的最大数量。**默认值：** `10`。
-  * `maxSendHeaderBlockLength` {number} 设置已序列化、压缩后的头部块的最大允许大小。尝试发送
-    超出此限制的头部将导致触发 `'frameError'` 事件，并且该流将被关闭并销毁。
-  * `paddingStrategy` {number} 用于确定 `HEADERS` 和 `DATA` 帧所使用填充量的策略。**默认值：**
-    `http2.constants.PADDING_STRATEGY_NONE`。可选值可以是：
-    * `http2.constants.PADDING_STRATEGY_NONE`: 不应用填充。
-    * `http2.constants.PADDING_STRATEGY_MAX`: 应用由内部实现确定的最大填充量。
-    * `http2.constants.PADDING_STRATEGY_ALIGNED`: 尝试应用足够的
-      填充，以确保包括 9 字节头部在内的总帧长度为 8 的倍数。对于每个帧，都有一个允许的最大填充字节数，
-      该值由当前流控制状态和设置决定。如果此最大值小于为确保对齐所需的计算量，则使用最大值，
-      且总帧长度不一定会与 8 字节对齐。
-  * `peerMaxConcurrentStreams` {number} 设置远程对端的最大并发
-    流数量，就好像已接收到一个 `SETTINGS` 帧一样。如果远程对端为
-    `maxConcurrentStreams` 设置了自己的值，则该值会被覆盖。**默认值：** `100`。
-  * `maxSessionInvalidFrames` {integer} 设置在会话关闭前可容忍的无效
-    帧最大数量。**默认值：** `1000`。
-  * `maxSessionRejectedStreams` {integer} 设置在会话关闭前可容忍的、创建时被拒绝的流最大数量。
-    每次拒绝都会关联一个 `NGHTTP2_ENHANCE_YOUR_CALM`
-    错误，该错误应告知对端不要再打开任何流，因此继续打开流会被视为对端行为异常的迹象。
+  * `maxDeflateDynamicTableSize` {number} 设置用于压缩头字段的最大动态表大小。**默认值：** `4Kib`。
+  * `maxSettings` {number} 设置每个 `SETTINGS` 帧中设置项的最大数量。允许的最小值为 `1`。**默认值：** `32`。
+  * `maxSessionMemory`{number} 设置 `Http2Session` 允许使用的最大内存。该值以兆字节数表示，
+    例如，`1` 等于 1 兆字节。允许的最小值为 `1`。这是一个基于额度的限制，现有的 `Http2Stream` 可能会导致超出此限制，但超出限制期间会拒绝新的 `Http2Stream` 实例。当前 `Http2Stream` 会话的数量、头部压缩表当前使用的内存、打开的流保留的头部块、当前排队等待发送的数据，以及未确认的 `PING` 和 `SETTINGS` 帧都会计入当前限制。**默认值：** `10`。
+  * `maxHeaderListPairs` {number} 设置头部项的最大数量。
+    这类似于 `node:http` 模块中的 [`server.maxHeadersCount`][] 或
+    [`request.maxHeadersCount`][]。允许的最小值为 `4`。**默认值：** `128`。
+  * `maxOutstandingPings` {number} 设置未完成且未确认的 ping 的最大数量。**默认值：** `10`。
+  * `maxSendHeaderBlockLength` {number} 设置序列化后的压缩头部块允许的最大大小。尝试发送超过此限制的头部会触发 `'frameError'` 事件，并关闭和销毁流。
+  * `paddingStrategy` {number} 用于确定 `HEADERS` 和 `DATA` 帧填充量的策略。**默认值：**
+    `http2.constants.PADDING_STRATEGY_NONE`。取值可以是以下之一：
+    * `http2.constants.PADDING_STRATEGY_NONE`：不应用填充。
+    * `http2.constants.PADDING_STRATEGY_MAX`：应用由内部实现确定的最大填充量。
+    * `http2.constants.PADDING_STRATEGY_ALIGNED`：尝试应用足够的
+      填充，以确保包括 9 字节帧头在内的总帧长度是 8 的倍数。对于每个帧，允许的最大填充字节数由当前流控制状态和设置决定。如果此最大值小于确保对齐所需的计算量，则使用最大值，并且总帧长度不一定会对齐到 8 字节。
+  * `peerMaxConcurrentStreams` {number} 为远程对等端设置最大并发流数量，就像已收到 `SETTINGS` 帧一样。如果远程对等端为 `maxConcurrentStreams` 设置了自己的值，则会覆盖此设置。**默认值：** `100`。
+  * `maxSessionInvalidFrames` {integer} 设置关闭会话前可容忍的无效帧最大数量。
+    **默认值：** `1000`。
+  * `maxSessionRejectedStreams` {integer} 设置关闭会话前可容忍的创建时被拒绝的流的最大数量。
+    每次拒绝都会关联一个 `NGHTTP2_ENHANCE_YOUR_CALM` 错误，该错误应告知对等端不要再打开更多流，因此，继续打开流会被视为对等端行为不当的迹象。
     **默认值：** `100`。
-  * `settings` {HTTP/2 Settings Object} 连接建立时发送给远程对端的初始设置。
-  * `streamResetBurst` {number} 和 `streamResetRate` {number} 设置传入流重置（RST_STREAM 帧）的速率
-    限制。必须同时设置这两个选项才会生效，默认值分别为 1000 和 33。
-  * `remoteCustomSettings` {Array} 该整数值数组决定包含在接收到的 remoteSettings 的
-    `customSettings` 属性中的设置类型。有关允许的设置类型，请参阅
-    `Http2Settings` 对象的 `customSettings` 属性。
-  * `...options` {Object} 可以提供任何 [`tls.createServer()`][] 选项。
-    对于服务器，通常需要身份选项（`pfx` 或 `key`/`cert`）。
-  * `origins` {string\[]} 一个原点字符串数组，会在创建新的服务器 `Http2Session` 之后立即随一个 `ORIGIN`
-    帧发送。
-  * `unknownProtocolTimeout` {number} 指定服务器在触发 [`'unknownProtocol'`][] 事件时应等待的超时时间（毫秒）。如果
-    到那时 socket 仍未被销毁，服务器将销毁它。
+  * `connectionWindowSize` {number} 设置每个会话的初始流控制窗口大小，单位为字节。这是远程对等端在必须等待 `WINDOW_UPDATE` 之前，可以跨所有流发送的数据总量。对应的每流限制为 `settings.initialWindowSize`。允许的最小值为 `1`，最大值为 2<sup>31</sup>-1。低于 65535 的值要等到初始的协议默认窗口 65535 用完后才会生效。
+    **默认值：** `33554432`。
+  * `settings` {HTTP/2 Settings Object} 连接时发送给远程对等端的初始设置。
+  * `streamResetBurst` {number} 和 `streamResetRate` {number} 设置传入流重置（RST\_STREAM 帧）的速率限制。必须同时设置这两个选项才会生效，默认值分别为 1000 和 33。
+  * `remoteCustomSettings` {Array} 整数值数组，用于确定所接收的 remoteSettings 中 `customSettings` 属性包含的设置类型。有关允许的设置类型的更多信息，请参阅 `Http2Settings` 对象的 `customSettings` 属性。
+  * `...options` {Object} 可以提供任何 [`tls.createServer()`][] 选项。对于服务器，通常需要身份选项（`pfx` 或 `key`/`cert`）。
+  * `origins` {string\[]} 要在创建新的服务器 `Http2Session` 后立即通过 `ORIGIN` 帧发送的来源字符串数组。
+  * `unknownProtocolTimeout` {number} 指定服务器在触发 [`'unknownProtocol'`][] 事件时应等待的超时时间，单位为毫秒。如果到时套接字尚未销毁，服务器将销毁它。
     **默认值：** `10000`。
-  * `strictFieldWhitespaceValidation` {boolean} 如果为 `true`，则会启用严格的前导
-    和针对 HTTP/2 标头字段名称和值的尾随空白验证
-    根据 [RFC-9113](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.2.1)。
+  * `strictFieldWhitespaceValidation` {boolean} 如果为 `true`，则根据 [RFC-9113](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.2.1)，对 HTTP/2 头字段名称和值启用严格的前导和尾随空白验证。
     **默认值：** `true`。
-  * `strictSingleValueFields` {boolean} 如果 `true`，则对被定义为仅有单个值的标头和尾部字段使用严格验证，
-    这样一来，如果提供了多个值，就会抛出错误。
+  * `strictSingleValueFields` {boolean} 如果为 `true`，则对定义为仅具有单个值的头部和尾部使用严格验证；如果提供多个值，则会抛出错误。
     **默认值：** `true`。
-  * `http1Options` {Object} 用于在 `allowHTTP1` 为 `true` 时配置 HTTP/1
-    回退的选项对象。这些选项会传递给底层的 HTTP/1 服务器。可用选项请参见 [`http.createServer()`][]。
-    其中支持以下选项：
-    * `IncomingMessage` {http.IncomingMessage} 指定用于 HTTP/1 回退的
-      `IncomingMessage` 类。
+  * `http1Options` {Object} 用于配置 `allowHTTP1` 为 `true` 时 HTTP/1 回退行为的选项对象。这些选项会传递给底层 HTTP/1 服务器。请参阅 [`http.createServer()`][] 了解可用选项。支持的选项包括：
+    * `IncomingMessage` {http.IncomingMessage} 指定 HTTP/1 回退使用的 `IncomingMessage` 类。
       **默认值：** `http.IncomingMessage`。
-    * `ServerResponse` {http.ServerResponse} 指定用于 HTTP/1 回退的 `ServerResponse`
-      类。
+    * `ServerResponse` {http.ServerResponse} 指定 HTTP/1 回退使用的 `ServerResponse` 类。
       **默认值：** `http.ServerResponse`。
-    * `keepAliveTimeout` {number} 在服务器完成写入最后一个响应之后，
-      需要等待额外传入数据的空闲毫秒数；超过该时间后，将销毁套接字。
+    * `keepAliveTimeout` {number} 服务器写完最后一个响应后，在销毁套接字之前等待其他传入数据的非活动时间（毫秒）。
       **默认值：** `5000`。
-* `onRequestHandler` {Function} 参见 [兼容性 API][]
-* 返回值：{Http2SecureServer}
+* `onRequestHandler` {Function} 请参阅[兼容性 API][]
+* 返回：{Http2SecureServer}
 
 返回一个 `tls.Server` 实例，该实例创建和管理 `Http2Session`
 实例。
@@ -2835,6 +2808,9 @@ server.listen(8443);
 <!-- YAML
 added: v8.4.0
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65619
+    description: Added the `connectionWindowSize` option.
   - version:
       - v15.10.0
       - v14.16.0
@@ -2897,20 +2873,17 @@ changes:
     `maxConcurrentStreams` 设置了自己的值，则将覆盖此设置。**默认值：** `100`。
   * `protocol` {string} 如果未在 `authority` 中设置，则用于连接的协议。取值可以是 `'http:'` 或 `'https:'`。**默认值：**
     `'https:'`
+  * `connectionWindowSize` {number} 设置此会话的初始流控制窗口大小，单位为字节。这是远程对等端在必须等待 `WINDOW_UPDATE` 之前，可以跨所有流发送的数据总量。对应的每流限制为 `settings.initialWindowSize`。允许的最小值为 `1`，最大值为 2<sup>31</sup>-1。低于 65535 的值要等到初始的协议默认窗口 65535 用完后才会生效。
+    **默认值：** `33554432`。
   * `settings` {HTTP/2 Settings Object} 连接时发送给远程对等端的初始设置。
-  * `remoteCustomSettings` {Array} 整数值数组确定设置类型，这些类型包含在接收到的
-    remoteSettings 的 `CustomSettings` 属性中。请参阅 `Http2Settings` 对象的 `CustomSettings` 属性以获取更多关于允许的设置类型的信息。
-  * `createConnection` {Function} 一个可选的回调，接收传递给 `connect` 的 `URL`
-    实例和 `options` 对象，并返回任何将用作此会话连接的 [`Duplex`][] 流。
-  * `...options` {Object} 可以提供任何 [`net.connect()`][] 或 [`tls.connect()`][] 选项
-    。
-  * `unknownProtocolTimeout` {number} 指定当发出 [`'unknownProtocol'`][] 事件时服务器应等待的超时时间（毫秒）。如果
-    到时 socket 尚未被销毁，服务器将销毁它。
+  * `remoteCustomSettings` {Array} 整数值数组用于确定设置类型，这些类型包含在所接收的 remoteSettings 的 `CustomSettings` 属性中。有关允许的设置类型的更多信息，请参阅 `Http2Settings` 对象的 `CustomSettings` 属性。
+  * `createConnection` {Function} 可选回调，接收传递给 `connect` 的 `URL` 实例和 `options` 对象，并返回用作此会话连接的任意 [`Duplex`][] 流。
+  * `...options` {Object} 可以提供任何 [`net.connect()`][] 或 [`tls.connect()`][] 选项。
+  * `unknownProtocolTimeout` {number} 指定服务器在触发 [`'unknownProtocol'`][] 事件时应等待的超时时间，单位为毫秒。如果到时套接字尚未销毁，服务器将销毁它。
     **默认值：** `10000`。
-  * `strictFieldWhitespaceValidation` {boolean} 如果为 `true`，则根据 [RFC-9113](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.2.1) 开启对 HTTP/2 头部字段名称和值的严格前导
-    和尾随空格验证。
+  * `strictFieldWhitespaceValidation` {boolean} 如果为 `true`，则根据 [RFC-9113](https://www.rfc-editor.org/rfc/rfc9113.html#section-8.2.1)，对 HTTP/2 头字段名称和值启用严格的前导和尾随空白验证。
     **默认值：** `true`。
-* `listener` {Function} 将被注册为 [`'connect'`][] 事件的一次性监听器。
+* `listener` {Function} 将注册为 [`'connect'`][] 事件的一次性监听器。
 * 返回：{ClientHttp2Session}
 
 返回一个 `ClientHttp2Session` 实例。
@@ -2939,7 +2912,115 @@ client.close();
 added: v8.4.0
 -->
 
-#### HTTP/2 和 HTTP/3 的错误码
+#### 头部名称常量
+
+`HTTP2_HEADER_*` 常量为 HTTP/2 伪头部和已知 HTTP 头部名称提供名称。使用这些字符串常量是可选的。例如，`http2.constants.HTTP2_HEADER_CONTENT_TYPE` 等于 `'content-type'`。对于接受常规头部名称的 API，`http2.constants.HTTP2_HEADER_CONTENT_TYPE`、`'content-type'` 和 `'Content-Type'` 的效果相同；Node.js 会将名称序列化为小写。
+
+在兼容性 API 中，只要接受相应的字面头部名称，就可以使用常规头部常量。在兼容性 API 的请求处理程序中，对于相应的伪头部，优先使用 `request.method`、`request.authority`、`request.scheme` 和 `request.url`。其他传入的伪头部仍可通过 `request.headers` 访问。通过 `response.statusCode` 或传递给 `response.writeHead()` 的 `statusCode` 参数设置响应状态。在 `response.setHeader()` 中或 `response.writeHead()` 的头部对象中传递 `HTTP2_HEADER_STATUS`（`':status'`）会抛出 `ERR_HTTP2_PSEUDOHEADER_NOT_ALLOWED`。`HTTP2_HEADER_PROTOCOL` 是请求伪头部，不能在响应中发送。
+
+传入头部对象的键均为小写，因此将其作为对象属性访问时，请使用常量或小写字面量。使用常量不会改变头部验证，并且存在某个常量并不意味着该头部在所有 HTTP/2 上下文中都有效。有关头部大小写和验证的详细信息，请参阅 [HTTP/2 Headers Object][] 和 [Invalid character handling in header names and values][]。
+
+##### 伪头部常量
+
+`HTTP2_HEADER_METHOD`、`HTTP2_HEADER_AUTHORITY`、`HTTP2_HEADER_SCHEME` 和 `HTTP2_HEADER_PATH` 用于标识请求伪头部。`HTTP2_HEADER_STATUS` 用于标识响应伪头部。`HTTP2_HEADER_PROTOCOL` 用于标识扩展 `CONNECT` 请求伪头部。尾部中不允许包含伪头部。
+
+| Constant                                 | Value          |
+| ---------------------------------------- | -------------- |
+| `http2.constants.HTTP2_HEADER_STATUS`    | `':status'`    |
+| `http2.constants.HTTP2_HEADER_METHOD`    | `':method'`    |
+| `http2.constants.HTTP2_HEADER_AUTHORITY` | `':authority'` |
+| `http2.constants.HTTP2_HEADER_SCHEME`    | `':scheme'`    |
+| `http2.constants.HTTP2_HEADER_PATH`      | `':path'`      |
+| `http2.constants.HTTP2_HEADER_PROTOCOL`  | `':protocol'`  |
+
+##### 常规头部常量
+
+`HTTP2_HEADER_CONNECTION`、`HTTP2_HEADER_UPGRADE`、`HTTP2_HEADER_HTTP2_SETTINGS`、`HTTP2_HEADER_KEEP_ALIVE`、`HTTP2_HEADER_PROXY_CONNECTION` 和 `HTTP2_HEADER_TRANSFER_ENCODING` 常量用于标识 HTTP/2 不允许的特定于连接的头部。只有当 `HTTP2_HEADER_TE` 的值为 `'trailers'` 时才允许使用它。
+
+| Constant                                                        | Value                                |
+| --------------------------------------------------------------- | ------------------------------------ |
+| `http2.constants.HTTP2_HEADER_ACCEPT_ENCODING`                  | `'accept-encoding'`                  |
+| `http2.constants.HTTP2_HEADER_ACCEPT_LANGUAGE`                  | `'accept-language'`                  |
+| `http2.constants.HTTP2_HEADER_ACCEPT_RANGES`                    | `'accept-ranges'`                    |
+| `http2.constants.HTTP2_HEADER_ACCEPT`                           | `'accept'`                           |
+| `http2.constants.HTTP2_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS` | `'access-control-allow-credentials'` |
+| `http2.constants.HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS`     | `'access-control-allow-headers'`     |
+| `http2.constants.HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS`     | `'access-control-allow-methods'`     |
+| `http2.constants.HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN`      | `'access-control-allow-origin'`      |
+| `http2.constants.HTTP2_HEADER_ACCESS_CONTROL_EXPOSE_HEADERS`    | `'access-control-expose-headers'`    |
+| `http2.constants.HTTP2_HEADER_ACCESS_CONTROL_REQUEST_HEADERS`   | `'access-control-request-headers'`   |
+| `http2.constants.HTTP2_HEADER_ACCESS_CONTROL_REQUEST_METHOD`    | `'access-control-request-method'`    |
+| `http2.constants.HTTP2_HEADER_AGE`                              | `'age'`                              |
+| `http2.constants.HTTP2_HEADER_AUTHORIZATION`                    | `'authorization'`                    |
+| `http2.constants.HTTP2_HEADER_CACHE_CONTROL`                    | `'cache-control'`                    |
+| `http2.constants.HTTP2_HEADER_CONNECTION`                       | `'connection'`                       |
+| `http2.constants.HTTP2_HEADER_CONTENT_DISPOSITION`              | `'content-disposition'`              |
+| `http2.constants.HTTP2_HEADER_CONTENT_ENCODING`                 | `'content-encoding'`                 |
+| `http2.constants.HTTP2_HEADER_CONTENT_LENGTH`                   | `'content-length'`                   |
+| `http2.constants.HTTP2_HEADER_CONTENT_TYPE`                     | `'content-type'`                     |
+| `http2.constants.HTTP2_HEADER_COOKIE`                           | `'cookie'`                           |
+| `http2.constants.HTTP2_HEADER_DATE`                             | `'date'`                             |
+| `http2.constants.HTTP2_HEADER_ETAG`                             | `'etag'`                             |
+| `http2.constants.HTTP2_HEADER_FORWARDED`                        | `'forwarded'`                        |
+| `http2.constants.HTTP2_HEADER_HOST`                             | `'host'`                             |
+| `http2.constants.HTTP2_HEADER_IF_MODIFIED_SINCE`                | `'if-modified-since'`                |
+| `http2.constants.HTTP2_HEADER_IF_NONE_MATCH`                    | `'if-none-match'`                    |
+| `http2.constants.HTTP2_HEADER_IF_RANGE`                         | `'if-range'`                         |
+| `http2.constants.HTTP2_HEADER_LAST_MODIFIED`                    | `'last-modified'`                    |
+| `http2.constants.HTTP2_HEADER_LINK`                             | `'link'`                             |
+| `http2.constants.HTTP2_HEADER_LOCATION`                         | `'location'`                         |
+| `http2.constants.HTTP2_HEADER_RANGE`                            | `'range'`                            |
+| `http2.constants.HTTP2_HEADER_REFERER`                          | `'referer'`                          |
+| `http2.constants.HTTP2_HEADER_SERVER`                           | `'server'`                           |
+| `http2.constants.HTTP2_HEADER_SET_COOKIE`                       | `'set-cookie'`                       |
+| `http2.constants.HTTP2_HEADER_STRICT_TRANSPORT_SECURITY`        | `'strict-transport-security'`        |
+| `http2.constants.HTTP2_HEADER_TRANSFER_ENCODING`                | `'transfer-encoding'`                |
+| `http2.constants.HTTP2_HEADER_TE`                               | `'te'`                               |
+| `http2.constants.HTTP2_HEADER_UPGRADE_INSECURE_REQUESTS`        | `'upgrade-insecure-requests'`        |
+| `http2.constants.HTTP2_HEADER_UPGRADE`                          | `'upgrade'`                          |
+| `http2.constants.HTTP2_HEADER_USER_AGENT`                       | `'user-agent'`                       |
+| `http2.constants.HTTP2_HEADER_VARY`                             | `'vary'`                             |
+| `http2.constants.HTTP2_HEADER_X_CONTENT_TYPE_OPTIONS`           | `'x-content-type-options'`           |
+| `http2.constants.HTTP2_HEADER_X_FRAME_OPTIONS`                  | `'x-frame-options'`                  |
+| `http2.constants.HTTP2_HEADER_KEEP_ALIVE`                       | `'keep-alive'`                       |
+| `http2.constants.HTTP2_HEADER_PROXY_CONNECTION`                 | `'proxy-connection'`                 |
+| `http2.constants.HTTP2_HEADER_X_XSS_PROTECTION`                 | `'x-xss-protection'`                 |
+| `http2.constants.HTTP2_HEADER_ALT_SVC`                          | `'alt-svc'`                          |
+| `http2.constants.HTTP2_HEADER_CONTENT_SECURITY_POLICY`          | `'content-security-policy'`          |
+| `http2.constants.HTTP2_HEADER_EARLY_DATA`                       | `'early-data'`                       |
+| `http2.constants.HTTP2_HEADER_EXPECT_CT`                        | `'expect-ct'`                        |
+| `http2.constants.HTTP2_HEADER_ORIGIN`                           | `'origin'`                           |
+| `http2.constants.HTTP2_HEADER_PURPOSE`                          | `'purpose'`                          |
+| `http2.constants.HTTP2_HEADER_TIMING_ALLOW_ORIGIN`              | `'timing-allow-origin'`              |
+| `http2.constants.HTTP2_HEADER_X_FORWARDED_FOR`                  | `'x-forwarded-for'`                  |
+| `http2.constants.HTTP2_HEADER_PRIORITY`                         | `'priority'`                         |
+| `http2.constants.HTTP2_HEADER_ACCEPT_CHARSET`                   | `'accept-charset'`                   |
+| `http2.constants.HTTP2_HEADER_ACCESS_CONTROL_MAX_AGE`           | `'access-control-max-age'`           |
+| `http2.constants.HTTP2_HEADER_ALLOW`                            | `'allow'`                            |
+| `http2.constants.HTTP2_HEADER_CONTENT_LANGUAGE`                 | `'content-language'`                 |
+| `http2.constants.HTTP2_HEADER_CONTENT_LOCATION`                 | `'content-location'`                 |
+| `http2.constants.HTTP2_HEADER_CONTENT_MD5`                      | `'content-md5'`                      |
+| `http2.constants.HTTP2_HEADER_CONTENT_RANGE`                    | `'content-range'`                    |
+| `http2.constants.HTTP2_HEADER_DNT`                              | `'dnt'`                              |
+| `http2.constants.HTTP2_HEADER_EXPECT`                           | `'expect'`                           |
+| `http2.constants.HTTP2_HEADER_EXPIRES`                          | `'expires'`                          |
+| `http2.constants.HTTP2_HEADER_FROM`                             | `'from'`                             |
+| `http2.constants.HTTP2_HEADER_IF_MATCH`                         | `'if-match'`                         |
+| `http2.constants.HTTP2_HEADER_IF_UNMODIFIED_SINCE`              | `'if-unmodified-since'`              |
+| `http2.constants.HTTP2_HEADER_MAX_FORWARDS`                     | `'max-forwards'`                     |
+| `http2.constants.HTTP2_HEADER_PREFER`                           | `'prefer'`                           |
+| `http2.constants.HTTP2_HEADER_PROXY_AUTHENTICATE`               | `'proxy-authenticate'`               |
+| `http2.constants.HTTP2_HEADER_PROXY_AUTHORIZATION`              | `'proxy-authorization'`              |
+| `http2.constants.HTTP2_HEADER_REFRESH`                          | `'refresh'`                          |
+| `http2.constants.HTTP2_HEADER_RETRY_AFTER`                      | `'retry-after'`                      |
+| `http2.constants.HTTP2_HEADER_TRAILER`                          | `'trailer'`                          |
+| `http2.constants.HTTP2_HEADER_TK`                               | `'tk'`                               |
+| `http2.constants.HTTP2_HEADER_VIA`                              | `'via'`                              |
+| `http2.constants.HTTP2_HEADER_WARNING`                          | `'warning'`                          |
+| `http2.constants.HTTP2_HEADER_WWW_AUTHENTICATE`                 | `'www-authenticate'`                 |
+| `http2.constants.HTTP2_HEADER_HTTP2_SETTINGS`                   | `'http2-settings'`                   |
+
+#### `RST_STREAM` 和 `GOAWAY` 的错误代码
 
 | Value  | Name                | Constant                                      |
 | ------ | ------------------- | --------------------------------------------- |
@@ -3153,20 +3234,15 @@ changes:
 `http2session.remoteSettings` API 要么返回要么接收一个定义 `Http2Session` 对象配置设置的对象作为输入。
 这些对象是包含以下属性的普通 JavaScript 对象。
 
-* `headerTableSize` {number} 指定用于标头压缩的最大字节数。允许的最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `4096`。
+* `headerTableSize` {number} 指定用于头部压缩的最大字节数。允许的最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `4096`。
 * `enablePush` {boolean} 如果允许在 `Http2Session` 实例上使用 HTTP/2 推送流，则指定为 `true`。**默认值：** `true`。
-* `initialWindowSize` {number} 指定用于流级流量控制的_发送方_初始窗口大小（以字节为单位）。允许的最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `4194304`。
-* `maxFrameSize` {number} 指定最大帧负载的字节大小。允许的最小值为 16,384。允许的最大值为 2<sup>24</sup>-1。**默认值：** `16384`。
-* `maxConcurrentStreams` {number} 指定 `Http2Session` 上允许的最大并发流数量。没有默认值，这意味着至少在理论上，在 `Http2Session` 中任何时刻都可以同时打开 2<sup>32</sup>-1 个流。最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `4294967295`。
-* `maxHeaderListSize` {number} 指定将接受的标头列表的最大大小（未压缩字节数）。允许的最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `65535`。
+* `initialWindowSize` {number} 指定流级流量控制中发送方的初始窗口大小（以字节为单位）。允许的最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `4194304`。这是一个针对每个流的限制；整个连接的窗口通过 [`http2.createServer()`][] 或 [`http2.connect()`][] 的 `connectionWindowSize` 选项单独配置。
+* `maxFrameSize` {number} 指定最大帧有效负载的大小（以字节为单位）。允许的最小值为 16,384。允许的最大值为 2<sup>24</sup>-1。**默认值：** `16384`。
+* `maxConcurrentStreams` {number} 指定 `Http2Session` 上允许的最大并发流数量。此项没有默认值，这意味着，至少在理论上，`Http2Session` 在任何给定时间都可能同时打开 2<sup>32</sup>-1 个流。最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `4294967295`。
+* `maxHeaderListSize` {number} 指定将被接受的头部列表最大大小（未压缩字节数）。允许的最小值为 0。允许的最大值为 2<sup>32</sup>-1。**默认值：** `65535`。
 * `maxHeaderSize` {number} `maxHeaderListSize` 的别名。
-* `enableConnectProtocol`{boolean} 如果要启用 [RFC 8441][] 定义的“扩展 Connect 协议”，则指定为 `true`。此设置仅在由服务器发送时有意义。一旦为给定的 `Http2Session` 启用 `enableConnectProtocol` 设置，就无法将其禁用。**默认值：** `false`。
-* `customSettings` {Object} 指定 Node.js 和底层库中尚未实现的其他设置。对象的键定义设置类型的数值（如 \[RFC 7540] 建立的“HTTP/2 SETTINGS”注册表中所定义），值则为设置的实际数值。
-  设置类型必须是 1 到 2^16-1 范围内的整数。
-  它不应是 Node.js 已处理的设置类型，即目前应大于 6，但这并不会导致错误。
-  值必须是 0 到 2^32-1 范围内的无符号整数。
-  目前最多支持 10 个自定义设置。
-  仅支持用于发送 SETTINGS，或接收服务器或客户端对象的 `remoteCustomSettings` 选项中指定的设置值。如果未来 Node.js 版本原生支持某个设置，请不要将某个设置 ID 的 `customSettings` 机制与原生处理设置的接口混用。
+* `enableConnectProtocol`{boolean} 如果要启用 [RFC 8441][] 定义的“扩展 Connect 协议”，则指定为 `true`。此设置仅在由服务器发送时才有意义。为给定的 `Http2Session` 启用 `enableConnectProtocol` 设置后，便不能将其禁用。**默认值：** `false`。
+* `customSettings` {Object} 指定尚未在 node 和底层库中实现的其他设置。对象的键定义设置类型的数值（如 \[RFC 7540] 建立的“HTTP/2 SETTINGS”注册表中所定义），而值则是设置的实际数值。设置类型必须是介于 1 到 2^16-1 之间的整数。它不应是 node 已处理的设置类型，即目前应大于 6，但这不会导致错误。值必须是介于 0 到 2^32-1 之间的无符号整数。目前最多支持 10 个自定义设置。此项仅支持发送 SETTINGS，或接收服务器或客户端对象的 `remoteCustomSettings` 选项中指定的设置值。如果某个设置在未来的 node 版本中成为原生支持的设置，请勿针对该设置 ID 混用 `customSettings` 机制与原生处理设置的接口。
 
 设置对象上的所有其他属性都被忽略。
 
@@ -3418,9 +3494,10 @@ client.on('remoteSettings', (settings) => {
 ```mjs
 import { createServer } from 'node:http2';
 const server = createServer((req, res) => {
-  res.setHeader('Content-Type', 'text/html');
-  res.setHeader('X-Foo', 'bar');
-  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.writeHead(200, {
+    'Content-Type': 'text/plain; charset=utf-8',
+    'X-Foo': 'bar',
+  });
   res.end('ok');
 });
 ```
@@ -3428,9 +3505,10 @@ const server = createServer((req, res) => {
 ```cjs
 const http2 = require('node:http2');
 const server = http2.createServer((req, res) => {
-  res.setHeader('Content-Type', 'text/html');
-  res.setHeader('X-Foo', 'bar');
-  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.writeHead(200, {
+    'Content-Type': 'text/plain; charset=utf-8',
+    'X-Foo': 'bar',
+  });
   res.end('ok');
 });
 ```
@@ -3510,9 +3588,12 @@ added: v8.4.0
 
 <!-- YAML
 added: v8.4.0
+deprecated: REPLACEME
 -->
 
-当底层可写端仍处于打开状态时，如果 `Http2ServerRequest` 实例被关闭，就会触发 `'aborted'` 事件。
+> 稳定性：0 - 已弃用
+
+当底层可写端仍处于打开状态时，`Http2ServerRequest` 实例关闭后，就会发出 `'aborted'` 事件。
 
 #### 事件：`'close'`
 
@@ -3527,9 +3608,12 @@ added: v8.4.0
 
 <!-- YAML
 added: v10.1.0
+deprecated: REPLACEME
 -->
 
 * 类型：{boolean}
+
+> 稳定性：0 - 已弃用
 
 如果请求已中止，`request.aborted` 属性将为 `true`。
 
@@ -4368,6 +4452,7 @@ HTTP/2 要求请求具有 `:authority` 伪头部或 `host` 头部。直接构建
 [HTTP/2 设置对象]: #settings-object
 [HTTP/2 未加密]: https://http2.github.io/faq/#does-http2-require-encryption
 [HTTPS]: https.md
+[Invalid character handling in header names and values]: #invalid-character-handling-in-header-names-and-values
 [Performance Observer]: perf_hooks.md
 [RFC 7838]: https://tools.ietf.org/html/rfc7838
 [RFC 8336]: https://tools.ietf.org/html/rfc8336
@@ -4392,6 +4477,7 @@ HTTP/2 要求请求具有 `:authority` 伪头部或 `host` 头部。直接构建
 [`http.createServer()`]: http.md#httpcreateserveroptions-requestlistener
 [`http2.SecureServer`]: #class-http2secureserver
 [`http2.Server`]: #class-http2server
+[`http2.connect()`]: #http2connectauthority-options-listener
 [`http2.createSecureServer()`]: #http2createsecureserveroptions-onrequesthandler
 [`http2.createServer()`]: #http2createserveroptions-onrequesthandler
 [`http2stream.pushStream()`]: #http2streampushstreamheaders-options-callback

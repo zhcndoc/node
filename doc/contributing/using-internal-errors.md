@@ -60,7 +60,7 @@ assert.throws(() => { throw new EXAMPLE_KEY.RangeError(); }, { name: 'RangeError
 
 每当添加并使用新的静态错误代码时，都应该在 `doc/api/errors.md` 文件中添加相应的错误代码文档。这样用户就能方便地查找各个错误代码的含义。
 
-如果 `make lint` 未能检测到新增到 `errors.md` 中的新错误代码，则必须使用 `make lint-md-clean` 清理 markdown lint 缓存。
+如果 `make lint` 未能检测到添加到 `errors.md` 中的新错误代码，则必须使用 `make lint-clean` 清除 Markdown linting 缓存。
 
 ## 测试新错误
 

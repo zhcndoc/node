@@ -6,7 +6,7 @@
 
 <!-- source_link=lib/crypto.js -->
 
-`node:crypto` 模块提供加密功能，包括一组 OpenSSL 的哈希、HMAC、加密、解密、签名和验证函数的包装器。
+`node:crypto` 模块提供加密功能，其中包含一组封装器，用于调用 OpenSSL 的哈希、消息认证码（MAC）、加密、解密、签名、验证和密钥封装机制（KEM）函数。
 
 ```mjs
 const { createHmac } = await import('node:crypto');
@@ -137,7 +137,7 @@ JSON Web Key (JWK) 是 [RFC 7517][] 中定义的基于 JSON 的密钥表示。JW
 
 ### 选择密钥格式
 
-**始终优先使用 [`KeyObject`][]** - 从你拥有的任何格式创建一个并重用它。下面的指南仅适用于在选择序列化格式时，无论是导入到 [`KeyObject`][] 还是在 [`KeyObject`][] 不切实际时内联传递密钥材料。
+**始终优先使用 [`KeyObject`][]**——从你拥有的任何格式创建一个并重用它。下面的指南仅适用于在选择序列化格式时，无论是导入到 [`KeyObject`][] 还是在 [`KeyObject`][] 不切实际时内联传递密钥材料。
 
 #### 导入密钥
 
@@ -145,9 +145,9 @@ JSON Web Key (JWK) 是 [RFC 7517][] 中定义的基于 JSON 的密钥表示。JW
 
 导入成本分为两部分：**解析开销**（解码序列化包装器）和**密钥计算**（重建完整密钥所需的任何数学工作，例如从私钥标量派生公钥或扩展种子）。哪部分占主导地位取决于密钥类型。例如：
 
-* 公钥 - `'raw-public'` 是最快的序列化格式，因为原始格式跳过了所有 ASN.1 和 Base64 解码。
-* EC 私钥 - `'raw-private'` 比 PEM 或 DER 快，因为它避免了 ASN.1 解析。但是，对于较大的曲线（例如 P-384、P-521），从私钥标量派生公钥点所需的计算变得昂贵，减少了优势。
-* RSA 密钥 - `'jwk'` 是最快的序列化格式。JWK 将 RSA 密钥组件表示为单个 Base64url 编码的整数，完全避免了 ASN.1 解析的开销。
+* 公钥——`'raw-public'` 是最快的序列化格式，因为原始格式跳过了所有 ASN.1 和 Base64 解码。
+* EC 私钥——`'raw-private'` 比 PEM 或 DER 快，因为它避免了 ASN.1 解析。但是，对于较大的曲线（例如 P-384、P-521），从私钥标量派生公钥点所需的计算变得昂贵，减少了优势。
+* RSA 密钥——`'jwk'` 是最快的序列化格式。JWK 将 RSA 密钥组件表示为单个 Base64url 编码的整数，完全避免了 ASN.1 解析的开销。
 
 #### 操作中的内联密钥材料
 
@@ -545,6 +545,8 @@ added: v0.1.94
 
 [`crypto.createCipheriv()`][] 方法用于创建 `Cipheriv` 实例。不应直接使用 `new` 关键字创建 `Cipheriv` 对象。
 
+所选算法可能会对流式处理以及对 [`cipher.update()`][] 的调用施加其他限制。请参阅 [CCM mode][]、[CBC-CTS mode][]、[XTS mode][]、[AES key wrap modes][] 和 [SIV and GCM-SIV modes][]。
+
 示例：将 `Cipheriv` 对象用作流：
 
 ```mjs
@@ -772,8 +774,7 @@ added: v0.1.94
 added: v1.0.0
 -->
 
-* 返回：{Buffer} 当使用认证加密模式时（目前支持 `GCM`、`CCM`、`OCB` 和 `chacha20-poly1305`），
-  `cipher.getAuthTag()` 方法返回一个 [`Buffer`][]，其中包含从给定数据计算出的_认证标签_。
+* 返回：{Buffer} 使用认证加密模式时（目前支持 `GCM`、`CCM`、`OCB`、`SIV`、`GCM-SIV` 和 `chacha20-poly1305`），`cipher.getAuthTag()` 方法会返回一个 [`Buffer`][]，其中包含根据给定数据计算得出的 _认证标签_。
 
 `cipher.getAuthTag()` 方法应仅在使用 [`cipher.final()`][] 方法完成加密后调用。
 
@@ -792,11 +793,9 @@ added: v1.0.0
   * `encoding` {string} 当 `buffer` 是字符串时使用的字符串编码。
 * 返回：{Cipheriv} 相同的 `Cipheriv` 实例用于方法链。
 
-当使用认证加密模式时（目前支持 `GCM`、`CCM`、`OCB` 和 `chacha20-poly1305`），
-`cipher.setAAD()` 方法设置用于_附加认证数据_ (AAD) 输入参数的值。
+使用认证加密模式时（目前支持 `GCM`、`CCM`、`OCB`、`SIV`、`GCM-SIV` 和 `chacha20-poly1305`），`cipher.setAAD()` 方法会设置用于 _附加认证数据_（AAD）输入参数的值。
 
-`plaintextLength` 选项对于 `GCM` 和 `OCB` 是可选的。当使用 `CCM` 时，
-必须指定 `plaintextLength` 选项，并且其值必须与明文长度（字节）匹配。参见 [CCM 模式][]。
+对于 `GCM`、`OCB`、`SIV` 和 `GCM-SIV`，`plaintextLength` 选项是可选的。使用 `CCM` 时，必须指定 `plaintextLength` 选项，且其值必须与明文的字节长度相符。请参阅 [CCM mode][]。
 
 必须在 [`cipher.update()`][] 之前调用 `cipher.setAAD()` 方法。
 
@@ -809,9 +808,9 @@ added: v0.7.1
 * `autoPadding` {boolean} **默认：** `true`
 * 返回：{Cipheriv} 相同的 `Cipheriv` 实例用于方法链。
 
-当使用块加密算法时，`Cipheriv` 类将自动向输入数据添加填充以达到适当的块大小。要禁用默认填充，请调用 `cipher.setAutoPadding(false)`。
+使用标准块填充的分组密码时，`Cipheriv` 类会自动将填充添加到输入数据，使其达到适当的块大小。若要禁用默认填充，请调用 `cipher.setAutoPadding(false)`。
 
-当 `autoPadding` 为 `false` 时，整个输入数据的长度必须是密码块大小的倍数，否则 [`cipher.final()`][] 将抛出错误。禁用自动填充对于非标准填充很有用，例如使用 `0x0` 而不是 PKCS 填充。
+对于使用标准块填充的分组密码，当 `autoPadding` 为 `false` 时，整个输入数据的长度必须是密码块大小的倍数，否则 [`cipher.final()`][] 将抛出错误。禁用自动填充适用于非标准填充，例如使用 `0x0` 而不是 PKCS 填充。
 
 必须在 [`cipher.final()`][] 之前调用 `cipher.setAutoPadding()` 方法。
 
@@ -840,7 +839,7 @@ changes:
 `outputEncoding`，则返回 [`Buffer`][]。
 指定 `outputEncoding` 时，必须使用与之前调用 `cipher.update()` 时相同的编码。
 
-可以多次调用 `cipher.update()` 方法并传入新数据，直到调用 [`cipher.final()`][]。在 [`cipher.final()`][] 之后调用 `cipher.update()` 将导致抛出错误。
+对于大多数算法，可以使用新数据多次调用 `cipher.update()`，直到调用 [`cipher.final()`][]。某些算法会限制对 `cipher.update()` 的调用。例如，[CCM mode][]、[CBC-CTS mode][]、[XTS mode][]、[AES key wrap modes][] 和 [SIV and GCM-SIV modes][] 要求在单次调用中提供完整消息。在调用 [`cipher.final()`][] 后再调用 `cipher.update()` 将导致抛出错误。
 
 ## 类：`Decipheriv`
 
@@ -856,6 +855,8 @@ added: v0.1.94
 * 使用 [`decipher.update()`][] 和 [`decipher.final()`][] 方法来产生未加密数据。
 
 [`crypto.createDecipheriv()`][] 方法用于创建 `Decipheriv` 实例。不应直接使用 `new` 关键字创建 `Decipheriv` 对象。
+
+所选算法可能会对流式处理以及对 [`decipher.update()`][] 的调用施加其他限制。请参阅 [CCM mode][]、[CBC-CTS mode][]、[XTS mode][]、[AES key wrap modes][] 和 [SIV and GCM-SIV modes][]。
 
 示例：将 `Decipheriv` 对象用作流：
 
@@ -1148,9 +1149,9 @@ changes:
   * `encoding` {string} 当 `buffer` 为字符串时使用的字符串编码。
 * 返回：{Decipheriv} 该方法链式调用时返回相同的 `Decipheriv` 实例。
 
-当使用认证加密模式（目前支持 `GCM`、`CCM`、`OCB` 和 `chacha20-poly1305`）时，`decipher.setAAD()` 方法设置用于 _额外认证数据_ (AAD) 输入参数的值。
+使用认证加密模式时（目前支持 `GCM`、`CCM`、`OCB`、`SIV`、`GCM-SIV` 和 `chacha20-poly1305`），`decipher.setAAD()` 方法会设置用作_附加认证数据_（AAD）输入参数的值。
 
-对于 `GCM`，`options` 参数是可选的。当使用 `CCM` 时，必须指定 `plaintextLength` 选项，并且其值必须与密文的字节长度匹配。参见 [CCM 模式][]。
+对于 `GCM`、`OCB`、`SIV` 和 `GCM-SIV`，`options` 参数是可选的。使用 `CCM` 时，必须指定 `plaintextLength` 选项，且其值必须与密文的字节长度相同。参见 [CCM 模式][]。
 
 必须在 [`decipher.update()`][] 之前调用 `decipher.setAAD()` 方法。
 
@@ -1184,10 +1185,9 @@ changes:
 * `encoding` {string} 当 `buffer` 为字符串时使用的字符串编码。
 * 返回：{Decipheriv} 该方法链式调用时返回相同的 `Decipheriv` 实例。
 
-当使用认证加密模式（目前支持 `GCM`、`CCM`、`OCB` 和 `chacha20-poly1305`）时，`decipher.setAuthTag()` 方法用于传入接收到的 _认证标签_。如果未提供标签，或者密文已被篡改，[`decipher.final()`][] 将抛出错误，表明由于认证失败应丢弃密文。如果标签长度根据 [NIST SP 800-38D][] 无效，或者与 `authTagLength` 选项的值不匹配，`decipher.setAuthTag()` 将抛出错误。
+使用认证加密模式时（目前支持 `GCM`、`CCM`、`OCB`、`SIV`、`GCM-SIV` 和 `chacha20-poly1305`），`decipher.setAuthTag()` 方法用于传入收到的_认证标签_。如果未提供标签，或者密文遭到篡改，[`decipher.final()`][] 将抛出错误，表明由于认证失败，应丢弃密文。如果标签长度不符合 [NIST SP 800-38D][] 的规定，或与 `authTagLength` 选项的值不匹配，`decipher.setAuthTag()` 将抛出错误。
 
-对于 `CCM` 模式，必须在 [`decipher.update()`][] 之前调用 `decipher.setAuthTag()` 方法；对于 `GCM` 和 `OCB` 模式以及 `chacha20-poly1305`，必须在 [`decipher.final()`][] 之前调用。
-`decipher.setAuthTag()` 只能调用一次。
+对于 `CCM`、`SIV` 和 `GCM-SIV` 模式，必须在 [`decipher.update()`][] 之前调用 `decipher.setAuthTag()` 方法；对于 `GCM` 和 `OCB` 模式以及 `chacha20-poly1305`，则必须在 [`decipher.final()`][] 之前调用。`decipher.setAuthTag()` 只能调用一次。
 
 当传递字符串作为认证标签时，请考虑 [将字符串用作加密 API 输入时的注意事项][]。
 
@@ -1202,7 +1202,7 @@ added: v0.7.1
 
 当数据在没有标准块填充的情况下被加密时，调用 `decipher.setAutoPadding(false)` 将禁用自动填充，以防止 [`decipher.final()`][] 检查并移除填充。
 
-只有在输入数据的长度是密码块大小的倍数时，关闭自动填充才有效。
+对于使用标准块填充的分组密码，禁用填充后，输入数据的长度必须是密码块大小的倍数。
 
 必须在 [`decipher.final()`][] 之前调用 `decipher.setAutoPadding()` 方法。
 
@@ -1217,18 +1217,17 @@ changes:
 -->
 
 * `data` {string|Buffer|TypedArray|DataView}
-* `inputEncoding` {string} The [encoding][] of the `data` string.
-* `outputEncoding` {string} The [encoding][] of the return value.
-* Returns: {Buffer | string}
+* `inputEncoding` {string} `data` 字符串的 [编码][]。
+* `outputEncoding` {string} 返回值的 [编码][]。
+* 返回：{Buffer | string}
 
-Updates the decipher with `data`. If the `inputEncoding` argument is given, the `data` argument is a string using the specified encoding. If the `inputEncoding` argument is not given, `data` must be a [`Buffer`][]. If `data` is a [`Buffer`][], `inputEncoding` is ignored.
+使用 `data` 更新解密器。如果提供了 `inputEncoding` 参数，`data` 参数就是使用指定编码的字符串。如果未提供 `inputEncoding` 参数，`data` 必须是 [`Buffer`][]、`TypedArray` 或 `DataView`。如果 `data` 是 [`Buffer`][]、`TypedArray` 或 `DataView`，则会忽略 `inputEncoding`。
 
-`outputEncoding` specifies the output format of the deciphered data. If `outputEncoding` is specified, a string using the specified encoding is returned. If `outputEncoding` is not provided, a [`Buffer`][] is returned.
-When specifying `outputEncoding`, the same encoding must be used as in previous calls to `decipher.update()`.
+`outputEncoding` 指定解密数据的输出格式。如果指定了 `outputEncoding`，则返回使用指定编码的字符串。如果未提供 `outputEncoding`，则返回 [`Buffer`][]。指定 `outputEncoding` 时，它必须与之前调用 `decipher.update()` 时使用相同的编码。
 
-The `decipher.update()` method can be called multiple times with new data until [`decipher.final()`][] is called. Calling `decipher.update()` after [`decipher.final()`][] will cause an error to be thrown.
+对于大多数算法，可以使用新数据多次调用 `decipher.update()`，直到调用 [`decipher.final()`][]。某些算法会限制对 `decipher.update()` 的调用。例如，[CCM 模式][]、[CBC-CTS 模式][]、[XTS 模式][]、[AES 密钥包装模式][]以及 [SIV 和 GCM-SIV 模式][]要求在一次调用中提供完整消息。在 [`decipher.final()`][] 之后调用 `decipher.update()` 将导致抛出错误。
 
-Even if the underlying cipher implements authentication, the authenticity and integrity of the plaintext returned from this function may be uncertain at this time. For authenticated encryption algorithms, authenticity is generally established only when the application calls [`decipher.final()`][].
+即使底层密码实现了认证，此函数返回的明文在此时也可能无法确定其真实性和完整性。对于认证加密算法，通常只有在应用程序调用 [`decipher.final()`][] 后，才能确认其真实性。
 
 ## 类：`DiffieHellman`
 
@@ -1297,8 +1296,7 @@ added: v0.5.0
 * `outputEncoding` {string} 返回值的 [编码][]。
 * 返回：{Buffer | string}
 
-使用 `otherPublicKey` 作为另一方的公钥计算共享秘密，并返回计算出的共享秘密。提供的密钥使用指定的 `inputEncoding` 进行解释，秘密使用指定的 `outputEncoding` 进行编码。
-如果未提供 `inputEncoding`，则 `otherPublicKey` 应为 [`Buffer`][]、`TypedArray` 或 `DataView`。
+使用 `otherPublicKey` 作为另一方的公钥计算共享秘密，并返回计算出的共享秘密。提供的密钥使用指定的 `inputEncoding` 进行解释，秘密使用指定的 `outputEncoding` 进行编码。如果未提供 `inputEncoding`，则 `otherPublicKey` 应为 [`Buffer`][]、`TypedArray` 或 `DataView`。
 
 如果给出了 `outputEncoding`，则返回字符串；否则返回 [`Buffer`][]。
 
@@ -1311,13 +1309,9 @@ added: v0.5.0
 * `encoding` {string} 返回值的 [编码][]。
 * 返回：{Buffer | string}
 
-生成私钥和公钥 Diffie-Hellman 密钥值（除非它们已经生成或计算过），并以指定的 `encoding` 返回公钥。此密钥应传输给另一方。
-如果提供了 `encoding`，则返回字符串；否则返回 [`Buffer`][]。
+生成私钥和公钥 Diffie-Hellman 密钥值（除非它们已经生成或计算过），并以指定的 `encoding` 返回公钥。此密钥应传输给另一方。如果提供了 `encoding`，则返回字符串；否则返回 [`Buffer`][]。
 
-此函数是对 [`DH_generate_key()`][] 的轻量封装。特别是，
-一旦私钥已生成或已设置，调用此函数只会
-根据现有私钥重新计算公钥。由于公钥是由私钥
-决定的，除非通过 [`diffieHellman.setPrivateKey()`][] 更改了私钥，否则结果将保持不变。
+此函数是对 [`DH_generate_key()`][] 的轻量封装。特别是，一旦私钥已生成或已设置，调用此函数只会根据现有私钥重新计算公钥。由于公钥是由私钥决定的，除非通过 [`diffieHellman.setPrivateKey()`][] 更改了私钥，否则结果将保持不变。
 
 ### `diffieHellman.getGenerator([encoding])`
 
@@ -1328,8 +1322,7 @@ added: v0.5.0
 * `encoding` {string} 返回值的 [编码][]。
 * 返回：{Buffer | string}
 
-返回指定 `encoding` 的 Diffie-Hellman 生成元。
-如果提供了 `encoding`，则返回字符串；否则返回 [`Buffer`][]。
+返回指定 `encoding` 的 Diffie-Hellman 生成元。如果提供了 `encoding`，则返回字符串；否则返回 [`Buffer`][]。
 
 ### `diffieHellman.getPrime([encoding])`
 
@@ -1340,8 +1333,7 @@ added: v0.5.0
 * `encoding` {string} 返回值的 [编码][]。
 * 返回：{Buffer | string}
 
-返回指定 `encoding` 的 Diffie-Hellman 素数。
-如果提供了 `encoding`，则返回字符串；否则返回 [`Buffer`][]。
+返回指定 `encoding` 的 Diffie-Hellman 素数。如果提供了 `encoding`，则返回字符串；否则返回 [`Buffer`][]。
 
 ### `diffieHellman.getPrivateKey([encoding])`
 
@@ -1352,8 +1344,7 @@ added: v0.5.0
 * `encoding` {string} 返回值的 [编码][]。
 * 返回：{Buffer | string}
 
-返回指定 `encoding` 的 Diffie-Hellman 私钥。
-如果提供了 `encoding`，则返回字符串；否则返回 [`Buffer`][]。
+返回指定 `encoding` 的 Diffie-Hellman 私钥。如果提供了 `encoding`，则返回字符串；否则返回 [`Buffer`][]。
 
 ### `diffieHellman.getPublicKey([encoding])`
 
@@ -1364,8 +1355,7 @@ added: v0.5.0
 * `encoding` {string} 返回值的 [编码][]。
 * 返回：{Buffer | string}
 
-返回指定 `encoding` 的 Diffie-Hellman 公钥。
-如果提供了 `encoding`，则返回字符串；否则返回 [`Buffer`][]。
+返回指定 `encoding` 的 Diffie-Hellman 公钥。如果提供了 `encoding`，则返回字符串；否则返回 [`Buffer`][]。
 
 ### `diffieHellman.setPrivateKey(privateKey[, encoding])`
 
@@ -1412,8 +1402,7 @@ added: v0.11.12
 added: v0.7.5
 -->
 
-`DiffieHellmanGroup` 类将众所周知的 modp 组作为其参数。
-它的工作方式与 `DiffieHellman` 相同，只不过它不允许在创建后更改其密钥。换句话说，它不实现 `setPublicKey()` 或 `setPrivateKey()` 方法。
+`DiffieHellmanGroup` 类将众所周知的 modp 组作为其参数。它的工作方式与 `DiffieHellman` 相同，只不过它不允许在创建后更改其密钥。换句话说，它不实现 `setPublicKey()` 或 `setPrivateKey()` 方法。
 
 ```mjs
 const { createDiffieHellmanGroup } = await import('node:crypto');
@@ -1427,17 +1416,17 @@ const dh = createDiffieHellmanGroup('modp16');
 
 支持以下组：
 
-* `'modp14'` (2048 位，[RFC 3526][] 第 3 节)
-* `'modp15'` (3072 位，[RFC 3526][] 第 4 节)
-* `'modp16'` (4096 位，[RFC 3526][] 第 5 节)
-* `'modp17'` (6144 位，[RFC 3526][] 第 6 节)
-* `'modp18'` (8192 位，[RFC 3526][] 第 7 节)
+* `'modp14'`（2048 位，[RFC 3526][] 第 3 节）
+* `'modp15'`（3072 位，[RFC 3526][] 第 4 节）
+* `'modp16'`（4096 位，[RFC 3526][] 第 5 节）
+* `'modp17'`（6144 位，[RFC 3526][] 第 6 节）
+* `'modp18'`（8192 位，[RFC 3526][] 第 7 节）
 
 以下组仍然受支持但已弃用（参见 [注意事项][]）：
 
-* `'modp1'` (768 位，[RFC 2409][] 第 6.1 节) <span class="deprecated-inline"></span>
-* `'modp2'` (1024 位，[RFC 2409][] 第 6.2 节) <span class="deprecated-inline"></span>
-* `'modp5'` (1536 位，[RFC 3526][] 第 2 节) <span class="deprecated-inline"></span>
+* `'modp1'`（768 位，[RFC 2409][] 第 6.1 节） <span class="deprecated-inline"></span>
+* `'modp2'`（1024 位，[RFC 2409][] 第 6.2 节） <span class="deprecated-inline"></span>
+* `'modp5'`（1536 位，[RFC 3526][] 第 2 节） <span class="deprecated-inline"></span>
 
 这些已弃用的组可能会在未来的 Node.js 版本中被移除。
 
@@ -1447,7 +1436,7 @@ const dh = createDiffieHellmanGroup('modp16');
 added: v0.11.14
 -->
 
-`ECDH` 类是用于创建椭圆曲线 Diffie-Hellman (ECDH) 密钥交换的工具。
+`ECDH` 类是用于创建椭圆曲线 Diffie-Hellman（ECDH）密钥交换的工具。
 
 `ECDH` 类的实例可以使用 [`crypto.createECDH()`][] 函数创建。
 
@@ -2303,7 +2292,69 @@ added: v11.6.0
 
 根据此 `KeyObject` 的类型，此属性对于密钥（对称）为 `'secret'`，对于公钥（非对称）为 `'public'`，或对于私钥（非对称）为 `'private'`。
 
-## 类：`Sign`
+## Class: `Mac`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+* 继承自：{stream.Transform}
+
+`Mac` 类使用 OpenSSL 提供程序提供的 MAC 实现来计算消息认证码。它可以通过以下两种方式之一使用：
+
+* 作为可读写的 [流][]，将数据写入其中，并在可写端结束时从可读端生成一个认证标签；或者
+* 调用一次或多次 [`mac.update()`][]，然后调用 [`mac.final()`][]。
+
+`Mac` 实例使用 [`crypto.createMac()`][] 创建。`Mac` 类不会由 `node:crypto` 模块直接导出。
+
+如果未先写入数据就调用 `mac.end()`，则会计算空消息的认证标签。如果所选 MAC 生成零字节标签（例如，提供程序接受 `outputLength: 0`），则可读端会在不发出数据块的情况下结束，因为 Node.js 流不会发出零长度数据块。改用 `mac.final()` 时，它会返回零长度的 [`Buffer`][] 或空编码字符串。
+
+`mac.end()` 和 `mac.final()` 是互斥的终结操作，不得在同一个对象上同时调用。尝试执行任一终结操作，或底层 MAC 更新失败后，都不能再次使用 `Mac` 对象。
+
+示例：使用 [`mac.update()`][] 和 [`mac.final()`][]：
+
+```mjs
+const { createMac, randomBytes } = await import('node:crypto');
+
+const key = randomBytes(16);
+const mac = createMac('CMAC', key, {
+  cipher: 'AES-128-CBC',
+});
+
+mac.update('some data to authenticate');
+console.log(mac.final('hex'));
+```
+
+### `mac.final([outputEncoding])`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+* `outputEncoding` {string} 返回值的 [编码][]。
+* 返回：{Buffer | string}
+
+完成 MAC 计算并返回认证标签。如果省略 `outputEncoding` 或其值为 `'buffer'`，则返回 [`Buffer`][]。否则返回字符串。
+
+要验证认证标签，请使用 [`crypto.timingSafeEqual()`][] 比较长度相同的 [`Buffer`][] 值。
+
+尝试终结后（包括终结失败时），都不能再次使用 `Mac` 对象。之后调用 `mac.update()` 或 `mac.final()` 会抛出 `ERR_CRYPTO_MAC_FINALIZED`。
+
+### `mac.update(data[, inputEncoding])`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+* `data` {string|Buffer|TypedArray|DataView}
+* `inputEncoding` {string} `data` 字符串的 [编码][]。
+* 返回：{Mac}
+
+使用 `data` 更新 MAC，并返回 `Mac` 对象，以便链式调用。当 `data` 是字符串时，`inputEncoding` 默认为 `'utf8'`。当 `data` 是 [`Buffer`][]、`TypedArray` 或 `DataView` 时，会忽略 `inputEncoding`。
+
+在终结之前可以多次调用此方法。如果底层 MAC 更新失败，则不能再次使用 `Mac` 对象。在先前的底层 MAC 更新失败后或终结后调用此方法会抛出 `ERR_CRYPTO_MAC_FINALIZED`。
+
+## Class: `Sign`
 
 <!-- YAML
 added: v0.1.92
@@ -2654,7 +2705,7 @@ changes:
 
 检查证书是否与给定的电子邮件地址匹配。
 
-如果 `'subject'` 选项为 undefined 或设置为 `'default'`，则仅当主题备用名称扩展不存在或不包含任何电子邮件地址时，才考虑证书主题。
+如果 `'subject'` 选项未定义或设置为 `'default'`，则根据 OpenSSL 的默认行为考虑证书主题。
 
 如果 `'subject'` 选项设置为 `'always'`，并且如果主题备用名称扩展不存在或不包含匹配的电子邮件地址，则考虑证书主题。
 
@@ -2689,7 +2740,7 @@ changes:
 
 如果证书与给定的主机名匹配，则返回匹配的主题名称。返回的名称可能是完全匹配（例如，`foo.example.com`），也可能包含通配符（例如，`*.example.com`）。因为主机名比较不区分大小写，所以返回的主题名称在大写上也可能与给定的 `name` 不同。
 
-如果 `'subject'` 选项为 undefined 或设置为 `'default'`，则仅当主题备用名称扩展不存在或不包含任何 DNS 名称时，才考虑证书主题。此行为与 [RFC 2818][]（"HTTP Over TLS"）一致。
+如果 `'subject'` 选项未定义或设置为 `'default'`，则根据 OpenSSL 的默认行为考虑证书主题。
 
 如果 `'subject'` 选项设置为 `'always'`，并且如果主题备用名称扩展不存在或不包含匹配的 DNS 名称，则考虑证书主题。
 
@@ -3136,7 +3187,7 @@ added: v15.8.0
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "向 `callback` 参数传递无效的回调现在抛出 `ERR_INVALID_ARG_TYPE` 而不是 `ERR_INVALID_CALLBACK`。"
+    description: "现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
 -->
 
 * `candidate` {ArrayBuffer|SharedArrayBuffer|TypedArray|Buffer|DataView|bigint}
@@ -3180,7 +3231,13 @@ added: v0.1.94
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63188
-    description: 不再支持将 CryptoKey 作为 `key` 传递。
+    description: 不再支持将 CryptoKey 作为 `key` 传入。
+  - version: v26.9.0
+    pr-url: https://github.com/nodejs/node/pull/65484
+    description: 现在支持通过 OpenSSL providers 提供的其他密码（例如 SM4-GCM、SM4-CCM、SM4-XTS、CBC-CTS 和 AES 密钥包装变体）。新增了 `ctsMode` 和 `xtsStandard` 选项。
+  - version: v26.8.0
+    pr-url: https://github.com/nodejs/node/pull/63411
+    description: 现在支持 SIV 和 GCM-SIV 模式下的密码。
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "传递 CryptoKey 作为 `key` 已弃用。"
@@ -3214,20 +3271,27 @@ changes:
 * `algorithm` {string}
 * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `iv` {string|ArrayBuffer|Buffer|TypedArray|DataView|null}
-* `options` {Object} [`stream.transform` 选项][]
+* `options` {Object} [`stream.transform` 选项][]，包含以下附加属性：
+  * `authTagLength` {number} 认证标签的长度，单位为字节。其要求和默认值取决于经过认证的密码，如下所述。
+  * `ctsMode` {string} [CBC-CTS 模式][]变体。可选值为 `'CS1'`、`'CS2'` 或 `'CS3'`。这些值区分大小写。**默认值：** `'CS1'`。
+  * `encoding` {string} 当 `key` 为字符串时使用的[编码][]。此选项不会影响字符串 `iv`，后者始终按 UTF-8 解释。**默认值：** `'utf8'`。
+  * `xtsStandard` {string} `sm4-xts` 使用的标准。可选值为 `'GB'` 或 `'IEEE'`。这些值区分大小写。**默认值：** `'GB'`。
 * 返回：{Cipheriv}
 
 创建并返回一个 `Cipheriv` 对象，带有给定的 `algorithm`、`key` 和初始化向量 (`iv`)。
 
-`options` 参数控制流行为，除了使用 CCM 或 OCB 模式（例如 `'aes-128-ccm'`）的密码外，它是可选的。在这种情况下，`authTagLength` 选项是必需的，并指定认证标签的长度（以字节为单位），参见 [CCM 模式][]。在 GCM 模式下，`authTagLength` 选项不是必需的，但可用于设置 `getAuthTag()` 返回的认证标签的长度，默认为 16 字节。对于 `chacha20-poly1305`，`authTagLength` 选项默认为 16 字节。
+`options` 参数控制特定于密码的设置和流行为。除非使用 CCM 或 OCB 模式下的密码（例如 `'aes-128-ccm'`），否则该参数是可选的。在这种情况下，必须设置 `authTagLength` 选项，以指定认证标签的长度（单位为字节），参见 [CCM 模式][]。在 GCM 模式下，`authTagLength` 选项不是必需的，但可用于设置 `getAuthTag()` 返回的认证标签长度，默认值为 16 字节。
+对于 `SIV`、`GCM-SIV` 和 `chacha20-poly1305`，`authTagLength` 选项默认为 16 字节。`SIV` 和 `GCM-SIV` 仅支持 16 字节的认证标签。
 
-`algorithm` 依赖于 OpenSSL，示例有 `'aes192'` 等。在最近的 OpenSSL 版本上，`openssl list -cipher-algorithms` 将显示可用的密码算法。
+`ctsMode` 和 `xtsStandard` 选项用于配置 OpenSSL providers 暴露的参数。只有 OpenSSL 3.0 或更高版本，以及支持相应参数的 provider 才能使用这些选项。`ctsMode` 仅适用于 CBC-CTS 密码，而 `xtsStandard` 仅适用于 `sm4-xts`。如果为不支持该选项的可用密码实现提供其中任一选项，则会抛出 `ERR_CRYPTO_UNSUPPORTED_OPERATION` 错误。详情请参阅 [CBC-CTS 模式][]和 [XTS 模式][]。
 
-`key` 是 `algorithm` 使用的原始密钥，`iv` 是 [初始化向量][]。两个参数必须是 `'utf8'` 编码的字符串、[缓冲区][`Buffer`]、`TypedArray` 或 `DataView`。`key` 也可以是类型为 `secret` 的 [`KeyObject`][]。如果密码不需要初始化向量，`iv` 可以是 `null`。
+可用算法取决于 OpenSSL。[`crypto.getCiphers()`][] 列出 Node.js 暴露的算法。在较新的 OpenSSL 版本中，`openssl list -cipher-algorithms` 会显示 OpenSSL 可用的算法，其中可能包含 Node.js 未暴露的算法。
+
+`key` 是 `algorithm` 使用的原始密钥，`iv` 是[初始化向量][]。二者都可以是字符串、`ArrayBuffer`、[`Buffer`][]、`TypedArray` 或 `DataView`。字符串形式的 `key` 使用 `options.encoding` 解码，该选项默认为 `'utf8'`；字符串形式的 `iv` 始终按 UTF-8 解码。`key` 也可以是类型为 `secret` 的 [`KeyObject`][]。如果密码不需要初始化向量，`iv` 可以是 `null`。
 
 当为 `key` 或 `iv` 传递字符串时，请考虑 [使用字符串作为加密 API 输入时的注意事项][]。
 
-初始化向量应该是不可预测且唯一的；理想情况下，它们应该是加密随机的。它们不必是秘密的：IV 通常只是未加密地添加到密文消息中。听起来可能矛盾的是，某物必须不可预测且唯一，但不必是秘密的；请记住，攻击者必须无法提前预测给定 IV 将是什么。
+初始化向量的要求取决于算法。对于某些算法，IV 必须不可预测且唯一；对于其他算法，仅需唯一即可、必须使用固定值，或不使用 IV。请遵循所选算法的要求。IV 通常不必保密，可以与密文一起传输。
 
 ### `crypto.createDecipheriv(algorithm, key, iv[, options])`
 
@@ -3236,7 +3300,13 @@ added: v0.1.94
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63188
-    description: 不再支持将 CryptoKey 作为 `key` 传递。
+    description: 不再支持将 CryptoKey 作为 `key` 传入。
+  - version: v26.9.0
+    pr-url: https://github.com/nodejs/node/pull/65484
+    description: 现在支持通过 OpenSSL providers 提供的其他密码（例如 SM4-GCM、SM4-CCM、SM4-XTS、CBC-CTS 和 AES 密钥包装变体）。新增了 `ctsMode` 和 `xtsStandard` 选项。
+  - version: v26.8.0
+    pr-url: https://github.com/nodejs/node/pull/63411
+    description: 现在支持 SIV 和 GCM-SIV 模式下的密码。
   - version: v26.0.0
     pr-url: https://github.com/nodejs/node/pull/62453
     description: "传递 CryptoKey 作为 `key` 已弃用。"
@@ -3267,20 +3337,26 @@ changes:
 * `algorithm` {string}
 * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
 * `iv` {string|ArrayBuffer|Buffer|TypedArray|DataView|null}
-* `options` {Object} [`stream.transform` 选项][]
+* `options` {Object} [`stream.transform` 选项][]，包含以下附加属性：
+  * `authTagLength` {number} 认证标签的长度，单位为字节。其要求和默认值取决于经过认证的密码，如下所述。
+  * `ctsMode` {string} [CBC-CTS 模式][]变体。可选值为 `'CS1'`、`'CS2'` 或 `'CS3'`。这些值区分大小写。**默认值：** `'CS1'`。
+  * `encoding` {string} 当 `key` 为字符串时使用的[编码][]。此选项不会影响字符串 `iv`，后者始终按 UTF-8 解释。**默认值：** `'utf8'`。
+  * `xtsStandard` {string} `sm4-xts` 使用的标准。可选值为 `'GB'` 或 `'IEEE'`。这些值区分大小写。**默认值：** `'GB'`。
 * 返回：{Decipheriv}
 
 创建并返回一个 `Decipheriv` 对象，使用给定的 `algorithm`、`key` 和初始化向量 (`iv`)。
 
-`options` 参数控制流行为，除了使用 CCM 或 OCB 模式（例如 `'aes-128-ccm'`）的密码外，它是可选的。在这种情况下，`authTagLength` 选项是必需的，并指定认证标签的长度（以字节为单位），参见 [CCM 模式][]。对于 AES-GCM 和 `chacha20-poly1305`，`authTagLength` 选项默认为 16 字节，如果使用不同长度则必须设置为不同的值。
+`options` 参数控制特定于密码的设置和流行为。除非使用 CCM 或 OCB 模式下的密码（例如 `'aes-128-ccm'`），否则该参数是可选的。在这种情况下，必须设置 `authTagLength` 选项，以指定认证标签的长度（单位为字节），参见 [CCM 模式][]。对于 GCM 和 `chacha20-poly1305`，`authTagLength` 选项默认为 16 字节；如果使用不同的长度，则必须设置该选项。对于 `SIV` 和 `GCM-SIV`，`authTagLength` 选项默认为 16 字节，并且仅支持 16 字节的认证标签。
 
-`algorithm` 依赖于 OpenSSL，示例有 `'aes192'` 等。在最近的 OpenSSL 版本上，`openssl list -cipher-algorithms` 将显示可用的密码算法。
+`ctsMode` 和 `xtsStandard` 选项用于配置 OpenSSL providers 暴露的参数。只有 OpenSSL 3.0 或更高版本，以及支持相应参数的 provider 才能使用这些选项。`ctsMode` 仅适用于 CBC-CTS 密码，而 `xtsStandard` 仅适用于 `sm4-xts`。如果为不支持该选项的可用密码实现提供其中任一选项，则会抛出 `ERR_CRYPTO_UNSUPPORTED_OPERATION` 错误。详情请参阅 [CBC-CTS 模式][]和 [XTS 模式][]。
 
-`key` 是 `algorithm` 使用的原始密钥，`iv` 是 [初始化向量][]。两个参数必须是 `'utf8'` 编码的字符串、[缓冲区][`Buffer`]、`TypedArray` 或 `DataView`。`key` 也可以是类型为 `secret` 的 [`KeyObject`][]。如果密码不需要初始化向量，`iv` 可以是 `null`。
+可用算法取决于 OpenSSL。[`crypto.getCiphers()`][] 列出 Node.js 暴露的算法。在较新的 OpenSSL 版本中，`openssl list -cipher-algorithms` 会显示 OpenSSL 可用的算法，其中可能包含 Node.js 未暴露的算法。
+
+`key` 是 `algorithm` 使用的原始密钥，`iv` 是[初始化向量][]。二者都可以是字符串、`ArrayBuffer`、[`Buffer`][]、`TypedArray` 或 `DataView`。字符串形式的 `key` 使用 `options.encoding` 解码，该选项默认为 `'utf8'`；字符串形式的 `iv` 始终按 UTF-8 解码。`key` 也可以是类型为 `secret` 的 [`KeyObject`][]。如果密码不需要初始化向量，`iv` 可以是 `null`。
 
 当为 `key` 或 `iv` 传递字符串时，请考虑 [使用字符串作为加密 API 输入时的注意事项][]。
 
-初始化向量应该是不可预测且唯一的；理想情况下，它们应该是加密随机的。它们不必是秘密的：IV 通常只是未加密地添加到密文消息中。听起来可能矛盾的是，某物必须不可预测且唯一，但不必是秘密的；请记住，攻击者必须无法提前预测给定 IV 将是什么。
+初始化向量的要求取决于算法。对于某些算法，IV 必须不可预测且唯一；对于其他算法，仅需唯一即可、必须使用固定值，或不使用 IV。请遵循所选算法的要求。IV 通常不必保密，可以与密文一起传输。
 
 ### `crypto.createDiffieHellman(prime[, primeEncoding][, generator][, generatorEncoding])`
 
@@ -3299,10 +3375,10 @@ changes:
 -->
 
 * `prime` {string|ArrayBuffer|Buffer|TypedArray|DataView}
-* `primeEncoding` {string} `prime` 字符串的 [编码][]。
+* `primeEncoding` {string} `prime` 字符串的[编码][]。
 * `generator` {number|string|ArrayBuffer|Buffer|TypedArray|DataView}
   **默认值：** `2`
-* `generatorEncoding` {string} `generator` 字符串的 [编码][]。
+* `generatorEncoding` {string} `generator` 字符串的[编码][]。
 * 返回：{DiffieHellman}
 
 使用提供的 `prime` 和可选的特定 `generator` 创建 `DiffieHellman` 密钥交换对象。
@@ -3354,21 +3430,32 @@ added: v0.1.92
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/64000
-    description: XOF 哈希函数若没有默认输出长度，则现在需要 `outputLength` 选项。
+    description: The `outputLength` option is now required for XOF
+                 hash functions without default output lengths.
+  - version: v26.9.0
+    pr-url: https://github.com/nodejs/node/pull/65484
+    description: Hash algorithms exposed by OpenSSL providers are now
+                 supported. The `functionName` and `customization` options
+                 were added for cSHAKE hash functions.
   - version: v12.8.0
     pr-url: https://github.com/nodejs/node/pull/28805
     description: "为 XOF 哈希函数添加了 `outputLength` 选项。"
 -->
 
 * `algorithm` {string}
-* `options` {Object} [`stream.transform` 选项][]
+* `options` {Object} [`stream.transform` options][]
+  * `customization` {string|ArrayBuffer|Buffer|TypedArray|DataView} 对于 cSHAKE 哈希函数，指定自定义字节字符串。**默认值：**空字节字符串。
+  * `functionName` {string|ArrayBuffer|Buffer|TypedArray|DataView} 对于 cSHAKE 哈希函数，指定 NIST 函数名称字节字符串。**默认值：**空字节字符串。
+  * `outputLength` {number} 对于 XOF 哈希函数，指定所需的输出长度（以字节为单位）。
 * 返回：{Hash}
 
 创建并返回一个 `Hash` 对象，可用于使用给定的 `algorithm` 生成哈希摘要。可选的 `options` 参数控制流行为。对于诸如 `'shake256'` 之类的 XOF 哈希函数，`outputLength` 选项指定所需的输出长度（以字节为单位）。对于没有默认输出长度的 XOF 哈希函数，这是必需的。
 
-当数据较小（< 5MB）且可直接获取时，通常 [`crypto.hash()`][] 的速度更快。
+`functionName` 和 `customization` 选项仅适用于 cSHAKE-128 和 cSHAKE-256。只有在使用 OpenSSL 4.0 或更高版本构建 Node.js，且所选提供程序支持相应摘要参数时，才支持这些选项。字符串会编码为 UTF-8，字符串和值都不得包含 NUL 字节。这两个选项的默认值均为空字节字符串。对于 OpenSSL 内置提供程序，`functionName` 区分大小写，且必须是 `''`、`'TupleHash'`、`'ParallelHash'` 或 `'KMAC'`。其他提供程序可能会施加不同的限制。当这两个选项均为空时，对于相同的输出长度，cSHAKE 会产生与对应 SHAKE 函数相同的输出。`cshake-128` 和 `cshake-256` 的默认输出长度分别为 32 字节和 64 字节。
 
-`algorithm` 取决于平台上 OpenSSL 版本所支持的可用算法。示例包括 `'sha256'`、`'sha512'` 等。在较新版本的 OpenSSL 中，`openssl list -digest-algorithms` 将显示可用的摘要算法。
+当数据量较小（< 5MB）且可随时获取时，通常 [`crypto.hash()`][] 更快。
+
+可用算法取决于平台上的 OpenSSL 版本和配置。例如 `'sha256'` 和 `'sha512'`。使用 [`crypto.getHashes()`][] 获取 Node.js 进程可用的哈希算法列表。
 
 示例：生成文件的 sha256 总和
 
@@ -3449,9 +3536,9 @@ changes:
 
 创建并返回一个 `Hmac` 对象，使用给定的 `algorithm` 和 `key`。可选 `options` 参数控制流行为。
 
-`algorithm` 取决于平台上 OpenSSL 版本支持的可用算法。示例有 `'sha256'`、`'sha512'` 等。在最近的 OpenSSL 版本上，`openssl list -digest-algorithms` 将显示可用的摘要算法。
+可用算法取决于平台上的 OpenSSL 版本和配置。例如 `'sha256'` 和 `'sha512'`。[`crypto.getHashes()`][] 列出了哈希 API 可用的算法，但 HMAC 另有一些限制，因此并非列出的所有算法都适用。
 
-`key` 是用于生成加密 HMAC 哈希的 HMAC 密钥。如果它是 [`KeyObject`][]，其类型必须是 `secret`。如果它是字符串，请考虑 [使用字符串作为加密 API 输入时的注意事项][]。如果它是从加密安全的熵源获得的，例如 [`crypto.randomBytes()`][] 或 [`crypto.generateKey()`][]，其长度不应超过 `algorithm` 的块大小（例如，SHA-256 为 512 位）。
+`key` 是用于生成加密 HMAC 哈希的 HMAC 密钥。如果它是 [`KeyObject`][]，其类型必须是 `secret`。如果它是字符串，请考虑[使用字符串作为加密 API 输入时的注意事项][]。如果它是从加密安全的熵源获得的，例如 [`crypto.randomBytes()`][] 或 [`crypto.generateKey()`][]，其长度不应超过 `algorithm` 的块大小（例如，SHA-256 为 512 位）。
 
 示例：生成文件的 sha256 HMAC
 
@@ -3505,12 +3592,53 @@ input.on('readable', () => {
 });
 ```
 
+### `crypto.createMac(algorithm, key[, options])`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1.2 - 候选发布版
+
+* `algorithm` {string} MAC 算法的名称。
+* `key` {ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
+* `options` {Object} [`stream.transform` options][]
+  * `digest` {string} MAC（如 HMAC）使用的摘要算法。
+  * `cipher` {string} MAC（如 CMAC 或 GMAC）使用的密码算法。
+  * `iv` {ArrayBuffer|Buffer|TypedArray|DataView} MAC（如 GMAC）的初始化向量。
+  * `customization` {ArrayBuffer|Buffer|TypedArray|DataView} 支持自定义的 MAC（如 KMAC）使用的自定义字节字符串。
+  * `salt` {ArrayBuffer|Buffer|TypedArray|DataView} 支持盐值的 MAC（如 BLAKE2 MAC）使用的盐值字节字符串。
+  * `outputLength` {number} 所请求的提供程序输出大小（以字节为单位）。必须是无符号 32 位整数。还需遵循提供程序特定的限制。
+* 返回：{Mac}
+
+`algorithm` 必须是非空的提供程序 MAC 名称。上面列出的 MAC 特定属性是标准 [`stream.transform` options][] 的扩展，只有在所选提供程序实现声明支持对应类型的参数时，才会传递这些属性。如果提供了所选实现不支持的 MAC 特定选项，则会导致错误。
+
+下表总结了 OpenSSL 内置提供程序中的 MAC 实现所接受的 MAC 特定选项。每种 MAC 都必须提供 `key` 参数。该表仅列出 MAC 特定选项；每个系列仍可使用标准 [`stream.transform` options][]。
+
+| MAC 系列 | 必需选项 | 可选选项 | 备注 |
+| ---------- | --------------------------------------- | --------------------------------------- | ---------------------------------------------------------------------- |
+| HMAC | `digest` | 无 | |
+| CMAC | 使用 CBC 模式的 `cipher` | 无 | |
+| GMAC | 使用 GCM 模式的 `cipher`、非空 `iv` | 无 | 对使用给定密钥进行身份验证的每条消息，都必须使用唯一的 IV。 |
+| KMAC | 无 | `customization`、`outputLength` | |
+| BLAKE2 MAC | 无 | `customization`、`salt`、`outputLength` | |
+| Poly1305 | 无 | 无 | 每个密钥只能用于一条消息。 |
+| SipHash | 无 | `outputLength` | |
+
+`outputLength` 用于配置提供程序 MAC 的输出大小。它绝不会通过计算更长的标签再截断来实现。值 `0` 会传递给提供程序，且只有在该提供程序能够以零字节输出初始化并完成 MAC 时才会被接受。如果省略 `outputLength`，则使用提供程序的默认输出大小，该值必须非零。
+
+`key` 必须包含字节，或者是类型为 `secret` 的 [`KeyObject`][]。密钥长度和其他密钥要求由所选提供程序实现决定。
+
+可用算法及其接受的参数取决于 OpenSSL 版本、已加载的提供程序以及当前启用的默认属性查询。使用 [`crypto.getMacs()`][] 列出可获取的 MAC 名称。列出的名称仍可能要求提供选项或具有提供程序特定属性的密钥。
+
 ### `crypto.createPrivateKey(key)`
 
 <!-- YAML
 added: v11.6.0
 changes:
-  - version: v26.7.0
+  - version:
+     - v26.7.0
+     - v24.21.0
     pr-url: https://github.com/nodejs/node/pull/63949
     description: 密钥也可以是引用 OpenSSL STORE 加载器对象的 URL。新增了 `properties` 选项。
   - version: v26.7.0
@@ -3667,7 +3795,7 @@ added: v0.1.92
 * `options` {Object} [`stream.Writable` 选项][]
 * 返回：{Sign}
 
-创建并返回一个 Verify 对象，使用给定的摘要算法。使用 [crypto.getHashes][] 获取可用摘要算法的名称。可选的回调参数控制异步行为。
+创建并返回一个使用给定 `algorithm` 的 `Sign` 对象。使用 [`crypto.getHashes()`][] 获取哈希 API 可用的名称。密钥类型和签名方案可能会对可用摘要施加其他限制。可选的 `options` 参数用于控制 `stream.Writable` 的行为。
 
 在某些情况下，可以使用签名算法的名称（如 RSA-SHA256）而不是摘要算法来创建 Verify 实例。这将使用相应的摘要算法。这不适用于所有签名算法，例如 RSA-SHA1，因此最好始终使用摘要算法名称。
 
@@ -3681,7 +3809,10 @@ added: v0.1.92
 * options {Object} [options 选项][]
 * 返回：{Verify}
 
-创建并返回一个 Verify 对象，使用给定的算法。使用 [crypto.getHashes][] 获取可用签名算法名称的数组。可选的回调参数控制异步行为。
+创建并返回一个使用给定 algorithm 的 `Verify` 对象。
+使用 [`crypto.getHashes()`][] 获取哈希 API 可用的名称。
+密钥类型和签名方案可能会对可用摘要施加其他限制。可选的 `options` 参数用于控制
+`stream.Writable` 的行为。
 
 在某些情况下，可以使用签名算法的名称（如 RSA-SHA256）而不是摘要算法来创建 Verify 实例。这将使用相应的摘要算法。这不适用于所有签名算法，例如 RSA-SHA1，因此最好始终使用摘要算法名称。
 
@@ -3902,7 +4033,9 @@ changes:
 
 生成给定 `type` 的新非对称密钥对。参见支持的 [非对称密钥类型][]。
 
-如果指定了 `publicKeyEncoding` 或 `privateKeyEncoding`，此函数的行为就像在其结果上调用了 [`keyObject.export()`][]。否则，密钥的相应部分作为 [`KeyObject`][] 返回。
+对于 RSA-PSS 密钥，[`crypto.getHashes()`][] 会列出哈希 API 可用的算法，但并非所有列出的摘要都能编码到 RSA-PSS 参数中，或受到活动 RSA 实现的支持。
+
+如果指定了 `publicKeyEncoding` 或 `privateKeyEncoding`，此函数的行为就像对其结果调用了 [`keyObject.export()`][]。否则，密钥的相应部分将作为 [`KeyObject`][] 返回。
 
 建议将公钥编码为 `'spki'`，私钥编码为 `'pkcs8'` 并加密以进行长期存储：
 
@@ -4012,7 +4145,9 @@ changes:
 
 生成给定 `type` 的新非对称密钥对。参见支持的 [非对称密钥类型][]。
 
-如果指定了 `publicKeyEncoding` 或 `privateKeyEncoding`，此函数的行为就像在其结果上调用了 [`keyObject.export()`][]。否则，密钥的相应部分作为 [`KeyObject`][] 返回。
+对于 RSA-PSS 密钥，[`crypto.getHashes()`][] 会列出哈希 API 可用的算法，但并非所有列出的摘要都能编码到 RSA-PSS 参数中，或受到活动 RSA 实现的支持。
+
+如果指定了 `publicKeyEncoding` 或 `privateKeyEncoding`，此函数的行为就像对其结果调用了 [`keyObject.export()`][]。否则，密钥的相应部分将作为 [`KeyObject`][] 返回。
 
 编码公钥时，建议使用 `'spki'`。编码私钥时，建议使用 `'pkcs8'` 并带有强密码短语，并保持密码短语机密。
 
@@ -4175,15 +4310,15 @@ added: v15.0.0
 
 * `nameOrNid` {string|number} 要查询的密码名称或 nid。
 * `options` {Object}
-  * `keyLength` {number} 要测试的密钥长度。
-  * `ivLength` {number} 要测试的 IV 长度。
+  * `keyLength` {number} 测试密钥长度。
+  * `ivLength` {number} 测试 IV 长度。
 * 返回：{Object}
-  * `name` {string} 密码名称
-  * `nid` {number} 密码 nid
-  * `blockSize` {number} 密码块大小（字节）。当 `mode` 为 `'stream'` 时，此属性被省略。
-  * `ivLength` {number} 预期或默认的初始化向量长度（字节）。如果密码不使用初始化向量，则省略此属性。
+  * `name` {string} 密码的名称
+  * `nid` {number|undefined} 密码的 nid。如果密码没有 OpenSSL nid，此属性为 `undefined`。
+  * `blockSize` {number|undefined} 密码的块大小（字节）。当 `mode` 为 `'stream'` 时，此属性为 `undefined`。
+  * `ivLength` {number|undefined} 预期或默认的初始化向量长度（字节）。如果密码不使用初始化向量，此属性为 `undefined`。
   * `keyLength` {number} 预期或默认的密钥长度（字节）。
-  * `mode` {string} 密码模式。为 `'cbc'`、`'ccm'`、`'cfb'`、`'ctr'`、`'ecb'`、`'gcm'`、`'ocb'`、`'ofb'`、`'stream'`、`'wrap'`、`'xts'` 之一。
+  * `mode` {string} 密码模式。取值之一：`'cbc'`、`'ccm'`、`'cfb'`、`'ctr'`、`'ecb'`、`'gcm'`、`'gcm-siv'`、`'ocb'`、`'ofb'`、`'siv'`、`'stream'`、`'wrap'`、`'xts'`。
 
 返回有关给定密码的信息。
 
@@ -4294,19 +4429,26 @@ console.log(aliceSecret === bobSecret);
 added: v10.0.0
 -->
 
-* 返回：{number} 如果启用了 FIPS 模式，则为 `1`，否则为 `0`。未来的
-  semver-major 版本可能会将此 API 的返回类型更改为 {boolean}。
+* 返回：{number} 如果启用了 FIPS 模式，则为 `1`，否则为 `0`。未来的 semver-major 版本可能会将此 API 的返回类型更改为 {boolean}。
 
-使用 OpenSSL 3 时，此 API 报告默认属性查询是否包含
-`fips=yes`。它不能证明 FIPS 提供程序已加载或经过验证。即使请求的加密实现无法获取，因为没有已加载的提供程序为 `fips=yes` 提供匹配项，它也可能返回 `1`。请参阅 [FIPS 模式][]。
+使用 OpenSSL 3 时，此 API 报告默认属性查询是否包含 `fips=yes`。它不能证明 FIPS 提供程序已加载或经过验证。即使请求的加密实现无法获取，因为没有已加载的提供程序为 `fips=yes` 提供匹配项，它也可能返回 `1`。请参阅 [FIPS 模式][]。
 
 ### `crypto.getHashes()`
 
 <!-- YAML
 added: v0.9.3
+changes:
+  - version: v26.9.0
+    pr-url: https://github.com/nodejs/node/pull/65484
+    description: Names and aliases exposed by loaded OpenSSL providers that
+                 match the default property query are now included.
 -->
 
 * 返回：{string\[]} 支持的哈希算法名称数组，例如 `'RSA-SHA256'`。哈希算法也称为“摘要”算法。
+
+这是当前进程中可供 [`crypto.createHash()`][] 和 [`crypto.hash()`][] 使用的权威 Node.js 哈希算法列表。对于 OpenSSL 3 或更高版本，该列表取决于已加载的提供程序，以及首次生成列表时生效的默认属性查询。部分列出的算法可能需要特定于 API 的选项，例如 XOF 哈希函数的 `outputLength`。
+
+列出的哈希算法不一定受将摘要与另一项加密操作结合使用的 API 支持，例如 HMAC、密钥派生或签名。这些操作可能会施加额外限制。
 
 ```mjs
 const {
@@ -4322,6 +4464,29 @@ const {
 } = require('node:crypto');
 
 console.log(getHashes()); // ['DSA', 'DSA-SHA', 'DSA-SHA1', ...]
+```
+
+### `crypto.getMacs()`
+
+<!-- YAML
+added: v26.9.0
+-->
+
+> 稳定性：1.2 - 候选发布版
+
+* 返回：{string\[]} 一个新数组，包含可获取的 MAC 实现的小写名称及其别名，并按名称排序。
+
+返回已加载的 OpenSSL 提供程序所公开且符合当前默认属性查询的 MAC 名称。重复名称和数字 OID 别名会被省略。在不支持 OpenSSL `EVP_MAC` 的构建版本中，此函数返回空数组。
+
+返回的名称描述的是 OpenSSL 可以获取的实现。它们并不保证 [`crypto.createMac()`][] 无需额外选项即可初始化 MAC。提供程序可能要求额外参数或具有特定于算法属性的密钥，也可能公开此 API 不支持的参数。
+
+使用 [`crypto.setFips()`][] 成功更改 FIPS 模式后，后续调用会反映新的模式，新建的 `Mac` 对象也会使用该模式。现有的 `Mac` 对象会继续使用创建时选定的提供程序实现。
+
+```mjs
+const { getMacs } = await import('node:crypto');
+
+console.log(getMacs());
+// ['blake2bmac', 'blake2smac', 'cmac', 'gmac', 'hmac', ...]
 ```
 
 ### `crypto.getRandomValues(typedArray)`
@@ -4344,7 +4509,13 @@ added:
 changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/64000
-    description: 对于没有默认输出长度的 XOF 哈希函数，现在必须提供 `outputLength` 选项。
+    description: The `outputLength` option is now required for XOF
+                 hash functions without default output lengths.
+  - version: v26.9.0
+    pr-url: https://github.com/nodejs/node/pull/65484
+    description: Hash algorithms exposed by OpenSSL providers are now
+                 supported. The `functionName` and `customization` options
+                 were added for cSHAKE hash functions.
   - version:
      - v25.5.0
      - v24.13.1
@@ -4358,13 +4529,17 @@ changes:
 * `algorithm` {string|undefined}
 * `data` {string|Buffer|TypedArray|DataView} 当 `data` 是字符串时，它将在被哈希之前编码为 UTF-8。如果希望字符串输入使用不同的输入编码，用户可以使用 `TextEncoder` 或 `Buffer.from()` 将字符串编码为 `TypedArray`，并将编码后的 `TypedArray` 传递到此 API 中。
 * `options` {Object|string}
-  * `outputEncoding` {string} [编码][encoding] 用于对返回的摘要进行编码。**默认值：** `'hex'`。
-  * `outputLength` {number} 对于诸如 'shake256' 之类的 XOF 哈希函数，指定所需的输出长度（以字节为单位）。对于没有默认输出长度的 XOF 哈希函数，此选项是必需的。
+  * `customization` {string|ArrayBuffer|Buffer|TypedArray|DataView} 对于 cSHAKE 哈希函数，指定自定义字节串。**默认值：** 空字节串。
+  * `functionName` {string|ArrayBuffer|Buffer|TypedArray|DataView} 对于 cSHAKE 哈希函数，指定 NIST 函数名称字节串。**默认值：** 空字节串。
+  * `outputEncoding` {string} 用于对返回的摘要进行编码的[编码方式][encoding]。**默认值：** `'hex'`。
+  * `outputLength` {number} 对于 'shake256' 等 XOF 哈希函数，指定所需的输出长度（字节）。对于没有默认输出长度的 XOF 哈希函数，此选项为必需。
 * 返回：{string|Buffer}
 
 用于创建数据一次性哈希摘要的实用工具。当哈希少量现成数据（<= 5MB）时，它可能比基于对象的 `crypto.createHash()` 更快。如果数据可能很大或是流式的，仍建议使用 `crypto.createHash()`。
 
-`algorithm` 取决于平台上 OpenSSL 版本支持的可用算法。例如 `'sha256'`、`'sha512'` 等。在最新版本的 OpenSSL 上，`openssl list -digest-algorithms` 将显示可用的摘要算法。
+可用算法取决于平台上的 OpenSSL 版本和配置。示例包括 `'sha256'` 和 `'sha512'`。使用 [`crypto.getHashes()`][] 获取 Node.js 进程可用的哈希算法列表。
+
+`functionName` 和 `customization` 选项仅适用于 cSHAKE-128 和 cSHAKE-256。只有在使用 OpenSSL 4.0 或更高版本构建 Node.js，且所选提供程序支持相应摘要参数时，才支持这些选项。字符串会编码为 UTF-8，字符串和字节值均不得包含 NUL 字节。这两个选项的默认值都是空字节串。对于 OpenSSL 内置提供程序，`functionName` 区分大小写，且必须为 `''`、`'TupleHash'`、`'ParallelHash'` 或 `'KMAC'`。其他提供程序可能施加不同限制。当这两个选项都为空时，对于相同的输出长度，cSHAKE 会产生与相应 SHAKE 函数相同的输出。`cshake-128` 和 `cshake-256` 的默认输出长度分别为 32 和 64 字节。
 
 如果 `options` 是字符串，则它指定 `outputEncoding`。
 
@@ -4426,7 +4601,7 @@ changes:
   * `err` {Error}
   * `derivedKey` {ArrayBuffer}
 
-HKDF 是 RFC 5869 中定义的一种简单密钥派生函数。给定的 `ikm`、`salt` 和 `info` 与 `digest` 一起用于派生 `keylen` 字节的密钥。
+HKDF 是 RFC 5869 中定义的一种简单密钥派生函数。给定的 `ikm`、`salt` 和 `info` 与 `digest` 一起使用，以派生长度为 `keylen` 字节的密钥。可用的摘要算法取决于 OpenSSL 的版本和配置。HKDF 在内部使用 HMAC。[`crypto.getHashes()`][] 列出了哈希 API 可用的算法，但列出的算法并非都适用于 HMAC 或 HKDF。
 
 提供的 `callback` 函数接收两个参数：`err` 和 `derivedKey`。如果在派生密钥时发生错误，`err` 将被设置；否则 `err` 将为 `null`。成功生成的 `derivedKey` 将作为 {ArrayBuffer} 传递给回调。如果任何输入参数指定了无效的值或类型，将抛出错误。
 
@@ -4473,7 +4648,7 @@ changes:
 * `keylen` {number} 要生成的密钥长度。必须大于 0。最大允许值是所选摘要函数产生的字节数的 `255` 倍（例如 `sha512` 生成 64 字节哈希，使最大 HKDF 输出为 16320 字节）。
 * 返回：{ArrayBuffer}
 
-提供 RFC 5869 中定义的同步 HKDF 密钥派生函数。给定的 `ikm`、`salt` 和 `info` 与 `digest` 一起用于派生 `keylen` 字节的密钥。
+提供 RFC 5869 中定义的同步 HKDF 密钥派生函数。给定的 `ikm`、`salt` 和 `info` 与 `digest` 一起使用，以派生长度为 `keylen` 字节的密钥。可用的摘要算法取决于 OpenSSL 的版本和配置。HKDF 在内部使用 HMAC。[`crypto.getHashes()`][] 列出了哈希 API 可用的算法，但列出的算法并非都适用于 HMAC 或 HKDF。
 
 成功生成的 `derivedKey` 将作为 {ArrayBuffer} 返回。
 
@@ -4499,7 +4674,33 @@ const derivedKey = hkdfSync('sha512', 'key', 'salt', 'info', 64);
 console.log(Buffer.from(derivedKey).toString('hex'));  // '24156e2...5391653'
 ```
 
-### 密钥派生函数 2（PBKDF2）
+### `crypto.parsePKCS12(bundle[, options])`
+
+<!-- YAML
+added: v26.10.0
+-->
+
+* `bundle` {ArrayBuffer|Buffer|TypedArray|DataView} DER 编码的 PKCS#12（`.p12` 或 `.pfx`）捆绑包。
+* `options` {Object}
+  * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于保护捆绑包的密码短语。省略此选项等同于传入 `''`。
+* 返回：{Object}
+  * `privateKey` {KeyObject|null} 捆绑包中的第一个私钥，如果不存在，则为 `null`。
+  * `certificate` {X509Certificate|null} 与 `privateKey` 匹配的证书，如果不存在匹配的证书，则为 `null`。
+  * `additionalCertificates` {X509Certificate\[]} 捆绑包中的所有其他证书。如果没有私钥，则此项包含所有证书。可以为空。
+
+解析 PKCS#12 捆绑包（通常以 `.p12` 或 `.pfx` 为扩展名存储），并返回其中的私钥和证书。
+
+```mjs
+import { parsePKCS12 } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+
+const { privateKey, certificate, additionalCertificates } = parsePKCS12(
+  readFileSync('bundle.p12'),
+  { passphrase: 'secret' },
+);
+```
+
+### `crypto.pbkdf2(password, salt, iterations, keylen, digest, callback)`
 
 <!-- YAML
 added: v0.5.5
@@ -4565,7 +4766,7 @@ pbkdf2('secret', 'salt', 100000, 64, 'sha512', (err, derivedKey) => {
 });
 ```
 
-可以使用 [`crypto.getHashes()`][] 检索支持的摘要函数数组。
+可用的摘要算法取决于 OpenSSL 的版本和配置。PBKDF2 在内部使用 HMAC。[`crypto.getHashes()`][] 列出了哈希 API 可用的算法，但列出的算法并非都适用于 HMAC 或 PBKDF2。
 
 此 API 使用 libuv 的线程池，这可能会对某些应用程序产生令人惊讶的负面性能影响；有关更多信息，请参阅 [`UV_THREADPOOL_SIZE`][] 文档。
 
@@ -4623,7 +4824,7 @@ const key = pbkdf2Sync('secret', 'salt', 100000, 64, 'sha512');
 console.log(key.toString('hex'));  // '3745e48...08d59ae'
 ```
 
-可以使用 [`crypto.getHashes()`][] 检索支持的摘要函数数组。
+可用的摘要算法取决于 OpenSSL 的版本和配置。PBKDF2 在内部使用 HMAC。[`crypto.getHashes()`][] 列出了哈希 API 可用的算法，但列出的算法并非都适用于 HMAC 或 PBKDF2。
 
 ### `crypto.privateDecrypt(privateKey, buffer)`
 
@@ -4631,11 +4832,11 @@ console.log(key.toString('hex'));  // '3745e48...08d59ae'
 added: v0.11.14
 changes:
   - version: REPLACEME
-    pr-url: https://github.com/nodejs/node/pull/65073
-    description: The `mgf1Hash` option was added.
-  - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63188
-    description: 传入 CryptoKey 作为 `privateKey` 已不再受支持。
+    description: 不再支持将 CryptoKey 作为 `privateKey` 传入。
+  - version: v26.8.0
+    pr-url: https://github.com/nodejs/node/pull/65073
+    description: 添加了 `mgf1Hash` 选项。
   - version:
       - v21.6.2
       - v20.11.1
@@ -4659,11 +4860,8 @@ changes:
 <!--lint disable maximum-line-length remark-lint-->
 
 * `privateKey` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject|URL}
-  * `oaepHash` {string} 用于 OAEP 填充和, unless
-    `mgf1Hash` is set, MGF1 的哈希函数。 **默认值：** `'sha1'`
-  * `mgf1Hash` {string} The hash function to use for the MGF1 mask generation
-    function of OAEP padding. If not specified, the value of `oaepHash` is used.
-    This allows the OAEP digest and the MGF1 digest to differ.
+  * `oaepHash` {string} 用于 OAEP 填充和 MGF1 的哈希函数，除非设置了 `mgf1Hash`。**默认值：** `'sha1'`
+  * `mgf1Hash` {string} 用于 OAEP 填充的 MGF1 掩码生成函数的哈希函数。如果未指定，则使用 `oaepHash` 的值。这允许 OAEP 摘要和 MGF1 摘要不同。
   * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于 OAEP 填充的标签。如果未指定，则不使用标签。
   * `padding` {crypto.constants} 在 `crypto.constants` 中定义的可选填充值，可以是：`crypto.constants.RSA_NO_PADDING`、`crypto.constants.RSA_PKCS1_PADDING` 或
     `crypto.constants.RSA_PKCS1_OAEP_PADDING`。
@@ -4673,6 +4871,8 @@ changes:
 <!--lint enable maximum-line-length remark-lint-->
 
 使用 `privateKey` 解密 `buffer`。`buffer` 之前是使用相应的公钥加密的，例如使用 [`crypto.publicEncrypt()`][]。
+
+[`crypto.getHashes()`][] 列出了哈希 API 可用的算法，但当前的 RSA 实现可能会对用于 OAEP 或 MGF1 的摘要施加额外限制。
 
 如果 `privateKey` 不是 [`KeyObject`][]，此函数的行为就好像 `privateKey` 已传递给 [`crypto.createPrivateKey()`][]。如果它是一个对象，则可以传递 `padding` 属性。否则，此函数使用 `RSA_PKCS1_OAEP_PADDING`。
 
@@ -4754,11 +4954,11 @@ changes:
 added: v0.11.14
 changes:
   - version: REPLACEME
-    pr-url: https://github.com/nodejs/node/pull/65073
-    description: The `mgf1Hash` option was added.
-  - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/63188
-    description: 作为 `key` 传递 CryptoKey 已不再受支持。
+    description: 将 CryptoKey 作为 `key` 传递不再受支持。
+  - version: v26.8.0
+    pr-url: https://github.com/nodejs/node/pull/65073
+    description: 添加了 `mgf1Hash` 选项。
   - version: v15.0.0
     pr-url: https://github.com/nodejs/node/pull/35093
     description: 添加了 string、ArrayBuffer 和 CryptoKey 作为允许的密钥类型。oaepLabel 和 passphrase 可以是 ArrayBuffer。buffer 可以是 string 或 ArrayBuffer。所有接受 buffer 的类型限制为最大 2 ** 31 - 1 字节。
@@ -4778,11 +4978,11 @@ changes:
 * `key` {Object|string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
   * `key` {string|ArrayBuffer|Buffer|TypedArray|DataView|KeyObject}
     PEM 编码的公钥或私钥，或者 {KeyObject}。
-  * `oaepHash` {string} 用于 OAEP 填充和, unless
-    `mgf1Hash` is set, MGF1 的哈希函数。 **默认值：** `'sha1'`
-  * `mgf1Hash` {string} The hash function to use for the MGF1 mask generation
-    function of OAEP padding. If not specified, the value of `oaepHash` is used.
-    This allows the OAEP digest and the MGF1 digest to differ.
+  * `oaepHash` {string} 用于 OAEP 填充和 MGF1 的哈希函数，除非
+    设置了 `mgf1Hash`。**默认值：** `'sha1'`
+  * `mgf1Hash` {string} 用于 OAEP 填充的 MGF1 掩码生成
+    函数的哈希函数。如果未指定，则使用 `oaepHash` 的值。
+    这样可以使 OAEP 摘要与 MGF1 摘要不同。
   * `oaepLabel` {string|ArrayBuffer|Buffer|TypedArray|DataView} 用于
     OAEP 填充的标签。如果未指定，则不使用标签。
   * `passphrase` {string|ArrayBuffer|Buffer|TypedArray|DataView} 私钥的可选
@@ -4800,6 +5000,8 @@ changes:
 
 使用 `key` 加密 `buffer` 的内容并返回一个包含加密内容的新 [`Buffer`][]。返回的数据可以使用相应的私钥解密，例如使用 [`crypto.privateDecrypt()`][]。
 
+[`crypto.getHashes()`][] 列出了哈希 API 可用的算法，但当前活动的 RSA 实现可能会对用于 OAEP 或 MGF1 的摘要施加额外限制。
+
 如果 `key` 不是 [`KeyObject`][]，此函数的行为就好像 `key` 已传递给 [`crypto.createPublicKey()`][]。如果它是一个对象，则可以传递 `padding` 属性。否则，此函数使用 `RSA_PKCS1_OAEP_PADDING`。
 
 因为 RSA 公钥可以从私钥派生，所以可以传递私钥而不是公钥。
@@ -4811,21 +5013,21 @@ added: v0.5.8
 changes:
   - version: v18.0.0
     pr-url: https://github.com/nodejs/node/pull/41678
-    description: "Passing an invalid callback to the `callback` argument now throws `ERR_INVALID_ARG_TYPE` instead of `ERR_INVALID_CALLBACK`."
+    description: "现在向 `callback` 参数传递无效的回调会抛出 `ERR_INVALID_ARG_TYPE`，而不是 `ERR_INVALID_CALLBACK`。"
   - version: v9.0.0
     pr-url: https://github.com/nodejs/node/pull/16454
-    description: "Passing `null` as the `callback` argument now throws `ERR_INVALID_CALLBACK`."
+    description: "现在将 `null` 作为 `callback` 参数传递会抛出 `ERR_INVALID_CALLBACK`。"
 -->
 
-* `size` {number} The number of bytes to generate. `size` must not be greater than `2**31 - 1`.
+* `size` {number} 要生成的字节数。`size` 不得大于 `2**31 - 1`。
 * `callback` {Function}
   * `err` {Error}
   * `buf` {Buffer}
-* Returns: {Buffer} if the `callback` function is not provided.
+* 返回：{Buffer} 如果未提供 `callback` 函数。
 
-Generates cryptographically strong pseudorandom data. The `size` argument is a number indicating the number of bytes to generate.
+生成在密码学上安全的伪随机数据。`size` 参数是一个数字，表示要生成的字节数。
 
-If a `callback` function is provided, the bytes are generated asynchronously and the `callback` function is called with two arguments: `err` and `buf`. If an error occurs, `err` will be an `Error` object; otherwise it will be `null`. The `buf` argument is a [`Buffer`][] containing the generated bytes.
+如果提供了 `callback` 函数，字节将异步生成，并使用两个参数 `err` 和 `buf` 调用 `callback` 函数。如果发生错误，`err` 将是一个 `Error` 对象；否则它将为 `null`。`buf` 参数是一个包含所生成字节的 [`Buffer`][]。
 
 ```mjs
 // Asynchronous
@@ -4851,7 +5053,7 @@ randomBytes(256, (err, buf) => {
 });
 ```
 
-If the `callback` function is not provided, the random bytes are generated synchronously and returned as a [`Buffer`][]. An error will be thrown if there is a problem generating the bytes.
+如果未提供 `callback` 函数，随机字节将同步生成，并作为 [`Buffer`][] 返回。如果生成字节时出现问题，则会抛出错误。
 
 ```mjs
 // Synchronous
@@ -4875,11 +5077,11 @@ console.log(
   `${buf.length} 字节的随机数据：${buf.toString('hex')}`);
 ```
 
-The `crypto.randomBytes()` method will not complete until there is sufficient available entropy. This will normally never take longer than a few milliseconds. The only time generating random bytes may block for a longer period of time is right after startup, when the entire system is still low on entropy.
+`crypto.randomBytes()` 方法会一直等待，直到有足够的可用熵。通常，这不会超过几毫秒。生成随机字节可能长时间阻塞的唯一情况是在启动后，此时整个系统的熵仍然不足。
 
-This API uses libuv's threadpool, which can have surprising and negative performance implications for some applications; see the [`UV_THREADPOOL_SIZE`][] documentation for more information.
+此 API 使用 libuv 的线程池，这可能会对某些应用程序产生令人惊讶的负面性能影响；有关更多信息，请参阅 [`UV_THREADPOOL_SIZE`][] 文档。
 
-The asynchronous version of `crypto.randomBytes()` is carried out in a single threadpool request. To minimize threadpool task length variation, partition large `randomBytes` requests when fulfilling client requests.
+`crypto.randomBytes()` 的异步版本通过单个线程池请求执行。为了尽量减少线程池任务长度的变化，在处理客户端请求时，请将大型 `randomBytes` 请求拆分。
 
 ### `crypto.randomFill(buffer[, offset][, size], callback)`
 
@@ -5489,7 +5691,9 @@ changes:
 
 对于 Ed25519、Ed448 和 ML-DSA，`algorithm` 必须是 `null` 或 `undefined`。
 
-如果 `key` 不是 [`KeyObject`][]，此函数的行为就像将 `key` 传递给了 [`crypto.createPrivateKey()`][] 一样。当 `key` 是字符串、`ArrayBuffer`、[`Buffer`][]、`TypedArray` 或 `DataView` 时，它必须包含 PEM 编码的密钥材料。如果它是一个对象，则可以传入以下其他属性：
+[`crypto.getHashes()`][] 列出了哈希 API 可用的算法，但密钥类型和签名方案决定了列出的摘要算法是否可用于签名。
+
+如果 `key` 不是 [`KeyObject`][]，此函数的行为就像将 `key` 传递给了 [`crypto.createPrivateKey()`][]。当 `key` 是字符串、`ArrayBuffer`、[`Buffer`][]、`TypedArray` 或 `DataView` 时，它必须包含 PEM 编码的密钥材料。如果它是一个对象，则可以传入以下其他属性：
 
 * `dsaEncoding` {string} 对于 DSA 和 ECDSA，此选项指定生成签名的格式。它可以是以下之一：
   * `'der'`（默认）：DER 编码的 ASN.1 签名结构编码 `(r, s)`。
@@ -5614,10 +5818,9 @@ changes:
 对于 Ed25519、Ed448 和
 ML-DSA，`algorithm` 必须为 `null` 或 `undefined`。
 
-如果 `key` 不是 [`KeyObject`][]，此函数的行为就如同将 `key` 传递给了
-[`crypto.createPublicKey()`][]。当 `key` 是字符串、`ArrayBuffer`、
-[`Buffer`][]、`TypedArray` 或 `DataView` 时，其中必须包含 PEM 编码的密钥
-材料。如果它是一个对象，还可以传递以下其他属性：
+[`crypto.getHashes()`][] 列出了哈希 API 可用的算法，但密钥类型和签名方案决定了列出的摘要算法是否可用于验证。
+
+If `key` 不是 [`KeyObject`][]，此函数的行为就像将 `key` 传递给了 [`crypto.createPublicKey()`][]。当 `key` 是字符串、`ArrayBuffer`、[`Buffer`][]、`TypedArray` 或 `DataView` 时，它必须包含 PEM 编码的密钥材料。如果它是一个对象，则可以传递以下附加属性：
 
 * `dsaEncoding` {string} 对于 DSA 和 ECDSA，此选项指定
   签名的格式。它可以是以下之一：
@@ -5655,6 +5858,211 @@ added: v15.0.0
 类型：{Crypto} Web Crypto API 标准的实现。
 
 详见 [Web Crypto API 文档][]。
+
+### FIPS 模式
+
+Node.js 公开了所链接的 OpenSSL 库提供的 FIPS 支持。Node.js 本身并未通过 FIPS 验证。验证针对特定的 OpenSSL 模块或提供程序，并且仅在按照其安全策略部署时适用。供应商提供的 Node.js 或 OpenSSL 构建可能需要不同的配置；对于这些构建，请遵循供应商的文档。
+
+使用 OpenSSL 1.1.1 时，Node.js 必须针对支持 FIPS 的 OpenSSL 库构建。
+
+使用 OpenSSL 3 时，FIPS 支持采用 [OpenSSL FIPS 模块指南][] 中描述的提供程序模型。使用经 FIPS 批准的实现需要：
+
+* 正确安装的 OpenSSL 3 FIPS 提供程序。
+* OpenSSL 3 [FIPS 模块配置文件][]。
+* 将 FIPS 提供程序加载到 Node.js 使用的 OpenSSL 库上下文中，通常是在 Node.js 启动时通过 OpenSSL 配置文件激活该提供程序。
+* 在获取加密实现时，使默认属性查询包含 `fips=yes`。可以通过 OpenSSL 配置、[`--enable-fips`][] 或 [`--force-fips`][] 在进程启动时设置，也可以通过 `crypto.setFips(true)` 为后续获取操作设置。
+
+  ```js
+  const original = [0xc0, 0xaf];
+  const bytesAsString = Buffer.from(original).toString('utf8');
+  const stringAsBytes = Buffer.from(bytesAsString, 'utf8');
+  console.log(stringAsBytes);
+  // Prints '<Buffer ef bf bd ef bf bd>'.
+  ```
+
+  密码、哈希函数、签名算法和密钥派生函数的输出是伪随机字节序列，不应将其用作 Unicode 字符串。
+* 从用户输入获取字符串时，一些 Unicode 字符可以用多种等效方式表示，而这些表示会产生不同的字节序列。例如，将用户口令短语传递给 PBKDF2 或 scrypt 等密钥派生函数时，密钥派生函数的结果取决于字符串使用的是组合字符还是分解字符。Node.js 不会规范化字符表示。开发者应考虑在将用户输入传递给加密 API 之前，对其使用 [`String.prototype.normalize()`][]。
+
+### 旧版流 API（早于 Node.js 0.10）
+
+Crypto 模块在 Node.js 尚未有统一流 API 概念、也尚未有用于处理二进制数据的 [`Buffer`][] 对象之前就已加入。因此，许多 `crypto` 类具有其他实现 [streams][stream] API 的 Node.js 类通常没有的方法（例如 `update()`、`final()` 或 `digest()`）。此外，许多方法默认接受并返回 `'latin1'` 编码的字符串，而不是 `Buffer`。此默认设置在 Node.js 0.9.3 中更改为默认使用 [`Buffer`][] 对象。
+
+### 对弱算法或已遭破解算法的支持
+
+`node:crypto` 模块仍支持一些已经遭破解且不建议使用的算法。该 API 也允许使用密钥长度较短、无法安全使用的密码和哈希算法。
+
+用户应全权负责根据自身安全要求选择加密算法和密钥长度。
+
+根据 [NIST SP 800-131A][] 的建议：
+
+* 在需要抗碰撞性的场景（例如数字签名）中，MD5 和 SHA-1 已不再适用。
+* 建议 RSA、DSA 和 DH 算法使用的密钥至少为 2048 位，ECDSA 和 ECDH 使用的曲线至少为 224 位，以确保未来数年内可安全使用。
+* `modp1`、`modp2` 和 `modp5` DH 组的密钥长度小于 2048 位，不建议使用。
+
+其他建议和详细信息请参阅参考资料。
+
+一些已知存在弱点、且在实践中意义不大的算法仅可通过 [legacy provider][] 使用，该提供程序默认未启用。
+
+### CCM 模式
+
+CCM 是受支持的 [AEAD 算法][]之一。使用此模式的应用程序必须在使用密码 API 时遵守某些限制：
+
+* 必须在创建密码时通过设置 `authTagLength` 选项指定认证标签长度，且长度必须为 4、6、8、10、12、14 或 16 字节。
+* 初始化向量（nonce）`N` 的长度必须介于 7 到 13 字节之间（`7 ≤ N ≤ 13`）。
+* 明文长度最多为 `2 ** (8 * (15 - N))` 字节。
+* 解密时，必须在调用 `update()` 之前通过 `setAuthTag()` 设置认证标签。
+  否则，解密将失败，并且 `final()` 会根据 [RFC 3610][] 第 2.6 节抛出错误。
+* 在 CCM 模式下使用 `write(data)`、`end(data)` 或 `pipe()` 等流方法可能会失败，因为 CCM 每个实例无法处理多个数据块。
+* 传递附加认证数据（AAD）时，必须通过 `plaintextLength` 选项将实际消息的字节长度传递给 `setAAD()`。
+  许多加密库会将认证标签包含在密文中，这意味着它们生成的密文长度为
+  `plaintextLength + authTagLength`。Node.js 不包含认证标签，因此密文长度始终为 `plaintextLength`。
+  如果未使用 AAD，则不需要这样做。
+* 由于 CCM 会一次性处理整条消息，因此必须且只能调用一次 `update()`。
+* 尽管调用 `update()` 已足以加密或解密消息，但应用程序仍必须调用 `final()` 来计算或验证认证标签。
+
+```mjs
+import { Buffer } from 'node:buffer';
+const {
+  createCipheriv,
+  createDecipheriv,
+  randomBytes,
+} = await import('node:crypto');
+
+const key = 'keykeykeykeykeykeykeykey';
+const nonce = randomBytes(12);
+
+const aad = Buffer.from('0123456789', 'hex');
+
+const cipher = createCipheriv('aes-192-ccm', key, nonce, {
+  authTagLength: 16,
+});
+const plaintext = 'Hello world';
+cipher.setAAD(aad, {
+  plaintextLength: Buffer.byteLength(plaintext),
+});
+const ciphertext = cipher.update(plaintext, 'utf8');
+cipher.final();
+const tag = cipher.getAuthTag();
+
+// Now transmit { ciphertext, nonce, tag }.
+
+const decipher = createDecipheriv('aes-192-ccm', key, nonce, {
+  authTagLength: 16,
+});
+decipher.setAuthTag(tag);
+decipher.setAAD(aad, {
+  plaintextLength: ciphertext.length,
+});
+const receivedPlaintext = decipher.update(ciphertext, null, 'utf8');
+
+try {
+  decipher.final();
+} catch (err) {
+  throw new Error('Authentication failed!', { cause: err });
+}
+
+console.log(receivedPlaintext);
+```
+
+```cjs
+const { Buffer } = require('node:buffer');
+const {
+  createCipheriv,
+  createDecipheriv,
+  randomBytes,
+} = require('node:crypto');
+
+const key = 'keykeykeykeykeykeykeykey';
+const nonce = randomBytes(12);
+
+const aad = Buffer.from('0123456789', 'hex');
+
+const cipher = createCipheriv('aes-192-ccm', key, nonce, {
+  authTagLength: 16,
+});
+const plaintext = 'Hello world';
+cipher.setAAD(aad, {
+  plaintextLength: Buffer.byteLength(plaintext),
+});
+const ciphertext = cipher.update(plaintext, 'utf8');
+cipher.final();
+const tag = cipher.getAuthTag();
+
+// Now transmit { ciphertext, nonce, tag }.
+
+const decipher = createDecipheriv('aes-192-ccm', key, nonce, {
+  authTagLength: 16,
+});
+decipher.setAuthTag(tag);
+decipher.setAAD(aad, {
+  plaintextLength: ciphertext.length,
+});
+const receivedPlaintext = decipher.update(ciphertext, null, 'utf8');
+
+try {
+  decipher.final();
+} catch (err) {
+  throw new Error('Authentication failed!', { cause: err });
+}
+
+console.log(receivedPlaintext);
+```
+
+### CBC-CTS 模式
+
+对于 CBC 密文窃取（CBC-CTS）密码，[`crypto.createCipheriv()`][] 或 [`crypto.createDecipheriv()`][] 的 `ctsMode` 选项用于选择变体：
+
+* `'CS1'` 是默认值。对于块对齐的输入，其输出与 CBC 模式相同。
+* `'CS2'` 对于块对齐的输入也与 CBC 相同。对于末尾含有部分数据块的输入，它会相对于 CS1 交换末尾完整密文块和部分密文块的位置。
+* `'CS3'` 是 Kerberos 5 变体。对于末尾含有部分数据块的输入，它使用 CS2 的顺序；对于块对齐的输入，它也会交换末尾两个密文块。
+
+加密和解密必须使用相同的变体。此选项仅适用于 OpenSSL 3.0 或更高版本中的 CBC-CTS 提供程序密码。
+
+使用此模式的应用程序必须遵守以下限制：
+
+* 明文或密文至少必须有一个数据块长。
+* 密文长度与明文长度相同。
+* 必须只调用一次 `cipher.update()` 或 `decipher.update()`，并传入所有输入数据。`write(data)`、`end(data)` 或 `pipe()` 等流方法可能会失败，因为 CBC-CTS 不接受多次数据更新。
+* 仍必须调用 `cipher.final()` 或 `decipher.final()` 来完成操作。
+* `crypto.getCipherInfo()` 会将基本模式报告为 `'cbc'`。
+
+### XTS 模式
+
+XTS 密码对可独立调整的数据单元进行操作。一个 `Cipheriv` 或 `Decipheriv` 实例表示一个完整的数据单元，其 `iv` 参数提供 16 字节的 tweak。对于每个不同的逻辑数据单元，请使用具有相应位置 tweak 的新实例。
+
+使用 XTS 模式的应用程序必须遵守以下限制：
+
+* 明文或密文至少必须有一个 16 字节的数据块。其长度不必是 16 的倍数，因为 XTS 会对末尾的部分数据块使用密文窃取。
+* 密文长度与明文长度相同。
+* 必须只调用一次 `cipher.update()` 或 `decipher.update()`，并传入所有输入数据。`write(data)`、`end(data)` 或 `pipe()` 等流方法可能会失败，因为 XTS 不接受多次数据更新。
+* 仍必须调用 `cipher.final()` 或 `decipher.final()` 来完成操作。
+
+对于 `sm4-xts`，[`crypto.createCipheriv()`][] 或 [`crypto.createDecipheriv()`][] 的 `xtsStandard` 选项用于选择 GB/T 17964-2021 中的默认 `'GB'` 变体或 IEEE Std 1619-2007 中的 `'IEEE'` 变体。加密和解密必须使用相同的变体。此选项仅适用于 `sm4-xts`；不适用于 AES-XTS 密码。OpenSSL 的默认提供程序在 OpenSSL 3.2 或更高版本中支持 `sm4-xts`。
+
+### AES 密钥封装模式
+
+AES 密钥封装（`AES-WRAP`）和带填充的 AES 密钥封装（`AES-WRAP-PAD`）密码针对完整的密钥数据值进行操作，而不是针对增量字节流进行操作。逆变换变体具有相同的处理限制。
+
+使用 AES 密钥封装密码的应用程序必须遵守以下限制：
+
+* 必须只调用一次 `cipher.update()` 或 `decipher.update()`，并传入完整的非空输入值。
+* 不要将 AES 密钥封装密码用作通用的 [`stream.Transform`][] 流。`write(data)`、`end(data)` 和 `pipe()` 等方法可能会将一个值拆分为多次更新，而每次更新都会被视为单独的封装或解封装操作。
+* 仍必须调用 `cipher.final()` 或 `decipher.final()` 来完成操作。
+
+### SIV 和 GCM-SIV 模式
+
+如果 OpenSSL 支持，`SIV`[^openssl30] 和 `GCM-SIV`[^openssl32] 是受支持的 [AEAD 算法][]。使用这些模式的应用程序必须在使用密码 API 时遵守某些限制：
+
+* 认证标签长度固定为 16 字节。
+* `AES-SIV` 密钥长度是所指定 AES 密钥长度的两倍：`aes-128-siv` 需要 32 字节密钥，`aes-192-siv` 需要 48 字节密钥，`aes-256-siv` 需要 64 字节密钥。
+* `AES-SIV` 密码不使用初始化向量。向 [`crypto.createCipheriv()`][] 或 [`crypto.createDecipheriv()`][] 传递 `null` 或长度为零的 `iv`。
+* 只有在 OpenSSL 3.5 或更高版本中，`AES-SIV` 和 `AES-GCM-SIV` 密码才支持零长度明文。
+* `AES-SIV` 没有单独的 nonce 或 IV 参数。RFC 5297 定义的 `AES-SIV` 以有序的关联数据输入列表为基础。每次调用 `setAAD()` 都会向该列表提供一个输入。如果某个协议在使用 `AES-SIV` 时使用 nonce，请在其他关联数据输入之后、`update()` 之前调用 `setAAD(nonce)`。最多可提供 126 个关联数据输入。
+* `AES-GCM-SIV` 密码需要 12 字节的初始化向量。
+* 解密时，必须在调用 `update()` 之前通过 `setAuthTag()` 设置认证标签。
+* 使用 `write(data)`、`end(data)` 或 `pipe()` 等流方法可能会失败，因为这些模式的每个实例无法处理多个数据块。
+* 由于这些模式会一次性处理整条消息，因此必须且只能调用一次 `update()`。
+* 尽管调用 `update()` 已足以加密或解密消息，但应用程序仍必须调用 `final()` 来计算或验证认证标签。
 
 ### FIPS 模式
 
@@ -5712,9 +6120,10 @@ export OPENSSL_MODULES=/<path to openssl lib>/ossl-modules
 
 在 OpenSSL 3 上，上述配置会在启动时启用 `fips=yes` 属性查询。还可以使用以下控制项：
 
-* [`--enable-fips`][] 和 [`--force-fips`][] 会启用属性查询，并另外要求配置的名为 `fips` 的提供程序完成初始化并通过自检。如果检查失败，Node.js 将退出。`--force-fips` 还会阻止通过脚本代码禁用 FIPS 模式。
-* [`crypto.setFips()`][] 会更改 FIPS/属性查询状态。在 OpenSSL 3 上，它不会安装、加载、初始化或验证提供程序。调用之前获取的实现不会发生变化。
-* [`crypto.getFips()`][] 会报告 FIPS/属性查询状态。在 OpenSSL 3 上，返回值为 `1` 并不能证明 FIPS 提供程序已加载或通过验证。
+* [`--enable-fips`][] 和 [`--force-fips`][] 会启用属性查询，并额外要求配置的、名为 `fips` 的提供程序完成初始化并通过自检。如果检查失败，Node.js 将退出。`--force-fips` 还会阻止通过脚本代码禁用 FIPS 模式。使用 `--force-fips=strict` 时，Node.js 还会拒绝通过 OpenSSL FIPS 指示器回调报告的非批准操作。
+* [`crypto.setFips()`][] 会更改 FIPS／属性查询状态。在 OpenSSL 3 上，它不会安装、加载、初始化或验证提供程序。调用之前获取的实现不会发生变化。
+* [`crypto.getFips()`][] 会报告 FIPS／属性查询状态。在 OpenSSL 3 上，返回值为 `1` 并不能证明 FIPS 提供程序已加载或已通过验证。
+* 使用 [`--enable-fips-indicator-events`][] 时，[`'crypto.fips.indicator'`][] 诊断通道会报告由配置为向后兼容的 OpenSSL 3.4 或更高版本 FIPS 提供程序允许的非批准操作。
 
 使用 OpenSSL 1.1.1 时，这些控制项使用库提供的 FIPS 模式支持，并且要求使用支持 FIPS 的 OpenSSL 构建。
 
@@ -5989,8 +6398,10 @@ OpenSSL 文档说明，同一个 FIPS 提供程序不能被一个进程中的多
 
 [^openssl35]: 需要 OpenSSL >= 3.5
 
-[AEAD 算法]: https://en.wikipedia.org/wiki/Authenticated_encryption
-[CCM 模式]: #ccm-mode
+[AEAD algorithms]: https://en.wikipedia.org/wiki/Authenticated_encryption
+[AES key wrap modes]: #aes-key-wrap-modes
+[CBC-CTS mode]: #cbc-cts-mode
+[CCM mode]: #ccm-mode
 [CVE-2021-44532]: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44532
 [注意事项]: #support-for-weak-or-compromised-algorithms
 [加密常量]: #crypto-constants
@@ -6009,7 +6420,6 @@ OpenSSL 文档说明，同一个 FIPS 提供程序不能被一个进程中的多
 [权限模型]: permissions.md#permission-model
 [RFC 1421]: https://www.rfc-editor.org/rfc/rfc1421.txt
 [RFC 2409]: https://www.rfc-editor.org/rfc/rfc2409.txt
-[RFC 2818]: https://www.rfc-editor.org/rfc/rfc2818.txt
 [RFC 3526]: https://www.rfc-editor.org/rfc/rfc3526.txt
 [RFC 3610]: https://www.rfc-editor.org/rfc/rfc3610.txt
 [RFC 4055]: https://www.rfc-editor.org/rfc/rfc4055.txt
@@ -6019,8 +6429,12 @@ OpenSSL 文档说明，同一个 FIPS 提供程序不能被一个进程中的多
 [RFC 7517]: https://www.rfc-editor.org/rfc/rfc7517.txt
 [RFC 8032]: https://www.rfc-editor.org/rfc/rfc8032.txt
 [RFC 9562]: https://www.rfc-editor.org/rfc/rfc9562.txt
-[Web Crypto API 文档]: webcrypto.md
+[SIV and GCM-SIV modes]: #siv-and-gcm-siv-modes
+[Web Crypto API documentation]: webcrypto.md
+[XTS mode]: #xts-mode
+[`'crypto.fips.indicator'`]: diagnostics_channel.md#event-cryptofipsindicator
 [`--allow-openssl-store`]: cli.md#--allow-openssl-store
+[`--enable-fips-indicator-events`]: cli.md#--enable-fips-indicator-events
 [`--enable-fips`]: cli.md#--enable-fips
 [`--force-fips`]: cli.md#--force-fips
 [`--openssl-config`]: cli.md#--openssl-configfile
@@ -6042,6 +6456,7 @@ OpenSSL 文档说明，同一个 FIPS 提供程序不能被一个进程中的多
 [`crypto.createECDH()`]: #cryptocreateecdhcurvename
 [`crypto.createHash()`]: #cryptocreatehashalgorithm-options
 [`crypto.createHmac()`]: #cryptocreatehmacalgorithm-key-options
+[`crypto.createMac()`]: #cryptocreatemacalgorithm-key-options
 [`crypto.createPrivateKey()`]: #cryptocreateprivatekeykey
 [`crypto.createPublicKey()`]: #cryptocreatepublickeykey
 [`crypto.createSecretKey()`]: #cryptocreatesecretkeykey-encoding
@@ -6049,10 +6464,12 @@ OpenSSL 文档说明，同一个 FIPS 提供程序不能被一个进程中的多
 [`crypto.createVerify()`]: #cryptocreateverifyalgorithm-options
 [`crypto.generateKey()`]: #cryptogeneratekeytype-options-callback
 [`crypto.generateKeyPair()`]: #cryptogeneratekeypairtype-options-callback
+[`crypto.getCiphers()`]: #cryptogetciphers
 [`crypto.getCurves()`]: #cryptogetcurves
 [`crypto.getDiffieHellman()`]: #cryptogetdiffiehellmangroupname
 [`crypto.getFips()`]: #cryptogetfips
 [`crypto.getHashes()`]: #cryptogethashes
+[`crypto.getMacs()`]: #cryptogetmacs
 [`crypto.hash()`]: #cryptohashalgorithm-data-options
 [`crypto.privateDecrypt()`]: #cryptoprivatedecryptprivatekey-buffer
 [`crypto.privateEncrypt()`]: #cryptoprivateencryptprivatekey-buffer
@@ -6062,6 +6479,7 @@ OpenSSL 文档说明，同一个 FIPS 提供程序不能被一个进程中的多
 [`crypto.randomFill()`]: #cryptorandomfillbuffer-offset-size-callback
 [`crypto.setFips()`]: #cryptosetfipsbool
 [`crypto.sign()`]: #cryptosignalgorithm-data-key-callback
+[`crypto.timingSafeEqual()`]: #cryptotimingsafeequala-b
 [`crypto.verify()`]: #cryptoverifyalgorithm-data-key-signature-callback
 [`crypto.webcrypto.getRandomValues()`]: webcrypto.md#cryptogetrandomvaluestypedarray
 [`crypto.webcrypto.subtle`]: webcrypto.md#class-subtlecrypto
@@ -6078,11 +6496,14 @@ OpenSSL 文档说明，同一个 FIPS 提供程序不能被一个进程中的多
 [`hmac.update()`]: #hmacupdatedata-inputencoding
 [`import()`]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import
 [`keyObject.export()`]: #keyobjectexportoptions
+[`mac.final()`]: #macfinaloutputencoding
+[`mac.update()`]: #macupdatedata-inputencoding
 [`postMessage()`]: worker_threads.md#portpostmessagevalue-transferlist
 [`sign.sign()`]: #signsignprivatekey-outputencoding
 [`sign.update()`]: #signupdatedata-inputencoding
-[`stream.Writable` 选项]: stream.md#new-streamwritableoptions
-[`stream.transform` 选项]: stream.md#new-streamtransformoptions
+[`stream.Transform`]: stream.md#class-streamtransform
+[`stream.Writable` options]: stream.md#new-streamwritableoptions
+[`stream.transform` options]: stream.md#new-streamtransformoptions
 [`util.promisify()`]: util.md#utilpromisifyoriginal
 [`verify.update()`]: #verifyupdatedata-inputencoding
 [`verify.verify()`]: #verifyverifykey-signature-signatureencoding

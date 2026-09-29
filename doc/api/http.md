@@ -750,7 +750,7 @@ added: v0.7.8
 
 当底层 socket 因无活动而超时时触发。这仅通知 socket 处于空闲状态。必须手动销毁请求。
 
-另见：[`request.setTimeout()`][].
+另见：[`request.setTimeout()`]。
 
 ### 事件：`'upgrade'`
 
@@ -904,7 +904,7 @@ added:
  - v12.16.0
 -->
 
-参见 [`writable.cork()`][].
+参见 [`writable.cork()`]。
 
 ### 结束请求
 
@@ -945,7 +945,7 @@ changes:
 
 销毁请求。可选择触发 `'error'` 事件，并触发 `'close'` 事件。调用此方法会导致响应中的剩余数据被丢弃，并在使用了 socket 时销毁 socket；否则在可能的情况下将其返回到相应的 Agent 池。
 
-详见 [`writable.destroy()`][]。
+详见 [`writable.destroy()`]。
 
 #### 请求已销毁
 
@@ -1086,9 +1086,9 @@ const hasContentType = request.hasHeader('content-type');
 
 ### `request.maxHeadersCount`
 
-* 类型：{number} **默认：** `2000`
+* 类型：{number} **默认值：** `1000`
 
-限制最大响应头部数量。如果设置为 0，则不应用限制。
+限制响应头部的最大数量。超过此限制的响应将被拒绝，并返回 [`HPE_HEADER_OVERFLOW`][] 错误。如果设置为 `0`，则不应用任何限制。
 
 ### `request.path`
 
@@ -1631,7 +1631,7 @@ changes:
 * `callback` {Function}
 
 停止服务器接受新连接，并关闭所有连接到该服务器且既不发送请求也不等待响应的连接。
-参见 [`net.Server.close()`][].
+参见 [`net.Server.close()`][]。
 
 ```js
 const http = require('node:http');
@@ -1762,7 +1762,7 @@ added: v5.7.0
 added: v0.7.0
 -->
 
-* 类型：{number} **默认值：** `2000`
+* 类型：{number} **默认值：** `1000`
 
 限制传入标头的最大数量。如果设置为 `0`，则不应用限制。
 
@@ -1950,7 +1950,7 @@ response.addTrailers({ 'Content-MD5': '7895bf4b8828b55ceaf47747b4bca667' });
 response.end();
 ```
 
-尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][].
+尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][]。
 
 ### `response.connection`
 
@@ -2020,7 +2020,7 @@ deprecated:
 added: v1.6.0
 -->
 
-刷新响应头。另请参见：[`request.flushHeaders()`][].
+刷新响应头。另请参见：[`request.flushHeaders`][]。
 
 ### `response.getHeader(name)`
 
@@ -2438,7 +2438,7 @@ const server = http.createServer((req, res) => {
 
 `Content-Length` 以字节为单位读取，而不是字符。使用 [`Buffer.byteLength()`][] 确定主体的字节长度。Node.js 将检查 `Content-Length` 与已传输的主体长度是否相等。
 
-尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][].
+尝试设置包含无效字符的头部字段名或值将导致抛出 [`TypeError`][]。
 
 ### `response.writeInformation(statusCode[, headers][, callback])`
 
@@ -2727,7 +2727,9 @@ added:
  - v26.1.0
  - v24.16.0
 changes:
-  - version: v26.7.0
+  - version:
+     - v26.7.0
+     - v24.20.0
     pr-url: https://github.com/nodejs/node/pull/64392
     description: 消息正常完成后，该信号不再中止。
 -->
@@ -3852,6 +3854,8 @@ const req = http.request(options, (res) => {
 * `'error'` 在 `res` 对象上，带有消息 `'Error: aborted'` 和代码 `'ECONNRESET'` 的错误
 * `'close'` 在 `res` 对象上
 
+如果套接字错误（例如 TLS 错误）导致连接过早关闭，该错误会在 `'close'` 之前在请求上发出。不完整响应上发出的错误仍保留消息 `'aborted'` 和代码 `'ECONNRESET'`，原始套接字错误则可通过其 `cause` 获取。即使原始套接字错误的代码为 `'ECONNRESET'`，也同样如此。如果没有可用的底层错误，响应错误将没有 `cause` 属性。
+
 如果在分配套接字之前调用了 `req.destroy()`，将按以下顺序发出以下事件：
 
 * （此处调用了 `req.destroy()`）
@@ -3873,7 +3877,7 @@ const req = http.request(options, (res) => {
 * （此处调用了 `req.destroy()`）
 * `'aborted'` 在 `res` 对象上
 * `'close'`
-* `'error'` 在 `res` 对象上，带有消息 `'Error: aborted'` 和代码 `'ECONNRESET'` 的错误，或调用 `req.destroy()` 时使用的错误
+* `'error'` 在 `res` 对象上，错误消息为 `'Error: aborted'`，代码为 `'ECONNRESET'`。如果向 `req.destroy()` 传递了错误，该错误可通过响应错误的 `cause` 获取。
 * `'close'` 在 `res` 对象上
 
 如果在分配套接字之前调用了 `req.abort()`，将按以下顺序发出以下事件：

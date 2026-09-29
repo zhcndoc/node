@@ -1,6 +1,6 @@
 # 可迭代流
 
-<!--introduced_in=v25.9.0-->
+<!--introduced_in=v24.20.0-->
 
 > 稳定性：1 - 实验性 – 使用 [`--experimental-stream-iter`][] CLI 标志启用此 API。
 
@@ -353,7 +353,10 @@ const { writer, readable } = push({
 
 writer 是任何符合 Writer 接口的对象。只需要 `write()`；所有其他方法都是可选的。
 
-每个异步方法都有一个同步的 `*Sync` 对应方法，设计用于尝试 - 回退模式：首先尝试快速同步路径，仅当同步调用指示无法完成时才回退到异步版本：
+Writer 参数使用 Web IDL 转换语义。非 `Uint8Array` 块会转换为 `USVString`，然后进行 UTF-8 编码。`writev()` 和
+`writevSync()` 接受值可以转换为块的任意可迭代对象。Writer 选项字典将 `null` 视为空字典，并忽略未知成员。
+
+每个异步方法都有一个同步的 `*Sync` 对应方法，专为尝试后回退模式而设计：先尝试快速同步路径，仅当同步调用表明无法完成时，才回退到异步版本：
 
 ```mjs
 if (!writer.writeSync(chunk)) await writer.write(chunk);
@@ -366,7 +369,10 @@ writer.fail(err);  // 始终同步，不需要回退
 
 * {boolean|null}
 
-如果下一次写入很可能会被接受（已缓冲数据低于容量），则返回 `true`；如果背压处于活动状态，则返回 `false`；如果 writer 已关闭或消费者已断开连接，则返回 `null`。
+如果槽位缓冲区有实际容量（已缓冲数据低于配置的字节预算），则返回 `true`；如果预算已耗尽，则返回 `false`；如果 writer 已关闭或消费者已断开连接，则返回 `null`。
+
+此属性独立于背压策略报告实际容量。使用
+`'drop-oldest'` 或 `'drop-newest'` 时，即使此值为 `false`，写入仍会完成，分别通过驱逐已缓冲数据或丢弃传入数据实现。
 
 这只是提示，并非保证：检查与写入之间状态可能发生变化。应使用 [`ondrain()`][] 等待容量，而不是轮询。
 
@@ -376,13 +382,13 @@ writer.fail(err);  // 始终同步，不需要回退
   * `signal` {AbortSignal} 仅取消此操作。该信号只会取消挂起的 `end()` 调用；不会使 writer 自身失败。
 * 返回：{Promise} 完成时返回已写入的总字节数。
 
-信号表明不再写入更多数据。
+表示不会再写入数据。已经在等待缓冲区空间的写入仍会按顺序排在流结束之前，而之后的写入会失败。如果仍有未处理数据，返回的 Promise 会在消费者拉取最终批次之后的 `done: true` 时兑现。如果没有缓冲或待处理数据，writer 会立即关闭。
 
 #### 获取已写入字节数
 
-* 返回：{number} 写入的总字节数，如果 writer 未打开则为 `-1`。
+* 返回：{number} 已写入的总字节数；如果无法同步完成，则为 `-1`。
 
-`writer.end()` 的同步变体。如果 writer 已关闭或出错，则返回 `-1`。可用作尝试 - 回退模式：
+`writer.end()` 的同步版本。返回值为 `-1` 仅表示操作无法同步完成；不能据此判断关闭是否已开始，或无法完成的原因。使用尝试后回退模式等待完成：
 
 ```cjs
 const result = writer.endSync();
@@ -391,11 +397,15 @@ if (result < 0) {
 }
 ```
 
-#### `writer.fail(reason)`
+#### `writer.fail([reason])`
 
 * `reason` {any}
 
-将 writer 置于终止错误状态。如果 writer 已关闭或出错，则这是无操作。与 `write()` 和 `end()` 不同，`fail()` 无条件同步，因为使 writer 失败是纯状态转换，无需执行异步工作。
+将 writer 置于终止错误状态。如果 writer 已关闭或已出错，则不执行任何操作。与 `write()` 和 `end()` 不同，`fail()` 始终同步，因为使 writer 失败是纯粹的状态转换，不需要执行异步工作。原因会原样存储并传递。如果省略，则原因是 `undefined`。
+
+#### `writer[Symbol.asyncDispose]()`
+
+如果 writer 处于打开状态，则调用 `writer.fail()`。如果 writer 在 `end()` 或 `endSync()` 后正在关闭，则等待缓冲数据排空。如果 writer 已关闭或已出错，则立即兑现。
 
 #### `writer.write(chunk[, options])`
 
@@ -415,7 +425,7 @@ if (result < 0) {
 
 #### `writer.writev(chunks[, options])`
 
-* `chunks` {Uint8Array\[]|string\[]}
+* `chunks` {Iterable}，其值为 {Uint8Array|string}
 * `options` {Object}
   * `signal` {AbortSignal} 仅取消此写入操作。该信号只会取消挂起的 `writev()` 调用；不会使 writer 自身失败。
 * 返回：{Promise}
@@ -424,14 +434,15 @@ if (result < 0) {
 
 #### `writer.writevSync(chunks)`
 
-* `chunks` {Uint8Array\[]|string\[]}
+* `chunks` {Iterable}，其值为 {Uint8Array|string}
 * 返回：{boolean} 如果写入被接受则为 `true`，如果缓冲区已满则为 `false`。
 
 同步批次写入。
 
 ## `stream/iter` 模块
 
-所有函数既可作为命名导出使用，也可作为 `Stream` 命名空间对象的属性使用：
+大多数函数既可作为命名导出使用，也可作为 `Stream` 命名空间对象的属性使用。经典流适配器（`fromReadable()`、
+`fromWritable()`、`toReadable()`、`toReadableSync()` 和 `toWritable()`）以及静态辅助对象（`Broadcast`、`Share` 和 `SyncShare`）仅作为命名导出提供。
 
 ```mjs
 // 命名导出
@@ -440,6 +451,9 @@ import { from, pull, bytes, Stream } from 'node:stream/iter';
 // 命名空间访问
 Stream.from('hello');
 ```
+
+Iterable Streams API 定义的选项字典使用 Web IDL 转换语义。`null` 会被视为空字典，未知成员会被忽略，已知成员会在操作运行前转换为其声明的类型。转换失败时会使用 Node.js 错误代码，例如
+`ERR_INVALID_ARG_TYPE`、`ERR_INVALID_ARG_VALUE` 和 `ERR_OUT_OF_RANGE`。
 
 ```cjs
 // 命名导出
@@ -458,15 +472,15 @@ Stream.from('hello');
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `input` {string|ArrayBuffer|ArrayBufferView|Iterable|AsyncIterable|Object}
   不能是 `null` 或 `undefined`。
 * 返回：{AsyncIterable}，其块以 {Uint8Array\[]} 履行。
 
-从给定输入创建异步字节流。字符串会使用 UTF-8 编码。
-`ArrayBuffer` 和 `ArrayBufferView` 值会被包装为 `Uint8Array`。`input` 中的数组
-和可迭代对象会被递归展平并规范化。
+根据给定输入创建异步字节流。字符串会进行 UTF-8 编码。
+`ArrayBuffer` 和 `ArrayBufferView` 值会包装为 `Uint8Array`。`input` 中的数组和可迭代对象会被递归展平并规范化。展平后的值可能会拆分到由实现定义的有界批次中。
 
 实现 `Symbol.for('Stream.toAsyncStreamable')` 或
 `Symbol.for('Stream.toStreamable')` 的对象会通过这些协议进行转换。
@@ -498,6 +512,7 @@ run().catch(console.error);
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `input` {string|ArrayBuffer|ArrayBufferView|Iterable|Object}
@@ -527,18 +542,17 @@ console.log(textSync(fromSync('hello'))); // 'hello'
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {AsyncIterable|Iterable} 数据源。
 * `...transforms` {Function|Object} 零个或多个要应用的转换。
 * `writer` {Object} 具有 `write(chunk)` 方法的目标。
 * `options` {Object}
-  * `signal` {AbortSignal} 中止管道。
-  * `preventClose` {boolean} 如果为 `true`，当源结束时不调用 `writer.end()`。
-    **默认：** `false`。
-  * `preventFail` {boolean} 如果为 `true`，出错时不调用 `writer.fail()`。
-    **默认：** `false`。
-* 返回：{Promise} 以写入的总字节数完成。
+  * `signal` {AbortSignal} 中止管道。除非 `preventFail` 为 `true`，否则中止会导致目标写入器失败。
+  * `preventClose` {boolean} 如果为 `true`，则源结束时不调用 `writer.end()`。**默认值：** `false`。
+  * `preventFail` {boolean} 如果为 `true`，则发生错误时不调用 `writer.fail()`。**默认值：** `false`。
+* 返回：{Promise} 成功时兑现为已写入的总字节数。
 
 将源通过转换管道传输到写入器。如果写入器具有
 `writev(chunks)` 方法，则整个批次会在单次调用中传递（启用
@@ -584,14 +598,15 @@ run().catch(console.error);
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {Iterable} 同步数据源。
 * `...transforms` {Function|Object} 零个或多个同步转换。
 * `writer` {Object} 具有 `write(chunk)` 方法的目标。
 * `options` {Object}
-  * `preventClose` {boolean} **默认：** `false`。
-  * `preventFail` {boolean} **默认：** `false`。
+  * `preventClose` {boolean} **默认值：** `false`。
+  * `preventFail` {boolean} **默认值：** `false`。
 * 返回：{number} 写入的总字节数。
 
 [`pipeTo()`][] 的同步版本。`source`、所有转换和
@@ -605,6 +620,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {AsyncIterable|Iterable} 数据源。
@@ -613,7 +629,7 @@ added:
   * `signal` {AbortSignal} 中止管道。
 * 返回：{AsyncIterable}，其数据块以 {Uint8Array\[]} 的形式完成
 
-创建惰性异步管道。直到返回的可迭代对象被消费之前，不会从 `source` 读取数据。转换按顺序应用。
+创建惰性异步管道。源转换和 streamable 协议分派会在调用 `pull()` 时进行，但在消费返回的可迭代对象之前，不会从 `source` 读取数据。若信号已处于中止状态，则在源转换后同步抛出。转换按顺序应用。
 
 ```mjs
 import { from, pull, text } from 'node:stream/iter';
@@ -676,13 +692,14 @@ ac.abort(); // 管道在下一次迭代时抛出 AbortError
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {Iterable} 同步数据源。
 * `...transforms` {Function|Object} 零个或多个同步转换。
 * 返回：{Iterable}，其数据块返回 {Uint8Array\[]}
 
-[`pull()`][] 的同步版本。所有转换必须是同步的。
+[`pull()`][] 的同步版本。源转换和 streamable 协议分派会在调用 `pullSync()` 时进行。所有转换都必须是同步的。
 
 ## 推送流
 
@@ -691,18 +708,19 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `...transforms` {Function|Object} 应用于可读侧的可选转换。
 * `options` {Object}
-  * `budget` {number} 应用背压前缓冲的最大字节数。必须 >= 16384。
+  * `budget` {number} 应用背压前允许缓冲的最大字节数。必须 >= 16384。
     **默认值：** `16384`。
   * `backpressure` {string} 背压策略：`'strict'`、`'unbounded'`、
     `'drop-oldest'` 或 `'drop-newest'`。**默认值：** `'strict'`。
-  * `signal` {AbortSignal} 中止流。
-* 返回值：{Object}
+  * `signal` {AbortSignal} 中止流。在 `writer.end()` 后缓冲数据排空期间，信号仍保持有效；此时中止会使写入器失败，并拒绝尚未完成的 `end()` Promise。
+* 返回：{Object}
   * `writer` {Writable} 写入器侧。
-  * `readable` {AsyncIterable}，其块以 {Uint8Array\[]} 形式满足。
+  * `readable` {AsyncIterable}，其数据块兑现为 {Uint8Array\[]}
 
 创建具有背压的推送流。写入器推入数据；
 可读侧作为异步可迭代对象被消费。
@@ -754,15 +772,17 @@ run().catch(console.error);
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `options` {Object}
-  * `budget` {number} 两个方向的缓冲区大小，单位为字节。
-    **默认值：** `16384`。
-  * `backpressure` {string} 两个方向的背压策略。
+  * `budget` {number} 两个方向的缓冲区大小（以字节为单位）。
+    必须 >= 16384。**默认值：** `16384`。
+  * `backpressure` {string} 两个方向的策略。
     **默认值：** `'strict'`。
   * `signal` {AbortSignal} 两个通道的取消信号。
-  * `a` {Object} A 到 B 方向的专用选项。会覆盖共享选项。
+  * `a` {Object} A 到 B 方向的专用选项。会覆盖
+    共享选项。
     * `budget` {number}
     * `backpressure` {string}
   * `b` {Object} B 到 A 方向的专用选项。会覆盖共享选项。
@@ -791,12 +811,13 @@ const serving = (async () => {
   for await (const chunks of server.readable) {
     await server.writer.writev(chunks);
   }
+  await server.writer.end();
 })();
 
 await client.writer.write('hello');
 await client.writer.end();
 
-console.log(await text(server.readable)); // 由回显处理
+console.log(await text(client.readable)); // 'hello'
 await serving;
 ```
 
@@ -811,12 +832,13 @@ async function run() {
     for await (const chunks of server.readable) {
       await server.writer.writev(chunks);
     }
+    await server.writer.end();
   })();
 
   await client.writer.write('hello');
   await client.writer.end();
 
-  console.log(await text(server.readable)); // 由回显处理
+  console.log(await text(client.readable)); // 'hello'
   await serving;
 }
 
@@ -830,6 +852,7 @@ run().catch(console.error);
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {AsyncIterable|Iterable}，其块必须为 {Uint8Array\[]}
@@ -845,6 +868,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {AsyncIterable|Iterable}，其块必须为 {Uint8Array\[]}
@@ -860,6 +884,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {Iterable}，其块必须为 {Uint8Array\[]}
@@ -874,6 +899,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {Iterable}，其块必须为 {Uint8Array\[]}
@@ -888,6 +914,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {AsyncIterable|Iterable}，其块必须为 {Uint8Array\[]}
@@ -921,6 +948,7 @@ run().catch(console.error);
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {Iterable}，其块必须为 {Uint8Array\[]}
@@ -935,6 +963,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {AsyncIterable|Iterable}，其块必须为 {Uint8Array\[]}
@@ -967,6 +996,7 @@ run().catch(console.error);
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {Iterable}，其块必须为 {Uint8Array\[]}
@@ -984,12 +1014,15 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `drainable` {Object} 一个实现了 drainable 协议的对象。
 * 返回：{Promise|null}
 
-等待一个可排空写入器的背压清除。如果对象不实现 drainable 协议，则返回 `null`；否则返回一个在写入器可以接受更多数据时兑现为 `true` 的 promise。
+等待 drainable 写入器恢复物理缓冲区容量。如果对象未实现 drainable 协议，则返回 `null`；否则返回一个 Promise，当缓冲数据低于字节预算时，该 Promise 会兑现为 `true`。
+
+对于使用 `'drop-oldest'` 或 `'drop-newest'` 的写入器，即使写入不会阻塞，此方法也会等待物理容量恢复。这样，生产者就可以在写入前等待，以避免数据丢失。
 
 ```mjs
 import { push, ondrain, text } from 'node:stream/iter';
@@ -1040,6 +1073,7 @@ run().catch(console.error);
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `...sources` {AsyncIterable|Iterable} 其块必须是 {Uint8Array\[]}
@@ -1072,10 +1106,11 @@ run().catch(console.error);
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
-* `callback` {Function} `(chunks) => void` 使用每个批次调用。
-* 返回：{Function} 一个无状态转换。
+* `callback` {Function} `(chunks) => void` 每个批次以及源结束时的 `null` 都会传入此回调。
+* 返回：{Function} 无状态转换。
 
 创建一个直通转换，用于观察批次而不修改它们。适用于日志记录、指标或调试。
 
@@ -1084,7 +1119,9 @@ import { from, pull, text, tap } from 'node:stream/iter';
 
 const result = pull(
   from('hello'),
-  tap((chunks) => console.log('Batch size:', chunks.length)),
+  tap((chunks) => {
+    if (chunks !== null) console.log('Batch size:', chunks.length);
+  }),
 );
 console.log(await text(result));
 ```
@@ -1095,7 +1132,9 @@ const { from, pull, text, tap } = require('node:stream/iter');
 async function run() {
   const result = pull(
     from('hello'),
-    tap((chunks) => console.log('Batch size:', chunks.length)),
+    tap((chunks) => {
+      if (chunks !== null) console.log('Batch size:', chunks.length);
+    }),
   );
   console.log(await text(result));
 }
@@ -1110,6 +1149,7 @@ run().catch(console.error);
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `callback` {Function}
@@ -1124,6 +1164,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `options` {Object}
@@ -1186,9 +1227,9 @@ run().catch(console.error);
 
 #### `broadcast.cancel([reason])`
 
-* `reason` {Error}
+* `reason` {any}
 
-取消广播。所有消费者都会收到一个错误。
+取消广播。如果提供了 `reason`，所有消费者都会以该确切原因拒绝。如果省略该参数，消费者会正常完成。
 
 #### `broadcast.consumerCount`
 
@@ -1203,7 +1244,7 @@ run().catch(console.error);
   * `signal` {AbortSignal}
 * 返回：{AsyncIterable}，其块以 {Uint8Array\[]} 兑现
 
-创建一个新的消费者。每个消费者都会接收从订阅点开始写入广播的所有数据。可选的转换会应用于此消费者的数据视图。
+创建一个新消费者。可选的转换会应用于该消费者所见的数据。
 
 #### `broadcast[Symbol.dispose]()`
 
@@ -1214,11 +1255,13 @@ run().catch(console.error);
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `input` {AsyncIterable|Iterable|BroadcastChannel}
 * `options` {Object} 与 `broadcast()` 相同。
-* 返回：{Object} `{ writer, broadcast }`
+* 返回：{BroadcastChannel|Object} `broadcastProtocol` 输入会直接返回其
+  {BroadcastChannel}。其他输入会返回 `{ writer, broadcast }`。
 
 从现有源创建一个 {BroadcastChannel}。源会被自动消费，并推送给所有订阅者。
 
@@ -1227,6 +1270,7 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {AsyncIterable} 要共享的源。
@@ -1235,6 +1279,7 @@ added:
     **默认值：** `65536`。
   * `backpressure` {string} `'strict'`、`'unbounded'`、`'drop-oldest'` 或
     `'drop-newest'`。**默认值：** `'strict'`。
+  * `signal` {AbortSignal}
 * 返回：{Share}
 
 创建一个拉模型多消费者共享流。与 `broadcast()` 不同，源仅在有消费者拉取时才会被读取。多个消费者共享单个缓冲区。
@@ -1288,9 +1333,9 @@ added:
 
 #### `share.cancel([reason])`
 
-* `reason` {Error}
+* `reason` {any}
 
-取消共享。所有消费者都会收到一个错误。
+取消共享。如果提供了 `reason`，所有消费者都会以该确切原因拒绝。如果省略该参数，消费者会正常完成。
 
 #### `share.consumerCount`
 
@@ -1328,16 +1373,20 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `source` {Iterable} 要共享的同步源。
 * `options` {Object}
   * `budget` {number} 必须 >= 16384。
     **默认值：** `65536`。
-  * `backpressure` {string} **默认值：** `'strict'`。
+  * `backpressure` {string} `'strict'`、`'drop-oldest'` 或 `'drop-newest'`。
+    **默认值：** `'strict'`。
 * 返回：{SyncShare}
 
 [`share()`][] 的同步版本。
+
+由于在同步上下文中无法等待，因此不支持 `'unbounded'`，并会抛出 `ERR_INVALID_ARG_VALUE`。使用 `'drop-newest'` 时，当消费者在预算耗尽的情况下到达缓冲区末尾，会从源中丢弃一个条目，然后返回 `{ done: true }`，且不带值；消费者不会被分离，因此在最慢的消费者前进并释放预算后，仍可继续读取。
 
 ### 类：`SyncShare`
 
@@ -1346,23 +1395,18 @@ added:
 <!-- YAML
 added:
  - v25.9.0
+ - v24.20.0
 -->
 
 * `input` {Iterable|SyncShareable}
 * `options` {Object}
 * 返回：{SyncShare}
 
-#### `share.bufferSize`
-
-* {number}
-
-当前缓冲的块数。
-
 #### `share.cancel([reason])`
 
-* `reason` {Error}
+* `reason` {any}
 
-取消共享。所有消费者都会收到一个错误。
+取消共享。如果提供了 `reason`，所有消费者都会抛出该确切原因。如果省略该参数，消费者会正常完成。
 
 #### `share.consumerCount`
 
@@ -1370,11 +1414,9 @@ added:
 
 活动消费者的数量。
 
-#### `share.pull([...transforms][, options])`
+#### `share.pull([...transforms])`
 
 * `...transforms` {Function|Object}
-* `options` {Object}
-  * `signal` {AbortSignal}
 * 返回：{Iterable}，其块返回 {Uint8Array\[]}
 
 创建共享源的新消费者。
@@ -1396,31 +1438,34 @@ added:
 [`stream.Readable`][]/[`stream.Writable`][] 流和 `stream/iter`
 API 之间架起了桥梁。
 
-`fromReadable()` 和 `fromWritable()` 都接受 duck-typed 对象 -- 它们
+`fromReadable()` 和 `fromWritable()` 都接受鸭子类型对象——它们
 不要求输入直接扩展 `stream.Readable` 或 `stream.Writable`。
 每个函数的最低契约如下所述。
 
 ### `fromReadable(readable)`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
 
-* `readable` {stream.Readable|Object} 经典 Readable 流或任何具有
-  `read()`、`on()` 和 `off()` 方法的对象。
-* 返回：{AsyncIterable}，其块以 {Uint8Array\[]} 形式完成
+* `readable` {stream.Readable|Object} 经典 Readable 流，或具有
+  `read()`、`pipe()`、`destroy()`、`on()` 和 `removeListener()`
+  方法的兼容对象。
+* 返回：{AsyncIterable}，其块以 {Uint8Array\[]} 兑现
 
-将经典 Readable 流（或 duck-typed 等效对象）转换为
+将经典 Readable 流（或鸭子类型的等效对象）转换为
 stream/iter 异步可迭代源，可以传递给 [`from()`][]、
 [`pull()`][]、[`text()`][] 等。
 
-如果对象实现了 [`toAsyncStreamable`][] 协议（`stream.Readable` 也是如此），则会使用该协议。否则，函数会基于
-`read()`、`on()` 和 `off()`（EventEmitter）进行 duck-type 检测，并将
-流包装为批处理异步迭代器。
+如果对象实现了 [`toAsyncStreamable`][] 协议（`stream.Readable` 即如此），
+则会使用该协议。否则，该函数会通过鸭子类型检查 `read()`、`pipe()`、`destroy()`、`on()` 和 `removeListener()`
+（EventEmitter）方法，并使用批处理异步迭代器包装流。
 
-结果会按实例缓存 -- 使用同一流调用 `fromReadable()` 两次
+结果会按实例缓存——使用同一流调用 `fromReadable()` 两次
 会返回相同的可迭代对象。
 
 对于 object-mode 或已编码的 Readable 流，块会自动
@@ -1456,36 +1501,44 @@ run();
 ### `fromWritable(writable[, options])`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
 
-* `writable` {stream.Writable|Object} 经典 Writable 流或任何对象
-  具有 `write()` 和 `on()` 方法。
+* `writable` {stream.Writable|Object} 经典 Writable 流，或具有
+  `write()`、`end()`、`destroy()`、`on()` 和 `removeListener()`
+  方法的兼容对象。
 * `options` {Object}
-  * `backpressure` {string} 背压策略。**默认：** `'strict'`。
-    * `'strict'` -- 缓冲区已满时拒绝写入。用于捕获忽略背压的调用方。
-    * `'unbounded'` -- 缓冲区已满时等待 drain。建议与 [`pipeTo()`][] 一起使用。
-    * `'drop-newest'` -- 缓冲区已满时静默丢弃写入。
-    * `'drop-oldest'` -- **不支持**。抛出 `ERR_INVALID_ARG_VALUE`。
+  * `backpressure` {string} 背压策略。**默认值：** `'strict'`。
+    * `'strict'` —— 缓冲区已满时，一次写入可能需要等待。在该写入被接受或取消之前，后续写入都会被拒绝。
+    * `'unbounded'` —— 缓冲区已满时，写入会排队。建议与 [`pipeTo()`][] 一起使用。
+    * `'drop-newest'` —— 缓冲区已满时，写入会被静默丢弃。
+    * `'drop-oldest'` —— 不支持。会抛出 `ERR_INVALID_ARG_VALUE`。
 * 返回：{Object} stream/iter Writer 适配器。
 
 从经典 Writable 流（或
-duck-typed 等效对象）创建 stream/iter Writer 适配器。该适配器可以作为
+鸭子类型的等效对象）创建 stream/iter Writer 适配器。该适配器可以作为
 目的地传递给 [`pipeTo()`][]。
 
-由于经典 Writable 上的所有写入本质上是异步的，
+由于经典 Writable 上的所有写入本质上都是异步的，
 同步 Writer 方法（`writeSync`、`writevSync`、`endSync`）始终
-返回 `false` 或 `-1`，转而走异步路径。每次写入
-来自 Writer 接口的 `options.signal` 参数也会被忽略。
+返回 `false` 或 `-1`，并交由异步路径处理。排队的 `write()` 或
+`writev()` 在到达经典 Writable 之前，可以通过其 `options.signal`
+取消。
+
+如果 `writer.fail(reason)` 接收到非 Error 类型的原因，经典 Writable 会以
+`ERR_FALSY_VALUE_REJECTION` 或 `ERR_OPERATION_FAILED` 错误销毁。
+其 `reason` 属性包含原始值，该值仍是 Writer 存储的失败原因。
 
 结果会按实例和背压策略进行缓存——使用相同的流和 `backpressure` 选项两次调用
 `fromWritable()` 会返回同一个 Writer。
 
-对于不暴露 `writableHighWaterMark`、
-`writableLength` 或类似属性的 duck-typed 流，
-会使用合理的默认值。Object 模式 writable（如果可检测）会被拒绝，因为 Writer
+对于不公开 `writableHighWaterMark`、
+`writableLength` 或类似属性的鸭子类型流，
+会使用合理的默认值。如果可检测到 Object 模式 writable，则会拒绝它，因为 Writer
 接口仅支持字节。
 
 ```mjs
@@ -1518,7 +1571,9 @@ run().catch(console.error);
 ### `toReadable(source[, options])`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1526,12 +1581,16 @@ added: v26.1.0
 * `source` {AsyncIterable}，其块必须以 {Uint8Array\[]} 形式完成，
   即 [`pull()`][] 或 [`from()`][] 的返回值。
 * `options` {Object}
-  * `highWaterMark` {number} 在应用背压之前内部缓冲区的大小（以字节为单位）。**默认：** `65536` (64 KB)。
+  * `highWaterMark` {number} 在应用背压之前内部缓冲区的大小（以字节为单位）。**默认值：** `65536` (64 KB)。
   * `signal` {AbortSignal} 用于中止 readable 的可选 signal。
 * 返回：{stream.Readable}
 
 从 `source` 创建字节模式的 [`stream.Readable`][]（使用
 stream/iter API 的原生批处理格式）。生成的每个批次中的 `Uint8Array` 都会作为单独的块推送到 Readable 中。
+
+经典流无法将任意值表示为发出的错误。非 Error 类型的原因会被包装为
+`ERR_FALSY_VALUE_REJECTION` 或 `ERR_OPERATION_FAILED` 错误，其
+`reason` 属性包含原始值。
 
 ```mjs
 import { createWriteStream } from 'node:fs';
@@ -1558,7 +1617,9 @@ readable.pipe(createWriteStream('output.gz'));
 ### `toReadableSync(source[, options])`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1566,7 +1627,7 @@ added: v26.1.0
 * `source` {Iterable}，其块必须返回 {Uint8Array\[]}，例如
   [`pullSync()`][] 或 [`fromSync()`][] 的返回值。
 * `options` {Object}
-  * `highWaterMark` {number} 在应用背压之前内部缓冲区的大小（以字节为单位）。**默认：** `65536` (64 KB)。
+  * `highWaterMark` {number} 在应用背压之前内部缓冲区的大小（以字节为单位）。**默认值：** `65536` (64 KB)。
 * 返回：{stream.Readable}
 
 从 `source` 创建字节模式的 [`stream.Readable`][]。
@@ -1594,7 +1655,9 @@ console.log(readable.read().toString()); // 'hello world'
 ### `toWritable(writer)`
 
 <!-- YAML
-added: v26.1.0
+added:
+ - v26.1.0
+ - v24.20.0
 -->
 
 > 稳定性：1 - 实验性
@@ -1611,9 +1674,17 @@ added: v26.1.0
 再尝试 `end()`。当同步路径成功时，回调会通过
 `queueMicrotask` 延迟，以保持异步解析约定。
 
-Writable 的 `highWaterMark` 设置为 `Number.MAX_SAFE_INTEGER` 以
-有效禁用其内部缓冲，允许底层 Writer
-直接管理背压。
+经典流回调无法将任意值表示为错误。非 Error 类型的原因会被包装为
+`ERR_FALSY_VALUE_REJECTION` 或 `ERR_OPERATION_FAILED` 错误，然后
+传递给回调。该错误的 `reason` 属性包含原始值。
+
+在成功完成之前销毁 Writable 会调用 `writer.fail()`。
+如果 `fail()` 不可用，则在 Writer 实现了 `Symbol.dispose` 或
+`Symbol.asyncDispose` 时使用相应方法。
+
+Writable 使用经典流的默认 `highWaterMark`。
+经典流背压会限制等待传递到底层 Writer 的写入数量，而 Writer 则控制活动的
+`_write()` 或 `_writev()` 操作何时完成。
 
 ```mjs
 import { push, toWritable } from 'node:stream/iter';
@@ -1646,7 +1717,11 @@ writable.end();
 该值必须是一个函数。当被 `Broadcast.from()` 调用时，它会接收传递给 `Broadcast.from()` 的选项，并且必须返回一个符合 {BroadcastChannel} 接口的对象。实现完全是自定义的——它可以随意管理消费者、缓冲和背压。
 
 ```mjs
-import { Broadcast, text } from 'node:stream/iter';
+import {
+  broadcast as createBroadcast,
+  Broadcast,
+  text,
+} from 'node:stream/iter';
 
 // 此示例委托给内置的 Broadcast，但自定义
 // 实现可以使用任何机制。
@@ -1655,7 +1730,7 @@ class MessageBus {
   #writer;
 
   constructor() {
-    const { writer, broadcast } = Broadcast();
+    const { writer, broadcast } = createBroadcast();
     this.#writer = writer;
     this.#broadcast = broadcast;
   }
@@ -1674,7 +1749,7 @@ class MessageBus {
 }
 
 const bus = new MessageBus();
-const { broadcast } = Broadcast.from(bus);
+const broadcast = Broadcast.from(bus);
 const consumer = broadcast.push();
 bus.send('hello');
 bus.close();
@@ -1682,7 +1757,11 @@ console.log(await text(consumer)); // 'hello'
 ```
 
 ```cjs
-const { Broadcast, text } = require('node:stream/iter');
+const {
+  broadcast: createBroadcast,
+  Broadcast,
+  text,
+} = require('node:stream/iter');
 
 // 此示例委托给内置的 Broadcast，但自定义
 // 实现可以使用任何机制。
@@ -1691,7 +1770,7 @@ class MessageBus {
   #writer;
 
   constructor() {
-    const { writer, broadcast } = Broadcast();
+    const { writer, broadcast } = createBroadcast();
     this.#writer = writer;
     this.#broadcast = broadcast;
   }
@@ -1710,7 +1789,7 @@ class MessageBus {
 }
 
 const bus = new MessageBus();
-const { broadcast } = Broadcast.from(bus);
+const broadcast = Broadcast.from(bus);
 const consumer = broadcast.push();
 bus.send('hello');
 bus.close();
@@ -1918,7 +1997,10 @@ console.log(textSync(consumer)); // 'hello'
 
 * 值：toWellFormed
 
-该值必须是一个将对象转换为可流式传输值的函数。当在流式传输管道中的任何位置遇到该对象时（作为传递给 `from()` 的源，或作为转换返回的值），就会调用此方法以生成实际数据。它可以返回任何会解析为以下类型的值：字符串、`Uint8Array`、`AsyncIterable`、`Iterable`，或另一个可流式传输对象。
+该值必须是一个函数，用于将对象转换为可流式传输的值。
+当对象传递给 `from()` 时，会调用此方法以生成
+实际数据。它可以返回任何解析为字符串、`Uint8Array`、
+`AsyncIterable`、`Iterable` 或其他可流式传输对象的值。
 
 ```mjs
 import { from, text } from 'node:stream/iter';
@@ -1962,7 +2044,7 @@ text(stream).then(console.log); // 'hello world'
 
 * 值：`Symbol.for('Stream.toStreamable')`
 
-该值必须是一个同步将对象转换为可流式传输值的函数。当在流式传输管道中的任何位置遇到该对象时（作为传递给 `fromSync()` 的源，或作为同步转换返回的值），就会调用此方法以生成实际数据。它必须同步返回一个可流式传输的值：字符串、`Uint8Array` 或 `Iterable`。
+该值必须是一个函数，用于将对象同步转换为可流式传输的值。当对象传递给 `fromSync()` 时，会调用此方法以生成实际数据。它必须同步返回一个可流式传输的值：字符串、`Uint8Array` 或 `Iterable`。
 
 ```mjs
 import { fromSync, textSync } from 'node:stream/iter';

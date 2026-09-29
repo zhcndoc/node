@@ -467,9 +467,10 @@ node --report-uncaught-exception --report-on-signal \
   诊断数据元素，如堆、堆栈、事件循环状态、资源
   消耗等，以推断致命错误的原因。
 
-* `--report-compact` 以紧凑格式写入报告，单行 JSON，比默认的多行格式
-  更易于日志处理系统消费，默认格式设计用于
-  人类消费。
+* `--report-on-process-timeout` 启用在进程退出前达到 `--process-timeout` 设置的时长时触发报告。
+  有助于分析进程未退出的原因。
+
+* `--report-compact` 以紧凑格式写入报告，即单行 JSON，与默认的多行格式相比，更易于日志处理系统使用；默认的多行格式则是为便于人类阅读而设计的。
 
 * `--report-directory` 报告生成的
   位置。
