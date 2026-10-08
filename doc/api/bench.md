@@ -62,8 +62,10 @@ node --experimental-bench --bench benchmark.mjs
 Benchmarks are executed serially in declaration order. Declared benchmarks are
 scheduled automatically. Call `run()` during the same turn as the declarations
 to consume the event stream or configure filtering.
-If an automatically scheduled run fails and `run()` was not called, the process
-exit code is set to `1`.
+If a benchmark run started automatically or through the module-level `run()`
+fails, the process exit code is set to `1` unless `process.exitCode` has
+already been set. Runners created with [`createRunner()`][] leave the exit code
+to their caller.
 
 ## Measurement model
 
@@ -73,6 +75,12 @@ fresh {BenchContext}. The function must either call `context.start()` and
 once to provide an externally measured sample. Setup before `start()` and
 cleanup after `end()` are outside the measured region. Promise-returning
 functions are awaited.
+
+By default, ten unreported warmup invocations run before the measured samples
+so that early samples are less likely to be taken before the measured code has
+been optimized. A fixed warmup count does not guarantee a stable optimization
+state; inspect raw `samples` and increase `warmup` when early samples are
+consistently slower. Set `warmup` to `0` to measure from the first invocation.
 
 By default, an event loop turn occurs between sample invocations. An embedded
 runner can disable this using `yieldBetweenSamples`. The runner executes
@@ -304,7 +312,8 @@ runner and obtain its {BenchmarksStream}.
 
 Each runner can be started once. Its `run()` function accepts the same options
 as the module-level [`run()`][]. `run({ yieldBetweenSamples })` overrides the
-value passed to `createRunner()`.
+value passed to `createRunner()`. Unlike the module-level runner, a failed
+benchmark in an explicit runner does not change the process exit code.
 
 ## `bench([name][, options], fn)`
 
@@ -336,7 +345,7 @@ added: v26.9.0
   * `timeout` {number} The number of milliseconds after which the benchmark
     fails. **Default:** `Infinity`.
   * `warmup` {number} The number of unreported callback invocations before
-    measured samples. Must be a 32-bit unsigned integer. **Default:** `0`.
+    measured samples. Must be a 32-bit unsigned integer. **Default:** `10`.
 * `fn` {Function|AsyncFunction} The benchmark function. It receives a
   {BenchContext}.
 * Returns: {Promise} Fulfilled with the benchmark result after a top-level
@@ -497,6 +506,9 @@ Returns the object-mode event stream for the in-process benchmark run. Call
 execution begins. Calling `run()` is optional when the returned stream is not
 needed. An explicit runner created by `createRunner()` does not run
 automatically, so its `run()` function may be called later.
+
+If any benchmark fails, the process exit code is set to `1` once the run
+finishes, unless `process.exitCode` has already been set.
 
 ```mjs
 import { bench, run } from 'node:bench';
@@ -843,6 +855,7 @@ A completed benchmark result contains:
   * `skewness` {number} The skewness of the scaled rate histogram.
 
 [`context.record()`]: #contextrecordsample
+[`createRunner()`]: #createrunneroptions
 [`run()`]: #runoptions
 [benchmark result]: #benchmark-result
 [command-line options documentation]: cli.md#--bench

@@ -630,6 +630,8 @@ added: v26.9.0
 
 Overrides the number of unreported warmup callback invocations for every
 selected benchmark. `count` must be an integer between `0` and `4294967295`.
+Without this option, each benchmark uses its own `warmup` value, which defaults
+to `10`.
 
 ### `--build-sea=config`
 
@@ -2676,7 +2678,7 @@ Identical to `-e` but prints the result.
 ### `--process-timeout=duration`
 
 <!-- YAML
-added: REPLACEME
+added: v26.11.0
 -->
 
 > Stability: 1.1 - Active development
@@ -2856,7 +2858,7 @@ error.
 ### `--report-on-process-timeout`
 
 <!-- YAML
-added: REPLACEME
+added: v26.11.0
 -->
 
 > Stability: 1.1 - Active development
