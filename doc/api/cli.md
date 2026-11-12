@@ -1232,8 +1232,9 @@ priority than `--dns-result-order`.
 added: v6.0.0
 -->
 
-Enable [FIPS mode][] at startup. A configured provider named `fips` must be
-available and initialize successfully.
+Enable [FIPS mode][] at startup by adding `fips=yes` to OpenSSL's default
+property query. This does not load or validate a FIPS provider or run its
+self-tests. Configure OpenSSL to load the provider separately.
 
 ### `--enable-fips-indicator-events`
 
@@ -1766,14 +1767,6 @@ changes:
 
 Enable experimental WebAssembly System Interface (WASI) support.
 
-### `--experimental-web-worker`
-
-<!-- YAML
-added: v26.9.0
--->
-
-Enable experimental support for the Web Worker API.
-
 ### `--experimental-worker-inspection`
 
 <!-- YAML
@@ -1807,7 +1800,8 @@ changes:
 -->
 
 Enable [FIPS mode][] at startup and prevent it from being disabled from script
-code. The same OpenSSL requirements as [`--enable-fips`][] apply.
+code. This changes the default property query as described for
+[`--enable-fips`][].
 
 An optional mode can be specified using `--force-fips=mode`:
 
@@ -2391,6 +2385,20 @@ changes:
 -->
 
 Disable the experimental [`node:vfs`][] module and `--vfs-load`.
+
+### `--no-experimental-web-worker`
+
+<!-- YAML
+added: v26.9.0
+changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/65323
+    description: This feature is now enabled by default.
+-->
+
+> Stability: 1.1 - Active Development
+
+Disable support for the Web Worker API.
 
 ### `--no-experimental-webstorage`
 
@@ -3996,9 +4004,9 @@ comes from anywhere else, such as the real file system, needs nothing added.
 the command line's decision, and the environment must not be able to redirect
 it.
 
-A [single executable application][] built with `"vfsArchive"` mounts that
-archive at the mount point reserved for `--vfs-load`, so `--vfs-load` cannot be
-used in it.
+`--vfs-load` cannot be used in a [single executable application][]: its entry
+point is the `"main"` it was built with, and with `"useVfs"` its own virtual
+file system is mounted at the mount point reserved for `--vfs-load`.
 
 ```console
 $ node --vfs-load=app.zip
@@ -4327,7 +4335,6 @@ one is included in the list below.
 * `--experimental-top-level-await`
 * `--experimental-vm-modules`
 * `--experimental-wasi-unstable-preview1`
-* `--experimental-web-worker`
 * `--experimental-websocket`
 * `--force-context-aware`
 * `--force-fips`
@@ -4360,6 +4367,7 @@ one is included in the list below.
 * `--no-experimental-sqlite`
 * `--no-experimental-strip-types`
 * `--no-experimental-vfs`
+* `--no-experimental-web-worker`
 * `--no-experimental-webstorage`
 * `--no-extra-info-on-fatal-exception`
 * `--no-force-async-hooks-checks`
