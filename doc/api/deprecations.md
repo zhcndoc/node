@@ -754,6 +754,9 @@ npx codemod@latest @nodejs/slow-buffer-to-buffer-alloc-unsafe-slow
 
 <!-- YAML
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/67493
+    description: End-of-Life.
   - version: v25.0.0
     pr-url: https://github.com/nodejs/node/pull/58620
     description: Runtime deprecation.
@@ -765,10 +768,13 @@ changes:
     description: Documentation-only deprecation.
 -->
 
-Type: Runtime
+Type: End-of-Life
 
-The [`ecdh.setPublicKey()`][] method is now deprecated as its inclusion in
-the API is not useful.
+The `ecdh.setPublicKey()` method has been removed as its inclusion in the API
+was not useful. `ECDH` only requires a private key and the other party's public
+key to compute the shared secret. Use [`ecdh.generateKeys()`][] or
+[`ecdh.setPrivateKey()`][] instead; the latter also sets the associated public
+key.
 
 ### DEP0032: `node:domain` module
 
@@ -2942,6 +2948,9 @@ npx codemod @nodejs/timers-deprecations
 
 <!-- YAML
 changes:
+  - version: REPLACEME
+    pr-url: https://github.com/nodejs/node/pull/67487
+    description: End-of-Life.
   - version: v16.0.0
     pr-url: https://github.com/nodejs/node/pull/37204
     description: Runtime deprecation.
@@ -2950,12 +2959,12 @@ changes:
     description: Documentation-only.
 -->
 
-Type: Runtime
+Type: End-of-Life
 
-Modules that have an invalid `main` entry (e.g., `./does-not-exist.js`) and
-also have an `index.js` file in the top level directory will resolve the
-`index.js` file. That is deprecated and is going to throw an error in future
-Node.js versions.
+Modules that have an invalid `main` entry (e.g., `./does-not-exist.js`) no
+longer fall back to resolving an `index.js` file in the top level directory.
+Loading such a module with `require()` now throws a `MODULE_NOT_FOUND` error.
+Fix the `main` entry so that it points to an existing file.
 
 ### DEP0129: `ChildProcess._channel`
 
@@ -4871,7 +4880,7 @@ Type: Documentation-only
 
 <!-- YAML
 changes:
-  - version: REPLACEME
+  - version: v27.0.0-alpha.0.2.0
     pr-url: https://github.com/nodejs/node/pull/67461
     description: Documentation-only deprecation.
 -->
@@ -4888,7 +4897,7 @@ changes:
   - version: REPLACEME
     pr-url: https://github.com/nodejs/node/pull/67618
     description: Runtime deprecation. Renegotiation is disabled by default.
-  - version: REPLACEME
+  - version: v27.0.0-alpha.0.2.0
     pr-url: https://github.com/nodejs/node/pull/67532
     description: Documentation-only deprecation
                  with `--pending-deprecation` support.
@@ -4992,7 +5001,8 @@ This affects multiple TLS APIs:
 [`dns.lookup()`]: dns.md#dnslookuphostname-options-callback
 [`dnsPromises.lookup()`]: dns.md#dnspromiseslookuphostname-options
 [`domain`]: domain.md
-[`ecdh.setPublicKey()`]: crypto.md#ecdhsetpublickeypublickey-encoding
+[`ecdh.generateKeys()`]: crypto.md#ecdhgeneratekeysencoding-format
+[`ecdh.setPrivateKey()`]: crypto.md#ecdhsetprivatekeyprivatekey-encoding
 [`emitter.listenerCount(eventName)`]: events.md#emitterlistenercounteventname-listener
 [`events.listenerCount(emitter, eventName)`]: events.md#eventslistenercountemitterortarget-eventname
 [`fs.Dir`]: fs.md#class-fsdir
